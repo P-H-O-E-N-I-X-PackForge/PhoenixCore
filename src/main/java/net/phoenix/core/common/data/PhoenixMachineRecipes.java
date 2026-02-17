@@ -412,7 +412,7 @@ public class PhoenixMachineRecipes {
         .duration(200) // EV tier duration
         .EUt(GTValues.VA[GTValues.EV]); // EV voltage
 
-         // Recipe for Voidic Drill Fluid
+         // Recipe for Voidic Drill Flui
     event.recipes.gtceu.large_chemical_reactor("voidic_drilling_fluid_recipe_base") // Renamed ID
         .inputFluids([
             "gtceu:drilling_fluid 500",
