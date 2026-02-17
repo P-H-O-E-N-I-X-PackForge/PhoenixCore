@@ -45,6 +45,15 @@ public class PhoenixItems {
             .item("royal_jelly", Item::new)
             .lang("§dRoyal Jelly")
             .register();
+    public static ItemEntry<Item> HONEY_COMB_BASE = REGISTRATE
+            .item("honey_comb_base", Item::new)
+            .lang("§6Honeycomb Base")
+            .register();
+    public static ItemEntry<Item> HONEY_COMB_BASE_MOLD = REGISTRATE
+            .item("honey_comb_base_mold", Item::new)
+            .lang("§6Honeycomb Base Mold")
+            .register();
+
 
     /*
      * public static ItemEntry<ComponentItem> ENERGY_LAPOTRONIC_ORB = REGISTRATE

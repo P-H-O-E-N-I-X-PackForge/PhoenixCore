@@ -9,8 +9,10 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
+import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import java.util.function.Consumer;
@@ -285,14 +287,14 @@ public class PhoenixMachineRecipes {
 
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_imbued_titanium")
                 .inputItems(ingot, Titanium, 1)
-                .inputFluids(SOURCE_OF_MAGIC.getFluid(1000))
+                .input(SourceRecipeCapability.CAP, 2)
                 .duration(160)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .outputItems(ingot, SOURCE_IMBUED_TITANIUM, 1)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_gem")
                 .inputItems(gem, Amethyst, 1)
-                .inputFluids(SOURCE_OF_MAGIC.getFluid(250))
+                .input(SourceRecipeCapability.CAP, 2)
                 .duration(40)
                 .EUt(GTValues.VA[GTValues.HV] / 2)
                 .outputItems(SOURCE_GEM, 2)
@@ -306,7 +308,7 @@ public class PhoenixMachineRecipes {
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("85_percent_pure_nevonian_steel_cooling")
                 .inputItems(ingotHot, EightyFivePercentPureNevonianSteel, 1)
-                .inputFluids(SOURCE_OF_MAGIC.getFluid(2500))
+                .input(SourceRecipeCapability.CAP, 250)
                 .duration(400)
                 .EUt(GTValues.VA[GTValues.EV] / 2)
                 .outputItems(ingot, EightyFivePercentPureNevonianSteel, 1)
@@ -314,68 +316,129 @@ public class PhoenixMachineRecipes {
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_wheat")
                 .inputItems(new ItemStack(Items.WHEAT), 3)
                 .circuitMeta(1)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(125))
+                .output(SourceRecipeCapability.CAP, 4)
                 .duration(190)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_flowers")
                 .inputItems(PTags.FLOWERS, 3)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(80))
+                .output(SourceRecipeCapability.CAP, 8)
                 .duration(150)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_crops")
                 .inputItems(PTags.CROPS, 3)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(100))
+                .output(SourceRecipeCapability.CAP, 8)
                 .duration(160)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_mushrooms")
                 .inputItems(PTags.MUSHROOMS, 4)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(60))
+                .output(SourceRecipeCapability.CAP, 6)
                 .duration(145)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coal")
                 .inputItems(gem, Coal, 2)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(500))
+                .output(SourceRecipeCapability.CAP, 5)
                 .duration(220)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coke")
                 .inputItems(gem, Coke, 1)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(400))
+                .output(SourceRecipeCapability.CAP, 7)
                 .duration(250)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_charcoal")
                 .inputItems(gem, Charcoal, 2)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(450))
+                .output(SourceRecipeCapability.CAP, 4)
                 .duration(210)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_logs")
                 .inputItems(PTags.LOGS, 4)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(200))
+                .output(SourceRecipeCapability.CAP, 5)
                 .duration(180)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_planks")
                 .inputItems(PTags.PLANKS, 4)
-                .outputFluids(SOURCE_OF_MAGIC.getFluid(200))
+                .output(SourceRecipeCapability.CAP, 3)
                 .duration(180)
+                .EUt(GTValues.VA[GTValues.HV] / 3)
+                .save(provider);
+        PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_lava")
+                .inputFluids(Lava, 1000)
+                .output(SourceRecipeCapability.CAP, 5)
+                .duration(200)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("alchemical_imbuer")
                 .inputItems(SOURCE_GEM_BLOCK, 4)
                 .inputItems(pipeLargeFluid, StainlessSteel, 4)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("kubejs", "honey_comb_base")), 1)
+                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ars_nouveau", "sourcestone")), 8)
                 .inputItems(CASING_STAINLESS_CLEAN, 4)
                 .inputItems(CustomTags.HV_CIRCUITS, 2)
                 .outputItems(PhoenixMachines.ALCHEMICAL_IMBUER)
                 .inputFluids(SolderingAlloy, 613)
-                .duration(150).EUt(VA[HV] / 2)
+                .duration(250).EUt(VA[HV] / 2)
                 .save(provider);
+        /*
+
+
+                    event.recipes.gtceu.large_chemical_reactor("eighty_five_percent_pure_nevonian_steel_dust")
+        .itemInputs(
+            "4x gtceu:exquisite_coke_gem",
+            "16x gtceu:diamond_dust",
+            "2x phoenixcore:nevvonian_iron_dust")
+        .inputFluids("phoenixcore:source_of_magic 1200", "gtceu:titanium 250")
+        .outputFluids("gtceu:titanium_tetrachloride 100")
+        .itemOutputs("4x phoenixcore:eighty_five_percent_pure_nevonian_steel_dust")
+        .duration(800)
+        .EUt(GTValues.VA[GTValues.EV]);
+
+
+    event.recipes.gtceu.mixer("source_titanium_filament_alloy")
+        .itemInputs(
+            "4x gtceu:titanium_dust",
+            "64x ars_nouveau:source_gem",
+            "2x gtceu:molybdenum_dust",
+
+        )
+        .inputFluids("phoenixcore:source_of_magic 1200")
+        .itemOutputs("6x phoenixcore:source_titanium_filament_dust") // Output the custom material dust
+        .duration(200) // EV tier duration
+        .EUt(GTValues.VA[GTValues.EV]); // EV voltage
+
+         // Recipe for Voidic Drill Fluid (Base)
+    event.recipes.gtceu.large_chemical_reactor("voidic_drilling_fluid_recipe_base") // Renamed ID
+        .inputFluids([
+            "gtceu:drilling_fluid 500",
+            "phoenixcore:frost 250",
+            "kubejs:cryo_ember_fluid 25000",
+            "phoenixcore:source_of_magic 100"
+        ])
+        .itemInputs([
+            "phoenixcore:permafrost_dust",
+            "gtceu:ender_eye_dust"
+        ])
+        .outputFluids("kubejs:voidic_drilling_fluid 1000")
+        .duration(300)
+        .EUt(GTValues.VA[GTValues.EV] / 2);
+
+    event.recipes.gtceu.large_chemical_reactor("voidic_drilling_fluid_recipe_better") // Renamed ID
+        .inputFluids([
+            "gtceu:drilling_fluid 500",
+            "phoenixcore:source_of_magic 1000"
+        ])
+        .itemInputs([
+            "phoenixcore:crystallized_fluxstone_dust"
+        ])
+        .outputFluids("kubejs:voidic_drilling_fluid 3000")
+        .duration(300)
+        .EUt(GTValues.VA[GTValues.EV] / 2);
+                */
     }
 }

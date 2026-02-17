@@ -143,7 +143,7 @@ public class BeeRecipeData {
             // "diamond", "emerald", "netherite", "infinity", "arcane", "arcane_crystal",
             "spacial", "fluix", "obsidian", "withered", "ghostly", "prismarine");
 
-    private static int tierFor(String beeId) {
+    public static int tierFor(String beeId) {
         if (TIER_THREE_BEES.contains(beeId)) return 3;
         if (TIER_TWO_BEES.contains(beeId)) return 2;
         return 1;
