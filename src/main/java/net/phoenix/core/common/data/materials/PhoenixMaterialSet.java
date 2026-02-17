@@ -12,7 +12,8 @@ public class PhoenixMaterialSet {
     public static final MaterialIconType TIER_ONE_BEE = new MaterialIconType("tier_one_bee");
     public static final MaterialIconType TIER_TWO_BEE = new MaterialIconType("tier_two_bee");
     public static final MaterialIconType TIER_THREE_BEE = new MaterialIconType("tier_three_bee");
-    public static final MaterialIconType BEE_COMB = new MaterialIconType("comb_bee");
+    public static final MaterialIconType BEE_COMB = new MaterialIconType("honeycomb");
+    public static final MaterialIconType HONEYCOMB_BLOCK = new MaterialIconType("honeycomb_block");
     public static final MaterialIconSet ALMOST_PURE_NEVONIAN_STEEL = new MaterialIconSet("almost_pure_nevonian_steel",
             SHINY);
 

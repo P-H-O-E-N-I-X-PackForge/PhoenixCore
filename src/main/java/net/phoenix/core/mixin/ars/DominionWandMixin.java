@@ -1,4 +1,4 @@
-package net.phoenix.core.mixin;
+package net.phoenix.core.mixin.ars;
 
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;

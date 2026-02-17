@@ -1,4 +1,4 @@
-package net.phoenix.core.mixin;
+package net.phoenix.core.mixin.minecraft;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

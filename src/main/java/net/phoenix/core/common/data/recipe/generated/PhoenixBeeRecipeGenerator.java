@@ -70,7 +70,7 @@ public class PhoenixBeeRecipeGenerator {
     }
 
     private static ItemStack combItemFor(Material mat) {
-        return ChemicalHelper.get(PhoenixMaterialFlags.bee_comb, mat);
+        return ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat);
     }
 
     /*

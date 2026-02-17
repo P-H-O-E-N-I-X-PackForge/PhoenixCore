@@ -1,4 +1,4 @@
-package net.phoenix.core.mixin;
+package net.phoenix.core.mixin.gtceu;
 
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;

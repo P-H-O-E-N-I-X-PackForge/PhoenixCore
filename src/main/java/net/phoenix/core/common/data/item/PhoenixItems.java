@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.ElectricStats;
 
+import net.minecraft.world.item.Item;
+
 import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static net.phoenix.core.PhoenixCore.PHOENIX_CREATIVE_TAB;
@@ -14,6 +16,7 @@ public class PhoenixItems {
     static {
         REGISTRATE.creativeModeTab(() -> PHOENIX_CREATIVE_TAB);
     }
+
     public static ItemEntry<ComponentItem> POWER_UNIT_LUV = REGISTRATE.item("luv_power_unit", ComponentItem::create)
             .lang("LuV Power Unit")
             .properties(p -> p.stacksTo(8))
@@ -33,6 +36,14 @@ public class PhoenixItems {
             // This line tells the item to use its OWN class logic for interactions
             .onRegister(c -> c.attachComponents(c))
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tools/tesla_binder")))
+            .register();
+    public static ItemEntry<Item> HONEY_TREAT = REGISTRATE
+            .item("honey_treat", Item::new)
+            .lang("§6Honey Treat")
+            .register();
+    public static ItemEntry<Item> ROYAL_JELLY = REGISTRATE
+            .item("royal_jelly", Item::new)
+            .lang("§dRoyal Jelly")
             .register();
 
     /*

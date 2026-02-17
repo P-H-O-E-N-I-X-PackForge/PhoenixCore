@@ -22,10 +22,8 @@ import static com.gregtechceu.gtceu.api.GTValues.L;
 import static com.gregtechceu.gtceu.api.GTValues.LuV;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.foil;
-import static com.gregtechceu.gtceu.common.data.GTMaterials.PolyphenyleneSulfide;
-import static com.gregtechceu.gtceu.common.data.GTMaterials.PolyvinylChloride;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
-import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.FROST;
 
 public class PhoenixWireRecipeHandler {
 
@@ -86,7 +84,7 @@ public class PhoenixWireRecipeHandler {
             builder.inputItems(foil, PolyvinylChloride, insulationAmount);
         }
 
-        builder.inputFluids(FROST.getFluid(L * insulationAmount / 2))
+        builder.inputFluids(Water.getFluid(L * insulationAmount / 2))
                 .save(provider);
     }
 }

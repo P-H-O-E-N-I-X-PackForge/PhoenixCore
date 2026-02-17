@@ -16,7 +16,7 @@ import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 
 import java.util.function.Consumer;
 
-import static net.phoenix.core.common.data.materials.PhoenixPolymerMaterials.CRYO_GRAPHITE_BINDING_SOLUTION;
+import static net.phoenix.core.common.data.materials.PhoenixFissionMaterials.CRYO_GRAPHITE_BINDING_SOLUTION;
 
 public class CrystalRoseAssemblerGenerator {
 

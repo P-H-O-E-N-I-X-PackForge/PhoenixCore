@@ -14,17 +14,19 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastP
 public class PhoenixProgressionMaterials {
 
     // Basic Alloys & Progression
-    public static Material ALUMINFROST, SOURCE_IMBUED_TITANIUM, RESONANT_RHODIUM_ALLOY, FROST;
-    public static Material EightyFivePercentPureNevonianSteel, NIOBIUM_MODIFIED_SILICON_CARBIDE, AURUM_STEEL,
-            FIERY_BRONZE, VOID_TOUCHED_TUNGSTEN_STEEL, FROST_REINFORCED_STAINED_STEEL;
+    public static Material ALUMINFROST, SOURCE_IMBUED_TITANIUM, RESONANT_RHODIUM_ALLOY;
+    public static Material EightyFivePercentPureNevonianSteel, AURUM_STEEL,
+            FIERY_BRONZE, VOID_TOUCHED_TUNGSTEN_STEEL, FROST_REINFORCED_STAINED_STEEL, FROST,
+            ADVANCED_QUIN_NAQUADIAN_ALLOY;
 
     // Superconductors
     public static Material MAGMATIC_MANGANESE_LEAD, CRYOGENIC_ALUMINUM_STRAND, ICY_STEEL_MATRIX,
-            SOURCE_TITANIUM_FILAMENT;
+            SOURCE_TITANIUM_FILAMENT, MAGMA;
 
     // Endgame "Big" List
+
     public static Material AKASHIC_ZERONIUM, PHOENIX_ENRICHED_NAQUADAH, PHOENIX_ENRICHED_TRITANIUM, AETHERIUM_STEEL,
-            SUBSPACE_COBALT;
+            SUBSPACE_COBALT, UNREFINED_ALUMINFROST;
     public static Material SINGULARITY_FORGED_TITANIUM, EXOTIC_VANADIUM_COMPOSITE, DARK_MATTER_PLATED_IRIDIUM,
             CORRUPTED_HYPERALLOY;
     public static Material REALITY_BOUND_OSMIUM, VOID_STITCHED_NEODYMIUM, CELESTIAL_AURORIUM, PRIMORDIAL_FLUX_METAL,
@@ -37,14 +39,36 @@ public class PhoenixProgressionMaterials {
             GALACTIC_HEART_MATTER;
     public static Material DARK_NEBULA_INFUSED_IRIDIUM, ELDRITCH_VOIDSTEEL, AKASHIC_CHRONO_METAL,
             ABSOLUTE_ZERO_ZERONIUM;
-    public static Material MULTIVERSAL_HYPERALLOY, GLITCHED_CORRUPTION_SUBSTRATE, EVENT_HORIZON_MATTER, ANTIMATTER;
+    public static Material MULTIVERSAL_HYPERALLOY, GLITCHED_CORRUPTION_SUBSTRATE, EVENT_HORIZON_MATTER, ANTIMATTER,
+            RESONANT_ENDER;
 
     public static void register() {
         // Progression Alloys
-        FROST = new Material.Builder(PhoenixCore.id("frost")).fluid().color(0xA7D1EB).secondaryColor(0x778899)
+        RESONANT_ENDER = new Material.Builder(PhoenixCore.id("resonant_ender")).fluid().color(0x032620)
                 .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+        MAGMA = new Material.Builder(PhoenixCore.id("magma"))
+                .dust()
+                .color(0xff6d00)
+                .secondaryColor(0xeaa92e)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+        FROST = new Material.Builder(PhoenixCore.id("frost"))
+                .langValue("§bFrost")
+                .fluid()
+                .color(0xA7D1EB)
+                .secondaryColor(0x778899)
+                .iconSet(MaterialIconSet.SHINY)
+                .buildAndRegister();
+
+        UNREFINED_ALUMINFROST = new Material.Builder(PhoenixCore.id("unrefined_aluminfrost"))
+                .dust()
+                .color(0xA7D1EB)
+                .secondaryColor(0x778899)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+
         ALUMINFROST = new Material.Builder(PhoenixCore.id("aluminfrost")).ingot().fluid().color(0xadd8e6)
-                .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.SHINY)
+                .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.BRIGHT)
                 .fluidPipeProperties(1200, 110, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_LONG_ROD,
                         GENERATE_ROD, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
@@ -55,7 +79,8 @@ public class PhoenixProgressionMaterials {
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD,
                         GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
                 .buildAndRegister();
-        RESONANT_RHODIUM_ALLOY = new Material.Builder(PhoenixCore.id("resonant_rhodium_alloy")).ingot().fluid()
+        RESONANT_RHODIUM_ALLOY = new Material.Builder(PhoenixCore.id("resonant_rhodium_alloy"))
+                .ingot().fluid()
                 .color(0xE245F8).secondaryColor(0xA345B0).iconSet(MaterialIconSet.METALLIC)
                 .components(GTMaterials.Rhodium, 3, GTMaterials.Palladium, 4, PhoenixOres.POLARITY_FLIPPED_BISMUTHITE,
                         1, GTMaterials.Cerium, 4)
@@ -63,17 +88,38 @@ public class PhoenixProgressionMaterials {
                 .flags(GENERATE_PLATE, GENERATE_RING, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD, GENERATE_GEAR,
                         GENERATE_SMALL_GEAR, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
                 .buildAndRegister();
+
+        ADVANCED_QUIN_NAQUADIAN_ALLOY = new Material.Builder(PhoenixCore.id("advanced_quin_naquadian_alloy"))
+                .ingot()
+                .liquid(7400)
+                .color(0x000000)
+                .secondaryColor(0x8B0000)
+                .iconSet(MaterialIconSet.RADIOACTIVE)
+                .fluidPipeProperties(8000, 800, true, true, true, true)
+                .components(GTMaterials.Naquadah, 5, GTMaterials.Trinium, 1, GTMaterials.Technetium, 3,
+                        GTMaterials.Strontium, 4, GTMaterials.Iodine, 1)
+                .blastTemp(7200, HIGH, GTValues.VA[GTValues.ZPM], 1950)
+                .flags(GENERATE_PLATE,
+                        GENERATE_RING,
+                        PHOSPHORESCENT,
+                        GENERATE_ROD,
+                        GENERATE_BOLT_SCREW,
+                        GENERATE_FRAME,
+                        GENERATE_DENSE,
+                        GENERATE_ROTOR)
+                .buildAndRegister();
+
         FROST_REINFORCED_STAINED_STEEL = new Material.Builder(PhoenixCore.id("frost_reinforced_stained_steel"))
                 .ingot()
                 .fluid()
                 .color(0xB0E0E6).secondaryColor(0x708090)
                 .iconSet(MaterialIconSet.SHINY)
-                .components(GTMaterials.StainlessSteel, 4, PhoenixProgressionMaterials.FROST, 1, GTMaterials.Aluminium,
-                        2)
+                .components(GTMaterials.StainlessSteel, 4, FROST, 2, GTMaterials.Aluminium, 2)
                 .blastTemp(4500, BlastProperty.GasTier.HIGH, GTValues.VA[GTValues.EV], 1200)
                 .flags(
                         GENERATE_PLATE,
                         GENERATE_ROD,
+                        GENERATE_LONG_ROD,
                         GENERATE_GEAR,
                         GENERATE_SMALL_GEAR,
                         GENERATE_FRAME,
@@ -109,11 +155,6 @@ public class PhoenixProgressionMaterials {
                         GENERATE_DENSE,
                         GENERATE_ROTOR)
                 .buildAndRegister();
-        NIOBIUM_MODIFIED_SILICON_CARBIDE = new Material.Builder(PhoenixCore.id("niobium_modified_silicon_carbide"))
-                .ingot().color(0x4A4B6B).secondaryColor(0x101021).formula("Nb(SiC)x").iconSet(MaterialIconSet.METALLIC)
-                .blastTemp(4500, MID, 2000, 1800)
-                .flags(GENERATE_PLATE, GENERATE_FRAME, GENERATE_FOIL, PhoenixMaterialFlags.GENERATE_TIER_ONE_BEE)
-                .buildAndRegister();
         AURUM_STEEL = new Material.Builder(PhoenixCore.id("aurum_steel")).ingot().fluid().color(0xd0a860)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.METALLIC)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
@@ -123,7 +164,8 @@ public class PhoenixProgressionMaterials {
                 .secondaryColor(0xa0522d).iconSet(MaterialIconSet.DULL)
                 .fluidPipeProperties(2000, 40, true, false, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
-                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
+                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR,
+                        PhoenixMaterialFlags.GENERATE_BEE_HONEYCOMB_BLOCK, PhoenixMaterialFlags.GENERATE_BEE_COMB)
                 .buildAndRegister();
 
         // Superconductors

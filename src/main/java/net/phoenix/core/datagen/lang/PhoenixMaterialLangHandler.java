@@ -11,6 +11,8 @@ public class PhoenixMaterialLangHandler {
         provider.add("tagprefix.tier_one_bee", "%s Lively Bee");
         provider.add("tagprefix.tier_two_bee", "%s Energetic Bee");
         provider.add("tagprefix.tier_three_bee", "%s Stronk Bee");
+        provider.add("tagprefix.honeycomb_block", "%s Rich Honey Comb (Block)");
+        provider.add("tagprefix.honeycomb", "%s Rich Honey Comb");
 
         // Fission & Radioactive
         provider.add("material.phoenixcore.uranium_233", "Uranium-233");
@@ -19,9 +21,13 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.americium_hexafluoride", "Americium Hexafluoride");
         provider.add("material.phoenixcore.uranium_oxide", "Uranium Oxide");
         provider.add("material.phoenixcore.irradiated_thorium", "Irradiated Thorium");
+        provider.add("material.phoenixcore.irradiated_uranium_236", "Irradiated Uranium 236");
         provider.add("material.phoenixcore.spent_uranium_233", "Spent Uranium-233");
         provider.add("material.phoenixcore.spent_uranium_235", "Spent Uranium-235");
+        provider.add("material.phoenixcore.spent_uranium_236", "Spent Uranium-236");
         provider.add("material.phoenixcore.depleted_uranium", "Depleted Uranium");
+        provider.add("material.phoenixcore.depleted_thorium", "Depleted Thorium");
+        provider.add("material.phoenixcore.depleted_plutonium_241", "Depleted Plutonium 241");
         provider.add("material.phoenixcore.boron_carbide", "§5Boron Carbide");
         provider.add("material.phoenixcore.zircalloy", "Zircalloy");
 
@@ -30,13 +36,15 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.frost", "§bFrost");
         provider.add("material.phoenixcore.source_imbued_titanium", "§5Source Imbued Titanium");
         provider.add("material.phoenixcore.resonant_rhodium_alloy", "§dResonant Rhodium Alloy");
+        provider.add("material.phoenixcore.advanced_quin_naquadian_alloy",
+                "Advanced Quin-Naquadian Alloy");
         provider.add("material.phoenixcore.eighty_five_percent_pure_nevvonian_steel", "§685% Pure Nevvonian Steel");
         provider.add("material.phoenixcore.niobium_modified_silicon_carbide", "§5Niobium Modified Silicon Carbide");
         provider.add("material.phoenixcore.extremely_modified_space_grade_steel",
                 "§cExtremely Modified Space Grade Steel");
         provider.add("material.phoenixcore.aurum_steel", "Aurum Steel");
         provider.add("material.phoenixcore.fiery_bronze", "Fiery Bronze");
-        provider.add("material.phoenixcore.void_touched_tungsten_steel", "§5Void-Touched Tungsten Steel");
+        provider.add("material.phoenixcore.void_touched_tungsten_steel", "§5Void Touched Tungsten Steel");
         provider.add("material.phoenixcore.frost_reinforced_stained_steel", "§bFrost-Reinforced Stained Steel");
 
         // Superconductors
@@ -106,5 +114,104 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.crystallized_fluxstone", "§dCrystallized Fluxstone");
         provider.add("material.phoenixcore.nevvonian_iron", "§7Nevvonian Iron");
         provider.add("material.phoenixcore.fluorite", "§aFluorite");
+        provider.add("material.phoenixcore.quantariumite", "Quantariumite");
+        provider.add("material.phoenixcore.phoenixite", "Phoenixite");
+        provider.add("material.phoenixcore.akashic_bismuthite", "Akashic Bismuthite");
+        provider.add("material.phoenixcore.starnite", "Starnite");
+        provider.add("material.phoenixcore.entropy_rich_ore", "Entropy-Rich Ore");
+        provider.add("material.phoenixcore.fractaline_core", "Fractaline Core");
+        provider.add("material.phoenixcore.voltanite_ore", "Voltanite");
+        provider.add("material.phoenixcore.quantum_entropite", "Quantum Entropite");
+        provider.add("material.phoenixcore.mycelial_netherite_ore", "Mycelial Netherite");
+        provider.add("material.phoenixcore.glacial_cryonite_ore", "Glacial Cryonite");
+        provider.add("material.phoenixcore.chronoton_ore", "Chronoton");
+        provider.add("material.phoenixcore.singulium_cluster", "Singulium Cluster");
+        provider.add("material.phoenixcore.irreality_shard", "Irreality Shard");
+        provider.add("material.phoenixcore.dimensium_crystal_lattice", "Dimensium Crystal Lattice");
+        provider.add("material.phoenixcore.exotic_hadronite", "Exotic Hadronite");
+        provider.add("material.phoenixcore.akashic_resonance_crystal", "Akashic Resonance Crystal");
+        provider.add("material.phoenixcore.finality_shard", "Finality Shard");
+        provider.add("material.phoenixcore.oblivium_cluster", "Oblivium Cluster");
+        provider.add("material.phoenixcore.dormant_ember", "Dormant Ember");
+        provider.add("material.phoenixcore.osmiridium_80_20", "Osmiridium 80/20");
+        provider.add("material.phoenixcore.ismiridium_80_20", "Ismiridium 80/20");
+        provider.add("material.phoenixcore.impure_wax", "Impure Wax");
+        provider.add("material.phoenixcore.impure_honey", "Impure Honey");
+        provider.add("material.phoenixcore.resonant_ender", "§3Resonant Ender");
+        provider.add("material.phoenixcore.honey", "§6Honey");
+        provider.add("material.phoenixcore.magma", "§cMagma");
+        provider.add("material.phoenixcore.space_grade_steel", "Space Grade Steel");
+        addMaterialLang(provider, "superconductive_honey", "§6Superconductive Honey");
+        addMaterialLang(provider, "zircon", "Zircon");
+        addMaterialLang(provider, "low_level_radioactive_waste", "Low Level Radioactive Waste");
+        addMaterialLang(provider, "frost", "Frost");
+        addMaterialLang(provider, "boron_carbide", "Boron Carbide");
+        addMaterialLang(provider, "impure_zirconium", "Impure Zirconium");
+        addMaterialLang(provider, "impure_hafnium", "Impure Hafnium");
+        addMaterialLang(provider, "zircalloy", "Zircalloy");
+        addMaterialLang(provider, "exotic_fission_concentrate", "Exotic Fission Concentrate");
+        addMaterialLang(provider, "exotic_fissile_materials_clump", "Exotic Fissile Materials Clump");
+        addMaterialLang(provider, "fissile_ash", "Fissile Ash");
+        addMaterialLang(provider, "plutonium_fission_ash", "Plutonium Fission Ash");
+        addMaterialLang(provider, "trace_actinides", "Trace Actinides");
+
+        // Solutions and Fluids
+        addMaterialLang(provider, "cryo_graphite_binding_solution", "Cryo Graphite Binding Solution");
+        addMaterialLang(provider, "cryo_zirconium_binding_solution", "Cryo Zirconium Binding Solution");
+        addMaterialLang(provider, "hafnium_chloride", "Hafnium Chloride");
+        addMaterialLang(provider, "hot_sodium_potassium", "Hot Sodium-Potassium");
+        addMaterialLang(provider, "medium_pressure_fissile_steam", "Medium Pressure Fissile Steam");
+        addMaterialLang(provider, "critical_steam", "Critical Steam");
+        addMaterialLang(provider, "fission_products_fluid", "Fission Products Fluid");
+        addMaterialLang(provider, "radioactive_sludge", "Radioactive Sludge");
+        addMaterialLang(provider, "radioactive_gas_mixture", "Radioactive Gas Mixture");
+        addMaterialLang(provider, "inert_gas_waste", "Inert Gas Waste");
+        addMaterialLang(provider, "rhodium_palladium_solution", "Rhodium-Palladium Solution");
+        addMaterialLang(provider, "technetium_strontium_solution", "Technetium-Strontium Solution");
+        addMaterialLang(provider, "gaseous_fission_byproducts", "Gaseous Fission Byproducts");
+        addMaterialLang(provider, "acidic_waste", "Acidic Waste");
+        addMaterialLang(provider, "trace_fission_gases", "Trace Fission Gases");
+        addMaterialLang(provider, "purified_radioactive_waste_fluid", "Purified Radioactive Waste Fluid");
+
+        String[] beeMaterials = {
+                "pitchblende", "steel", "apatite", "cobalt", "salty", "sponge", "ghostly", "copper", "rune", "menril",
+                "crimson",
+                "warped", "magmatic", "rocked", "steamy", "slimy", "brown_shroom", "sculk", "crystalline",
+                "super_factory",
+                "scheelite", "spacial", "silky", "frosty", "withered", "arcane_crystal", "sticky_resin", "zombie",
+                "blazing",
+                "red_shroom", "infinity", "skeletal", "lepidolite", "arcane", "cinnabar", "topaz", "amethyst",
+                "prismarine",
+                "realgar", "pyrope", "zinc", "tin", "diamond", "iron", "fluorite", "ruby", "sapphire", "stibnite",
+                "opal",
+                "cheese", "lapis", "electrotine", "constantan", "redstone", "niter", "coal", "ilmenite", "silicon",
+                "galena",
+                "experience", "sodalite", "gold", "obsidian", "cobaltite", "bauxite", "silver", "tungstate", "emerald",
+                "tricalcium_phosphate", "nickel", "fluix", "malachite", "lead", "invar", "desh", "thorium", "graphite",
+                "sphalerite", "netherite", "ender", "acidic", "chromite", "pyrolusite", "platinum", "bismuth",
+                "glowing",
+                "bastnasite", "tetrahedrite", "sulfur", "oilsands", "tantalite", "barite", "vanadium_magnetite",
+                "draconic",
+                "pyrochlore", "voidglass_shard", "crystalized_fluxstone", "ignisium", "sky_steel"
+        };
+
+        for (String mat : beeMaterials) {
+            String formatted = formatName(mat);
+            provider.add("material.phoenixcore.honeyed_" + mat, "Honeyed " + formatted);
+            provider.add("material.phoenixcore.raw_" + mat + "_wax", "Raw " + formatted + " Wax");
+        }
+    }
+
+    private static String formatName(String name) {
+        String[] parts = name.split("_");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    private static void addMaterialLang(RegistrateLangProvider provider, String id, String name) {
+        provider.add("material.phoenix_fission." + id, name);
     }
 }

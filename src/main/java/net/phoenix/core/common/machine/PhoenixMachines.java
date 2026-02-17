@@ -34,6 +34,7 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachin
 import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
 import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MachineModifiers;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -70,11 +71,13 @@ import static com.gregtechceu.gtceu.api.capability.recipe.IO.OUT;
 import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.IS_FORMED;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
-import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.BATCH_MODE;
+import static com.gregtechceu.gtceu.common.data.GTMachines.*;
+import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.*;
 import static com.gregtechceu.gtceu.common.data.machines.GTMachineUtils.*;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.*;
 import static net.phoenix.core.api.machine.PhoenixPartAbility.SOURCE_INPUT;
 import static net.phoenix.core.api.machine.PhoenixPartAbility.SOURCE_OUTPUT;
+import static net.phoenix.core.common.block.PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 import static net.phoenix.core.configs.PhoenixConfigs.INSTANCE;
@@ -289,7 +292,8 @@ public class PhoenixMachines {
     public static MachineDefinition SOURCE_IMBUED_TITANIUM_CRATE = registerCrate(
             SOURCE_IMBUED_TITANIUM, 140,
             "Source Imbued Titanium Crate");
-    public static MachineDefinition VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(VOID_TOUCHED_TUNGSTEN_STEEL, 160,
+    public static MachineDefinition VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(VOID_TOUCHED_TUNGSTEN_STEEL,
+            160,
             "Void Touched Tungsten Steel Crate");
     public static MachineDefinition RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
             "Resonant Rhodium Alloy Crate");
@@ -1120,7 +1124,7 @@ public class PhoenixMachines {
             .langValue("§5Alchemical Imbuer")
             .recipeTypes(PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES, PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES) // PhoenixRecipeTypes.SOURCE_IMBUMENT_RECIPES)//"SOURCE_IMBUMENT_RECIPES","SOURCE_EXTRACTION_RECIPES")
             .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, BATCH_MODE)
-            .appearanceBlock(GTBlocks.CASING_TITANIUM_STABLE)
+            .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .rotationState(RotationState.NON_Y_AXIS)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("BBCCCBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBCCCBB")
@@ -1132,7 +1136,7 @@ public class PhoenixMachines {
                     .aisle("BBCKCBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBCCCBB")
                     .where("B", Predicates.any())
                     .where("C",
-                            Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
+                            Predicates.blocks(SOURCE_FIBER_MACHINE_CASING.get())
                                     .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                                     .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("D",
@@ -1156,8 +1160,37 @@ public class PhoenixMachines {
                                     .getValue(ResourceLocation.parse("ars_nouveau:agronomic_sourcelink"))))
                     .where("K", Predicates.controller(Predicates.blocks(definition.get())))
                     .build())
-            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
-                    GTCEu.id("block/multiblock/implosion_compressor"))
+            .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    PhoenixCore.id("block/multiblock/alchemical_imbuer"))
+            .register();
+
+    public static final MultiblockMachineDefinition SOURCE_REACTOR = REGISTRATE
+            .multiblock("source_reactor", WorkableElectricMultiblockMachine::new)
+            .conditionalTooltip(defaultEnvironmentRequirement(),
+                    ConfigHolder.INSTANCE.gameplay.environmentalHazards)
+            .rotationState(RotationState.ALL)
+            .langValue("§5Source Reactor")
+            .recipeType(GTRecipeTypes.LARGE_CHEMICAL_RECIPES)
+            .recipeModifiers(DEFAULT_ENVIRONMENT_REQUIREMENT, OC_PERFECT_SUBTICK, BATCH_MODE)
+            .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
+            .pattern(definition -> {
+                var casing = blocks(SOURCE_FIBER_MACHINE_CASING.get()).setMinGlobalLimited(10);
+                var abilities = Predicates.autoAbilities(definition.getRecipeTypes())
+                        .or(Predicates.autoAbilities(true, false, false));
+                return FactoryBlockPattern.start()
+                        .aisle("XXX", "XCX", "XXX")
+                        .aisle("XCX", "CPC", "XCX")
+                        .aisle("XXX", "XSX", "XXX")
+                        .where('S', Predicates.controller(blocks(definition.getBlock())))
+                        .where('X', casing.or(abilities).or(abilities(SOURCE_INPUT)))
+                        .where('P', blocks(CASING_POLYTETRAFLUOROETHYLENE_PIPE.get()))
+                        .where('C', Predicates.heatingCoils().setExactLimit(1)
+                                .or(abilities)
+                                .or(casing))
+                        .build();
+            })
+            .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    PhoenixCore.id("block/multiblock/source_spin"))
             .register();
 
     public static void init() {}

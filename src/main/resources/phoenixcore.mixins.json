@@ -5,15 +5,15 @@
   "minVersion": "0.8",
   "refmap": "mixins.phoenixcore.refmap.json",
   "mixins": [
-    "DominionWandMixin",
     "EmiApiMixin",
-    "ItemStackTooltipMixin",
-    "MetaMachineBlockEntityWandableMixin",
-    "accessor.RelayTileDisabledAccessor"
+    "accessor.RelayTileDisabledAccessor",
+    "ars.DominionWandMixin",
+    "minecraft.GuiGraphicsCountSuffixMixin",
+    "gtceu.MetaMachineBlockEntityWandableMixin",
+    "minecraft.ItemStackTooltipMixin"
   ],
   "client": [
-    "GuiGraphicsCountSuffixMixin",
-    "RelayTileMixin"
+    "ars.RelayTileMixin"
   ],
   "injectors": {
     "defaultRequire": 1

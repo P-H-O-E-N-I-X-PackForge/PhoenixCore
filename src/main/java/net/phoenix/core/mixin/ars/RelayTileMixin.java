@@ -1,4 +1,4 @@
-package net.phoenix.core.mixin;
+package net.phoenix.core.mixin.ars;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

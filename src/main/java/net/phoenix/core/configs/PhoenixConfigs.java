@@ -173,7 +173,9 @@ public class PhoenixConfigs {
                 "The connection mode for Tesla Towers.",
                 "TEAM_AUTO: All towers under a team/player share the same cloud automatically.",
                 "DATA_STICK: Towers must be manually linked to hatches using a Data Stick."
+
         })
+
         public TeslaConnectionMode teslaConnectionMode = FeatureConfigs.TeslaConnectionMode.DATA_STICK;
 
         public enum TeslaConnectionMode {

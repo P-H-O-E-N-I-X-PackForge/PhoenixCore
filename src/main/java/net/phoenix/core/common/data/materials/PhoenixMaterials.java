@@ -3,10 +3,7 @@ package net.phoenix.core.common.data.materials;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidProperty;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.IngotProperty;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.ToolProperty;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.*;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
@@ -42,6 +39,10 @@ public class PhoenixMaterials {
         GTMaterials.Nobelium.setProperty(PropertyKey.INGOT, new IngotProperty());
         GTMaterials.Lawrencium.setProperty(PropertyKey.INGOT, new IngotProperty());
         GTMaterials.Strontium.setProperty(PropertyKey.INGOT, new IngotProperty());
+        GTMaterials.Zirconium.setProperty(PropertyKey.INGOT, new IngotProperty());
+        GTMaterials.Hafnium.setProperty(PropertyKey.INGOT, new IngotProperty());
+        GTMaterials.Hafnium.setProperty(PropertyKey.ORE, new OreProperty());
+        GTMaterials.Zirconium.setProperty(PropertyKey.ORE, new OreProperty());
 
         addFluid(GTMaterials.Iodine, FluidStorageKeys.GAS);
         addFluid(GTMaterials.Oganesson, FluidStorageKeys.GAS);

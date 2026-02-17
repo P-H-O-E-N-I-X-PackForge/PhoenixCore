@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.integration.kjs.recipe.components.ContentJS;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.api.capability.PhoenixRecipeCapabilities;
 import net.phoenix.core.common.data.PhoenixCovers;
+import net.phoenix.core.common.data.PhoenixFissionMachineRecipes;
 import net.phoenix.core.common.data.PhoenixMachineRecipes;
 import net.phoenix.core.common.data.PhoenixToolRecipes;
 import net.phoenix.core.common.data.materials.PhoenixElements;
@@ -46,6 +47,7 @@ public class PhoenixGTAddon implements IGTAddon {
     @Override
     public void addRecipes(Consumer<FinishedRecipe> provider) {
         PhoenixMachineRecipes.init(provider);
+        PhoenixFissionMachineRecipes.init(provider);
         PhoenixToolRecipes.init(provider);
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);
         CrystalRoseAssemblerGenerator.generateCrystalRoseRecipes(provider);

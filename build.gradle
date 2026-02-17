@@ -205,11 +205,13 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
     modImplementation("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
+    modImplementation("curse.maven:applied-energistics-2-223794:7148487")
+    modImplementation("curse.maven:guideme-1173950:7127447")
+
     modRuntimeOnly("curse.maven:jade-324717:5390389")
     modCompileOnly("curse.maven:jade-324717:5390389")
 
-    jarJar("appeng:appliedenergistics2-forge:${ae2_version}")
-    jarJar("lu.kolja:expandedae:${expandedAE}")
+
    // modImplementation "curse.maven:crazy-ae2-addons-1223804:7250497"
 
 

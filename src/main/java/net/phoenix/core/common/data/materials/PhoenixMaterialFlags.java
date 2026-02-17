@@ -30,6 +30,10 @@ public class PhoenixMaterialFlags {
     public static final MaterialFlag GENERATE_BEE_COMB = new MaterialFlag.Builder("generate_bee_comb")
             .requireProps(PropertyKey.DUST)
             .build();
+    public static final MaterialFlag GENERATE_BEE_HONEYCOMB_BLOCK = new MaterialFlag.Builder(
+            "generate_bee_honeycomb_block")
+            .requireProps(PropertyKey.DUST)
+            .build();
 
     public static final TagPrefix nanites = new TagPrefix("nanites")
             .idPattern("%s_nanites")
@@ -41,6 +45,16 @@ public class PhoenixMaterialFlags {
             .generateItem(true)
             .materialIconType(PhoenixMaterialSet.NANITES)
             .generationCondition(mat -> mat.hasFlag(PhoenixMaterialFlags.GENERATE_NANITES));
+    public static final TagPrefix honeycomb_block = new TagPrefix("honeycomb_block")
+            .idPattern("%s_honeycomb_block")
+            .defaultTagPath("honeycomb_block/%s")
+            .unformattedTagPath("honeycomb_block")
+            .langValue("%s HoneyComb Block")
+            .materialAmount(GTValues.M / 4)
+            .unificationEnabled(true)
+            .generateBlock(true)
+            .materialIconType(PhoenixMaterialSet.HONEYCOMB_BLOCK)
+            .generationCondition(mat -> mat.hasFlag(PhoenixMaterialFlags.GENERATE_BEE_HONEYCOMB_BLOCK));
 
     public static final TagPrefix crystal_rose = new TagPrefix("crystal_rose")
             .idPattern("%s_crystal_rose")
@@ -85,9 +99,9 @@ public class PhoenixMaterialFlags {
             .generateItem(true)
             .materialIconType(PhoenixMaterialSet.TIER_THREE_BEE)
             .generationCondition(mat -> mat.hasFlag(PhoenixMaterialFlags.GENERATE_TIER_THREE_BEE));
-    public static final TagPrefix bee_comb = new TagPrefix("bee_comb")
-            .idPattern("%s_bee_comb")
-            .defaultTagPath("bee_combs/%s")
+    public static final TagPrefix honeycomb = new TagPrefix("honeycomb")
+            .idPattern("%s_honeycomb")
+            .defaultTagPath("honeycombs/%s")
             .unformattedTagPath("bee_comb")
             .langValue("%s Honeycomb")
             .materialAmount(GTValues.M / 4)

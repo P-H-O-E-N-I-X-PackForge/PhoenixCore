@@ -49,12 +49,11 @@ import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.common.data.materials.*;
 import net.phoenix.core.common.data.recipeConditions.FluidInHatchCondition;
 import net.phoenix.core.common.event.SourceHatchJarTransferTick;
-import net.phoenix.core.common.machine.PhoenixBeeMachines;
-import net.phoenix.core.common.machine.PhoenixMachines;
-import net.phoenix.core.common.machine.PhoenixResearchMachines;
-import net.phoenix.core.common.machine.PhoenixTeslaMachines;
+import net.phoenix.core.common.machine.*;
 import net.phoenix.core.common.machine.multiblock.Shield;
+import net.phoenix.core.common.registry.PhoenixFissionEntities;
 import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.core.configs.PhoenixFissionConfigs;
 import net.phoenix.core.datagen.PhoenixDatagen;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
@@ -108,7 +107,9 @@ public class PhoenixCore {
 
     public static void init() {
         PhoenixConfigs.init();
+        PhoenixFissionConfigs.init();
         REGISTRATE.registerRegistrate();
+        PhoenixFissionEntities.init();
         PhoenixBlocks.init();
         PhoenixItems.init();
         PhoenixMaterialFlags.init();
@@ -156,9 +157,9 @@ public class PhoenixCore {
         PhoenixOres.register();
         PhoenixMaterials.register();
         PhoenixProgressionMaterials.register();
-        PhoenixFissionMaterials.register();
         PhoenixPolymerMaterials.register();
         PhoenixBeeMaterials.register();
+        PhoenixFissionMaterials.register();
     }
 
     private void modifyMaterials(PostMaterialEvent event) {
@@ -175,6 +176,7 @@ public class PhoenixCore {
 
     private void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
         PhoenixMachines.init();
+        PhoenixFissionMachines.init();
         PhoenixBeeMachines.init();
         PhoenixResearchMachines.init();
         PhoenixTeslaMachines.init();

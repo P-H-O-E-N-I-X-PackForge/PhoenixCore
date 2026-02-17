@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 
 import net.minecraft.world.level.block.Block;
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.integration.jade.provider.FissionMachineProvider;
 import net.phoenix.core.integration.jade.provider.HighPressurePlasmaArcFurnaceProvider;
 import net.phoenix.core.integration.jade.provider.SourceHatchProvider;
 import net.phoenix.core.integration.jade.provider.TeslaNetworkProvider;
@@ -24,6 +25,7 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(new TeslaNetworkProvider(), MetaMachineBlockEntity.class);
         registration.registerBlockDataProvider(new HighPressurePlasmaArcFurnaceProvider(),
                 MetaMachineBlockEntity.class);
+        registration.registerBlockDataProvider(new FissionMachineProvider(), MetaMachineBlockEntity.class);
     }
 
     @Override
@@ -33,5 +35,6 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(new SourceHatchProvider(), Block.class);
         registration.registerBlockComponent(new TeslaNetworkProvider(), Block.class);
         registration.registerBlockComponent(new HighPressurePlasmaArcFurnaceProvider(), Block.class);
+        registration.registerBlockComponent(new FissionMachineProvider(), Block.class);
     }
 }

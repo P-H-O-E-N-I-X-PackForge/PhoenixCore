@@ -151,6 +151,15 @@ public class PhoenixBlocks {
     public static BlockEntry<Block> INSANELY_SUPERCHARGED_TESLA_CASING = registerSimpleBlock(
             "§4Insanely Supercharged Tesla Tower Casing", "insanely_supercharged_tesla_casing",
             "casings/multiblock/tesla_casing", BlockItem::new);
+    public static BlockEntry<Block> SOURCE_FIBER_MACHINE_CASING = registerSimpleBlock(
+            "§dSource Fiber Machine Casing", "source_fiber_machine_casing",
+            "casings/multiblock/machine_casing_source_fiber_mesh", BlockItem::new);
+    public static BlockEntry<Block> MACHINE_CASING_RHODIUM_PLATED_PALLADIUM = registerSimpleBlock(
+            "Pristine Rhodium Plated Palladium Machine Casing", "machine_casing_pristine_rhodium_plated_palladium",
+            "casings/multiblock/machine_casing_pristine_rhodium_plated_palladium", BlockItem::new);
+    public static BlockEntry<Block> MACHINE_CASING_NAQUADAH_ALLOY = registerSimpleBlock(
+            "Invariant Naquadah Alloy Machine Casing", "machine_casing_invariant_naquadah_alloy",
+            "casings/multiblock/machine_casing_invariant_naquadah_alloy", BlockItem::new);
 
     static {
         if (PhoenixConfigs.INSTANCE.features.blazingCleanroomEnabled) {
