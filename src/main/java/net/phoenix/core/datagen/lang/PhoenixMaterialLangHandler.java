@@ -172,6 +172,9 @@ public class PhoenixMaterialLangHandler {
         addMaterialLang(provider, "acidic_waste", "Acidic Waste");
         addMaterialLang(provider, "trace_fission_gases", "Trace Fission Gases");
         addMaterialLang(provider, "purified_radioactive_waste_fluid", "Purified Radioactive Waste Fluid");
+        addMaterialLang(provider, "blazing_drilling_fluid", "§cBlazing Drilling Fluid");
+        addMaterialLang(provider, "voidic_drilling_fluid", "§dVoidic Drilling Fluid");
+        addMaterialLang(provider, "cryo_ember_fluid", "§bCryo§f-§cEmber§f Fluid");
 
         String[] beeMaterials = {
                 "pitchblende", "steel", "apatite", "cobalt", "salty", "sponge", "ghostly", "copper", "rune", "menril",

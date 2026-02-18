@@ -26,7 +26,7 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType SWARM_NURTURING_RECIPES;
     public static GTRecipeType APIS_PROGENITOR_RECIPES;
     public static GTRecipeType MELLIFERIOUS_MATRIX_RECIPES;
-    public static GTRecipeType SOURCE_IMBUEMENT_RECIPES;
+    public static GTRecipeType SOURCE_IMBUEMENT_RECIPES, SOURCE_REACTOR_RECIPES;
     public static GTRecipeType SOURCE_EXTRACTION_RECIPES;
     public static GTRecipeType HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
@@ -34,7 +34,6 @@ public class PhoenixRecipeTypes {
     public static void init() {
         PHOENIXWARE_FUSION_MK1 = register("phoenixware_fusion_mk1", MULTIBLOCK)
                 .setEUIO(IO.IN)
-                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setMaxIOSize(0, 0, 2, 1) // 0 Items, 2 Fluid Inputs, 1 Fluid Output
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
@@ -70,8 +69,6 @@ public class PhoenixRecipeTypes {
         COMB_DECANTING_RECIPES = register("comb_decanting", MULTIBLOCK)
                 .setMaxIOSize(1, 2, 1, 2)
                 .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)
-                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
-                .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_MACERATE, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CENTRIFUGE)
                 .setEUIO(IO.IN);
@@ -89,8 +86,17 @@ public class PhoenixRecipeTypes {
                 .setSound(GTSoundEntries.ARC)
                 .setEUIO(IO.IN);
 
+        SOURCE_REACTOR_RECIPES = register("source_reactor", MULTIBLOCK)
+                .setMaxIOSize(3,2,2,2)
+                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
+                .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
+                .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setSound(GTSoundEntries.REPLICATOR)
+            .setEUIO(IO.IN);
+
         SOURCE_IMBUEMENT_RECIPES = register("source_imbuement", MULTIBLOCK) // Imbue
-                .setMaxIOSize(3, 1, 1, 1)
+                .setMaxIOSize(3, 3, 5, 5)
+                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CHEMICAL)
@@ -99,6 +105,7 @@ public class PhoenixRecipeTypes {
         SOURCE_EXTRACTION_RECIPES = register("source_extraction", MULTIBLOCK) // Extract
                 .setMaxIOSize(3, 1, 1, 1)
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
+                .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CHEMICAL)
                 .setEUIO(IO.IN);

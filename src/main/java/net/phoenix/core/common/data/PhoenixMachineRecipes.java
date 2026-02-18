@@ -1,6 +1,7 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -13,6 +14,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
 import net.phoenix.core.common.data.item.PhoenixItems;
+import net.phoenix.core.common.data.materials.PhoenixOres;
+import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import java.util.function.Consumer;
@@ -30,8 +33,7 @@ import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_G
 import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
 import static net.phoenix.core.common.data.materials.PhoenixBeeMaterials.SOURCE_OF_MAGIC;
 import static net.phoenix.core.common.data.materials.PhoenixMaterials.*;
-import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.EightyFivePercentPureNevonianSteel;
-import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.SOURCE_IMBUED_TITANIUM;
+import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 
 public class PhoenixMachineRecipes {
 
@@ -383,62 +385,51 @@ public class PhoenixMachineRecipes {
                 .inputItems(CustomTags.HV_CIRCUITS, 2)
                 .outputItems(PhoenixMachines.ALCHEMICAL_IMBUER)
                 .inputFluids(SolderingAlloy, 613)
-                .duration(250).EUt(VA[HV] / 2)
+                .duration(250)
+                .EUt(VA[HV] / 2)
                 .save(provider);
-        /*
 
+        PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
+                .inputItems(gemExquisite, Coke, 4)
+                .inputItems(dust, Diamond, 16)
+                .inputItems(dust, PhoenixOres.NEVVONIAN_IRON, 2)
+                .inputFluids(Titanium, 250)
+                .input(SourceRecipeCapability.CAP, 12)
+                .outputFluids(TitaniumTetrachloride.getFluid(100))
+                .outputItems(dust , EightyFivePercentPureNevonianSteel, 4)
+                .duration(800)
+                .EUt(GTValues.VA[GTValues.EV])
+                .save(provider);
 
-                    event.recipes.gtceu.large_chemical_reactor("eighty_five_percent_pure_nevonian_steel_dust")
-        .itemInputs(
-            "4x gtceu:exquisite_coke_gem",
-            "16x gtceu:diamond_dust",
-            "2x phoenixcore:nevvonian_iron_dust")
-        .inputFluids("phoenixcore:source_of_magic 1200", "gtceu:titanium 250")
-        .outputFluids("gtceu:titanium_tetrachloride 100")
-        .itemOutputs("4x phoenixcore:eighty_five_percent_pure_nevonian_steel_dust")
-        .duration(800)
-        .EUt(GTValues.VA[GTValues.EV]);
+        GTRecipeTypes.MIXER_RECIPES.recipeBuilder("source_titanium_filament_alloy")
+                .inputItems(dust, Titanium, 4)
+                .inputItems(SOURCE_GEM, 64)
+                .inputItems(dust, Molybdenum, 2)
+                .input(SourceRecipeCapability.CAP, 120)
+                .outputItems(dust, SOURCE_TITANIUM_FILAMENT, 6)
+                .duration(200)
+                .EUt(VA[EV])
+                .save(provider);
 
+        GTRecipeTypes.LARGE_CHEMICAL_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_base")
+                .inputFluids(DrillingFluid.getFluid(500))
+                .inputFluids(FROST.getFluid(250))
+                .inputFluids(CRYO_EMBER_FLUID.getFluid(25000))
+                .input(SourceRecipeCapability.CAP, 10)
+                .inputItems(dust, PhoenixOres.PERMAFROST, 1)
+                .inputItems(dust, EnderEye, 1)
+                .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(1000))
+                .duration(300)
+                .EUt(VA[EV] / 2)
+                .save(provider);
 
-    event.recipes.gtceu.mixer("source_titanium_filament_alloy")
-        .itemInputs(
-            "4x gtceu:titanium_dust",
-            "64x ars_nouveau:source_gem",
-            "2x gtceu:molybdenum_dust",
-
-        )
-        .inputFluids("phoenixcore:source_of_magic 1200")
-        .itemOutputs("6x phoenixcore:source_titanium_filament_dust") // Output the custom material dust
-        .duration(200) // EV tier duration
-        .EUt(GTValues.VA[GTValues.EV]); // EV voltage
-
-         // Recipe for Voidic Drill Flui
-    event.recipes.gtceu.large_chemical_reactor("voidic_drilling_fluid_recipe_base") // Renamed ID
-        .inputFluids([
-            "gtceu:drilling_fluid 500",
-            "phoenixcore:frost 250",
-            "kubejs:cryo_ember_fluid 25000",
-            "phoenixcore:source_of_magic 100"
-        ])
-        .itemInputs([
-            "phoenixcore:permafrost_dust",
-            "gtceu:ender_eye_dust"
-        ])
-        .outputFluids("kubejs:voidic_drilling_fluid 1000")
-        .duration(300)
-        .EUt(GTValues.VA[GTValues.EV] / 2);
-
-    event.recipes.gtceu.large_chemical_reactor("voidic_drilling_fluid_recipe_better") // Renamed ID
-        .inputFluids([
-            "gtceu:drilling_fluid 500",
-            "phoenixcore:source_of_magic 1000"
-        ])
-        .itemInputs([
-            "phoenixcore:crystallized_fluxstone_dust"
-        ])
-        .outputFluids("kubejs:voidic_drilling_fluid 3000")
-        .duration(300)
-        .EUt(GTValues.VA[GTValues.EV] / 2);
-                */
+        GTRecipeTypes.LARGE_CHEMICAL_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_better")
+                .inputFluids(DrillingFluid.getFluid(500))
+                .input(SourceRecipeCapability.CAP, 100)
+                .inputItems(dust, PhoenixOres.CRYSTALLIZED_FLUXSTONE, 1)
+                .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(3000))
+                .duration(300)
+                .EUt(VA[EV] / 2)
+                .save(provider);
     }
 }

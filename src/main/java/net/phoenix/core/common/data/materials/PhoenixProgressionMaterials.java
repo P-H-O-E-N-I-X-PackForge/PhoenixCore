@@ -30,7 +30,7 @@ public class PhoenixProgressionMaterials {
     public static Material SINGULARITY_FORGED_TITANIUM, EXOTIC_VANADIUM_COMPOSITE, DARK_MATTER_PLATED_IRIDIUM,
             CORRUPTED_HYPERALLOY;
     public static Material REALITY_BOUND_OSMIUM, VOID_STITCHED_NEODYMIUM, CELESTIAL_AURORIUM, PRIMORDIAL_FLUX_METAL,
-            ETERNAL_STARFORGED_STEEL;
+            ETERNAL_STARFORGED_STEEL, BLAZING_DRILLING_FLUID, VOIDIC_DRILLING_FLUID, CRYO_EMBER_FLUID;
     public static Material DIMENSIONAL_REFLECTION_ALLOY, TIMEWOVEN_PLATINUM, SOULBOUND_ETHERSTEEL,
             TACHYON_INFUSED_CHROMIUM, ECHO_CRYSTAL_ALLOY;
     public static Material NEBULAR_RESONANCE_INGOT, PARADOXIUM, PHOENIX_TEMPERED_MITHRIL, VOID_SUNG_ADAMANTITE,
@@ -179,7 +179,24 @@ public class PhoenixProgressionMaterials {
         SOURCE_TITANIUM_FILAMENT = new Material.Builder(PhoenixCore.id("source_titanium_filament")).ingot().fluid()
                 .color(0x8B008B).secondaryColor(0x454545).cableProperties(GTValues.V[GTValues.EV], 16, 0, true)
                 .buildAndRegister();
-
+        BLAZING_DRILLING_FLUID = new Material.Builder(PhoenixCore.id("blazing_drilling_fluid"))
+                .fluid()
+                .color(0xFF6600)
+                .secondaryColor(0xEE4400)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+        VOIDIC_DRILLING_FLUID = new Material.Builder(PhoenixCore.id("voidic_drilling_fluid"))
+                .fluid()
+                .color(0x400080)
+                .secondaryColor(0x7B68EE)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+        CRYO_EMBER_FLUID = new Material.Builder(PhoenixCore.id("cryo_ember_fluid"))
+                .fluid()
+                .color(0xFF4500)
+                .secondaryColor(0xA020F0)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
 
 
         // Big List - Registration
