@@ -54,7 +54,6 @@ public class PhoenixItems {
             .lang("§6Honeycomb Base Mold")
             .register();
 
-
     /*
      * public static ItemEntry<ComponentItem> ENERGY_LAPOTRONIC_ORB = REGISTRATE
      * .item("lapotronic_energy_orb", ComponentItem::create)

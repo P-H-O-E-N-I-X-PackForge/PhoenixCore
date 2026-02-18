@@ -87,12 +87,12 @@ public class PhoenixRecipeTypes {
                 .setEUIO(IO.IN);
 
         SOURCE_REACTOR_RECIPES = register("source_reactor", MULTIBLOCK)
-                .setMaxIOSize(3,2,2,2)
+                .setMaxIOSize(3, 2, 2, 2)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.REPLICATOR)
-            .setEUIO(IO.IN);
+                .setEUIO(IO.IN);
 
         SOURCE_IMBUEMENT_RECIPES = register("source_imbuement", MULTIBLOCK) // Imbue
                 .setMaxIOSize(3, 3, 5, 5)

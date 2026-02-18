@@ -1,7 +1,6 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -10,12 +9,9 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
-import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.common.data.materials.PhoenixOres;
-import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import java.util.function.Consumer;
@@ -31,7 +27,6 @@ import static com.gregtechceu.gtceu.common.data.machines.GTResearchMachines.*;
 import static com.gregtechceu.gtceu.data.recipe.GTCraftingComponents.*;
 import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_GEM_BLOCK;
 import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
-import static net.phoenix.core.common.data.materials.PhoenixBeeMaterials.SOURCE_OF_MAGIC;
 import static net.phoenix.core.common.data.materials.PhoenixMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 
@@ -396,7 +391,7 @@ public class PhoenixMachineRecipes {
                 .inputFluids(Titanium, 250)
                 .input(SourceRecipeCapability.CAP, 12)
                 .outputFluids(TitaniumTetrachloride.getFluid(100))
-                .outputItems(dust , EightyFivePercentPureNevonianSteel, 4)
+                .outputItems(dust, EightyFivePercentPureNevonianSteel, 4)
                 .duration(800)
                 .EUt(GTValues.VA[GTValues.EV])
                 .save(provider);
