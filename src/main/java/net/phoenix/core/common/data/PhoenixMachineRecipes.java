@@ -278,20 +278,20 @@ public class PhoenixMachineRecipes {
                 .inputItems(GOOD_CIRCUIT_BOARD)
                 .inputItems(CustomTags.LV_CIRCUITS, 2)
                 .inputItems(CustomTags.DIODES, 2)
-                .inputItems(wireGtSingle, Copper, 2000000)
+                .inputItems(wireGtSingle, Copper, 2)
                 .outputItems(ELECTRONIC_CIRCUIT_MV)
                 .save(provider);
 
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_imbued_titanium")
                 .inputItems(ingot, Titanium, 1)
-                .input(SourceRecipeCapability.CAP, 2)
+                .input(SourceRecipeCapability.CAP, 180)
                 .duration(160)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .outputItems(ingot, SOURCE_IMBUED_TITANIUM, 1)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_gem")
                 .inputItems(gem, Amethyst, 1)
-                .input(SourceRecipeCapability.CAP, 2)
+                .input(SourceRecipeCapability.CAP, 20)
                 .duration(40)
                 .EUt(GTValues.VA[GTValues.HV] / 2)
                 .outputItems(SOURCE_GEM, 2)
@@ -343,13 +343,13 @@ public class PhoenixMachineRecipes {
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coke")
                 .inputItems(gem, Coke, 1)
-                .output(SourceRecipeCapability.CAP, 7)
+                .output(SourceRecipeCapability.CAP, 11)
                 .duration(250)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_charcoal")
                 .inputItems(gem, Charcoal, 2)
-                .output(SourceRecipeCapability.CAP, 4)
+                .output(SourceRecipeCapability.CAP, 6)
                 .duration(210)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
@@ -389,19 +389,19 @@ public class PhoenixMachineRecipes {
                 .inputItems(dust, Diamond, 16)
                 .inputItems(dust, PhoenixOres.NEVVONIAN_IRON, 2)
                 .inputFluids(Titanium, 250)
-                .input(SourceRecipeCapability.CAP, 12)
+                .input(SourceRecipeCapability.CAP, 120)
                 .outputFluids(TitaniumTetrachloride.getFluid(100))
                 .outputItems(dust, EightyFivePercentPureNevonianSteel, 4)
                 .duration(800)
                 .EUt(GTValues.VA[GTValues.EV])
                 .save(provider);
 
-        GTRecipeTypes.MIXER_RECIPES.recipeBuilder("source_titanium_filament_alloy")
+        PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES.recipeBuilder("source_titanium_filament_alloy")
                 .inputItems(dust, Titanium, 4)
                 .inputItems(SOURCE_GEM, 64)
                 .inputItems(dust, Molybdenum, 2)
-                .input(SourceRecipeCapability.CAP, 120)
-                .outputItems(dust, SOURCE_TITANIUM_FILAMENT, 6)
+                .input(SourceRecipeCapability.CAP, 220)
+                .outputItems(dust, SOURCE_TITANIUM_FILAMENT, 22)
                 .duration(200)
                 .EUt(VA[EV])
                 .save(provider);
@@ -410,7 +410,7 @@ public class PhoenixMachineRecipes {
                 .inputFluids(DrillingFluid.getFluid(500))
                 .inputFluids(FROST.getFluid(250))
                 .inputFluids(CRYO_EMBER_FLUID.getFluid(25000))
-                .input(SourceRecipeCapability.CAP, 10)
+                .input(SourceRecipeCapability.CAP, 140)
                 .inputItems(dust, PhoenixOres.PERMAFROST, 1)
                 .inputItems(dust, EnderEye, 1)
                 .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(1000))
@@ -420,11 +420,18 @@ public class PhoenixMachineRecipes {
 
         GTRecipeTypes.LARGE_CHEMICAL_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_better")
                 .inputFluids(DrillingFluid.getFluid(500))
-                .input(SourceRecipeCapability.CAP, 100)
+                .input(SourceRecipeCapability.CAP, 140)
                 .inputItems(dust, PhoenixOres.CRYSTALLIZED_FLUXSTONE, 1)
                 .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(3000))
                 .duration(300)
                 .EUt(VA[EV] / 2)
                 .save(provider);
+        CHEMICAL_RECIPES.recipeBuilder("butraldehyde")
+                .circuitMeta(4)
+                .inputFluids(Propene.getFluid(1000))
+                .inputFluids(Hydrogen.getFluid(2000))
+                .inputFluids(CarbonMonoxide.getFluid(1000))
+                .outputFluids(Butyraldehyde.getFluid(1000))
+                .duration(200).EUt(VA[HV]).save(provider);
     }
 }

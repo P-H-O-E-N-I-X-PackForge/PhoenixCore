@@ -53,6 +53,12 @@ public class PhoenixItems {
             .item("honey_comb_base_mold", Item::new)
             .lang("§6Honeycomb Base Mold")
             .register();
+    public static ItemEntry<Item> SOURCE_FIBERS = REGISTRATE.item("source_fibers", Item::new)
+            .lang("§dRaw Source Fibers")
+            .register();
+    public static ItemEntry<Item> CARBON_MESH = REGISTRATE.item("source_fiber_mesh", Item::new)
+            .lang("§dSource Fiber Mesh")
+            .register();
 
     /*
      * public static ItemEntry<ComponentItem> ENERGY_LAPOTRONIC_ORB = REGISTRATE

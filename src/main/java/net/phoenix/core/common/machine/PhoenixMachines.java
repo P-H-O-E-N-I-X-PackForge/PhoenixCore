@@ -1137,6 +1137,8 @@ public class PhoenixMachines {
                     .where("B", Predicates.any())
                     .where("C",
                             Predicates.blocks(SOURCE_FIBER_MACHINE_CASING.get())
+                                    .or(Predicates.abilities(SOURCE_INPUT).setPreviewCount(1))
+                                    .or(Predicates.abilities(SOURCE_OUTPUT).setPreviewCount(1))
                                     .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                                     .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("D",
@@ -1157,7 +1159,7 @@ public class PhoenixMachines {
                                     ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse("ars_nouveau:arcane_core"))))
                     .where("J",
                             Predicates.blocks(ForgeRegistries.BLOCKS
-                                    .getValue(ResourceLocation.parse("ars_nouveau:agronomic_sourcelink"))))
+                                    .getValue(ResourceLocation.parse("ars_nouveau:vitalic_sourcelink"))))
                     .where("K", Predicates.controller(Predicates.blocks(definition.get())))
                     .build())
             .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
@@ -1170,7 +1172,7 @@ public class PhoenixMachines {
                     ConfigHolder.INSTANCE.gameplay.environmentalHazards)
             .rotationState(RotationState.ALL)
             .langValue("§5Source Reactor")
-            .recipeType(GTRecipeTypes.LARGE_CHEMICAL_RECIPES)
+            .recipeType(PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES)
             .recipeModifiers(DEFAULT_ENVIRONMENT_REQUIREMENT, OC_PERFECT_SUBTICK, BATCH_MODE)
             .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .pattern(definition -> {
@@ -1178,15 +1180,12 @@ public class PhoenixMachines {
                 var abilities = Predicates.autoAbilities(definition.getRecipeTypes())
                         .or(Predicates.autoAbilities(true, false, false));
                 return FactoryBlockPattern.start()
-                        .aisle("XXX", "XCX", "XXX")
-                        .aisle("XCX", "CPC", "XCX")
+                        .aisle("XXX", "XXX", "XXX")
+                        .aisle("XXX", "XPX", "XXX")
                         .aisle("XXX", "XSX", "XXX")
                         .where('S', Predicates.controller(blocks(definition.getBlock())))
-                        .where('X', casing.or(abilities).or(abilities(SOURCE_INPUT)))
+                        .where('X', casing.or(abilities).or(abilities(SOURCE_INPUT).setPreviewCount(1)))
                         .where('P', blocks(CASING_POLYTETRAFLUOROETHYLENE_PIPE.get()))
-                        .where('C', Predicates.heatingCoils().setExactLimit(1)
-                                .or(abilities)
-                                .or(casing))
                         .build();
             })
             .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),

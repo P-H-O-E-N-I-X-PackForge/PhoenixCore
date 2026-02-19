@@ -100,7 +100,6 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.methyl_methacrylate", "Methyl Methacrylate");
 
         // Bee & Magic Materials
-        provider.add("material.phoenixcore.source_of_magic", "§5Source of Magic");
         provider.add("material.phoenixcore.sugar_water", "Sugar Water");
         provider.add("material.phoenixcore.wax_melting_catalyst", "Wax Melting Catalyst");
         provider.add("material.phoenixcore.sucrose", "Sucrose");

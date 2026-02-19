@@ -17,112 +17,103 @@ import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
 import com.hollingsworth.arsnouveau.common.block.tile.SourceJarTile;
 
+import java.util.Set;
+
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class SourceHatchJarTransferTick {
 
-    public SourceHatchJarTransferTick() {}
-
     @SubscribeEvent
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (!(event.level instanceof ServerLevel level)) return;
-
-        // once per second
+        if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level)) return;
         if (level.getGameTime() % 20L != 0L) return;
+
+        Set<BlockPos> hatches = SourceHatchTracker.get(level.dimension());
+        if (hatches.isEmpty()) return;
 
         int radius = PhoenixConfigs.INSTANCE.sourceHatch.sourceJarCheckRadius;
         if (radius <= 0) return;
 
-        for (BlockPos hatchPos : SourceHatchTracker.get(level.dimension())) {
+        for (BlockPos hatchPos : hatches) {
             if (!level.isLoaded(hatchPos)) continue;
 
             BlockEntity be = level.getBlockEntity(hatchPos);
-            if (!(be instanceof MetaMachineBlockEntity metaBE)) continue;
+            if (!(be instanceof MetaMachineBlockEntity metaBE)) {
+                // PhoenixCore.LOGGER.debug("Tracker contained non-machine at {}", hatchPos);
+                continue;
+            }
 
-            var machine = metaBE.getMetaMachine();
-            if (!(machine instanceof SourceHatchPartMachine hatch)) continue;
-
-            // ✅ Respect hatch on/off
+            if (!(metaBE.getMetaMachine() instanceof SourceHatchPartMachine hatch)) continue;
             if (!hatch.isWorkingEnabled()) continue;
 
             ISourceTile tank = hatch.getSource();
-            if (tank == null) continue;
+            if (tank == null) {
+                // PhoenixCore.LOGGER.warn("SourceHatch at {} has null Source container!", hatchPos);
+                continue;
+            }
 
-            IO io = hatch.getIo();
-
-            int minX = hatchPos.getX() - radius, maxX = hatchPos.getX() + radius;
-            int minY = hatchPos.getY() - radius, maxY = hatchPos.getY() + radius;
-            int minZ = hatchPos.getZ() - radius, maxZ = hatchPos.getZ() + radius;
-
-            // Cap per tick to hatch transfer rate (per second here)
             int rate = tank.getTransferRate();
             if (rate <= 0) continue;
 
-            if (io == IO.IN) {
-                if (!tank.canAcceptSource()) continue;
+            if (hatch.getIo() == IO.IN) {
+                handleInbound(level, hatchPos, tank, radius, rate);
+            } else {
+                handleOutbound(level, hatchPos, tank, radius, rate);
+            }
+        }
+    }
 
-                int space = tank.getMaxSource() - tank.getSource();
-                int remaining = Math.min(space, rate);
-                if (remaining <= 0) continue;
+    private static void handleInbound(ServerLevel level, BlockPos hatchPos, ISourceTile tank, int radius, int rate) {
+        if (!tank.canAcceptSource()) return;
 
-                outer:
-                for (int y = minY; y <= maxY; y++)
-                    for (int x = minX; x <= maxX; x++)
-                        for (int z = minZ; z <= maxZ; z++) {
+        int remaining = Math.min(tank.getMaxSource() - tank.getSource(), rate);
 
-                            if (remaining <= 0) break outer;
+        for (BlockPos targetPos : BlockPos.betweenClosed(hatchPos.offset(-radius, -radius, -radius),
+                hatchPos.offset(radius, radius, radius))) {
+            if (remaining <= 0) break;
 
-                            BlockPos jarPos = new BlockPos(x, y, z);
-                            BlockEntity jarBe = level.getBlockEntity(jarPos);
-                            if (!(jarBe instanceof SourceJarTile jar)) continue;
+            if (level.getBlockEntity(targetPos) instanceof SourceJarTile jar) {
+                int available = jar.getSource();
+                if (available <= 0) continue;
 
-                            int available = jar.getSource();
-                            if (available <= 0) continue;
+                int toMove = Math.min(remaining, available);
+                jar.removeSource(toMove);
+                tank.addSource(toMove);
 
-                            int toMove = Math.min(remaining, available);
+                // CRITICAL: Ensure the jar and hatch sync to client for particles/UI
+                jar.setChanged();
+                level.sendBlockUpdated(targetPos, jar.getBlockState(), jar.getBlockState(), 3);
 
-                            jar.removeSource(toMove);
-                            jar.setChanged();
-                            jar.updateBlock();
+                ParticleUtil.spawnFollowProjectile(level, targetPos, hatchPos, jar.getColor());
+                remaining -= toMove;
 
-                            tank.addSource(toMove);
+                // PhoenixCore.LOGGER.debug("Hatch at {} pulled {} source from jar at {}", hatchPos, toMove, targetPos);
+            }
+        }
+    }
 
-                            ParticleUtil.spawnFollowProjectile(level, jarPos, hatchPos, jar.getColor());
+    private static void handleOutbound(ServerLevel level, BlockPos hatchPos, ISourceTile tank, int radius, int rate) {
+        int remaining = Math.min(tank.getSource(), rate);
+        if (remaining <= 0) return;
 
-                            remaining -= toMove;
-                        }
+        for (BlockPos targetPos : BlockPos.betweenClosed(hatchPos.offset(-radius, -radius, -radius),
+                hatchPos.offset(radius, radius, radius))) {
+            if (remaining <= 0) break;
 
-            } else if (io == IO.OUT) {
-                int available = tank.getSource();
-                int remaining = Math.min(available, rate);
-                if (remaining <= 0) continue;
+            if (level.getBlockEntity(targetPos) instanceof SourceJarTile jar) {
+                int jarSpace = jar.getMaxSource() - jar.getSource();
+                if (jarSpace <= 0) continue;
 
-                outer:
-                for (int y = minY; y <= maxY; y++)
-                    for (int x = minX; x <= maxX; x++)
-                        for (int z = minZ; z <= maxZ; z++) {
+                int toMove = Math.min(remaining, jarSpace);
+                tank.removeSource(toMove);
+                jar.addSource(toMove);
 
-                            if (remaining <= 0) break outer;
+                jar.setChanged();
+                level.sendBlockUpdated(targetPos, jar.getBlockState(), jar.getBlockState(), 3);
 
-                            BlockPos jarPos = new BlockPos(x, y, z);
-                            BlockEntity jarBe = level.getBlockEntity(jarPos);
-                            if (!(jarBe instanceof SourceJarTile jar)) continue;
+                ParticleUtil.spawnFollowProjectile(level, hatchPos, targetPos, jar.getColor());
+                remaining -= toMove;
 
-                            int jarSpace = jar.getMaxSource() - jar.getSource();
-                            if (jarSpace <= 0) continue;
-
-                            int toMove = Math.min(remaining, jarSpace);
-
-                            tank.removeSource(toMove);
-
-                            jar.addSource(toMove);
-                            jar.setChanged();
-                            jar.updateBlock();
-
-                            ParticleUtil.spawnFollowProjectile(level, hatchPos, jarPos, jar.getColor());
-
-                            remaining -= toMove;
-                        }
+                // PhoenixCore.LOGGER.debug("Hatch at {} pushed {} source to jar at {}", hatchPos, toMove, targetPos);
             }
         }
     }

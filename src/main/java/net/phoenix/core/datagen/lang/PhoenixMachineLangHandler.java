@@ -32,8 +32,8 @@ public class PhoenixMachineLangHandler {
         provider.add("gui.phoenixcore.source_hatch.label.import", "Source Input Hatch");
         provider.add("gui.phoenixcore.source_hatch.label.export", "Source Output Hatch");
         provider.add("gui.phoenixcore.source_hatch.source", "Source Stored: %s");
-        provider.add("phoenix.core.recipe.source_in", "Source Necessary: %s.");
-        provider.add("phoenix.core.recipe.source_out", "Source Given: %s.");
+        provider.add("phoenix.core.recipe.source_in", "Source Consumed: %s.");
+        provider.add("phoenix.core.recipe.source_out", "Source Yield: %s.");
         provider.add("tooltip.phoenixcore.source_hatch.consumption", "§cMax Source Consumption:§d %s");
         provider.add("tooltip.phoenixcore.source_hatch.capacity", "§cMax Source Capacity:§d %s");
 
@@ -93,6 +93,12 @@ public class PhoenixMachineLangHandler {
         // Recipe Types
         provider.add("gtceu.recipe_type.phoenixcore.high_performance_breeder_reactor",
                 "High-Performance Breeder Reactor");
+        provider.add("gtceu.recipe_type.phoenixcore.source_extraction",
+                "Source Extraction");
+        provider.add("gtceu.recipe_type.phoenixcore.source_imbuement",
+                "Source Imbuement");
+        provider.add("gtceu.recipe_type.phoenixcore.source_reactor",
+                "Source Reactor");
         provider.add("gtceu.recipe_type.phoenix_fission.high_performance_breeder_reactor",
                 "High-Performance Breeder Reactor");
         provider.add("gtceu.recipe_type.phoenix_fission.advanced_pressurized_fission_reactor",

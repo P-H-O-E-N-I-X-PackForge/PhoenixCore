@@ -12,10 +12,12 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.phoenix.core.api.capability.ISourceProviderCapability;
 import net.phoenix.core.api.machine.trait.NotifiableSourceContainer;
 import net.phoenix.core.client.renderer.gui.SourceHatchFancyUIWidget;
+import net.phoenix.core.common.event.SourceHatchTracker;
 
 import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import lombok.Getter;
@@ -76,8 +78,24 @@ public class SourceHatchPartMachine extends TieredIOPartMachine implements ISour
                 .widget(new SourceHatchFancyUIWidget(this, w, h));
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            SourceHatchTracker.add(serverLevel.dimension(), getPos());
+        }
+    }
+
+    @Override
+    public void onUnload() {
+        super.onUnload();
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            SourceHatchTracker.remove(serverLevel.dimension(), getPos());
+        }
+    }
+
     public static int getMaxCapacity(int tier) {
-        return 1000 * tier;
+        return 10000 * tier;
     }
 
     public static int getMaxConsumption(int tier) {

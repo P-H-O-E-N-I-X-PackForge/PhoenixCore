@@ -8,8 +8,8 @@
     "EmiApiMixin",
     "accessor.RelayTileDisabledAccessor",
     "ars.DominionWandMixin",
-    "minecraft.GuiGraphicsCountSuffixMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
+    "minecraft.GuiGraphicsCountSuffixMixin",
     "minecraft.ItemStackTooltipMixin"
   ],
   "client": [

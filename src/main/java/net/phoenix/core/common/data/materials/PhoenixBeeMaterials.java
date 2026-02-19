@@ -14,7 +14,7 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlag
 
 public class PhoenixBeeMaterials {
 
-    public static Material SOURCE_OF_MAGIC, FRUCTOSE, GLUCOSE, SUCROSE, SUGAR_WATER;
+    public static Material FRUCTOSE, GLUCOSE, SUCROSE, SUGAR_WATER;
     public static Material PEANUT_BUTTER, PEANUT, CREAM, SKIM_MILK, MOLASSES;
     public static Material AMMONIUM_BISULFATE, AMMONIUM_BISULFATE_SOLUTION, AMMONIUM_PERSULFATE, PROTEIN_SOLUTION,
             AMINO_ACIDS;
@@ -28,8 +28,6 @@ public class PhoenixBeeMaterials {
     public static final Map<String, Material> RAW_WAX_MATERIALS = new HashMap<>();
 
     public static void register() {
-        SOURCE_OF_MAGIC = new Material.Builder(PhoenixCore.id("source_of_magic")).fluid().color(0x8F00FF)
-                .iconSet(MaterialIconSet.BRIGHT).buildAndRegister();
         HONEY = new Material.Builder(PhoenixCore.id("honey")).fluid().ingot().color(0xf9c901)
                 .iconSet(MaterialIconSet.BRIGHT).buildAndRegister();
         SUPERCONDUCTIVE_HONEY = new Material.Builder(PhoenixCore.id("superconductive_honey"))

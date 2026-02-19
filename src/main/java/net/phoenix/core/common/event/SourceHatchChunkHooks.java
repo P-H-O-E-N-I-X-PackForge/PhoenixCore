@@ -17,8 +17,7 @@ public final class SourceHatchChunkHooks {
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
-        if (!(event.getChunk() instanceof LevelChunk chunk)) return;
+        if (!(event.getLevel() instanceof ServerLevel level) || !(event.getChunk() instanceof LevelChunk chunk)) return;
 
         chunk.getBlockEntities().forEach((pos, be) -> {
             if (be instanceof MetaMachineBlockEntity metaBE &&

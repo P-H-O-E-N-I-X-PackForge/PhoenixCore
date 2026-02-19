@@ -92,7 +92,11 @@ public class PhoenixRecipeTypes {
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.REPLICATOR)
-                .setEUIO(IO.IN);
+                .setEUIO(IO.IN)
+                .setUiBuilder((recipe, widgetGroup) -> {
+                    var size = widgetGroup.getSize();
+                    widgetGroup.setSize(size.width, size.height + 5);
+                });
 
         SOURCE_IMBUEMENT_RECIPES = register("source_imbuement", MULTIBLOCK) // Imbue
                 .setMaxIOSize(3, 3, 5, 5)
@@ -100,6 +104,10 @@ public class PhoenixRecipeTypes {
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CHEMICAL)
+                .setUiBuilder((recipe, widgetGroup) -> {
+                    var size = widgetGroup.getSize();
+                    widgetGroup.setSize(size.width, size.height + 5);
+                })
                 .setEUIO(IO.IN);
 
         SOURCE_EXTRACTION_RECIPES = register("source_extraction", MULTIBLOCK) // Extract
@@ -108,7 +116,11 @@ public class PhoenixRecipeTypes {
                 .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CHEMICAL)
-                .setEUIO(IO.IN);
+                .setEUIO(IO.IN)
+                .setUiBuilder((recipe, widgetGroup) -> {
+                    var size = widgetGroup.getSize();
+                    widgetGroup.setSize(size.width, size.height + 5);
+                });
 
         APIS_PROGENITOR_RECIPES = register("apis_progenitor", MULTIBLOCK)
                 .setMaxIOSize(3, 1, 1, 1)
@@ -131,6 +143,7 @@ public class PhoenixRecipeTypes {
                     }
                     return "";
                 });
+
         PRESSURIZED_FISSION_REACTOR_RECIPES = register("pressurized_fission_reactor", MULTIBLOCK)
                 .setMaxIOSize(1, 1, 0, 0)
                 .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)

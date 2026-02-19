@@ -52,8 +52,9 @@ public class PhoenixProgressionMaterials {
                 .secondaryColor(0xeaa92e)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
+
         FROST = new Material.Builder(PhoenixCore.id("frost"))
-                .langValue("§bFrost")
+                .langValue("Frost")
                 .fluid()
                 .color(0xA7D1EB)
                 .secondaryColor(0x778899)
