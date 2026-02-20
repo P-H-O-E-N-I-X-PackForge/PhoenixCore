@@ -17,10 +17,10 @@ import net.minecraft.world.entity.player.Player;
 import net.phoenix.core.api.capability.ISourceProviderCapability;
 import net.phoenix.core.api.machine.trait.NotifiableSourceContainer;
 import net.phoenix.core.client.renderer.gui.SourceHatchFancyUIWidget;
-import net.phoenix.core.common.event.SourceHatchTracker;
 
 import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import lombok.Getter;
+import net.phoenix.core.common.event.SourceHatchTracker;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
@@ -78,6 +78,8 @@ public class SourceHatchPartMachine extends TieredIOPartMachine implements ISour
                 .widget(new SourceHatchFancyUIWidget(this, w, h));
     }
 
+
+
     @Override
     public void onLoad() {
         super.onLoad();
@@ -95,7 +97,7 @@ public class SourceHatchPartMachine extends TieredIOPartMachine implements ISour
     }
 
     public static int getMaxCapacity(int tier) {
-        return 10000 * tier;
+        return 1000 * tier;
     }
 
     public static int getMaxConsumption(int tier) {

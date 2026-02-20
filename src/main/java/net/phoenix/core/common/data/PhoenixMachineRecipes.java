@@ -1,14 +1,19 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
+import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
+import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
 import net.phoenix.core.common.data.materials.PhoenixOres;
@@ -313,62 +318,62 @@ public class PhoenixMachineRecipes {
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_wheat")
                 .inputItems(new ItemStack(Items.WHEAT), 3)
                 .circuitMeta(1)
-                .output(SourceRecipeCapability.CAP, 4)
-                .duration(190)
+                .output(SourceRecipeCapability.CAP, 14)
+                .duration(210)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_flowers")
                 .inputItems(PTags.FLOWERS, 3)
-                .output(SourceRecipeCapability.CAP, 8)
-                .duration(150)
+                .output(SourceRecipeCapability.CAP, 18)
+                .duration(170)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_crops")
                 .inputItems(PTags.CROPS, 3)
-                .output(SourceRecipeCapability.CAP, 8)
-                .duration(160)
+                .output(SourceRecipeCapability.CAP, 18)
+                .duration(180)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_mushrooms")
                 .inputItems(PTags.MUSHROOMS, 4)
-                .output(SourceRecipeCapability.CAP, 6)
-                .duration(145)
+                .output(SourceRecipeCapability.CAP, 16)
+                .duration(165)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coal")
                 .inputItems(gem, Coal, 2)
-                .output(SourceRecipeCapability.CAP, 5)
-                .duration(220)
+                .output(SourceRecipeCapability.CAP, 15)
+                .duration(240)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coke")
                 .inputItems(gem, Coke, 1)
-                .output(SourceRecipeCapability.CAP, 11)
-                .duration(250)
+                .output(SourceRecipeCapability.CAP, 15)
+                .duration(270)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_charcoal")
                 .inputItems(gem, Charcoal, 2)
-                .output(SourceRecipeCapability.CAP, 6)
-                .duration(210)
+                .output(SourceRecipeCapability.CAP, 16)
+                .duration(230)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_logs")
                 .inputItems(PTags.LOGS, 4)
-                .output(SourceRecipeCapability.CAP, 5)
-                .duration(180)
+                .output(SourceRecipeCapability.CAP, 15)
+                .duration(200)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_planks")
                 .inputItems(PTags.PLANKS, 4)
-                .output(SourceRecipeCapability.CAP, 3)
-                .duration(180)
+                .output(SourceRecipeCapability.CAP, 13)
+                .duration(200)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_lava")
                 .inputFluids(Lava, 1000)
-                .output(SourceRecipeCapability.CAP, 5)
-                .duration(200)
+                .output(SourceRecipeCapability.CAP, 15)
+                .duration(260)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
 
@@ -433,5 +438,34 @@ public class PhoenixMachineRecipes {
                 .inputFluids(CarbonMonoxide.getFluid(1000))
                 .outputFluids(Butyraldehyde.getFluid(1000))
                 .duration(200).EUt(VA[HV]).save(provider);
+        VanillaRecipeHelper.addShapedRecipe(provider,
+                "quartz_sand",
+                ChemicalHelper.get(dust, QuartzSand),
+                "S", "m", 'S',
+                new ItemStack(Blocks.SAND));
+        VanillaRecipeHelper.addShapedRecipe(provider, true, "emitter_iv", EMITTER_IV.asStack(), "CRX", "RGR", "XRC",
+                'R', new MaterialEntry(rod, Iridium), 'C', new MaterialEntry(cableGtSingle, Tungsten), 'G',
+                GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV), 'X', CustomTags.IV_CIRCUITS);
+        ASSEMBLER_RECIPES.recipeBuilder("emitter_iv")
+                .inputItems(rod, Iridium, 4)
+                .inputItems(cableGtSingle, Tungsten, 2)
+                .inputItems(CustomTags.IV_CIRCUITS, 2)
+                .inputItems(GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV))
+                .circuitMeta(1)
+                .outputItems(EMITTER_IV)
+                .duration(100).EUt(VA[LV]).save(provider);
+        VanillaRecipeHelper.addShapedRecipe(provider, true, "sensor_iv", SENSOR_IV.asStack(), "P G", "PR ", "XPP", 'P',
+                new MaterialEntry(plate, TungstenSteel), 'R', new MaterialEntry(rod, Iridium), 'G',
+                GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV), 'X', CustomTags.IV_CIRCUITS);
+        ASSEMBLER_RECIPES.recipeBuilder("sensor_iv")
+                .inputItems(rod, Iridium)
+                .inputItems(plate, TungstenSteel, 4)
+                .inputItems(CustomTags.IV_CIRCUITS)
+                .inputItems(GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV))
+                .outputItems(SENSOR_IV)
+                .duration(100).EUt(VA[LV]).save(provider);
+
+
+
     }
 }
