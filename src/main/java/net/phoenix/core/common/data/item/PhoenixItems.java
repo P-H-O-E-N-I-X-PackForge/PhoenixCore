@@ -69,13 +69,9 @@ public class PhoenixItems {
             String tierName = GTValues.VN[currentTier].toLowerCase();
 
             entries.add(REGISTRATE.item(tierName + "_tesla_stabilizer", Item::new)
-                    .lang(GTValues.VNF[currentTier] + " Tesla Stabilizer") // This sets the name
+                    .lang(GTValues.VNF[currentTier] + " Tesla Stabilizer")
                     .setData(ProviderType.LANG, (ctx, prov) -> {
-                        // 1. Re-confirm the Name (prevents it from being empty)
                         prov.add(ctx.get(), GTValues.VNF[currentTier] + " Tesla Stabilizer");
-
-                        // 2. Add the Tooltip using a CUSTOM KEY
-                        // We attach ".tooltip" to the end of the item's internal ID
                         prov.add(ctx.get().getDescriptionId() + ".tooltip",
                                 "A stabilizing unit for " + getVoltageName(currentTier) + " wireless power.\n" + getFlavorText(currentTier));
                     })
