@@ -1,5 +1,6 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -12,10 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
+import net.phoenix.core.common.data.materials.PhoenixBeeMaterials;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.common.data.recipe.records.ApisProgenitorConfig;
 import net.phoenix.core.common.data.recipe.records.FullBeeConfig;
@@ -46,7 +49,7 @@ public class PhoenixBeeRecipeGenerator {
         //
         generateApisProgenitorRecipes(provider);
         // generateSwarmNurturingRecipes(provider);
-        // generateLumberBeeRecipes(provider);
+         generateLumberBeeRecipes(provider);
     }
 
     /*
@@ -144,71 +147,7 @@ public class PhoenixBeeRecipeGenerator {
      * -----------------------------
      */
 
-    public static void loadBeeCombProductionRecipes(Consumer<FinishedRecipe> provider) {
-        for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
-            String beeId = config.beeId();
 
-            // preserve your exclusions
-            if (beeId.equals("rancher") || beeId.equals("steamy")) continue;
-
-            Material mat = GTMaterials.get(beeId);
-            if (mat == null) continue;
-
-            ItemStack combInput = combItemFor(mat);
-            if (combInput.isEmpty()) continue;
-
-            String waxDustId = "gtceu:raw_" + beeId + "_wax_dust";
-            String honeyedFluidId = "gtceu:honeyed_" + beeId;
-
-            // Decant comb -> wax dust + base comb
-            COMB_DECANTING_RECIPES.recipeBuilder(MOD_ID + "/decanting/" + beeId)
-                    .EUt(config.decantingEut())
-                    .duration(config.decantingDuration())
-                    .inputItems(combInput)
-                    .outputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(waxDustId))))
-                    .outputItems(new ItemStack(
-                            ForgeRegistries.ITEMS.getValue(new ResourceLocation("kubejs:honey_comb_base"))))
-                    .save(provider);
-
-            // Melt wax dust -> honeyed fluid
-            BREWING_RECIPES.recipeBuilder(MOD_ID + "/wax_melting/" + beeId)
-                    .EUt(config.waxEut())
-                    .duration(400)
-                    .inputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(waxDustId))))
-                    .inputFluids(WAX_MELTING_CATALYST.getFluid(100))
-                    .outputFluids(getFluidStack(honeyedFluidId + " 1000"))
-                    .save(provider);
-
-            // Purify honeyed fluid -> impure honey + item output
-            var purifier = CENTRIFUGE_RECIPES.recipeBuilder(MOD_ID + "/honeyed_purifying/" + beeId)
-                    .EUt(config.decantingEut())
-                    .duration(400)
-                    .inputFluids(getFluidStack(honeyedFluidId + " 1000"))
-                    .outputFluids(getFluidStack("gtceu:impure_honey 500"));
-
-            if (beeId.equals("water")) {
-                purifier.outputItems(
-                        new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:salmon"))));
-            } else if (beeId.equals("wannabee")) {
-                purifier.outputItems(new ItemStack(
-                        ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.pollinationInputId())), 2));
-            } else {
-                purifier.outputItems(config.finalOutputItem());
-            }
-
-            purifier.save(provider);
-
-            // Mix comb + sugar water -> honey fluid
-            MIXER_RECIPES.recipeBuilder(MOD_ID + "/honey_production/" + beeId)
-                    .EUt(config.fluidEut())
-                    .duration(config.fluidDuration())
-                    .inputItems(combInput)
-                    .inputFluids(BeeRecipeData.SUGAR_WATER_MATERIAL.getFluid(BeeRecipeData.SUGAR_WATER_AMOUNT))
-                    .outputFluids(
-                            getFluidStack(BeeRecipeData.HONEY_FLUID + " " + BeeRecipeData.FINAL_HONEY_OUTPUT_AMOUNT))
-                    .save(provider);
-        }
-    }
 
     private static record CountAndId(int count, String id) {}
 
@@ -233,38 +172,121 @@ public class PhoenixBeeRecipeGenerator {
         return new CountAndId(count, id);
     }
 
+    /**
+     * Apis Progenitor: Upgrades bees using the new TagPrefix items.
+     */
     public static void generateApisProgenitorRecipes(Consumer<FinishedRecipe> provider) {
         for (ApisProgenitorConfig cfg : BeeRecipeData.UNIQUE_APIS_PROGENITOR_CONFIGS) {
 
-            // Resolve materials
+            // Resolve Materials from the material ID strings in the record
             Material inMat = GTMaterials.get(cfg.inputMaterialId());
             Material outMat = GTMaterials.get(cfg.outputMaterialId());
+
             if (inMat == null || outMat == null) continue;
 
-            // Resolve bee items via TagPrefix + material
+            // Resolve the "Bee" items using your tierPrefix helper and ChemicalHelper
             ItemStack inBee = ChemicalHelper.get(tierPrefix(cfg.inputTier()), inMat);
             ItemStack outBee = ChemicalHelper.get(tierPrefix(cfg.outputTier()), outMat);
+
             if (inBee.isEmpty() || outBee.isEmpty()) continue;
 
-            var b = APIS_PROGENITOR_RECIPES.recipeBuilder(MOD_ID + "/apis_progenitor/" + cfg.id())
+            var builder = APIS_PROGENITOR_RECIPES.recipeBuilder(MOD_ID + "/apis_progenitor/" + cfg.id())
                     .EUt(cfg.EUt())
                     .duration(cfg.duration())
-                    .inputItems(inBee)      // consume input bee
-                    .outputItems(outBee);   // output upgraded bee
+                    .inputItems(inBee)      // Consumes the source bee
+                    .outputItems(outBee);   // Produces the upgraded bee
 
-            // extras: item inputs (0..n)
+            // Process the List of extra item inputs (e.g., "4x minecraft:lapis_block")
             for (String itemSpec : cfg.extraItemInputs()) {
-                if (itemSpec == null || itemSpec.isBlank()) continue;
-                applyExtraItemInput(b, itemSpec);
+                applyExtraItemInput(builder, itemSpec);
             }
 
-            // extras: fluid inputs (0..n), like "gtceu:water 1000"
+            // Process the List of extra fluid inputs (e.g., "gtceu:liquid_extra 1000")
             for (String fluidSpec : cfg.extraFluidInputs()) {
-                if (fluidSpec == null || fluidSpec.isBlank()) continue;
-                b.inputFluids(getFluidStack(fluidSpec));
+                builder.inputFluids(getFluidStack(fluidSpec));
             }
 
-            b.save(provider);
+            builder.save(provider);
+        }
+    }
+
+    /**
+     * Lumber Bee: Uses the Lumber Bee material as a Tier 2 catalyst for wood processing.
+     */
+    public static void generateLumberBeeRecipes(Consumer<FinishedRecipe> provider) {
+        Material lumberMat = GTMaterials.get("lumber");
+        if (lumberMat == null) return;
+
+        // Lumber Bee is treated as a Tier 2 Bee Catalyst
+        ItemStack lumberBee = ChemicalHelper.get(PhoenixMaterialFlags.tier_two_bee, lumberMat);
+        if (lumberBee.isEmpty()) return;
+
+        for (String logId : BeeRecipeData.LUMBER_LOG_TYPES) {
+            Item logItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(logId));
+            if (logItem == null) continue;
+
+            SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony/lumber_" + logId.replace(":", "_"))
+                    .EUt(GTValues.VA[GTValues.IV])
+                    .duration(1200)
+                    .notConsumable(lumberBee) // The bee is not consumed
+                    .inputItems(new ItemStack(logItem))
+                    .inputFluids(PhoenixBeeMaterials.SUGAR_WATER.getFluid(BeeRecipeData.SUGAR_WATER_AMOUNT))
+                    .outputItems(new ItemStack(logItem, 64))
+                    .save(provider);
+        }
+    }
+
+    /**
+     * Comb Production: Now uses the Maps from PhoenixBeeMaterials for type-safety.
+     */
+    public static void loadBeeCombProductionRecipes(Consumer<FinishedRecipe> provider) {
+        for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
+            String beeId = config.beeId();
+            if (beeId.equals("rancher") || beeId.equals("steamy")) continue;
+
+            Material mat = GTMaterials.get(beeId);
+            if (mat == null) continue;
+
+            // 1. Get the Honeycomb Item
+            ItemStack combInput = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat);
+
+            // 2. Retrieve your Java-defined materials from the Maps
+            Material honeyedFluidMat = PhoenixBeeMaterials.HONEYED_MATERIALS.get(beeId);
+            Material rawWaxDustMat = PhoenixBeeMaterials.RAW_WAX_MATERIALS.get(beeId);
+
+            if (combInput.isEmpty() || honeyedFluidMat == null || rawWaxDustMat == null) continue;
+
+            // Decanting: Comb -> Raw Wax Dust + Base Comb
+            COMB_DECANTING_RECIPES.recipeBuilder(MOD_ID + "/decanting/" + beeId)
+                    .EUt(config.decantingEut()).duration(config.decantingDuration())
+                    .inputItems(combInput)
+                    .outputItems(ChemicalHelper.get(TagPrefix.dust, rawWaxDustMat))
+                    .outputItems(HONEY_COMB_BASE)
+                    .save(provider);
+
+            // Melting: Raw Wax Dust + Catalyst -> Honeyed Fluid
+            BREWING_RECIPES.recipeBuilder(MOD_ID + "/wax_melting/" + beeId)
+                    .EUt(config.waxEut()).duration(400)
+                    .inputItems(TagPrefix.dust, rawWaxDustMat)
+                    .inputFluids(PhoenixBeeMaterials.WAX_MELTING_CATALYST.getFluid(100))
+                    .outputFluids(honeyedFluidMat.getFluid(1000))
+                    .save(provider);
+
+            // Purifying: Honeyed Fluid -> Impure Honey + Resource
+            var purifier = CENTRIFUGE_RECIPES.recipeBuilder(MOD_ID + "/honeyed_purifying/" + beeId)
+                    .EUt(config.decantingEut()).duration(400)
+                    .inputFluids(honeyedFluidMat.getFluid(1000))
+                    .outputFluids(PhoenixBeeMaterials.IMPURE_HONEY.getFluid(500));
+
+            // Resource logic (Salmon/Wannabee/Standard)
+            if (beeId.equals("water")) {
+                purifier.outputItems(new ItemStack(Items.SALMON));
+            } else if (beeId.equals("wannabee")) {
+                purifier.outputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.pollinationInputId())), 2));
+            } else {
+                purifier.outputItems(config.finalOutputItem());
+            }
+            purifier.save(provider);
         }
     }
 
