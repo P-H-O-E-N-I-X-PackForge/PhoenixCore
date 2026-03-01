@@ -258,20 +258,30 @@ public class TeslaTeamEnergyData extends SavedData {
     }
 
     public void removeMachineFromAllTeams(BlockPos pos) {
-        networks.values().forEach(team -> {
-            // 1. Remove from wired machines (Soul Consumers)
-            team.soulLinkedMachines.remove(pos);
-            team.posToDimension.remove(pos);
+        boolean changed = false;
+        for (TeamEnergy team : networks.values()) {
+            // Sets return boolean
+            boolean r1 = team.soulLinkedMachines.remove(pos);
+            boolean r2 = team.activeChargers.remove(pos);
+            boolean r3 = team.soulLinkedMachines.remove(pos);
 
-            // 2. Remove from wireless chargers [C]
-            team.activeChargers.remove(pos);
+            // Maps return null if the key wasn't present
+            boolean r4 = team.lastSeen.remove(pos) != null;
+            boolean r5 = team.machineDisplayFlow.remove(pos) != null;
+            boolean r6 = team.energyBuffered.remove(pos) != null;
+            boolean r7 = team.hatchIsOutput.remove(pos) != null;
+            boolean r8 = team.posToDimension.remove(pos) != null;
+            boolean r9 = team.energyInput.remove(pos) != null;
+            boolean r10 = team.energyOutput.remove(pos) != null;
 
-            // 3. Clear the display flow cache so the UI doesn't "ghost" old numbers
-            team.machineDisplayFlow.remove(pos);
-        });
+            if (r1 || r2 || r3 || r4 || r5 || r6 || r7 || r8 || r9 || r10) {
+                changed = true;
+            }
+        }
 
-        // Mark for saving to disk
-        this.setDirty();
+        if (changed) {
+            this.setDirty();
+        }
     }
 
     // --- ONLINE STATE METHODS ---

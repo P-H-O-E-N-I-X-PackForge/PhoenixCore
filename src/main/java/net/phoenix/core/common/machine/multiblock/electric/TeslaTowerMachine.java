@@ -13,14 +13,19 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.common.machine.electric.ChargerMachine;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
+import com.gregtechceu.gtceu.utils.GradientUtil;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.ChatFormatting;
@@ -29,12 +34,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.gui.PhoenixGuiTextures;
 import net.phoenix.core.api.machine.trait.ITeslaBattery;
 import net.phoenix.core.common.data.item.PhoenixItems;
@@ -50,13 +61,16 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.UnaryOperator;
 
 import javax.annotation.Nullable;
 
+import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos;
+import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getBlockPos;
 import static net.phoenix.core.common.machine.multiblock.part.special.TeslaEnergyHatchPartMachine.TESLA_DEBUG;
 
 public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
-                               implements IEnergyInfoProvider, IFancyUIMachine, IDataStickInteractable {
+        implements IEnergyInfoProvider, IFancyUIMachine, IDataStickInteractable {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             TeslaTowerMachine.class, UniqueWorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -75,6 +89,13 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
 
     private static final BigInteger BIG_INTEGER_MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
 
+
+    @Override
+    public boolean isActive() {
+        return isFormed() && isWorkingEnabled() && recipeLogic.isActive();
+    }
+
+
     @Getter
     private TeslaTowerMachine.TeslaEnergyBank energyBank;
     private EnergyContainerList inputHatches;
@@ -87,7 +108,25 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     @Getter
     private long outputPerSec;
 
+    private int messageDelay = -1; // Change to -1 to indicate "not active"
+    private UUID delayedOwner = null;
+    private boolean introSequencePlayed = false;
+
     protected ConditionalSubscriptionHandler tickSubscription;
+
+
+    public static TextColor nebulaColor(float speed) {
+        float baseHue = 260.5f;
+        float hueRange = 25f;
+
+        float time = (GTValues.CLIENT_TIME & ((1 << 20) - 1)) * speed;
+
+        float hue = baseHue + (float) (Math.sin(time * Math.PI / 180.0) * (hueRange / 2f));
+
+        return TextColor.fromRgb(GradientUtil.toRGB(hue, 95f, 65f));
+    }
+
+    public static final UnaryOperator<Style> NEBULA_HSL = style -> style.withColor(nebulaColor(8.0f));
 
     @Override
     public void onStructureFormed() {
@@ -96,6 +135,34 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         if (!getLevel().isClientSide) {
             ensureOwnerTeamUUID();
         }
+
+
+
+        UUID ownerId = getOwnerUUID();
+
+        if (!getLevel().isClientSide && ownerId != null && !introSequencePlayed) {
+            if (getLevel() instanceof ServerLevel serverLevel) {
+                Player player = serverLevel.getPlayerByUUID(ownerId);
+
+                if (player != null) {
+                    introSequencePlayed = true;
+
+                    player.displayClientMessage(
+                            Component.literal("We See You, We Know You.")
+                                    .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC), true
+                    );
+
+                    player.sendSystemMessage(Component.literal("The Signal Has Begun.").withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
+
+                    // Set the state for the delay
+                    this.messageDelay = 100; // 5 seconds
+                    this.delayedOwner = ownerId;
+                }
+            }
+        }
+
+
+
 
         // 2. Register for wireless logic
         if (ownerTeamUUID != null) {
@@ -169,8 +236,10 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         // Early exit if no machines are linked or the battery is empty
         if (team.soulLinkedMachines.isEmpty() || energyBank.getStored().equals(BigInteger.ZERO)) return;
 
+
+
         for (BlockPos targetPos : team.soulLinkedMachines) {
-            // 1. Check if chunk is loaded to prevent lag/errors
+            // 1. Check if a chunk is loaded to prevent lag/errors
             if (!level.isLoaded(targetPos)) continue;
 
             // 2. Ping the machine as "Active" for Jade and the Tower UI
@@ -238,11 +307,20 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         if (getLevel().isClientSide) return;
         if (!isWorkingEnabled() || !isFormed()) return;
 
+        if (!isWorkingEnabled() || !isFormed()) {
+            if (recipeLogic.isActive()) recipeLogic.setStatus(RecipeLogic.Status.IDLE);
+            return;
+        }
+
+
         ServerLevel sl = (ServerLevel) getLevel();
+        boolean isDoingWork = false;
 
         // 1. Every 20 ticks (1 second): Aggregate, Average, and Sync
         if (sl.getGameTime() % 20 == 0) {
             syncToTeslaSavedData(); // Push Tower internal buffer to the Cloud
+
+
 
             if (ownerTeamUUID != null) {
                 TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
@@ -304,8 +382,15 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
 
         // 2. Every Tick: Wired Energy Logic
         if (inputHatches != null && ownerTeamUUID != null) {
+            //      if (sl.getGameTime() % 100 == 0) {
+            //    sl.playSound(null, getPos(), PhoenixSounds.MICROVERSE.getMainEvent(),
+            //             SoundSource.BLOCKS, 4.0f, 1.5f);
+            //  }
+
             TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
             TeslaTeamEnergyData.TeamEnergy team = data.getOrCreate(ownerTeamUUID);
+
+
 
             long incoming = inputHatches.getEnergyStored();
             if (incoming > 0) {
@@ -314,15 +399,30 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 BigInteger newStored = before.add(toAdd).min(team.capacity);
                 team.stored = newStored;
 
+
                 long accepted = newStored.subtract(before).longValue();
                 if (accepted > 0) {
                     inputHatches.changeEnergy(-accepted);
                     netInLastSec += accepted;
+
+                }
+                if (accepted > 0) {
+                    isDoingWork = true;
                 }
             }
 
-            pushToSoulLinkedMachines(sl, team);
+            if (!team.soulLinkedMachines.isEmpty() && energyBank.getStored().signum() > 0) {
+                isDoingWork = true;
+                pushToSoulLinkedMachines(sl, team);
+            }
             data.setDirty();
+        }
+
+        // Update the machine status so the overlay and front face animate
+        if (isDoingWork) {
+            recipeLogic.setStatus(RecipeLogic.Status.WORKING);
+        } else {
+            recipeLogic.setStatus(RecipeLogic.Status.IDLE);
         }
     }
 

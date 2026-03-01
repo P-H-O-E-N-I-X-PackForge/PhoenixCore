@@ -17,6 +17,7 @@ public class PhoenixRecipeTypes {
 
     public static GTRecipeType HONEY_CHAMBER_RECIPES;
     public static GTRecipeType PLEASE;
+    public static GTRecipeType TESLA_TOWER;
     public static GTRecipeType HIGH_PERFORMANCE_BREEDER_REACTOR_RECIPES;
     public static GTRecipeType ADVANCED_PRESSURIZED_FISSION_REACTOR_RECIPES;
     public static GTRecipeType PRESSURIZED_FISSION_REACTOR_RECIPES;
