@@ -269,6 +269,9 @@ public class PhoenixMachines {
                 .register();
     }
 
+    public static MachineDefinition AURUM_STEEL_DRUM = registerDrum(AURUM_STEEL,
+            (80 * FluidType.BUCKET_VOLUME),
+            "Aurum Steel Drum");
     public static MachineDefinition ALUMINFROST_DRUM = registerDrum(ALUMINFROST,
             (160 * FluidType.BUCKET_VOLUME),
             "Aluminfrost Drum");
@@ -284,6 +287,9 @@ public class PhoenixMachines {
     public static MachineDefinition RESONANT_RHODIUM_ALLOY_DRUM = registerDrum(RESONANT_RHODIUM_ALLOY,
             (2300 * FluidType.BUCKET_VOLUME),
             "Resonant Rhodium Alloy Drum");
+
+    public static MachineDefinition AURUM_STEEL_CRATE = registerCrate(AURUM_STEEL, 90,
+            "Aurum Steel Crate");
     public static MachineDefinition ALUMINFROST_CRATE = registerCrate(ALUMINFROST, 100,
             "Aluminfrost Crate");
     public static MachineDefinition FROST_REINFORCED_STAINED_STEEL_CRATE = registerCrate(FROST_REINFORCED_STAINED_STEEL,
@@ -297,6 +303,7 @@ public class PhoenixMachines {
             "Void Touched Tungsten Steel Crate");
     public static MachineDefinition RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
             "Resonant Rhodium Alloy Crate");
+
 
     public static MachineDefinition SHIELD_INTEGRITY_SENSOR_HATCH = REGISTRATE
             .machine("shield_stability_sensor_hatch", ShieldSensorHatchPartMachine::new)
