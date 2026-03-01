@@ -96,12 +96,18 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
     @Override
     public void onUnload() {
         super.onUnload();
-        if (!getLevel().isClientSide && getLevel() instanceof ServerLevel server && ownerTeamUUID != null) {
-            TeslaTeamEnergyData.get(server).removeEndpoint(ownerTeamUUID, getPos());
-        }
+        if (!getLevel().isClientSide && getLevel() instanceof ServerLevel server) {
+            // Scrub this coordinate from EVERY team's data to prevent ghosting
+            TeslaTeamEnergyData.get(server).removeMachineFromAllTeams(getPos());
 
+            // Also unregister from your runtime registry
+            TeslaWirelessRegistry.unregisterHatch(this);
+        }
         unsubscribeFromTick();
     }
+
+
+
 
     public TeslaEnergyHatchPartMachine(IMachineBlockEntity holder, int tier, IO io, int amperage, Object... args) {
         super(holder, tier, io, amperage, args);

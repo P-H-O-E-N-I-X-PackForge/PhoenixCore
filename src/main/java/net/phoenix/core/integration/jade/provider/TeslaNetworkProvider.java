@@ -13,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.common.machine.multiblock.electric.TeslaTowerMachine;
 import net.phoenix.core.common.machine.multiblock.part.special.TeslaEnergyHatchPartMachine;
 import net.phoenix.core.saveddata.TeslaTeamEnergyData;
 import net.phoenix.core.utils.TeamUtils;
@@ -51,7 +52,14 @@ public class TeslaNetworkProvider implements IBlockComponentProvider, IServerDat
                         mode = hatch.isUplink() ? 0 : 1;
                         transferRate = data.getOrCreate(team).machineDisplayFlow.getOrDefault(pos, 0L);
                     }
-                } else {
+                }// ADD THIS BLOCK:
+                else if (machine instanceof TeslaTowerMachine tower) {
+                    // Assuming your Tower class has a way to get the Team UUID
+                    // (similar to how the Hatch does it)
+                    team = tower.getOwnerUUID();
+                    mode = -1; // We don't want "Providing/Taking" on the main controller
+                }
+                else {
                     for (var entry : data.getNetworksView().entrySet()) {
                         TeslaTeamEnergyData.TeamEnergy teamData = entry.getValue();
                         if (teamData.soulLinkedMachines.contains(pos)) {
