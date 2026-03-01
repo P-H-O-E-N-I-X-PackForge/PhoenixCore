@@ -204,6 +204,8 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    modRuntimeOnly("curse.maven:building-gadgets-298187:6850495")
+    modRuntimeOnly("curse.maven:kubejs-aisle-tool-1236291:7543948")
     modImplementation("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
     modImplementation("curse.maven:applied-energistics-2-223794:7148487")
     modImplementation("curse.maven:guideme-1173950:7127447")

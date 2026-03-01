@@ -403,8 +403,8 @@ public class FissionExplosionTask {
         }
 
         out.sort(Comparator.comparingLong(cp -> {
-            long ccx = (cp.x << 4) + 8L;
-            long ccz = (cp.z << 4) + 8L;
+            long ccx = ((long) cp.x << 4) + 8L;
+            long ccz = ((long) cp.z << 4) + 8L;
             long dx = ccx - center.getX();
             long dz = ccz - center.getZ();
             return dx * dx + dz * dz;
