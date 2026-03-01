@@ -53,6 +53,12 @@ public class PhoenixRecipeTypes {
                 .setSound(GTSoundEntries.MIXER)
                 .setEUIO(IO.IN);
 
+        TESLA_TOWER = register("tesla_tower", MULTIBLOCK)
+                .setMaxIOSize(1,1,1,1)
+                .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)
+                .setProgressBar(GuiTextures.PROGRESS_BAR_EXTRACT, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setEUIO(IO.IN);
+
         HONEY_CHAMBER_RECIPES = register("honey_chamber", MULTIBLOCK)
                 .setMaxIOSize(4, 4, 4, 4)
                 .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)

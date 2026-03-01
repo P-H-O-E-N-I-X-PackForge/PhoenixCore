@@ -1,4 +1,4 @@
-/*
+
 package net.phoenix.core.client.renderer.machine;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
@@ -119,5 +119,3 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         drawTeslaLine(vc, pose, mid, e, depth - 1, r, g, b, a, time);
     }
 }
-
- */

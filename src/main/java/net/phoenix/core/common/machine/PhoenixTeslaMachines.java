@@ -103,7 +103,7 @@ public class PhoenixTeslaMachines {
                             PhoenixCore.id("block/multiblock/tesla_tower"))
                             .andThen(d -> d
                                     .addDynamicRenderer(
-                                            PhoenixDynamicRenderHelpers::getPlasmaArcFurnaceRenderer)))
+                                            PhoenixDynamicRenderHelpers::getTeslaTowerRenderer)))
             .hasBER(true)
             .register();
 
