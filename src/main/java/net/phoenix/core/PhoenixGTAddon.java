@@ -13,9 +13,7 @@ import net.phoenix.core.common.data.PhoenixFissionMachineRecipes;
 import net.phoenix.core.common.data.PhoenixMachineRecipes;
 import net.phoenix.core.common.data.PhoenixToolRecipes;
 import net.phoenix.core.common.data.materials.PhoenixElements;
-import net.phoenix.core.common.data.recipe.generated.CrystalRoseAssemblerGenerator;
-import net.phoenix.core.common.data.recipe.generated.PhoenixBeeRecipeGenerator;
-import net.phoenix.core.common.data.recipe.generated.TeslaHatchRecipes;
+import net.phoenix.core.common.data.recipe.generated.*;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.integration.kubejs.recipe.ShieldComponent;
 
@@ -53,6 +51,9 @@ public class PhoenixGTAddon implements IGTAddon {
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);
         CrystalRoseAssemblerGenerator.generateCrystalRoseRecipes(provider);
         TeslaHatchRecipes.init(provider);
+        CustomComponetRecipes.init(provider);
+        WirelessChargerRecipes.init(provider);
+        SourceHatchRecipes.init(provider);
     }
 
     @Override
