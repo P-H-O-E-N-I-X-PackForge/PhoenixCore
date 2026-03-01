@@ -99,19 +99,19 @@ public class PhoenixRecipeTypes {
                 });
 
         SOURCE_IMBUEMENT_RECIPES = register("source_imbuement", MULTIBLOCK) // Imbue
-                .setMaxIOSize(3, 3, 5, 5)
+                .setMaxIOSize(3, 3, 1, 0)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.CHEMICAL)
                 .setUiBuilder((recipe, widgetGroup) -> {
                     var size = widgetGroup.getSize();
-                    widgetGroup.setSize(size.width, size.height + 5);
+                    widgetGroup.setSize(size.width, size.height + 15);
                 })
                 .setEUIO(IO.IN);
 
         SOURCE_EXTRACTION_RECIPES = register("source_extraction", MULTIBLOCK) // Extract
-                .setMaxIOSize(3, 1, 1, 1)
+                .setMaxIOSize(2, 1, 1, 0)
                 .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
                 .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
@@ -119,9 +119,8 @@ public class PhoenixRecipeTypes {
                 .setEUIO(IO.IN)
                 .setUiBuilder((recipe, widgetGroup) -> {
                     var size = widgetGroup.getSize();
-                    widgetGroup.setSize(size.width, size.height + 5);
+                    widgetGroup.setSize(size.width, size.height + 15);
                 });
-
         APIS_PROGENITOR_RECIPES = register("apis_progenitor", MULTIBLOCK)
                 .setMaxIOSize(3, 1, 1, 1)
                 .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)
