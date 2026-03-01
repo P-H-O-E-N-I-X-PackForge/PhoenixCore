@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.level.Level;
 import net.phoenix.core.PhoenixCore;
 
 public class PhoenixDamageSources {
@@ -17,7 +18,7 @@ public class PhoenixDamageSources {
         context.register(STERILIZED, new DamageType("sterilized", 0.1F));
     }
 
-    public static DamageSource sterilized(net.minecraft.world.level.Level level) {
+    public static DamageSource sterilized(Level level) {
         return new DamageSource(
                 level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(STERILIZED));
     }
