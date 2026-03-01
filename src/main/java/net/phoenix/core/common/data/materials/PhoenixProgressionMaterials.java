@@ -71,14 +71,14 @@ public class PhoenixProgressionMaterials {
         ALUMINFROST = new Material.Builder(PhoenixCore.id("aluminfrost")).ingot().fluid().color(0xadd8e6)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.BRIGHT)
                 .fluidPipeProperties(1200, 110, true, true, false, false)
-                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_LONG_ROD,
-                        GENERATE_ROD, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
+                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR,GENERATE_SMALL_GEAR, PHOSPHORESCENT, GENERATE_LONG_ROD,
+                        GENERATE_ROD, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL)
                 .buildAndRegister();
         SOURCE_IMBUED_TITANIUM = new Material.Builder(PhoenixCore.id("source_imbued_titanium")).ingot().fluid()
                 .color(0xc600ff).formula("✨C✨Ti").iconSet(MaterialIconSet.METALLIC)
                 .fluidPipeProperties(2800, 200, true, true, false, false)
-                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD,
-                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
+                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_SMALL_GEAR, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD,
+                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL)
                 .buildAndRegister();
         RESONANT_RHODIUM_ALLOY = new Material.Builder(PhoenixCore.id("resonant_rhodium_alloy"))
                 .ingot().fluid()
@@ -87,7 +87,7 @@ public class PhoenixProgressionMaterials {
                         1, GTMaterials.Cerium, 4)
                 .blastTemp(3600, HIGH, 480, 400).fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD, GENERATE_GEAR,
-                        GENERATE_SMALL_GEAR, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
+                        GENERATE_SMALL_GEAR, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL)
                 .buildAndRegister();
 
         ADVANCED_QUIN_NAQUADIAN_ALLOY = new Material.Builder(PhoenixCore.id("advanced_quin_naquadian_alloy"))
@@ -107,7 +107,10 @@ public class PhoenixProgressionMaterials {
                         GENERATE_BOLT_SCREW,
                         GENERATE_FRAME,
                         GENERATE_DENSE,
-                        GENERATE_ROTOR)
+                        GENERATE_SMALL_GEAR,
+                        GENERATE_ROTOR,
+                        GENERATE_FOIL,
+                        GENERATE_LONG_ROD)
                 .buildAndRegister();
 
         FROST_REINFORCED_STAINED_STEEL = new Material.Builder(PhoenixCore.id("frost_reinforced_stained_steel"))
@@ -126,7 +129,8 @@ public class PhoenixProgressionMaterials {
                         GENERATE_FRAME,
                         GENERATE_BOLT_SCREW,
                         GENERATE_RING,
-                        GENERATE_DENSE)
+                        GENERATE_DENSE,
+                        GENERATE_FOIL)
                 .buildAndRegister();
         EightyFivePercentPureNevonianSteel = new Material.Builder(
                 PhoenixCore.id("eighty_five_percent_pure_nevonian_steel")).ingot().color(0xFFFFE0)
@@ -154,12 +158,12 @@ public class PhoenixProgressionMaterials {
                         GENERATE_GEAR,
                         GENERATE_SMALL_GEAR,
                         GENERATE_DENSE,
-                        GENERATE_ROTOR)
+                        GENERATE_ROTOR, GENERATE_FOIL)
                 .buildAndRegister();
         AURUM_STEEL = new Material.Builder(PhoenixCore.id("aurum_steel")).ingot().fluid().color(0xd0a860)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.METALLIC)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
-                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR)
+                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL, GENERATE_SMALL_GEAR)
                 .buildAndRegister();
         FIERY_BRONZE = new Material.Builder(PhoenixCore.id("fiery_bronze")).ingot().fluid().color(0xff6d00)
                 .secondaryColor(0xa0522d).iconSet(MaterialIconSet.DULL)
