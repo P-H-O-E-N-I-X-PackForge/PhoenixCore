@@ -14,8 +14,9 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.phoenix.core.PhoenixCore;
 
-@Mod.EventBusSubscriber(modid = "PhoenixCore", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PhoenixTooltips {
 
     @SubscribeEvent
@@ -27,7 +28,7 @@ public class PhoenixTooltips {
         if (id == null) return;
 
         String namespace = id.getNamespace();
-        if (!namespace.equals("PhoenixCore") && !namespace.equals("gtceu")) return;
+        if (!namespace.equals("phoenixcore") && !namespace.equals("gtceu")) return;
 
         String path = id.getPath();
 
