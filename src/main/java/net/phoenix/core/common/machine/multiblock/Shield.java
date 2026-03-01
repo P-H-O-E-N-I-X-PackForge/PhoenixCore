@@ -3,7 +3,7 @@ package net.phoenix.core.common.machine.multiblock;
 import lombok.Getter;
 
 public class Shield {
-
+    @Getter
     public enum ShieldTypes {
 
         // key, decayRate, isActive, shieldCooldownTicks, shieldTimer, shieldCooldown, shieldHealth, langKey
@@ -20,7 +20,6 @@ public class Shield {
         public final int shieldCooldownTicks;
         public final boolean isActive;
         public final String langKey;
-        @Getter
         public final int key;
 
         ShieldTypes(int key, int decayRate, boolean isActive, int shieldCooldownTicks, int shieldTimer,
