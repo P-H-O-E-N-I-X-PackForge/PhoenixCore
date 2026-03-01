@@ -4,7 +4,7 @@
     },
     "animation": {
         "interpolate": true,
-        "frametime": 1,
+        "frametime": 4,
     "frames": [
             0,
             0,
