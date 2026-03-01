@@ -304,7 +304,6 @@ public class PhoenixMachines {
     public static MachineDefinition RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
             "Resonant Rhodium Alloy Crate");
 
-
     public static MachineDefinition SHIELD_INTEGRITY_SENSOR_HATCH = REGISTRATE
             .machine("shield_stability_sensor_hatch", ShieldSensorHatchPartMachine::new)
             .langValue("Shield Stability Sensor Hatch")

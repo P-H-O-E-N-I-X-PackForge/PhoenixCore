@@ -30,5 +30,7 @@ public class PhoenixDynamicRenderHelpers {
         return HoneyChamberDynamicRender.INSTANCE;
     }
 
-    public static DynamicRender<?, ?> getTeslaTowerRenderer() {return TeslaTowerRenderer.INSTANCE;}
+    public static DynamicRender<?, ?> getTeslaTowerRenderer() {
+        return TeslaTowerRenderer.INSTANCE;
+    }
 }

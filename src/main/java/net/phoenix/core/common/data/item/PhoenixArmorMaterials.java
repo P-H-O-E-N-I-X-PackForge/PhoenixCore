@@ -2,21 +2,22 @@ package net.phoenix.core.common.data.item;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.PhoenixClient;
 import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 
 import java.util.function.Supplier;
 
-public enum PhoenixArmorMaterials  implements ArmorMaterial {
-    TESLA("tesla", 23, new int[]{3,4,5,6}, 25, SoundEvents.ARMOR_EQUIP_CHAIN,
-            1f, 0f, () -> Ingredient.of(ChemicalHelper.get(TagPrefix.ingot, PhoenixProgressionMaterials.RESONANT_RHODIUM_ALLOY)));
+public enum PhoenixArmorMaterials implements ArmorMaterial {
+
+    TESLA("tesla", 23, new int[] { 3, 4, 5, 6 }, 25, SoundEvents.ARMOR_EQUIP_CHAIN,
+            1f, 0f, () -> Ingredient
+                    .of(ChemicalHelper.get(TagPrefix.ingot, PhoenixProgressionMaterials.RESONANT_RHODIUM_ALLOY)));
 
     private final String name;
     private final int durabilityMultiplier;
@@ -27,9 +28,11 @@ public enum PhoenixArmorMaterials  implements ArmorMaterial {
     private final float knockbackResistance;
     private final Supplier<Ingredient> repairIngredient;
 
-    private final int[] BASE_DURABILITY = {11,16,16,13};
+    private final int[] BASE_DURABILITY = { 11, 16, 16, 13 };
 
-    PhoenixArmorMaterials(String name, int durabilityMultiplier, int[] protectionAmounts, int enchantmentValue, SoundEvent equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredient) {
+    PhoenixArmorMaterials(String name, int durabilityMultiplier, int[] protectionAmounts, int enchantmentValue,
+                          SoundEvent equipSound, float toughness, float knockbackResistance,
+                          Supplier<Ingredient> repairIngredient) {
         this.name = name;
         this.durabilityMultiplier = durabilityMultiplier;
         this.protectionAmounts = protectionAmounts;
@@ -42,7 +45,6 @@ public enum PhoenixArmorMaterials  implements ArmorMaterial {
 
     @Override
     public int getDurabilityForType(ArmorItem.Type type) {
-
         return BASE_DURABILITY[type.ordinal()] * this.durabilityMultiplier;
     }
 

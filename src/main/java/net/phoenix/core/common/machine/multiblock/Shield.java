@@ -3,6 +3,7 @@ package net.phoenix.core.common.machine.multiblock;
 import lombok.Getter;
 
 public class Shield {
+
     @Getter
     public enum ShieldTypes {
 

@@ -106,9 +106,6 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
         unsubscribeFromTick();
     }
 
-
-
-
     public TeslaEnergyHatchPartMachine(IMachineBlockEntity holder, int tier, IO io, int amperage, Object... args) {
         super(holder, tier, io, amperage, args);
     }

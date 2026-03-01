@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
 import com.gregtechceu.gtceu.common.data.GCYMBlocks;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
-import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.machine.electric.ChargerMachine;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -55,32 +54,281 @@ public class PhoenixTeslaMachines {
             .recipeType(PhoenixRecipeTypes.TESLA_TOWER)
             .appearanceBlock(PhoenixBlocks.INSANELY_SUPERCHARGED_TESLA_CASING)
             .pattern(definition -> FactoryBlockPattern.start()
-                    .aisle("                   ", "                   ", "                   ", "                   ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("                   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCHFHCCC     ", "       F   F       ", "       F   F       ", "       F   F       ", "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("     IIIIIIIII     ", "                   ", "                   ", "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ", "    CCHHJFJHHCC    ", "                   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCHFHCCC     ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("    IIJJJJJJJII    ", "        FJF        ", "        FFF        ", "        FJF        ", "   CCEEGJJJGEECC   ", "   GD         DG   ", "   GD         DG   ", "   GD         DG   ", "   CCHHJIFIJHHCC   ", "                   ", "                   ", "                   ", "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ", "    CCHHJFJHHCC    ", "       F   F       ", "       F   F       ", "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("   IIJJCCCCCJJII   ", "     J       J     ", "     J       J     ", "     J       J     ", "  CCEJGGJCJGGJECC  ", "  DD           DD  ", "  DD           DD  ", "  DD           DD  ", "  CCHHJIIFIIJHHCC  ", "                   ", "                   ", "                   ", "                   ", "   CCEEIIIIIEECC   ", "   DD         DD   ", "   DD         DD   ", "   DD         DD   ", "   CCHHJJFJJHHCC   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCJFJCCC     ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IIJJCCCCCCCJJII  ", "    J         J    ", "    J         J    ", "    J         J    ", " CCEJGGJJCJJGGJECC ", " GD             DG ", " GD             DG ", " GD             DG ", " CCHHJIIJJJIIJHHCC ", "         F         ", "         F         ", "         F         ", "         C         ", "  CCEEIIJCJIIEECC  ", "  GD           DG  ", "  GD           DG  ", "  GD           DG  ", "  CCHHJEEEEEJHHCC  ", "         F         ", "         F         ", "         C         ", "    CCEEEFEEECC    ", "    GD       DG    ", "    GD       DG    ", "    GD       DG    ", "    CCJJIFIJJCC    ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IJJCCCGGGCCCJJI  ", "                   ", "                   ", "                   ", " CEEGGJJCCCJJGGEEC ", " D               D ", " D               D ", " D               D ", " CHHJIICCGCCIIJHHC ", "        K K        ", "        K K        ", "        K K        ", "        LCL        ", "  CEEIIJCCCJIIEEC  ", "  D             D  ", "  D             D  ", "  D             D  ", "  CHHJIICCCIIJHHC  ", "        K K        ", "        K K        ", "        LCL        ", "    CEEJJJJJEEC    ", "    D         D    ", "    D         D    ", "    D         D    ", "    CJJICFCIJJC    ", "        I I        ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IJCCCGGEGGCCCJI  ", "                   ", "                   ", "                   ", "CCEGGJJJCECJJJGGECC", "DD               DD", "DD               DD", "DD               DD", "CCHJIICEEGEECIIJHCC", " F     D   D     F ", " F     D   D     F ", " F     D   D     F ", " F     ILCLI     F ", " CCEIIJJCECJJIIECC ", " DD             DD ", " DD             DD ", " DD             DD ", " CCHJEICJJJCIEJHCC ", "   F   D   D   F   ", "   F   D   D   F   ", "   F   ILCLI   F   ", "   CCEJJIIIJJECC   ", "   DD         DD   ", "   DD         DD   ", "   DD         DD   ", "   CCJICCCCCIJCC   ", "       IICII       ", "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJFJJ       ", "       JJ JJ       ", "       JJ JJ       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IJCCGGEEEGGCCJI  ", "   F     C     F   ", "   F           F   ", "   F     C     F   ", "CEEJJJCCEGECCJJJEEC", "D        F        D", "D        F        D", "D        F        D", "CHJIIJCEFIFECJIIJHC", "      K GIG K      ", "      K GIG K      ", "      K GIGCK      ", "      LLLCLLL      ", " CEEIJCCEGECCJIEEC ", " D       F       D ", " D       F       D ", " D       F       D ", " CHJJECJJGJJCEJJHC ", "      K GIG K      ", "      K GIGCK      ", "      LLLCLLL      ", "   CEEJIIGIIJEEC   ", "   D     F     D   ", "   D     F     D   ", "   D     F     D   ", "   CJICCCICCCIJC   ", "      IICCCII      ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "        FFF        ", "        FFF        ", "        FFF        ", "        FFF        ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "                   ", "                   ")
-                    .aisle("  IJCCGEEEEEGCCJI  ", "   J    CFC    J   ", "   J     M     J   ", "   J    CNC    J   ", "CFFJCCCEGNGECCCJFFC", "C       FNF       C", "C       FNF       C", "C       FNF       C", "CFFFFJGGINIGGJFFFFC", "     F  INI  F     ", "     F  INI  F     ", "     F  INI  F     ", "     CCCCNCCCC     ", " CFFICCEGNGECCIFFC ", " C      FNF      C ", " C      FNF      C ", " C      FNF      C ", " CFFFECJGNGJCEFFFC ", "     F  INI  F     ", "     F  INI  F     ", "     CCCCNCCCC     ", "   CFFJIGNGIJFFC   ", "   C    FNF    C   ", "   C    FNF    C   ", "   C    FNF    C   ", "   CFFFCIIICFFFC   ", "       CCNCC       ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "       FFNFF       ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ", "         N         ", "         N         ")
-                    .aisle("  IJCCGGEEEGGCCJI  ", "   F     C     F   ", "   F           F   ", "   F     C     F   ", "CEEJJJCCEGECCJJJEEC", "D        F        D", "D        F        D", "D        F        D", "CHJIIJCEFIFECJIIJHC", "      K GIG K      ", "      K GIG K      ", "      K GIG K      ", "      LLLCLLL      ", " CEEIJCCEGECCJIEEC ", " D       F       D ", " D       F       D ", " D       F       D ", " CHJJECJJGJJCEJJHC ", "      K GIG K      ", "      K GIG K      ", "      LLLCLLL      ", "   CEEJIIGIIJEEC   ", "   D     F     D   ", "   D     F     D   ", "   D     F     D   ", "   CJICCCICCCIJC   ", "      IICCCII      ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "        FFF        ", "        FFF        ", "        FFF        ", "        FFF        ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "         F         ", "                   ", "                   ")
-                    .aisle("  IJCCCGGEGGCCCJI  ", "                   ", "                   ", "                   ", "CCEGGJJJCECJJJGGECC", "DD               DD", "DD               DD", "DD               DD", "CCHJIICEEGEECIIJHCC", " F     D   D     F ", " F     D   D     F ", " F     D   D     F ", " F     ILCLI     F ", " CCEIIJJCECJJIIECC ", " DD             DD ", " DD             DD ", " DD             DD ", " CCHJEICJJJCIEJHCC ", "   F   D   D   F   ", "   F   D   D   F   ", "   F   ILCLI   F   ", "   CCEJJIIIJJECC   ", "   DD         DD   ", "   DD         DD   ", "   DD         DD   ", "   CCJICCCCCIJCC   ", "       IICII       ", "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJFJJ       ", "       JJ JJ       ", "       JJ JJ       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IJJCCCGGGCCCJJI  ", "                   ", "                   ", "                   ", " CEEGGJJCCCJJGGEEC ", " D               D ", " D               D ", " D               D ", " CHHJIICCGCCIIJHHC ", "        K K        ", "        K K        ", "        K K        ", "        LCL        ", "  CEEIIJCCCJIIEEC  ", "  D             D  ", "  D             D  ", "  D             D  ", "  CHHJIICCCIIJHHC  ", "        K K        ", "        K K        ", "        LCL        ", "    CEEJJJJJEEC    ", "    D         D    ", "    D         D    ", "    D         D    ", "    CJJICFCIJJC    ", "        I I        ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("  IIJJCCCCCCCJJII  ", "    J         J    ", "    J         J    ", "    J         J    ", " CCEJGGJJCJJGGJECC ", " GD             DG ", " GD             DG ", " GD             DG ", " CCHHJIIJJJIIJHHCC ", "         F         ", "         F         ", "         F         ", "         C         ", "  CCEEIIJCJIIEECC  ", "  GD           DG  ", "  GD           DG  ", "  GD           DG  ", "  CCHHJEEEEEJHHCC  ", "         F         ", "         F         ", "         C         ", "    CCEEEFEEECC    ", "    GD       DG    ", "    GD       DG    ", "    GD       DG    ", "    CCJJIFIJJCC    ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("   IIJJCCCCCJJII   ", "     J       J     ", "     J       J     ", "     J       J     ", "  CCEJGGJCJGGJECC  ", "  DD           DD  ", "  DD           DD  ", "  DD           DD  ", "  CCHHJIIFIIJHHCC  ", "                   ", "                   ", "                   ", "                   ", "   CCEEIIIIIEECC   ", "   DD         DD   ", "   DD         DD   ", "   DD         DD   ", "   CCHHJJFJJHHCC   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCJFJCCC     ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("    IIJJJJJJJII    ", "        FJF        ", "        FOF        ", "        FJF        ", "   CCEEGJJJGEECC   ", "   GD         DG   ", "   GD         DG   ", "   GD         DG   ", "   CCHHJIFIJHHCC   ", "                   ", "                   ", "                   ", "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ", "    CCHHJFJHHCC    ", "       F   F       ", "       F   F       ", "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("     IIIIIIIII     ", "                   ", "                   ", "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ", "    CCHHJFJHHCC    ", "                   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCHFHCCC     ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("                   ", "                   ", "                   ", "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ", "     CCCHFHCCC     ", "       F   F       ", "       F   F       ", "       F   F       ", "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
-                    .aisle("                   ", "                   ", "                   ", "                   ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ", "       CCCCC       ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ", "                   ")
+                    .aisle("                   ", "                   ", "                   ", "                   ",
+                            "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ",
+                            "       CCCCC       ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("                   ", "                   ", "                   ", "                   ",
+                            "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     CCCHFHCCC     ", "       F   F       ", "       F   F       ", "       F   F       ",
+                            "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ",
+                            "       DDCDD       ", "       CCCCC       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("     IIIIIIIII     ", "                   ", "                   ", "                   ",
+                            "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ",
+                            "    CCHHJFJHHCC    ", "                   ", "                   ", "                   ",
+                            "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     GDD   DDG     ", "     CCCHFHCCC     ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("    IIJJJJJJJII    ", "        FJF        ", "        FFF        ", "        FJF        ",
+                            "   CCEEGJJJGEECC   ", "   GD         DG   ", "   GD         DG   ", "   GD         DG   ",
+                            "   CCHHJIFIJHHCC   ", "                   ", "                   ", "                   ",
+                            "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ",
+                            "    DD       DD    ", "    CCHHJFJHHCC    ", "       F   F       ", "       F   F       ",
+                            "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ",
+                            "       DDCDD       ", "       CCCCC       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("   IIJJCCCCCJJII   ", "     J       J     ", "     J       J     ", "     J       J     ",
+                            "  CCEJGGJCJGGJECC  ", "  DD           DD  ", "  DD           DD  ", "  DD           DD  ",
+                            "  CCHHJIIFIIJHHCC  ", "                   ", "                   ", "                   ",
+                            "                   ", "   CCEEIIIIIEECC   ", "   DD         DD   ", "   DD         DD   ",
+                            "   DD         DD   ", "   CCHHJJFJJHHCC   ", "                   ", "                   ",
+                            "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     GDD   DDG     ", "     CCCJFJCCC     ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IIJJCCCCCCCJJII  ", "    J         J    ", "    J         J    ", "    J         J    ",
+                            " CCEJGGJJCJJGGJECC ", " GD             DG ", " GD             DG ", " GD             DG ",
+                            " CCHHJIIJJJIIJHHCC ", "         F         ", "         F         ", "         F         ",
+                            "         C         ", "  CCEEIIJCJIIEECC  ", "  GD           DG  ", "  GD           DG  ",
+                            "  GD           DG  ", "  CCHHJEEEEEJHHCC  ", "         F         ", "         F         ",
+                            "         C         ", "    CCEEEFEEECC    ", "    GD       DG    ", "    GD       DG    ",
+                            "    GD       DG    ", "    CCJJIFIJJCC    ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IJJCCCGGGCCCJJI  ", "                   ", "                   ", "                   ",
+                            " CEEGGJJCCCJJGGEEC ", " D               D ", " D               D ", " D               D ",
+                            " CHHJIICCGCCIIJHHC ", "        K K        ", "        K K        ", "        K K        ",
+                            "        LCL        ", "  CEEIIJCCCJIIEEC  ", "  D             D  ", "  D             D  ",
+                            "  D             D  ", "  CHHJIICCCIIJHHC  ", "        K K        ", "        K K        ",
+                            "        LCL        ", "    CEEJJJJJEEC    ", "    D         D    ", "    D         D    ",
+                            "    D         D    ", "    CJJICFCIJJC    ", "        I I        ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IJCCCGGEGGCCCJI  ", "                   ", "                   ", "                   ",
+                            "CCEGGJJJCECJJJGGECC", "DD               DD", "DD               DD", "DD               DD",
+                            "CCHJIICEEGEECIIJHCC", " F     D   D     F ", " F     D   D     F ", " F     D   D     F ",
+                            " F     ILCLI     F ", " CCEIIJJCECJJIIECC ", " DD             DD ", " DD             DD ",
+                            " DD             DD ", " CCHJEICJJJCIEJHCC ", "   F   D   D   F   ", "   F   D   D   F   ",
+                            "   F   ILCLI   F   ", "   CCEJJIIIJJECC   ", "   DD         DD   ", "   DD         DD   ",
+                            "   DD         DD   ", "   CCJICCCCCIJCC   ", "       IICII       ", "       JJ JJ       ",
+                            "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJFJJ       ",
+                            "       JJ JJ       ", "       JJ JJ       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IJCCGGEEEGGCCJI  ", "   F     C     F   ", "   F           F   ", "   F     C     F   ",
+                            "CEEJJJCCEGECCJJJEEC", "D        F        D", "D        F        D", "D        F        D",
+                            "CHJIIJCEFIFECJIIJHC", "      K GIG K      ", "      K GIG K      ", "      K GIGCK      ",
+                            "      LLLCLLL      ", " CEEIJCCEGECCJIEEC ", " D       F       D ", " D       F       D ",
+                            " D       F       D ", " CHJJECJJGJJCEJJHC ", "      K GIG K      ", "      K GIGCK      ",
+                            "      LLLCLLL      ", "   CEEJIIGIIJEEC   ", "   D     F     D   ", "   D     F     D   ",
+                            "   D     F     D   ", "   CJICCCICCCIJC   ", "      IICCCII      ", "       JFFFJ       ",
+                            "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ",
+                            "       JFFFJ       ", "       JFFFJ       ", "        FFF        ", "        FFF        ",
+                            "        FFF        ", "        FFF        ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "                   ",
+                            "                   ")
+                    .aisle("  IJCCGEEEEEGCCJI  ", "   J    CFC    J   ", "   J     M     J   ", "   J    CNC    J   ",
+                            "CFFJCCCEGNGECCCJFFC", "C       FNF       C", "C       FNF       C", "C       FNF       C",
+                            "CFFFFJGGINIGGJFFFFC", "     F  INI  F     ", "     F  INI  F     ", "     F  INI  F     ",
+                            "     CCCCNCCCC     ", " CFFICCEGNGECCIFFC ", " C      FNF      C ", " C      FNF      C ",
+                            " C      FNF      C ", " CFFFECJGNGJCEFFFC ", "     F  INI  F     ", "     F  INI  F     ",
+                            "     CCCCNCCCC     ", "   CFFJIGNGIJFFC   ", "   C    FNF    C   ", "   C    FNF    C   ",
+                            "   C    FNF    C   ", "   CFFFCIIICFFFC   ", "       CCNCC       ", "        FNF        ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "       FFNFF       ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "        FNF        ",
+                            "        FNF        ", "        FNF        ", "        FNF        ", "         N         ",
+                            "         N         ")
+                    .aisle("  IJCCGGEEEGGCCJI  ", "   F     C     F   ", "   F           F   ", "   F     C     F   ",
+                            "CEEJJJCCEGECCJJJEEC", "D        F        D", "D        F        D", "D        F        D",
+                            "CHJIIJCEFIFECJIIJHC", "      K GIG K      ", "      K GIG K      ", "      K GIG K      ",
+                            "      LLLCLLL      ", " CEEIJCCEGECCJIEEC ", " D       F       D ", " D       F       D ",
+                            " D       F       D ", " CHJJECJJGJJCEJJHC ", "      K GIG K      ", "      K GIG K      ",
+                            "      LLLCLLL      ", "   CEEJIIGIIJEEC   ", "   D     F     D   ", "   D     F     D   ",
+                            "   D     F     D   ", "   CJICCCICCCIJC   ", "      IICCCII      ", "       JFFFJ       ",
+                            "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ", "       JFFFJ       ",
+                            "       JFFFJ       ", "       JFFFJ       ", "        FFF        ", "        FFF        ",
+                            "        FFF        ", "        FFF        ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "         F         ",
+                            "         F         ", "         F         ", "         F         ", "                   ",
+                            "                   ")
+                    .aisle("  IJCCCGGEGGCCCJI  ", "                   ", "                   ", "                   ",
+                            "CCEGGJJJCECJJJGGECC", "DD               DD", "DD               DD", "DD               DD",
+                            "CCHJIICEEGEECIIJHCC", " F     D   D     F ", " F     D   D     F ", " F     D   D     F ",
+                            " F     ILCLI     F ", " CCEIIJJCECJJIIECC ", " DD             DD ", " DD             DD ",
+                            " DD             DD ", " CCHJEICJJJCIEJHCC ", "   F   D   D   F   ", "   F   D   D   F   ",
+                            "   F   ILCLI   F   ", "   CCEJJIIIJJECC   ", "   DD         DD   ", "   DD         DD   ",
+                            "   DD         DD   ", "   CCJICCCCCIJCC   ", "       IICII       ", "       JJ JJ       ",
+                            "       JJ JJ       ", "       JJ JJ       ", "       JJ JJ       ", "       JJFJJ       ",
+                            "       JJ JJ       ", "       JJ JJ       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IJJCCCGGGCCCJJI  ", "                   ", "                   ", "                   ",
+                            " CEEGGJJCCCJJGGEEC ", " D               D ", " D               D ", " D               D ",
+                            " CHHJIICCGCCIIJHHC ", "        K K        ", "        K K        ", "        K K        ",
+                            "        LCL        ", "  CEEIIJCCCJIIEEC  ", "  D             D  ", "  D             D  ",
+                            "  D             D  ", "  CHHJIICCCIIJHHC  ", "        K K        ", "        K K        ",
+                            "        LCL        ", "    CEEJJJJJEEC    ", "    D         D    ", "    D         D    ",
+                            "    D         D    ", "    CJJICFCIJJC    ", "        I I        ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("  IIJJCCCCCCCJJII  ", "    J         J    ", "    J         J    ", "    J         J    ",
+                            " CCEJGGJJCJJGGJECC ", " GD             DG ", " GD             DG ", " GD             DG ",
+                            " CCHHJIIJJJIIJHHCC ", "         F         ", "         F         ", "         F         ",
+                            "         C         ", "  CCEEIIJCJIIEECC  ", "  GD           DG  ", "  GD           DG  ",
+                            "  GD           DG  ", "  CCHHJEEEEEJHHCC  ", "         F         ", "         F         ",
+                            "         C         ", "    CCEEEFEEECC    ", "    GD       DG    ", "    GD       DG    ",
+                            "    GD       DG    ", "    CCJJIFIJJCC    ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("   IIJJCCCCCJJII   ", "     J       J     ", "     J       J     ", "     J       J     ",
+                            "  CCEJGGJCJGGJECC  ", "  DD           DD  ", "  DD           DD  ", "  DD           DD  ",
+                            "  CCHHJIIFIIJHHCC  ", "                   ", "                   ", "                   ",
+                            "                   ", "   CCEEIIIIIEECC   ", "   DD         DD   ", "   DD         DD   ",
+                            "   DD         DD   ", "   CCHHJJFJJHHCC   ", "                   ", "                   ",
+                            "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     GDD   DDG     ", "     CCCJFJCCC     ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("    IIJJJJJJJII    ", "        FJF        ", "        FOF        ", "        FJF        ",
+                            "   CCEEGJJJGEECC   ", "   GD         DG   ", "   GD         DG   ", "   GD         DG   ",
+                            "   CCHHJIFIJHHCC   ", "                   ", "                   ", "                   ",
+                            "                   ", "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ",
+                            "    DD       DD    ", "    CCHHJFJHHCC    ", "       F   F       ", "       F   F       ",
+                            "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ",
+                            "       DDCDD       ", "       CCCCC       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("     IIIIIIIII     ", "                   ", "                   ", "                   ",
+                            "    CCEEEFEEECC    ", "    DD       DD    ", "    DD       DD    ", "    DD       DD    ",
+                            "    CCHHJFJHHCC    ", "                   ", "                   ", "                   ",
+                            "                   ", "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     GDD   DDG     ", "     CCCHFHCCC     ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("                   ", "                   ", "                   ", "                   ",
+                            "     CCCEFECCC     ", "     GDD   DDG     ", "     GDD   DDG     ", "     GDD   DDG     ",
+                            "     CCCHFHCCC     ", "       F   F       ", "       F   F       ", "       F   F       ",
+                            "       F   F       ", "       CCCCC       ", "       DDCDD       ", "       DDCDD       ",
+                            "       DDCDD       ", "       CCCCC       ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
+                    .aisle("                   ", "                   ", "                   ", "                   ",
+                            "       CCCCC       ", "       DDCDD       ", "       DDCDD       ", "       DDCDD       ",
+                            "       CCCCC       ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ", "                   ", "                   ", "                   ",
+                            "                   ")
                     .where(" ", Predicates.any())
                     .where("C", blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get()))
                     .where("D", blocks(GTBlocks.CASING_TEMPERED_GLASS.get())
                             .or(blocks(GTBlocks.CASING_LAMINATED_GLASS.get()))
                             .or(blocks(GTBlocks.FUSION_GLASS.get())))
                     .where("E", Predicates.lampsByColor(DyeColor.PURPLE))
-                    .where("F", blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, PhoenixProgressionMaterials.ADVANCED_QUIN_NAQUADIAN_ALLOY)))
+                    .where("F",
+                            blocks(ChemicalHelper.getBlock(TagPrefix.frameGt,
+                                    PhoenixProgressionMaterials.ADVANCED_QUIN_NAQUADIAN_ALLOY)))
                     .where("G", Predicates.blocks(PhoenixBlocks.MACHINE_CASING_RHODIUM_PLATED_PALLADIUM.get()))
                     .where("H", Predicates.lampsByColor(DyeColor.BLACK))
                     .where("I", blocks(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING.get()))
@@ -106,8 +354,6 @@ public class PhoenixTeslaMachines {
                                             PhoenixDynamicRenderHelpers::getTeslaTowerRenderer)))
             .hasBER(true)
             .register();
-
-
 
     // Helper to construct the path: "tesla_hatches/tesla_input" or "tesla_hatches/tesla_iomode_4a"
     private static String getTeslaOverlay(String iomode, int amperage) {
@@ -234,9 +480,9 @@ public class PhoenixTeslaMachines {
             64, PartAbility.SUBSTATION_INPUT_ENERGY);
 
     public static MachineDefinition[] registerWirelessCharger(
-            GTRegistrate registrate,
-            String name,
-            BiFunction<IMachineBlockEntity, Integer, TeslaWirelessChargerMachine> factory) {
+                                                              GTRegistrate registrate,
+                                                              String name,
+                                                              BiFunction<IMachineBlockEntity, Integer, TeslaWirelessChargerMachine> factory) {
         return registerChargerTieredMachines(
                 registrate,
                 name,
@@ -254,8 +500,8 @@ public class PhoenixTeslaMachines {
                                 Component.translatable("gtceu.universal.tooltip.amperage_in", 4),
                                 Component.literal("Wireless Range: ").withStyle(ChatFormatting.GRAY)
                                         .append(Component.literal(
-                                                        tier >= GTValues.LV ? "Global (Cross-Dimensional)" :
-                                                                (8 * (tier + 1)) + "m")
+                                                tier >= GTValues.LV ? "Global (Cross-Dimensional)" :
+                                                        (8 * (tier + 1)) + "m")
                                                 .withStyle(ChatFormatting.AQUA)),
                                 Component.literal("Charges armor and tools from the Team Energy Cloud")
                                         .withStyle(ChatFormatting.GREEN))
@@ -264,11 +510,11 @@ public class PhoenixTeslaMachines {
     }
 
     public static MachineDefinition[] registerChargerTieredMachines(
-            GTRegistrate registrate,
-            String name,
-            BiFunction<IMachineBlockEntity, Integer, MetaMachine> machineFactory,
-            BiFunction<Integer, MachineBuilder<MachineDefinition, ?>, MachineDefinition> definitionBuilder,
-            int... tiers) {
+                                                                    GTRegistrate registrate,
+                                                                    String name,
+                                                                    BiFunction<IMachineBlockEntity, Integer, MetaMachine> machineFactory,
+                                                                    BiFunction<Integer, MachineBuilder<MachineDefinition, ?>, MachineDefinition> definitionBuilder,
+                                                                    int... tiers) {
         MachineDefinition[] definitions = new MachineDefinition[GTValues.TIER_COUNT];
 
         for (int tier : tiers) {

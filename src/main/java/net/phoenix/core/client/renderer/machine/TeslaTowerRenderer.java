@@ -1,21 +1,20 @@
-
 package net.phoenix.core.client.renderer.machine;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.serialization.Codec;
+
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.phoenix.core.client.renderer.PhoenixRenderTypes;
 import net.phoenix.core.common.machine.multiblock.electric.TeslaTowerMachine;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-
-import java.util.List;
 
 public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTowerRenderer> {
 
@@ -57,7 +56,6 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
     public void render(TeslaTowerMachine machine, float partialTick,
                        @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer,
                        int packedLight, int packedOverlay) {
-
         long time = machine.getLevel().getGameTime();
         VertexConsumer vc = buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING());
 
@@ -97,8 +95,8 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
     private void drawTeslaLine(VertexConsumer vc, Matrix4f pose, Vec3 s, Vec3 e,
                                int depth, int r, int g, int b, float a, long time) {
         if (depth == 0) {
-            vc.vertex(pose, (float)s.x, (float)s.y, (float)s.z).color(r/255f, g/255f, b/255f, a).endVertex();
-            vc.vertex(pose, (float)e.x, (float)e.y, (float)e.z).color(r/255f, g/255f, b/255f, a).endVertex();
+            vc.vertex(pose, (float) s.x, (float) s.y, (float) s.z).color(r / 255f, g / 255f, b / 255f, a).endVertex();
+            vc.vertex(pose, (float) e.x, (float) e.y, (float) e.z).color(r / 255f, g / 255f, b / 255f, a).endVertex();
             return;
         }
 
@@ -112,8 +110,7 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         mid = mid.add(
                 (rand.nextFloat() - 0.5) * jitter,
                 (rand.nextFloat() - 0.5) * jitter,
-                (rand.nextFloat() - 0.5) * jitter
-        );
+                (rand.nextFloat() - 0.5) * jitter);
 
         drawTeslaLine(vc, pose, s, mid, depth - 1, r, g, b, a, time);
         drawTeslaLine(vc, pose, mid, e, depth - 1, r, g, b, a, time);

@@ -49,7 +49,7 @@ public class PhoenixBeeRecipeGenerator {
         //
         generateApisProgenitorRecipes(provider);
         // generateSwarmNurturingRecipes(provider);
-         generateLumberBeeRecipes(provider);
+        generateLumberBeeRecipes(provider);
     }
 
     /*
@@ -146,8 +146,6 @@ public class PhoenixBeeRecipeGenerator {
      * Comb processing (decanting/honey)
      * -----------------------------
      */
-
-
 
     private static record CountAndId(int count, String id) {}
 
@@ -282,7 +280,8 @@ public class PhoenixBeeRecipeGenerator {
             if (beeId.equals("water")) {
                 purifier.outputItems(new ItemStack(Items.SALMON));
             } else if (beeId.equals("wannabee")) {
-                purifier.outputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.pollinationInputId())), 2));
+                purifier.outputItems(new ItemStack(
+                        ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.pollinationInputId())), 2));
             } else {
                 purifier.outputItems(config.finalOutputItem());
             }

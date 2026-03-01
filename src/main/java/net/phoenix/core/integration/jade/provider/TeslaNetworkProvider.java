@@ -58,8 +58,7 @@ public class TeslaNetworkProvider implements IBlockComponentProvider, IServerDat
                     // (similar to how the Hatch does it)
                     team = tower.getOwnerUUID();
                     mode = -1; // We don't want "Providing/Taking" on the main controller
-                }
-                else {
+                } else {
                     for (var entry : data.getNetworksView().entrySet()) {
                         TeslaTeamEnergyData.TeamEnergy teamData = entry.getValue();
                         if (teamData.soulLinkedMachines.contains(pos)) {

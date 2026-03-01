@@ -54,7 +54,7 @@ public class PhoenixRecipeTypes {
                 .setEUIO(IO.IN);
 
         TESLA_TOWER = register("tesla_tower", MULTIBLOCK)
-                .setMaxIOSize(1,1,1,1)
+                .setMaxIOSize(1, 1, 1, 1)
                 .setSlotOverlay(false, false, GuiTextures.BOX_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_EXTRACT, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setEUIO(IO.IN);
