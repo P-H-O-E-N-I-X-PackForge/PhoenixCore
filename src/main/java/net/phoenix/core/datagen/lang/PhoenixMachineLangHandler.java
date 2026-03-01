@@ -90,27 +90,25 @@ public class PhoenixMachineLangHandler {
         provider.add("phoenix.multiblock.pattern.info.multiple_coolers",
                 "Coolers remove heat based on their tier and provided coolant fluid.");
 
-        // Recipe Types
-        provider.add("gtceu.recipe_type.phoenixcore.high_performance_breeder_reactor",
+        // Recipe Typeskk
+        provider.add("gtceu.high_performance_breeder_reactor",
                 "High-Performance Breeder Reactor");
-        provider.add("gtceu.recipe_type.phoenixcore.source_extraction",
+        provider.add("gtceu.source_extraction",
                 "Source Extraction");
-        provider.add("gtceu.recipe_type.phoenixcore.source_imbuement",
+        provider.add("gtceu.source_imbuement",
                 "Source Imbuement");
-        provider.add("gtceu.recipe_type.phoenixcore.source_reactor",
+        provider.add("gtceu.source_reactor",
                 "Source Reactor");
-        provider.add("gtceu.recipe_type.phoenix_fission.high_performance_breeder_reactor",
-                "High-Performance Breeder Reactor");
-        provider.add("gtceu.recipe_type.phoenix_fission.advanced_pressurized_fission_reactor",
+        provider.add("gtceu.advanced_pressurized_fission_reactor",
                 "Advanced Pressurized Fission Reactor");
-        provider.add("gtceu.recipe_type.phoenix_fission.pressurized_fission_reactor", "Pressurized Fission Reactor");
+        provider.add("gtceu.pressurized_fission_reactor", "Pressurized Fission Reactor");
 
-        provider.add("gtceu.recipe_type.phoenixcore.honey_chamber", "Honey Chamber");
-        provider.add("gtceu.recipe_type.phoenixcore.please", "Please Multiblock");
-        provider.add("gtceu.recipe_type.phoenixcore.simulated_colony", "Simulated Colony");
-        provider.add("gtceu.recipe_type.phoenixcore.comb_decanting", "Comb Decanter");
-        provider.add("gtceu.recipe_type.phoenixcore.swarm_nurturing", "Swarm Nurturing Chamber");
-        provider.add("gtceu.recipe_type.phoenixcore.apis_progenitor", "Apis Progenitor");
+        provider.add("gtceu.honey_chamber", "Honey Chamber");
+        provider.add("gtceu.please", "Please Multiblock");
+        provider.add("gtceu.simulated_colony", "Simulated Colony");
+        provider.add("gtceu.comb_decanting", "Comb Decanter");
+        provider.add("gtceu.swarm_nurturing", "Swarm Nurturing Chamber");
+        provider.add("gtceu.apis_progenitor", "Apis Progenitor");
 
         provider.add("gtceu.tooltip.tier", "Tier: %s");
 
@@ -125,6 +123,8 @@ public class PhoenixMachineLangHandler {
         provider.add("jade.phoenixcore.tesla_stored", "Stored: ");
         provider.add("jade.phoenixcore.tesla_receiving", "Receiving: %s EU/t");
         provider.add("jade.phoenixcore.tesla_providing", "Providing: %s EU/t");
+        provider.add("block.phoenixcore.tesla_battery.tooltip_empty", "§7A hollow casing. Provides no storage.");
+        provider.add("block.phoenixcore.tesla_battery.tooltip_filled", "§aCapacity: §f%s EU");
 
         provider.add("jade.phoenixcore.blanket_input", "Blanket Fuel: %s");
         provider.add("jade.phoenixcore.blanket_output", "Breeding Product: %s");

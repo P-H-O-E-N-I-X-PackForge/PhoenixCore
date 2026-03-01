@@ -3,6 +3,7 @@ package net.phoenix.core.common.data;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -16,8 +17,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
+import net.phoenix.core.common.block.PhoenixBlocks;
+import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.common.data.materials.PhoenixOres;
+import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 import net.phoenix.core.common.machine.PhoenixMachines;
+import net.phoenix.core.common.machine.PhoenixTeslaMachines;
 
 import java.util.function.Consumer;
 
@@ -26,14 +31,18 @@ import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
+import static com.gregtechceu.gtceu.common.data.GTMachines.HULL;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
+import static com.gregtechceu.gtceu.common.data.machines.GCYMMachines.PARALLEL_HATCH;
 import static com.gregtechceu.gtceu.common.data.machines.GTResearchMachines.*;
+import static com.gregtechceu.gtceu.data.recipe.CustomTags.UHV_CIRCUITS;
 import static com.gregtechceu.gtceu.data.recipe.GTCraftingComponents.*;
 import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_GEM_BLOCK;
 import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
 import static net.phoenix.core.common.data.materials.PhoenixMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
+import static net.phoenix.core.common.data.recipe.generated.TeslaHatchRecipes.*;
 
 public class PhoenixMachineRecipes {
 
@@ -59,7 +68,7 @@ public class PhoenixMachineRecipes {
          * .save(provider);
          * }
          * if (PhoenixConfigs.INSTANCE.features.recipesEnabled) {
-         * if (ConfigHolder.INSTANCE.machines.highTierContent) {
+         * if (ConfigHolder.INSTANCE.machines.high1Content) {
          * ASSEMBLY_LINE_RECIPES.recipeBuilder("high_performance_computing_array")
          * .inputItems(DATA_BANK)
          * .inputItems(CustomTags.ZPM_CIRCUITS, 4)
@@ -438,33 +447,40 @@ public class PhoenixMachineRecipes {
                 .inputFluids(CarbonMonoxide.getFluid(1000))
                 .outputFluids(Butyraldehyde.getFluid(1000))
                 .duration(200).EUt(VA[HV]).save(provider);
-        VanillaRecipeHelper.addShapedRecipe(provider,
-                "quartz_sand",
-                ChemicalHelper.get(dust, QuartzSand),
-                "S", "m", 'S',
-                new ItemStack(Blocks.SAND));
-        VanillaRecipeHelper.addShapedRecipe(provider, true, "emitter_iv", EMITTER_IV.asStack(), "CRX", "RGR", "XRC",
-                'R', new MaterialEntry(rod, Iridium), 'C', new MaterialEntry(cableGtSingle, Tungsten), 'G',
-                GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV), 'X', CustomTags.IV_CIRCUITS);
-        ASSEMBLER_RECIPES.recipeBuilder("emitter_iv")
-                .inputItems(rod, Iridium, 4)
-                .inputItems(cableGtSingle, Tungsten, 2)
-                .inputItems(CustomTags.IV_CIRCUITS, 2)
-                .inputItems(GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV))
-                .circuitMeta(1)
-                .outputItems(EMITTER_IV)
-                .duration(100).EUt(VA[LV]).save(provider);
-        VanillaRecipeHelper.addShapedRecipe(provider, true, "sensor_iv", SENSOR_IV.asStack(), "P G", "PR ", "XPP", 'P',
-                new MaterialEntry(plate, TungstenSteel), 'R', new MaterialEntry(rod, Iridium), 'G',
-                GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV), 'X', CustomTags.IV_CIRCUITS);
-        ASSEMBLER_RECIPES.recipeBuilder("sensor_iv")
-                .inputItems(rod, Iridium)
-                .inputItems(plate, TungstenSteel, 4)
-                .inputItems(CustomTags.IV_CIRCUITS)
-                .inputItems(GTCraftingComponents.SENSOR_EMITTER_GEM.get(IV))
-                .outputItems(SENSOR_IV)
-                .duration(100).EUt(VA[LV]).save(provider);
 
+        FORMING_PRESS_RECIPES.recipeBuilder("source_gem_to_fiber")
+                .inputItems(SOURCE_GEM)
+                .notConsumable(SHAPE_MOLD_SMALL_PIPE)
+                .outputItems(PhoenixItems.SOURCE_FIBERS, 2)
+                .duration(110)
+                .EUt(VA[MV])
+                .save(provider);
+
+        COMPRESSOR_RECIPES.recipeBuilder("source_fibers_to_mesh")
+                .inputItems(PhoenixItems.SOURCE_FIBERS, 2)
+                .outputItems(PhoenixItems.SOURCE_FIBER_MESH)
+                .duration(80)
+                .EUt(VA[LV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("source_fiber_machine_casing")
+                .inputItems(CARBON_MESH, 4)
+                .inputItems(frameGt, FROST_REINFORCED_STAINED_STEEL)
+                .inputItems(PhoenixItems.SOURCE_FIBER_MESH, 4)
+                .outputItems(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING, 2)
+                .duration(75)
+                .EUt(VA[HV])
+                .save(provider);
+
+
+        VanillaRecipeHelper.addShapedRecipe(provider, "parallel_hatch_mk8",
+                ENERGY_INPUT_HATCH[1].asStack(1),
+                "SZE", "ZHZ", "CZC",
+                'S', SENSOR_UV.asStack(),
+                'E', EMITTER_UV.asStack(),
+                'Z', UHV_CIRCUITS,
+                'H', HULL[UV].asStack(),
+                'C', new MaterialEntry(cableGtDouble, YttriumBariumCuprate));
 
 
     }
