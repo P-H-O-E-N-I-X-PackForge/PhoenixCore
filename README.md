@@ -11,7 +11,7 @@ However for the code involving cleanroom and hpca componet parts, these are an e
 - Thanks to Haze Vista of AstroGreg for providing the Tesla Tower related textures [HazeVista/Haze] (https://github.com/HazeVista)
 - Thanks to Ezlych of Sky Of Grind for providing the textures for the Phoenix HPCA Componets[Ezlych/RianGomita] (https://github.com/RianGomita)
 - Thanks to Sky of Grind for some textures/ideas[Sky of Grind Github] (https://github.com/RianGomita/Sky-Of-Grind)
-- Thanks to Ghostipedia for allowing me to use her UniqueWorkableElectricMultiblockMachine class[Ghosipedia] (https://github.com/Ghostipedia)
+- Thanks to Ghostipedia for allowing me to use her UniqueWorkableElectricMultiblockMachine class[Ghostipedia] (https://github.com/Ghostipedia)
 - Thanks to CosmicCore for some of the textures[Cosmic Core Github] (https://github.com/Frontiers-PackForge/CosmicCore)
 - Thanks to Kolja for parts of the source hatch code [Kolja](https://github.com/ko-lja)
 - Thanks to NegaNote of Monifactory/Monilabs for allowing me to use her CreativeEnergyMultiblockMachine[NegaNote/] (https://github.com/NegaNote)[MoniLabs Github](https://github.com/NegaNote/MoniLabs/blob/main/README.md)
