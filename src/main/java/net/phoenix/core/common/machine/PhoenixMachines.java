@@ -36,6 +36,7 @@ import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MachineModifiers;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -976,6 +977,7 @@ public class PhoenixMachines {
                             .where('B',
                                     blocks(PhoenixBlocks.PHOENIX_ENRICHED_TRITANIUM_CASING.get())
                                             .setMinGlobalLimited(575).setPreviewCount(1200)
+                                            .or(Predicates.blockTag(CustomTags.CLEANROOM_DOORS))
                                             .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS).setPreviewCount(1))
                                             .or(Predicates.abilities(PhoenixPartAbility.PLASMA_INPUT)
                                                     .setPreviewCount(1))

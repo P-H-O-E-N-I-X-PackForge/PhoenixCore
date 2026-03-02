@@ -1,18 +1,28 @@
 package net.phoenix.core.client;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
-
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.client.particle.TeslaSparkParticle;
 import net.phoenix.core.client.renderer.NukePrimedRenderer;
 import net.phoenix.core.client.renderer.gui.SourceHatchScreen;
 import net.phoenix.core.client.renderer.machine.*;
@@ -22,9 +32,24 @@ import net.phoenix.core.common.registry.PhoenixFissionEntities;
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PhoenixClient {
 
+    // --- 1. PARTICLE REGISTRY ---
+    public static final DeferredRegister<ParticleType<?>> PARTICLES =
+            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, PhoenixCore.MOD_ID);
+
+    public static final RegistryObject<SimpleParticleType> TESLA_SPARK =
+            PARTICLES.register("tesla_spark", () -> new SimpleParticleType(false));
+
     private PhoenixClient() {}
 
+    /**
+     * Called from your main Mod class (PhoenixCore) constructor or CommonSetup.
+     */
     public static void init(IEventBus modBus) {
+        // FIX: This tells Forge to actually look at our particle list.
+        // Without this, TESLA_SPARK.get() returns null!
+        PARTICLES.register(modBus);
+
+        // GTCEu Dynamic Renders
         DynamicRenderManager.register(PhoenixCore.id("eye_of_harmony"), EyeOfHarmonyRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("artificial_star"), ArtificialStarRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("plasma_arc_furnace"), PlasmaArcFurnaceRender.TYPE);
@@ -34,6 +59,39 @@ public class PhoenixClient {
         DynamicRenderManager.register(PhoenixCore.id("tesla_tower"), TeslaTowerRenderer.TYPE);
     }
 
+    // --- 2. PARTICLE FACTORY REGISTRATION ---
+    @SubscribeEvent
+    public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+        // Tells the game: "When you see TESLA_SPARK data, use this Provider to build the particle"
+        event.registerSpriteSet(TESLA_SPARK.get(), TeslaSparkProvider::new);
+    }
+
+    /**
+     * The bridge between the Particle Engine and your TeslaSparkParticle class.
+     */
+    public static class TeslaSparkProvider implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet sprites;
+
+        public TeslaSparkProvider(SpriteSet sprites) {
+            this.sprites = sprites;
+        }
+
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level,
+                                       double x, double y, double z,
+                                       double xSpeed, double ySpeed, double zSpeed) {
+            TeslaSparkParticle particle = new TeslaSparkParticle(level, x, y, z);
+
+            // Safety check: only pick if sprites exist
+            if (this.sprites != null) {
+                particle.pickSprite(this.sprites);
+            }
+
+            return particle;
+        }
+    }
+
+    // --- 3. MODEL & SETUP LOGIC ---
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(EyeOfHarmonyRender.SPACE_SHELL_MODEL_RL);
