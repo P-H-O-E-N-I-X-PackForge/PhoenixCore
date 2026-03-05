@@ -178,10 +178,10 @@ public class PhoenixRecipeTypes {
                     return "";
                 });
         HEAT_EXCHANGER_RECIPES = register("heat_exchanging", MULTIBLOCK)
-                .setMaxIOSize(0, 0, 1, 1)
+                .setMaxIOSize(1, 0, 1, 1)
                 .setSlotOverlay(false, true, GuiTextures.BOX_OVERLAY)
                 .setProgressBar(GuiTextures.PROGRESS_BAR_EXTRACT, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.MIXER)
-                .setEUIO(IO.IN);
+                .setEUIO(IO.OUT);
     }
 }

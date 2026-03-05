@@ -28,6 +28,11 @@ public class PhoenixMachineLangHandler {
         provider.add("tech.phoenixcore.laser.output.mid", "Tesla Photonic Coalescence Array");
         provider.add("tech.phoenixcore.laser.output.high", "Tesla Photonic Coalescence Matrix");
 
+        // Heat Exchanger System
+        provider.add("gui.phoenixcore.heat_exchanger.heat_exchange_surface", "Exchange Columns: %d");
+        provider.add("gui.phoenixcore.heat_exchanger.current_efficiency", "Thermal Conductivity: Tier %d");
+        provider.add("gui.phoenixcore.missing_spring", "Missing Heat Exchange Spring!");
+
         // Source System
         provider.add("gui.phoenixcore.source_hatch.label.import", "Source Input Hatch");
         provider.add("gui.phoenixcore.source_hatch.label.export", "Source Output Hatch");
@@ -93,6 +98,8 @@ public class PhoenixMachineLangHandler {
         // Recipe Typeskk
         provider.add("gtceu.high_performance_breeder_reactor",
                 "High-Performance Breeder Reactor");
+        provider.add("gtceu.heat_exchanging",
+                "Heat Exchanging");
         provider.add("gtceu.source_extraction",
                 "Source Extraction");
         provider.add("gtceu.source_imbuement",

@@ -1,6 +1,7 @@
 package net.phoenix.core.client;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
+
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -29,15 +30,17 @@ import net.phoenix.core.client.renderer.machine.*;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.registry.PhoenixFissionEntities;
 
+import org.jetbrains.annotations.NotNull;
+
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PhoenixClient {
 
     // --- 1. PARTICLE REGISTRY ---
-    public static final DeferredRegister<ParticleType<?>> PARTICLES =
-            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, PhoenixCore.MOD_ID);
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister
+            .create(ForgeRegistries.PARTICLE_TYPES, PhoenixCore.MOD_ID);
 
-    public static final RegistryObject<SimpleParticleType> TESLA_SPARK =
-            PARTICLES.register("tesla_spark", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> TESLA_SPARK = PARTICLES.register("tesla_spark",
+            () -> new SimpleParticleType(false));
 
     private PhoenixClient() {}
 
@@ -70,6 +73,7 @@ public class PhoenixClient {
      * The bridge between the Particle Engine and your TeslaSparkParticle class.
      */
     public static class TeslaSparkProvider implements ParticleProvider<SimpleParticleType> {
+
         private final SpriteSet sprites;
 
         public TeslaSparkProvider(SpriteSet sprites) {
@@ -77,7 +81,7 @@ public class PhoenixClient {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level,
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level,
                                        double x, double y, double z,
                                        double xSpeed, double ySpeed, double zSpeed) {
             TeslaSparkParticle particle = new TeslaSparkParticle(level, x, y, z);

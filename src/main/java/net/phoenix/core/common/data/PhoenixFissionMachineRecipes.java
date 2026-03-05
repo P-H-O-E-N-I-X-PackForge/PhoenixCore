@@ -18,6 +18,7 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static net.phoenix.core.PhoenixCore.id;
 import static net.phoenix.core.common.data.materials.PhoenixFissionMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.FROST;
+import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.MAGMA;
 
 public class PhoenixFissionMachineRecipes {
 
@@ -149,6 +150,38 @@ public class PhoenixFissionMachineRecipes {
                 .circuitMeta(15)
                 .duration(100)
                 .EUt(VA[HV])
+                .save(provider);
+
+        PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("lava_exchange")
+                .inputFluids(Lava.getFluid(100))
+                .outputFluids(MAGMA.getFluid(100))
+                .notConsumable(TagPrefix.spring, Steel)
+                .duration(40)
+                .EUt(-VA[MV])
+                .save(provider);
+
+        PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("steam_exchange")
+                .inputFluids(Steam.getFluid(1000))
+                .outputFluids(DistilledWater.getFluid(250))
+                .notConsumable(TagPrefix.spring, Aluminium)
+                .duration(10)
+                .EUt(-VA[MV])
+                .save(provider);
+
+        PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("sodium_potassium_exchange")
+                .inputFluids(HOT_SODIUM_POTASSIUM.getFluid(100))
+                .outputFluids(SodiumPotassium.getFluid(100))
+                .notConsumable(TagPrefix.spring, Copper)
+                .duration(20)
+                .EUt(-VA[HV])
+                .save(provider);
+
+        PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("critical_steam_exchange")
+                .inputFluids(CRITICAL_STEAM.getFluid(100))
+                .outputFluids(Steam.getFluid(100))
+                .notConsumable(TagPrefix.spring, RTMAlloy)
+                .duration(30)
+                .EUt(-VA[HV])
                 .save(provider);
     }
 }

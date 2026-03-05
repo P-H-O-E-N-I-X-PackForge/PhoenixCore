@@ -10,15 +10,21 @@ import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
+import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.api.item.tool.PhoenixToolType;
 import net.phoenix.core.common.data.recipe.generated.BeePrefixHelper;
 import net.phoenix.core.common.data.recipe.generated.CrystalRoseHelper;
+
+import org.jetbrains.annotations.NotNull;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixMaterialHelpers.*;
+import static net.phoenix.core.common.data.materials.PhoenixOres.*;
+import static net.phoenix.core.common.data.materials.PhoenixOres.IGNISIUM;
+import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 
 public class PhoenixMaterials {
 
@@ -56,144 +62,106 @@ public class PhoenixMaterials {
         m.setProperty(PropertyKey.FLUID, prop);
     }
 
+    @NotNull
+    public static Material get(String name) {
+        var mat = PhoenixAPI.materialManager.getMaterial(name);
+        // material could be null here due to the registry grabbing a material that isn't in the map
+        if (mat == null) {
+            PhoenixAPI.LOGGER.warn("{} is not a known Material", name);
+            return GTMaterials.NULL;
+        }
+        return mat;
+    }
+
     public static void modifyMaterials() {
+        // --- Crystal Rose Flags ---
         CrystalRoseHelper.addCrystalRoseFlags(
-                // --- Basic & Base Metals ---
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
                 Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
                 Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
                 TricalciumPhosphate, Tungstate, Zinc,
-
-                // --- LuV & Specialized Materials ---
                 Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
-
-                // --- Custom & External Materials from your Configs ---
-                // PhoenixOres.FLUORITE,
-                NetherQuartz,
-                RockSalt,
-                Sodalite,
-
-                // --- Missing GT Materials from BeeRecipeData ---
-                Coal,             // For Coal Bee
-                Redstone,         // For Redstone Bee
-                Tin,              // For Tin Bee
-                Obsidian,         // For Obsidian Bee
-                Netherite,        // For Netherite Bee
-                CertusQuartz     // For Spacial Bee
+                NetherQuartz, RockSalt, Sodalite,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, IGNISIUM,
+                RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
+                PRISMARINE
+        // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
         );
+
+        // --- Bee Comb Flags ---
         BeePrefixHelper.addBeeCombFlag(
-                // --- Basic & Base Metals ---
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
                 Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
                 Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
                 TricalciumPhosphate, Tungstate, Zinc,
-
-                // --- LuV & Specialized Materials ---
                 Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
-
-                // --- Custom & External Materials from your Configs ---
-                // PhoenixOres.FLUORITE,
-                NetherQuartz,
-                RockSalt,
-                Sodalite,
-
-                // --- Missing GT Materials from BeeRecipeData ---
-                Coal,             // For Coal Bee
-                Redstone,         // For Redstone Bee
-                Tin,              // For Tin Bee
-                Obsidian,         // For Obsidian Bee
-                Netherite,        // For Netherite Bee
-                CertusQuartz     // For Spacial Bee
+                NetherQuartz, RockSalt, Sodalite,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, PhoenixOres.IGNISIUM,
+                RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
+                PRISMARINE
+        // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
         );
 
+        // --- Tier One Bee Flags ---
         BeePrefixHelper.addTierOneBeeFlag(
-                // --- Basic & Base Metals ---
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
                 Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
                 Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
                 TricalciumPhosphate, Tungstate, Zinc,
-
-                // --- LuV & Specialized Materials ---
                 Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
-
-                // --- Custom & External Materials from your Configs ---
-                // PhoenixOres.FLUORITE,
-                NetherQuartz,
-                RockSalt,
-                Sodalite,
-
-                // --- Missing GT Materials from BeeRecipeData ---
-                Coal,             // For Coal Bee
-                Redstone,         // For Redstone Bee
-                Tin,              // For Tin Bee
-                Obsidian,         // For Obsidian Bee
-                Netherite,        // For Netherite Bee
-                CertusQuartz     // For Spacial Bee
+                NetherQuartz, RockSalt, Sodalite,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, PhoenixOres.IGNISIUM,
+                RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
+                PRISMARINE
+        // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
         );
 
+        // --- Tier Two Bee Flags ---
         BeePrefixHelper.addTierTwoBeeFlag(
-                // --- Basic & Base Metals ---
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
                 Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
                 Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
                 TricalciumPhosphate, Tungstate, Zinc,
-
-                // --- LuV & Specialized Materials ---
                 Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
+                NetherQuartz, RockSalt, Sodalite,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice,
+                RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
+                PRISMARINE
 
-                // --- Custom & External Materials from your Configs ---
-                // PhoenixOres.FLUORITE,
-                NetherQuartz,
-                RockSalt,
-                Sodalite,
-
-                // --- Missing GT Materials from BeeRecipeData ---
-                Coal,             // For Coal Bee
-                Redstone,         // For Redstone Bee
-                Tin,              // For Tin Bee
-                Obsidian,         // For Obsidian Bee
-                Netherite,        // For Netherite Bee
-                CertusQuartz     // For Spacial Bee
         );
 
+        // --- Tier Three Bee Flags ---
         BeePrefixHelper.addTierThreeBeeFlag(
-                // --- Basic & Base Metals ---
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
                 Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
                 Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
                 TricalciumPhosphate, Tungstate, Zinc,
-
-                // --- LuV & Specialized Materials ---
                 Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
+                NetherQuartz, RockSalt, Sodalite,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, Sculk, SLIME, MAGMA,
+                Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY, PRISMARINE
 
-                // --- Custom & External Materials from your Configs ---
-                // PhoenixOres.FLUORITE,
-                NetherQuartz,
-                RockSalt,
-                Sodalite,
-
-                // --- Missing GT Materials from BeeRecipeData ---
-                Coal,             // For Coal Bee
-                Redstone,         // For Redstone Bee
-                Tin,              // For Tin Bee
-                Obsidian,         // For Obsidian Bee
-                Netherite,        // For Netherite Bee
-                CertusQuartz     // For Spacial Bee
+        // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
         );
 
         for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {

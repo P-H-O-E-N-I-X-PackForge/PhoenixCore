@@ -33,6 +33,16 @@ public class BeeRecipeData {
             Map.entry("diamond", "Diamond Bee"),
             Map.entry("apatite", "Apatite Bee"),
             Map.entry("copper", "Copper Bee"),
+            Map.entry("sulfur", "Sulfur Bee"),
+            Map.entry("platinum", "Platinum Bee"),
+            Map.entry("graphite", "Graphite Bee"),
+            Map.entry("barite", "Barite Bee"),
+            Map.entry("bismuth", "Bismuth Bee"),
+            Map.entry("tetrahedrite", "Tetrahedrite Bee"),
+            Map.entry("vanadium_magnetite", "Vanadium Magnetite Bee"),
+            Map.entry("pyrochlore", "Pyrochlore Bee"),
+            Map.entry("oilsands", "Oil Sands Bee"),
+            Map.entry("bastnasite", "Bastnasite Bee"),
             Map.entry("emerald", "Emerald Bee"),
             Map.entry("gold", "Gold Bee"),
             Map.entry("redstone", "Redstone Bee"),
@@ -67,42 +77,59 @@ public class BeeRecipeData {
             Map.entry("pitchblende", "Pitchblende Bee"),
             Map.entry("galena", "Galena Bee"),
             Map.entry("ilmenite", "Ilmenite Bee"),
-            Map.entry("niter", "Niter Bee"),
             Map.entry("malachite", "Malachite Bee"),
             Map.entry("obsidian", "Obsidian Bee"),
-            Map.entry("blazing", "Blazing Bee"),
+            Map.entry("blaze", "Blazing Bee"),
             Map.entry("prismarine", "Prismarine Bee"),
             Map.entry("sculk", "Sculk Bee"),
             Map.entry("sponge", "Sponge Bee"),
             Map.entry("frosty", "Frosty Bee"),
-            Map.entry("slimy", "Slimy Bee"),
+            Map.entry("slime", "Slimy Bee"),
             Map.entry("menril", "Menril Bee"),
-            Map.entry("salty", "Salty Bee"),
-            Map.entry("steamy", "Steamy Bee"),
+            Map.entry("salt", "Salty Bee"),
             Map.entry("warped", "Warped Shroombee"),
             Map.entry("brown_shroom", "Brown Shroombee"),
             Map.entry("red_shroom", "Red Shroombee"),
             Map.entry("crimson", "Crimson Shroombee"),
             Map.entry("arcane_crystal", "Arcanus Bee"),
-            Map.entry("crystalline", "Crystalline Bee"),
             Map.entry("rune", "Rune Bee"),
             Map.entry("withered", "Withered Bee"),
-            Map.entry("skeletal", "Skeletal Bee"),
+            Map.entry("netherite", "Netherite Bee"),
+            Map.entry("bone", "Skeletal Bee"),
             Map.entry("sticky_resin", "Sticky Resin Bee"),
             Map.entry("zombie", "ZomBee"),
             Map.entry("silicon", "Silicon Bee"),
             Map.entry("silky", "Silky Bee"),
             Map.entry("ghostly", "Ghostly Bee"),
             Map.entry("lepidolite", "Lepidolite Bee"),
-            Map.entry("magmatic", "Magmatic Bee"),
-            Map.entry("spacial", "Spatial Bee"),
-            Map.entry("arcane", "Arcane Bee"),
+            Map.entry("magma", "Magmatic Bee"),
+            Map.entry("certus_quartz", "Certus Quartz Bee"),
             Map.entry("cheese", "CheesyB"),
-            Map.entry("rocked", "Rocked Bee"),
+            Map.entry("rock_salt", "Rock Salt Bee"),
             Map.entry("super_factory", "Super Factory Bee"),
             Map.entry("fluix", "Fluix Bee"),
             Map.entry("water", "Water Bee"),
-            Map.entry("rancher", "Rancher Bee"));
+            Map.entry("rancher", "Rancher Bee"),
+            Map.entry("thorium", "Thorium Bee"),
+            Map.entry("sphalerite", "Sphalerite Bee"),
+            Map.entry("chromite", "Chromite Bee"),
+            Map.entry("pyrolusite", "Pyrolusite Bee"),
+            Map.entry("tantalite", "Tantalite Bee"),
+            Map.entry("draconic", "Draconic Bee"),
+            Map.entry("crystallized_fluxstone", "Fluxstone Bee"),
+            Map.entry("ignisium", "Ignisium Bee"),
+            Map.entry("sky_steel", "Sky Steel Bee"),
+            Map.entry("infinity", "Infinity Bee"),
+            Map.entry("source_gem", "Source Bee"),
+            Map.entry("experience", "Experience Bee"),
+            Map.entry("nether_quartz", "Nether Quartz Bee"),
+            Map.entry("sodalite", "Sodalite Bee"),
+            Map.entry("glowstone", "Glowstone Bee"),
+            Map.entry("ice", "Ice Bee"),
+            Map.entry("saltpeter", "Saltpeter Bee"),
+            Map.entry("resonant_ender", "Ender Bee"),
+            Map.entry("acidic", "Acidic Bee"),
+            Map.entry("voidglass_shard", "Voidglass Shard Bee"));
 
     public static final List<String> LUMBER_LOG_TYPES = List.of(
             "minecraft:oak_log",
@@ -130,12 +157,24 @@ public class BeeRecipeData {
             "thorium", "scheelite", "tungstate", "bauxite", "ilmenite", "pitchblende",
             "graphite", "sphalerite", "chromite", "pyrolusite", "platinum", "bismuth",
             "bastnasite", "tetrahedrite", "sulfur", "oilsands", "tantalite", "barite",
-            "vanadium_magnetite", "draconic", "pyrochlore", "voidglass_shard",
+            "vanadium_magnetite", "draconic", "pyrochlore",
             "crystallized_fluxstone", "ignisium", "sky_steel");
 
     private static final List<String> TIER_TWO_BEES = List.of(
-            "diamond", "emerald", "netherite", "infinity", "arcane", "arcane_crystal",
-            "spacial", "fluix", "obsidian", "withered", "ghostly", "prismarine");
+            "diamond", "emerald", "netherite", "infinity", "source_gem", "arcane_crystal",
+            "certus_quartz", "fluix", "obsidian", "withered", "ghostly", "prismarine",
+            "cinnabar", "pyrope", "opal", "malachite", "apatite", "sapphire", "realgar",
+            "tricalcium_phosphate", "lepidolite", "stibnite", "galena", "electrotine", "cobaltite",
+            "salt", "sculk", "slime", "magma", "cheese", "rocked", "saltpeter", "nether_quartz",
+            "sticky_resin", "zombie", "sodalite", "glowstone", "ice", "sponge", "resonant_ender",
+            "bone", "silky", "acidic", "blaze", "rune", "menril",
+            "desh", "ruby");
+
+    private static final List<String> VANILLA_MATERIALS = List.of(
+            "iron", "gold", "copper", "diamond", "emerald", "lapis", "redstone", "coal", "netherite", "amethyst",
+            "sculk");
+    private static final List<String> PHOENIX_MATERIALS = List.of(
+            "fluorite", "ignisium", "crystallized_fluxstone", "voidglass_shard");
 
     public static int tierFor(String beeId) {
         if (TIER_THREE_BEES.contains(beeId)) return 3;
@@ -194,191 +233,202 @@ public class BeeRecipeData {
 
     private static Map<String, FullBeeConfig> createOreBeeConfigs() {
         Map<String, FullBeeConfig> configs = new HashMap<>();
-        List<String> luvBees = List.of("thorium", "scheelite", "tungstate", "bauxite", "ilmenite", "pitchblende");
 
-        List<String> oreIds = BEE_MATERIAL_TYPES.stream()
-                .filter(id -> !List.of("water", "rancher", "steamy", "acidic", "brown_shroom", "red_shroom", "crimson",
-                        "warped", "ghostly", "sponge", "sculk", "withered", "skeletal", "blazing").contains(id))
+        List<String> miscIds = List.of("water", "rancher", "acidic", "brown_shroom",
+                "red_shroom", "crimson", "warped", "ghostly", "sponge", "slime", "source_gem",
+                "sculk", "withered", "bone", "blaze", "glowstone", "ice", "fluix", "resonant_ender", "magma");
+
+        List<String> oreIds = ALL_BEE_NAMES.keySet().stream()
+                .filter(id -> !miscIds.contains(id))
                 .collect(Collectors.toList());
 
         for (String id : oreIds) {
-            String blockId, outputId;
-            int currentEut = luvBees.contains(id) ? DEFAULT_LUV_EUT : DEFAULT_IV_EUT;
-            int d = luvBees.contains(id) ? 400 : 200;
+            String namespace = "gtceu";
+            if (VANILLA_MATERIALS.contains(id)) namespace = "minecraft";
+            else if (PHOENIX_MATERIALS.contains(id)) namespace = "phoenixcore";
+
+            String blockId = namespace + ":" + id + "_block";
+            String outputId = namespace + ":raw_" + id;
             int outputCount = 5;
 
+            // 2. Handle the "Manual" Exceptions
             switch (id) {
-                case "iron" -> {
-                    blockId = "minecraft:iron_block";
-                    outputId = "minecraft:raw_iron";
-                }
-                case "gold" -> {
-                    blockId = "minecraft:gold_block";
-                    outputId = "minecraft:raw_gold";
-                }
-                case "copper" -> {
-                    blockId = "minecraft:copper_block";
-                    outputId = "minecraft:raw_copper";
-                }
-                case "diamond" -> {
-                    blockId = "minecraft:diamond_block";
-                    outputId = "gtceu:raw_diamond";
-                }
-                case "emerald" -> {
-                    blockId = "minecraft:emerald_block";
-                    outputId = "gtceu:raw_emerald";
-                }
-                case "lapis" -> {
-                    blockId = "minecraft:lapis_block";
-                    outputId = "gtceu:raw_lapis";
-                }
-                case "ruby" -> {
-                    blockId = "gtceu:raw_ruby_block";
-                    outputId = "gtceu:raw_ruby";
-                }
-                case "redstone" -> {
-                    blockId = "minecraft:redstone_block";
-                    outputId = "minecraft:redstone";
-                }
-                case "coal" -> {
-                    blockId = "minecraft:coal_block";
-                    outputId = "gtceu:coal_ore";
+                case "coal" -> outputId = "gtceu:coal_ore";
+                case "redstone" -> outputId = "gtceu:raw_redstone";
+                case "silicon" -> {
+                    outputId = "gtceu:silicon_dust";
+                    outputCount = 6;
                 }
                 case "netherite" -> {
                     blockId = "minecraft:ancient_debris";
                     outputId = "minecraft:ancient_debris";
                 }
-                case "amethyst" -> {
-                    blockId = "minecraft:amethyst_block";
-                    outputId = "gtceu:raw_amethyst";
+                case "sulfur" -> {
+                    blockId = "gtceu:raw_sulfur_block";
+                    outputId = "gtceu:raw_sulfur";
                 }
-                case "zinc" -> {
-                    blockId = "gtceu:zinc_block";
-                    outputId = "gtceu:zinc_ingot";
+                case "vanadium_magnetite" -> {
+                    blockId = "gtceu:raw_vanadium_magnetite_block";
+                    outputId = "gtceu:raw_vanadium_magnetite";
                 }
-                case "cobalt" -> {
-                    blockId = "gtceu:raw_cobalt_block";
-                    outputId = "gtceu:cobalt_dust";
+                case "bastnasite" -> {
+                    blockId = "gtceu:raw_bastnasite_block";
+                    outputId = "gtceu:raw_bastnasite";
                 }
-                case "desh" -> {
-                    blockId = "ad_astra:desh_block";
-                    outputId = "ad_astra:raw_desh";
-                    outputCount = 9;
-                }
-                case "steel" -> {
-                    blockId = "gtceu:steel_block";
-                    outputId = "gtceu:steel_ingot";
-                    outputCount = 3;
+                case "zinc", "steel" -> {
+                    outputId = "gtceu:" + id + "_ingot";
+                    if (id.equals("steel")) outputCount = 3;
                 }
                 case "sky_steel" -> {
                     blockId = "megacells:sky_steel_block";
                     outputId = "megacells:sky_steel_ingot";
                     outputCount = 3;
                 }
+                case "obsidian" -> {
+                    blockId = "minecraft:obsidian";
+                    outputId = "gtceu:obsidian_dust";
+                    outputCount = 3;
+                }
                 case "infinity" -> {
                     blockId = "enderio:grains_of_infinity";
                     outputId = "enderio:grains_of_infinity";
                 }
-                case "salty" -> {
-                    blockId = "gtceu:salt_block";
-                    outputId = "gtceu:raw_salt";
+                case "desh" -> {
+                    blockId = "ad_astra:desh_block";
+                    outputId = "ad_astra:raw_desh";
+                    outputCount = 9;
                 }
-                case "fluorite" -> {
-                    blockId = "phoenixcore:raw_fluorite_block";
-                    outputId = "phoenixcore:raw_fluorite";
+                case "bismuth" -> {
+                    blockId = "gtceu:bismuth_block";
+                    outputId = "gtceu:bismuth_dust";
+                    outputCount = 15;
                 }
-                default -> {
-                    blockId = "gtceu:" + id + "_block";
-                    outputId = "gtceu:" + id + "_ingot";
+                case "voidglass_shard" -> {
+                    blockId = "phoenixcore:raw_voidglass_shard_block";
+                    outputId = "phoenixcore:raw_voidglass_shard";
                 }
+                case "ignisium" -> {
+                    blockId = "phoenixcore:raw_ignisium_block";
+                    outputId = "phoenixcore:raw_ignisium";
+                }
+                case "tetrahedrite" -> {
+                    blockId = "gtceu:raw_tetrahedrite_block";
+                    outputId = "gtceu:raw_tetrahedrite";
+                }
+                case "oilsands" -> {
+                    blockId = "gtceu:raw_oilsands_block";
+                    outputId = "gtceu:raw_oilsands";
+                }
+                case "platinum" -> {
+                    blockId = "gtceu:raw_platinum_block";
+                    outputId = "gtceu:raw_platinum";
+                }
+                case "tantalite" -> {
+                    blockId = "gtceu:raw_tantalite_block";
+                    outputId = "gtceu:raw_tantalite";
+                }
+                case "graphite" -> {
+                    blockId = "gtceu:raw_graphite_block";
+                    outputId = "gtceu:raw_graphite";
+                }
+                case "certus_quartz" -> {
+                    blockId = "gtceu:raw_certus_quartz_block";
+                    outputId = "gtceu:raw_certus_quartz";
+                }
+                case "ilmenite" -> {
+                    blockId = "gtceu:raw_ilmenite_block";
+                    outputId = "gtceu:raw_ilmenite";
+                }
+                case "cobaltite" -> {
+                    blockId = "gtceu:raw_cobaltite_block";
+                    outputId = "gtceu:raw_cobaltite";
+                }
+                case "scheelite" -> {
+                    blockId = "gtceu:raw_scheelite_block";
+                    outputId = "gtceu:raw_scheelite";
+                }
+                case "tungstate" -> {
+                    blockId = "gtceu:raw_tungstate_block";
+                    outputId = "gtceu:raw_tungstate";
+                }
+                case "electrotine" -> {
+                    blockId = "gtceu:raw_electrotine_block";
+                    outputId = "gtceu:raw_electrotine";
+                }
+                case "pitchblende" -> {
+                    blockId = "gtceu:raw_pitchblende_block";
+                    outputId = "gtceu:raw_pitchblende";
+                }
+                case "bauxite" -> {
+                    blockId = "gtceu:raw_bauxite_block";
+                    outputId = "gtceu:raw_bauxite";
+                }
+                case "galena" -> {
+                    blockId = "gtceu:raw_galena_block";
+                    outputId = "gtceu:raw_galena";
+                }
+                case "fluix" -> {
+                    blockId = "ae2:fluix_block";
+                    outputId = "gtceu:fluix_dust";
+                    outputCount = 8;
+                }
+                case "fluorite" -> blockId = "phoenixcore:raw_fluorite_block";
+                case "barite" -> blockId = "gtceu:raw_barite_block";
+                case "tricalcium_phosphate" -> blockId = "gtceu:raw_tricalcium_phosphate_block";
+                case "sphalerite" -> blockId = "gtceu:raw_sphalerite_block";
+                case "pyrochlore" -> blockId = "gtceu:raw_pyrochlore_block";
+                case "nether_quartz" -> blockId = "minecraft:quartz_block";
+                case "pyrolusite" -> blockId = "gtceu:raw_pyrolusite_block";
+                case "saltpeter" -> blockId = "gtceu:raw_saltpeter_block";
+                case "salt" -> blockId = "gtceu:raw_salt_block";
+                case "chromite" -> blockId = "gtceu:raw_chromite_block";
+                case "lepidolite" -> blockId = "gtceu:raw_lepidolite_block";
+                case "stibnite" -> blockId = "gtceu:raw_stibnite_block";
+                case "cobalt" -> outputId = "gtceu:cobalt_dust";
             }
 
-            configs.put(id, buildConfig(id, blockId, outputId, outputCount, currentEut, d));
+            // 3. Auto-determine EUT and Duration based on Tier
+            int currentEut = (tierFor(id) == 3) ? DEFAULT_LUV_EUT : DEFAULT_IV_EUT;
+            int duration = (tierFor(id) == 3) ? 400 : 200;
+
+            configs.put(id, buildConfig(id, blockId, outputId, outputCount, currentEut, duration));
         }
         return configs;
     }
 
     private static Map<String, FullBeeConfig> createMiscBeeConfigs() {
         Map<String, FullBeeConfig> configs = new HashMap<>();
-        List<String> miscIds = List.of("water", "rancher", "steamy", "acidic", "brown_shroom", "red_shroom", "crimson",
-                "warped", "ghostly", "sponge", "sculk", "withered", "skeletal", "blazing");
 
-        for (String id : miscIds) {
-            String blockId, outputId;
-            int outputCount = 1;
+        Map<String, List<String>> miscData = Map.ofEntries(
+                Map.entry("ghostly", List.of("minecraft:ghast_tear", "minecraft:ghast_tear", "16")),
+                Map.entry("sponge", List.of("minecraft:sponge", "minecraft:sponge", "4")),
+                Map.entry("sculk", List.of("minecraft:sculk", "minecraft:sculk", "5")),
+                Map.entry("withered", List.of("minecraft:wither_rose", "minecraft:wither_rose", "5")),
+                Map.entry("skeletal", List.of("minecraft:bone_block", "minecraft:bone", "5")),
+                Map.entry("blaze", List.of("minecraft:blaze_rod", "minecraft:blaze_powder", "4")),
+                Map.entry("water", List.of("minecraft:water", "minecraft:salmon", "1")),
+                Map.entry("rancher", List.of("minecraft:milk", "productivebees:honeycomb_milky", "1")),
+                Map.entry("brown_shroom", List.of("minecraft:brown_mushroom_block", "minecraft:brown_mushroom", "5")),
+                Map.entry("red_shroom", List.of("minecraft:red_mushroom_block", "minecraft:red_mushroom", "5")),
+                Map.entry("crimson", List.of("minecraft:crimson_stem", "minecraft:crimson_fungus", "5")),
+                Map.entry("warped", List.of("minecraft:warped_stem", "minecraft:warped_fungus", "5")),
+                Map.entry("glowstone", List.of("minecraft:glowstone", "minecraft:glowstone", "5")),
+                Map.entry("ice", List.of("minecraft:ice", "minecraft:ice", "10")),
+                Map.entry("resonant_ender", List.of("gtceu:ender_pearl_block", "gtceu:ender_pearl_dust", "10")),
+                Map.entry("fluix", List.of("ae2:fluix_block", "ae2:fluix_crystal", "10")),
+                Map.entry("slime", List.of("minecraft:slime_block", "minecraft:slime_ball", "8")),
+                Map.entry("magma", List.of("minecraft:magma_block", "minecraft:magma_block", "8")),
+                Map.entry("source_gem", List.of("ars_nouveau:source_gem_block", "ars_nouveau:source_gem", "8")),
+                Map.entry("zombie", List.of("minecraft:rotten_flesh", "minecraft:rotten_flesh", "8")),
+                Map.entry("bone", List.of("minecraft:bone", "minecraft:bone_meal", "8")),
+                Map.entry("prismarine", List.of("minecraft:prismarine", "minecraft:prismarine_shard", "8")),
+                Map.entry("silky", List.of("minecraft:string", "minecraft:string", "8")));
 
-            switch (id) {
-                case "ghostly" -> {
-                    blockId = "minecraft:phantom_membrane";
-                    outputId = "minecraft:ghast_tear";
-                }
-                case "sponge" -> {
-                    blockId = "minecraft:sponge";
-                    outputId = "minecraft:sponge";
-                }
-                case "sculk" -> {
-                    blockId = "minecraft:sculk";
-                    outputId = "minecraft:sculk";
-                    outputCount = 5;
-                }
-                case "withered" -> {
-                    blockId = "minecraft:wither_rose";
-                    outputId = "minecraft:wither_rose";
-                    outputCount = 5;
-                }
-                case "skeletal" -> {
-                    blockId = "minecraft:bone_block";
-                    outputId = "minecraft:bone";
-                    outputCount = 5;
-                }
-                case "blazing" -> {
-                    blockId = "minecraft:magma_block";
-                    outputId = "minecraft:blaze_powder";
-                }
-                case "water" -> {
-                    blockId = "minecraft:water";
-                    outputId = "minecraft:salmon";
-                }
-                case "rancher" -> {
-                    blockId = "minecraft:milk";
-                    outputId = "productivebees:honeycomb_milky";
-                }
-                case "steamy" -> {
-                    blockId = "gtceu:steam_turbine_rotor";
-                    outputId = "gtceu:steam";
-                }
-                case "acidic" -> {
-                    blockId = "gtceu:sulfuric_acid_bucket";
-                    outputId = "gtceu:sulfuric_acid_bucket";
-                }
-                case "brown_shroom" -> {
-                    blockId = "minecraft:brown_mushroom_block";
-                    outputId = "minecraft:brown_mushroom";
-                    outputCount = 5;
-                }
-                case "red_shroom" -> {
-                    blockId = "minecraft:red_mushroom_block";
-                    outputId = "minecraft:red_mushroom";
-                    outputCount = 5;
-                }
-                case "crimson" -> {
-                    blockId = "minecraft:crimson_stem";
-                    outputId = "minecraft:crimson_fungus";
-                    outputCount = 5;
-                }
-                case "warped" -> {
-                    blockId = "minecraft:warped_stem";
-                    outputId = "minecraft:warped_fungus";
-                    outputCount = 5;
-                }
-                default -> {
-                    blockId = "minecraft:air";
-                    outputId = "minecraft:air";
-                }
-            }
+        miscData.forEach((id, data) -> {
+            configs.put(id,
+                    buildConfig(id, data.get(0), data.get(1), Integer.parseInt(data.get(2)), DEFAULT_IV_EUT, 200));
+        });
 
-            configs.put(id, buildConfig(id, blockId, outputId, outputCount, DEFAULT_IV_EUT, 200));
-        }
         return configs;
     }
 

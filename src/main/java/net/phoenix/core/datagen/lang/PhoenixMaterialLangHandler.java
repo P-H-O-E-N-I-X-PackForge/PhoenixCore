@@ -33,6 +33,7 @@ public class PhoenixMaterialLangHandler {
 
         // Progression & Special Alloys
         provider.add("material.phoenixcore.aluminfrost", "§bAluminfrost");
+        provider.add("material.phoenixcore.source_gem", "§dSource Gem");
         provider.add("material.phoenixcore.frost", "§bFrost");
         provider.add("material.phoenixcore.source_imbued_titanium", "§5Source Imbued Titanium");
         provider.add("material.phoenixcore.resonant_rhodium_alloy", "§dResonant Rhodium Alloy");
@@ -134,6 +135,9 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.dormant_ember", "Dormant Ember");
         provider.add("material.phoenixcore.osmiridium_80_20", "Osmiridium 80/20");
         provider.add("material.phoenixcore.ismiridium_80_20", "Ismiridium 80/20");
+        provider.add("material.phoenixcore.impure_zirconium", "Impure Zirconium");
+        provider.add("material.phoenixcore.ignisium", "§cIgnisium");
+        provider.add("material.phoenixcore.sponge", "Sponge");
         provider.add("material.phoenixcore.impure_wax", "Impure Wax");
         provider.add("material.phoenixcore.impure_honey", "Impure Honey");
         provider.add("material.phoenixcore.resonant_ender", "§3Resonant Ender");
@@ -141,22 +145,18 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.magma", "§cMagma");
         provider.add("material.phoenixcore.space_grade_steel", "Space Grade Steel");
         addMaterialLang(provider, "superconductive_honey", "§6Superconductive Honey");
-        addMaterialLang(provider, "zircon", "Zircon");
         addMaterialLang(provider, "low_level_radioactive_waste", "Low Level Radioactive Waste");
-        addMaterialLang(provider, "frost", "Frost");
-        addMaterialLang(provider, "boron_carbide", "Boron Carbide");
-        addMaterialLang(provider, "impure_zirconium", "Impure Zirconium");
         addMaterialLang(provider, "impure_hafnium", "Impure Hafnium");
-        addMaterialLang(provider, "zircalloy", "Zircalloy");
         addMaterialLang(provider, "exotic_fission_concentrate", "Exotic Fission Concentrate");
-        addMaterialLang(provider, "exotic_fissile_materials_clump", "Exotic Fissile Materials Clump");
-        addMaterialLang(provider, "fissile_ash", "Fissile Ash");
         addMaterialLang(provider, "plutonium_fission_ash", "Plutonium Fission Ash");
         addMaterialLang(provider, "trace_actinides", "Trace Actinides");
 
         // Solutions and Fluids
-        addMaterialLang(provider, "cryo_graphite_binding_solution", "Cryo Graphite Binding Solution");
-        addMaterialLang(provider, "cryo_zirconium_binding_solution", "Cryo Zirconium Binding Solution");
+        addMaterialLang(provider, "peanut", "Peanut");
+        addMaterialLang(provider, "fissile_ash", "Fissile Ash");
+        addMaterialLang(provider, "unrefined_aluminfrost", "Unrefined Aluminfrost");
+        addMaterialLang(provider, "exotic_fissile_materials_clump", "Exotic Fissile Materials Clump");
+        addMaterialLang(provider, "voidglass_shard", "§dVoidglass Shard");
         addMaterialLang(provider, "hafnium_chloride", "Hafnium Chloride");
         addMaterialLang(provider, "hot_sodium_potassium", "Hot Sodium-Potassium");
         addMaterialLang(provider, "medium_pressure_fissile_steam", "Medium Pressure Fissile Steam");
@@ -174,27 +174,35 @@ public class PhoenixMaterialLangHandler {
         addMaterialLang(provider, "blazing_drilling_fluid", "§cBlazing Drilling Fluid");
         addMaterialLang(provider, "voidic_drilling_fluid", "§dVoidic Drilling Fluid");
         addMaterialLang(provider, "cryo_ember_fluid", "§bCryo§f-§cEmber§f Fluid");
+        addMaterialLang(provider, "zircon", "Zircon");
+        addMaterialLang(provider, "permafrost", "§bPermafrost");
+        addMaterialLang(provider, "fluix", "§dFluix");
+        addMaterialLang(provider, "sculk", "Sculk");
+        addMaterialLang(provider, "slime", "§aSlime");
+        addMaterialLang(provider, "zombie", "Zombie");
+        addMaterialLang(provider, "withered", "Withered");
+        addMaterialLang(provider, "ghostly", "Ghostly");
+        addMaterialLang(provider, "silky", "Silky");
+        addMaterialLang(provider, "prismarine", "Prismarine");
 
         String[] beeMaterials = {
-                "pitchblende", "steel", "apatite", "cobalt", "salty", "sponge", "ghostly", "copper", "rune", "menril",
-                "crimson",
-                "warped", "magmatic", "rocked", "steamy", "slimy", "brown_shroom", "sculk", "crystalline",
-                "super_factory",
-                "scheelite", "spacial", "silky", "frosty", "withered", "arcane_crystal", "sticky_resin", "zombie",
-                "blazing",
-                "red_shroom", "infinity", "skeletal", "lepidolite", "arcane", "cinnabar", "topaz", "amethyst",
+                "pitchblende", "steel", "apatite", "cobalt", "salt", "sponge", "ghostly", "copper", "rune", "magma",
+                "rock_salt", "steamy", "slime", "brown_shroom", "sculk", "nether_quartz",
+                "scheelite", "certus_quartz", "silky", "frosty", "withered", "arcane_crystal", "sticky_resin", "zombie",
+                "blaze", "ice",
+                "red_shroom", "infinity", "bone", "lepidolite", "source_gem", "cinnabar", "topaz", "amethyst",
                 "prismarine",
                 "realgar", "pyrope", "zinc", "tin", "diamond", "iron", "fluorite", "ruby", "sapphire", "stibnite",
                 "opal",
-                "cheese", "lapis", "electrotine", "constantan", "redstone", "niter", "coal", "ilmenite", "silicon",
+                "cheese", "lapis", "electrotine", "redstone", "saltpeter", "coal", "ilmenite", "silicon",
                 "galena",
                 "experience", "sodalite", "gold", "obsidian", "cobaltite", "bauxite", "silver", "tungstate", "emerald",
-                "tricalcium_phosphate", "nickel", "fluix", "malachite", "lead", "invar", "desh", "thorium", "graphite",
-                "sphalerite", "netherite", "ender", "acidic", "chromite", "pyrolusite", "platinum", "bismuth",
+                "tricalcium_phosphate", "nickel", "fluix", "malachite", "lead", "invar", "thorium", "graphite",
+                "sphalerite", "netherite", "resonant_ender", "acidic", "chromite", "pyrolusite", "platinum", "bismuth",
                 "glowing",
                 "bastnasite", "tetrahedrite", "sulfur", "oilsands", "tantalite", "barite", "vanadium_magnetite",
                 "draconic",
-                "pyrochlore", "voidglass_shard", "crystalized_fluxstone", "ignisium", "sky_steel"
+                "pyrochlore", "voidglass_shard", "crystalized_fluxstone", "ignisium", "sky_steel", "glowstone"
         };
 
         for (String mat : beeMaterials) {
@@ -214,6 +222,6 @@ public class PhoenixMaterialLangHandler {
     }
 
     private static void addMaterialLang(RegistrateLangProvider provider, String id, String name) {
-        provider.add("material.phoenix_fission." + id, name);
+        provider.add("material.phoenixcore." + id, name);
     }
 }

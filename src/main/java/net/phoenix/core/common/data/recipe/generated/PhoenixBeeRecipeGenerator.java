@@ -1,10 +1,10 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import net.minecraft.core.registries.Registries;
@@ -17,9 +17,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
-import net.phoenix.core.common.data.materials.PhoenixBeeMaterials;
-import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
+import net.phoenix.core.common.data.materials.*;
 import net.phoenix.core.common.data.recipe.records.ApisProgenitorConfig;
 import net.phoenix.core.common.data.recipe.records.FullBeeConfig;
 
@@ -95,36 +95,99 @@ public class PhoenixBeeRecipeGenerator {
      * -----------------------------
      */
 
+    private static Material getMaterial(String id) {
+        if (id.equals("fluorite")) return PhoenixOres.FLUORITE;
+        if (id.equals("voidglass_shard")) return PhoenixOres.VOIDGLASS_SHARD;
+        if (id.equals("ignisium")) return PhoenixOres.IGNISIUM;
+        if (id.equals("crystallized_fluxstone")) return PhoenixOres.CRYSTALLIZED_FLUXSTONE;
+        if (id.equals("fluix")) return PhoenixProgressionMaterials.FLUIX;
+        if (id.equals("resonant_ender")) return PhoenixProgressionMaterials.RESONANT_ENDER;
+        if (id.equals("sponge")) return PhoenixProgressionMaterials.SPONGE;
+        if (id.equals("slime")) return PhoenixProgressionMaterials.SLIME;
+        if (id.equals("magma")) return PhoenixProgressionMaterials.MAGMA;
+        if (id.equals("source_gem")) return PhoenixProgressionMaterials.SOURCE_GEM;
+        if (id.equals("zombie")) return PhoenixProgressionMaterials.ZOMBIE;
+        if (id.equals("withered")) return PhoenixProgressionMaterials.WITHERED;
+        if (id.equals("ghostly")) return PhoenixProgressionMaterials.GHOSTLY;
+        if (id.equals("silky")) return PhoenixProgressionMaterials.SILKY;
+        if (id.equals("prismarine")) return PhoenixProgressionMaterials.PRISMARINE;
+
+        Material mat = GTCEuAPI.materialManager.getMaterial(id);
+
+        // 2. If not found, try the capitalized version (for Sulfur, Platinum, etc.)
+        if (mat == null && id != null && !id.isEmpty()) {
+            String capitalized = id.substring(0, 1).toUpperCase() + id.substring(1);
+            mat = GTCEuAPI.materialManager.getMaterial(capitalized);
+        }
+
+        return mat;
+    }
+
     public static void generateSimulatedColonyRecipes(Consumer<FinishedRecipe> provider) {
         for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
             String beeId = config.beeId();
-            Material mat = GTMaterials.get(beeId);
 
-            // If a beeId doesn't map to a GT material, it can't use TagPrefix unification.
-            if (mat == null) continue;
+            // 1. Log the material lookup attempt
+            Material mat = getMaterial(beeId);
 
+            if (mat == null) {
+                PhoenixAPI.LOGGER.error(
+                        "BEE DIAGNOSTIC [{}]: Material lookup failed for ID '{}'. Check registry timing or namespace.",
+                        beeId, beeId);
+                continue;
+            }
+
+            // 2. Validate Catalyst and Comb Items
             ItemStack beeCatalyst = beeItemFor(config, mat);
-            if (beeCatalyst.isEmpty()) continue;
-
             ItemStack combOutput = combItemFor(mat);
-            if (combOutput.isEmpty()) continue;
 
-            ItemStack resourceBlock = new ItemStack(
-                    ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.pollinationInputId())));
+            if (beeCatalyst.isEmpty()) {
+                PhoenixAPI.LOGGER.error(
+                        "BEE DIAGNOSTIC [{}]: Catalyst item is EMPTY. Tier: {}, Material: {}. Is the TagPrefix registered?",
+                        beeId, config.tier(), mat.getName());
+            }
 
+            if (combOutput.isEmpty()) {
+                PhoenixAPI.LOGGER.error(
+                        "BEE DIAGNOSTIC [{}]: Honeycomb output is EMPTY. Material: {}. Is 'honeycomb' TagPrefix registered for this material?",
+                        beeId, mat.getName());
+            }
+
+            if (beeCatalyst.isEmpty() || combOutput.isEmpty()) continue;
+
+            // 3. Validate the Pollination Block
+            ResourceLocation blockRL = new ResourceLocation(config.pollinationInputId());
+            Item blockItem = ForgeRegistries.ITEMS.getValue(blockRL);
+
+            if (blockItem == null || blockItem == Items.AIR) {
+                PhoenixAPI.LOGGER.error(
+                        "BEE DIAGNOSTIC [{}]: Block [{}] NOT FOUND in Forge Registry. Check MOD_ID or registry name.",
+                        beeId, blockRL);
+                continue;
+            }
+
+            // If we reached here, logging successful start
+            PhoenixAPI.LOGGER.info("BEE DIAGNOSTIC [{}]: All checks passed. Attempting to register recipe...", beeId);
+
+            ItemStack resourceBlock = new ItemStack(blockItem);
             FluidStack sugarWater = BeeRecipeData.SUGAR_WATER_MATERIAL.getFluid(BeeRecipeData.SUGAR_WATER_AMOUNT);
 
-            SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony/" + beeId)
-                    .EUt(config.decantingEut())
-                    .duration(config.decantingDuration())
-                    .notConsumable(beeCatalyst)
-                    .inputItems(HONEY_COMB_BASE)
-                    .inputItems(resourceBlock)
-                    .inputFluids(sugarWater)
-                    .outputItems(combOutput, 1)
-                    .save(provider);
+            try {
+                SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony/" + beeId)
+                        .EUt(config.decantingEut())
+                        .duration(config.decantingDuration())
+                        .notConsumable(beeCatalyst)
+                        .inputItems(HONEY_COMB_BASE)
+                        .inputItems(resourceBlock)
+                        .inputFluids(sugarWater)
+                        .outputItems(combOutput, 1)
+                        .save(provider);
+                PhoenixAPI.LOGGER.info("BEE DIAGNOSTIC [{}]: Recipe saved successfully.", beeId);
+            } catch (Exception e) {
+                PhoenixAPI.LOGGER.error("BEE DIAGNOSTIC [{}]: CRITICAL ERROR saving recipe: {}", beeId, e.getMessage());
+            }
 
-            // Boosted: crystal rose (still TagPrefix-based)
+            // 4. Boosted Logic
             ItemStack crystalRose = ChemicalHelper.get(crystal_rose, mat);
             if (!crystalRose.isEmpty()) {
                 SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony_boosted/" + beeId)
@@ -140,7 +203,6 @@ public class PhoenixBeeRecipeGenerator {
             }
         }
     }
-
     /*
      * -----------------------------
      * Comb processing (decanting/honey)
@@ -177,8 +239,8 @@ public class PhoenixBeeRecipeGenerator {
         for (ApisProgenitorConfig cfg : BeeRecipeData.UNIQUE_APIS_PROGENITOR_CONFIGS) {
 
             // Resolve Materials from the material ID strings in the record
-            Material inMat = GTMaterials.get(cfg.inputMaterialId());
-            Material outMat = GTMaterials.get(cfg.outputMaterialId());
+            Material inMat = getMaterial(cfg.inputMaterialId());
+            Material outMat = getMaterial(cfg.outputMaterialId());
 
             if (inMat == null || outMat == null) continue;
 
@@ -212,7 +274,7 @@ public class PhoenixBeeRecipeGenerator {
      * Lumber Bee: Uses the Lumber Bee material as a Tier 2 catalyst for wood processing.
      */
     public static void generateLumberBeeRecipes(Consumer<FinishedRecipe> provider) {
-        Material lumberMat = GTMaterials.get("lumber");
+        Material lumberMat = getMaterial("lumber");
         if (lumberMat == null) return;
 
         // Lumber Bee is treated as a Tier 2 Bee Catalyst
@@ -242,7 +304,7 @@ public class PhoenixBeeRecipeGenerator {
             String beeId = config.beeId();
             if (beeId.equals("rancher") || beeId.equals("steamy")) continue;
 
-            Material mat = GTMaterials.get(beeId);
+            Material mat = getMaterial(beeId);
             if (mat == null) continue;
 
             // 1. Get the Honeycomb Item

@@ -6,10 +6,17 @@ import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.phoenix.core.PhoenixCore;
 
+import com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry;
+
+import static appeng.core.definitions.AEItems.FLUIX_CRYSTAL;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.*;
+import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
+import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
 
 public class PhoenixProgressionMaterials {
 
@@ -21,9 +28,8 @@ public class PhoenixProgressionMaterials {
 
     // Superconductors
     public static Material MAGMATIC_MANGANESE_LEAD, CRYOGENIC_ALUMINUM_STRAND, ICY_STEEL_MATRIX,
-            SOURCE_TITANIUM_FILAMENT, MAGMA;
-
-    // Endgame "Big" List
+            SOURCE_TITANIUM_FILAMENT, MAGMA, SOURCE_GEM, SPONGE, SLIME, ZOMBIE, WITHERED, GHOSTLY, FLUIX, PRISMARINE,
+            SILKY;
 
     public static Material AKASHIC_ZERONIUM, PHOENIX_ENRICHED_NAQUADAH, PHOENIX_ENRICHED_TRITANIUM, AETHERIUM_STEEL,
             SUBSPACE_COBALT, UNREFINED_ALUMINFROST;
@@ -43,15 +49,103 @@ public class PhoenixProgressionMaterials {
             RESONANT_ENDER;
 
     public static void register() {
-        // Progression Alloys
-        RESONANT_ENDER = new Material.Builder(PhoenixCore.id("resonant_ender")).fluid().color(0x032620)
+        RESONANT_ENDER = new Material.Builder(PhoenixCore.id("resonant_ender"))
+                .ingot()
+                .fluid()
+                .color(0x032620)
                 .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(RESONANT_ENDER, Items.ENDER_PEARL.asItem());
+
+        FLUIX = new Material.Builder(PhoenixCore.id("fluix"))
+                .ingot()
+                .color(0x6E00FF)
+                .secondaryColor(0xB266FF)
+                .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(FLUIX, FLUIX_CRYSTAL.asItem());
+
+        SLIME = new Material.Builder(PhoenixCore.id("slime"))
+                .ingot()
+                .color(0x2ce551)
+                .secondaryColor(0x1c9234)
+                .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(SLIME, Items.SLIME_BALL.asItem());
+        block.setIgnored(SLIME, Blocks.SLIME_BLOCK.asItem());
+
+        ZOMBIE = new Material.Builder(PhoenixCore.id("zombie"))
+                .ingot()
+                .color(0x3e3434)
+                .secondaryColor(0x786464)
+                .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(ZOMBIE, Items.ROTTEN_FLESH.asItem());
+
+        PRISMARINE = new Material.Builder(PhoenixCore.id("prismarine"))
+                .dust()
+                .color(0x7FFFD4)
+                .secondaryColor(0x40E0D0)
+                .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(PRISMARINE, Blocks.PRISMARINE.asItem());
+
+        SILKY = new Material.Builder(PhoenixCore.id("silky"))
+                .dust()
+                .color(0xdce2f3)
+                .secondaryColor(0x6e95bf)
+                .iconSet(MaterialIconSet.SHINY).buildAndRegister();
+
+        ingot.setIgnored(SILKY, Items.STRING.asItem());
+
         MAGMA = new Material.Builder(PhoenixCore.id("magma"))
                 .dust()
+                .ingot()
+                .fluid()
                 .color(0xff6d00)
                 .secondaryColor(0xeaa92e)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
+
+        ingot.setIgnored(MAGMA, Blocks.MAGMA_BLOCK.asItem());
+
+        SPONGE = new Material.Builder(PhoenixCore.id("sponge"))
+                .dust()
+                .ingot()
+                .color(0xbcbc96)
+                .secondaryColor(0xe81123)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+
+        ingot.setIgnored(SPONGE, Blocks.SPONGE.asItem());
+
+        WITHERED = new Material.Builder(PhoenixCore.id("withered"))
+                .dust()
+                .ingot()
+                .color(0x131313)
+                .secondaryColor(0x141414)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+
+        ingot.setIgnored(WITHERED, Items.WITHER_SKELETON_SKULL.asItem());
+
+        GHOSTLY = new Material.Builder(PhoenixCore.id("ghostly"))
+                .dust()
+                .ingot()
+                .color(0xb5c3c8)
+                .secondaryColor(0xbdc8cd)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+
+        ingot.setIgnored(GHOSTLY, Items.GHAST_TEAR.asItem());
+
+        SOURCE_GEM = new Material.Builder(PhoenixCore.id("source_gem"))
+                .dust()
+                .color(0xBF00FF)
+                .iconSet(MaterialIconSet.DULL)
+                .buildAndRegister();
+
+        ingot.setIgnored(SOURCE_GEM, ItemsRegistry.SOURCE_GEM::get);
 
         FROST = new Material.Builder(PhoenixCore.id("frost"))
                 .langValue("Frost")
@@ -202,7 +296,7 @@ public class PhoenixProgressionMaterials {
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
         CRYO_EMBER_FLUID = new Material.Builder(PhoenixCore.id("cryo_ember_fluid"))
-                .fluid()
+                .liquid(6000)
                 .color(0xFF4500)
                 .secondaryColor(0xA020F0)
                 .iconSet(MaterialIconSet.DULL)

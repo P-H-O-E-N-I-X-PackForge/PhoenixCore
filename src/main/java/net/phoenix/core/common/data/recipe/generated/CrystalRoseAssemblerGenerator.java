@@ -1,10 +1,11 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
@@ -13,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
+import net.phoenix.core.common.data.materials.PhoenixOres;
+import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 
 import java.util.function.Consumer;
 
@@ -23,21 +26,29 @@ public class CrystalRoseAssemblerGenerator {
     public static void generateCrystalRoseRecipes(Consumer<FinishedRecipe> provider) {
         BeeRecipeData.ALL_BEE_CONFIGS.forEach((id, config) -> {
 
-            ItemStack output = config.finalOutputItem();
-            if (output == null || output.isEmpty()) return;
+            // 1. Robust Material Lookup
+            Material material = getMaterial(id);
 
-            Material material = tryGetMaterialFromOutput(output);
             if (material == null || material.isNull()) return;
 
-            ItemStack inputStack = getPreferredInputForMaterial(material);
-            if (inputStack.isEmpty()) return;
-            inputStack.setCount(4);
+            // 2. Universal Input: 4x Dust
+            // Dust is the most consistent form across all namespaces
+            ItemStack inputStack = ChemicalHelper.get(TagPrefix.dust, material, 4);
 
+            // Fallback: If no dust exists, try gem (Diamond, Emerald, etc.)
+            if (inputStack.isEmpty()) {
+                inputStack = ChemicalHelper.get(TagPrefix.gem, material, 4);
+            }
+
+            if (inputStack.isEmpty()) return;
+
+            // 3. Get the Crystal Rose output
             ItemStack roseStack = ChemicalHelper.get(PhoenixMaterialFlags.crystal_rose, material, 1);
             if (roseStack.isEmpty()) return;
 
             FluidStack crystalRoseFluid = CRYO_GRAPHITE_BINDING_SOLUTION.getFluid(144);
 
+            // 4. Build Recipe
             GTRecipeBuilder builder = GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder(
                     "phoenixcore:crystal_rose_" + material.getName())
                     .EUt(GTValues.V[GTValues.IV])
@@ -50,45 +61,81 @@ public class CrystalRoseAssemblerGenerator {
         });
     }
 
-    public static void linkCrystalRoseFlags() {
-        BeeRecipeData.ALL_BEE_CONFIGS.forEach((id, config) -> {
+    /**
+     * Specialized material lookup with direct hardcoded references for Phoenix materials
+     * to bypass registry lifecycle issues.
+     */
+    private static Material getMaterial(String id) {
+        if (id == null || id.isEmpty()) return null;
 
-            ItemStack output = config.finalOutputItem();
-            if (output == null || output.isEmpty()) return;
+        switch (id) {
+            case "fluorite" -> {
+                return PhoenixOres.FLUORITE;
+            }
+            case "voidglass_shard" -> {
+                return PhoenixOres.VOIDGLASS_SHARD;
+            }
+            case "ignisium" -> {
+                return PhoenixOres.IGNISIUM;
+            }
+            case "crystallized_fluxstone" -> {
+                return PhoenixOres.CRYSTALLIZED_FLUXSTONE;
+            }
+            case "fluix" -> {
+                return PhoenixProgressionMaterials.FLUIX;
+            }
+            case "resonant_ender" -> {
+                return PhoenixProgressionMaterials.RESONANT_ENDER;
+            }
+            case "sponge" -> {
+                return PhoenixProgressionMaterials.SPONGE;
+            }
+            case "slime" -> {
+                return PhoenixProgressionMaterials.SLIME;
+            }
+            case "magma" -> {
+                return PhoenixProgressionMaterials.MAGMA;
+            }
+            case "source_gem" -> {
+                return PhoenixProgressionMaterials.SOURCE_GEM;
+            }
+            case "zombie" -> {
+                return PhoenixProgressionMaterials.ZOMBIE;
+            }
+            case "withered" -> {
+                return PhoenixProgressionMaterials.WITHERED;
+            }
+            case "ghostly" -> {
+                return PhoenixProgressionMaterials.GHOSTLY;
+            }
+            case "silky" -> {
+                return PhoenixProgressionMaterials.SILKY;
+            }
+            case "prismarine" -> {
+                return PhoenixProgressionMaterials.PRISMARINE;
+            }
+            case "titanium" -> {
+                return GTMaterials.Titanium;
+            }
+        }
 
-            Material material = tryGetMaterialFromOutput(output);
-            if (material == null || material.isNull()) return;
+        Material mat = GTCEuAPI.materialManager.getMaterial(id);
 
-            material.addFlags(PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE);
-        });
-    }
-
-    private static Material tryGetMaterialFromOutput(ItemStack stack) {
-        MaterialEntry entry = ChemicalHelper.getMaterialEntry(stack.getItem());
-        if (entry == null || entry.isEmpty()) return null;
-
-        Material mat = entry.material();
-        if (mat == null || mat.isNull()) return null;
+        if (mat == null) {
+            String capitalized = id.substring(0, 1).toUpperCase() + id.substring(1);
+            mat = GTCEuAPI.materialManager.getMaterial(capitalized);
+        }
 
         return mat;
     }
 
-    private static ItemStack getPreferredInputForMaterial(Material material) {
-        if (!TagPrefix.rawOre.isIgnored(material)) {
-            ItemStack raw = ChemicalHelper.get(TagPrefix.rawOre, material, 1);
-            if (!raw.isEmpty()) return raw;
-        }
-
-        if (!TagPrefix.dust.isIgnored(material)) {
-            ItemStack dust = ChemicalHelper.get(TagPrefix.dust, material, 1);
-            if (!dust.isEmpty()) return dust;
-        }
-
-        if (!TagPrefix.gem.isIgnored(material)) {
-            ItemStack gem = ChemicalHelper.get(TagPrefix.gem, material, 1);
-            if (!gem.isEmpty()) return gem;
-        }
-
-        return ItemStack.EMPTY;
+    public static void linkCrystalRoseFlags() {
+        BeeRecipeData.ALL_BEE_CONFIGS.forEach((id, config) -> {
+            Material material = getMaterial(id);
+            if (material != null && !material.isNull()) {
+                // Injects the Rose generation flag into the material properties
+                material.addFlags(PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE);
+            }
+        });
     }
 }

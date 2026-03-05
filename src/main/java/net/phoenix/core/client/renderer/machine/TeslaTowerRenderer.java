@@ -2,20 +2,20 @@ package net.phoenix.core.client.renderer.machine;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.serialization.Codec;
+
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.phoenix.core.client.PhoenixClient;
 import net.phoenix.core.client.renderer.PhoenixRenderTypes;
 import net.phoenix.core.common.machine.multiblock.electric.TeslaTowerMachine;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTowerRenderer> {
@@ -56,7 +56,6 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
     public void render(TeslaTowerMachine machine, float partialTick,
                        PoseStack poseStack, MultiBufferSource buffer,
                        int packedLight, int packedOverlay) {
-
         long time = machine.getLevel().getGameTime();
         VertexConsumer vc = buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING());
 
@@ -65,9 +64,9 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         float TEEPEE_DROP = 2.5f;
         int ARC_POINTS = 30;
 
-        float[] yPositions = new float[]{ 5.0f, 14.0f, 22.0f };
-        float[] xPositions = new float[]{ 2.5f, 2.5f, 2.5f };
-        float[] zPositions = new float[]{ -2.0f, -2.0f, -2.0f };
+        float[] yPositions = new float[] { 5.0f, 14.0f, 22.0f };
+        float[] xPositions = new float[] { 2.5f, 2.5f, 2.5f };
+        float[] zPositions = new float[] { -2.0f, -2.0f, -2.0f };
 
         poseStack.pushPose();
         poseStack.translate(-1.5, 0.5, -3.5);
@@ -115,19 +114,19 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
 
         Vec3 mid = start.add(end).scale(0.5);
         // Use the sinNoise we made earlier to keep it high-performance
-        float seed = (float)(time + start.x + start.y + start.z);
+        float seed = (float) (time + start.x + start.y + start.z);
 
         mid = mid.add(
                 (sinNoise(seed) - 0.5) * jitter * depth,
                 (sinNoise(seed + 1) - 0.5) * jitter * depth,
-                (sinNoise(seed + 2) - 0.5) * jitter * depth
-        );
+                (sinNoise(seed + 2) - 0.5) * jitter * depth);
 
         generateLightningPath(points, start, mid, depth - 1, jitter, time);
         generateLightningPath(points, mid, end, depth - 1, jitter, time);
     }
 
-    private void drawVolumetricArc(VertexConsumer vc, Matrix4f pose, List<Vec3> path, float width, float r, float g, float b, float a) {
+    private void drawVolumetricArc(VertexConsumer vc, Matrix4f pose, List<Vec3> path, float width, float r, float g,
+                                   float b, float a) {
         for (int i = 0; i < path.size() - 1; i++) {
             Vec3 s = path.get(i);
             Vec3 e = path.get(i + 1);
@@ -144,26 +143,30 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
             float nz = dx * width;
 
             // Quad Vertex 1
-            vc.vertex(pose, (float)s.x - nx, (float)s.y, (float)s.z - nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) s.x - nx, (float) s.y, (float) s.z - nz).color(r, g, b, a).endVertex();
             // Quad Vertex 2
-            vc.vertex(pose, (float)s.x + nx, (float)s.y, (float)s.z + nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) s.x + nx, (float) s.y, (float) s.z + nz).color(r, g, b, a).endVertex();
             // Quad Vertex 3
-            vc.vertex(pose, (float)e.x + nx, (float)e.y, (float)e.z + nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) e.x + nx, (float) e.y, (float) e.z + nz).color(r, g, b, a).endVertex();
             // Quad Vertex 4
-            vc.vertex(pose, (float)e.x - nx, (float)e.y, (float)e.z - nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) e.x - nx, (float) e.y, (float) e.z - nz).color(r, g, b, a).endVertex();
         }
     }
-
-
 
     private void drawTeslaLine(VertexConsumer vc, Matrix4f pose, Vec3 s, Vec3 e,
                                int depth, boolean isCore, long time) {
         if (depth == 0) {
             float r, g, b, a;
             if (isCore) {
-                r = 160 / 255f; g = 32 / 255f; b = 240 / 255f; a = 1.0f;
+                r = 160 / 255f;
+                g = 32 / 255f;
+                b = 240 / 255f;
+                a = 1.0f;
             } else {
-                r = 255 / 255f; g = 183 / 255f; b = 197 / 255f; a = 0.5f;
+                r = 255 / 255f;
+                g = 183 / 255f;
+                b = 197 / 255f;
+                a = 0.5f;
             }
             vc.vertex(pose, (float) s.x, (float) s.y, (float) s.z).color(r, g, b, a).endVertex();
             vc.vertex(pose, (float) e.x, (float) e.y, (float) e.z).color(r, g, b, a).endVertex();
@@ -175,7 +178,7 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         // --- THE PERFORMANCE FIX ---
         // Instead of RandomSource.create(), we use a deterministic "Pseudo-random" math function.
         // This is much faster and uses 0 memory allocations.
-        float seed = (float)(time + s.x * 31 + s.y * 17 + s.z);
+        float seed = (float) (time + s.x * 31 + s.y * 17 + s.z);
         float jitter = 0.25f * depth;
 
         double jX = (sinNoise(seed) - 0.5) * jitter;
@@ -189,7 +192,9 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
     }
 
     private static final Vec3[] POINT_CACHE = new Vec3[64];
-    static { for(int i=0; i<64; i++) POINT_CACHE[i] = Vec3.ZERO; }
+    static {
+        for (int i = 0; i < 64; i++) POINT_CACHE[i] = Vec3.ZERO;
+    }
 
     private void renderArc(PoseStack stack, VertexConsumer vc, Vec3 start, Vec3 end, long time) {
         Matrix4f pose = stack.last().pose();
@@ -203,7 +208,7 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         int totalPoints = generatePath(start, end, 1, 5, 0.18f, snapTime, smoothTime);
         POINT_CACHE[totalPoints - 1] = end;
 
-// Inside renderArc
+        // Inside renderArc
         drawRibbon(vc, pose, totalPoints, 0.08f, 1.0f, 0.7f, 0.8f, 0.3f, time); // Glow
         drawRibbon(vc, pose, totalPoints, 0.02f, 0.6f, 0.1f, 0.9f, 1.0f, time); // Core
     }
@@ -217,31 +222,31 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         Vec3 mid = s.add(e).scale(0.5);
 
         // combine snapTime (big jumps) with smoothTime (gentle vibration)
-        float seed = (float)(snapTime + (index * 1.5f) + smoothTime);
+        float seed = (float) (snapTime + (index * 1.5f) + smoothTime);
 
         // This creates the "Arcing" look:
         // The bolt structure is stable, but the midpoints "vibrate"
-        float currentJitter = jitter * (float)Math.sqrt(depth);
+        float currentJitter = jitter * (float) Math.sqrt(depth);
 
         mid = mid.add(
                 (sinNoise(seed) - 0.5) * currentJitter,
                 (sinNoise(seed + 12) - 0.5) * currentJitter,
-                (sinNoise(seed + 24) - 0.5) * currentJitter
-        );
+                (sinNoise(seed + 24) - 0.5) * currentJitter);
 
         int nextIndex = generatePath(s, mid, index, depth - 1, jitter, snapTime, smoothTime);
         return generatePath(mid, e, nextIndex, depth - 1, jitter, snapTime, smoothTime);
     }
 
-    private void drawRibbon(VertexConsumer vc, Matrix4f pose, int count, float width, float r, float g, float b, float a, long time) {
+    private void drawRibbon(VertexConsumer vc, Matrix4f pose, int count, float width, float r, float g, float b,
+                            float a, long time) {
         for (int i = 0; i < count - 1; i++) {
             Vec3 s = POINT_CACHE[i];
-            Vec3 e = POINT_CACHE[i+1];
+            Vec3 e = POINT_CACHE[i + 1];
 
             // 1. Direction of the segment
-            float dx = (float)(e.x - s.x);
-            float dy = (float)(e.y - s.y);
-            float dz = (float)(e.z - s.z);
+            float dx = (float) (e.x - s.x);
+            float dy = (float) (e.y - s.y);
+            float dz = (float) (e.z - s.z);
 
             // 2. The "Twist" Math
             // We calculate a 'roll' angle that changes per segment and over time
@@ -250,8 +255,8 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
 
             // 3. Calculate the Perpendicular "Width" Vectors
             // We use Sin/Cos to rotate the offset around the segment's axis
-            float angleX = (float)Math.cos(roll) * width;
-            float angleY = (float)Math.sin(roll) * width;
+            float angleX = (float) Math.cos(roll) * width;
+            float angleY = (float) Math.sin(roll) * width;
 
             // Using a basic billboarding-style offset that rotates
             float nx = -dz * angleX;
@@ -260,18 +265,18 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
 
             // 4. Draw the Quad
             // Vertices at S (Start)
-            vc.vertex(pose, (float)s.x - nx, (float)s.y - ny, (float)s.z - nz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float)s.x + nx, (float)s.y + ny, (float)s.z + nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) s.x - nx, (float) s.y - ny, (float) s.z - nz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) s.x + nx, (float) s.y + ny, (float) s.z + nz).color(r, g, b, a).endVertex();
 
             // Vertices at E (End) - Note: To be perfectly professional,
             // the End vertices of segment I should use the same 'roll' as the Start of I+1
             float nextRoll = ((i + 1) * 0.5f) + twistSpeed;
-            float nnx = -dz * (float)Math.cos(nextRoll) * width;
-            float nny = (float)Math.sin(nextRoll) * width;
-            float nnz = dx * (float)Math.cos(nextRoll) * width;
+            float nnx = -dz * (float) Math.cos(nextRoll) * width;
+            float nny = (float) Math.sin(nextRoll) * width;
+            float nnz = dx * (float) Math.cos(nextRoll) * width;
 
-            vc.vertex(pose, (float)e.x + nnx, (float)e.y + nny, (float)e.z + nnz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float)e.x - nnx, (float)e.y - nny, (float)e.z - nnz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) e.x + nnx, (float) e.y + nny, (float) e.z + nnz).color(r, g, b, a).endVertex();
+            vc.vertex(pose, (float) e.x - nnx, (float) e.y - nny, (float) e.z - nnz).color(r, g, b, a).endVertex();
         }
     }
 
@@ -279,4 +284,3 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         return (float) (Math.sin(n * 2137.123) * 43758.5453) % 1.0f;
     }
 }
-
