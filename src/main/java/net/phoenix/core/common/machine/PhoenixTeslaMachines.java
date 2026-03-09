@@ -23,6 +23,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.pattern.PhoenixPredicates;
 import net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers;
@@ -35,7 +36,9 @@ import net.phoenix.core.common.machine.singleblock.TeslaWirelessChargerMachine;
 import net.phoenix.core.common.registry.PhoenixRegistration;
 import net.phoenix.core.datagen.models.PhoenixMachineModels;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 import static com.gregtechceu.gtceu.api.GTValues.VCF;
@@ -46,6 +49,18 @@ import static net.phoenix.core.common.machine.PhoenixMachines.registerTieredMach
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class PhoenixTeslaMachines {
+
+    public static final BiConsumer<ItemStack, List<Component>> TELSA_TOWER_TOOLTIPS = (stack,
+                                                                                       list) -> {
+        list.add(
+                Component.literal("The pulsating heart of your Tesla Network.")
+                        .withStyle(TeslaTowerMachine.NEBULA_HSL));
+        list.add(
+                Component.literal("Transmits EU §7trans-dimensionally§f with §7infinite§f range."));
+        list.add(
+                Component.literal("Internal buffer is §7determined§f by the tier of §7Tesla Battery§f it has."));
+
+    };
 
     public static final MultiblockMachineDefinition TESLA_TOWER = REGISTRATE
             .multiblock("tesla_tower", TeslaTowerMachine::new)
@@ -342,7 +357,7 @@ public class PhoenixTeslaMachines {
                     .where('K', blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()))
                     .where('L', blocks(PhoenixBlocks.RELIABLE_NAQUADAH_ALLOY_MACHINE_CASING.get()))
                     .where("M", PhoenixPredicates.teslaBatteries())
-                    .where('N', blocks(GTBlocks.COIL_NAQUADAH.get()))
+                    .where('N', blocks(GTBlocks.COIL_CUPRONICKEL.get()))
                     .where('O', controller(blocks(definition.get())))
                     .build())
             .model(
@@ -353,6 +368,7 @@ public class PhoenixTeslaMachines {
                                     .addDynamicRenderer(
                                             PhoenixDynamicRenderHelpers::getTeslaTowerRenderer)))
             .hasBER(true)
+            .tooltipBuilder(TELSA_TOWER_TOOLTIPS)
             .register();
 
     // Helper to construct the path: "tesla_hatches/tesla_input" or "tesla_hatches/tesla_iomode_4a"

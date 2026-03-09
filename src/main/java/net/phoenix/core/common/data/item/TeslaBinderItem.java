@@ -234,6 +234,9 @@ public class TeslaBinderItem extends ComponentItem
         if (stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("OwnerName")) {
             int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);
 
+            tooltip.add(Component.literal("Right-Click to open the Tesla Network UI.")
+                    .withStyle(Style.EMPTY.withColor(color)));
+
             tooltip.add(Component.literal("Bound to Player: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(stack.getTag().getString("OwnerName"))
                             .withStyle(Style.EMPTY.withColor(color))));
@@ -244,8 +247,10 @@ public class TeslaBinderItem extends ComponentItem
                                 .withStyle(Style.EMPTY.withColor(color))));
             }
         } else {
+            tooltip.add(Component.literal("Currently not bound to a soul.")
+                    .withStyle(Style.EMPTY.withColor(0x8F00FF)));
             tooltip.add(Component.literal("Shift + Right-Click to bind to your frequency.")
-                    .withStyle(ChatFormatting.DARK_GRAY));
+                    .withStyle(Style.EMPTY.withColor(0xA330FF)));
         }
     }
 
