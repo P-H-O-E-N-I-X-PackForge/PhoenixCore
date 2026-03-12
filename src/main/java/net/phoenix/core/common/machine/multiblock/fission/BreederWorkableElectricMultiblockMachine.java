@@ -23,9 +23,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.api.block.IFissionBlanketType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 
 import lombok.Getter;
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -105,7 +105,7 @@ public class BreederWorkableElectricMultiblockMachine extends DynamicFissionReac
         super.handleReactorLogic(running);
 
         if (running && isFormed() && primaryBlanket != null) {
-            processBreeding(PhoenixFissionConfigs.INSTANCE.fission, lastParallels);
+            processBreeding(PhoenixConfigs.INSTANCE.fission, lastParallels);
         }
     }
 
@@ -143,7 +143,7 @@ public class BreederWorkableElectricMultiblockMachine extends DynamicFissionReac
         }
     }
 
-    private void processBreeding(PhoenixFissionConfigs.FissionConfigs cfg, int parallels) {
+    private void processBreeding(PhoenixConfigs.FissionConfigs cfg, int parallels) {
         if (activeBlankets == null || activeBlankets.isEmpty()) return;
 
         // Use primary blanket duration as pacing clock

@@ -19,9 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.block.IFissionCoolerType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 
 import lombok.Getter;
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -95,7 +95,7 @@ public class DynamicFissionReactorMachine extends FissionWorkableElectricMultibl
     }
 
     protected boolean canConsumeCoolantForThisTickMachineDriven() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.coolingRequiresCoolant) return true;
         if (activeCoolers.isEmpty()) return true;
 
@@ -143,7 +143,7 @@ public class DynamicFissionReactorMachine extends FissionWorkableElectricMultibl
     }
 
     protected boolean consumeCoolantForThisTickMachineDriven() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.coolingRequiresCoolant) return true;
         if (activeCoolers.isEmpty()) return true;
 
@@ -198,7 +198,7 @@ public class DynamicFissionReactorMachine extends FissionWorkableElectricMultibl
      */
     @Override
     protected void tickFuelConsumptionMachineDriven(int parallels) {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
 
         IFissionFuelRodType fuelType = getFuelRodForConsumption();
         if (fuelType == null) return;

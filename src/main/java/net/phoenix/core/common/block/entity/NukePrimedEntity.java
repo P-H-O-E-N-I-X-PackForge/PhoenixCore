@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkHooks;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.Nullable;
 
 public class NukePrimedEntity extends Entity {
@@ -53,7 +53,7 @@ public class NukePrimedEntity extends Entity {
     }
 
     public void setRadius(int r) {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         int cap = Math.max(1, cfg.nukeCubeRadiusCap);
         this.entityData.set(DATA_RADIUS, Mth.clamp(r, 1, cap));
     }
@@ -68,7 +68,7 @@ public class NukePrimedEntity extends Entity {
 
         if (level().isClientSide) return;
 
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.nukeEnabled) {
             discard();
             return;
@@ -90,7 +90,7 @@ public class NukePrimedEntity extends Entity {
     }
 
     private void doWipeBatch() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
 
         int radius = entityData.get(DATA_RADIUS);
         int side = 2 * radius + 1;

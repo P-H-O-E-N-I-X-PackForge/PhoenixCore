@@ -38,6 +38,7 @@ import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import net.phoenix.core.api.PhoenixColors;
 import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.api.recipe.lookup.MapSourceIngredient;
@@ -53,7 +54,6 @@ import net.phoenix.core.common.machine.*;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.common.registry.PhoenixFissionEntities;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 import net.phoenix.core.datagen.PhoenixDatagen;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
@@ -107,7 +107,7 @@ public class PhoenixCore {
 
     public static void init() {
         PhoenixConfigs.init();
-        PhoenixFissionConfigs.init();
+        PhoenixColors.loadColorsFromConfig();
         REGISTRATE.registerRegistrate();
         PhoenixFissionEntities.init();
         PhoenixBlocks.init();

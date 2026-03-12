@@ -7,18 +7,13 @@ plugins {
     id "maven-publish"
     id 'net.neoforged.moddev.legacyforge' version '2.0.91'
     id 'com.diffplug.spotless' version '7.0.2'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 
 }
 
 
 
 configurations {
-    // Defines a new configuration called 'shadow'
-    shadow {
-        // Dependencies added to 'shadow' will also be used for compilation
-        extendsFrom implementation
-    }
+
 }
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += "-Xlint:-deprecation"
@@ -264,36 +259,16 @@ tasks.named('processResources', ProcessResources).configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// ----------------------------------------------------
-// FIX: Manually define the reobfuscation task for the shaded JAR
-// ----------------------------------------------------
-// --- Reobfuscate the shaded (Shadow) JAR using NeoForge's RemapJar task ---
 
 
 tasks.named('jar', Jar).configure {
-    // You should use a classifier for the un-shaded jar (e.g., 'slim')
     archiveClassifier.set('slim')
     // Existing manifest attributes...
     finalizedBy 'reobfJar'
 }
 
-// Configuration for the Shadow plugin
-shadowJar {
-    // We use an empty classifier here to create an intermediate file name,
-    // which will be consumed by reobfShadowJar.
-    archiveClassifier.set('unreobf-shadow')
-    configurations = [project.configurations.shadow]
-
-    // CRITICAL: Relocate the package names
-    relocate 'appeng', "${project.maven_group}.relocated.ae2"
-
-    // This makes the reobfuscation step run immediately after shadowing
-    // The final artifact is produced by the manual task defined above
-    finalizedBy 'reobfShadowJar'
-}
 
 
-// Update the build task to depend on the final, reobfuscated, and shaded JAR
 tasks.named("build") {
     // Ensure that the final product task is what the build relies on
     dependsOn("spotlessApply")

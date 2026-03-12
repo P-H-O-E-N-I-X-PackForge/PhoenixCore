@@ -33,7 +33,7 @@ public class PhoenixMaterialLangHandler {
 
         // Progression & Special Alloys
         provider.add("material.phoenixcore.aluminfrost", "§bAluminfrost");
-        provider.add("material.phoenixcore.source_gem", "§dSource Gem");
+        provider.add("material.phoenixcore.source_gem", "§zSource Gem");
         provider.add("material.phoenixcore.frost", "§bFrost");
         provider.add("material.phoenixcore.source_imbued_titanium", "§5Source Imbued Titanium");
         provider.add("material.phoenixcore.resonant_rhodium_alloy", "§dResonant Rhodium Alloy");

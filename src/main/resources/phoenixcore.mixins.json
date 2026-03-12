@@ -9,11 +9,13 @@
     "accessor.RelayTileDisabledAccessor",
     "ars.DominionWandMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
-    "minecraft.GuiGraphicsCountSuffixMixin",
-    "minecraft.ItemStackTooltipMixin"
+    "minecraft.ItemStackTooltipMixin",
+    "minecraft.MixinChatFormatting",
+    "minecraft.MixinTextColor"
   ],
   "client": [
-    "ars.RelayTileMixin"
+    "ars.RelayTileMixin",
+    "minecraft.GuiGraphicsCountSuffixMixin"
   ],
   "injectors": {
     "defaultRequire": 1

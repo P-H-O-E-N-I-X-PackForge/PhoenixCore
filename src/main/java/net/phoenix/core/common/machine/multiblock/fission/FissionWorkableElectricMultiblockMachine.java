@@ -29,9 +29,9 @@ import net.phoenix.core.api.block.IFissionBlanketType;
 import net.phoenix.core.api.block.IFissionCoolerType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
 import net.phoenix.core.api.block.IFissionModeratorType;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 
 import lombok.Getter;
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,8 +130,8 @@ public class FissionWorkableElectricMultiblockMachine extends WorkableElectricMu
         return MANAGED_FIELD_HOLDER;
     }
 
-    protected static PhoenixFissionConfigs.FissionConfigs cfg() {
-        return PhoenixFissionConfigs.INSTANCE.fission;
+    protected static PhoenixConfigs.FissionConfigs cfg() {
+        return PhoenixConfigs.INSTANCE.fission;
     }
 
     @Override
@@ -535,7 +535,7 @@ public class FissionWorkableElectricMultiblockMachine extends WorkableElectricMu
      * Ramps from 1.0 to 1.0 + (burnBonusMaxPercent/100) over burnBonusRampSeconds.
      */
     protected double getBurnMultiplier() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
 
         double maxPct = Math.max(0.0, cfg.burnBonusMaxPercent);
         double rampSec = Math.max(1.0, cfg.burnBonusRampSeconds);
@@ -1002,7 +1002,7 @@ public class FissionWorkableElectricMultiblockMachine extends WorkableElectricMu
     }
 
     protected boolean canConsumeCoolantForThisTickMachineDriven() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.coolingRequiresCoolant) return true;
         if (activeCoolers.isEmpty()) return true;
 
@@ -1046,7 +1046,7 @@ public class FissionWorkableElectricMultiblockMachine extends WorkableElectricMu
     }
 
     protected boolean consumeCoolantForThisTickMachineDriven() {
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.coolingRequiresCoolant) return true;
         if (activeCoolers.isEmpty()) return true;
 

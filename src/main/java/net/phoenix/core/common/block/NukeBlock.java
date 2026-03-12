@@ -19,8 +19,8 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.phoenix.core.common.block.entity.NukePrimedEntity;
 import net.phoenix.core.common.registry.PhoenixFissionEntities;
-import net.phoenix.core.configs.PhoenixFissionConfigs;
 
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ public class NukeBlock extends Block {
     private void prime(Level level, BlockPos pos, @Nullable LivingEntity igniter) {
         if (level.isClientSide) return;
 
-        var cfg = PhoenixFissionConfigs.INSTANCE.fission;
+        var cfg = PhoenixConfigs.INSTANCE.fission;
         if (!cfg.nukeEnabled) return;
 
         int r = Math.max(1, Math.min(cfg.nukeCubeRadius, Math.max(1, cfg.nukeCubeRadiusCap)));
@@ -64,7 +64,7 @@ public class NukeBlock extends Block {
         tooltip.add(Component.literal("Large scale nuclear explosive.").withStyle(ChatFormatting.DARK_GREEN));
         tooltip.add(Component.literal("Handle with caution!").withStyle(ChatFormatting.RED));
         tooltip.add(Component.translatable("phoenix.fission.nuke_radius",
-                Component.literal(String.valueOf(PhoenixFissionConfigs.INSTANCE.fission.nukeCubeRadius))
+                Component.literal(String.valueOf(PhoenixConfigs.INSTANCE.fission.nukeCubeRadius))
                         .withStyle(ChatFormatting.RED)));
     }
 

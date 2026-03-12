@@ -56,7 +56,7 @@ public class PhoenixTeslaMachines {
                 Component.literal("The pulsating heart of your Tesla Network.")
                         .withStyle(TeslaTowerMachine.NEBULA_HSL));
         list.add(
-                Component.literal("Transmits EU §7trans-dimensionally§f with §7infinite§f range."));
+                Component.literal("Transmits EU §7inter-dimensionally§f with §7infinite§f range."));
         list.add(
                 Component.literal("Internal buffer is §7determined§f by the tier of §7Tesla Battery§f it has."));
 

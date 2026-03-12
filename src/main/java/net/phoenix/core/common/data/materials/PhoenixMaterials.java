@@ -11,10 +11,13 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.phoenix.core.PhoenixAPI;
+import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.api.PhoenixColors;
 import net.phoenix.core.api.item.tool.PhoenixToolType;
 import net.phoenix.core.common.data.recipe.generated.BeePrefixHelper;
 import net.phoenix.core.common.data.recipe.generated.CrystalRoseHelper;
 
+import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.NotNull;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
@@ -29,6 +32,36 @@ import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials
 public class PhoenixMaterials {
 
     public static void register() {
+        // Access the String array from the config
+        String[] colorSettings = PhoenixConfigs.INSTANCE.colors.customColors;
+
+        if (colorSettings != null) {
+            for (String entry : colorSettings) {
+                // Basic validation: ensure it's not null and contains our delimiter
+                if (entry == null || !entry.contains(":")) continue;
+
+                try {
+                    // Split "z:BF00FF" into ["z", "BF00FF"]
+                    String[] parts = entry.split(":", 2);
+                    if (parts.length < 2) continue;
+
+                    String codePart = parts[0].trim();
+                    String hexPart = parts[1].replace("#", "").trim();
+
+                    if (!codePart.isEmpty() && !hexPart.isEmpty()) {
+                        char codeChar = codePart.charAt(0);
+                        int colorInt = Integer.parseInt(hexPart, 16);
+
+                        PhoenixColors.registerCustomColor(codeChar, colorInt);
+
+                        // Optional: Log it so you can verify in the console during startup
+                        PhoenixCore.LOGGER.info("Phoenix Colors: Mapping §{} to #{}", codeChar, hexPart);
+                    }
+                } catch (Exception e) {
+                    PhoenixCore.LOGGER.error("Phoenix Core: Failed to parse color config entry '{}'", entry);
+                }
+            }
+        }
         GTMaterials.Francium.setProperty(PropertyKey.INGOT, new IngotProperty());
         GTMaterials.Technetium.setProperty(PropertyKey.INGOT, new IngotProperty());
         GTMaterials.Radium.setProperty(PropertyKey.INGOT, new IngotProperty());
