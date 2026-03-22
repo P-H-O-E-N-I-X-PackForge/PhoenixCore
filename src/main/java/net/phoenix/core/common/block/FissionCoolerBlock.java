@@ -83,13 +83,14 @@ public class FissionCoolerBlock extends ActiveBlock {
 
     public enum FissionCoolerTypes implements StringRepresentable, IFissionCoolerType {
 
-        COOLER_BASIC(
-                "basic_cooler",
-                50500, 1, 10,
-                "gtceu:distilled_water",
-                "gtceu:steam",
-                PhoenixCore.id("block/fission/basic_cooler_block"),
-                0xFF7DE7FF);
+        COOLER_BASIC("basic_cooler", 1000, 1, 100, "minecraft:water", "phoenixcore:critical_steam",
+                PhoenixCore.id("block/fission/active_cooler"), 0xFF3D80FF),
+        COOLER_EV("ev_cooler", 5000, 2, 10, "gtceu:sodium_potassium", "phoenixcore:hot_sodium_potassium",
+                PhoenixCore.id("block/fission/active_cooler"), 0xFFFFB03D),
+        COOLER_IV("iv_cooler", 10000, 3, 30, "gtceu:sodium_potassium", "phoenixcore:hot_sodium_potassium",
+                PhoenixCore.id("block/fission/active_cooler"), 0xFFFF4D3D),
+        COOLER_LUV("luv_cooler", 20000, 4, 35, "gtceu:liquid_helium", "gtceu:helium",
+                PhoenixCore.id("block/fission/active_cooler"), 0xFFD23DFF);
 
         @Getter
         @NotNull

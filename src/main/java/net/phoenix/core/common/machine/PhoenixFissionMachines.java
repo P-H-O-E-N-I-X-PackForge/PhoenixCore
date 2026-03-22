@@ -32,7 +32,6 @@ import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.FLUID_EXPORT_HATCH;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel;
-import static net.phoenix.core.common.block.PhoenixBlocks.FISSILE_HEAT_SAFE_CASING;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 @SuppressWarnings("all")
@@ -178,7 +177,7 @@ public class PhoenixFissionMachines {
                             Predicates.blocks(PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING.get()))
 
                     .where('C',
-                            Predicates.blocks(FISSILE_HEAT_SAFE_CASING.get())
+                            Predicates.blocks(PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING.get())
                                     .setMinGlobalLimited(6)
                                     .or(Predicates.abilities(PartAbility.IMPORT_ITEMS))
                                     .or(Predicates.abilities(PartAbility.EXPORT_ITEMS))

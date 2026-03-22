@@ -260,9 +260,10 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
         AURUM_STEEL = new Material.Builder(PhoenixCore.id("aurum_steel")).ingot().fluid().color(0xd0a860)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.METALLIC)
+                .fluidPipeProperties(5000, 50, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
                         GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL,
-                        GENERATE_SMALL_GEAR)
+                        GENERATE_SMALL_GEAR, GENERATE_LONG_ROD)
                 .buildAndRegister();
         FIERY_BRONZE = new Material.Builder(PhoenixCore.id("fiery_bronze")).ingot().fluid().color(0xff6d00)
                 .secondaryColor(0xa0522d).iconSet(MaterialIconSet.DULL)

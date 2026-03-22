@@ -33,4 +33,8 @@ public class PhoenixDynamicRenderHelpers {
     public static DynamicRender<?, ?> getTeslaTowerRenderer() {
         return TeslaTowerRenderer.INSTANCE;
     }
+
+    public static DynamicRender<?, ?> getEngineGearboxRenderer() {
+        return EngineGearboxRenderer.INSTANCE;
+    }
 }

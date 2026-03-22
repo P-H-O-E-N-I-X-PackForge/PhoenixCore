@@ -12,24 +12,20 @@ public final class TeamUtils {
 
     private TeamUtils() {}
 
-    /**
-     * Used by the TOWER (via ownerUUID)
-     */
     public static UUID getTeamIdOrPlayerFallback(UUID playerUUID) {
         if (playerUUID == null) return null;
 
         return FTBTeamsAPI.api().getManager().getTeamForPlayerID(playerUUID)
+                .filter(Team::isPartyTeam)
                 .map(Team::getTeamId)
                 .orElse(playerUUID);
     }
 
-    /**
-     * Used by the HATCH (via placer instance)
-     */
     public static UUID getTeamIdOrPlayerFallback(ServerPlayer player) {
         if (player == null) return null;
 
         return FTBTeamsAPI.api().getManager().getTeamForPlayer(player)
+                .filter(Team::isPartyTeam)
                 .map(Team::getTeamId)
                 .orElse(player.getUUID());
     }

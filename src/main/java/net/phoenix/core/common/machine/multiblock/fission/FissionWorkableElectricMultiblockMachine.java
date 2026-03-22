@@ -29,9 +29,9 @@ import net.phoenix.core.api.block.IFissionBlanketType;
 import net.phoenix.core.api.block.IFissionCoolerType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
 import net.phoenix.core.api.block.IFissionModeratorType;
+import net.phoenix.core.configs.PhoenixConfigs;
 
 import lombok.Getter;
-import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

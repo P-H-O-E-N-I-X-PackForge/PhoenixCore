@@ -13,7 +13,6 @@ import net.phoenix.core.PhoenixCore;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.HIGH;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.MID;
-import static com.gregtechceu.gtceu.common.data.GTMaterials.SiliconDioxide;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.ICY_STEEL_MATRIX;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.SOURCE_IMBUED_TITANIUM;
 
@@ -31,6 +30,7 @@ public class PhoenixFissionMaterials {
     public static Material ZIRCALLOY;
     public static Material ZIRCON, SPACE_GRADE_STEEL;
 
+    public static Material MEDIUM_LEVEL_RADIOACTIVE_WASTE;
     public static Material HOT_SODIUM_POTASSIUM;
     public static Material MEDIUM_PRESSURE_FISSILE_STEAM;
     public static Material CRITICAL_STEAM;
@@ -59,7 +59,6 @@ public class PhoenixFissionMaterials {
                 .color(0xC2B280)
                 .secondaryColor(0x8B7D6B)
                 .iconSet(MaterialIconSet.DULL)
-                .addOreByproducts(SiliconDioxide)
                 .formula("ZrSiO4")
                 .buildAndRegister();
 
@@ -80,6 +79,12 @@ public class PhoenixFissionMaterials {
                 .iconSet(MaterialIconSet.RADIOACTIVE)
                 .buildAndRegister();
 
+        MEDIUM_LEVEL_RADIOACTIVE_WASTE = new Material.Builder(PhoenixCore.id("medium_level_radioactive_waste"))
+                .ingot()
+                .color(0x4d5447).secondaryColor(0x1a2e0a)
+                .iconSet(MaterialIconSet.RADIOACTIVE)
+                .buildAndRegister();
+
         NIOBIUM_MODIFIED_SILICON_CARBIDE = new Material.Builder(PhoenixCore.id("niobium_modified_silicon_carbide"))
                 .ingot()
                 .color(0x4A4B6B)
@@ -89,23 +94,6 @@ public class PhoenixFissionMaterials {
                 .blastTemp(4500, BlastProperty.GasTier.MID,
                         2000, 1800)
                 .formula("Nb(SiC)x")
-                .buildAndRegister();
-        IMPURE_ZIRCONIUM = new Material.Builder(PhoenixCore.id("impure_zirconium"))
-                .langValue("Impure Zirconium")
-                .dust()
-                .color(0x7F8C8D)
-                .secondaryColor(0x3A3F44)
-                .iconSet(MaterialIconSet.DULL)
-                .flags(MaterialFlags.DISABLE_DECOMPOSITION)
-                .buildAndRegister();
-
-        IMPURE_HAFNIUM = new Material.Builder(PhoenixCore.id("impure_hafnium"))
-                .langValue("Impure Hafnium")
-                .dust()
-                .color(0xA9A9A9)
-                .secondaryColor(0x4B4B4B)
-                .iconSet(MaterialIconSet.DULL)
-                .flags(MaterialFlags.DISABLE_DECOMPOSITION)
                 .buildAndRegister();
 
         CRYO_GRAPHITE_BINDING_SOLUTION = new Material.Builder(PhoenixCore.id("cryo_graphite_binding_solution"))

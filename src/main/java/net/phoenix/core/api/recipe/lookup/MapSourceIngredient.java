@@ -2,33 +2,31 @@ package net.phoenix.core.api.recipe.lookup;
 
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 
+import net.phoenix.core.common.data.recipe.custom.SourceIngredient;
+
 import java.util.Collections;
 import java.util.List;
 
 public class MapSourceIngredient extends AbstractMapIngredient {
 
-    public final Integer source;
+    public final SourceIngredient ingredient;
 
-    public MapSourceIngredient(Integer source) {
-        this.source = source;
+    public MapSourceIngredient(SourceIngredient ingredient) {
+        this.ingredient = ingredient;
     }
 
     @Override
     protected int hash() {
-        return MapSourceIngredient.class.hashCode();
+        return ingredient.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof MapSourceIngredient;
+        if (!(obj instanceof MapSourceIngredient other)) return false;
+        return other.ingredient.equals(this.ingredient);
     }
 
-    @Override
-    public String toString() {
-        return "MapSourceIngredient{" + "source=" + source + '}';
-    }
-
-    public static List<AbstractMapIngredient> convertToMapIngredient(Integer source) {
-        return Collections.singletonList(new MapSourceIngredient(source));
+    public static List<AbstractMapIngredient> convertToMapIngredient(SourceIngredient ingredient) {
+        return Collections.singletonList(new MapSourceIngredient(ingredient));
     }
 }

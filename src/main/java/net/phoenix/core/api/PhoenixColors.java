@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PhoenixColors {
+
     public static final Map<Character, Integer> CUSTOM_FORMATTING = new HashMap<>();
     public static final ThreadLocal<Character> LAST_CODE = ThreadLocal.withInitial(() -> ' ');
 
     public static void registerCustomColor(char code, int hex) {
         CUSTOM_FORMATTING.put(Character.toLowerCase(code), hex);
     }
+
     public static void loadColorsFromConfig() {
         // Access the String array instead of the List
         String[] colorDefinitions = PhoenixConfigs.INSTANCE.colors.customColors;

@@ -1,8 +1,6 @@
 package net.phoenix.core.common.data;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -24,7 +22,6 @@ public class PhoenixFissionMachineRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
         var assembler = GTRecipeTypes.ASSEMBLER_RECIPES;
-        var electro = GTRecipeTypes.ELECTROLYZER_RECIPES;
 
         assembler.recipeBuilder("fissile_heat_safe_casing")
                 .inputItems(TagPrefix.plate, ZIRCALLOY, 6)
@@ -34,7 +31,7 @@ public class PhoenixFissionMachineRecipes {
                 .inputFluids(FROST.getFluid(100))
                 .outputItems(PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING.asItem(), 2)
                 .duration(160)
-                .EUt(GTValues.HV / 2)
+                .EUt(VA[HV]) // Standardized from HV / 2
                 .save(provider);
 
         assembler.recipeBuilder("fissile_reaction_safe_casing")
@@ -45,7 +42,7 @@ public class PhoenixFissionMachineRecipes {
                 .inputFluids(StainlessSteel.getFluid(250))
                 .outputItems(PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING.asItem(), 2)
                 .duration(145)
-                .EUt(GTValues.HV / 2)
+                .EUt(VA[HV]) // Standardized from HV / 2
                 .save(provider);
 
         assembler.recipeBuilder("fisile_safe_gearbox_casing")
@@ -53,10 +50,10 @@ public class PhoenixFissionMachineRecipes {
                 .inputItems(TagPrefix.gear, ZIRCALLOY, 2)
                 .inputItems(TagPrefix.frameGt, ZIRCALLOY, 1)
                 .circuitMeta(4)
-                .inputFluids(Gold, 1000)
+                .inputFluids(Gold.getFluid(1000))
                 .outputItems(PhoenixFissionBlocks.FISSILE_SAFE_GEARBOX_CASING.asItem(), 2)
                 .duration(120)
-                .EUt(GTValues.LV / 2)
+                .EUt(VA[LV])
                 .save(provider);
 
         assembler.recipeBuilder("presurized_fission_reactor")
@@ -64,10 +61,10 @@ public class PhoenixFissionMachineRecipes {
                 .inputItems(TagPrefix.pipeLargeFluid, StainlessSteel, 8)
                 .inputItems(TagPrefix.frameGt, ZIRCALLOY, 4)
                 .inputItems(CustomTags.HV_CIRCUITS)
-                .inputFluids(SolderingAlloy, 613)
+                .inputFluids(SolderingAlloy.getFluid(613))
                 .outputItems(PhoenixFissionMachines.PRESSURIZED_FISSION_REACTOR, 1)
                 .duration(320)
-                .EUt(GTValues.HV / 2)
+                .EUt(VA[HV]) // Standardized from HV / 2
                 .save(provider);
 
         assembler.recipeBuilder("heat_exhanger")
@@ -76,10 +73,10 @@ public class PhoenixFissionMachineRecipes {
                 .inputItems(TagPrefix.plateDense, ZIRCALLOY, 2)
                 .inputItems(CustomTags.EV_CIRCUITS)
                 .inputItems(TagPrefix.pipeLargeFluid, Titanium, 2)
-                .inputFluids(SolderingAlloy, 613)
+                .inputFluids(SolderingAlloy.getFluid(613))
                 .outputItems(PhoenixFissionMachines.HEAT_EXCHANGER.asStack(), 1)
                 .duration(180)
-                .EUt(GTValues.EV / 2)
+                .EUt(VA[EV]) // Standardized from EV / 2
                 .save(provider);
 
         assembler.recipeBuilder("high_performnce_breeder_reactor")
@@ -89,38 +86,15 @@ public class PhoenixFissionMachineRecipes {
                 .inputItems(TagPrefix.gear, ZIRCALLOY, 2)
                 .inputItems(GTMachines.HULL[IV])
                 .inputItems(TagPrefix.rod, Uranium238, 16)
-                .inputFluids(CRYO_GRAPHITE_BINDING_SOLUTION, 6000)
+                .inputFluids(CRYO_GRAPHITE_BINDING_SOLUTION.getFluid(6000))
                 .outputItems(PhoenixFissionMachines.HIGH_PERFORMANCE_BREEDER_REACTOR.asStack(), 1)
                 .duration(800)
-                .EUt(IV / 2)
-                .save(provider);
-
-        assembler.recipeBuilder("graphite_moderator")
-                .inputItems(TagPrefix.plate, Steel, 4)
-                .inputItems(TagPrefix.dust, Graphite, 16)
-                .inputItems(TagPrefix.frameGt, Steel, 1)
-                .inputItems(GTItems.VOLTAGE_COIL_MV, 1)
-                .inputItems(CustomTags.MV_CIRCUITS)
-                .inputFluids(Steel, 576)
-                .outputItems(PhoenixFissionBlocks.MODERATOR_GRAPHITE.asItem(), 1)
-                .duration(450)
-                .EUt(VA[EV])
-                .save(provider);
-
-        assembler.recipeBuilder("basic_fission_cooler")
-                .inputItems(TagPrefix.frameGt, Steel, 2)
-                .inputItems(TagPrefix.rodLong, Steel, 3)
-                .inputItems(TagPrefix.rotor, Steel, 1)
-                .inputItems(CustomTags.HV_CIRCUITS)
-                .inputFluids(DistilledWater.getFluid(576))
-                .outputItems(PhoenixFissionBlocks.COOLER_BASIC.asItem(), 1)
-                .duration(450)
-                .EUt(VA[HV])
+                .EUt(VA[IV]) // Standardized from IV / 2
                 .save(provider);
 
         GTRecipeTypes.CHEMICAL_BATH_RECIPES.recipeBuilder(id("zirconium_dust_to_hafnium_chloride"))
                 .inputItems(TagPrefix.dust, Zirconium, 4)
-                .inputFluids(HydrochloricAcid, 1000)
+                .inputFluids(HydrochloricAcid.getFluid(1000))
                 .outputFluids(HAFNIUM_CHLORIDE.getFluid(2000))
                 .duration(200)
                 .EUt(VA[HV])
@@ -128,8 +102,8 @@ public class PhoenixFissionMachineRecipes {
 
         GTRecipeTypes.CENTRIFUGE_RECIPES.recipeBuilder(id("zircon_dust_processing"))
                 .inputItems(TagPrefix.dust, ZIRCON, 20)
-                .outputItems(TagPrefix.dust, IMPURE_ZIRCONIUM, 8)
-                .outputItems(TagPrefix.dust, IMPURE_HAFNIUM, 4)
+                .outputItems(TagPrefix.dustImpure, Zirconium, 8)
+                .outputItems(TagPrefix.dustImpure, Hafnium, 4)
                 .duration(400)
                 .EUt(VA[HV])
                 .save(provider);

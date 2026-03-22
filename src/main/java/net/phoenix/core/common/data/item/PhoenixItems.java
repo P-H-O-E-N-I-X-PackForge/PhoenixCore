@@ -37,9 +37,49 @@ public class PhoenixItems {
             .onRegister(c -> c.attachComponents(c))
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tools/tesla_binder")))
             .register();
+    public static ItemEntry<SoulLensItem> SOUL_LENS = REGISTRATE
+            .item("soul_lens", SoulLensItem::new)
+            .lang("Soul Lens")
+            .properties(p -> p.stacksTo(1))
+            .onRegister(c -> c.attachComponents(c))
+            .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/soul_lens")))
+            .register();
+
     public static ItemEntry<Item> HONEY_TREAT = REGISTRATE
             .item("honey_treat", Item::new)
-            .lang("§6Honey Treat")
+            .lang("§2Basic Fuel Rod")
+            .register();
+    public static ItemEntry<Item> BASIC_FUEL_ROD = REGISTRATE
+            .item("basic_fuel_rod", Item::new)
+            .lang("Basic Fuel Rod")
+            .register();
+    public static ItemEntry<Item> QUARRY_BEE = REGISTRATE
+            .item("quarry_bee", Item::new)
+            .lang("Quarry Bee")
+            .register();
+    public static ItemEntry<Item> LUMBER_BEE = REGISTRATE
+            .item("lumber_bee", Item::new)
+            .lang("Lumber Bee")
+            .register();
+    public static ItemEntry<Item> THORIUM_FUEL_PELLET = REGISTRATE
+            .item("thorium_fuel_pellet", Item::new)
+            .lang("§2Thorium Fuel Pellet")
+            .register();
+    public static ItemEntry<Item> U33_FUEL_PELLET = REGISTRATE
+            .item("u233_fuel_pellet", Item::new)
+            .lang("§aUranium-233 Fuel Pellet")
+            .register();
+    public static ItemEntry<Item> PLUTONIUM_241_FUEL_PELLET = REGISTRATE
+            .item("plutonium_241_fuel_pellet", Item::new)
+            .lang("§cPlutonium-241 Fuel Pellet")
+            .register();
+    public static ItemEntry<Item> U236_FUEL_PELLET = REGISTRATE
+            .item("u236_fuel_pellet", Item::new)
+            .lang("§aUranium-236 Fuel Pellet")
+            .register();
+    public static ItemEntry<Item> U235_FUEL_PELLET = REGISTRATE
+            .item("u235_fuel_pellet", Item::new)
+            .lang("§aUranium-235 Fuel Pellet")
             .register();
     public static ItemEntry<Item> ROYAL_JELLY = REGISTRATE
             .item("royal_jelly", Item::new)

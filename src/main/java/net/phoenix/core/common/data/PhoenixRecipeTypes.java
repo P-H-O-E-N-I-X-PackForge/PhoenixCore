@@ -27,7 +27,7 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType SWARM_NURTURING_RECIPES;
     public static GTRecipeType APIS_PROGENITOR_RECIPES;
     public static GTRecipeType MELLIFERIOUS_MATRIX_RECIPES;
-    public static GTRecipeType SOURCE_IMBUEMENT_RECIPES, SOURCE_REACTOR_RECIPES;
+    public static GTRecipeType SOURCE_IMBUEMENT_RECIPES, SOURCE_REACTOR_RECIPES, BIO_ENGINE_RECIPES;
     public static GTRecipeType SOURCE_EXTRACTION_RECIPES;
     public static GTRecipeType HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
@@ -100,6 +100,18 @@ public class PhoenixRecipeTypes {
                 .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.REPLICATOR)
                 .setEUIO(IO.IN)
+                .setUiBuilder((recipe, widgetGroup) -> {
+                    var size = widgetGroup.getSize();
+                    widgetGroup.setSize(size.width, size.height + 5);
+                });
+        BIO_ENGINE_RECIPES = register("bio_engine", MULTIBLOCK)
+                .setMaxIOSize(1, 1, 0, 1)
+                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
+                .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
+                .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
+                .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setSound(GTSoundEntries.REPLICATOR)
+                .setEUIO(IO.OUT)
                 .setUiBuilder((recipe, widgetGroup) -> {
                     var size = widgetGroup.getSize();
                     widgetGroup.setSize(size.width, size.height + 5);

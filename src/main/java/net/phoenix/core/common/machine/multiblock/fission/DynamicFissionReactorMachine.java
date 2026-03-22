@@ -19,9 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.block.IFissionCoolerType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
+import net.phoenix.core.configs.PhoenixConfigs;
 
 import lombok.Getter;
-import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;

@@ -34,7 +34,6 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachin
 import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
 import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MachineModifiers;
@@ -59,6 +58,9 @@ import net.phoenix.core.common.machine.multiblock.part.ShieldRenderProperty;
 import net.phoenix.core.common.machine.multiblock.part.fluid.PlasmaHatchPartMachine;
 import net.phoenix.core.common.machine.multiblock.part.special.ShieldSensorHatchPartMachine;
 import net.phoenix.core.common.machine.multiblock.part.special.SourceHatchPartMachine;
+import net.phoenix.core.common.machine.multiblock.source.AlchemicalImbuerMachine;
+import net.phoenix.core.common.machine.multiblock.source.BioAethericEngineMachine;
+import net.phoenix.core.common.machine.multiblock.source.SourceReactorMachine;
 import net.phoenix.core.common.registry.PhoenixRegistration;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.datagen.models.PhoenixMachineModels;
@@ -76,6 +78,7 @@ import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.*;
 import static com.gregtechceu.gtceu.common.data.machines.GTMachineUtils.*;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.*;
+import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.VOID_PRISM;
 import static net.phoenix.core.api.machine.PhoenixPartAbility.SOURCE_INPUT;
 import static net.phoenix.core.api.machine.PhoenixPartAbility.SOURCE_OUTPUT;
 import static net.phoenix.core.common.block.PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING;
@@ -1128,10 +1131,11 @@ public class PhoenixMachines {
     }
 
     public static final MultiblockMachineDefinition ALCHEMICAL_IMBUER = REGISTRATE
-            .multiblock("alchemical_imbuer", WorkableElectricMultiblockMachine::new)
+            .multiblock("alchemical_imbuer", AlchemicalImbuerMachine::new)
             .langValue("§5Alchemical Imbuer")
             .recipeTypes(PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES, PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES) // PhoenixRecipeTypes.SOURCE_IMBUMENT_RECIPES)//"SOURCE_IMBUMENT_RECIPES","SOURCE_EXTRACTION_RECIPES")
-            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, BATCH_MODE)
+            .recipeModifiers(AlchemicalImbuerMachine::recipeModifier, GTRecipeModifiers.OC_NON_PERFECT_SUBTICK,
+                    BATCH_MODE)
             .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .rotationState(RotationState.NON_Y_AXIS)
             .pattern(definition -> FactoryBlockPattern.start()
@@ -1175,13 +1179,11 @@ public class PhoenixMachines {
             .register();
 
     public static final MultiblockMachineDefinition SOURCE_REACTOR = REGISTRATE
-            .multiblock("source_reactor", WorkableElectricMultiblockMachine::new)
-            .conditionalTooltip(defaultEnvironmentRequirement(),
-                    ConfigHolder.INSTANCE.gameplay.environmentalHazards)
+            .multiblock("source_reactor", SourceReactorMachine::new)
             .rotationState(RotationState.ALL)
             .langValue("§5Source Reactor")
             .recipeType(PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES)
-            .recipeModifiers(DEFAULT_ENVIRONMENT_REQUIREMENT, OC_PERFECT_SUBTICK, BATCH_MODE)
+            .recipeModifiers(SourceReactorMachine::recipeModifier, OC_NON_PERFECT_SUBTICK, BATCH_MODE)
             .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .pattern(definition -> {
                 var casing = blocks(SOURCE_FIBER_MACHINE_CASING.get()).setMinGlobalLimited(10);
@@ -1198,6 +1200,47 @@ public class PhoenixMachines {
             })
             .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
                     PhoenixCore.id("block/multiblock/source_spin"))
+            .register();
+    public static final MultiblockMachineDefinition BIO_AETHERIC_ENGINE = REGISTRATE
+            .multiblock("bio_aetheric_engine", BioAethericEngineMachine::new)
+            .rotationState(RotationState.ALL)
+            .langValue("§dBio Aetheric Engine")
+            .recipeType(PhoenixRecipeTypes.BIO_ENGINE_RECIPES)
+            .recipeModifiers(BioAethericEngineMachine::recipeModifier, BATCH_MODE)
+            .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BBCBB", "BBHBB", "CHBHC", "BBHBB", "BBCBB")
+                        .aisle("BBCBB", "BHCHB", "CCICC", "BHCHB", "BBCBB")
+                        .aisle("BBBBB", "BCCCB", "CCFCC", "BCCCB", "BBCBB")
+                        .aisle("BBBBB", "BCCCB", "CCBCC", "BCCCB", "BBCBB")
+                        .aisle("BBBBB", "BCCCB", "BGBGB", "BCCCB", "BBBBB")
+                        .aisle("BBBBB", "BCCCB", "BGBGB", "BCCCB", "BBBBB")
+                        .aisle("BBBBB", "BCCCB", "BGBGB", "BCCCB", "BBBBB")
+                        .aisle("BEBEB", "BCCCB", "BCFCB", "BCCCB", "BBBBB")
+                        .aisle("BBBBB", "BBCBB", "BCDCB", "BBCBB", "BBBBB")
+                        .where('B', Predicates.any())
+                        .where('C',
+                                Predicates.blocks(SOURCE_FIBER_MACHINE_CASING.get())
+                                        .or(Predicates.abilities(SOURCE_INPUT).setPreviewCount(1))
+                                        .or(Predicates.autoAbilities(definition.getRecipeTypes()))
+                                        .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
+                        .where('E', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, SOURCE_IMBUED_TITANIUM)))
+                        .where('H', blocks(VOID_PRISM.get()))
+                        .where('G', blocks(GTBlocks.CLEANROOM_GLASS.get()))
+                        .where('D', Predicates.controller(blocks(definition.getBlock())))
+                        .where('F', blocks(CASING_TITANIUM_GEARBOX.get()))
+                        .where('I', Predicates.abilities(PartAbility.MUFFLER))
+                        .build();
+            })
+            .model(
+                    createWorkableCasingMachineModel(
+                            PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                            GTCEu.id("block/multiblock/generator/large_gas_turbine"))
+                            .andThen(d -> d
+                                    .addDynamicRenderer(
+                                            PhoenixDynamicRenderHelpers::getEngineGearboxRenderer)))
+            .hasBER(true)
             .register();
 
     public static void init() {}

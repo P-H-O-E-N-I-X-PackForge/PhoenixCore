@@ -113,14 +113,16 @@ public class FissionFuelRodBlock extends ActiveBlock {
 
     public enum FissionFuelRodTypes implements StringRepresentable, IFissionFuelRodType {
 
-        // Example: uranium fuel rod has neutral bias
-        URANIUM("uranium_fuel_rod",
-                500, 1,
-                1200, 1,
-                "gtceu:uranium_nugget",
-                "gtceu:plutonium_nugget",
-                0xFF7DE7FF,
-                4);
+        T1_FUEL_ROD("t1_fuel_rod", 50, 1, 1500, 1, "gtceu:uranium_238_dust", "phoenixcore:low_level_radioactive_waste",
+                0xFF62FF57, 0),
+        T2_FUEL_ROD("t2_fuel_rod", 150, 2, 2500, 1, "gtceu:uranium_238_dust", "phoenixcore:low_level_radioactive_waste",
+                0xFF8AFF57, 1),
+        T3_FUEL_ROD("t3_fuel_rod", 500, 3, 3500, 1, "kubejs:u235_fuel_pellet", "phoenixcore:spent_uranium_235_nugget",
+                0xFF57FFD2, 5),
+        T4_FUEL_ROD("t4_fuel_rod", 1200, 4, 4500, 1, "kubejs:plutonium_241_fuel_pellet",
+                "phoenixcore:depleted_plutonium_241_nugget", 0xFF57A8FF, 12),
+        T5_FUEL_ROD("t5_fuel_rod", 3000, 5, 8000, 1, "kubejs:u242_fuel_pellet", "phoenixcore:spent_uranium_242_nugget",
+                0xFFFF5757, 30);
 
         @Getter
         @NotNull

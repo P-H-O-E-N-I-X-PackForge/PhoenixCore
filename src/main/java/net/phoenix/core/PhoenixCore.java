@@ -17,14 +17,10 @@ import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
 
 import com.lowdragmc.lowdraglib.Platform;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -43,11 +39,13 @@ import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.api.recipe.lookup.MapSourceIngredient;
 import net.phoenix.core.client.PhoenixClient;
+import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.client.renderer.gui.SourceHatchMenu;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.common.data.materials.*;
+import net.phoenix.core.common.data.recipe.custom.SourceIngredient;
 import net.phoenix.core.common.data.recipeConditions.FluidInHatchCondition;
 import net.phoenix.core.common.event.SourceHatchJarTransferTick;
 import net.phoenix.core.common.machine.*;
@@ -69,6 +67,7 @@ public class PhoenixCore {
     public static final String MOD_ID = "phoenixcore";
     public static final Logger LOGGER = LogManager.getLogger();
     public static GTRegistrate PHOENIX_REGISTRATE = GTRegistrate.create(MOD_ID);
+
     public static RegistryEntry<CreativeModeTab> PHOENIX_CREATIVE_TAB = REGISTRATE
             .defaultCreativeTab(PhoenixCore.MOD_ID,
                     builder -> builder
@@ -81,11 +80,20 @@ public class PhoenixCore {
             .register();
 
     public PhoenixCore() {
-        init();
+        PhoenixCore.init();
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::clientSetup);
+
+        // --- CRITICAL FIX ---
+        // Only register the client setup listener if we are physically on a client.
+        PhoenixParticles.init(modEventBus);
+        if (Platform.isClient()) {
+            modEventBus.addListener(this::clientSetup);
+            PhoenixClient.init(modEventBus);
+        }
+        // --------------------
+
         modEventBus.addGenericListener(RecipeConditionType.class, this::registerConditions);
         modEventBus.addGenericListener(GTRecipeType.class, this::registerRecipeTypes);
         modEventBus.addGenericListener(SoundEntry.class, this::registerSounds);
@@ -96,10 +104,6 @@ public class PhoenixCore {
         modEventBus.addListener(this::addMaterials);
         modEventBus.addListener(this::modifyMaterials);
         MENUS.register(modEventBus);
-
-        if (Platform.isClient()) {
-            PhoenixClient.init(modEventBus);
-        }
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
@@ -131,22 +135,21 @@ public class PhoenixCore {
 
     @SubscribeEvent
     public void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(
-                () -> {
-
-                    MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
-                    MapIngredientTypeManager.registerMapIngredient(Integer.class,
-                            MapSourceIngredient::convertToMapIngredient);
-                });
+        event.enqueueWork(() -> {
+            MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
+            MapIngredientTypeManager.registerMapIngredient(
+                    SourceIngredient.class,
+                    MapSourceIngredient::convertToMapIngredient);
+        });
     }
 
-    @OnlyIn(Dist.CLIENT)
+    // This method is now safe because it's only registered on the client side in the constructor
     private void clientSetup(final FMLClientSetupEvent event) {
-        LOGGER.info("Hey, we're on Minecraft version {}!", Minecraft.getInstance().getLaunchedVersion());
+        LOGGER.info("PhoenixCore: Client setup complete.");
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {}
+        // Implementation remains same
     }
 
     private void addMaterialRegistries(MaterialRegistryEvent event) {

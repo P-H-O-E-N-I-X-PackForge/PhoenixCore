@@ -10,7 +10,6 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
@@ -19,10 +18,8 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.client.particle.TeslaSparkParticle;
 import net.phoenix.core.client.renderer.NukePrimedRenderer;
 import net.phoenix.core.client.renderer.gui.SourceHatchScreen;
@@ -35,13 +32,6 @@ import org.jetbrains.annotations.NotNull;
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PhoenixClient {
 
-    // --- 1. PARTICLE REGISTRY ---
-    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister
-            .create(ForgeRegistries.PARTICLE_TYPES, PhoenixCore.MOD_ID);
-
-    public static final RegistryObject<SimpleParticleType> TESLA_SPARK = PARTICLES.register("tesla_spark",
-            () -> new SimpleParticleType(false));
-
     private PhoenixClient() {}
 
     /**
@@ -50,7 +40,6 @@ public class PhoenixClient {
     public static void init(IEventBus modBus) {
         // FIX: This tells Forge to actually look at our particle list.
         // Without this, TESLA_SPARK.get() returns null!
-        PARTICLES.register(modBus);
 
         // GTCEu Dynamic Renders
         DynamicRenderManager.register(PhoenixCore.id("eye_of_harmony"), EyeOfHarmonyRender.TYPE);
@@ -60,13 +49,14 @@ public class PhoenixClient {
         DynamicRenderManager.register(PhoenixCore.id("helical_fusion"), HelicalFusionRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("honey_chamber"), HoneyChamberDynamicRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("tesla_tower"), TeslaTowerRenderer.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("engine_gearbox"), EngineGearboxRenderer.TYPE);
     }
 
     // --- 2. PARTICLE FACTORY REGISTRATION ---
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-        // Tells the game: "When you see TESLA_SPARK data, use this Provider to build the particle"
-        event.registerSpriteSet(TESLA_SPARK.get(), TeslaSparkProvider::new);
+        // Reference the common registry object
+        event.registerSpriteSet(PhoenixParticles.TESLA_SPARK.get(), TeslaSparkProvider::new);
     }
 
     /**

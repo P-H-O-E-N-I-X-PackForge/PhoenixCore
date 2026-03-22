@@ -46,7 +46,6 @@ public class FissionBlanketBlock extends ActiveBlock {
         tooltip.add(Component.translatable("phoenix.fission.blanket_input", inputName)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
 
-        // NEW: show distribution of outputs instead of a single output key
         tooltip.add(Component.translatable("phoenix.fission.blanket_outputs")
                 .withStyle(ChatFormatting.GOLD));
 
@@ -82,21 +81,15 @@ public class FissionBlanketBlock extends ActiveBlock {
 
     public enum BreederBlanketTypes implements StringRepresentable, IFissionBlanketType {
 
-        PLUTONIUM_BREEDER("plutonium_breeder",
-                2, 2400, 1,
-                "gtceu:uranium_238_nugget",
-                List.of(
-                        new BlanketOutput("gtceu:plutonium_nugget", 70, 1),
-                        new BlanketOutput("gtceu:plutonium_241_nugget", 20, 3),
-                        new BlanketOutput("gtceu:plutonium_238_nugget", 10, 4)),
-                0xFFB07CFF),
-
-        THORIUM_BREEDER("thorium_breeder",
-                1, 240, 1,
-                "gtceu:uranium_235_nugget",
-                List.of(
-                        new BlanketOutput("gtceu:plutonium_nugget", 85, 1),
-                        new BlanketOutput("gtceu:plutonium_241_nugget", 15, 3)),
+        THORIUM_BLANKET("thorium_blanket", 1, 3500, 4, "kubejs:thorium_fuel_pellet",
+                List.of(new BlanketOutput("phoenixcore:irradiated_thorium_nugget", 100, 1)), 0xFFD2FF57),
+        U236_BLANKET("u236_blanket", 2, 4500, 4, "kubejs:u236_fuel_pellet",
+                List.of(new BlanketOutput("phoenixcore:irradiated_uranium_236_nugget", 100, 1)), 0xFF57D2FF),
+        LEAD_BLANKET("lead_blanket", 3, 2000, 1, "gtceu:lead_dust",
+                List.of(new BlanketOutput("gtceu:bismuth_dust", 100, 1)), 0xFFB0B0B0),
+        HEAVY_BLANKET("heavy_blanket", 4, 6000, 1, "gtceu:uranium_238_dust",
+                List.of(new BlanketOutput("gtceu:uranium_242_nugget", 80, 1),
+                        new BlanketOutput("gtceu:plutonium_241_nugget", 20, 1)),
                 0xFFFFD27D);
 
         @Getter

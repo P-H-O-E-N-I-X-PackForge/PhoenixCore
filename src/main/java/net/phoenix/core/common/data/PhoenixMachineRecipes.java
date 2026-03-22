@@ -1,11 +1,10 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
-import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +14,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.api.capability.SourceRecipeCapability;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.item.PhoenixItems;
+import net.phoenix.core.common.data.materials.PhoenixBeeMaterials;
+import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.common.data.materials.PhoenixOres;
+import net.phoenix.core.common.data.recipe.custom.SourceIngredient;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import java.util.function.Consumer;
@@ -25,14 +27,14 @@ import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
-import static com.gregtechceu.gtceu.common.data.GTMachines.HULL;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 import static com.gregtechceu.gtceu.common.data.machines.GTResearchMachines.*;
-import static com.gregtechceu.gtceu.data.recipe.CustomTags.UHV_CIRCUITS;
 import static com.gregtechceu.gtceu.data.recipe.GTCraftingComponents.*;
 import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_GEM_BLOCK;
 import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
+import static net.phoenix.core.common.data.PhoenixRecipeTypes.*;
+import static net.phoenix.core.common.data.item.PhoenixItems.HONEY_COMB_BASE;
 import static net.phoenix.core.common.data.materials.PhoenixMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 import static net.phoenix.core.common.data.recipe.generated.TeslaHatchRecipes.*;
@@ -173,7 +175,7 @@ public class PhoenixMachineRecipes {
                 .inputFluids(Tritium.getFluid(125))
                 .outputFluids(Helium.getFluid(FluidStorageKeys.PLASMA, 125))
                 .duration(16)
-                .input(SourceRecipeCapability.CAP, 2)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(2))
                 .EUt(4096)
                 .fusionStartEU(40_000_000)
                 .save(provider);
@@ -181,7 +183,7 @@ public class PhoenixMachineRecipes {
                 .inputFluids(Deuterium.getFluid(125))
                 .outputFluids(Helium.getFluid(FluidStorageKeys.PLASMA, 125))
                 .duration(16)
-                .output(SourceRecipeCapability.CAP, 2)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(2))
                 .EUt(4096)
                 .save(provider);
 
@@ -291,14 +293,14 @@ public class PhoenixMachineRecipes {
 
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_imbued_titanium")
                 .inputItems(ingot, Titanium, 1)
-                .input(SourceRecipeCapability.CAP, 180)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(180))
                 .duration(160)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .outputItems(ingot, SOURCE_IMBUED_TITANIUM, 1)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_gem")
                 .inputItems(gem, Amethyst, 1)
-                .input(SourceRecipeCapability.CAP, 20)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(20))
                 .duration(40)
                 .EUt(GTValues.VA[GTValues.HV] / 2)
                 .outputItems(SOURCE_GEM, 2)
@@ -312,7 +314,7 @@ public class PhoenixMachineRecipes {
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("85_percent_pure_nevonian_steel_cooling")
                 .inputItems(ingotHot, EightyFivePercentPureNevonianSteel, 1)
-                .input(SourceRecipeCapability.CAP, 250)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(250))
                 .duration(400)
                 .EUt(GTValues.VA[GTValues.EV] / 2)
                 .outputItems(ingot, EightyFivePercentPureNevonianSteel, 1)
@@ -320,63 +322,115 @@ public class PhoenixMachineRecipes {
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_wheat")
                 .inputItems(new ItemStack(Items.WHEAT), 3)
                 .circuitMeta(1)
-                .output(SourceRecipeCapability.CAP, 14)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(140))
                 .duration(210)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_flowers")
                 .inputItems(PTags.FLOWERS, 3)
-                .output(SourceRecipeCapability.CAP, 18)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(180))
                 .duration(170)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_crops")
                 .inputItems(PTags.CROPS, 3)
-                .output(SourceRecipeCapability.CAP, 18)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(180))
                 .duration(180)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_mushrooms")
                 .inputItems(PTags.MUSHROOMS, 4)
-                .output(SourceRecipeCapability.CAP, 16)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(160))
                 .duration(165)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coal")
                 .inputItems(gem, Coal, 2)
-                .output(SourceRecipeCapability.CAP, 15)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(150))
                 .duration(240)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_coke")
                 .inputItems(gem, Coke, 1)
-                .output(SourceRecipeCapability.CAP, 15)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(150))
                 .duration(270)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_charcoal")
                 .inputItems(gem, Charcoal, 2)
-                .output(SourceRecipeCapability.CAP, 16)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(160))
                 .duration(230)
                 .EUt(GTValues.VA[GTValues.HV] / 2, 5)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_logs")
                 .inputItems(PTags.LOGS, 4)
-                .output(SourceRecipeCapability.CAP, 15)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(150))
                 .duration(200)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_planks")
                 .inputItems(PTags.PLANKS, 4)
-                .output(SourceRecipeCapability.CAP, 13)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(130))
                 .duration(200)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
                 .save(provider);
         PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.recipeBuilder("source_from_lava")
                 .inputFluids(Lava, 1000)
-                .output(SourceRecipeCapability.CAP, 15)
+                .output(SourceRecipeCapability.CAP, new SourceIngredient(150))
                 .duration(260)
                 .EUt(GTValues.VA[GTValues.HV] / 3)
+                .save(provider);
+
+        CENTRIFUGE_RECIPES.recipeBuilder("honey_reduction_to_jelly")
+                .inputFluids(PhoenixBeeMaterials.HONEY.getFluid(2000))
+                .outputItems(PhoenixItems.ROYAL_JELLY)
+                .duration(400)
+                .EUt(VA[MV])
+                .save(provider);
+
+        // 1. Resonant Ender Catalyst (The Gem Root)
+        APIS_PROGENITOR_RECIPES.recipeBuilder("synth_resonant_ender")
+                .inputItems(HONEY_COMB_BASE)
+                .inputItems(PhoenixItems.ROYAL_JELLY, 4)
+                .inputItems(TagPrefix.block, GTMaterials.EnderPearl, 4)
+                .outputItems(PhoenixMaterialFlags.tier_one_bee, RESONANT_ENDER)
+                .duration(600).EUt(VA[IV])
+                .save(provider);
+
+        // 2. Iron Catalyst (The Metal Root)
+        APIS_PROGENITOR_RECIPES.recipeBuilder("synth_iron")
+                .inputItems(HONEY_COMB_BASE)
+                .inputItems(PhoenixItems.ROYAL_JELLY, 4)
+                .inputItems(new ItemStack(Items.IRON_BLOCK, 4))
+                .outputItems(PhoenixMaterialFlags.tier_one_bee, Iron)
+                .duration(600).EUt(VA[IV])
+                .save(provider);
+
+        // 3. Coal Catalyst (The Earth Root)
+        APIS_PROGENITOR_RECIPES.recipeBuilder("synth_coal")
+                .inputItems(HONEY_COMB_BASE)
+                .inputItems(PhoenixItems.ROYAL_JELLY, 4)
+                .inputItems(new ItemStack(Items.COAL_BLOCK, 4))
+                .outputItems(PhoenixMaterialFlags.tier_one_bee, GTMaterials.Coal)
+                .duration(400).EUt(VA[IV])
+                .save(provider);
+
+        // 4. Quarry Catalyst (The Utility Root)
+        APIS_PROGENITOR_RECIPES.recipeBuilder("synth_quarry")
+                .inputItems(HONEY_COMB_BASE)
+                .inputItems(PhoenixItems.ROYAL_JELLY, 4)
+                .inputItems(TagPrefix.block, GTMaterials.Stone, 16)
+                .outputItems(PhoenixItems.QUARRY_BEE)
+                .duration(400).EUt(VA[IV])
+                .save(provider);
+
+        // 5. Lumber Catalyst (The Nature Root)
+        APIS_PROGENITOR_RECIPES.recipeBuilder("synth_lumber")
+                .inputItems(HONEY_COMB_BASE)
+                .inputItems(PhoenixItems.ROYAL_JELLY, 4)
+                .inputItems(PTags.LOGS, 16)
+                .outputItems(PhoenixItems.LUMBER_BEE)
+                .duration(400).EUt(VA[IV])
                 .save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("alchemical_imbuer")
@@ -391,33 +445,40 @@ public class PhoenixMachineRecipes {
                 .EUt(VA[HV] / 2)
                 .save(provider);
 
-        PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
+        SOURCE_REACTOR_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
                 .inputItems(gemExquisite, Coke, 4)
                 .inputItems(dust, Diamond, 16)
                 .inputItems(dust, PhoenixOres.NEVVONIAN_IRON, 2)
                 .inputFluids(Titanium, 250)
-                .input(SourceRecipeCapability.CAP, 120)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(1200))
                 .outputFluids(TitaniumTetrachloride.getFluid(100))
                 .outputItems(dust, EightyFivePercentPureNevonianSteel, 4)
                 .duration(800)
                 .EUt(GTValues.VA[GTValues.EV])
                 .save(provider);
+        BIO_ENGINE_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
+                .inputItems(gemExquisite, Coke, 4)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(1200))
+                .outputItems(dust, EightyFivePercentPureNevonianSteel, 4)
+                .duration(800)
+                .EUt(-100)
+                .save(provider);
 
-        PhoenixRecipeTypes.SOURCE_REACTOR_RECIPES.recipeBuilder("source_titanium_filament_alloy")
+        SOURCE_REACTOR_RECIPES.recipeBuilder("source_titanium_filament_alloy")
                 .inputItems(dust, Titanium, 4)
                 .inputItems(SOURCE_GEM, 64)
                 .inputItems(dust, Molybdenum, 2)
-                .input(SourceRecipeCapability.CAP, 220)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(2200))
                 .outputItems(dust, SOURCE_TITANIUM_FILAMENT, 22)
                 .duration(200)
                 .EUt(VA[EV])
                 .save(provider);
 
-        GTRecipeTypes.LARGE_CHEMICAL_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_base")
+        SOURCE_REACTOR_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_base")
                 .inputFluids(DrillingFluid.getFluid(500))
                 .inputFluids(FROST.getFluid(250))
                 .inputFluids(CRYO_EMBER_FLUID.getFluid(25000))
-                .input(SourceRecipeCapability.CAP, 140)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(1400))
                 .inputItems(dust, PhoenixOres.PERMAFROST, 1)
                 .inputItems(dust, EnderEye, 1)
                 .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(1000))
@@ -425,9 +486,9 @@ public class PhoenixMachineRecipes {
                 .EUt(VA[EV] / 2)
                 .save(provider);
 
-        GTRecipeTypes.LARGE_CHEMICAL_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_better")
+        SOURCE_REACTOR_RECIPES.recipeBuilder("voidic_drilling_fluid_recipe_better")
                 .inputFluids(DrillingFluid.getFluid(500))
-                .input(SourceRecipeCapability.CAP, 140)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(1400))
                 .inputItems(dust, PhoenixOres.CRYSTALLIZED_FLUXSTONE, 1)
                 .outputFluids(VOIDIC_DRILLING_FLUID.getFluid(3000))
                 .duration(300)
@@ -464,14 +525,5 @@ public class PhoenixMachineRecipes {
                 .duration(75)
                 .EUt(VA[HV])
                 .save(provider);
-
-        VanillaRecipeHelper.addShapedRecipe(provider, "parallel_hatch_mk8",
-                ENERGY_INPUT_HATCH[1].asStack(1),
-                "SZE", "ZHZ", "CZC",
-                'S', SENSOR_UV.asStack(),
-                'E', EMITTER_UV.asStack(),
-                'Z', UHV_CIRCUITS,
-                'H', HULL[UV].asStack(),
-                'C', new MaterialEntry(cableGtDouble, YttriumBariumCuprate));
     }
 }

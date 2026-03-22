@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.phoenix.core.client.PhoenixClient;
+import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.client.renderer.PhoenixRenderTypes;
 import net.phoenix.core.common.machine.multiblock.electric.TeslaTowerMachine;
 
@@ -66,7 +66,7 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
 
         float[] yPositions = new float[] { 5.0f, 14.0f, 22.0f };
         float[] xPositions = new float[] { 2.5f, 2.5f, 2.5f };
-        float[] zPositions = new float[] { -2.0f, -2.0f, -2.0f };
+        float[] zPositions = new float[] { 10.0f, 10.0f, 10.0f };
 
         poseStack.pushPose();
         poseStack.translate(-1.5, 0.5, -3.5);
@@ -91,14 +91,14 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
                 if ((time + i * 7 + ringIndex * 13) % 12 < 5) {
                     renderArc(poseStack, vc, currentTopCenter, targetPos, time);
 
+                    // Inside TeslaTowerRenderer.java, inside the render loop:
                     if (machine.getLevel().random.nextFloat() < 0.05f) {
                         machine.getLevel().addParticle(
-                                PhoenixClient.TESLA_SPARK.get(),
+                                PhoenixParticles.TESLA_SPARK.get(), // Update this reference
                                 targetPos.x + machine.getPos().getX() + 0.5,
                                 targetPos.y + machine.getPos().getY() + 0.5,
                                 targetPos.z + machine.getPos().getZ() + 0.5,
-                                0.0, 0.0, 0.0 // Add these three zeros
-                        );
+                                0.0, 0.0, 0.0);
                     }
                 }
             }

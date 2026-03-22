@@ -10,8 +10,6 @@
     "ars.DominionWandMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
     "minecraft.ItemStackTooltipMixin",
-    "minecraft.MixinChatFormatting",
-    "minecraft.MixinTextColor"
   ],
   "client": [
     "ars.RelayTileMixin",

@@ -111,6 +111,9 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.peanut_butter", "Peanut Butter");
 
         provider.add("material.phoenixcore.polarity_flipped_bismuthite", "§bPolarity Flipped Bismuthite");
+        provider.add("material.phoenixcore.eighty_five_percent_pure_nevonian_steel",
+                "§6Eighty Five Percent Pure Nevonian Steel");
+        provider.add("material.phoenixcore.aurum_wood", "§6Aurum Wood");
         provider.add("material.phoenixcore.crystallized_fluxstone", "§dCrystallized Fluxstone");
         provider.add("material.phoenixcore.nevvonian_iron", "§7Nevvonian Iron");
         provider.add("material.phoenixcore.fluorite", "§aFluorite");
@@ -146,6 +149,7 @@ public class PhoenixMaterialLangHandler {
         provider.add("material.phoenixcore.space_grade_steel", "Space Grade Steel");
         addMaterialLang(provider, "superconductive_honey", "§6Superconductive Honey");
         addMaterialLang(provider, "low_level_radioactive_waste", "Low Level Radioactive Waste");
+        addMaterialLang(provider, "medium_level_radioactive_waste", "Medium Level Radioactive Waste");
         addMaterialLang(provider, "impure_hafnium", "Impure Hafnium");
         addMaterialLang(provider, "exotic_fission_concentrate", "Exotic Fission Concentrate");
         addMaterialLang(provider, "plutonium_fission_ash", "Plutonium Fission Ash");

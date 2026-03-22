@@ -44,6 +44,8 @@ import net.phoenix.core.utils.TeamUtils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -53,6 +55,8 @@ import static net.phoenix.core.api.gui.PhoenixGuiTextures.TESLA_BACKGROUND;
 
 public class TeslaBinderItem extends ComponentItem
                              implements IItemUIFactory, IInteractionItem, IAddInformation {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("TeslaBinder");
 
     public TeslaBinderItem(Properties properties) {
         super(properties);
@@ -79,10 +83,10 @@ public class TeslaBinderItem extends ComponentItem
         Level level = context.getLevel();
         BlockPos clickedPos = context.getClickedPos();
         MetaMachine machine = MetaMachine.getMachine(level, clickedPos); // Checks if the clicked block is a meta
-                                                                         // machine, holds that data for further use.
+        // machine, holds that data for further use.
 
         if (machine instanceof IDataStickInteractable interactable) { // If the machine clicked is data stick
-                                                                      // interactable, hands off the logic.
+            // interactable, hands off the logic.
             return player.isShiftKeyDown() ?
                     interactable.onDataStickShiftUse(player, itemStack) :
                     interactable.onDataStickUse(player, itemStack);
@@ -91,20 +95,27 @@ public class TeslaBinderItem extends ComponentItem
         if (!level.isClientSide && machine != null) { // If clicked on a machine, runs.
             if (level instanceof ServerLevel serverLevel &&
                     machine instanceof TieredEnergyMachine tiered && tiered.energyContainer != null) { // If on the
-                                                                                                       // server level
-                                                                                                       // and has an
-                                                                                                       // energy
-                                                                                                       // container,
-                                                                                                       // runs.
+                // server level
+                // and has an
+                // energy
+                // container,
+                // runs.
 
                 CompoundTag tag = itemStack.getOrCreateTag();
                 if (tag.hasUUID("TargetTeam")) {
                     UUID teamUUID = tag.getUUID("TargetTeam");
                     TeslaTeamEnergyData data = TeslaTeamEnergyData.get(serverLevel);
 
+                    // --- LOGGING ---
+                    LOGGER.info("[TeslaBinder] onItemUseFirst: player={} clicking machine at {}",
+                            player.getName().getString(), clickedPos);
+                    LOGGER.info("[TeslaBinder] TargetTeam UUID from tag: {}", teamUUID);
+                    LOGGER.info("[TeslaBinder] Machine type: {}", machine.getClass().getSimpleName());
+                    // --- END LOGGING ---
+
                     boolean isNowLinked = data.toggleSoulLink(teamUUID, level, clickedPos); // Is activated when machine
-                                                                                            // is right-clicked with
-                                                                                            // bound binder.
+                    // is right-clicked with
+                    // bound binder.
 
                     if (isNowLinked) { // If the machine is linked, runs.
                         player.sendSystemMessage(
@@ -113,7 +124,7 @@ public class TeslaBinderItem extends ComponentItem
                         serverLevel.playSound(null, clickedPos, SoundEvents.BEACON_POWER_SELECT,
                                 SoundSource.PLAYERS, 1f, 1.5f);
                     } else { // If still clicking on a matching machine but is already linked, removes the block pos and
-                             // machine name from list of linked machines.
+                        // machine name from list of linked machines.
                         if (tag.contains("MachineData")) {
                             ListTag machineList = tag.getList("MachineData", Tag.TAG_COMPOUND);
                             long targetPosLong = clickedPos.asLong();
@@ -135,14 +146,14 @@ public class TeslaBinderItem extends ComponentItem
                     return InteractionResult.SUCCESS;
 
                 } else { // If clicking on a machine but the binder is not bound to player, fail but pass a chat
-                         // message.
+                    // message.
                     player.sendSystemMessage(
                             Component.literal("Binder is not initialized. Shift-Right Click the air first.")
                                     .withStyle(ChatFormatting.RED));
                     return InteractionResult.FAIL;
                 }
             } else { // If clicking on a machine but does not have an internal energy buffer, fails but passes a
-                     // message.
+                // message.
                 player.sendSystemMessage(Component.literal("Invalid Target: Machine has no internal soul-buffer.")
                         .withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
@@ -189,8 +200,13 @@ public class TeslaBinderItem extends ComponentItem
         if (!level.isClientSide) {
             CompoundTag tag = stack.getOrCreateTag();
             if (tag.hasUUID("TargetTeam")) {
+                LOGGER.info("[TeslaBinder] use(): player={} opening UI, TargetTeam={}", player.getName().getString(),
+                        tag.getUUID("TargetTeam"));
                 level.playSound(null, player.blockPosition(),
                         SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 0.4f, 1.5f);
+            } else {
+                LOGGER.info("[TeslaBinder] use(): player={} has no TargetTeam tag, UI will not open",
+                        player.getName().getString());
             }
         }
 
@@ -199,14 +215,16 @@ public class TeslaBinderItem extends ComponentItem
 
     // Handles the linking of the player/team data onto the Telsa Binder.
     private void bindToPlayer(Player player, ItemStack stack) {
-        UUID uuid = player.getUUID(); // Unique player id.
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        UUID teamUUID = TeamUtils.getTeamIdOrPlayerFallback(serverPlayer);
         var tag = stack.getOrCreateTag();
-        tag.putUUID("TargetTeam", uuid);
+        tag.putUUID("TargetTeam", teamUUID);
         tag.putString("OwnerName", player.getName().getString());
-        tag.putString("TeamName", player.getName().getString() + "'s Network");
+        tag.putString("TeamName", TeamUtils.getTeamName(teamUUID));
 
         if (player.level() instanceof ServerLevel server) {
-            TeslaTeamEnergyData.get(server).getOrCreate(uuid);
+            TeslaTeamEnergyData.get(server).getOrCreate(teamUUID);
             server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2,
                     0.2, 0.02);
             player.playSound(SoundEvents.PLAYER_LEVELUP, 0.5f, 1.5f);
@@ -572,11 +590,21 @@ public class TeslaBinderItem extends ComponentItem
         CompoundTag tag = stack.getOrCreateTag();
         if (tag.hasUUID("TargetTeam")) {
             UUID teamUUID = tag.getUUID("TargetTeam");
+
             ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
             if (overworld == null) return;
 
             TeslaTeamEnergyData globalData = TeslaTeamEnergyData.get(overworld);
             TeslaTeamEnergyData.TeamEnergy team = globalData.getOrCreate(teamUUID);
+
+            // --- LOGGING ---
+            LOGGER.info("[TeslaBinder] inventoryTick: player={} teamUUID={}", serverPlayer.getName().getString(),
+                    teamUUID);
+            LOGGER.info("[TeslaBinder] Team stored={} capacity={}", team.stored, team.capacity);
+            LOGGER.info("[TeslaBinder] Hatches found: {}", globalData.getHatches(teamUUID).size());
+            LOGGER.info("[TeslaBinder] Soul-linked machines: {}", team.soulLinkedMachines.size());
+            LOGGER.info("[TeslaBinder] Active chargers: {}", team.activeChargers.size());
+            // --- END LOGGING ---
 
             tag.putString("StoredEU", team.stored.toString());
             tag.putString("CapacityEU", team.capacity.toString());

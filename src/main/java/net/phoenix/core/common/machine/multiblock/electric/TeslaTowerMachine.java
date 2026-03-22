@@ -285,10 +285,60 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         }
     }
 
+    private void pullFromSoulLinkedGenerators(ServerLevel level, TeslaTeamEnergyData.TeamEnergy team) {
+        if (team.soulLinkedMachines.isEmpty()) return;
+
+        for (BlockPos targetPos : team.soulLinkedMachines) {
+            if (!level.isLoaded(targetPos)) continue;
+
+            MetaMachine machine = MetaMachine.getMachine(level, targetPos);
+            if (machine == null) continue;
+
+            long pulledThisTick = 0;
+
+            // SimpleGeneratorMachine covers Combustion, Steam, Gas, etc.
+            if (machine instanceof TieredEnergyMachine generator) {
+                var energy = generator.energyContainer;
+
+                // Generators use Output Traits, so we check what they are holding
+                if (energy != null && energy.getEnergyStored() > 0) {
+                    long voltage = energy.getOutputVoltage();
+                    long maxAmperage = energy.getOutputAmperage();
+
+                    // Calculate how much we can actually take this tick
+                    long available = energy.getEnergyStored();
+                    long maxTransfer = voltage * maxAmperage;
+                    long toPull = Math.min(available, maxTransfer);
+
+                    if (toPull > 0) {
+                        // 1. Add to the Tower's central bank
+                        energyBank.fill(toPull);
+
+                        // 2. Remove from the generator's internal buffer
+                        energy.removeEnergy(toPull);
+
+                        pulledThisTick = toPull;
+                    }
+                }
+            }
+
+            if (pulledThisTick > 0) {
+                // Update tracking: negative value indicates "Input" to the Tower
+                team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
+                team.markHatchActive(targetPos, level.getGameTime());
+
+                // Visual feedback: Green sparks for gathering energy
+                if (level.getGameTime() % 12 == 0) {
+                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
+                            targetPos.getX() + 0.5, targetPos.getY() + 1.2, targetPos.getZ() + 0.5,
+                            3, 0.1, 0.1, 0.1, 0.02);
+                }
+            }
+        }
+    }
+
     protected void transferEnergyTick() {
         if (getLevel().isClientSide) return;
-        if (!isWorkingEnabled() || !isFormed()) return;
-
         if (!isWorkingEnabled() || !isFormed()) {
             if (recipeLogic.isActive()) recipeLogic.setStatus(RecipeLogic.Status.IDLE);
             return;
@@ -297,109 +347,93 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         ServerLevel sl = (ServerLevel) getLevel();
         boolean isDoingWork = false;
 
-        // 1. Every 20 ticks (1 second): Aggregate, Average, and Sync
+        // 1. Every 20 ticks: Aggregate and Reset Flow Maps
         if (sl.getGameTime() % 20 == 0) {
-            syncToTeslaSavedData(); // Push Tower internal buffer to the Cloud
+            syncToTeslaSavedData();
 
             if (ownerTeamUUID != null) {
                 TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
                 TeslaTeamEnergyData.TeamEnergy team = data.getOrCreate(ownerTeamUUID);
 
-                // We clear old display averages for all known endpoints first.
-                // If they don't move energy this second, they will correctly show 0.
-                for (var hatch : data.getHatches(ownerTeamUUID)) {
-                    team.machineDisplayFlow.put(hatch.pos, 0L);
-                }
-                for (BlockPos soulPos : team.soulLinkedMachines) {
-                    team.machineDisplayFlow.put(soulPos, 0L);
-                }
+                // Reset averages
+                for (var hatch : data.getHatches(ownerTeamUUID)) team.machineDisplayFlow.put(hatch.pos, 0L);
+                for (BlockPos soulPos : team.soulLinkedMachines) team.machineDisplayFlow.put(soulPos, 0L);
 
-                long totalWirelessInput = 0;
-                long totalWirelessOutput = 0;
+                long totalWirelessInput = 0; // Generators/Uplinks
+                long totalWirelessOutput = 0; // Consumers/Downlinks
 
-                // Uplinks (Providing: Hatch -> Cloud)
+                // Standard Hatches (Uplinks/Downlinks)
                 for (var entry : team.energyOutput.entrySet()) {
-                    long accumulated = entry.getValue().longValue();
-                    totalWirelessInput += accumulated;
-                    // Overwrite the 0 with the actual 1s average
-                    team.machineDisplayFlow.put(entry.getKey(), accumulated / 20);
+                    totalWirelessInput += entry.getValue().longValue();
+                    team.machineDisplayFlow.put(entry.getKey(), entry.getValue().longValue() / 20);
                 }
-
-                // Downlinks (Taking: Cloud -> Hatch)
                 for (var entry : team.energyInput.entrySet()) {
-                    long accumulated = entry.getValue().longValue();
-                    totalWirelessOutput += accumulated;
-                    // Overwrite the 0 with the actual 1s average
-                    team.machineDisplayFlow.put(entry.getKey(), accumulated / 20);
+                    totalWirelessOutput += entry.getValue().longValue();
+                    team.machineDisplayFlow.put(entry.getKey(), entry.getValue().longValue() / 20);
                 }
 
-                long totalSoulLinkedOutput = 0;
+                // Soul-Linked Machines (Generators return negative, Consumers return positive)
                 for (BlockPos mPos : team.soulLinkedMachines) {
                     long accumulated = team.machineCurrentFlow.getOrDefault(mPos, 0L);
-                    long averagePerTick = accumulated / 20;
+                    team.machineDisplayFlow.put(mPos, accumulated / 20);
 
-                    team.machineDisplayFlow.put(mPos, averagePerTick);
-                    totalSoulLinkedOutput += accumulated;
+                    if (accumulated < 0) totalWirelessInput += Math.abs(accumulated);
+                    else totalWirelessOutput += accumulated;
 
                     team.machineCurrentFlow.put(mPos, 0L);
                 }
 
                 team.lastNetInput = (netInLastSec + totalWirelessInput) / 20;
-                team.lastNetOutput = (netOutLastSec + totalWirelessOutput + totalSoulLinkedOutput) / 20;
+                team.lastNetOutput = (netOutLastSec + totalWirelessOutput) / 20;
 
                 team.energyInput.clear();
                 team.energyOutput.clear();
                 data.setDirty();
             }
 
-            // Reset local wired accumulators
             inputPerSec = netInLastSec;
             outputPerSec = netOutLastSec;
             netInLastSec = 0;
             netOutLastSec = 0;
         }
 
-        // 2. Every Tick: Wired Energy Logic
-        if (inputHatches != null && ownerTeamUUID != null) {
-            // if (sl.getGameTime() % 100 == 0) {
-            // sl.playSound(null, getPos(), PhoenixSounds.MICROVERSE.getMainEvent(),
-            // SoundSource.BLOCKS, 4.0f, 1.5f);
-            // }
-
+        // 2. Every Tick: Energy Processing
+        if (ownerTeamUUID != null) {
             TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
             TeslaTeamEnergyData.TeamEnergy team = data.getOrCreate(ownerTeamUUID);
 
-            long incoming = inputHatches.getEnergyStored();
-            if (incoming > 0) {
-                BigInteger before = team.stored;
-                BigInteger toAdd = BigInteger.valueOf(incoming);
-                BigInteger newStored = before.add(toAdd).min(team.capacity);
-                team.stored = newStored;
-
-                long accepted = newStored.subtract(before).longValue();
-                if (accepted > 0) {
-                    inputHatches.changeEnergy(-accepted);
-                    netInLastSec += accepted;
-
-                }
-                if (accepted > 0) {
-                    isDoingWork = true;
+            // A. Wired Input (Physical Hatches on the Tower)
+            if (inputHatches != null) {
+                long incoming = inputHatches.getEnergyStored();
+                if (incoming > 0) {
+                    BigInteger accepted = team.fill(BigInteger.valueOf(incoming));
+                    if (accepted.signum() > 0) {
+                        inputHatches.changeEnergy(-accepted.longValue());
+                        netInLastSec += accepted.longValue();
+                        isDoingWork = true;
+                    }
                 }
             }
 
-            if (!team.soulLinkedMachines.isEmpty() && energyBank.getStored().signum() > 0) {
-                isDoingWork = true;
+            // B. Soul-Linked PULL (Generators -> Tower)
+            // We do this BEFORE push so generators can power machines in the same tick
+            pullFromSoulLinkedGenerators(sl, team);
+
+            // Check if any generator actually moved energy this tick
+            // (You'd need a boolean return or check the flow map)
+
+            // C. Soul-Linked PUSH (Tower -> Consumers)
+            if (!team.soulLinkedMachines.isEmpty() && team.stored.signum() > 0) {
                 pushToSoulLinkedMachines(sl, team);
+                // Note: isDoingWork is usually set inside push/pull methods
+                // but we can assume if stored > 0 and links exist, we are "Active"
+                isDoingWork = true;
             }
+
             data.setDirty();
         }
 
-        // Update the machine status so the overlay and front face animate
-        if (isDoingWork) {
-            recipeLogic.setStatus(RecipeLogic.Status.WORKING);
-        } else {
-            recipeLogic.setStatus(RecipeLogic.Status.IDLE);
-        }
+        recipeLogic.setStatus(isDoingWork ? RecipeLogic.Status.WORKING : RecipeLogic.Status.IDLE);
     }
 
     private static final Map<UUID, TeslaTowerMachine> TEAM_TOWER_MAP = new HashMap<>();

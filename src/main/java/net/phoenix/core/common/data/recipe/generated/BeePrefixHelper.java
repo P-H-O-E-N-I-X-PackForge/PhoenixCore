@@ -14,6 +14,13 @@ public class BeePrefixHelper {
         material.addFlags(PhoenixMaterialFlags.GENERATE_TIER_ONE_BEE);
     }
 
+    public static void addTierOneBeeFlag(Material... materials) {
+        if (materials == null) return;
+        for (Material m : materials) {
+            addTierOneBeeFlag(m);
+        }
+    }
+
     public static void addTierTwoBeeFlag(Material... materials) {
         if (materials == null) return;
         for (Material m : materials) {
@@ -27,28 +34,6 @@ public class BeePrefixHelper {
         }
 
         material.addFlags(PhoenixMaterialFlags.GENERATE_TIER_TWO_BEE);
-    }
-
-    public static void addTierThreeBeeFlag(Material... materials) {
-        if (materials == null) return;
-        for (Material m : materials) {
-            addTierOneBeeFlag(m);
-        }
-    }
-
-    public static void addTierThreeBeeFlag(Material material) {
-        if (material == null) {
-            return;
-        }
-
-        material.addFlags(PhoenixMaterialFlags.GENERATE_TIER_THREE_BEE);
-    }
-
-    public static void addTierOneBeeFlag(Material... materials) {
-        if (materials == null) return;
-        for (Material m : materials) {
-            addTierThreeBeeFlag(m);
-        }
     }
 
     public static void addBeeCombFlag(Material material) {

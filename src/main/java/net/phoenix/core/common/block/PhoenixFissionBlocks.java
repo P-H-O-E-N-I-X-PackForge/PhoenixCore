@@ -25,20 +25,55 @@ public class PhoenixFissionBlocks {
 
     public static void init() {}
 
-    private static @NotNull BlockEntry<Block> registerSimpleBlock(String name, String id, String texture,
-                                                                  NonNullBiFunction<Block, Item.Properties, ? extends BlockItem> func) {
-        return REGISTRATE
-                .block(id, Block::new)
-                .initialProperties(() -> Blocks.IRON_BLOCK)
-                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
-                .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
-                        prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/" + texture))))
-                .lang(name)
-                .item(func)
-                .build()
-                .register();
-    }
+    // Mapping the registration fields to the correct Enum constants
+    public static final BlockEntry<FissionCoolerBlock> COOLER_BASIC = createCoolerBlock(
+            FissionCoolerBlock.FissionCoolerTypes.COOLER_BASIC);
+    public static final BlockEntry<FissionCoolerBlock> COOLER_EV = createCoolerBlock(
+            FissionCoolerBlock.FissionCoolerTypes.COOLER_EV);
+    public static final BlockEntry<FissionCoolerBlock> COOLER_IV = createCoolerBlock(
+            FissionCoolerBlock.FissionCoolerTypes.COOLER_IV);
+    public static final BlockEntry<FissionCoolerBlock> COOLER_LUV = createCoolerBlock(
+            FissionCoolerBlock.FissionCoolerTypes.COOLER_LUV);
 
+    // --- MODERATORS ---
+    // Updated to reference the enum constants (GRAPHITE, BERYLLIUM, etc.)
+    public static final BlockEntry<FissionModeratorBlock> MODERATOR_GRAPHITE = createModeratorBlock(
+            FissionModeratorBlock.FissionModeratorTypes.GRAPHITE);
+    public static final BlockEntry<FissionModeratorBlock> MODERATOR_BERYLLIUM = createModeratorBlock(
+            FissionModeratorBlock.FissionModeratorTypes.BERYLLIUM);
+    public static final BlockEntry<FissionModeratorBlock> MODERATOR_HEAVY_WATER = createModeratorBlock(
+            FissionModeratorBlock.FissionModeratorTypes.HEAVY_WATER);
+    public static final BlockEntry<FissionModeratorBlock> MODERATOR_NIOBIUM_SIC = createModeratorBlock(
+            FissionModeratorBlock.FissionModeratorTypes.NIOBIUM_SIC);
+
+    // --- FUEL RODS ---
+    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_T1 = createFuelRodBlock(
+            FissionFuelRodBlock.FissionFuelRodTypes.T1_FUEL_ROD);
+    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_T2 = createFuelRodBlock(
+            FissionFuelRodBlock.FissionFuelRodTypes.T2_FUEL_ROD);
+    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_T3 = createFuelRodBlock(
+            FissionFuelRodBlock.FissionFuelRodTypes.T3_FUEL_ROD);
+    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_T4 = createFuelRodBlock(
+            FissionFuelRodBlock.FissionFuelRodTypes.T4_FUEL_ROD);
+    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_T5 = createFuelRodBlock(
+            FissionFuelRodBlock.FissionFuelRodTypes.T5_FUEL_ROD);
+    // --- BLANKET RODS ---
+    // Updated to match your BreederBlanketTypes Enum naming
+    public static final BlockEntry<FissionBlanketBlock> THORIUM_BLANKET = createBlanketBlock(
+            FissionBlanketBlock.BreederBlanketTypes.THORIUM_BLANKET);
+    public static final BlockEntry<FissionBlanketBlock> U236_BLANKET = createBlanketBlock(
+            FissionBlanketBlock.BreederBlanketTypes.U236_BLANKET);
+    public static final BlockEntry<FissionBlanketBlock> LEAD_BLANKET = createBlanketBlock(
+            FissionBlanketBlock.BreederBlanketTypes.LEAD_BLANKET);
+    public static final BlockEntry<FissionBlanketBlock> HEAVY_BLANKET = createBlanketBlock(
+            FissionBlanketBlock.BreederBlanketTypes.HEAVY_BLANKET);
+    // --- Casings & Nuke ---
+    public static BlockEntry<Block> FISSILE_HEAT_SAFE_CASING = registerSimpleBlock("§bFissile Heat Safe Casing",
+            "fissile_heat_safe_casing", "fissile_heat_safe_casing", BlockItem::new);
+    public static BlockEntry<Block> FISSILE_REACTION_SAFE_CASING = registerSimpleBlock("§bFissile Reaction Safe Casing",
+            "fissile_reaction_safe_casing", "fissile_reaction_safe_casing", BlockItem::new);
+    public static BlockEntry<Block> FISSILE_SAFE_GEARBOX_CASING = registerSimpleBlock("§bFissile Safe Gearbox",
+            "fissile_safe_gearbox_casing", "fissile_safe_gearbox", BlockItem::new);
     public static final BlockEntry<NukeBlock> NUKE_BLOCK = REGISTRATE
             .block("nuke", NukeBlock::new)
             .initialProperties(() -> Blocks.TNT)
@@ -53,86 +88,53 @@ public class PhoenixFissionBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<FissionCoolerBlock> COOLER_BASIC = createCoolerBlock(
-            FissionCoolerBlock.FissionCoolerTypes.COOLER_BASIC);
-
-    public static final BlockEntry<FissionModeratorBlock> MODERATOR_GRAPHITE = createModeratorBlock(
-            FissionModeratorBlock.FissionModeratorTypes.MODERATOR_GRAPHITE);
-    public static final BlockEntry<FissionFuelRodBlock> FUEL_ROD_URANIUM = createFuelRodBlock(
-            FissionFuelRodBlock.FissionFuelRodTypes.URANIUM);
-    public static final BlockEntry<FissionBlanketBlock> THORIUM_BLANKET = createBlanketBlock(
-            FissionBlanketBlock.BreederBlanketTypes.THORIUM_BREEDER);
-
-    public static BlockEntry<Block> FISSILE_HEAT_SAFE_CASING = registerSimpleBlock(
-            "§bFissile Heat Safe Casing", "fissile_heat_safe_casing",
-            "fissile_heat_safe_casing", BlockItem::new);
-    public static BlockEntry<Block> FISSILE_REACTION_SAFE_CASING = registerSimpleBlock(
-            "§bFissile Reaction Safe Casing", "fissile_reaction_safe_casing",
-            "fissile_reaction_safe_casing", BlockItem::new);
-    public static BlockEntry<Block> FISSILE_SAFE_GEARBOX_CASING = registerSimpleBlock(
-            "§bFissile Safe Gearbox", "fissile_safe_gearbox_casing",
-            "fissile_safe_gearbox", BlockItem::new);
-
+    // Registration Methods
     private static BlockEntry<FissionModeratorBlock> createModeratorBlock(IFissionModeratorType type) {
-        var moderator = REGISTRATE
-                .block("%s".formatted(type.getName()),
-                        p -> new FissionModeratorBlock(p, type))
+        var moderator = REGISTRATE.block("%s".formatted(type.getName()), p -> new FissionModeratorBlock(p, type))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
                 .blockstate(PhoenixFissionMachineModels.createFissionModeratorModel(type))
-                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
-                .item(BlockItem::new)
-                .build()
-                .register();
-
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH).item(BlockItem::new).build().register();
         PhoenixAPI.FISSION_MODERATORS.put(type, moderator);
         return moderator;
     }
 
     private static BlockEntry<FissionFuelRodBlock> createFuelRodBlock(IFissionFuelRodType type) {
-        var rod = REGISTRATE
-                .block("%s".formatted(type.getName()),
-                        p -> new FissionFuelRodBlock(p, type))
+        var rod = REGISTRATE.block("%s".formatted(type.getName()), p -> new FissionFuelRodBlock(p, type))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
                 .blockstate(PhoenixFissionMachineModels.createFuelRodModel(type))
-                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
-                .item(BlockItem::new)
-                .build()
-                .register();
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH).item(BlockItem::new).build().register();
         PhoenixAPI.FISSION_FUEL_RODS.put(type, rod);
         return rod;
     }
 
     private static BlockEntry<FissionBlanketBlock> createBlanketBlock(IFissionBlanketType type) {
-        var blanket = REGISTRATE
-                .block("%s".formatted(type.getName()),
-                        p -> new FissionBlanketBlock(p, type))
+        var blanket = REGISTRATE.block("%s".formatted(type.getName()), p -> new FissionBlanketBlock(p, type))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
                 .blockstate(PhoenixFissionMachineModels.createBlanketRodModel(type))
-                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
-                .item(BlockItem::new)
-                .build()
-                .register();
-
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH).item(BlockItem::new).build().register();
         PhoenixAPI.FISSION_BLANKETS.put(type, blanket);
         return blanket;
     }
 
     private static BlockEntry<FissionCoolerBlock> createCoolerBlock(IFissionCoolerType type) {
-        var cooler = REGISTRATE
-                .block("%s".formatted(type.getName()),
-                        p -> new FissionCoolerBlock(p, type))
+        var cooler = REGISTRATE.block("%s".formatted(type.getName()), p -> new FissionCoolerBlock(p, type))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
                 .blockstate(PhoenixFissionMachineModels.createActiveCoolerModel(type))
-                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
-                .item(BlockItem::new)
-                .build()
-                .register();
-
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH).item(BlockItem::new).build().register();
         PhoenixAPI.FISSION_COOLERS.put(type, cooler);
         return cooler;
+    }
+
+    private static @NotNull BlockEntry<Block> registerSimpleBlock(String name, String id, String texture,
+                                                                  NonNullBiFunction<Block, Item.Properties, ? extends BlockItem> func) {
+        return REGISTRATE.block(id, Block::new).initialProperties(() -> Blocks.IRON_BLOCK)
+                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+                .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
+                        prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/" + texture))))
+                .lang(name).item(func).build().register();
     }
 }

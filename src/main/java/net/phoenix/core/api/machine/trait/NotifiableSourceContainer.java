@@ -11,14 +11,14 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.phoenix.core.api.capability.SourceRecipeCapability;
+import net.phoenix.core.common.data.recipe.custom.SourceIngredient;
 
 import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 
-public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Integer> implements ISourceTile {
+public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<SourceIngredient> implements ISourceTile {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             NotifiableSourceContainer.class,
@@ -49,35 +49,45 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Inte
     }
 
     @Override
-    public List<Integer> handleRecipeInner(IO io, GTRecipe recipe, List<Integer> left, boolean simulate) {
-        int remaining = left.stream().reduce(0, Integer::sum);
+    public List<SourceIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<SourceIngredient> left,
+                                                    boolean simulate) {
+        if (io != this.handlerIO) return left;
 
-        if (io == IO.IN) {
-            int extracted = Math.toIntExact(Math.min(remaining, currentSource));
-            if (!simulate) removeSource(extracted);
-            remaining -= extracted;
-        } else if (io == IO.OUT) {
-            int inserted = Math.toIntExact(Math.min(remaining, maxSource - currentSource));
-            if (!simulate) addSource(inserted);
-            remaining -= inserted;
+        for (int i = 0; i < left.size(); i++) {
+            SourceIngredient ingredient = left.get(i);
+            int amountNeeded = ingredient.getSource();
+
+            if (io == IO.IN) {
+                if (currentSource >= amountNeeded) {
+                    if (!simulate) removeSource(amountNeeded);
+                    left.remove(i);
+                    break;
+                }
+            } else {
+                if (maxSource - currentSource >= amountNeeded) {
+                    if (!simulate) addSource(amountNeeded);
+                    left.remove(i);
+                    break;
+                }
+            }
         }
 
-        return remaining <= 0 ? null : Collections.singletonList(remaining);
+        return left.isEmpty() ? null : left;
     }
 
     @Override
     public @NotNull List<Object> getContents() {
-        return List.of(currentSource);
+        return List.of(new SourceIngredient((int) currentSource));
+    }
+
+    @Override
+    public RecipeCapability<SourceIngredient> getCapability() {
+        return SourceRecipeCapability.CAP;
     }
 
     @Override
     public double getTotalContentAmount() {
         return currentSource;
-    }
-
-    @Override
-    public RecipeCapability<Integer> getCapability() {
-        return SourceRecipeCapability.CAP;
     }
 
     @Override

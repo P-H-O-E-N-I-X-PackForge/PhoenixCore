@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkHooks;
-
 import net.phoenix.core.configs.PhoenixConfigs;
+
 import org.jetbrains.annotations.Nullable;
 
 public class NukePrimedEntity extends Entity {

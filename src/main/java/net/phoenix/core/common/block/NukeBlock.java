@@ -19,8 +19,8 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.phoenix.core.common.block.entity.NukePrimedEntity;
 import net.phoenix.core.common.registry.PhoenixFissionEntities;
-
 import net.phoenix.core.configs.PhoenixConfigs;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

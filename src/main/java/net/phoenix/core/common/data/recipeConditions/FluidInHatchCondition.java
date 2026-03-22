@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @NoArgsConstructor
 public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition> {
@@ -107,19 +108,14 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
     protected boolean testCondition(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
         Fluid requiredFluid = getFluid();
         if (requiredFluid == null) return false;
-        var machine = recipeLogic.getMachine();
-        if (!(machine instanceof WorkableElectricMultiblockMachine controller)) return false;
-        var fluidHandlers = controller.getCapabilitiesFlat(IO.IN, FluidRecipeCapability.CAP);
-        for (var fluidHandler : fluidHandlers) {
-            if (!(fluidHandler instanceof NotifiableFluidTank fluidTank)) continue;
-            for (int i = 0; i < fluidTank.getTanks(); i++) {
-                var fluidStack = fluidTank.getFluidInTank(i);
-                if (!fluidStack.isEmpty() && fluidStack.getFluid().isSame(requiredFluid)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+
+        if (!(recipeLogic.getMachine() instanceof WorkableElectricMultiblockMachine controller)) return false;
+
+        return controller.getCapabilitiesFlat(IO.IN, FluidRecipeCapability.CAP).stream()
+                .filter(NotifiableFluidTank.class::isInstance)
+                .map(NotifiableFluidTank.class::cast)
+                .flatMap(tank -> IntStream.range(0, tank.getTanks()).mapToObj(tank::getFluidInTank))
+                .anyMatch(stack -> stack.getFluid().isSame(requiredFluid));
     }
 
     @Override

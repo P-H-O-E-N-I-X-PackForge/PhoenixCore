@@ -23,9 +23,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.api.block.IFissionBlanketType;
 import net.phoenix.core.api.block.IFissionFuelRodType;
+import net.phoenix.core.configs.PhoenixConfigs;
 
 import lombok.Getter;
-import net.phoenix.core.configs.PhoenixConfigs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

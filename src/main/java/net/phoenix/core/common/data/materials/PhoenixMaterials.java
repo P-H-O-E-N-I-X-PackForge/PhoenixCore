@@ -16,8 +16,8 @@ import net.phoenix.core.api.PhoenixColors;
 import net.phoenix.core.api.item.tool.PhoenixToolType;
 import net.phoenix.core.common.data.recipe.generated.BeePrefixHelper;
 import net.phoenix.core.common.data.recipe.generated.CrystalRoseHelper;
-
 import net.phoenix.core.configs.PhoenixConfigs;
+
 import org.jetbrains.annotations.NotNull;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
@@ -158,42 +158,6 @@ public class PhoenixMaterials {
                 PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, PhoenixOres.IGNISIUM,
                 RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
                 PRISMARINE
-        // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
-        );
-
-        // --- Tier Two Bee Flags ---
-        BeePrefixHelper.addTierTwoBeeFlag(
-                Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
-                Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
-                Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
-                Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
-                TricalciumPhosphate, Tungstate, Zinc,
-                Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
-                Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
-                Titanium, VanadiumMagnetite,
-                NetherQuartz, RockSalt, Sodalite,
-                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
-                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice,
-                RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
-                PRISMARINE
-
-        );
-
-        // --- Tier Three Bee Flags ---
-        BeePrefixHelper.addTierThreeBeeFlag(
-                Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
-                Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,
-                Lead, Lepidolite, Malachite, Nickel, Opal, Pitchblende, Pyrope, Realgar,
-                Ruby, Salt, Sapphire, Scheelite, Silicon, Silver, Steel, Stibnite, Topaz,
-                TricalciumPhosphate, Tungstate, Zinc,
-                Barite, Bastnasite, Bismuth, Chromite, Graphite, Molybdenum, Oilsands, Platinum,
-                Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
-                Titanium, VanadiumMagnetite,
-                NetherQuartz, RockSalt, Sodalite,
-                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
-                PhoenixOres.FLUORITE, PhoenixProgressionMaterials.SOURCE_GEM, Glowstone, Ice, Sculk, SLIME, MAGMA,
-                Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY, PRISMARINE
-
         // Rune, ArcaneCrystal, Crystalline, Spacial, Menril, SkySteel, Desh
         );
 

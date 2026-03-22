@@ -146,6 +146,20 @@ legacyForge {
             programArguments.addAll('--refresh-dependencies')
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
+        client1 {
+            client()
+            sourceSet = sourceSets.main
+            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
+            programArgument '--username'
+            programArgument 'Player1'
+        }
+        client2 {
+            client()
+            sourceSet = sourceSets.main
+            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
+            programArgument '--username'
+            programArgument 'Player2'
+        }
         server {
             server()
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)

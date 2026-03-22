@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.common.machine.PhoenixTeslaMachines;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,36 +26,52 @@ public class WirelessChargerRecipes {
 
     public static void run(@NotNull Consumer<FinishedRecipe> provider) {
         for (int tier = GTValues.LV; tier <= GTValues.OpV; tier++) {
+            // Check if our own machine exists for this tier first
+            if (PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier] == null) continue;
 
-            if (tier >= GTValues.LV && tier <= EV) {
+            if (tier <= EV) {
                 processWirelessCharger(provider, tier);
-            } else if (tier >= IV) {
+            } else {
                 processWirelessChargerWithQuantumChest(provider, tier);
             }
         }
     }
 
     private static void processWirelessCharger(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+        // Guard: Super Chests and 4A Chargers must exist in the GT registry
+        if (GTMachines.SUPER_CHEST[tier] == null || GTMachines.CHARGER_4[tier] == null) return;
+
+        ItemStack stabilizer = getTeslaStabilizerForTier(tier);
+        if (stabilizer.isEmpty()) return;
+
         VanillaRecipeHelper.addShapedRecipe(provider, true,
                 "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase(),
                 PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier].asStack(),
                 "WCW", "WTW", "RXR",
-                'C', (GTMachines.SUPER_CHEST[tier].asStack()),
-                'T', (GTMachines.CHARGER_4[tier].asStack()),
-                'R', (getOctalWireForTier(tier)),
-                'X', (getTeslaStabilizerForTier(tier)),
-                'W', (getQuadCableForTier(tier)));
+                'C', GTMachines.SUPER_CHEST[tier].asStack(),
+                'T', GTMachines.CHARGER_4[tier].asStack(),
+                'R', getOctalWireForTier(tier),
+                'X', stabilizer,
+                'W', getQuadCableForTier(tier));
     }
 
     private static void processWirelessChargerWithQuantumChest(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+        // Guard: Quantum Chests and 4A Chargers must exist in the GT registry
+        if (tier >= GTMachines.QUANTUM_CHEST.length || GTMachines.QUANTUM_CHEST[tier] == null ||
+                tier >= GTMachines.CHARGER_4.length || GTMachines.CHARGER_4[tier] == null)
+            return;
+
+        ItemStack stabilizer = getTeslaStabilizerForTier(tier);
+        if (stabilizer.isEmpty()) return;
+
         VanillaRecipeHelper.addShapedRecipe(provider, true,
                 "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase(),
                 PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier].asStack(),
                 "WCW", "WTW", "RXR",
-                'C', (GTMachines.QUANTUM_CHEST[tier].asStack()),
-                'T', (GTMachines.CHARGER_4[tier].asStack()),
-                'R', (getOctalWireForTier(tier)),
-                'X', (getTeslaStabilizerForTier(tier)),
-                'W', (getQuadCableForTier(tier)));
+                'C', GTMachines.QUANTUM_CHEST[tier].asStack(),
+                'T', GTMachines.CHARGER_4[tier].asStack(),
+                'R', getOctalWireForTier(tier),
+                'X', stabilizer,
+                'W', getQuadCableForTier(tier));
     }
 }

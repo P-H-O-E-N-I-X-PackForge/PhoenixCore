@@ -54,11 +54,10 @@ public class FissionModeratorBlock extends ActiveBlock {
 
     public enum FissionModeratorTypes implements StringRepresentable, IFissionModeratorType {
 
-        MODERATOR_GRAPHITE(
-                "graphite_moderator",
-                1, 3, 1,
-                PhoenixCore.id("block/fission/graphite_moderator"),
-                0xFFB07CFF);
+        GRAPHITE("graphite_moderator", 1, 3, 1, PhoenixCore.id("block/fission/graphite_moderator"), 0xFFB07CFF),
+        BERYLLIUM("beryllium_moderator", 5, 2, 2, PhoenixCore.id("block/fission/graphite_moderator"), 0xFFE7FF7D),
+        HEAVY_WATER("heavy_water_moderator", 12, 5, 3, PhoenixCore.id("block/fission/graphite_moderator"), 0xFF7DFFB0),
+        NIOBIUM_SIC("niobium_sic_moderator", 30, 10, 4, PhoenixCore.id("block/fission/graphite_moderator"), 0xFFFF7D7D);
 
         @Getter
         @NotNull
