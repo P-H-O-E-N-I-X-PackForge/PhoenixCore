@@ -158,6 +158,7 @@ public class PhoenixProgressionMaterials {
         UNREFINED_ALUMINFROST = new Material.Builder(PhoenixCore.id("unrefined_aluminfrost"))
                 .dust()
                 .color(0xA7D1EB)
+                .cableProperties(GTValues.MV, 1, 2, false)
                 .secondaryColor(0x778899)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
@@ -172,6 +173,7 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
         SOURCE_IMBUED_TITANIUM = new Material.Builder(PhoenixCore.id("source_imbued_titanium")).ingot().fluid()
                 .color(0xc600ff).formula("✨C✨Ti").iconSet(MaterialIconSet.METALLIC)
+                .cableProperties(GTValues.EV, 1, 2, false)
                 .fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_SMALL_GEAR, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
                         GENERATE_LONG_ROD,
@@ -182,6 +184,7 @@ public class PhoenixProgressionMaterials {
                 .color(0xE245F8).secondaryColor(0xA345B0).iconSet(MaterialIconSet.METALLIC)
                 .components(GTMaterials.Rhodium, 3, GTMaterials.Palladium, 4, PhoenixOres.POLARITY_FLIPPED_BISMUTHITE,
                         1, GTMaterials.Cerium, 4)
+                .cableProperties(GTValues.LuV, 1, 2, false)
                 .blastTemp(3600, HIGH, 480, 400).fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD, GENERATE_GEAR,
                         GENERATE_SMALL_GEAR, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR,
@@ -193,6 +196,7 @@ public class PhoenixProgressionMaterials {
                 .liquid(7400)
                 .color(0x000000)
                 .secondaryColor(0x8B0000)
+                .cableProperties(GTValues.ZPM, 1, 2, false)
                 .iconSet(MaterialIconSet.RADIOACTIVE)
                 .fluidPipeProperties(8000, 800, true, true, true, true)
                 .components(GTMaterials.Naquadah, 5, GTMaterials.Trinium, 1, GTMaterials.Technetium, 3,
@@ -216,6 +220,7 @@ public class PhoenixProgressionMaterials {
                 .fluid()
                 .color(0xB0E0E6).secondaryColor(0x708090)
                 .iconSet(MaterialIconSet.SHINY)
+                .cableProperties(GTValues.HV, 1, 2, false)
                 .components(GTMaterials.StainlessSteel, 4, FROST, 2, GTMaterials.Aluminium, 2)
                 .blastTemp(4500, BlastProperty.GasTier.HIGH, GTValues.VA[GTValues.EV], 1200)
                 .flags(
@@ -242,6 +247,7 @@ public class PhoenixProgressionMaterials {
                 .liquid(3100)
                 .color(0x4B0082).secondaryColor(0x000000)
                 .iconSet(MaterialIconSet.METALLIC)
+                .cableProperties(GTValues.IV, 1, 2, false)
                 .components(GTMaterials.Tungsten, 4, PhoenixOres.VOIDGLASS_SHARD, 4, GTMaterials.Molybdenum, 2)
                 .blastTemp(4200, BlastProperty.GasTier.MID, GTValues.VA[GTValues.EV], 1000)
                 .fluidPipeProperties(3800, 250, true, true, true, true)
@@ -260,6 +266,7 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
         AURUM_STEEL = new Material.Builder(PhoenixCore.id("aurum_steel")).ingot().fluid().color(0xd0a860)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.METALLIC)
+                .cableProperties(GTValues.LV, 1, 2, false)
                 .fluidPipeProperties(5000, 50, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
                         GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL,

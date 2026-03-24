@@ -39,8 +39,10 @@ public final class TeamUtils {
     }
 
     public static boolean isPlayerOnTeam(Player player, UUID teamUUID) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            return getTeamIdOrPlayerFallback(serverPlayer).equals(teamUUID);
+        if (player instanceof ServerPlayer) {
+            return FTBTeamsAPI.api().getManager().getTeamByID(teamUUID)
+                    .map(team -> team.getMembers().contains(player.getUUID()))
+                    .orElse(player.getUUID().equals(teamUUID));
         }
         return false;
     }

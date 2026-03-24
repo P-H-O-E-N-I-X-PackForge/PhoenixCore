@@ -3,6 +3,8 @@ package net.phoenix.core.common.machine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.RotationState;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
@@ -31,6 +33,7 @@ import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.FLUID_EXPORT_HATCH;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.Steel;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
@@ -135,47 +138,17 @@ public class PhoenixFissionMachines {
             .recipeType(PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES)
             .recipeModifiers(HeatExchangerMachine::recipeModifier)
             .appearanceBlock(PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING)
-
             .pattern(definition -> FactoryBlockPattern.start(LEFT, UP, BACK)
-
-                    .aisle("XBBBX",
-                            "BBCBB",
-                            "BCDCB",
-                            "BBCBB",
-                            "XBBBX")
-
-                    .aisle("XBCBX",
-                            "BB BB",
-                            "C G C",
-                            "BB BB",
-                            "XBCBX")
-
-                    .aisle("XBCBX",
-                            "BB BB",
-                            "C G C",
-                            "BB BB",
-                            "XBCBX")
-
-                    .aisle("XBCBX",
-                            "BB BB",
-                            "C G C",
-                            "BB BB",
-                            "XBCBX")
-
+                    .aisle("ABBBBBA", "BBBCBBB", "BBCCCBB", "BCCGCCB", "BBCCCBB", "BBBCBBB", "ABBBBBA")
+                    .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
+                    .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
+                    .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
+                    .aisle("ABCCCBA", "BBAAABB", "CAAAAAC", "CASASAC", "CAAAAAC", "BBAAABB", "ABCCCBA")
                     .setRepeatable(1, 20)
+                    .aisle("ABBBBBA", "BBBCBBB", "BBCCCBB", "BCCCCCB", "BBCCCBB", "BBBCBBB", "ABBBBBA")
 
-                    .aisle("XBBBX",
-                            "BBCBB",
-                            "BCCCB",
-                            "BBCBB",
-                            "XBBBX")
-
-                    .where(' ', Predicates.air())
-                    .where('X', Predicates.any())
-
-                    .where('B',
-                            Predicates.blocks(PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING.get()))
-
+                    .where('A', Predicates.any())
+                    .where('B', Predicates.blocks(PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING.get()))
                     .where('C',
                             Predicates.blocks(PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING.get())
                                     .setMinGlobalLimited(6)
@@ -184,15 +157,10 @@ public class PhoenixFissionMachines {
                                     .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS))
                                     .or(Predicates.abilities(PartAbility.EXPORT_FLUIDS))
                                     .or(Predicates.abilities(PartAbility.OUTPUT_ENERGY)))
-
-                    .where('G',
-                            Predicates.blocks(PhoenixFissionBlocks.FISSILE_SAFE_GEARBOX_CASING.get()))
-
-                    .where('D',
-                            Predicates.controller(Predicates.blocks(definition.get())))
-
+                    .where('E', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, Steel)))
+                    .where('S', Predicates.blocks(PhoenixFissionBlocks.FISSILE_SAFE_GEARBOX_CASING.get()))
+                    .where('G', Predicates.controller(Predicates.blocks(definition.get())))
                     .build())
-
             .workableCasingModel(
                     PhoenixCore.id("block/fission/fissile_heat_safe_casing"),
                     GTCEu.id("block/multiblock/fusion_reactor"))
@@ -200,75 +168,76 @@ public class PhoenixFissionMachines {
                 List<MultiblockShapeInfo> shapeInfos = new ArrayList<>();
 
                 for (int length = 1; length <= 20; length++) {
-
                     MultiblockShapeInfo.ShapeInfoBuilder builder = MultiblockShapeInfo.builder()
-
-                            .where('D', definition, Direction.NORTH)
-
-                            .where('B',
-                                    PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING
-                                            .getDefaultState())
-
-                            .where('C',
-                                    PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING
-                                            .getDefaultState())
-
-                            .where('G',
-                                    PhoenixFissionBlocks.FISSILE_SAFE_GEARBOX_CASING
-                                            .getDefaultState())
-
+                            .where('G', definition, Direction.NORTH)
+                            .where('B', PhoenixFissionBlocks.FISSILE_REACTION_SAFE_CASING.getDefaultState())
+                            .where('C', PhoenixFissionBlocks.FISSILE_HEAT_SAFE_CASING.getDefaultState())
+                            .where('S', PhoenixFissionBlocks.FISSILE_SAFE_GEARBOX_CASING.getDefaultState())
+                            .where('E', ChemicalHelper.getBlock(TagPrefix.frameGt, Steel).defaultBlockState())
                             .where('I', ITEM_IMPORT_BUS[GTValues.LV], Direction.NORTH)
                             .where('O', ITEM_EXPORT_BUS[GTValues.LV], Direction.NORTH)
-                            .where('F', FLUID_IMPORT_HATCH[GTValues.LV], Direction.NORTH)
-                            .where('E', FLUID_EXPORT_HATCH[GTValues.LV], Direction.NORTH)
+                            .where('P', FLUID_IMPORT_HATCH[GTValues.LV], Direction.NORTH)
+                            .where('Q', FLUID_EXPORT_HATCH[GTValues.LV], Direction.NORTH)
                             .where('Z', ENERGY_OUTPUT_HATCH[GTValues.LV], Direction.SOUTH)
+                            .where('A', Blocks.AIR.defaultBlockState())
 
-                            .where(' ', Blocks.AIR.defaultBlockState())
+                            // Front cap
+                            .aisle("ABBBBBA",
+                                    "BBBCBBB",
+                                    "BBCCCBB",
+                                    "BCCGCCB",
+                                    "BBCCCBB",
+                                    "BBBCBBB",
+                                    "ABBBBBA")
 
-                            .aisle(" BBB ",
-                                    "BBCBB",
-                                    "BCDCB",
-                                    "BBCBB",
-                                    " BBB ")
+                            // First 3 layers with steel frame + gearbox
+                            .aisle("ABCCCBA",
+                                    "BBAAABB",
+                                    "CAAEAAC",
+                                    "CAESEAC",
+                                    "CAAEAAC",
+                                    "BBAAABB",
+                                    "ABCCCBA")
+                            .aisle("ABCCCBA",
+                                    "BBAAABB",
+                                    "CAAEAAC",
+                                    "CAESEAC",
+                                    "CAAEAAC",
+                                    "BBAAABB",
+                                    "ABCCCBA")
+                            .aisle("ABCCCBA",
+                                    "BBAAABB",
+                                    "CAAEAAC",
+                                    "CAESEAC",
+                                    "CAAEAAC",
+                                    "BBAAABB",
+                                    "ABCCCBA");
 
-                            .aisle(" BCB ",
-                                    "BB BB",
-                                    "C G C",
-                                    "BB BB",
-                                    " BCB ")
-
-                            .aisle(" BCB ",
-                                    "BB BB",
-                                    "C G C",
-                                    "BB BB",
-                                    " BCB ")
-
-                            .aisle(" BCB ",
-                                    "BB BB",
-                                    "C G C",
-                                    "BB BB",
-                                    " BCB ");
-
-                    for (int i = 0; i < length - 1; i++) {
-                        builder.aisle(" BCB ",
-                                "BB BB",
-                                "C G C",
-                                "BB BB",
-                                " BCB ");
+                    // Repeatable layers
+                    for (int i = 0; i < length; i++) {
+                        builder.aisle("ABCCCBA",
+                                "BBAAABB",
+                                "CAAAAAC",
+                                "CASASAC",
+                                "CAAAAAC",
+                                "BBAAABB",
+                                "ABCCCBA");
                     }
 
-                    builder.aisle(" BBB ",
-                            "BBCBB",
-                            "BCZCB",
-                            "BBCBB",
-                            " BBB ");
+                    // Back cap
+                    builder.aisle("ABBBBBA",
+                            "BBBCBBB",
+                            "BBCCCBB",
+                            "BCCCCCB",
+                            "BBCCCBB",
+                            "BBBCBBB",
+                            "ABBBBBA");
 
                     shapeInfos.add(builder.build());
                 }
 
                 return shapeInfos;
             })
-
             .register();
 
     public static void init() {}

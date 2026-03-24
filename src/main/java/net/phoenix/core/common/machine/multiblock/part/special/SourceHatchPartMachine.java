@@ -95,10 +95,10 @@ public class SourceHatchPartMachine extends TieredIOPartMachine implements ISour
     }
 
     public static int getMaxCapacity(int tier) {
-        return 1000 * tier;
+        return 2000 * tier;
     }
 
     public static int getMaxConsumption(int tier) {
-        return 250 * tier;
+        return 500 * tier;
     }
 }

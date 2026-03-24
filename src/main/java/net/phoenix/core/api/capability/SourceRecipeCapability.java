@@ -51,6 +51,9 @@ public class SourceRecipeCapability extends RecipeCapability<SourceIngredient> {
             if (isInput) {
                 group.addWidget(new LabelWidget(3 - xOffset, yOffset.addAndGet(10),
                         "Source needed: " + ingredient.getSource()));
+            } else {
+                group.addWidget(new LabelWidget(3 - xOffset, yOffset.addAndGet(10),
+                        "Source produced: " + ingredient.getSource()));
             }
         }
     }

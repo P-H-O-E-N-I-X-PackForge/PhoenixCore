@@ -124,25 +124,29 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
             return RecipeModifier.nullWrongType(BioAethericEngineMachine.class, machine);
         }
 
-        float totalSoul = 1.0f;
+        float baseSoul = 1.0f;
         if (engine.getLevel() instanceof ServerLevel serverLevel) {
-            float baseSoul = SoulSavedData.get(serverLevel).getMultiplier(new ChunkPos(engine.getPos()));
-            totalSoul = baseSoul + engine.getLastBotanicalBoost();
+            // Fetch the chunk-based soul value
+            baseSoul = SoulSavedData.get(serverLevel).getMultiplier(new ChunkPos(engine.getPos()));
         }
 
-        double boostFactor = 1.0 + (totalSoul * 0.1);
+        // This is your core stat: Base Soul + Flora Boost
+        float totalResonance = baseSoul + engine.getLastBotanicalBoost();
 
+        // Speed boost: 10% per point of resonance
+        double durationMultiplier = 1.0 / (1.0 + (totalResonance * 0.1));
+
+        // Night-time speed bonus (25% faster)
         if (engine.getLevel() != null && engine.getLevel().isNight()) {
-            boostFactor *= 1.25;
+            durationMultiplier /= 1.25;
         }
 
-        // EU output doubles per tier, so stay well under 2x
-        double euBoost = 1.0 + (totalSoul * 0.02); // max ~1.1x at soul=5, night = ~1.375 still too high
+        double euBoost = (double) totalResonance;
 
         return PhoenixRecipeModifier.builder()
-                .durationMultiplier(1.0 / boostFactor)
+                .durationMultiplier(durationMultiplier)
                 .euOutputMultiplier(euBoost)
-                .sourceMultiplier(1.0 + (totalSoul * 0.05))
+                .sourceMultiplier(1.0 + (totalResonance * 0.05))
                 .build();
     }
 

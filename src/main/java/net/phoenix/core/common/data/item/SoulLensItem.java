@@ -12,12 +12,12 @@ import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,23 +56,15 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
         BlockPos pos = context.getClickedPos();
         MetaMachine machine = MetaMachine.getMachine(level, pos);
 
-        // 1. Compatibility: Act like a Data Stick if the machine supports it
         if (machine instanceof IDataStickInteractable interactable) {
             return player.isShiftKeyDown() ?
                     interactable.onDataStickShiftUse(player, stack) :
                     interactable.onDataStickUse(player, stack);
         }
 
-        // 2. Safety: If it's any other GT Machine, we return SUCCESS (to consume click)
-        // or PASS (to allow the machine GUI to open).
-        // IMPORTANT: Never call super.onItemUseFirst() here to avoid StackOverflow.
-        if (machine != null) {
-            // If you want the Soul Map to open even when clicking a machine,
-            // you could trigger the UI here, but usually, PASS is safer.
-            return InteractionResult.PASS;
-        }
-
-        return InteractionResult.PASS;
+        // For any other block including machines and sand,
+        // return FAIL to stop ComponentItem from re-calling useOn
+        return InteractionResult.FAIL;
     }
 
     @Override
@@ -166,10 +158,22 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
         tag.put("MapData", mapList);
     }
 
+    private int getAnimatedColor(int color1, int color2, int duration) {
+        float time = (System.currentTimeMillis() % duration) / (float) duration;
+        float phase = (float) Math.sin(time * 2 * Math.PI) * 0.5f + 0.5f;
+        int r = (int) (((color1 >> 16) & 0xFF) + (((color2 >> 16) & 0xFF) - ((color1 >> 16) & 0xFF)) * phase);
+        int g = (int) (((color1 >> 8) & 0xFF) + (((color2 >> 8) & 0xFF) - ((color1 >> 8) & 0xFF)) * phase);
+        int b = (int) ((color1 & 0xFF) + ((color2 & 0xFF) - (color1 & 0xFF)) * phase);
+        return (r << 16) | (g << 8) | b;
+    }
+
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip,
                                 @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.ars_nouveau.soul_lens.tooltip").withStyle(ChatFormatting.GRAY));
+        int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);
+        tooltip.add(
+                Component.translatable("phoenixcore.soul_lens.tooltip.flavor").withStyle(Style.EMPTY.withColor(color)));
+        tooltip.add(Component.translatable("phoenixcore.soul_lens.tooltip.1").withStyle(Style.EMPTY.withColor(color)));
     }
 
     private String formatBiomeName(String path) {

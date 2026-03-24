@@ -64,12 +64,15 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         float TEEPEE_DROP = 2.5f;
         int ARC_POINTS = 30;
 
-        float[] yPositions = new float[] { 5.0f, 14.0f, 22.0f };
-        float[] xPositions = new float[] { 2.5f, 2.5f, 2.5f };
-        float[] zPositions = new float[] { 10.0f, 10.0f, 10.0f };
+        // Folded translate(-1.5, 0.5, -3.5) into positions to avoid
+        // singleplayer vs dedicated server origin discrepancy.
+        // xPositions: 8.0 - 1.5 = 6.5
+        // zPositions: 4.0 - 3.5 = 0.5
+        float[] yPositions = new float[] { 5.5f, 14.5f, 22.5f }; // y + 0.5
+        float[] xPositions = new float[] { -5.0f, -5.0f, -5.0f };
+        float[] zPositions = new float[] { 1f, 1.0f, 1.0f };
 
         poseStack.pushPose();
-        poseStack.translate(-1.5, 0.5, -3.5);
 
         for (int ringIndex = 0; ringIndex < yPositions.length; ringIndex++) {
             float xBase = xPositions[ringIndex];
@@ -91,10 +94,9 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
                 if ((time + i * 7 + ringIndex * 13) % 12 < 5) {
                     renderArc(poseStack, vc, currentTopCenter, targetPos, time);
 
-                    // Inside TeslaTowerRenderer.java, inside the render loop:
-                    if (machine.getLevel().random.nextFloat() < 0.05f) {
+                    if (machine.getLevel().isClientSide && machine.getLevel().random.nextFloat() < 0.05f) {
                         machine.getLevel().addParticle(
-                                PhoenixParticles.TESLA_SPARK.get(), // Update this reference
+                                PhoenixParticles.TESLA_SPARK.get(),
                                 targetPos.x + machine.getPos().getX() + 0.5,
                                 targetPos.y + machine.getPos().getY() + 0.5,
                                 targetPos.z + machine.getPos().getZ() + 0.5,

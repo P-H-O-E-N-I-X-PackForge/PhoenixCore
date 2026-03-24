@@ -51,6 +51,7 @@ public class PhoenixGTAddon implements IGTAddon {
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);
         CrystalRoseAssemblerGenerator.generateCrystalRoseRecipes(provider);
         TeslaHatchRecipes.init(provider);
+        TeslaMultiAmpHatchRecipes.init(provider);
         CustomComponetRecipes.init(provider);
         WirelessChargerRecipes.init(provider);
         SourceHatchRecipes.init(provider);

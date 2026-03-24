@@ -24,33 +24,33 @@ import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipe
 public class TeslaHatchRecipes {
 
     public static void init(@NotNull Consumer<FinishedRecipe> provider) {
-        // Use V for actual voltage (long), VA for Tier index (int)
         final long[] V = GTValues.V;
 
         for (int tier = LV; tier <= OpV; tier++) {
-            // 1. Machine existence check
+            // 1. Basic Existence Checks
             if (PhoenixTeslaMachines.TESLA_INPUT_2A[tier] == null) continue;
 
-            // 2. Hatch Array safety
+            // Ensure the base GTCEu hatches exist for this tier to use as ingredients
             if (tier >= GTMachines.ENERGY_INPUT_HATCH.length || GTMachines.ENERGY_INPUT_HATCH[tier] == null) continue;
 
-            // 3. Physical Item check (The fix for the IllegalArgumentException)
             ItemStack baseHatch = GTMachines.ENERGY_INPUT_HATCH[tier].asStack();
+            ItemStack outputBaseHatch = GTMachines.ENERGY_OUTPUT_HATCH[tier].asStack();
             if (baseHatch.isEmpty()) continue;
 
+            // 2. Process Base (2A) Hatches
+            // We use an if/else chain here because 2A hatches have different base recipes per tier
             if (tier >= ZPM) {
-                processAssemblyLineHatchStation(provider, tier, V, baseHatch);
+                processAssemblyLineHatchStation(provider, tier, V, baseHatch, outputBaseHatch);
             } else if (tier == LuV) {
-                processAssemblyLineHatchScanner(provider, tier, V, baseHatch);
+                processAssemblyLineHatchScanner(provider, tier, V, baseHatch, outputBaseHatch);
             } else {
-                processAssemblerHatch(provider, tier, V, baseHatch);
-                if (tier <= EV) processMultiAmpAssemblerHatch(provider, tier, V);
+                processAssemblerHatch(provider, tier, V, baseHatch, outputBaseHatch);
             }
         }
     }
 
     private static void processAssemblerHatch(Consumer<FinishedRecipe> provider, int tier, long[] V,
-                                              ItemStack baseHatch) {
+                                              ItemStack baseHatch, ItemStack outputBaseHatch) {
         FluidStack fluid = getFluidForTier(tier);
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
         if (fluid.isEmpty() || stabilizer.isEmpty()) return;
@@ -64,11 +64,21 @@ public class TeslaHatchRecipes {
                 .inputFluids(fluid)
                 .outputItems(PhoenixTeslaMachines.TESLA_INPUT_2A[tier])
                 .duration(600).EUt(V[tier]).save(provider);
+        GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_2a_" + VN[tier].toLowerCase())
+                .inputItems(outputBaseHatch)
+                .inputItems(getQuadCableForTier(tier), 2)
+                .inputItems(getDensePlateForTier(tier))
+                .inputItems(GTCraftingComponents.SENSOR.get(tier))
+                .inputItems(stabilizer)
+                .inputFluids(fluid)
+                .outputItems(PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier])
+                .duration(600).EUt(V[tier]).save(provider);
     }
 
     private static void processAssemblyLineHatchScanner(Consumer<FinishedRecipe> provider, int tier, long[] V,
-                                                        ItemStack baseHatch) {
+                                                        ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
+        ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();
         if (researchStack.isEmpty()) return; // Research must have a valid item
 
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_input_hatch_2a_scanner_" + VN[tier].toLowerCase())
@@ -83,11 +93,24 @@ public class TeslaHatchRecipes {
                 .duration(600).EUt(V[tier])
                 .scannerResearch(b -> b.researchStack(researchStack).duration(2400).EUt(V[IV]))
                 .save(provider);
+        GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_output_hatch_2a_scanner_" + VN[tier].toLowerCase())
+                .inputItems(outputBaseHatch)
+                .inputItems(getQuadCableForTier(tier), 4)
+                .inputItems(getCrystalBoards(tier), getCrystalBoardAmount(tier))
+                .inputItems(GTCraftingComponents.SENSOR.get(tier), 2)
+                .inputItems(getTeslaStabilizerForTier(tier), 2)
+                .inputFluids(getFluidForTier(tier))
+                .inputFluids(GTMaterials.SolderingAlloy.getFluid(144))
+                .outputItems(PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier])
+                .duration(600).EUt(V[tier])
+                .scannerResearch(b -> b.researchStack(outputResearchStack).duration(2400).EUt(V[IV]))
+                .save(provider);
     }
 
     private static void processAssemblyLineHatchStation(Consumer<FinishedRecipe> provider, int tier, long[] V,
-                                                        ItemStack baseHatch) {
+                                                        ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
+        ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();
         if (researchStack.isEmpty()) return;
 
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_input_hatch_2a_station_" + VN[tier].toLowerCase())
@@ -102,18 +125,18 @@ public class TeslaHatchRecipes {
                 .duration(600).EUt(V[tier])
                 .stationResearch(b -> b.researchStack(researchStack).CWUt(8))
                 .save(provider);
-    }
-
-    private static void processMultiAmpAssemblerHatch(Consumer<FinishedRecipe> provider, int tier, long[] V) {
-        ItemStack wire4 = getQuadWireForTier(tier);
-        if (wire4.isEmpty()) return;
-
-        GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_4a_" + VN[tier].toLowerCase())
-                .inputItems(PhoenixTeslaMachines.TESLA_INPUT_2A[tier])
-                .inputItems(wire4, 2)
-                .inputItems(getPlateForTier(tier), 2)
-                .outputItems(PhoenixTeslaMachines.TESLA_INPUT_4A[tier])
-                .EUt(V[tier]).duration(100).save(provider);
+        GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_output_hatch_2a_station_" + VN[tier].toLowerCase())
+                .inputItems(outputBaseHatch)
+                .inputItems(getQuadCableForTier(tier), 4)
+                .inputItems(getCrystalBoards(tier), getCrystalBoardAmount(tier))
+                .inputItems(GTCraftingComponents.SENSOR.get(tier), 2)
+                .inputItems(getTeslaStabilizerForTier(tier), 2)
+                .inputFluids(getFluidForTier(tier))
+                .inputFluids(GTMaterials.SolderingAlloy.getFluid(144))
+                .outputItems(PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier])
+                .duration(600).EUt(V[tier])
+                .stationResearch(b -> b.researchStack(outputResearchStack).CWUt(8))
+                .save(provider);
     }
 
     public static ItemStack getCoilForTier(int tier) {

@@ -1,5 +1,6 @@
 package net.phoenix.core.common.machine;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.GTValues.VCF;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.blocks;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.controller;
@@ -49,6 +51,8 @@ import static net.phoenix.core.common.machine.PhoenixMachines.registerTieredMach
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class PhoenixTeslaMachines {
+
+    public static final int[] MULTI_AMP_TESLA_HATCH = GTValues.tiersBetween(EV, GTCEuAPI.isHighTier() ? MAX : UHV);
 
     public static final BiConsumer<ItemStack, List<Component>> TELSA_TOWER_TOOLTIPS = (stack,
                                                                                        list) -> {
@@ -380,7 +384,7 @@ public class PhoenixTeslaMachines {
         return "tesla_hatches/tesla_" + iomode + "_" + amperage + "a";
     }
 
-    private static MachineDefinition[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability) {
+    private static MachineDefinition[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability, int... tiers) {
         // iomode variable for the path and tooltips
         String iomode = io == IO.OUT ? "input" : "output";
 
@@ -404,7 +408,7 @@ public class PhoenixTeslaMachines {
                                 Component.translatable("tooltip.phoenixcore.tesla_hatch." + iomode))
                         .overlayTieredHullModel(getTeslaOverlay(iomode, amperage))
                         .register(),
-                GTValues.ALL_TIERS);
+                tiers); // Passes the custom tiers array directly
     }
 
     // 256A - The Entry Level Massive Laser
@@ -476,24 +480,35 @@ public class PhoenixTeslaMachines {
     }
 
     // Registrations
-
+// Standard Hatches (All Tiers: ULV/LV to OpV)
     public static final MachineDefinition[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
-            PartAbility.OUTPUT_ENERGY);
-    public static final MachineDefinition[] TESLA_INPUT_4A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 4,
-            PartAbility.OUTPUT_ENERGY);
-    public static final MachineDefinition[] TESLA_INPUT_16A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 16,
-            PartAbility.OUTPUT_ENERGY);
-    public static final MachineDefinition[] TESLA_INPUT_64A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 64,
-            PartAbility.SUBSTATION_OUTPUT_ENERGY);
+            PartAbility.OUTPUT_ENERGY, GTValues.ALL_TIERS);
 
+    public static final MachineDefinition[] TESLA_INPUT_4A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 4,
+            PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
+
+    // High Amperage Hatches (Filtered: EV to OpV)
+    public static final MachineDefinition[] TESLA_INPUT_16A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 16,
+            PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
+
+    public static final MachineDefinition[] TESLA_INPUT_64A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 64,
+            PartAbility.SUBSTATION_OUTPUT_ENERGY,
+            MULTI_AMP_TESLA_HATCH);
+
+    // Outputs (Follows the same logic)
     public static final MachineDefinition[] TESLA_OUTPUT_2A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 2,
-            PartAbility.INPUT_ENERGY);
+            PartAbility.INPUT_ENERGY, GTValues.ALL_TIERS);
+
     public static final MachineDefinition[] TESLA_OUTPUT_4A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 4,
-            PartAbility.INPUT_ENERGY);
+            PartAbility.INPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
+
     public static final MachineDefinition[] TESLA_OUTPUT_16A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
-            16, PartAbility.INPUT_ENERGY);
+            16, PartAbility.INPUT_ENERGY,
+            MULTI_AMP_TESLA_HATCH);
+
     public static final MachineDefinition[] TESLA_OUTPUT_64A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
-            64, PartAbility.SUBSTATION_INPUT_ENERGY);
+            64, PartAbility.SUBSTATION_INPUT_ENERGY,
+            MULTI_AMP_TESLA_HATCH);
 
     public static MachineDefinition[] registerWirelessCharger(
                                                               GTRegistrate registrate,

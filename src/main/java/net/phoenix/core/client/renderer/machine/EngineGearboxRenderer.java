@@ -78,7 +78,8 @@ public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachin
         Vec3 start = new Vec3(-2.0, 0.0, 0.0);
         Vec3 end = new Vec3(2.0, 0.0, 0.0);
 
-        float r = 0.1f, g = 1.0f, b = 0.2f;
+        // Cyan = 0% Red, 100% Green, 100% Blue
+        float r = 0.0f, g = 1.0f, b = 1.0f;
 
         for (GearParticle p : particles) {
             p.update(random);

@@ -265,7 +265,6 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
     private void autoLinkTeamIfNeeded() {
         if (!(getLevel() instanceof ServerLevel sl)) return;
 
-        // DATA_STICK mode: manual bind only
         if (PhoenixConfigs.INSTANCE.features.teslaConnectionMode ==
                 PhoenixConfigs.FeatureConfigs.TeslaConnectionMode.DATA_STICK)
             return;
@@ -273,14 +272,19 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
         UUID ownerUUID = getOwnerUUID();
         if (ownerUUID == null) return;
 
+        // Try to resolve via online player first
         ServerPlayer sp = sl.getServer().getPlayerList().getPlayer(ownerUUID);
-        if (sp == null) return;
+        UUID team;
+        if (sp != null) {
+            team = TeamUtils.getTeamIdOrPlayerFallback(sp);
+        } else {
+            // Player offline — resolve via UUID overload which also filters for party
+            team = TeamUtils.getTeamIdOrPlayerFallback(ownerUUID);
+        }
 
-        UUID team = TeamUtils.getTeamIdOrPlayerFallback(sp);
         if (!team.equals(ownerTeamUUID)) {
             ownerTeamUUID = team;
             self().markDirty();
-            // Update registry and tick subscription when team changes
             TeslaWirelessRegistry.unregisterHatch(this);
             TeslaWirelessRegistry.registerHatch(this);
             updateTickSubscription();

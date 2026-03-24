@@ -8,13 +8,13 @@ import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
+import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -44,8 +44,6 @@ import net.phoenix.core.utils.TeamUtils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -55,8 +53,6 @@ import static net.phoenix.core.api.gui.PhoenixGuiTextures.TESLA_BACKGROUND;
 
 public class TeslaBinderItem extends ComponentItem
                              implements IItemUIFactory, IInteractionItem, IAddInformation {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("TeslaBinder");
 
     public TeslaBinderItem(Properties properties) {
         super(properties);
@@ -103,15 +99,15 @@ public class TeslaBinderItem extends ComponentItem
 
                 CompoundTag tag = itemStack.getOrCreateTag();
                 if (tag.hasUUID("TargetTeam")) {
+                    if (machine instanceof BatteryBufferMachine) {
+                        player.sendSystemMessage(Component.literal("Danger: High Risk of Voiding. Connection terminated.")
+                                .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.5f, 1.2f);
+                        return InteractionResult.FAIL;
+                    }
+
                     UUID teamUUID = tag.getUUID("TargetTeam");
                     TeslaTeamEnergyData data = TeslaTeamEnergyData.get(serverLevel);
-
-                    // --- LOGGING ---
-                    LOGGER.info("[TeslaBinder] onItemUseFirst: player={} clicking machine at {}",
-                            player.getName().getString(), clickedPos);
-                    LOGGER.info("[TeslaBinder] TargetTeam UUID from tag: {}", teamUUID);
-                    LOGGER.info("[TeslaBinder] Machine type: {}", machine.getClass().getSimpleName());
-                    // --- END LOGGING ---
 
                     boolean isNowLinked = data.toggleSoulLink(teamUUID, level, clickedPos); // Is activated when machine
                     // is right-clicked with
@@ -200,13 +196,8 @@ public class TeslaBinderItem extends ComponentItem
         if (!level.isClientSide) {
             CompoundTag tag = stack.getOrCreateTag();
             if (tag.hasUUID("TargetTeam")) {
-                LOGGER.info("[TeslaBinder] use(): player={} opening UI, TargetTeam={}", player.getName().getString(),
-                        tag.getUUID("TargetTeam"));
                 level.playSound(null, player.blockPosition(),
                         SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 0.4f, 1.5f);
-            } else {
-                LOGGER.info("[TeslaBinder] use(): player={} has no TargetTeam tag, UI will not open",
-                        player.getName().getString());
             }
         }
 
@@ -215,16 +206,14 @@ public class TeslaBinderItem extends ComponentItem
 
     // Handles the linking of the player/team data onto the Telsa Binder.
     private void bindToPlayer(Player player, ItemStack stack) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-
-        UUID teamUUID = TeamUtils.getTeamIdOrPlayerFallback(serverPlayer);
+        UUID uuid = player.getUUID(); // Unique player id.
         var tag = stack.getOrCreateTag();
-        tag.putUUID("TargetTeam", teamUUID);
+        tag.putUUID("TargetTeam", uuid);
         tag.putString("OwnerName", player.getName().getString());
-        tag.putString("TeamName", TeamUtils.getTeamName(teamUUID));
+        tag.putString("TeamName", player.getName().getString() + "'s Network");
 
         if (player.level() instanceof ServerLevel server) {
-            TeslaTeamEnergyData.get(server).getOrCreate(teamUUID);
+            TeslaTeamEnergyData.get(server).getOrCreate(uuid);
             server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2,
                     0.2, 0.02);
             player.playSound(SoundEvents.PLAYER_LEVELUP, 0.5f, 1.5f);
@@ -345,17 +334,30 @@ public class TeslaBinderItem extends ComponentItem
 
                 String transferStr = hTag.getString("transfer");
                 long flowVal = Long.parseLong(transferStr.isEmpty() ? "0" : transferStr);
-                String sign = isHatch ? (hTag.getBoolean("isOut") ? "+" : "-") : "-";
+                
+                String sign;
+                if (isCharger) {
+                    sign = "-";
+                } else if (isHatch) {
+                    sign = hTag.getBoolean("isOut") ? "+" : "-";
+                } else {
+                    // Soul-linked machines: negative flow means it's a generator (giving energy to the tower)
+                    // In pullFromSoulLinkedGenerators, team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
+                    // So if flowVal < 0, it's a generator -> "+"
+                    // if flowVal > 0, it's a consumer -> "-"
+                    sign = (flowVal < 0) ? "+" : (flowVal > 0 ? "-" : "");
+                }
+                
                 String flowLabel = isCharger ? "Wireless Output: " : "Current Flow: ";
 
                 list.add(Component.literal(flowLabel).withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal(sign + compactTeslaValue(transferStr) + "EU/t")
-                                .withStyle(flowVal > 0 ? titleColor : ChatFormatting.WHITE)));
+                        .append(Component.literal(sign + compactTeslaValue(String.valueOf(Math.abs(flowVal))) + "EU/t")
+                                .withStyle(flowVal != 0 ? titleColor : ChatFormatting.WHITE)));
 
-                String statusText = (flowVal > 0) ? "OPERATIONAL" : "IDLE / NO LOAD";
+                String statusText = (flowVal != 0) ? "OPERATIONAL" : "IDLE / NO LOAD";
                 list.add(Component.literal("Status: ").withStyle(ChatFormatting.GRAY)
                         .append(Component.literal(statusText)
-                                .withStyle(flowVal > 0 ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY)));
+                                .withStyle(flowVal != 0 ? titleColor : ChatFormatting.DARK_GRAY)));
             }));
             detailLayer.addWidget(displayBox);
 
@@ -446,7 +448,6 @@ public class TeslaBinderItem extends ComponentItem
     private int addListRow(WidgetGroup group, CompoundTag data, Player player, Consumer<CompoundTag> clickAction, int y,
                            String type, int windowWidth) {
         BlockPos pos = BlockPos.of(data.getLong("pos")).immutable();
-        var font = Minecraft.getInstance().font;
 
         String typeLabel;
         String colorCode;
@@ -490,17 +491,9 @@ public class TeslaBinderItem extends ComponentItem
 
         String flowStr = " §8(" + colorCode + sign + compactTeslaValue(transferRaw) + "EU§8)";
 
-        int totalAvailableWidth = windowWidth - 110;
-        int tailWidth = font.width(flowStr);
-        int headWidth = font.width(statusIcon + " " + colorCode + typeLabel + "§r ");
-        int availableForName = totalAvailableWidth - tailWidth - headWidth;
-
         String displayName = rawName;
-        if (font.width(displayName) > availableForName) {
-            while (font.width(displayName + "..") > availableForName && displayName.length() > 1) {
-                displayName = displayName.substring(0, displayName.length() - 1);
-            }
-            displayName += "..";
+        if (displayName.length() > 20) {
+            displayName = displayName.substring(0, 18) + "..";
         }
 
         String finalRowText = String.format("%s %s%s§r %s%s", statusIcon, colorCode, typeLabel, displayName, flowStr);
@@ -596,15 +589,6 @@ public class TeslaBinderItem extends ComponentItem
 
             TeslaTeamEnergyData globalData = TeslaTeamEnergyData.get(overworld);
             TeslaTeamEnergyData.TeamEnergy team = globalData.getOrCreate(teamUUID);
-
-            // --- LOGGING ---
-            LOGGER.info("[TeslaBinder] inventoryTick: player={} teamUUID={}", serverPlayer.getName().getString(),
-                    teamUUID);
-            LOGGER.info("[TeslaBinder] Team stored={} capacity={}", team.stored, team.capacity);
-            LOGGER.info("[TeslaBinder] Hatches found: {}", globalData.getHatches(teamUUID).size());
-            LOGGER.info("[TeslaBinder] Soul-linked machines: {}", team.soulLinkedMachines.size());
-            LOGGER.info("[TeslaBinder] Active chargers: {}", team.activeChargers.size());
-            // --- END LOGGING ---
 
             tag.putString("StoredEU", team.stored.toString());
             tag.putString("CapacityEU", team.capacity.toString());

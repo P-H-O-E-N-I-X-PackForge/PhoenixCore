@@ -1,5 +1,7 @@
 package net.phoenix.core.saveddata;
 
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -224,6 +226,10 @@ public class TeslaTeamEnergyData extends SavedData {
     }
 
     public boolean toggleSoulLink(UUID team, Level level, BlockPos pos) {
+        if (MetaMachine.getMachine(level, pos) instanceof BatteryBufferMachine) {
+            return false;
+        }
+
         TeamEnergy e = getOrCreate(team);
         boolean removed = e.soulLinkedMachines.remove(pos);
         if (!removed) {

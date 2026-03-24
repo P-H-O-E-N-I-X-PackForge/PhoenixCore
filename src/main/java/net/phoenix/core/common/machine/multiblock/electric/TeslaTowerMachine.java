@@ -217,15 +217,11 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     }
 
     private void pushToSoulLinkedMachines(ServerLevel level, TeslaTeamEnergyData.TeamEnergy team) {
-        // Early exit if no machines are linked or the battery is empty
-        if (team.soulLinkedMachines.isEmpty() || energyBank.getStored().equals(BigInteger.ZERO)) return;
+        if (team.soulLinkedMachines.isEmpty() || team.stored.signum() == 0) return;
 
         for (BlockPos targetPos : team.soulLinkedMachines) {
-            // 1. Check if a chunk is loaded to prevent lag/errors
             if (!level.isLoaded(targetPos)) continue;
 
-            // 2. Ping the machine as "Active" for Jade and the Tower UI
-            // This ensures the machine shows up in 'Active Connections'
             team.markHatchActive(targetPos, level.getGameTime());
 
             MetaMachine machine = MetaMachine.getMachine(level, targetPos);
@@ -233,12 +229,11 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
 
             long injectedThisTick = 0;
 
-            // 3. Handle Charger Machine (e.g., Battery Chargers)
-            if (machine instanceof com.gregtechceu.gtceu.common.machine.electric.ChargerMachine charger) {
+            if (machine instanceof ChargerMachine charger) {
                 var energy = charger.energyContainer;
                 if (energy != null) {
                     long voltage = energy.getInputVoltage();
-                    long available = energyBank.getStored().longValue();
+                    long available = team.stored.min(BigInteger.valueOf(Long.MAX_VALUE)).longValue();
                     long maxTransfer = voltage * energy.getInputAmperage();
                     long toPush = Math.min(available, maxTransfer);
 
@@ -246,40 +241,37 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                             (long) Math.ceil((double) toPush / voltage));
                     if (accepted > 0) {
                         injectedThisTick = accepted * voltage;
-                        energyBank.drain(injectedThisTick);
+                        team.drain(BigInteger.valueOf(injectedThisTick));
                     }
                 }
-            }
-            // 4. Handle Standard Tiered Machines
-            else if (machine instanceof TieredEnergyMachine tieredMachine) {
+            } else if (machine instanceof TieredEnergyMachine tieredMachine) {
                 var energy = tieredMachine.energyContainer;
                 if (energy != null && energy.getInputVoltage() > 0) {
                     long demand = energy.getEnergyCanBeInserted();
                     if (demand > 0) {
                         long voltage = energy.getInputVoltage();
                         long transferLimit = voltage * energy.getInputAmperage();
-
                         long toInject = Math.min(demand, transferLimit);
-                        // Drain from the internal battery bank trait
-                        injectedThisTick = energyBank.drain(toInject);
+                        long available = team.stored.min(BigInteger.valueOf(toInject)).longValue();
 
-                        if (injectedThisTick > 0) {
-                            energy.addEnergy(injectedThisTick);
+                        if (available > 0) {
+                            BigInteger drained = team.drain(BigInteger.valueOf(available));
+                            injectedThisTick = drained.longValue();
+                            if (injectedThisTick > 0) {
+                                energy.addEnergy(injectedThisTick);
 
-                            // Visual Feedback
-                            if (level.getGameTime() % 10 == 0) {
-                                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
-                                        targetPos.getX() + 0.5, targetPos.getY() + 1.1, targetPos.getZ() + 0.5,
-                                        5, 0.2, 0.2, 0.2, 0.05);
+                                if (level.getGameTime() % 10 == 0) {
+                                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                                            targetPos.getX() + 0.5, targetPos.getY() + 1.1, targetPos.getZ() + 0.5,
+                                            5, 0.2, 0.2, 0.2, 0.05);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // 5. Accumulate the flow for the 20-tick display cycle
             if (injectedThisTick > 0) {
-                // Using merge ensures we don't overwrite values from other energy events in the same tick
                 team.machineCurrentFlow.merge(targetPos, injectedThisTick, Long::sum);
             }
         }
@@ -355,9 +347,10 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
                 TeslaTeamEnergyData.TeamEnergy team = data.getOrCreate(ownerTeamUUID);
 
-                // Reset averages
-                for (var hatch : data.getHatches(ownerTeamUUID)) team.machineDisplayFlow.put(hatch.pos, 0L);
-                for (BlockPos soulPos : team.soulLinkedMachines) team.machineDisplayFlow.put(soulPos, 0L);
+                // soul-linked generators (negative means giving to tower)
+                for (BlockPos soulPos : team.soulLinkedMachines) {
+                    team.machineDisplayFlow.put(soulPos, 0L);
+                }
 
                 long totalWirelessInput = 0; // Generators/Uplinks
                 long totalWirelessOutput = 0; // Consumers/Downlinks
@@ -369,7 +362,7 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 }
                 for (var entry : team.energyInput.entrySet()) {
                     totalWirelessOutput += entry.getValue().longValue();
-                    team.machineDisplayFlow.put(entry.getKey(), entry.getValue().longValue() / 20);
+                    team.machineDisplayFlow.put(entry.getKey(), -entry.getValue().longValue() / 20); // Output is negative for Binder
                 }
 
                 // Soul-Linked Machines (Generators return negative, Consumers return positive)
