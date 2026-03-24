@@ -106,8 +106,8 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
                                 boost += 0.005f;
                             } else {
                                 String name = state.getBlock().getDescriptionId();
-                                if (name.contains("magebloom")) boost += 0.05f;
-                                else if (name.contains("sourceberry")) boost += 0.03f;
+                                if (name.contains("magebloom")) boost += 0.01f;
+                                else if (name.contains("sourceberry")) boost += 0.01f;
                             }
 
                             if (boost >= 5.0f) return 5.0f;

@@ -69,8 +69,8 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
         // xPositions: 8.0 - 1.5 = 6.5
         // zPositions: 4.0 - 3.5 = 0.5
         float[] yPositions = new float[] { 5.5f, 14.5f, 22.5f }; // y + 0.5
-        float[] xPositions = new float[] { -5.0f, -5.0f, -5.0f };
-        float[] zPositions = new float[] { 1f, 1.0f, 1.0f };
+        float[] xPositions = new float[] { 1.0f, 1.0f, 1.0f };
+        float[] zPositions = new float[] { 6f, 6.0f, 6.0f };
 
         poseStack.pushPose();
 

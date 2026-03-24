@@ -28,6 +28,7 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -217,9 +218,11 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     }
 
     private void pushToSoulLinkedMachines(ServerLevel level, TeslaTeamEnergyData.TeamEnergy team) {
+        // Check if we have anywhere to send energy or energy to send
         if (team.soulLinkedMachines.isEmpty() || team.stored.signum() == 0) return;
 
         for (BlockPos targetPos : team.soulLinkedMachines) {
+            // Ensure chunk is loaded before accessing world data
             if (!level.isLoaded(targetPos)) continue;
 
             team.markHatchActive(targetPos, level.getGameTime());
@@ -233,12 +236,15 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 var energy = charger.energyContainer;
                 if (energy != null) {
                     long voltage = energy.getInputVoltage();
+                    // Ensure we don't overflow Long when checking available team energy
                     long available = team.stored.min(BigInteger.valueOf(Long.MAX_VALUE)).longValue();
                     long maxTransfer = voltage * energy.getInputAmperage();
                     long toPush = Math.min(available, maxTransfer);
 
+                    // Use the precise network acceptance logic from snippet 2
                     long accepted = energy.acceptEnergyFromNetwork(null, voltage,
                             (long) Math.ceil((double) toPush / voltage));
+
                     if (accepted > 0) {
                         injectedThisTick = accepted * voltage;
                         team.drain(BigInteger.valueOf(injectedThisTick));
@@ -252,6 +258,8 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                         long voltage = energy.getInputVoltage();
                         long transferLimit = voltage * energy.getInputAmperage();
                         long toInject = Math.min(demand, transferLimit);
+
+                        // Logic fix: limit the available pull to the specific injection limit
                         long available = team.stored.min(BigInteger.valueOf(toInject)).longValue();
 
                         if (available > 0) {
@@ -260,8 +268,9 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                             if (injectedThisTick > 0) {
                                 energy.addEnergy(injectedThisTick);
 
+                                // Visuals: Electric sparks
                                 if (level.getGameTime() % 10 == 0) {
-                                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK,
                                             targetPos.getX() + 0.5, targetPos.getY() + 1.1, targetPos.getZ() + 0.5,
                                             5, 0.2, 0.2, 0.2, 0.05);
                                 }
@@ -288,40 +297,41 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
 
             long pulledThisTick = 0;
 
-            // SimpleGeneratorMachine covers Combustion, Steam, Gas, etc.
             if (machine instanceof TieredEnergyMachine generator) {
                 var energy = generator.energyContainer;
 
-                // Generators use Output Traits, so we check what they are holding
+                // Check if generator has energy to give
                 if (energy != null && energy.getEnergyStored() > 0) {
                     long voltage = energy.getOutputVoltage();
                     long maxAmperage = energy.getOutputAmperage();
 
-                    // Calculate how much we can actually take this tick
                     long available = energy.getEnergyStored();
                     long maxTransfer = voltage * maxAmperage;
                     long toPull = Math.min(available, maxTransfer);
 
                     if (toPull > 0) {
-                        // 1. Add to the Tower's central bank
-                        energyBank.fill(toPull);
+                        // 1. Use the 'fill' method from your TeamEnergy class
+                        // It calculates space and returns how much was actually added
+                        BigInteger accepted = team.fill(BigInteger.valueOf(toPull));
+                        long acceptedLong = accepted.longValue();
 
-                        // 2. Remove from the generator's internal buffer
-                        energy.removeEnergy(toPull);
-
-                        pulledThisTick = toPull;
+                        if (acceptedLong > 0) {
+                            // 2. ONLY remove what the network actually accepted
+                            // This prevents energy "voiding" when the network is full
+                            energy.removeEnergy(acceptedLong);
+                            pulledThisTick = acceptedLong;
+                        }
                     }
                 }
             }
 
             if (pulledThisTick > 0) {
-                // Update tracking: negative value indicates "Input" to the Tower
+                // Update tracking and visuals
                 team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
                 team.markHatchActive(targetPos, level.getGameTime());
 
-                // Visual feedback: Green sparks for gathering energy
                 if (level.getGameTime() % 12 == 0) {
-                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
+                    level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                             targetPos.getX() + 0.5, targetPos.getY() + 1.2, targetPos.getZ() + 0.5,
                             3, 0.1, 0.1, 0.1, 0.02);
                 }

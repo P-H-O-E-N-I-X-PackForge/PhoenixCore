@@ -93,6 +93,7 @@ public class TeslaWirelessChargerMachine extends TieredEnergyMachine
         TeslaTeamEnergyData data = TeslaTeamEnergyData.get(level);
         TeslaTeamEnergyData.TeamEnergy network = data.getOrCreate(boundTeam);
 
+        // Run every 10 ticks (0.5 seconds) to save TPS
         if (getOffsetTimer() % 10 == 0) {
             if (network.stored.signum() <= 0) {
                 this.lastTransferred = 0L;
@@ -110,11 +111,14 @@ public class TeslaWirelessChargerMachine extends TieredEnergyMachine
 
             handleRangeNotifications(playersToCharge);
 
-            long movedThisCycle = 0L;
+            long movedInThisCycle = 0L;
             long voltage = GTValues.V[getTier()];
-            long ampsPerTick = 4;
+            long amps = 4;
             long ticksInBatch = 10;
-            int totalPulses = (int) (ampsPerTick * ticksInBatch);
+
+            // The total amount of energy this machine can "output" in a 10-tick burst
+            // For HV: 512V * 4A * 10 ticks = 20,480 EU
+            long totalBatchBudget = voltage * amps * ticksInBatch;
 
             for (Player player : playersToCharge) {
                 List<IItemHandler> inventories = new ArrayList<>();
@@ -123,26 +127,31 @@ public class TeslaWirelessChargerMachine extends TieredEnergyMachine
 
                 for (IItemHandler handler : inventories) {
                     for (int i = 0; i < handler.getSlots(); i++) {
+                        if (totalBatchBudget <= 0) break;
+
                         ItemStack stack = handler.getStackInSlot(i);
                         if (stack.isEmpty()) continue;
 
                         IElectricItem electric = GTCapabilityHelper.getElectricItem(stack);
-                        if (electric != null && electric.chargeable() && electric.getTier() <= getTier()) {
-                            long itemAcceptedTotal = 0;
-                            for (int p = 0; p < totalPulses; p++) {
-                                long networkCanProvide = network.stored.min(BigInteger.valueOf(voltage)).longValue();
-                                long itemRemainingLimit = (voltage * totalPulses) - itemAcceptedTotal;
-                                long pulseOffer = Math.min(networkCanProvide, Math.min(voltage, itemRemainingLimit));
+                        if (electric != null && electric.chargeable()) {
 
-                                if (pulseOffer <= 0) break;
+                            long itemNeeded = electric.getMaxCharge() - electric.getCharge();
+                            if (itemNeeded <= 0) continue;
 
-                                long accepted = electric.charge(pulseOffer, getTier(), false, false);
+                            // Check network availability
+                            long networkAvailable = network.stored.min(BigInteger.valueOf(totalBatchBudget))
+                                    .longValue();
+                            long offer = Math.min(itemNeeded, Math.min(totalBatchBudget, networkAvailable));
+
+                            if (offer > 0) {
+                                // ignoreTransferLimit = true is CRITICAL here.
+                                // It allows the 10-tick burst to bypass the item's 1-tick intake limit.
+                                long accepted = electric.charge(offer, getTier(), true, false);
+
                                 if (accepted > 0) {
-                                    itemAcceptedTotal += accepted;
                                     network.drain(BigInteger.valueOf(accepted));
-                                    movedThisCycle += accepted;
-                                } else {
-                                    break;
+                                    movedInThisCycle += accepted;
+                                    totalBatchBudget -= accepted;
                                 }
                             }
                         }
@@ -150,17 +159,19 @@ public class TeslaWirelessChargerMachine extends TieredEnergyMachine
                 }
             }
 
-            this.lastTransferred = movedThisCycle / ticksInBatch;
-
+            // Calculate average EU/t for the UI (Total Burst / Ticks in Burst)
+            this.lastTransferred = movedInThisCycle / ticksInBatch;
             network.machineDisplayFlow.put(getPos(), this.lastTransferred);
 
-            if (movedThisCycle > 0) {
+            if (movedInThisCycle > 0) {
+                // Update the real-time flow for the Binder UI [C] row
+                network.machineCurrentFlow.merge(getPos(), movedInThisCycle, Long::sum);
+                network.markHatchActive(getPos(), level.getGameTime());
                 data.setDirty();
                 changeState(State.RUNNING);
-            } else if (!playersToCharge.isEmpty()) {
-                changeState(State.FINISHED);
             } else {
-                changeState(State.IDLE);
+                // If players are present but no energy moved, show "Finished" (Yellow)
+                changeState(playersToCharge.isEmpty() ? State.IDLE : State.FINISHED);
             }
         }
     }

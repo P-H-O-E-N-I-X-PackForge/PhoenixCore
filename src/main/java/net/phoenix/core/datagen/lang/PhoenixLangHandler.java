@@ -10,10 +10,20 @@ public class PhoenixLangHandler {
         provider.add("item.gtceu.tool.mv_screwdriver", "%s Electric Screwdriver (MV)");
         provider.add("item.gtceu.tool.luv_screwdriver", "%s Electric Screwdriver (LuV)");
         provider.add("item.gtceu.tool.zpm_screwdriver", "%s Electric Screwdriver (ZPM)");
+        provider.add("item.gtceu.tool.zpm_drill", "%s Drill (ZPM)");
+        provider.add("item.gtceu.tool.luv_drill", "%s Drill (LuV)");
         provider.add("item.gtceu.tool.mv_wrench", "%s Wrench (MV)");
         provider.add("item.gtceu.tool.ev_wrench", "%s Wrench (EV)");
         provider.add("item.gtceu.tool.luv_wrench", "%s Wrench (LuV)");
         provider.add("item.gtceu.tool.zpm_wrench", "%s Wrench (ZPM)");
+        provider.add("item.gtceu.tool.mv_buzzsaw", "%s Buzzsaw (MV)");
+        provider.add("item.gtceu.tool.ev_buzzsaw", "%s Buzzsaw  (EV)");
+        provider.add("item.gtceu.tool.luv_buzzsaw", "%s Buzzsaw  (LuV)");
+        provider.add("item.gtceu.tool.zpm_buzzsaw", "%s Buzzsaw  (ZPM)");
+        provider.add("item.gtceu.tool.mv_chainsaw", "%s Buzzsaw  (MV)");
+        provider.add("item.gtceu.tool.ev_chainsaw", "%s Buzzsaw  (EV)");
+        provider.add("item.gtceu.tool.luv_chainsaw", "%s Buzzsaw  (LuV)");
+        provider.add("item.gtceu.tool.zpm_chainsaw", "%s Buzzsaw  (ZPM)");
 
         // Shield States
         provider.add("shield.phoenixcore.type.normal", "Normal");

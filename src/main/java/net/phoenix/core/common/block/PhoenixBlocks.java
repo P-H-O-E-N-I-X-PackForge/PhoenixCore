@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.common.block.CoilBlock;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +34,12 @@ public class PhoenixBlocks {
         return REGISTRATE
                 .block(id, Block::new)
                 .initialProperties(() -> Blocks.IRON_BLOCK)
-                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+                // ADD THESE TAGS HERE
+                .tag(BlockTags.MINEABLE_WITH_PICKAXE) // Standard Minecraft pickaxe speed
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH) // GregTech Wrench support
+                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false)
+                        .strength(5.0f, 6.0f) // Sets hardness (Iron block is 5.0f)
+                        .requiresCorrectToolForDrops()) // Ensures you need a pickaxe to get the item back
                 .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
                         prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/" + texture))))
                 .lang(name)

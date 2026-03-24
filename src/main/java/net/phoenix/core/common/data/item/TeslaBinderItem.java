@@ -456,9 +456,16 @@ public class TeslaBinderItem extends ComponentItem
         String colorCode;
         String sign;
 
+        // 1. Parse the flow value to determine if it's a generator or consumer
+        String transferRaw = data.getString("transfer");
+        long flowVal = 0;
+        try {
+            flowVal = Long.parseLong(transferRaw.isEmpty() ? "0" : transferRaw);
+        } catch (NumberFormatException ignored) {}
+
         switch (type) {
             case "hatch" -> {
-                boolean isInput = data.getBoolean("isOut");
+                boolean isInput = data.getBoolean("isOut"); // [I] is Uplink, [O] is Downlink
                 typeLabel = isInput ? "[I]" : "[O]";
                 colorCode = isInput ? "§a" : "§c";
                 sign = isInput ? "+" : "-";
@@ -468,16 +475,21 @@ public class TeslaBinderItem extends ComponentItem
                 colorCode = "§b";
                 sign = "-";
             }
-            default -> {
+            default -> { // Soul-linked machines
                 typeLabel = "[S]";
-                colorCode = "§d";
-                sign = "-";
+                // FIX: If flow is negative, it's a generator (Network Input)
+                if (flowVal < 0) {
+                    colorCode = "§a"; // Green for production
+                    sign = "+";
+                } else {
+                    colorCode = "§d"; // Purple for consumption
+                    sign = "-";
+                }
             }
         }
 
         String statusIcon;
-        String transferRaw = data.getString("transfer");
-        boolean hasFlow = !transferRaw.equals("0") && !transferRaw.isEmpty();
+        boolean hasFlow = flowVal != 0;
 
         if (type.equals("charger")) {
             statusIcon = hasFlow ? "§3波" : "§7波";
@@ -492,7 +504,9 @@ public class TeslaBinderItem extends ComponentItem
         String rawName = data.contains("name") ? data.getString("name") :
                 (type.equals("hatch") ? "Tesla Hatch" : (type.equals("charger") ? "Wireless Charger" : "Soul Machine"));
 
-        String flowStr = " §8(" + colorCode + sign + compactTeslaValue(transferRaw) + "EU§8)";
+        // FIX: Use Math.abs(flowVal) to prevent compactTeslaValue from adding its own minus sign
+        // This allows our 'sign' variable to control the display entirely.
+        String flowStr = " §8(" + colorCode + sign + compactTeslaValue(String.valueOf(Math.abs(flowVal))) + "EU§8)";
 
         String displayName = rawName;
         if (displayName.length() > 20) {
@@ -506,7 +520,6 @@ public class TeslaBinderItem extends ComponentItem
 
         row.addWidget(new ButtonWidget(0, 0, rowWidth - 22, 18, GuiTextures.BUTTON, c -> clickAction.accept(data)));
         row.addWidget(new LabelWidget(4, 5, finalRowText));
-
         row.addWidget(new LabelWidget(rowWidth - 68, 5, getDistanceString(pos, player, data)));
 
         int gearX = rowWidth - 18;
