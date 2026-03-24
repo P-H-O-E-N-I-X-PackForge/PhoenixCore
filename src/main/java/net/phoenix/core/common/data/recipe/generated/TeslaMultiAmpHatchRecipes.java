@@ -79,13 +79,14 @@ public class TeslaMultiAmpHatchRecipes {
                     .EUt(V[tier]).duration(100).save(provider);
         }
 
-            if (PhoenixTeslaMachines.TESLA_OUTPUT_64A[tier] != null && PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null) {
-        GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_64a_" + VN[tier].toLowerCase())
-                .inputItems(GTMachines.HI_AMP_TRANSFORMER_2A[tier], 1)
-                .inputItems(PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier])
-                .inputItems(getPlateForTier(tier), 8)
-                .outputItems(PhoenixTeslaMachines.TESLA_OUTPUT_64A[tier])
-                .EUt(V[tier]).duration(100).save(provider);
+        if (PhoenixTeslaMachines.TESLA_OUTPUT_64A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null) {
+            GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_64a_" + VN[tier].toLowerCase())
+                    .inputItems(GTMachines.HI_AMP_TRANSFORMER_2A[tier], 1)
+                    .inputItems(PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier])
+                    .inputItems(getPlateForTier(tier), 8)
+                    .outputItems(PhoenixTeslaMachines.TESLA_OUTPUT_64A[tier])
+                    .EUt(V[tier]).duration(100).save(provider);
+        }
     }
-}
 }

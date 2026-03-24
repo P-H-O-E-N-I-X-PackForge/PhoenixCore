@@ -384,7 +384,8 @@ public class PhoenixTeslaMachines {
         return "tesla_hatches/tesla_" + iomode + "_" + amperage + "a";
     }
 
-    private static MachineDefinition[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability, int... tiers) {
+    private static MachineDefinition[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability,
+                                                          int... tiers) {
         // iomode variable for the path and tooltips
         String iomode = io == IO.OUT ? "input" : "output";
 
@@ -480,7 +481,7 @@ public class PhoenixTeslaMachines {
     }
 
     // Registrations
-// Standard Hatches (All Tiers: ULV/LV to OpV)
+    // Standard Hatches (All Tiers: ULV/LV to OpV)
     public static final MachineDefinition[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
             PartAbility.OUTPUT_ENERGY, GTValues.ALL_TIERS);
 

@@ -100,9 +100,11 @@ public class TeslaBinderItem extends ComponentItem
                 CompoundTag tag = itemStack.getOrCreateTag();
                 if (tag.hasUUID("TargetTeam")) {
                     if (machine instanceof BatteryBufferMachine) {
-                        player.sendSystemMessage(Component.literal("Danger: High Risk of Voiding. Connection terminated.")
-                                .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.5f, 1.2f);
+                        player.sendSystemMessage(
+                                Component.literal("Danger: High Risk of Voiding. Connection terminated.")
+                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.5f,
+                                1.2f);
                         return InteractionResult.FAIL;
                     }
 
@@ -334,7 +336,7 @@ public class TeslaBinderItem extends ComponentItem
 
                 String transferStr = hTag.getString("transfer");
                 long flowVal = Long.parseLong(transferStr.isEmpty() ? "0" : transferStr);
-                
+
                 String sign;
                 if (isCharger) {
                     sign = "-";
@@ -342,12 +344,13 @@ public class TeslaBinderItem extends ComponentItem
                     sign = hTag.getBoolean("isOut") ? "+" : "-";
                 } else {
                     // Soul-linked machines: negative flow means it's a generator (giving energy to the tower)
-                    // In pullFromSoulLinkedGenerators, team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
+                    // In pullFromSoulLinkedGenerators, team.machineCurrentFlow.merge(targetPos, -pulledThisTick,
+                    // Long::sum);
                     // So if flowVal < 0, it's a generator -> "+"
                     // if flowVal > 0, it's a consumer -> "-"
                     sign = (flowVal < 0) ? "+" : (flowVal > 0 ? "-" : "");
                 }
-                
+
                 String flowLabel = isCharger ? "Wireless Output: " : "Current Flow: ";
 
                 list.add(Component.literal(flowLabel).withStyle(ChatFormatting.GRAY)

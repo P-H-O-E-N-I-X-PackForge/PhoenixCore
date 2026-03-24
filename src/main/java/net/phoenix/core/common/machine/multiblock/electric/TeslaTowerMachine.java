@@ -362,7 +362,9 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 }
                 for (var entry : team.energyInput.entrySet()) {
                     totalWirelessOutput += entry.getValue().longValue();
-                    team.machineDisplayFlow.put(entry.getKey(), -entry.getValue().longValue() / 20); // Output is negative for Binder
+                    team.machineDisplayFlow.put(entry.getKey(), -entry.getValue().longValue() / 20); // Output is
+                                                                                                     // negative for
+                                                                                                     // Binder
                 }
 
                 // Soul-Linked Machines (Generators return negative, Consumers return positive)
