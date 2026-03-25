@@ -1,6 +1,5 @@
 package net.phoenix.core.commands;
 
-import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -12,6 +11,8 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.saveddata.TeslaTeamEnergyData;
+
+import com.mojang.brigadier.CommandDispatcher;
 
 import java.util.UUID;
 
@@ -32,12 +33,14 @@ public class TeslaDebugCommand {
         ServerLevel level = source.getLevel();
         TeslaTeamEnergyData data = TeslaTeamEnergyData.get(level);
 
-        source.sendSuccess(() -> Component.literal("=== TESLA NETWORK SYSTEM DEBUG ===").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), false);
+        source.sendSuccess(() -> Component.literal("=== TESLA NETWORK SYSTEM DEBUG ===").withStyle(ChatFormatting.GOLD,
+                ChatFormatting.BOLD), false);
 
         var networks = data.getNetworksView();
 
         // 1. GLOBAL REGISTRY VERIFICATION (Checks if Mixin lookup is valid)
-        source.sendSuccess(() -> Component.literal("Global Machine Registry:").withStyle(ChatFormatting.YELLOW, ChatFormatting.UNDERLINE), false);
+        source.sendSuccess(() -> Component.literal("Global Machine Registry:").withStyle(ChatFormatting.YELLOW,
+                ChatFormatting.UNDERLINE), false);
 
         int globalCount = 0;
         for (var entry : networks.entrySet()) {
@@ -51,22 +54,25 @@ public class TeslaDebugCommand {
                 source.sendSuccess(() -> Component.literal("  [LINKED] ")
                         .append(Component.literal(pos.toShortString()).withStyle(ChatFormatting.WHITE))
                         .append(" -> Team: ")
-                        .append(Component.literal(teamId.toString().substring(0,8)).withStyle(ChatFormatting.AQUA))
-                        .append(verified ? Component.literal(" [VERIFIED]").withStyle(ChatFormatting.GREEN)
-                                : Component.literal(" [MAP MISSING]").withStyle(ChatFormatting.RED)), false);
+                        .append(Component.literal(teamId.toString().substring(0, 8)).withStyle(ChatFormatting.AQUA))
+                        .append(verified ? Component.literal(" [VERIFIED]").withStyle(ChatFormatting.GREEN) :
+                                Component.literal(" [MAP MISSING]").withStyle(ChatFormatting.RED)),
+                        false);
                 globalCount++;
             }
         }
 
         if (globalCount == 0) {
-            source.sendSuccess(() -> Component.literal("  No machines currently registered in Global Map.").withStyle(ChatFormatting.DARK_GRAY), false);
+            source.sendSuccess(() -> Component.literal("  No machines currently registered in Global Map.")
+                    .withStyle(ChatFormatting.DARK_GRAY), false);
         }
 
         source.sendSuccess(() -> Component.literal("--------------------------------"), false);
 
         // 2. DETAILED TEAM BREAKDOWN
         if (networks.isEmpty()) {
-            source.sendSuccess(() -> Component.literal("No active team networks found.").withStyle(ChatFormatting.RED), false);
+            source.sendSuccess(() -> Component.literal("No active team networks found.").withStyle(ChatFormatting.RED),
+                    false);
             return 1;
         }
 
@@ -78,7 +84,8 @@ public class TeslaDebugCommand {
             // Network Identity
             MutableComponent teamHeader = Component.literal("Network: ")
                     .append(Component.literal(team.toString().substring(0, 8)).withStyle(ChatFormatting.AQUA))
-                    .append(online ? Component.literal(" [ONLINE]").withStyle(ChatFormatting.GREEN) : Component.literal(" [OFFLINE]").withStyle(ChatFormatting.RED));
+                    .append(online ? Component.literal(" [ONLINE]").withStyle(ChatFormatting.GREEN) :
+                            Component.literal(" [OFFLINE]").withStyle(ChatFormatting.RED));
             source.sendSuccess(() -> teamHeader, false);
 
             // Energy & Heartbeat Stats
@@ -94,20 +101,24 @@ public class TeslaDebugCommand {
             }
             final int finalLiveCount = liveCount;
             source.sendSuccess(() -> Component.literal("  Live Heartbeats: ").withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal(String.valueOf(finalLiveCount)).withStyle(ChatFormatting.LIGHT_PURPLE)), false);
+                    .append(Component.literal(String.valueOf(finalLiveCount)).withStyle(ChatFormatting.LIGHT_PURPLE)),
+                    false);
 
             // Device List (Hatches & Soul-Links)
             var hatches = data.getHatches(team);
             if (!hatches.isEmpty()) {
-                source.sendSuccess(() -> Component.literal("  Connected Hardware:").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
+                source.sendSuccess(() -> Component.literal("  Connected Hardware:").withStyle(ChatFormatting.GRAY,
+                        ChatFormatting.ITALIC), false);
                 for (var info : hatches) {
                     String typePrefix = info.isSoulLinked ? "[S]" : (info.isPhysicalOutput ? "[I]" : "[O]");
-                    ChatFormatting typeColor = info.isSoulLinked ? ChatFormatting.LIGHT_PURPLE : (info.isPhysicalOutput ? ChatFormatting.GREEN : ChatFormatting.RED);
+                    ChatFormatting typeColor = info.isSoulLinked ? ChatFormatting.LIGHT_PURPLE :
+                            (info.isPhysicalOutput ? ChatFormatting.GREEN : ChatFormatting.RED);
 
                     source.sendSuccess(() -> Component.literal("    - ")
                             .append(Component.literal(typePrefix).withStyle(typeColor))
                             .append(" " + info.pos.toShortString())
-                            .append(Component.literal(" (" + info.dimension.location().getPath() + ")").withStyle(ChatFormatting.DARK_GRAY))
+                            .append(Component.literal(" (" + info.dimension.location().getPath() + ")")
+                                    .withStyle(ChatFormatting.DARK_GRAY))
                             .append(" Flow: " + info.displayFlow + " EU/t"), false);
                 }
             }

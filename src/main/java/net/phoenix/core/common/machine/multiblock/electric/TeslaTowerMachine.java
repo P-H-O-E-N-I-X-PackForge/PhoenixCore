@@ -74,7 +74,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         subscribeServerTick(this::transferEnergyTick);
     }
 
-
     public static final String TTB_BATTERY_HEADER = "TTBatteries_";
 
     private static final BigInteger BIG_INTEGER_MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);

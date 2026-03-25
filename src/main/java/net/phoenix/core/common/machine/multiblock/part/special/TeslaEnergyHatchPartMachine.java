@@ -15,7 +15,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -294,14 +293,14 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
             updateTickSubscription();
 
             // Sync initial buffer state to the cloud
-// Only register position/team mapping on load; let tickWireless handle the real buffer sync
+            // Only register position/team mapping on load; let tickWireless handle the real buffer sync
             TeslaTeamEnergyData.get(sl).setEnergyBuffered(
                     ownerTeamUUID,
                     getLevel(),
                     getPos(),
                     BigInteger.valueOf(energyContainer.getEnergyStored()), // fine, will be corrected next tick
                     getIO() == IO.OUT);
-// This is acceptable — tickWireless will overwrite with real data within 1 tick
+            // This is acceptable — tickWireless will overwrite with real data within 1 tick
         }
     }
 

@@ -181,7 +181,6 @@ public class TeslaBinderItem extends ComponentItem
         return InteractionResult.PASS;
     }
 
-
     // If shift right-clicked on air, binds to player. If right-clicked on air, opens the ui.
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player,
@@ -227,7 +226,8 @@ public class TeslaBinderItem extends ComponentItem
             TeslaTeamEnergyData.get(server).getOrCreate(resolvedId);
 
             // Visual/Audio feedback
-            server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2, 0.2, 0.02);
+            server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2,
+                    0.2, 0.02);
             player.playSound(SoundEvents.PLAYER_LEVELUP, 0.5f, 1.5f);
 
             // 4. Clearer messaging so players know they are sharing a network
@@ -600,7 +600,8 @@ public class TeslaBinderItem extends ComponentItem
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(@NotNull ItemStack stack, Level level, @NotNull Entity entity, int slotId,
+                              boolean isSelected) {
         if (level.isClientSide || !(entity instanceof ServerPlayer serverPlayer)) return;
         if (level.getGameTime() % 5 != 0) return;
 

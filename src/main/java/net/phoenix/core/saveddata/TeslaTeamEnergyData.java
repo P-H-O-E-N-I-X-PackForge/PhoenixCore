@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,7 @@ public class TeslaTeamEnergyData extends SavedData {
     public final Map<BlockPos, UUID> machineToTeam = new HashMap<>();
 
     public static class HatchInfo {
+
         public final BlockPos pos;
         public final ResourceKey<Level> dimension;
         public BigInteger buffered = BigInteger.ZERO;
@@ -66,8 +68,6 @@ public class TeslaTeamEnergyData extends SavedData {
         return map.values();
     }
 
-
-
     /**
      * Checks if a specific team's network is currently toggled "ON".
      */
@@ -76,6 +76,7 @@ public class TeslaTeamEnergyData extends SavedData {
         if (!networks.containsKey(team)) return true;
         return onlineNetworks.contains(team);
     }
+
     /**
      * Provides a read-only view of all active networks.
      * Used by the debug command and UI synchronization.
@@ -94,9 +95,8 @@ public class TeslaTeamEnergyData extends SavedData {
         }
     }
 
-
-
     public static class TeamEnergy {
+
         public BigInteger stored = BigInteger.ZERO;
         public BigInteger capacity = BigInteger.ZERO;
 
@@ -135,7 +135,6 @@ public class TeslaTeamEnergyData extends SavedData {
             }
             return count;
         }
-
 
         public ResourceKey<Level> getMachineDimension(BlockPos pos) {
             return posToDimension.getOrDefault(pos, Level.OVERWORLD);
@@ -320,7 +319,7 @@ public class TeslaTeamEnergyData extends SavedData {
 
             // Re-populate machineToTeam from persisted sets
             for (BlockPos p : teamData.soulLinkedMachines) data.machineToTeam.put(p, teamUUID);
-            for (BlockPos p : teamData.activeChargers)     data.machineToTeam.put(p, teamUUID);
+            for (BlockPos p : teamData.activeChargers) data.machineToTeam.put(p, teamUUID);
             for (BlockPos p : teamData.energyBuffered.keySet()) data.machineToTeam.put(p, teamUUID);
 
             // Add this inside the per-team loop in load(), after loading teamData:
