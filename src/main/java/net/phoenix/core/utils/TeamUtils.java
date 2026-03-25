@@ -12,22 +12,23 @@ public final class TeamUtils {
 
     private TeamUtils() {}
 
+
     public static UUID getTeamIdOrPlayerFallback(UUID playerUUID) {
         if (playerUUID == null) return null;
 
         return FTBTeamsAPI.api().getManager().getTeamForPlayerID(playerUUID)
-                .filter(Team::isPartyTeam)
-                .map(Team::getTeamId)
+                .map(team -> {
+                    // If the player is in a Party or a Server-wide team,
+                    // use that ID so everyone in that group shares power.
+                    if (team.isPartyTeam() || team.isServerTeam()) {
+                        return team.getTeamId();
+                    }
+
+                    // If it's a 'Player' team (personal), ignore the Team UUID
+                    // and use the Player's actual UUID to keep their data private.
+                    return playerUUID;
+                })
                 .orElse(playerUUID);
-    }
-
-    public static UUID getTeamIdOrPlayerFallback(ServerPlayer player) {
-        if (player == null) return null;
-
-        return FTBTeamsAPI.api().getManager().getTeamForPlayer(player)
-                .filter(Team::isPartyTeam)
-                .map(Team::getTeamId)
-                .orElse(player.getUUID());
     }
 
     public static String getTeamName(UUID teamId) {

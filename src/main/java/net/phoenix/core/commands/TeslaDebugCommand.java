@@ -1,8 +1,10 @@
 package net.phoenix.core.commands;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -10,8 +12,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.saveddata.TeslaTeamEnergyData;
-
-import com.mojang.brigadier.CommandDispatcher;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class TeslaDebugCommand {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(
-                Commands.literal("tesla_energy_debug")
+                Commands.literal("tesla_debug")
                         .requires(src -> src.hasPermission(2))
                         .executes(ctx -> run(ctx.getSource())));
     }
@@ -32,15 +32,41 @@ public class TeslaDebugCommand {
         ServerLevel level = source.getLevel();
         TeslaTeamEnergyData data = TeslaTeamEnergyData.get(level);
 
-        source.sendSuccess(() -> Component.literal("=== Tesla Network Debugger ===").withStyle(ChatFormatting.GOLD,
-                ChatFormatting.BOLD), false);
+        source.sendSuccess(() -> Component.literal("=== TESLA NETWORK SYSTEM DEBUG ===").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD), false);
 
         var networks = data.getNetworksView();
 
+        // 1. GLOBAL REGISTRY VERIFICATION (Checks if Mixin lookup is valid)
+        source.sendSuccess(() -> Component.literal("Global Machine Registry:").withStyle(ChatFormatting.YELLOW, ChatFormatting.UNDERLINE), false);
+
+        int globalCount = 0;
+        for (var entry : networks.entrySet()) {
+            UUID teamId = entry.getKey();
+            TeslaTeamEnergyData.TeamEnergy teamData = entry.getValue();
+
+            for (BlockPos pos : teamData.soulLinkedMachines) {
+                UUID lookupTeam = data.getOwnerTeam(pos);
+                boolean verified = teamId.equals(lookupTeam);
+
+                source.sendSuccess(() -> Component.literal("  [LINKED] ")
+                        .append(Component.literal(pos.toShortString()).withStyle(ChatFormatting.WHITE))
+                        .append(" -> Team: ")
+                        .append(Component.literal(teamId.toString().substring(0,8)).withStyle(ChatFormatting.AQUA))
+                        .append(verified ? Component.literal(" [VERIFIED]").withStyle(ChatFormatting.GREEN)
+                                : Component.literal(" [MAP MISSING]").withStyle(ChatFormatting.RED)), false);
+                globalCount++;
+            }
+        }
+
+        if (globalCount == 0) {
+            source.sendSuccess(() -> Component.literal("  No machines currently registered in Global Map.").withStyle(ChatFormatting.DARK_GRAY), false);
+        }
+
+        source.sendSuccess(() -> Component.literal("--------------------------------"), false);
+
+        // 2. DETAILED TEAM BREAKDOWN
         if (networks.isEmpty()) {
-            source.sendSuccess(
-                    () -> Component.literal("No active networks found in SavedData.").withStyle(ChatFormatting.RED),
-                    false);
+            source.sendSuccess(() -> Component.literal("No active team networks found.").withStyle(ChatFormatting.RED), false);
             return 1;
         }
 
@@ -49,46 +75,53 @@ public class TeslaDebugCommand {
             TeslaTeamEnergyData.TeamEnergy teamData = entry.getValue();
             boolean online = data.isOnline(team);
 
-            // Team Header
-            MutableComponent teamInfo = Component.literal("Network: ")
+            // Network Identity
+            MutableComponent teamHeader = Component.literal("Network: ")
                     .append(Component.literal(team.toString().substring(0, 8)).withStyle(ChatFormatting.AQUA))
-                    .append(Component.literal(" Status: ").withStyle(ChatFormatting.WHITE))
-                    .append(online ? Component.literal("ONLINE").withStyle(ChatFormatting.GREEN) :
-                            Component.literal("OFFLINE").withStyle(ChatFormatting.RED));
+                    .append(online ? Component.literal(" [ONLINE]").withStyle(ChatFormatting.GREEN) : Component.literal(" [OFFLINE]").withStyle(ChatFormatting.RED));
+            source.sendSuccess(() -> teamHeader, false);
 
-            source.sendSuccess(() -> teamInfo, false);
-
-            // Energy Stats
-            source.sendSuccess(() -> Component.literal("  Power: ").withStyle(ChatFormatting.GRAY)
+            // Energy & Heartbeat Stats
+            source.sendSuccess(() -> Component.literal("  EU: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(teamData.stored.toString()).withStyle(ChatFormatting.YELLOW))
                     .append(" / ")
-                    .append(Component.literal(teamData.capacity.toString()).withStyle(ChatFormatting.GOLD))
-                    .append(" EU"), false);
+                    .append(Component.literal(teamData.capacity.toString()).withStyle(ChatFormatting.GOLD)), false);
 
-            // Detailed Hatch Breakdown
+            long now = level.getGameTime();
+            int liveCount = 0;
+            for (long lastSeen : teamData.lastSeen.values()) {
+                if (now - lastSeen < 40) liveCount++;
+            }
+            final int finalLiveCount = liveCount;
+            source.sendSuccess(() -> Component.literal("  Live Heartbeats: ").withStyle(ChatFormatting.GRAY)
+                    .append(Component.literal(String.valueOf(finalLiveCount)).withStyle(ChatFormatting.LIGHT_PURPLE)), false);
+
+            // Device List (Hatches & Soul-Links)
             var hatches = data.getHatches(team);
-            source.sendSuccess(() -> Component.literal("  Hatch Details (Count: " + hatches.size() + "):")
-                    .withStyle(ChatFormatting.GRAY), false);
+            if (!hatches.isEmpty()) {
+                source.sendSuccess(() -> Component.literal("  Connected Hardware:").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
+                for (var info : hatches) {
+                    String typePrefix = info.isSoulLinked ? "[S]" : (info.isPhysicalOutput ? "[I]" : "[O]");
+                    ChatFormatting typeColor = info.isSoulLinked ? ChatFormatting.LIGHT_PURPLE : (info.isPhysicalOutput ? ChatFormatting.GREEN : ChatFormatting.RED);
 
-            if (hatches.isEmpty()) {
-                source.sendSuccess(() -> Component.literal("    None registered.").withStyle(ChatFormatting.DARK_GRAY),
-                        false);
-            } else {
-                for (TeslaTeamEnergyData.HatchInfo hatch : hatches) {
-                    boolean isOut = hatch.isPhysicalOutput;
-                    MutableComponent hatchLine = Component.literal("    - ")
-                            .append(Component.literal(isOut ? "[OUT] " : "[IN] ")
-                                    .withStyle(isOut ? ChatFormatting.RED : ChatFormatting.GREEN))
-                            .append(Component
-                                    .literal(hatch.pos.getX() + ", " + hatch.pos.getY() + ", " + hatch.pos.getZ())
-                                    .withStyle(ChatFormatting.WHITE))
-                            .append(Component.literal(" | Buf: ").withStyle(ChatFormatting.GRAY))
-                            .append(Component.literal(hatch.buffered.toString()).withStyle(ChatFormatting.DARK_AQUA));
-
-                    source.sendSuccess(() -> hatchLine, false);
+                    source.sendSuccess(() -> Component.literal("    - ")
+                            .append(Component.literal(typePrefix).withStyle(typeColor))
+                            .append(" " + info.pos.toShortString())
+                            .append(Component.literal(" (" + info.dimension.location().getPath() + ")").withStyle(ChatFormatting.DARK_GRAY))
+                            .append(" Flow: " + info.displayFlow + " EU/t"), false);
                 }
             }
-            source.sendSuccess(() -> Component.literal("--------------------------------"), false);
+
+            // Wireless Chargers
+            if (!teamData.activeChargers.isEmpty()) {
+                source.sendSuccess(() -> Component.literal("  Active Chargers:").withStyle(ChatFormatting.BLUE), false);
+                for (BlockPos cPos : teamData.activeChargers) {
+                    source.sendSuccess(() -> Component.literal("    - " + cPos.toShortString())
+                            .append(" Flow: " + teamData.machineDisplayFlow.getOrDefault(cPos, 0L) + " EU/t"), false);
+                }
+            }
+
+            source.sendSuccess(() -> Component.literal(" "), false); // Spacer
         }
 
         return 1;

@@ -495,10 +495,10 @@ public class PhoenixMachineRecipes {
                 .save(provider);
         BIO_ENGINE_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
                 .notConsumable(SOURCE_FIBERS)
-                .input(SourceRecipeCapability.CAP, new SourceIngredient(100))
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(140))
                 .outputFluids(FROST.getFluid(100))
                 .duration(140)
-                .EUt(-VA[EV] * 2L)
+                .EUt(-VA[HV] * 2L)
                 .save(provider);
 
         SOURCE_REACTOR_RECIPES.recipeBuilder("source_titanium_filament_alloy")

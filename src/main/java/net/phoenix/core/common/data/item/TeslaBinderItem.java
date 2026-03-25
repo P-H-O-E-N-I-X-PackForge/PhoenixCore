@@ -168,6 +168,7 @@ public class TeslaBinderItem extends ComponentItem
         Player player = context.getPlayer();
         if (player == null) return InteractionResult.PASS;
 
+        // Trigger binding logic when Sneaking + Right-Clicking a block
         if (player.isShiftKeyDown()) {
             if (!context.getLevel().isClientSide) {
                 bindToPlayer(player, context.getItemInHand());
@@ -179,6 +180,7 @@ public class TeslaBinderItem extends ComponentItem
 
         return InteractionResult.PASS;
     }
+
 
     // If shift right-clicked on air, binds to player. If right-clicked on air, opens the ui.
     @Override
@@ -208,19 +210,30 @@ public class TeslaBinderItem extends ComponentItem
 
     // Handles the linking of the player/team data onto the Telsa Binder.
     private void bindToPlayer(Player player, ItemStack stack) {
-        UUID uuid = player.getUUID(); // Unique player id.
+        // 1. Resolve the correct ID (Party ID or Player ID)
+        UUID resolvedId = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
         var tag = stack.getOrCreateTag();
-        tag.putUUID("TargetTeam", uuid);
+
+        // 2. Get the actual name of the team (e.g., "Phoenix" or "PlayerA")
+        String teamName = TeamUtils.getTeamName(resolvedId);
+
+        tag.putUUID("TargetTeam", resolvedId);
+        tag.putString("TeamName", teamName);
+        // Keeping track of who last synchronized the binder
         tag.putString("OwnerName", player.getName().getString());
-        tag.putString("TeamName", player.getName().getString() + "'s Network");
 
         if (player.level() instanceof ServerLevel server) {
-            TeslaTeamEnergyData.get(server).getOrCreate(uuid);
-            server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2,
-                    0.2, 0.02);
+            // 3. Initialize the shared data entry if it doesn't exist
+            TeslaTeamEnergyData.get(server).getOrCreate(resolvedId);
+
+            // Visual/Audio feedback
+            server.sendParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.1, player.getZ(), 20, 0.2, 0.2, 0.2, 0.02);
             player.playSound(SoundEvents.PLAYER_LEVELUP, 0.5f, 1.5f);
-            player.sendSystemMessage(
-                    Component.literal("Tesla frequency set to personal network.").withStyle(ChatFormatting.GREEN));
+
+            // 4. Clearer messaging so players know they are sharing a network
+            player.sendSystemMessage(Component.literal("Tesla frequency linked to: ")
+                    .withStyle(ChatFormatting.GREEN)
+                    .append(Component.literal(teamName).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)));
         }
     }
 
@@ -587,10 +600,8 @@ public class TeslaBinderItem extends ComponentItem
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, Level level, @NotNull Entity entity, int slotId,
-                              boolean isSelected) {
+    public void inventoryTick(@NotNull ItemStack stack, Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
         if (level.isClientSide || !(entity instanceof ServerPlayer serverPlayer)) return;
-
         if (level.getGameTime() % 5 != 0) return;
 
         boolean isUIOpen = serverPlayer.containerMenu instanceof com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
@@ -599,7 +610,6 @@ public class TeslaBinderItem extends ComponentItem
         CompoundTag tag = stack.getOrCreateTag();
         if (tag.hasUUID("TargetTeam")) {
             UUID teamUUID = tag.getUUID("TargetTeam");
-
             ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
             if (overworld == null) return;
 
@@ -612,11 +622,9 @@ public class TeslaBinderItem extends ComponentItem
             tag.putString("NetInput", String.valueOf(team.lastNetInput));
             tag.putString("NetOutput", String.valueOf(team.lastNetOutput));
 
-            List<BlockPos> toRemove = new ArrayList<>();
-
+            // 1. Sync Hatch Data
             ListTag hatchList = new ListTag();
             for (TeslaTeamEnergyData.HatchInfo hatch : globalData.getHatches(teamUUID)) {
-                if (hatch.isSoulLinked) continue;
                 CompoundTag hTag = new CompoundTag();
                 hTag.putLong("pos", hatch.pos.asLong());
                 hTag.putBoolean("isOut", hatch.isPhysicalOutput);
@@ -627,14 +635,15 @@ public class TeslaBinderItem extends ComponentItem
             }
             tag.put("HatchData", hatchList);
 
+            // 2. Sync Machine Data (EV Lathes, etc)
             ListTag machineList = new ListTag();
             for (BlockPos mPos : team.soulLinkedMachines) {
-                ResourceKey<Level> mDim = team.getMachineDimension(mPos);
-                ServerLevel mLevel = serverPlayer.server.getLevel(mDim != null ? mDim : Level.OVERWORLD);
+                ResourceKey<Level> mDim = team.posToDimension.getOrDefault(mPos, Level.OVERWORLD);
+                ServerLevel mLevel = serverPlayer.server.getLevel(mDim);
 
                 CompoundTag mTag = new CompoundTag();
                 mTag.putLong("pos", mPos.asLong());
-                mTag.putString("dim", mDim != null ? mDim.location().toString() : "minecraft:overworld");
+                mTag.putString("dim", mDim.location().toString());
 
                 if (mLevel != null && mLevel.isLoaded(mPos)) {
                     MetaMachine machine = MetaMachine.getMachine(mLevel, mPos);
@@ -644,20 +653,18 @@ public class TeslaBinderItem extends ComponentItem
                             mTag.putString("buf", String.valueOf(tiered.energyContainer.getEnergyStored()));
                         }
                     } else {
-                        toRemove.add(mPos);
-                        continue;
+                        mTag.putString("name", "§c[Missing Machine]");
                     }
                 } else {
-                    mTag.putString("name", "§8[Unloaded]§r");
+                    mTag.putString("name", "§8[Unloaded]");
                 }
                 mTag.putString("transfer", String.valueOf(team.machineDisplayFlow.getOrDefault(mPos, 0L)));
                 machineList.add(mTag);
             }
             tag.put("MachineData", machineList);
 
+            // 3. Sync Chargers
             ListTag chargerList = new ListTag();
-            List<BlockPos> deadChargers = new ArrayList<>();
-
             for (BlockPos cPos : team.activeChargers) {
                 CompoundTag cTag = new CompoundTag();
                 cTag.putLong("pos", cPos.asLong());
@@ -668,23 +675,9 @@ public class TeslaBinderItem extends ComponentItem
 
                 if (machine instanceof TeslaWirelessChargerMachine) {
                     cTag.putString("name", machine.getDefinition().getLangValue());
-                    long flow = team.machineDisplayFlow.getOrDefault(cPos, 0L);
-                    cTag.putString("transfer", String.valueOf(flow));
+                    cTag.putString("transfer", String.valueOf(team.machineDisplayFlow.getOrDefault(cPos, 0L)));
                     chargerList.add(cTag);
-                } else {
-                    if (level.isLoaded(cPos) || overworld.isLoaded(cPos)) {
-                        deadChargers.add(cPos);
-                    } else {
-                        cTag.putString("name", "§8[Unloaded Charger]§r");
-                        cTag.putString("transfer", "0");
-                        chargerList.add(cTag);
-                    }
                 }
-            }
-
-            if (!deadChargers.isEmpty()) {
-                for (BlockPos p : deadChargers) team.removeCharger(p);
-                globalData.setDirty();
             }
             tag.put("ChargerData", chargerList);
 

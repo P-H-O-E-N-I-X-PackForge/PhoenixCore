@@ -9,7 +9,7 @@
     "accessor.RelayTileDisabledAccessor",
     "ars.DominionWandMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
-    "minecraft.ItemStackTooltipMixin",
+    "minecraft.ItemStackTooltipMixin"
   ],
   "client": [
     "ars.RelayTileMixin",

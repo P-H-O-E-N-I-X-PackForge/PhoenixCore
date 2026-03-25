@@ -74,8 +74,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         subscribeServerTick(this::transferEnergyTick);
     }
 
-    public static final int MAX_BATTERY_LAYERS = 18;
-    public static final int MIN_CASINGS = 14;
 
     public static final String TTB_BATTERY_HEADER = "TTBatteries_";
 
@@ -98,8 +96,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     @Getter
     private long outputPerSec;
 
-    private int messageDelay = -1; // Change to -1 to indicate "not active"
-    private UUID delayedOwner = null;
     private boolean introSequencePlayed = false;
 
     protected ConditionalSubscriptionHandler tickSubscription;
@@ -143,8 +139,8 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                             .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
 
                     // Set the state for the delay
-                    this.messageDelay = 100; // 5 seconds
-                    this.delayedOwner = ownerId;
+                    // Change to -1 to indicate "not active"
+                    int messageDelay = 100; // 5 seconds
                 }
             }
         }
@@ -218,14 +214,16 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     }
 
     private void pushToSoulLinkedMachines(ServerLevel level, TeslaTeamEnergyData.TeamEnergy team) {
-        // Check if we have anywhere to send energy or energy to send
-        if (team.soulLinkedMachines.isEmpty() || team.stored.signum() == 0) return;
+        if (team.soulLinkedMachines.isEmpty()) return; // removed stored == 0 early return
 
         for (BlockPos targetPos : team.soulLinkedMachines) {
-            // Ensure chunk is loaded before accessing world data
             if (!level.isLoaded(targetPos)) continue;
 
+            // ALWAYS heartbeat regardless of energy availability
             team.markHatchActive(targetPos, level.getGameTime());
+
+            // Only bother with energy logic if we actually have something to give
+            if (team.stored.signum() == 0) continue;
 
             MetaMachine machine = MetaMachine.getMachine(level, targetPos);
             if (machine == null) continue;
@@ -236,12 +234,10 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 var energy = charger.energyContainer;
                 if (energy != null) {
                     long voltage = energy.getInputVoltage();
-                    // Ensure we don't overflow Long when checking available team energy
                     long available = team.stored.min(BigInteger.valueOf(Long.MAX_VALUE)).longValue();
                     long maxTransfer = voltage * energy.getInputAmperage();
                     long toPush = Math.min(available, maxTransfer);
 
-                    // Use the precise network acceptance logic from snippet 2
                     long accepted = energy.acceptEnergyFromNetwork(null, voltage,
                             (long) Math.ceil((double) toPush / voltage));
 
@@ -258,8 +254,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                         long voltage = energy.getInputVoltage();
                         long transferLimit = voltage * energy.getInputAmperage();
                         long toInject = Math.min(demand, transferLimit);
-
-                        // Logic fix: limit the available pull to the specific injection limit
                         long available = team.stored.min(BigInteger.valueOf(toInject)).longValue();
 
                         if (available > 0) {
@@ -268,7 +262,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                             if (injectedThisTick > 0) {
                                 energy.addEnergy(injectedThisTick);
 
-                                // Visuals: Electric sparks
                                 if (level.getGameTime() % 10 == 0) {
                                     level.sendParticles(ParticleTypes.ELECTRIC_SPARK,
                                             targetPos.getX() + 0.5, targetPos.getY() + 1.1, targetPos.getZ() + 0.5,
@@ -292,6 +285,9 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         for (BlockPos targetPos : team.soulLinkedMachines) {
             if (!level.isLoaded(targetPos)) continue;
 
+            // ALWAYS heartbeat so idle generators stay "connected" in UI
+            team.markHatchActive(targetPos, level.getGameTime());
+
             MetaMachine machine = MetaMachine.getMachine(level, targetPos);
             if (machine == null) continue;
 
@@ -299,25 +295,17 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
 
             if (machine instanceof TieredEnergyMachine generator) {
                 var energy = generator.energyContainer;
-
-                // Check if generator has energy to give
                 if (energy != null && energy.getEnergyStored() > 0) {
                     long voltage = energy.getOutputVoltage();
                     long maxAmperage = energy.getOutputAmperage();
-
                     long available = energy.getEnergyStored();
                     long maxTransfer = voltage * maxAmperage;
                     long toPull = Math.min(available, maxTransfer);
 
                     if (toPull > 0) {
-                        // 1. Use the 'fill' method from your TeamEnergy class
-                        // It calculates space and returns how much was actually added
                         BigInteger accepted = team.fill(BigInteger.valueOf(toPull));
                         long acceptedLong = accepted.longValue();
-
                         if (acceptedLong > 0) {
-                            // 2. ONLY remove what the network actually accepted
-                            // This prevents energy "voiding" when the network is full
                             energy.removeEnergy(acceptedLong);
                             pulledThisTick = acceptedLong;
                         }
@@ -326,9 +314,7 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
             }
 
             if (pulledThisTick > 0) {
-                // Update tracking and visuals
                 team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
-                team.markHatchActive(targetPos, level.getGameTime());
 
                 if (level.getGameTime() % 12 == 0) {
                     level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
@@ -537,7 +523,6 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     private BigInteger[] storage;
     private BigInteger[] maximums;
     @Setter
-    @Getter
     private BigInteger capacity;
     private int index;
 

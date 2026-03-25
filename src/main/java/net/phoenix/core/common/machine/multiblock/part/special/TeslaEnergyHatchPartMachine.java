@@ -82,14 +82,16 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
         super.onLoad();
         if (!getLevel().isClientSide && getLevel() instanceof ServerLevel server) {
             autoLinkTeamIfNeeded();
-            if (ownerTeamUUID != null && getLevel() instanceof ServerLevel serverLevel) {
-                TeslaTeamEnergyData.get(serverLevel).setEnergyBuffered(
+            if (ownerTeamUUID != null) {
+                TeslaTeamEnergyData.get(server).setEnergyBuffered(
                         ownerTeamUUID,
                         getLevel(),
                         getPos(),
-                        java.math.BigInteger.valueOf(energyContainer.getEnergyStored()),
+                        BigInteger.valueOf(energyContainer.getEnergyStored()),
                         getIO() == IO.OUT);
             }
+            // MISSING: subscribe/unsubscribe based on current controller state
+            updateTickSubscription();
         }
     }
 
@@ -97,10 +99,17 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
     public void onUnload() {
         super.onUnload();
         if (!getLevel().isClientSide && getLevel() instanceof ServerLevel server) {
-            // Scrub this coordinate from EVERY team's data to prevent ghosting
-            TeslaTeamEnergyData.get(server).removeMachineFromAllTeams(getPos());
-
-            // Also unregister from your runtime registry
+            if (self().getHolder().self().isRemoved()) {
+                TeslaTeamEnergyData.get(server).removeMachineFromAllTeams(getPos());
+            } else if (ownerTeamUUID != null) {
+                // Flush accurate final state so it persists correctly across restarts
+                TeslaTeamEnergyData.get(server).setEnergyBuffered(
+                        ownerTeamUUID,
+                        getLevel(),
+                        getPos(),
+                        BigInteger.valueOf(energyContainer.getEnergyStored()),
+                        getIO() == IO.OUT);
+            }
             TeslaWirelessRegistry.unregisterHatch(this);
         }
         unsubscribeFromTick();
@@ -223,7 +232,6 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
         TeslaTeamEnergyData.TeamEnergy teamData = data.getOrCreate(ownerTeamUUID);
         if (!data.isOnline(ownerTeamUUID)) return;
 
-        // 1. ALWAYS mark as active so the Tower knows we are still connected
         teamData.markHatchActive(getPos(), sl.getGameTime());
 
         long voltage = com.gregtechceu.gtceu.api.GTValues.V[getTier()];
@@ -233,21 +241,23 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
 
         if (getIO() == IO.IN) {
             long space = energyContainer.getEnergyCapacity() - energyContainer.getEnergyStored();
-            if (space > 0) { // Only attempt move if there is space
+            if (space > 0) {
                 BigInteger toPull = BigInteger.valueOf(Math.min(transferLimit, space));
                 moved = teamData.drain(toPull);
                 if (moved.signum() > 0) {
                     energyContainer.changeEnergy(moved.longValue());
+                    // energyInput feeds the tower's 20-tick display loop for downlinks
                     teamData.energyInput.merge(getPos(), moved, BigInteger::add);
                 }
             }
         } else {
             long stored = energyContainer.getEnergyStored();
-            if (stored > 0) { // Only attempt move if there is energy
+            if (stored > 0) {
                 BigInteger toPush = BigInteger.valueOf(Math.min(transferLimit, stored));
                 moved = teamData.fill(toPush);
                 if (moved.signum() > 0) {
                     energyContainer.changeEnergy(-moved.longValue());
+                    // energyOutput feeds the tower's 20-tick display loop for uplinks
                     teamData.energyOutput.merge(getPos(), moved, BigInteger::add);
                 }
             }
@@ -272,22 +282,26 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
         UUID ownerUUID = getOwnerUUID();
         if (ownerUUID == null) return;
 
-        // Try to resolve via online player first
-        ServerPlayer sp = sl.getServer().getPlayerList().getPlayer(ownerUUID);
-        UUID team;
-        if (sp != null) {
-            team = TeamUtils.getTeamIdOrPlayerFallback(sp);
-        } else {
-            // Player offline — resolve via UUID overload which also filters for party
-            team = TeamUtils.getTeamIdOrPlayerFallback(ownerUUID);
-        }
+        // Resolve the team using the UUID directly (works for online and offline players)
+        UUID team = TeamUtils.getTeamIdOrPlayerFallback(ownerUUID);
 
-        if (!team.equals(ownerTeamUUID)) {
-            ownerTeamUUID = team;
+        if (this.ownerTeamUUID == null || !team.equals(this.ownerTeamUUID)) {
+            this.ownerTeamUUID = team;
             self().markDirty();
+
             TeslaWirelessRegistry.unregisterHatch(this);
             TeslaWirelessRegistry.registerHatch(this);
             updateTickSubscription();
+
+            // Sync initial buffer state to the cloud
+// Only register position/team mapping on load; let tickWireless handle the real buffer sync
+            TeslaTeamEnergyData.get(sl).setEnergyBuffered(
+                    ownerTeamUUID,
+                    getLevel(),
+                    getPos(),
+                    BigInteger.valueOf(energyContainer.getEnergyStored()), // fine, will be corrected next tick
+                    getIO() == IO.OUT);
+// This is acceptable — tickWireless will overwrite with real data within 1 tick
         }
     }
 
