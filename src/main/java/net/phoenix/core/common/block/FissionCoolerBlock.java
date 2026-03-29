@@ -49,18 +49,18 @@ public class FissionCoolerBlock extends ActiveBlock {
 
         String inId = coolerType.getInputCoolantFluidId();
         Component inName = getFluidDisplayName(inId);
-        tooltip.add(Component.translatable("phoenix.fission.coolant_required", inName));
+        tooltip.add(Component.translatable("phoenixcore.coolant_required", inName));
 
         String outId = coolerType.getOutputCoolantFluidId();
         if (!outId.equalsIgnoreCase(inId)) {
             Component outName = getFluidDisplayName(outId);
-            tooltip.add(Component.translatable("phoenix.fission.coolant_output", outName));
+            tooltip.add(Component.translatable("phoenixcore.coolant_output", outName));
         }
 
         tooltip.add(Component.literal("§7Coolant Usage: §f" +
                 coolerType.getCoolantUsagePerTick() + " mB/t"));
 
-        tooltip.add(Component.translatable("phoenix.fission.cooling_power",
+        tooltip.add(Component.translatable("phoenixcore.cooling_power",
                 coolerType.getCoolerTemperature()));
     }
 

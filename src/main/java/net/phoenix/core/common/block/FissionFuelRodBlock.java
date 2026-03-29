@@ -52,21 +52,21 @@ public class FissionFuelRodBlock extends ActiveBlock {
 
         Component fuelName = getRegistryDisplayName(fuelRodType.getFuelKey());
 
-        tooltip.add(Component.translatable("phoenix.fission.fuel_required", fuelName)
+        tooltip.add(Component.translatable("phoenixcore.fuel_required", fuelName)
                 .withStyle(ChatFormatting.AQUA));
 
         Component outputName = getRegistryDisplayName(fuelRodType.getOutputKey());
 
-        tooltip.add(Component.translatable("phoenix.fission.depleted_fuel", outputName)
+        tooltip.add(Component.translatable("phoenixcore.depleted_fuel", outputName)
                 .withStyle(ChatFormatting.DARK_GREEN));
 
-        tooltip.add(Component.translatable("phoenix.fission.heat_production",
+        tooltip.add(Component.translatable("phoenixcore.heat_production",
                 Component.literal(String.valueOf(fuelRodType.getBaseHeatProduction()))
                         .withStyle(ChatFormatting.RED))
                 .append(Component.literal(" HU/t").withStyle(ChatFormatting.GRAY)));
 
         double seconds = fuelRodType.getDurationTicks() / 20.0;
-        tooltip.add(Component.translatable("phoenix.fission.fuel_cycle",
+        tooltip.add(Component.translatable("phoenixcore.fuel_cycle",
                 Component.literal(String.valueOf(fuelRodType.getAmountPerCycle()))
                         .withStyle(ChatFormatting.WHITE),
                 Component.literal(String.format("%.2f", seconds))
@@ -78,7 +78,7 @@ public class FissionFuelRodBlock extends ActiveBlock {
         try {
             bias = fuelRodType.getNeutronBias();
         } catch (Throwable ignored) {}
-        tooltip.add(Component.translatable("phoenix.fission.neutron_bias",
+        tooltip.add(Component.translatable("phoenixcore.neutron_bias",
                 Component.literal((bias >= 0 ? "+" : "") + bias + "%")
                         .withStyle(bias >= 0 ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.BLUE))
                 .withStyle(ChatFormatting.GRAY));
@@ -113,15 +113,19 @@ public class FissionFuelRodBlock extends ActiveBlock {
 
     public enum FissionFuelRodTypes implements StringRepresentable, IFissionFuelRodType {
 
-        T1_FUEL_ROD("t1_fuel_rod", 50, 1, 1500, 1, "gtceu:uranium_238_dust", "phoenixcore:low_level_radioactive_waste",
+        T1_FUEL_ROD("t1_fuel_rod", 50, 1, 2500, 1, "phoenixcore:basic_fuel_rod",
+                "phoenixcore:low_level_radioactive_waste",
                 0xFF62FF57, 0),
-        T2_FUEL_ROD("t2_fuel_rod", 150, 2, 2500, 1, "gtceu:uranium_238_dust", "phoenixcore:low_level_radioactive_waste",
+        T2_FUEL_ROD("t2_fuel_rod", 150, 2, 3000, 1, "phoenixcore:basic_fuel_rod",
+                "phoenixcore:low_level_radioactive_waste",
                 0xFF8AFF57, 1),
-        T3_FUEL_ROD("t3_fuel_rod", 500, 3, 3500, 1, "kubejs:u235_fuel_pellet", "phoenixcore:spent_uranium_235_nugget",
+        T3_FUEL_ROD("t3_fuel_rod", 500, 3, 3500, 1, "phoenixcore:u235_fuel_pellet",
+                "phoenixcore:spent_uranium_235_nugget",
                 0xFF57FFD2, 5),
-        T4_FUEL_ROD("t4_fuel_rod", 1200, 4, 4500, 1, "kubejs:plutonium_241_fuel_pellet",
+        T4_FUEL_ROD("t4_fuel_rod", 1200, 4, 4500, 1, "phoenixcore:plutonium_241_fuel_pellet",
                 "phoenixcore:depleted_plutonium_241_nugget", 0xFF57A8FF, 12),
-        T5_FUEL_ROD("t5_fuel_rod", 3000, 5, 8000, 1, "kubejs:u242_fuel_pellet", "phoenixcore:spent_uranium_242_nugget",
+        T5_FUEL_ROD("t5_fuel_rod", 3000, 5, 8000, 1, "phoenixcore:u242_fuel_pellet",
+                "phoenixcore:spent_uranium_242_nugget",
                 0xFFFF5757, 30);
 
         @Getter

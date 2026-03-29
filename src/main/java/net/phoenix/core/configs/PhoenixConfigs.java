@@ -34,6 +34,9 @@ public class PhoenixConfigs {
     @Configurable
     public FissionConfigs fission = new FissionConfigs();
 
+    @Configurable
+    public static WingFlightConfigs wingFlight = new WingFlightConfigs();
+
     // --- COLOR CONFIG ---
 
     public static class ColorConfig {
@@ -59,6 +62,73 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "The radius (in blocks) in which a Source Hatch will scan for nearby Source Jars to pull from." })
         public int sourceJarCheckRadius = 12;
+    }
+
+    // Wing config
+
+    public static class WingFlightConfigs {
+
+        @Configurable
+        @Configurable.Comment({
+                "EU/t drained from the Tesla network during powered elytra/sonic flight.",
+                "Speed and boost scale proportionally with this value.",
+                "Default: 5000"
+        })
+        public long poweredFlightEUt = 5_000L;
+
+        @Configurable
+        @Configurable.Comment({
+                "EU/t drained from the Tesla network during creative flight mode.",
+                "Set to 0 for truly free creative flight.",
+                "Fly speed scales proportionally with this value.",
+                "Default: 1000"
+        })
+        public long creativeFlightEUt = 1_000L;
+
+        @Configurable
+        @Configurable.Comment({
+                "Base boost scale for powered elytra flight at minimum speed setting.",
+                "The actual boost = boostMin + (speedSlider * (boostMax - boostMin))",
+                "Default: 0.01"
+        })
+        public double poweredBoostMin = 0.01;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max boost scale for powered elytra flight at maximum speed setting.",
+                "Scales further with poweredFlightEUt so higher drain = faster top speed.",
+                "Default: 0.09"
+        })
+        public double poweredBoostMax = 0.09;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min creative fly speed (at speed slider = 0).",
+                "Default: 0.05"
+        })
+        public double creativeSpeedMin = 0.05;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max creative fly speed (at speed slider = 10).",
+                "Scales further with creativeFlightEUt so higher drain = faster top speed.",
+                "Default: 0.2"
+        })
+        public double creativeSpeedMax = 0.20;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min speed clamp for powered flight (at drift slider = 0, tightest handling).",
+                "Default: 0.6"
+        })
+        public double poweredDriftMin = 0.6;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max speed clamp for powered flight (at drift slider = 10, loosest/floatiest).",
+                "Default: 1.8"
+        })
+        public double poweredDriftMax = 1.8;
     }
 
     // --- CLEANROOM CONFIG ---
@@ -276,7 +346,7 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment("The maximum heat a reactor can hold before starting the meltdown timer.")
-        public double maxSafeHeat = 10000.0;
+        public double maxSafeHeat = 100000.0;
 
         @Configurable
         @Configurable.Comment("Minimum heat clamp.")
@@ -304,11 +374,11 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment("Hard cap for parallels.")
-        public int maxParallels = 64;
+        public int maxParallels = 256;
 
         @Configurable
         @Configurable.Comment("How much EU/t is generated per unit of CURRENT heat (power scales with current heat).")
-        public double euPerHeatUnit = 0.5;
+        public double euPerHeatUnit = 1.0;
 
         @Configurable
         @Configurable.Comment("Optional cap on generated EU/t. Set <= 0 for no cap.")
@@ -344,7 +414,7 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment("Minimum EU/t produced while running (prevents 0). Set 0 to allow 0.")
-        public long minGeneratedEUt = 8;
+        public long minGeneratedEUt = 1024;
 
         @Configurable
         @Configurable.Comment("Exponent for heat->power curve. 1 = linear, >1 rewards high heat.")
@@ -400,7 +470,7 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment("If true, replaces blocks with air/fire. If false, uses standard GT explosion (drops items).")
-        public boolean destructiveExplosion = true;
+        public boolean destructiveExplosion = false;
 
         @Configurable
         @Configurable.Comment("Explosion power scales with fuel rod count: power = base + rods * multiplier.")
@@ -408,7 +478,7 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment("The base power of the meltdown explosion.")
-        public float baseExplosionPower = 10.0f;
+        public float baseExplosionPower = 2.0f;
 
         @Configurable
         @Configurable.Comment("Max radius used for destructive bypass block wiping.")

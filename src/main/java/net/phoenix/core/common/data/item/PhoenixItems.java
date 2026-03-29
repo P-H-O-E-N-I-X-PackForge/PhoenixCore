@@ -2,9 +2,16 @@ package net.phoenix.core.common.data.item;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
+import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.component.ElectricStats;
+import com.gregtechceu.gtceu.common.item.armor.GTArmorMaterials;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraftforge.common.Tags;
 
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
@@ -47,7 +54,7 @@ public class PhoenixItems {
 
     public static ItemEntry<Item> HONEY_TREAT = REGISTRATE
             .item("honey_treat", Item::new)
-            .lang("§2Basic Fuel Rod")
+            .lang("§6Honey Treat")
             .register();
     public static ItemEntry<Item> BASIC_FUEL_ROD = REGISTRATE
             .item("basic_fuel_rod", Item::new)
@@ -98,6 +105,62 @@ public class PhoenixItems {
             .register();
     public static ItemEntry<Item> SOURCE_FIBER_MESH = REGISTRATE.item("source_fiber_mesh", Item::new)
             .lang("§dSource Fiber Mesh")
+            .register();
+
+    public static ItemEntry<ArmorComponentItem> PHOENIX_HELMET = REGISTRATE
+            .item("phoenix_helmet", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.HELMET, p)
+                    .setArmorLogic(new PhoenixTechSuite(ArmorItem.Type.HELMET,
+                            16384,
+                            500_000_000L,
+                            8))) // MAX tier
+            .lang("Phoenix Tech Suite Helmet")
+            .properties(p -> p.rarity(Rarity.EPIC))
+            .tag(Tags.Items.ARMORS_HELMETS)
+            .tag(CustomTags.PPE_ARMOR)
+            .register();
+
+    public static ItemEntry<PhoenixArmorItem> PHOENIX_WINGS = REGISTRATE
+            .item("phoenix_wings", (p) -> new PhoenixArmorItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p,
+                    new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 8)))
+            .lang("Phoenix Wings")
+            .properties(p -> p.rarity(Rarity.EPIC))
+            .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .register();
+
+    public static ItemEntry<PhoenixArmorItem> PHOENIX_CHESTPLATE = REGISTRATE
+            .item("phoenix_chestplate",
+                    (p) -> new PhoenixArmorItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p,
+                            new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 8)))
+            .lang("Phoenix Tech Suite Chestplate")
+            .properties(p -> p.rarity(Rarity.EPIC))
+            .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
+            .tag(CustomTags.PPE_ARMOR)
+            .register();
+
+    public static ItemEntry<ArmorComponentItem> PHOENIX_LEGGINGS = REGISTRATE
+            .item("phoenix_leggings", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.LEGGINGS, p)
+                    .setArmorLogic(new PhoenixTechSuite(ArmorItem.Type.LEGGINGS,
+                            16384,
+                            500_000_000L,
+                            8)))
+            .lang("Phoenix Tech Suite Leggings")
+            .properties(p -> p.rarity(Rarity.EPIC))
+            .tag(Tags.Items.ARMORS_LEGGINGS)
+            .tag(CustomTags.PPE_ARMOR)
+            .register();
+
+    public static ItemEntry<ArmorComponentItem> PHOENIX_BOOTS = REGISTRATE
+            .item("phoenix_boots", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.BOOTS, p)
+                    .setArmorLogic(new PhoenixTechSuite(ArmorItem.Type.BOOTS,
+                            16384,
+                            500_000_000L,
+                            8)))
+            .lang("Phoenix Tech Suite Boots")
+            .properties(p -> p.rarity(Rarity.EPIC))
+            .tag(Tags.Items.ARMORS_BOOTS)
+            .tag(CustomTags.PPE_ARMOR)
+            .tag(CustomTags.STEP_BOOTS)
             .register();
 
     public static ItemEntry<TeslaStabilizerItem> LV_TESLA_STABILIZER = REGISTRATE

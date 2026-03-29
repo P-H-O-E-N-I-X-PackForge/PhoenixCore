@@ -38,17 +38,17 @@ public class FissionModeratorBlock extends ActiveBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level,
                                 List<Component> tooltip, TooltipFlag flag) {
         if (!GTUtil.isShiftDown()) {
-            tooltip.add(Component.translatable("block.phoenix_fission.fission_moderator.shift")
+            tooltip.add(Component.translatable("block.phoenixcore.fission_moderator.shift")
                     .withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        tooltip.add(Component.translatable("block.phoenix_fission.fission_moderator.info_header"));
+        tooltip.add(Component.translatable("block.phoenixcore.fission_moderator.info_header"));
 
-        tooltip.add(Component.translatable("block.phoenix_fission.fission_moderator.boost",
+        tooltip.add(Component.translatable("block.phoenixcore.fission_moderator.boost",
                 moderatorType.getEUBoost()));
 
-        tooltip.add(Component.translatable("block.phoenix_fission.fission_moderator.fuel_discount",
+        tooltip.add(Component.translatable("block.phoenixcore.fission_moderator.fuel_discount",
                 moderatorType.getFuelDiscount()));
     }
 

@@ -131,31 +131,31 @@ public class PhoenixFissionMachineRecipes {
                 .outputFluids(MAGMA.getFluid(100))
                 .notConsumable(TagPrefix.spring, Steel)
                 .duration(40)
-                .EUt(-VA[MV])
+                .EUt(-VA[EV])
                 .save(provider);
 
         PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("steam_exchange")
                 .inputFluids(Steam.getFluid(2000))
                 .outputFluids(DistilledWater.getFluid(250))
                 .notConsumable(TagPrefix.spring, Aluminium)
-                .duration(10)
-                .EUt(-VA[MV])
+                .duration(20)
+                .EUt(-VA[HV])
                 .save(provider);
 
         PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("sodium_potassium_exchange")
                 .inputFluids(HOT_SODIUM_POTASSIUM.getFluid(100))
                 .outputFluids(SodiumPotassium.getFluid(100))
                 .notConsumable(TagPrefix.spring, Copper)
-                .duration(100)
-                .EUt(-VA[HV])
+                .duration(140)
+                .EUt(-VA[EV])
                 .save(provider);
 
         PhoenixRecipeTypes.HEAT_EXCHANGER_RECIPES.recipeBuilder("critical_steam_exchange")
                 .inputFluids(CRITICAL_STEAM.getFluid(100))
                 .outputFluids(Steam.getFluid(100))
                 .notConsumable(TagPrefix.spring, RTMAlloy)
-                .duration(60)
-                .EUt(-VA[HV] * 2L)
+                .duration(120)
+                .EUt(-VA[EV] * 2L)
                 .save(provider);
     }
 }

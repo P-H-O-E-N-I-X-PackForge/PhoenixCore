@@ -194,7 +194,7 @@ public class BeeRecipeData {
 
             String blockId = namespace + ":" + id + "_block";
             String outputId = namespace + ":raw_" + id;
-            int outputCount = 5;
+            int outputCount = 10;
 
             // Specialized Overrides
             switch (id) {
@@ -232,7 +232,7 @@ public class BeeRecipeData {
                 case "obsidian" -> {
                     blockId = "minecraft:obsidian";
                     outputId = "gtceu:obsidian_dust";
-                    outputCount = 3;
+                    outputCount = 20;
                 }
                 case "infinity" -> {
                     blockId = "enderio:grains_of_infinity";
@@ -332,7 +332,7 @@ public class BeeRecipeData {
                 case "cobalt" -> outputId = "gtceu:cobalt_dust";
             }
 
-            configs.put(id, buildConfig(id, blockId, outputId, outputCount, DEFAULT_IV_EUT, 200));
+            configs.put(id, buildConfig(id, blockId, outputId, outputCount, DEFAULT_IV_EUT, 80));
         }
         return configs;
     }
@@ -355,7 +355,7 @@ public class BeeRecipeData {
     }
 
     private static FullBeeConfig buildConfig(String id, String blockId, String outputId, int count, int eut, int dur) {
-        return new FullBeeConfig(id, 1, blockId, outputId, count, eut, dur, eut, 300, eut, 400, eut, 100, eut, 300, eut,
+        return new FullBeeConfig(id, 1, blockId, outputId, count, eut, dur, eut, 200, eut, 300, eut, 100, eut, 250, eut,
                 400);
     }
 

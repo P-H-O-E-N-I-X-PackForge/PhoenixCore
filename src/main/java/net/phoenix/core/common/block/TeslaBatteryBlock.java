@@ -44,7 +44,7 @@ public class TeslaBatteryBlock extends Block {
 
     public enum TeslaBatteryType implements ITeslaBattery {
 
-        UHV(9, BigInteger.valueOf(1_000_000_000L)),
+        UHV(9, BigInteger.valueOf(10_000_000_000L).multiply(BigInteger.valueOf(100))),
         UEV(10, BigInteger.valueOf(50_000_000_000L).multiply(BigInteger.valueOf(100))),
         UIV(11, BigInteger.valueOf(250_000_000_000L).multiply(BigInteger.valueOf(100))),
         UXV(12, BigInteger.valueOf(1_000_000_000_000L).multiply(BigInteger.valueOf(100))),

@@ -1150,7 +1150,7 @@ public class FissionWorkableElectricMultiblockMachine extends WorkableElectricMu
         super.addDisplayText(textList);
 
         if (!isFormed()) {
-            textList.add(Component.translatable("phoenix.fission.not_formed")
+            textList.add(Component.translatable("phoenixcore.not_formed")
                     .withStyle(s -> s.withColor(0xFF4444)));
             return;
         }

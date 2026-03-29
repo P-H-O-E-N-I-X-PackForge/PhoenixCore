@@ -24,6 +24,10 @@ public class PhoenixLangHandler {
         provider.add("item.gtceu.tool.ev_chainsaw", "%s Buzzsaw  (EV)");
         provider.add("item.gtceu.tool.luv_chainsaw", "%s Buzzsaw  (LuV)");
         provider.add("item.gtceu.tool.zpm_chainsaw", "%s Buzzsaw  (ZPM)");
+        provider.add("item.gtceu.tool.mv_wirecutter", "%s Wire Cutters  (MV)");
+        provider.add("item.gtceu.tool.ev_wirecutter", "%s Wire Cutters  (EV)");
+        provider.add("item.gtceu.tool.luv_wirecutter", "%s Wire Cutters (LuV)");
+        provider.add("item.gtceu.tool.zpm_wirecutter", "%s Wire Cutters  (ZPM)");
 
         // Shield States
         provider.add("shield.phoenixcore.type.normal", "Normal");
@@ -36,6 +40,11 @@ public class PhoenixLangHandler {
         provider.add("tooltip.phoenixcore.crystal_rose.made_from", "Forged from %s.");
         provider.add("tooltip.phoenixcore.nanites.generic", "Microscopic machines swarming with potential.");
         provider.add("tooltip.phoenixcore.nanites.made_from", "Constructed from %s.");
+
+        // Keybinds
+
+        provider.add("key.categories.phoenixcore", "PhoenixCore");
+        provider.add("key.phoenixcore.wing_flight_gui", "Wing Flight Settings");
 
         // Tesla Binder Item
         provider.add("item.phoenixcore.tesla_binder.linked", "§aLinked to: §f%s");

@@ -63,7 +63,7 @@ public class NukeBlock extends Block {
                                 List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal("Large scale nuclear explosive.").withStyle(ChatFormatting.DARK_GREEN));
         tooltip.add(Component.literal("Handle with caution!").withStyle(ChatFormatting.RED));
-        tooltip.add(Component.translatable("phoenix.fission.nuke_radius",
+        tooltip.add(Component.translatable("phoenixcore.nuke_radius",
                 Component.literal(String.valueOf(PhoenixConfigs.INSTANCE.fission.nukeCubeRadius))
                         .withStyle(ChatFormatting.RED)));
     }

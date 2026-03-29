@@ -125,6 +125,17 @@ public class TeslaTeamEnergyData extends SavedData {
             machineDisplayFlow.remove(pos);
         }
 
+        public long calculateTotalNetworkFlow() {
+            long total = 0;
+            // Sum flow from all machines currently in the display map
+            for (Long flow : machineDisplayFlow.values()) {
+                if (flow != null) {
+                    total += Math.abs(flow); // Use absolute to show total throughput
+                }
+            }
+            return total;
+        }
+
         public int getLiveHatchCount(long gameTime) {
             int count = 0;
             for (long time : lastSeen.values()) {

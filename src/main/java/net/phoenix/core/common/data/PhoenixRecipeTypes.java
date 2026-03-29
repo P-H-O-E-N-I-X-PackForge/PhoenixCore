@@ -157,7 +157,7 @@ public class PhoenixRecipeTypes {
                 .addDataInfo(data -> {
                     int cooling = data.getInt("required_cooling");
                     if (cooling > 0) {
-                        return LocalizationUtils.format("emi_info.phoenix_fission.required_cooling", cooling);
+                        return LocalizationUtils.format("emi_info.phoenixcore.required_cooling", cooling);
                     }
                     return "";
                 });
@@ -172,7 +172,7 @@ public class PhoenixRecipeTypes {
                 .addDataInfo(data -> {
                     int cooling = data.getInt("required_cooling");
                     if (cooling > 0) {
-                        return LocalizationUtils.format("emi_info.phoenix_fission.required_cooling", cooling);
+                        return LocalizationUtils.format("emi_info.phoenixcore.required_cooling", cooling);
                     }
                     return "";
                 });
@@ -185,14 +185,14 @@ public class PhoenixRecipeTypes {
                 .addDataInfo(data -> {
                     int cooling = data.getInt("required_cooling");
                     if (cooling > 0) {
-                        return LocalizationUtils.format("emi_info.phoenix_fission.required_cooling", cooling);
+                        return LocalizationUtils.format("emi_info.phoenixcore.required_cooling", cooling);
                     }
                     return "";
                 });
         HEAT_EXCHANGER_RECIPES = register("heat_exchanging", MULTIBLOCK)
                 .setMaxIOSize(1, 0, 1, 1)
                 .setSlotOverlay(false, true, GuiTextures.BOX_OVERLAY)
-                .setProgressBar(GuiTextures.PROGRESS_BAR_EXTRACT, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setProgressBar(PhoenixGuiTextures.PROGRESS_BAR_FISSION, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
                 .setSound(GTSoundEntries.MIXER)
                 .setEUIO(IO.OUT);
     }

@@ -6,6 +6,7 @@
   "refmap": "mixins.phoenixcore.refmap.json",
   "mixins": [
     "EmiApiMixin",
+    "accessor.AbilitiesAccessor",
     "accessor.RelayTileDisabledAccessor",
     "ars.DominionWandMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",

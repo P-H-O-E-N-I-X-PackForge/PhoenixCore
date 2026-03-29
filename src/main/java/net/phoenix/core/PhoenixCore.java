@@ -39,6 +39,7 @@ import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.api.recipe.lookup.MapSourceIngredient;
 import net.phoenix.core.client.PhoenixClient;
+import net.phoenix.core.client.keybind.PhoenixKeybinds;
 import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.client.renderer.gui.SourceHatchMenu;
 import net.phoenix.core.common.block.PhoenixBlocks;
@@ -53,6 +54,7 @@ import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.common.registry.PhoenixFissionEntities;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.datagen.PhoenixDatagen;
+import net.phoenix.core.network.PhoenixNetwork;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import org.apache.logging.log4j.LogManager;
@@ -90,6 +92,7 @@ public class PhoenixCore {
         PhoenixParticles.init(modEventBus);
         if (Platform.isClient()) {
             modEventBus.addListener(this::clientSetup);
+            modEventBus.addListener(PhoenixKeybinds::register); // ADD THIS
             PhoenixClient.init(modEventBus);
         }
         // --------------------
@@ -136,6 +139,7 @@ public class PhoenixCore {
     @SubscribeEvent
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            PhoenixNetwork.init(); // ADD THIS
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(
                     SourceIngredient.class,
@@ -146,6 +150,11 @@ public class PhoenixCore {
     // This method is now safe because it's only registered on the client side in the constructor
     private void clientSetup(final FMLClientSetupEvent event) {
         LOGGER.info("PhoenixCore: Client setup complete.");
+
+        event.enqueueWork(() -> {
+            // This is a "Safety Check" to ensure the class is loaded on the client
+            // but the actual link happens in PhoenixArmorItem.java
+        });
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

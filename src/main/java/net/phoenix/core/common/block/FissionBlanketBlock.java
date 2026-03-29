@@ -43,10 +43,10 @@ public class FissionBlanketBlock extends ActiveBlock {
         }
 
         Component inputName = FissionFuelRodBlock.getRegistryDisplayName(blanketType.getInputKey());
-        tooltip.add(Component.translatable("phoenix.fission.blanket_input", inputName)
+        tooltip.add(Component.translatable("phoenixcore.blanket_input", inputName)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
 
-        tooltip.add(Component.translatable("phoenix.fission.blanket_outputs")
+        tooltip.add(Component.translatable("phoenixcore.blanket_outputs")
                 .withStyle(ChatFormatting.GOLD));
 
         List<BlanketOutput> outs = blanketType.getOutputs();
@@ -71,7 +71,7 @@ public class FissionBlanketBlock extends ActiveBlock {
 
         double seconds = blanketType.getDurationTicks() / 20.0;
         tooltip.add(Component.translatable(
-                "phoenix.fission.blanket_cycle",
+                "phoenixcore.blanket_cycle",
                 Component.literal(String.valueOf(blanketType.getAmountPerCycle()))
                         .withStyle(ChatFormatting.WHITE),
                 Component.literal(String.format("%.2f", seconds))
@@ -81,9 +81,9 @@ public class FissionBlanketBlock extends ActiveBlock {
 
     public enum BreederBlanketTypes implements StringRepresentable, IFissionBlanketType {
 
-        THORIUM_BLANKET("thorium_blanket", 1, 3500, 4, "kubejs:thorium_fuel_pellet",
+        THORIUM_BLANKET("thorium_blanket", 1, 3500, 4, "phoenixcore:thorium_fuel_pellet",
                 List.of(new BlanketOutput("phoenixcore:irradiated_thorium_nugget", 100, 1)), 0xFFD2FF57),
-        U236_BLANKET("u236_blanket", 2, 4500, 4, "kubejs:u236_fuel_pellet",
+        U236_BLANKET("u236_blanket", 2, 4500, 4, "phoenixcore:u236_fuel_pellet",
                 List.of(new BlanketOutput("phoenixcore:irradiated_uranium_236_nugget", 100, 1)), 0xFF57D2FF),
         LEAD_BLANKET("lead_blanket", 3, 2000, 1, "gtceu:lead_dust",
                 List.of(new BlanketOutput("gtceu:bismuth_dust", 100, 1)), 0xFFB0B0B0),

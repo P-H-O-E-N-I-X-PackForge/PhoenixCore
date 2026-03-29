@@ -128,11 +128,13 @@ public class PhoenixBeeRecipeGenerator {
                     .inputItems(base)
                     .inputItems(pollinationInput)
                     .inputFluids(sugarWater)
-                    .outputItems(combOutput)
+                    .outputItems(combOutput.copyWithCount(4)) // Buffed from 1 -> 4
                     .save(provider);
 
             // Boosted Logic
             ItemStack crystalRose = ChemicalHelper.get(PhoenixMaterialFlags.crystal_rose, mat);
+            // Inside generateSimulatedColonyRecipes
+            // Boosted Logic
             if (!crystalRose.isEmpty()) {
                 SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony_boosted/" + config.beeId())
                         .EUt(config.boostedDecantingEut()).duration(config.boostedDecantingDuration())
@@ -141,7 +143,7 @@ public class PhoenixBeeRecipeGenerator {
                         .inputItems(pollinationInput)
                         .inputFluids(sugarWater)
                         .inputItems(crystalRose.copyWithCount(1))
-                        .outputItems(combOutput.copyWithCount(2))
+                        .outputItems(combOutput.copyWithCount(16)) // Buffed from 2 -> 16
                         .save(provider);
             }
         }
@@ -200,7 +202,7 @@ public class PhoenixBeeRecipeGenerator {
             if (log.isEmpty()) continue;
 
             SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/lumber/" + logId.replace(":", "_"))
-                    .EUt(VA[HV]).duration(800)
+                    .EUt(VA[HV]).duration(250)
                     .notConsumable(lumberBee)
                     .inputItems(base)
                     .inputItems(log)

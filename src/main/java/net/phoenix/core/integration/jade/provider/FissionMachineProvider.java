@@ -66,21 +66,21 @@ public class FissionMachineProvider implements IBlockComponentProvider, IServerD
 
         int meltdownSeconds = data.getInt(NBT_MELTDOWN_SECONDS);
         if (meltdownSeconds > 0) {
-            tooltip.add(Component.translatable("jade.phoenix_fission.fission_meltdown_timer", meltdownSeconds)
+            tooltip.add(Component.translatable("jade.phoenixcore.fission_meltdown_timer", meltdownSeconds)
                     .withStyle(s -> s.withColor(0xFFAA00)));
-            tooltip.add(Component.translatable("jade.phoenix_fission.heat", (long) heat));
+            tooltip.add(Component.translatable("jade.phoenixcore.heat", (long) heat));
         } else {
-            tooltip.add(Component.translatable("jade.phoenix_fission.fission_safe")
+            tooltip.add(Component.translatable("jade.phoenixcore.fission_safe")
                     .withStyle(s -> s.withColor(0x33FF33)));
         }
 
         if (!data.getBoolean(NBT_HAS_COOLANT)) {
-            tooltip.add(Component.translatable("jade.phoenix_fission.fission_no_coolant")
+            tooltip.add(Component.translatable("jade.phoenixcore.fission_no_coolant")
                     .withStyle(s -> s.withColor(0xFF3333)));
         }
 
         if (netHeat > 0.0001) {
-            tooltip.add(Component.translatable("jade.phoenix_fission.fission_heating")
+            tooltip.add(Component.translatable("jade.phoenixcore.fission_heating")
                     .withStyle(s -> s.withColor(0xFF5555)));
         }
 
@@ -105,7 +105,7 @@ public class FissionMachineProvider implements IBlockComponentProvider, IServerD
             String inKey = data.getString(NBT_BLANKET_INPUT);
             Component inName = resolveKeyToDisplayName(inKey);
 
-            tooltip.add(Component.translatable("jade.phoenix_fission.blanket_input", inName)
+            tooltip.add(Component.translatable("jade.phoenixcore.blanket_input", inName)
                     .withStyle(s -> s.withColor(0xAAAAFF)));
 
             // Legacy primary output line (first entry)
@@ -113,7 +113,7 @@ public class FissionMachineProvider implements IBlockComponentProvider, IServerD
                 String outKey = data.getString(NBT_BLANKET_OUTPUT);
                 if (!outKey.isEmpty()) {
                     Component outName = resolveKeyToDisplayName(outKey);
-                    tooltip.add(Component.translatable("jade.phoenix_fission.blanket_output", outName)
+                    tooltip.add(Component.translatable("jade.phoenixcore.blanket_output", outName)
                             .withStyle(s -> s.withColor(0xFFBBFF)));
                 }
             }
@@ -122,7 +122,7 @@ public class FissionMachineProvider implements IBlockComponentProvider, IServerD
             if (data.contains(NBT_BLANKET_OUTPUTS, Tag.TAG_LIST)) {
                 ListTag list = data.getList(NBT_BLANKET_OUTPUTS, Tag.TAG_STRING);
                 if (!list.isEmpty()) {
-                    tooltip.add(Component.translatable("phoenix.fission.blanket_outputs")
+                    tooltip.add(Component.translatable("phoenixcore.blanket_outputs")
                             .withStyle(s -> s.withColor(0xFFDD88)));
 
                     int shown = 0;
@@ -148,7 +148,7 @@ public class FissionMachineProvider implements IBlockComponentProvider, IServerD
 
             if (data.contains(NBT_BLANKET_AMOUNT)) {
                 int amt = data.getInt(NBT_BLANKET_AMOUNT);
-                tooltip.add(Component.translatable("jade.phoenix_fission.blanket_amount", amt)
+                tooltip.add(Component.translatable("jade.phoenixcore.blanket_amount", amt)
                         .withStyle(s -> s.withColor(0xBBBBBB)));
             }
         }
