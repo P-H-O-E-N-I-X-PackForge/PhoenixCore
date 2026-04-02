@@ -9,6 +9,7 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.level.Level;
 import net.phoenix.core.PhoenixCore;
 
+@SuppressWarnings("removal")
 public class PhoenixDamageSources {
 
     public static final ResourceKey<DamageType> STERILIZED = ResourceKey.create(Registries.DAMAGE_TYPE,

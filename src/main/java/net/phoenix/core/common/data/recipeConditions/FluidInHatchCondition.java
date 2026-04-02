@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@SuppressWarnings("removal")
 @NoArgsConstructor
 public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition> {
 

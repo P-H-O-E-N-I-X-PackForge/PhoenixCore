@@ -31,8 +31,22 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType SOURCE_EXTRACTION_RECIPES;
     public static GTRecipeType HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
+    public static GTRecipeType DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
 
     public static void init() {
+        AETHERIAL_FABIRCATION_RECIPES = register("aetherial_fabrication", MULTIBLOCK)
+                .setEUIO(IO.IN)
+                .setMaxIOSize(3, 25, 1, 0)
+                .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
+                .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setSound(GTSoundEntries.ARC);
+
+        DIMENSIONAL_ANCHORING_RECIPES = register("dimensional_anchoring", MULTIBLOCK)
+                .setEUIO(IO.IN)
+                .setMaxIOSize(3, 30, 1, 0)
+                .setSlotOverlay(false, false, GuiTextures.SOLIDIFIER_OVERLAY)
+                .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+                .setSound(GTSoundEntries.ARC);
         PHOENIXWARE_FUSION_MK1 = register("phoenixware_fusion_mk1", MULTIBLOCK)
                 .setEUIO(IO.IN)
                 .setMaxIOSize(0, 0, 2, 1) // 0 Items, 2 Fluid Inputs, 1 Fluid Output

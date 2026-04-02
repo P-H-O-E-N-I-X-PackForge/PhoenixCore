@@ -5,12 +5,20 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("removal")
 public class SoulBalance {
+
+    private static final List<TagKey<Biome>> MAGICAL_BIOME_TAGS = List.of(
+            TagKey.create(Registries.BIOME, new ResourceLocation("forge", "is_magical")),
+            TagKey.create(Registries.BIOME, new ResourceLocation("minecraft", "is_forest")),
+            TagKey.create(Registries.BIOME, new ResourceLocation("minecraft", "is_jungle")));
 
     public record SoulProfile(float minSoul, float maxSoul, float regenPerTick) {}
 
@@ -18,16 +26,14 @@ public class SoulBalance {
 
     // This is your catch-all for biomes like Plains, Forests, etc.
     private static final SoulProfile DEFAULT = new SoulProfile(0.8f, 1.2f, 0.001f);
+    private static final SoulProfile END_NETHER = new SoulProfile(0.1f, 0.2f, 0.001f);
 
     // This is a "Smart Fallback" for modded biomes that have magical tags
     // but aren't manually registered by you yet.
-    private static final SoulProfile MAGICAL_FALLBACK = new SoulProfile(1.5f, 2.0f, 0.003f);
+    private static final SoulProfile MAGICAL_FALLBACK = new SoulProfile(1.0f, 2.0f, 0.003f);
 
     static {
-        // Manual Fine-Grained Overrides
-        register("minecraft:old_growth_birch_forest", 1.8f, 2.5f, 0.004f);
-        register("minecraft:ocean", 0.3f, 0.7f, 0.001f);
-        register("ars_nouveau:vibrant_ecosystem", 2.0f, 4.0f, 0.008f);
+        register("ars_nouveau:archwood_forrest", 2.0f, 4.0f, 0.008f);
     }
 
     private static void register(String id, float min, float max, float regen) {
@@ -38,21 +44,23 @@ public class SoulBalance {
      * Gets the profile for a biome.
      * Priority: Manual Registry -> Biome Tag Check -> Default
      */
-    public static SoulProfile get(Holder<Biome> biomeHolder) {
+    public static SoulProfile get(Holder<Biome> biomeHolder, Level level) {
         // 1. Check Manual Registry first
         ResourceLocation id = biomeHolder.unwrapKey().map(ResourceKey::location).orElse(null);
         if (id != null && REGISTRY.containsKey(id)) {
             return REGISTRY.get(id);
         }
 
-        // 2. Check for "Magical" tags (Supports mods like Biomes O' Plenty or Oh The Biomes You'll Go)
-        // You can check for Ars Nouveau tags or standard Forge/NeoForge tags
-        if (biomeHolder.is(TagKey.create(Registries.BIOME, new ResourceLocation("forge", "is_magical"))) ||
-                biomeHolder.is(TagKey.create(Registries.BIOME, new ResourceLocation("ars_nouveau", "vibrant")))) {
+        // 2. Check dimension
+        ResourceKey<Level> dim = level.dimension();
+        if (dim == Level.NETHER || dim == Level.END) return END_NETHER;
+
+        // 3. Check magical biome tags
+        boolean isMagical = MAGICAL_BIOME_TAGS.stream().anyMatch(biomeHolder::is);
+        if (isMagical) {
             return MAGICAL_FALLBACK;
         }
 
-        // 3. Absolute Fallback
         return DEFAULT;
     }
 }

@@ -177,7 +177,8 @@ public class PhoenixProgressionMaterials {
                 .fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_SMALL_GEAR, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
                         GENERATE_LONG_ROD,
-                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL)
+                        GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR, GENERATE_FOIL,
+                        GENERATE_ROTOR)
                 .buildAndRegister();
         RESONANT_RHODIUM_ALLOY = new Material.Builder(PhoenixCore.id("resonant_rhodium_alloy"))
                 .ingot().fluid()
@@ -231,6 +232,7 @@ public class PhoenixProgressionMaterials {
                         GENERATE_SMALL_GEAR,
                         GENERATE_FRAME,
                         GENERATE_BOLT_SCREW,
+                        GENERATE_ROTOR,
                         GENERATE_RING,
                         GENERATE_DENSE,
                         GENERATE_FOIL)

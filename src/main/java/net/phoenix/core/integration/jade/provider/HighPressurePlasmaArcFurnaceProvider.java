@@ -22,6 +22,8 @@ public class HighPressurePlasmaArcFurnaceProvider implements IBlockComponentProv
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+        if (!config.get(UID)) return;
+
         CompoundTag data = accessor.getServerData();
         Shield.ShieldTypes shieldType = null;
 

@@ -8,6 +8,7 @@ import net.phoenix.core.network.packet.UpdateWingSettingsPacket;
 
 import java.util.Optional;
 
+@SuppressWarnings("removal")
 public class PhoenixNetwork {
 
     private static final String PROTOCOL = "1";

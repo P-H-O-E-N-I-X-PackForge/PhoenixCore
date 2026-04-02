@@ -33,6 +33,7 @@ public class PhoenixMaterialLangHandler {
 
         // Progression & Special Alloys
         provider.add("material.phoenixcore.aluminfrost", "§bAluminfrost");
+        provider.add("material.phoenixcore.concentrated_sulfuric_acid", "Concentrated Sulfuric Acid");
         provider.add("material.phoenixcore.source_gem", "§zSource Gem");
         provider.add("material.phoenixcore.frost", "§bFrost");
         provider.add("material.phoenixcore.source_imbued_titanium", "§5Source Imbued Titanium");

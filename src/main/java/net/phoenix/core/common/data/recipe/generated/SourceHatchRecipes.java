@@ -17,6 +17,7 @@ import static com.gregtechceu.gtceu.api.GTValues.VN;
 import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_JAR;
 import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipes.*;
 
+@SuppressWarnings("removal")
 public class SourceHatchRecipes {
 
     private static final int[] VA = GTValues.VA;

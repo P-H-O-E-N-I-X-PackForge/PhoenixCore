@@ -46,6 +46,7 @@ public class PhoenixMachineLangHandler {
         provider.add("phoenix.core.recipe.source_out", "Source Yield: %s.");
         provider.add("tooltip.phoenixcore.source_hatch.consumption", "§cMax Source Consumption:§d %s");
         provider.add("tooltip.phoenixcore.source_hatch.capacity", "§cMax Source Capacity:§d %s");
+        provider.add("recipe.capability.source.name", "Source");
 
         // Fission Reactor System
         provider.add("phoenixcore.not_formed", "Structure not formed!");
@@ -125,10 +126,15 @@ public class PhoenixMachineLangHandler {
         provider.add("gtceu.tooltip.tier", "Tier: %s");
 
         // Jade Integration
-        provider.add("config.jade.plugin_phoenixcore.source_hatch_info", "Source Stored: %s");
+        provider.add("config.jade.plugin_phoenixcore.source_machine_info", "Source Machine Information");
         provider.add("config.jade.plugin_phoenixcore.plasma_furnace_info", "High-Pressure Plasma Arc Furnace Info");
         provider.add("config.jade.plugin_phoenixcore.tesla_network_info", "Tesla Network Information");
         provider.add("config.jade.plugin_phoenixcore.fission_machine_info", "Fission Machine Info");
+
+        provider.add("jade.phoenixcore.shield_state", "Shield State: %s");
+        provider.add("jade.phoenixcore.shield_health", "Shield Health: %d");
+        provider.add("jade.phoenixcore.shield_cooldown", "Shield Recharging: %ds");
+        provider.add("jade.phoenixcore.plasma_boost_duration", "Power Multiplier: %s");
 
         provider.add("jade.phoenixcore.plasma_boost_active", "Plasma Boost: %s Active");
         provider.add("jade.phoenixcore.no_plasma_boost", "No Plasma Catalyst");
@@ -146,6 +152,11 @@ public class PhoenixMachineLangHandler {
         provider.add("jade.phoenixcore.fission_safe", "§aCore Stable");
         provider.add("jade.phoenixcore.fission_no_coolant", "§cNO COOLANT DETECTED");
         provider.add("jade.phoenixcore.fission_heating", "§eCORE HEATING UP");
+
+        provider.add("jade.phoenixcore.source_giving", "Producing Source");
+        provider.add("jade.phoenixcore.source_taking", "Consuming Source");
+        provider.add("jade.phoenixcore.source_consumption", "Source Consumption:");
+        provider.add("jade.phoenixcore.source_production", "Source Production:");
 
         // Multi-line Tooltips
         PhoenixLangHandler.multiLang(provider, "tooltip.phoenixcore.shield_stability_hatch", "Outputs shield stability",

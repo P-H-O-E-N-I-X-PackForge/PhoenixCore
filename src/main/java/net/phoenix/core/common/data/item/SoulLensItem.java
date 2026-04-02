@@ -9,6 +9,9 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
+import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -32,6 +35,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.phoenix.core.api.gui.PhoenixGuiTextures;
 import net.phoenix.core.client.SoulMapWidget;
 import net.phoenix.core.saveddata.SoulSavedData;
 
@@ -87,28 +91,32 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
         ItemStack stack = holder.getHeld();
         CompoundTag tag = stack.getOrCreateTag();
 
-        ModularUI ui = new ModularUI(220, 140, holder, player).background(GuiTextures.BACKGROUND);
-        ui.widget(new LabelWidget(8, 6, "Soul Field Topology").setTextColor(0x8F00FF));
+        ModularUI ui = new ModularUI(220, 200, holder, player).background(PhoenixGuiTextures.TESLA_BACKGROUND);
+        ui.widget(new ImageWidget(0, 0, 220, 200, new ColorBorderTexture(2, 0xFF000000)));
+        ui.widget(new LabelWidget(50, 6, "Soul Field Topography").setTextColor(0x8F00FF));
 
         // Map Widget
-        WidgetGroup mapGroup = new WidgetGroup(10, 20, 110, 110);
+        WidgetGroup mapBorder = new WidgetGroup(48, 78, 114, 114);
+        mapBorder.setBackground(new ColorBorderTexture(2, 0xFF000000));
+
+        WidgetGroup mapGroup = new WidgetGroup(2, 2, 110, 110);
         mapGroup.setBackground(GuiTextures.DISPLAY);
         mapGroup.addWidget(new SoulMapWidget(4, 4, stack));
-        ui.widget(mapGroup);
+
+        mapBorder.addWidget(mapGroup);
+        ui.widget(mapBorder);
 
         // Info Panel
-        WidgetGroup infoGroup = new WidgetGroup(125, 20, 85, 110);
+        WidgetGroup infoGroup = new WidgetGroup(160, 20, 85, 110);
         String biomeName = tag.getString("BiomeName");
         float current = tag.getFloat("CurrentSoul");
         float max = tag.getFloat("MaxSoul");
 
-        infoGroup.addWidget(new LabelWidget(0, 0,
-                "Target: §6" + (biomeName.length() > 10 ? biomeName.substring(0, 10) : biomeName)));
-        if (biomeName.length() > 10) infoGroup.addWidget(new LabelWidget(0, 10, "§6" + biomeName.substring(10)));
+        infoGroup.addWidget(new LabelWidget(-155, 0,
+                "Target: §6" + (biomeName)));
 
-        int yOffset = biomeName.length() > 10 ? 25 : 15;
-        infoGroup.addWidget(new LabelWidget(0, yOffset, "Density: §d" + String.format("%.2fx", current)));
-        infoGroup.addWidget(new LabelWidget(0, yOffset + 15, "Status: " + getStatusString(current, max)));
+        infoGroup.addWidget(new LabelWidget(-155, 20, "Density: §d" + String.format("%.2fx", current)));
+        infoGroup.addWidget(new LabelWidget(-155, 40, "Status: " + getStatusString(current, max)));
 
         ui.widget(infoGroup);
         return ui;
@@ -127,8 +135,7 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
                               boolean isSelected) {
         if (level.isClientSide || !(entity instanceof ServerPlayer player)) return;
 
-        boolean isUIOpen = player.containerMenu instanceof com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
-        if (level.getGameTime() % 20 != 0 && !isUIOpen) return;
+        boolean isUIOpen = player.containerMenu instanceof ModularUIContainer;
 
         CompoundTag tag = stack.getOrCreateTag();
         SoulSavedData data = SoulSavedData.get((ServerLevel) level);
@@ -201,5 +208,10 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || oldStack.getItem() != newStack.getItem();
+    }
+
+    @Override
+    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+        return false;
     }
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("removal")
 public class PhoenixMaterialRegistry {
 
     private static final Map<Fluid, Material> FLUID_TO_MATERIAL = new HashMap<>();

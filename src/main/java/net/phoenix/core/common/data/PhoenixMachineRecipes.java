@@ -39,6 +39,7 @@ import static net.phoenix.core.common.data.materials.PhoenixMaterials.*;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 import static net.phoenix.core.common.data.recipe.generated.TeslaHatchRecipes.*;
 
+@SuppressWarnings("removal")
 public class PhoenixMachineRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
@@ -487,7 +488,7 @@ public class PhoenixMachineRecipes {
                 .inputItems(dust, Diamond, 16)
                 .inputItems(dust, PhoenixOres.NEVVONIAN_IRON, 2)
                 .inputFluids(Titanium, 250)
-                .input(SourceRecipeCapability.CAP, new SourceIngredient(1200))
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(1000))
                 .outputFluids(TitaniumTetrachloride.getFluid(100))
                 .outputItems(dust, EightyFivePercentPureNevonianSteel, 4)
                 .duration(800)
@@ -495,7 +496,7 @@ public class PhoenixMachineRecipes {
                 .save(provider);
         BIO_ENGINE_RECIPES.recipeBuilder("eighty_five_percent_pure_nevonian_steel_dust")
                 .notConsumable(SOURCE_FIBERS)
-                .input(SourceRecipeCapability.CAP, new SourceIngredient(140))
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(160))
                 .outputFluids(FROST.getFluid(100))
                 .duration(140)
                 .EUt(-VA[HV] * 2L)

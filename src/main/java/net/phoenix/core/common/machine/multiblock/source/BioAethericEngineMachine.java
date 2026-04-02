@@ -23,6 +23,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
+import net.phoenix.core.common.data.PTags;
 import net.phoenix.core.saveddata.SoulSavedData;
 
 import lombok.Getter;
@@ -102,13 +103,7 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
                                     new BlockPos((centerChunk.x + x) << 4 | bx, by, (centerChunk.z + z) << 4 | bz));
                             if (state.isAir()) continue;
 
-                            if (state.is(BlockTags.FLOWERS)) {
-                                boost += 0.005f;
-                            } else {
-                                String name = state.getBlock().getDescriptionId();
-                                if (name.contains("magebloom")) boost += 0.01f;
-                                else if (name.contains("sourceberry")) boost += 0.01f;
-                            }
+                            boost += getFloraBoost(state);
 
                             if (boost >= 5.0f) return 5.0f;
                         }
@@ -117,6 +112,14 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
             }
         }
         return Math.min(boost, 5.0f);
+    }
+
+    private float getFloraBoost(BlockState state) {
+        // Tag-based checks (highest priority, most specific first)
+        if (state.is(PTags.SOUL_FLOWERS)) return 0.01f;   // your custom high-value tag
+        if (state.is(BlockTags.FLOWERS)) return 0.005f;          // vanilla flowers
+
+        return 0.0f;
     }
 
     public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {

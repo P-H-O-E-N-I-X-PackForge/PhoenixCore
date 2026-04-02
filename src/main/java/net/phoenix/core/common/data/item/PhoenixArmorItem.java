@@ -72,19 +72,30 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
             Entity entity = event.getData(DataTickets.ENTITY);
 
             if (entity instanceof Player player) {
+                // 1. ELYTRA / SONIC FLIGHT
                 if (player.isFallFlying()) {
-                    if (player.getDeltaMovement().length() > 0.8) {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.phoenix.sonic"));
+                    if (player.getDeltaMovement().length() > 1.1) {
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("animation.phoenix.sonic"));
                     }
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.phoenix.fly"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.phoenix.fly"));
                 }
 
-                if (player.getAbilities().flying && player.getDeltaMovement().y > 0.01) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.phoenix.flap"));
+                // 2. CREATIVE-STYLE FLIGHT (Hovering/Flying)
+                if (player.getAbilities().flying) {
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.phoenix.creative_fly"));
                 }
+
+                ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+                CompoundTag chestNBT = chestplate.getTag();
+                if (chestNBT != null && chestNBT.getInt("wingFlapTick") > 0) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.phoenix.flap"));
+                }
+
+                // 4. ON GROUND - WING FOLDING
+                return event.setAndContinue(RawAnimation.begin()
+                        .thenPlay("animation.phoenix.fold"));
             }
-
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.phoenix.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.phoenix.idle"));
         }));
     }
 

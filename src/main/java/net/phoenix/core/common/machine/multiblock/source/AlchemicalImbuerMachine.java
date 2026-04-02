@@ -70,19 +70,19 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
                                 boost += 0.005f;
                             } else {
                                 String blockId = state.getBlock().getDescriptionId();
-                                if (blockId.contains("magebloom")) boost += 0.05f;
-                                else if (blockId.contains("sourceberry")) boost += 0.03f;
+                                if (blockId.contains("magebloom")) boost += 0.01f;
+                                else if (blockId.contains("sourceberry")) boost += 0.01f;
                                 else if (blockId.contains("arcane_core") || blockId.contains("source_gem_block"))
-                                    boost += 0.02f;
+                                    boost += 0.05f;
                             }
 
-                            if (boost >= 5.0f) return 5.0f;
+                            if (boost >= 3.0f) return 3.0f;
                         }
                     }
                 }
             }
         }
-        return Math.min(boost, 5.0f);
+        return Math.min(boost, 3.0f);
     }
 
     public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {

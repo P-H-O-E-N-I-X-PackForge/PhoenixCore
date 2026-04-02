@@ -690,4 +690,14 @@ public class TeslaBinderItem extends ComponentItem
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || oldStack.getItem() != newStack.getItem();
     }
+
+    @Override
+    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+        target.hurt(target.damageSources().playerAttack((Player) attacker), 6.0f);
+
+        target.level().playSound(null, target.blockPosition(),
+                SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5f, 2.0f);
+
+        return true;
+    }
 }

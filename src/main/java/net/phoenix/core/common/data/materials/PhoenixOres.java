@@ -77,6 +77,7 @@ public class PhoenixOres {
                 .ore()
                 .color(0x0C9949)
                 .iconSet(MaterialIconSet.DIAMOND)
+                .components(GTMaterials.Fluorine, 2, GTMaterials.Calcium, 1)
                 .buildAndRegister();
 
         IGNISIUM = new Material.Builder(PhoenixCore.id("ignisium"))

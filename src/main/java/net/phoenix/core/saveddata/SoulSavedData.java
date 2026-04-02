@@ -62,7 +62,7 @@ public class SoulSavedData extends SavedData {
             Holder<Biome> biomeHolder = level.getBiome(pos.getMiddleBlockPosition(64));
 
             // Get the profile (Manual -> Tag -> Default)
-            SoulBalance.SoulProfile profile = SoulBalance.get(biomeHolder);
+            SoulBalance.SoulProfile profile = SoulBalance.get(biomeHolder, level);
 
             // Roll a unique "Hotspot" value for this specific chunk
             float min = profile.minSoul();
@@ -83,7 +83,7 @@ public class SoulSavedData extends SavedData {
 
         // We still need the profile to know the REGEN RATE for this biome
         Holder<Biome> biomeHolder = level.getBiome(pos.getMiddleBlockPosition(64));
-        SoulBalance.SoulProfile profile = SoulBalance.get(biomeHolder);
+        SoulBalance.SoulProfile profile = SoulBalance.get(biomeHolder, level);
 
         // Update soul: Add (regen * time), capped at the chunk's unique maxCapacity
         float updatedSoul = entry.currentSoul + (ticksPassed * profile.regenPerTick());

@@ -34,10 +34,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.gui.PhoenixGuiTextures;
@@ -213,18 +215,24 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     }
 
     private void pushToSoulLinkedMachines(ServerLevel level, TeslaTeamEnergyData.TeamEnergy team) {
-        if (team.soulLinkedMachines.isEmpty()) return; // removed stored == 0 early return
+        if (team.soulLinkedMachines.isEmpty()) return;
 
         for (BlockPos targetPos : team.soulLinkedMachines) {
-            if (!level.isLoaded(targetPos)) continue;
+            // 1. Get the correct dimension for this specific machine
+            ResourceKey<Level> dimKey = team.getMachineDimension(targetPos);
+            ServerLevel targetLevel = level.getServer().getLevel(dimKey);
+
+            // 2. Check if the level is loaded and the chunk is active in that dimension
+            if (targetLevel == null || !targetLevel.isLoaded(targetPos)) continue;
 
             // ALWAYS heartbeat regardless of energy availability
-            team.markHatchActive(targetPos, level.getGameTime());
+            team.markHatchActive(targetPos, targetLevel.getGameTime());
 
             // Only bother with energy logic if we actually have something to give
             if (team.stored.signum() == 0) continue;
 
-            MetaMachine machine = MetaMachine.getMachine(level, targetPos);
+            // 3. Fetch the machine from the target dimension
+            MetaMachine machine = MetaMachine.getMachine(targetLevel, targetPos);
             if (machine == null) continue;
 
             long injectedThisTick = 0;
@@ -261,8 +269,9 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                             if (injectedThisTick > 0) {
                                 energy.addEnergy(injectedThisTick);
 
-                                if (level.getGameTime() % 10 == 0) {
-                                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK,
+                                // Particles must be sent in the target dimension
+                                if (targetLevel.getGameTime() % 10 == 0) {
+                                    targetLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK,
                                             targetPos.getX() + 0.5, targetPos.getY() + 1.1, targetPos.getZ() + 0.5,
                                             5, 0.2, 0.2, 0.2, 0.05);
                                 }
@@ -282,12 +291,18 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         if (team.soulLinkedMachines.isEmpty()) return;
 
         for (BlockPos targetPos : team.soulLinkedMachines) {
-            if (!level.isLoaded(targetPos)) continue;
+            // 1. Get the correct dimension for this specific machine
+            ResourceKey<Level> dimKey = team.getMachineDimension(targetPos);
+            ServerLevel targetLevel = level.getServer().getLevel(dimKey);
+
+            // 2. Check if the level is loaded in its own dimension
+            if (targetLevel == null || !targetLevel.isLoaded(targetPos)) continue;
 
             // ALWAYS heartbeat so idle generators stay "connected" in UI
-            team.markHatchActive(targetPos, level.getGameTime());
+            team.markHatchActive(targetPos, targetLevel.getGameTime());
 
-            MetaMachine machine = MetaMachine.getMachine(level, targetPos);
+            // 3. Fetch the machine from the target dimension
+            MetaMachine machine = MetaMachine.getMachine(targetLevel, targetPos);
             if (machine == null) continue;
 
             long pulledThisTick = 0;
@@ -315,8 +330,9 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
             if (pulledThisTick > 0) {
                 team.machineCurrentFlow.merge(targetPos, -pulledThisTick, Long::sum);
 
-                if (level.getGameTime() % 12 == 0) {
-                    level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                // Particles must be sent in the target dimension
+                if (targetLevel.getGameTime() % 12 == 0) {
+                    targetLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                             targetPos.getX() + 0.5, targetPos.getY() + 1.2, targetPos.getZ() + 0.5,
                             3, 0.1, 0.1, 0.1, 0.02);
                 }
@@ -342,13 +358,8 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 TeslaTeamEnergyData data = TeslaTeamEnergyData.get(sl);
                 TeslaTeamEnergyData.TeamEnergy team = data.getOrCreate(ownerTeamUUID);
 
-                // soul-linked generators (negative means giving to tower)
-                for (BlockPos soulPos : team.soulLinkedMachines) {
-                    team.machineDisplayFlow.put(soulPos, 0L);
-                }
-
-                long totalWirelessInput = 0; // Generators/Uplinks
-                long totalWirelessOutput = 0; // Consumers/Downlinks
+                long totalWirelessInput = 0;
+                long totalWirelessOutput = 0;
 
                 // Standard Hatches (Uplinks/Downlinks)
                 for (var entry : team.energyOutput.entrySet()) {
@@ -357,19 +368,24 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
                 }
                 for (var entry : team.energyInput.entrySet()) {
                     totalWirelessOutput += entry.getValue().longValue();
-                    team.machineDisplayFlow.put(entry.getKey(), -entry.getValue().longValue() / 20); // Output is
-                                                                                                     // negative for
-                                                                                                     // Binder
+                    team.machineDisplayFlow.put(entry.getKey(), -entry.getValue().longValue() / 20);
                 }
 
-                // Soul-Linked Machines (Generators return negative, Consumers return positive)
-                for (BlockPos mPos : team.soulLinkedMachines) {
+                // Soul-Linked Machines
+                // We use a copy to avoid ConcurrentModificationException if a machine unlinks mid-tick
+                for (BlockPos mPos : new HashSet<>(team.soulLinkedMachines)) {
                     long accumulated = team.machineCurrentFlow.getOrDefault(mPos, 0L);
+
+                    // Calculate display flow (EU/t average over the last second)
                     team.machineDisplayFlow.put(mPos, accumulated / 20);
 
-                    if (accumulated < 0) totalWirelessInput += Math.abs(accumulated);
-                    else totalWirelessOutput += accumulated;
+                    if (accumulated < 0) {
+                        totalWirelessInput += Math.abs(accumulated);
+                    } else {
+                        totalWirelessOutput += accumulated;
+                    }
 
+                    // RESET the flow for the next 20-tick window
                     team.machineCurrentFlow.put(mPos, 0L);
                 }
 

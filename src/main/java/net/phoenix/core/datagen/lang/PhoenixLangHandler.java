@@ -6,6 +6,8 @@ public class PhoenixLangHandler {
 
     public static void init(RegistrateLangProvider provider) {
         // Tool Renaming & General Items
+        provider.add("metaarmor.message.step_assist.disabled", "PhoenixTech™ Suite: StepAssist Disabled");
+        provider.add("metaarmor.message.step_assist.enabled", "PhoenixTech™ Suite: StepAssist Enabled");
         provider.add("item.gtceu.tool.ev_screwdriver", "%s Electric Screwdriver (EV)");
         provider.add("item.gtceu.tool.mv_screwdriver", "%s Electric Screwdriver (MV)");
         provider.add("item.gtceu.tool.luv_screwdriver", "%s Electric Screwdriver (LuV)");

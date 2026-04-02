@@ -143,7 +143,7 @@ public class PhoenixFissionMachines {
                     .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
                     .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
                     .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
-                    .aisle("ABCCCBA", "BBAAABB", "CAAAAAC", "CASASAC", "CAAAAAC", "BBAAABB", "ABCCCBA")
+                    .aisle("ABCCCBA", "BBAAABB", "CAAEAAC", "CAESEAC", "CAAEAAC", "BBAAABB", "ABCCCBA")
                     .setRepeatable(1, 20)
                     .aisle("ABBBBBA", "BBBCBBB", "BBCCCBB", "BCCCCCB", "BBCCCBB", "BBBCBBB", "ABBBBBA")
 
@@ -217,9 +217,9 @@ public class PhoenixFissionMachines {
                     for (int i = 0; i < length; i++) {
                         builder.aisle("ABCCCBA",
                                 "BBAAABB",
-                                "CAAAAAC",
-                                "CASASAC",
-                                "CAAAAAC",
+                                "CAAEAAC",
+                                "CAESEAC",
+                                "CAAEAAC",
                                 "BBAAABB",
                                 "ABCCCBA");
                     }

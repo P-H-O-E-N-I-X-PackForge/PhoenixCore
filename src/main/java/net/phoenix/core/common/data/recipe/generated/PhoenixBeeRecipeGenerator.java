@@ -37,7 +37,7 @@ import static net.phoenix.core.common.data.bees.BeeRecipeData.MOD_ID;
  * 100% Fully Updated Bee Recipe Generator
  * Fixed: Registry race conditions, null stack crashes, and dynamic material mapping.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "removal" })
 public class PhoenixBeeRecipeGenerator {
 
     /**

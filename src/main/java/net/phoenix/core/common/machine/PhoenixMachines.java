@@ -10,12 +10,12 @@ import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.DrumMachineItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
+import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
@@ -44,6 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
@@ -71,10 +72,12 @@ import java.util.function.BiFunction;
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.capability.recipe.IO.IN;
 import static com.gregtechceu.gtceu.api.capability.recipe.IO.OUT;
+import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.frameGt;
 import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.IS_FORMED;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.*;
 import static com.gregtechceu.gtceu.common.data.machines.GTMachineUtils.*;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.*;
@@ -992,17 +995,17 @@ public class PhoenixMachines {
                                                             .setPreviewCount(1)))
                                             .or(autoAbilities(true, false, true)))
                             .where('C',
-                                    blocks(ChemicalHelper.getBlock(TagPrefix.frameGt,
+                                    blocks(ChemicalHelper.getBlock(frameGt,
                                             PHOENIX_ENRICHED_TRITANIUM)))
                             .where('D', blocks(ADVANCED_COMPUTER_CASING.get()))
-                            .where('E', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTMaterials.Neutronium)))
+                            .where('E', blocks(ChemicalHelper.getBlock(frameGt, Neutronium)))
                             .where('F', blocks(COMPUTER_CASING.get()))
                             .where('G', blocks(PhoenixBlocks.COIL_TRUE_HEAT_STABLE.get()))
                             .where('H', blocks(PhoenixBlocks.STABLE_LOGIC_CASING.get()))
                             .where('I', blocks(GTResearchMachines.HPCA_BRIDGE_COMPONENT.get()))
                             .where('J', blocks(PhoenixBlocks.RELIABLE_NAQUADAH_ALLOY_MACHINE_CASING.get()))
                             .where('K',
-                                    blocks(ChemicalHelper.getBlock(TagPrefix.frameGt,
+                                    blocks(ChemicalHelper.getBlock(frameGt,
                                             PHOENIX_ENRICHED_NAQUADAH)))
                             .where('L', blocks(PhoenixBlocks.SUPER_STABLE_FUSION_CASING.get())
                                     .or(blocks(ForgeRegistries.BLOCKS
@@ -1225,7 +1228,7 @@ public class PhoenixMachines {
                                         .or(Predicates.abilities(SOURCE_INPUT).setPreviewCount(1))
                                         .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                                         .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
-                        .where('E', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, SOURCE_IMBUED_TITANIUM)))
+                        .where('E', blocks(ChemicalHelper.getBlock(frameGt, SOURCE_IMBUED_TITANIUM)))
                         .where('H', blocks(VOID_PRISM.get()))
                         .where('G', blocks(GTBlocks.CLEANROOM_GLASS.get()))
                         .where('D', Predicates.controller(blocks(definition.getBlock())))
@@ -1241,6 +1244,248 @@ public class PhoenixMachines {
                                     .addDynamicRenderer(
                                             PhoenixDynamicRenderHelpers::getEngineGearboxRenderer)))
             .hasBER(true)
+            .register();
+    public static final MultiblockMachineDefinition EMBERWAKE_ALLOY_HEARTH = REGISTRATE
+            .multiblock("emberwake_alloy_hearth", CoilWorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(GCYMRecipeTypes.ALLOY_BLAST_RECIPES)
+            .recipeModifiers(PARALLEL_HATCH, BATCH_MODE, GTRecipeModifiers::ebfOverclock)
+            .appearanceBlock(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BCCCB", "BCDCB", "BCDCB", "BEEEB", "BFFFB", "BCCCB", "BBBBB", "BBBBB", "BBBBB")
+                        .aisle("CCCCC", "CDGDC", "CADAC", "EADAE", "FAFAF", "CCCCC", "BCFCB", "BBFBB", "BBFBB")
+                        .aisle("CCCCC", "DGHGD", "DDHDD", "EDHDE", "FFAFF", "CCCCC", "BFCFB", "BFAFB", "BFIFB")
+                        .aisle("CCCCC", "CDGDC", "CADAC", "EADAE", "FAFAF", "CCCCC", "BCFCB", "BBFBB", "BBFBB")
+                        .aisle("BCCCB", "BCJCB", "BCDCB", "BEEEB", "BFFFB", "BCCCB", "BBBBB", "BBBBB", "BBBBB")
+                        .where('A', air())
+                        .where('B', any())
+                        .where('C', blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()).setMinGlobalLimited(10)
+                                .or(abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where('D',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        Neutronium)))
+
+                        .where("E", Predicates.blocks(GCYMBlocks.HEAT_VENT.get()))
+                        .where("F", Predicates.heatingCoils())
+                        .where("G", Predicates.blocks(FUSION_COIL.get()))
+                        .where("H", Predicates.blocks(CASING_TUNGSTENSTEEL_ROBUST.get()))
+                        .where("I", Predicates.abilities(PartAbility.MUFFLER).setExactLimit(1))
+                        .where("J", Predicates.controller(Predicates.blocks(definition.get())))
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("block/casings/gcym/high_temperature_smelting_casing"),
+                    GTCEu.id("block/multiblock/gcym/blast_alloy_smelter"))
+            .register();
+
+    public static final MultiblockMachineDefinition ADVANCED_CRACKING_UNIT = REGISTRATE
+            .multiblock("advanced_cracking_unit", CoilWorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(GTRecipeTypes.CRACKING_RECIPES)
+            .recipeModifiers(PARALLEL_HATCH, BATCH_MODE, GTRecipeModifiers::crackerOverclock)
+            .appearanceBlock(GTBlocks.CASING_TUNGSTENSTEEL_TURBINE)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BBCCCCCBB", "DBDDDDDBD", "DBDDDDDBD", "DBDDDDDBD", "DBDDDDDBD", "DDDDDDDDD",
+                                "DDDDDDDDD", "DDDDDDDDD")
+                        .aisle("BEEEEEEEB", "BEFFFFFEB", "BEEEEEEEB", "BEEEEEEEB", "BEEEEEEEB", "DBCBBBCBD",
+                                "DDCBBBCDD", "DDCBBBCDD")
+                        .aisle("CEEEEEEEC", "DFAGAAAFD", "DHAAAAAHD", "DHAGAGAHD", "DHHEEEHHD", "DIHAAAHID",
+                                "DDHAAAHDD", "DDBJJJBDD")
+                        .aisle("CEEEEEEEC", "DFGKGKGFD", "DHAGAGAHD", "DHGKGKGHD", "DHHEAEHHD", "DIHAAAHID",
+                                "DDHAAAHDD", "DDBJLJBDD")
+                        .aisle("CEEEEEEEC", "DFAGAGAFD", "DHAAAAAHD", "DHAGAGAHD", "DHHEEEHHD", "DIHAAAHID",
+                                "DDHAAAHDD", "DDBJJJBDD")
+                        .aisle("BEEEEEEEB", "BEMMMMMEB", "BEMMNMMEB", "BEMMMMMEB", "BEEEEEEEB", "DBCBBBCBD",
+                                "DDCBBBCDD", "DDCBBBCDD")
+                        .aisle("BBCDDDCBB", "DBCDDDCBD", "DBCDDDCBD", "DBCDDDCBD", "DBCCCCCBD", "DDDDDDDDD",
+                                "DDDDDDDDD", "DDDDDDDDD")
+                        .where("A", air())
+                        .where("B",
+                                Predicates.blocks(GTBlocks.CASING_TUNGSTENSTEEL_TURBINE.get()).setMinGlobalLimited(10)
+                                        .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                        .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
+                                        .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where('C',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        VOID_TOUCHED_TUNGSTEN_STEEL)))
+                        .where("D", Predicates.any())
+                        .where("E", Predicates.blocks(CASING_TUNGSTENSTEEL_ROBUST.get()))
+                        .where("F", Predicates.blocks(FIREBOX_TUNGSTENSTEEL.get()))
+                        .where("G", Predicates.blocks(CASING_TUNGSTENSTEEL_PIPE.get()))
+                        .where("H", Predicates.heatingCoils())
+                        .where("I", Predicates.blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()))
+                        .where("J", Predicates.blocks(CASING_HSSE_STURDY.get()))
+                        .where("K", Predicates.blocks(CASING_EXTREME_ENGINE_INTAKE.get()))
+                        .where("L", Predicates.abilities(PartAbility.MUFFLER).setExactLimit(1))
+                        .where("M", Predicates.blocks(CASING_STAINLESS_CLEAN.get()))
+                        .where("N", Predicates.controller(Predicates.blocks(definition.get())))
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("block/casings/mechanic/machine_casing_turbine_tungstensteel"),
+                    GTCEu.id("block/multiblock/cracking_uni"))
+            .register();
+
+    public static final MultiblockMachineDefinition SUPERHEATED_PYROLYSING_OVEN = REGISTRATE
+            .multiblock("superheated_pyrolysing_oven", CoilWorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(GTRecipeTypes.PYROLYSE_RECIPES)
+            .recipeModifiers(PARALLEL_HATCH, BATCH_MODE, GTRecipeModifiers::ebfOverclock)
+            .appearanceBlock(GTBlocks.CASING_STEEL_SOLID)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BCBBBBBCB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB",
+                                "BDBBBBBDB", "BCBBBBBCB")
+                        .aisle("CCEEEEECC", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD",
+                                "DCFFFFFCD", "CCCCCCCCC")
+                        .aisle("BEGGGGGEB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB",
+                                "BFHIJIHFB", "BCHCCCHCB")
+                        .aisle("BEGGGGGEB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB",
+                                "BFIAAAIFB", "BCCGGGCCB")
+                        .aisle("BEGGGGGEB", "BFJAAAJFB", "BFJAAAJFB", "BFJAAAJFB", "BFJAAAJFB", "BFJAAAJFB",
+                                "BFJAAAJFB", "BCCGKGCCB")
+                        .aisle("BEGGGGGEB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB", "BFIAAAIFB",
+                                "BFIAAAIFB", "BCCGGGCCB")
+                        .aisle("BEGGGGGEB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB", "BFHIJIHFB",
+                                "BFHIJIHFB", "BCHCCCHCB")
+                        .aisle("CCEEEEECC", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD", "DCFFFFFCD",
+                                "DCFFFFFCD", "CCCCLCCCC")
+                        .aisle("BCBBBBBCB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB", "BDBBBBBDB",
+                                "BDBBBBBDB", "BCBBBBBCB")
+                        .where("A", air())
+                        .where("B", any())
+                        .where("C", Predicates.blocks(CASING_STEEL_SOLID.get()).setMinGlobalLimited(10)
+                                .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where('D',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        VOID_TOUCHED_TUNGSTEN_STEEL)))
+                        .where("E", Predicates.blocks(FIREBOX_STEEL.get()))
+                        .where("F", Predicates.blocks(CASING_LAMINATED_GLASS.get()))
+                        .where("G", Predicates.blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()))
+                        .where('H',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        RESONANT_RHODIUM_ALLOY)))
+                        .where("I", Predicates.blocks(GCYMBlocks.HEAT_VENT.get()))
+                        .where("J", Predicates.heatingCoils())
+                        .where("K", Predicates.abilities(PartAbility.MUFFLER).setExactLimit(1))
+                        .where("L", Predicates.controller(Predicates.blocks(definition.get())))
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_solid_steel"),
+                    GTCEu.id("block/multiblock/pyrolyse_oven"))
+            .register();
+
+    public static final MultiblockMachineDefinition MELLIFERIOUS_MATRIX = REGISTRATE
+            .multiblock("melliferious_matrix", WorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(PhoenixRecipeTypes.MELLIFERIOUS_MATRIX_RECIPES)
+            .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.OC_NON_PERFECT_SUBTICK,
+                    GTRecipeModifiers.BATCH_MODE)
+            .appearanceBlock(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BBBCCCBBB", "BBBCCCBBB", "BBBDDDBBB", "BBBDDDBBB", "BBBEEEBBB", "BBBBBBBBB")
+                        .aisle("BCCCCCCCB", "BCFGGGFCB", "BDDGGGDDB", "BDDGGGDDB", "BEEGGGEEB", "BBEEEEEBB")
+                        .aisle("CCCCCCCCC", "CHGIIIGHC", "DHGJJJGHD", "DIGAAAGID", "BEGAAAGEB", "BBEAGAEBB")
+                        .aisle("CCCCCCCCC", "CHGIJIGHC", "DHGJJJGHD", "DIGABAGID", "BEGAKAGEB", "BBEGGGEBB")
+                        .aisle("CCCCCCCCC", "CHGIIIGHC", "DHGJJJGHD", "DIGAAAGID", "BEGA2AGEB", "BBEAGAEBB")
+                        .aisle("BCCCCCCCB", "BCFGGGFCB", "BDDGGGDDB", "BDDGGGDDB", "BEEGGGEEB", "BBEEEEEBB")
+                        .aisle("BBBCCCBBB", "BBBCLCBBB", "BBBDDDBBB", "BBBDDDBBB", "BBBEEEBBB", "BBBBBBBBB")
+                        .where("A", air())
+                        .where("2", Predicates.blocks(Blocks.DIRT))
+                        .where("B", Predicates.any())
+                        .where("C", Predicates.blocks(CASING_HSSE_STURDY.get()).setMinGlobalLimited(10)
+                                .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where('D',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        TungstenSteel)))
+                        .where("E", Predicates.blocks(Blocks.WARPED_HYPHAE))
+                        .where("F", Predicates.blocks(TUNGSTENSTEEL_CRATE.getBlock()))
+                        .where('G',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        TreatedWood)))
+                        .where("H", Predicates.blocks(CASING_TUNGSTENSTEEL_PIPE.get()))
+                        .where("I", Predicates.blocks(Blocks.HONEYCOMB_BLOCK))
+                        .where("J", Predicates.blocks(Blocks.HONEY_BLOCK))
+                        .where("K", blocks(Blocks.POPPY))
+                        .where("L", Predicates.controller(Predicates.blocks(definition.get())))
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_sturdy_hsse"),
+                    GTCEu.id("block/multiblock/implosion_compressor"))
+            .register();
+    public static final MultiblockMachineDefinition DIMENSIONAL_ANCHOR = REGISTRATE
+            .multiblock("dimensional_anchor", WorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(PhoenixRecipeTypes.DIMENSIONAL_ANCHORING_RECIPES)
+            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, GTRecipeModifiers.BATCH_MODE)
+            .appearanceBlock(CASING_TITANIUM_STABLE)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BCDCB", "BBEBB", "BBEBB", "BBEBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB", "BBBBB")
+                        .aisle("CCCCC", "BEFEB", "BEGEB", "BBEBB", "BBEBB", "BBEBB", "BBEBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB", "BBBBB")
+                        .aisle("DCCCD", "EFFFE", "EGHGE", "EEGEE", "BEGEB", "BEGEB", "BEGEB", "BBEBB", "BBEBB", "BBEBB",
+                                "BBEBB", "BBEBB")
+                        .aisle("CCCCC", "BEFEB", "BEGEB", "BBEBB", "BBEBB", "BBEBB", "BBEBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB", "BBBBB")
+                        .aisle("BCICB", "BBEBB", "BBEBB", "BBEBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB", "BBBBB")
+                        .where("B", Predicates.any())
+                        .where("C", Predicates.blocks(CASING_TITANIUM_STABLE.get()).setMinGlobalLimited(5)
+                                .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where("D", Predicates.blocks(FIREBOX_TITANIUM.get()))
+                        .where("E", Predicates.blocks(ChemicalHelper.getBlock(frameGt, SOURCE_IMBUED_TITANIUM)))
+                        .where("F", Predicates.blocks(COIL_NICHROME.get()))
+                        .where("G", Predicates.blocks(FIREBOX_TITANIUM.get()))
+                        .where("H", Predicates.blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()))
+                        .where("I", Predicates.controller(Predicates.blocks(definition.get())))
+
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("gtceu:block/casings/solid/machine_casing_stable_titanium"),
+                    GTCEu.id("gtceu:block/multiblock/large_miner"))
+            .register();
+
+    public static final MultiblockMachineDefinition AETHERIAL_FABIRCATOR = REGISTRATE
+            .multiblock("aetherical_fabricator", WorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeTypes(PhoenixRecipeTypes.AETHERIAL_FABIRCATION_RECIPES)
+            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, GTRecipeModifiers.BATCH_MODE)
+            .appearanceBlock(GTBlocks.CASING_STAINLESS_CLEAN)
+            .pattern(definition -> {
+                return FactoryBlockPattern.start()
+                        .aisle("BCCCB", "BDDDB", "BCCCB", "BBCBB", "BBCBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB")
+                        .aisle("CEEEC", "DAAAD", "CAAAC", "BEAEB", "BEAEB", "BEEEB", "BBEBB", "BBEBB", "BBBBB", "BBBBB",
+                                "BBBBB")
+                        .aisle("CEEEC", "DAAAD", "CAAAC", "CAAAC", "CAAAC", "BEAEB", "BEAEB", "BEAEB", "BBCBB", "BBDBB",
+                                "BBCBB")
+                        .aisle("CEEEC", "DAAAD", "CAAAC", "BEAEB", "BEAEB", "BEEEB", "BBEBB", "BBEBB", "BBBBB", "BBBBB",
+                                "BBBBB")
+                        .aisle("BCCCB", "BCFCB", "BCCCB", "BBCBB", "BBCBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB", "BBBBB",
+                                "BBBBB")
+                        .where("A", air())
+                        .where("B", Predicates.any())
+                        .where("C", Predicates.blocks(CASING_STAINLESS_CLEAN.get()).setMinGlobalLimited(5)
+                                .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes())))
+                        .where("D", Predicates.blocks(COIL_KANTHAL.get()))
+                        .where('E',
+                                blocks(ChemicalHelper.getBlock(frameGt,
+                                        FROST_REINFORCED_STAINED_STEEL)))
+                        .where("F", Predicates.controller(Predicates.blocks(definition.get())))
+                        .build();
+            })
+            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
+                    GTCEu.id("block/multiblock/large_miner"))
             .register();
 
     public static void init() {}

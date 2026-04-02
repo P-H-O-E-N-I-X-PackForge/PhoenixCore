@@ -3,6 +3,7 @@ package net.phoenix.core.api.machine.trait;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
@@ -34,6 +35,16 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
     @Persisted
     private int maxConsumption;
 
+    @Persisted
+    @DescSynced
+    private int currentFlow;
+
+    @Persisted
+    private long lastFlowUpdate;
+
+    @Persisted
+    private GTRecipe lastRecipe;
+
     private final IO handlerIO;
 
     public NotifiableSourceContainer(MetaMachine machine, IO io, int maxCapacity, int maxConsumption) {
@@ -41,6 +52,27 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
         this.setMaxSource(maxCapacity);
         this.maxConsumption = maxConsumption;
         this.handlerIO = io;
+    }
+
+    public int getCurrentFlow() {
+        if (getMachine().getLevel() != null && !(getMachine() instanceof WorkableElectricMultiblockMachine)) {
+            long time = getMachine().getLevel().getGameTime();
+            if (time - lastFlowUpdate > 20) {
+                this.currentFlow = 0;
+            }
+        }
+        return currentFlow;
+    }
+
+    public void updateFlow(int delta) {
+        if (getMachine().getLevel() != null) {
+            this.lastFlowUpdate = getMachine().getLevel().getGameTime();
+        }
+        this.currentFlow += delta;
+    }
+
+    public void resetFlow() {
+        this.currentFlow = 0;
     }
 
     @Override
@@ -53,19 +85,32 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
                                                     boolean simulate) {
         if (io != this.handlerIO) return left;
 
+        if (!simulate && recipe != null) {
+            if (this.lastRecipe != recipe) {
+                this.currentFlow = 0;
+                this.lastRecipe = recipe;
+            }
+        }
+
         for (int i = 0; i < left.size(); i++) {
             SourceIngredient ingredient = left.get(i);
             int amountNeeded = ingredient.getSource();
 
             if (io == IO.IN) {
                 if (currentSource >= amountNeeded) {
-                    if (!simulate) removeSource(amountNeeded);
+                    if (!simulate) {
+                        removeSource(amountNeeded);
+                        updateFlow(-amountNeeded);
+                    }
                     left.remove(i);
                     break;
                 }
             } else {
                 if (maxSource - currentSource >= amountNeeded) {
-                    if (!simulate) addSource(amountNeeded);
+                    if (!simulate) {
+                        addSource(amountNeeded);
+                        updateFlow(amountNeeded);
+                    }
                     left.remove(i);
                     break;
                 }

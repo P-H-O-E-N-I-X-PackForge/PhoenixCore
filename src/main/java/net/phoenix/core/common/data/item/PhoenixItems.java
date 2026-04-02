@@ -42,7 +42,7 @@ public class PhoenixItems {
             .lang("Tesla Binder")
             .properties(p -> p.stacksTo(1))
             .onRegister(c -> c.attachComponents(c))
-            .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tools/tesla_binder")))
+            .model((ctx, prov) -> prov.handheld(ctx, prov.modLoc("item/tools/tesla_binder")))
             .register();
     public static ItemEntry<SoulLensItem> SOUL_LENS = REGISTRATE
             .item("soul_lens", SoulLensItem::new)
@@ -50,51 +50,6 @@ public class PhoenixItems {
             .properties(p -> p.stacksTo(1))
             .onRegister(c -> c.attachComponents(c))
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/soul_lens")))
-            .register();
-
-    public static ItemEntry<Item> HONEY_TREAT = REGISTRATE
-            .item("honey_treat", Item::new)
-            .lang("§6Honey Treat")
-            .register();
-    public static ItemEntry<Item> BASIC_FUEL_ROD = REGISTRATE
-            .item("basic_fuel_rod", Item::new)
-            .lang("Basic Fuel Rod")
-            .register();
-    public static ItemEntry<Item> QUARRY_BEE = REGISTRATE
-            .item("quarry_bee", Item::new)
-            .lang("Quarry Bee")
-            .register();
-    public static ItemEntry<Item> LUMBER_BEE = REGISTRATE
-            .item("lumber_bee", Item::new)
-            .lang("Lumber Bee")
-            .register();
-    public static ItemEntry<Item> THORIUM_FUEL_PELLET = REGISTRATE
-            .item("thorium_fuel_pellet", Item::new)
-            .lang("§2Thorium Fuel Pellet")
-            .register();
-    public static ItemEntry<Item> U33_FUEL_PELLET = REGISTRATE
-            .item("u233_fuel_pellet", Item::new)
-            .lang("§aUranium-233 Fuel Pellet")
-            .register();
-    public static ItemEntry<Item> PLUTONIUM_241_FUEL_PELLET = REGISTRATE
-            .item("plutonium_241_fuel_pellet", Item::new)
-            .lang("§cPlutonium-241 Fuel Pellet")
-            .register();
-    public static ItemEntry<Item> U236_FUEL_PELLET = REGISTRATE
-            .item("u236_fuel_pellet", Item::new)
-            .lang("§aUranium-236 Fuel Pellet")
-            .register();
-    public static ItemEntry<Item> U235_FUEL_PELLET = REGISTRATE
-            .item("u235_fuel_pellet", Item::new)
-            .lang("§aUranium-235 Fuel Pellet")
-            .register();
-    public static ItemEntry<Item> ROYAL_JELLY = REGISTRATE
-            .item("royal_jelly", Item::new)
-            .lang("§dRoyal Jelly")
-            .register();
-    public static ItemEntry<Item> HONEY_COMB_BASE = REGISTRATE
-            .item("honey_comb_base", Item::new)
-            .lang("§6Honeycomb Base")
             .register();
     public static ItemEntry<Item> HONEY_COMB_BASE_MOLD = REGISTRATE
             .item("honey_comb_base_mold", Item::new)
@@ -105,6 +60,164 @@ public class PhoenixItems {
             .register();
     public static ItemEntry<Item> SOURCE_FIBER_MESH = REGISTRATE.item("source_fiber_mesh", Item::new)
             .lang("§dSource Fiber Mesh")
+            .register();
+    public static ItemEntry<Item> QUARRY_BEE = REGISTRATE
+            .item("quarry_bee", Item::new)
+            .lang("Quarry Bee")
+            .register();
+    public static ItemEntry<Item> LUMBER_BEE = REGISTRATE
+            .item("lumber_bee", Item::new)
+            .lang("Lumber Bee")
+            .register();
+    public static ItemEntry<Item> ROYAL_JELLY = REGISTRATE
+            .item("royal_jelly", Item::new)
+            .lang("§dRoyal Jelly")
+            .register();
+    public static ItemEntry<Item> HONEY_COMB_BASE = REGISTRATE
+            .item("honey_comb_base", Item::new)
+            .lang("§6Honeycomb Base")
+            .register();
+
+    public static ItemEntry<TooltipItem> THORIUM_FUEL_PELLET = REGISTRATE
+            .item("thorium_fuel_pellet", p -> new TooltipItem(p,
+                    "§6A compacted pellet of fertile thorium.",
+                    "§6Designed for efficient neutron capture and U-233 breeding in reactor blankets."))
+            .lang("§2Thorium Fuel Pellet")
+            .register();
+
+    public static ItemEntry<TooltipItem> U33_FUEL_PELLET = REGISTRATE
+            .item("u233_fuel_pellet", p -> new TooltipItem(p,
+                    "§aA highly concentrated pellet of bred Uranium-233.",
+                    "§aDelivers exceptional energy output as primary fissile fuel."))
+            .lang("§aUranium-233 Fuel Pellet")
+            .register();
+
+    public static ItemEntry<TooltipItem> PLUTONIUM_241_FUEL_PELLET = REGISTRATE
+            .item("plutonium_241_fuel_pellet", p -> new TooltipItem(p,
+                    "§6A compacted pellet of Plutonium-241.",
+                    "§aDelivers exceptional energy output as primary fissile fuel."))
+            .lang("§cPlutonium-241 Fuel Pellet")
+            .register();
+
+    public static ItemEntry<TooltipItem> U236_FUEL_PELLET = REGISTRATE
+            .item("u236_fuel_pellet", p -> new TooltipItem(p,
+                    "§aA highly concentrated pellet of bred Uranium-236.",
+                    "§6Designed for efficient neutron capture and Pu-241 breeding reactions as a blanket."))
+            .lang("§aUranium-236 Fuel Pellet")
+            .register();
+
+    public static ItemEntry<TooltipItem> U235_FUEL_PELLET = REGISTRATE
+            .item("u235_fuel_pellet", p -> new TooltipItem(p,
+                    "§2A compacted pellet of Uranium-235.",
+                    "§2Serves as the primary driver fuel for fission reactors."))
+            .lang("§aUranium-235 Fuel Pellet")
+            .register();
+    public static ItemEntry<Item> HONEY_TREAT = REGISTRATE
+            .item("honey_treat", Item::new)
+            .lang("§6Honey Treat")
+            .register();
+    public static ItemEntry<Item> BASIC_FUEL_ROD = REGISTRATE
+            .item("basic_fuel_rod", Item::new)
+            .lang("Basic Fuel Rod")
+            .register();
+    public static ItemEntry<Item> ZIRCONIUM__ROD = REGISTRATE
+            .item("zirconium_rod", Item::new)
+            .lang("§2Zirconium Rod")
+            .register();
+
+    // Drilling Kits
+    public static final ItemEntry<TooltipItem> SPACE_GRADE_STEEL_DRILLING_KIT = REGISTRATE
+            .item("space_grade_steel_drilling_kit", p -> new TooltipItem(p,
+                    "§d§oA state-of-the-art drilling kit, engineered for extraterrestrial exploration.",
+                    "§5Its components are hermetically sealed and radiation-hardened for deep space operations."))
+            .lang("§7Space Grade Steel Drilling Kit")
+            .register();
+
+    public static final ItemEntry<TooltipItem> FROST_REINFORCED_STAINED_STEEL_DRILLING_KIT = REGISTRATE
+            .item("frost_reinforced_stained_steel_drilling_kit", p -> new TooltipItem(p,
+                    "§f§oA heavy-duty drilling kit, reinforced with cryogenic alloys.",
+                    "§9Its components are exceptionally durable and resistant to extreme temperature fluctuations."))
+            .lang("§3Frost Reinforced Stained Steel Drill Kit")
+            .register();
+
+    public static final ItemEntry<TooltipItem> ALUMIN_FROST_DRILLING_KIT = REGISTRATE
+            .item("aluminfrost_drilling_kit", p -> new TooltipItem(p,
+                    "§b§oA drilling kit designed for precision in the most frigid, brittle environments.",
+                    "§9Its components remain perfectly chilled, preventing overheating and material degradation."))
+            .lang("§bAluminfrost Drill Kit")
+            .register();
+
+    public static final ItemEntry<TooltipItem> AURUM_STEEL_DRILLING_KIT = REGISTRATE
+            .item("aurum_steel_drilling_kit", p -> new TooltipItem(p,
+                    "§6§oA kit imbued with ancient power, capable of penetrating some stubborn materials.",
+                    "§9Forged from Aurum Steel, its strength is matched by its inherent, volatile mystery."))
+            .lang("§6Aurum Steel Drill Kit")
+            .register();
+
+    // Modules
+    public static final ItemEntry<TooltipItem> SPACE_MINER_MODULE = REGISTRATE
+            .item("space_miner_module", p -> new TooltipItem(p,
+                    "§d§oDesigned for deep-space resource extraction.",
+                    "§5Enables efficient mining on celestial bodies and asteroids, far from terrestrial interference."))
+            .lang("§dSpace Miner Module")
+            .register();
+
+    public static final ItemEntry<TooltipItem> EARTHBOUND_MINER_MODULE = REGISTRATE
+            .item("earthbound_miner_module", p -> new TooltipItem(p,
+                    "§e§oA versatile mining module, adaptable to multiple dimensions.",
+                    "§6Optimized for resource gathering in the Overworld, Nether, and End, maximizing terrestrial yields."))
+            .lang("§eEarth Bound Miner Module")
+            .register();
+
+    // Drill Heads
+    public static final ItemEntry<TooltipItem> SPACE_GRADE_STEEL_DRILL_HEAD = REGISTRATE
+            .item("space_grade_steel_drill_head", p -> new TooltipItem(p,
+                    "§d§lAn orbital-grade drill head, designed to pierce lunar regolith or asteroid cores.",
+                    "§5Extremely strong in its ability to withstand vacuum, extreme temperatures, and cosmic radiation."))
+            .lang("§7Space Grade Steel Drill Head")
+            .register();
+
+    public static final ItemEntry<TooltipItem> FROST_REINFORCED_STAINED_STEEL_DRILL_HEAD = REGISTRATE
+            .item("frost_reinforced_stained_steel_drill_head", p -> new TooltipItem(p,
+                    "§f§lThis drill head bears a subtle, frozen pattern, a testament to its resilience.",
+                    "§9Capable of breaking through solidified barriers while maintaining its integrity in the cold."))
+            .lang("§3Frost Reinforced Stained Steel Drill Head")
+            .register();
+
+    public static final ItemEntry<TooltipItem> ALUMIN_FROST_DRILL_HEAD = REGISTRATE
+            .item("aluminfrost_drill_head", p -> new TooltipItem(p,
+                    "§b§lAn icy drill head, its surface supercooled to reduce friction to almost nothing.",
+                    "§9It carves through rock and ice alike with unnerving silence, leaving a trail of frost."))
+            .lang("§bAluminfrost Drill Head")
+            .register();
+
+    public static final ItemEntry<TooltipItem> AURUM_STEEL_DRILL_HEAD = REGISTRATE
+            .item("aurum_steel_drill_head", p -> new TooltipItem(p,
+                    "§6§lThe head of an ancient drill, shimmering with a golden, arcane glow.",
+                    "§8§lIt can carve through dimensions, but is prone to unexpected failures if its power is mishandled."))
+            .lang("§6Aurum Steel Drill Head")
+            .register();
+
+    // Miscellaneous
+    public static final ItemEntry<TooltipItem> FLAMING_MESH = REGISTRATE
+            .item("flaming_mesh", p -> new TooltipItem(p,
+                    "§6A superheated lattice used to filter neural essences.",
+                    "§eEssential for stabilizing simulation chambers during high-intensity processing."))
+            .lang("§cFlaming Mesh")
+            .register();
+
+    public static final ItemEntry<TooltipItem> FLAMING_DUST = REGISTRATE
+            .item("flaming_dust", p -> new TooltipItem(p,
+                    "§6Infinitesimal embers recovered from a phoenix's pyre.",
+                    "§eActs as a thermal catalyst for reconstructing mob drops from digital data."))
+            .lang("§cFlaming Dust")
+            .register();
+
+    public static final ItemEntry<TooltipItem> PHOENIX_FEATHER = REGISTRATE
+            .item("phoenix_feather", p -> new TooltipItem(p,
+                    "§6A shimmering feather that pulses with the heat of a thousand suns.",
+                    "§eUsed to harness the §6Phoenix Force §efor extreme metallurgy."))
+            .lang("§cFeather §6Of §cRebirth")
             .register();
 
     public static ItemEntry<ArmorComponentItem> PHOENIX_HELMET = REGISTRATE
@@ -121,7 +234,7 @@ public class PhoenixItems {
 
     public static ItemEntry<PhoenixArmorItem> PHOENIX_WINGS = REGISTRATE
             .item("phoenix_wings", (p) -> new PhoenixArmorItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p,
-                    new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 8)))
+                    new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 6)))
             .lang("Phoenix Wings")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_CHESTPLATES)
@@ -130,7 +243,7 @@ public class PhoenixItems {
     public static ItemEntry<PhoenixArmorItem> PHOENIX_CHESTPLATE = REGISTRATE
             .item("phoenix_chestplate",
                     (p) -> new PhoenixArmorItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p,
-                            new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 8)))
+                            new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 6)))
             .lang("Phoenix Tech Suite Chestplate")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_CHESTPLATES)
@@ -143,7 +256,7 @@ public class PhoenixItems {
                     .setArmorLogic(new PhoenixTechSuite(ArmorItem.Type.LEGGINGS,
                             16384,
                             500_000_000L,
-                            8)))
+                            6)))
             .lang("Phoenix Tech Suite Leggings")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_LEGGINGS)
@@ -155,7 +268,7 @@ public class PhoenixItems {
                     .setArmorLogic(new PhoenixTechSuite(ArmorItem.Type.BOOTS,
                             16384,
                             500_000_000L,
-                            8)))
+                            6)))
             .lang("Phoenix Tech Suite Boots")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_BOOTS)

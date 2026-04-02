@@ -106,6 +106,8 @@ public class TeslaNetworkProvider implements IBlockComponentProvider, IServerDat
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+        if (!config.get(UID)) return;
+
         CompoundTag data = accessor.getServerData();
         if (!data.contains("TeslaTeam")) return;
 

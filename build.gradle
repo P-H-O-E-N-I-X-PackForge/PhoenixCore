@@ -283,7 +283,17 @@ tasks.named('jar', Jar).configure {
 
 
 
-tasks.named("build") {
-    // Ensure that the final product task is what the build relies on
+
+tasks.named('build') {
     dependsOn("spotlessApply")
+
+    doLast {
+        copy {
+            from "build/libs"
+            into "C:/Users/conno/Desktop/PFT Core/Phoenix-Forge-Technologies/mods"
+            include "${archives_base_name}-${version}*.jar"
+            exclude "*-sources.jar", "*-javadoc.jar"
+        }
+        println "SUCCESS: Spotless applied and Jar moved to mods folder!"
+    }
 }

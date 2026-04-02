@@ -1002,13 +1002,30 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     @Override
     public int damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
                            EquipmentSlot equipmentSlot) {
+        // 1. CRITICAL NULL CHECK: Fixes the NPE when a zombie or modded source hits you
+        if (source == null) {
+            return super.damageArmor(entity, itemStack, source, damage, equipmentSlot);
+        }
+
         if (entity instanceof Player player && !player.level().isClientSide &&
                 player.level() instanceof ServerLevel serverLevel) {
-            if (player.getHealth() <= damage) {
-                TeslaTeamEnergyData data = TeslaTeamEnergyData.get(serverLevel);
-                UUID teamID = player.getUUID();
 
-                if (data.isOnline(teamID)) {
+            TeslaTeamEnergyData data = TeslaTeamEnergyData.get(serverLevel);
+            UUID teamID = player.getUUID();
+
+            if (data.isOnline(teamID)) {
+                // 2. KINETIC & SHIELD PROTECTION (Armor Durability)
+                // If the shield or dampeners are active, the armor takes 0 damage.
+                // Note: The actual health blocking happens in the Event below!
+                CompoundTag nbt = itemStack.getOrCreateTag();
+                if (source.is(net.minecraft.world.damagesource.DamageTypes.FLY_INTO_WALL) ||
+                        source.is(net.minecraft.world.damagesource.DamageTypes.FALL) ||
+                        nbt.getBoolean("teslaMode")) {
+                    return 0;
+                }
+
+                // 3. PHOENIX REBIRTH (The "Death-Defying" Save)
+                if (player.getHealth() <= (float) damage) {
                     TeslaTeamEnergyData.TeamEnergy network = data.getOrCreate(teamID);
                     java.math.BigInteger rebirthCost = java.math.BigInteger.valueOf(10_000_000L);
 
@@ -1016,20 +1033,15 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     CompoundTag chestNBT = chestplate.getOrCreateTag();
                     int rebirthCooldown = chestNBT.getInt("rebirthCooldown");
 
-                    if (rebirthCooldown > 0) {
-                        int secondsLeft = rebirthCooldown / 20;
-                        player.displayClientMessage(
-                                Component.literal("§c⚡ REBIRTH RECHARGING: §e" + secondsLeft + "s")
-                                        .withStyle(ChatFormatting.BOLD),
-                                true);
-
-                    } else if (network.stored.compareTo(rebirthCost) >= 0) {
+                    if (rebirthCooldown <= 0 && network.stored.compareTo(rebirthCost) >= 0) {
                         network.drain(rebirthCost);
 
                         player.setHealth(player.getMaxHealth());
                         player.removeAllEffects();
-                        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1200, 0));
-                        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
+                        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 1200, 0));
+                        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                net.minecraft.world.effect.MobEffects.REGENERATION, 200, 1));
 
                         chestNBT.putInt("rebirthCooldown", 600);
 
@@ -1042,11 +1054,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
                         player.displayClientMessage(Component.literal("§6§l⚡ PHOENIX REBIRTH ACTIVATED ⚡"), true);
                         return 0;
-                    } else {
-                        player.displayClientMessage(
-                                Component.literal("§c⚡ REBIRTH FAILED: §7Insufficient network energy!")
-                                        .withStyle(ChatFormatting.BOLD),
-                                true);
                     }
                 }
             }

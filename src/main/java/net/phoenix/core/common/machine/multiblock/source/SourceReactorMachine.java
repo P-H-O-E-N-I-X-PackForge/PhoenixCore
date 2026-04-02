@@ -15,20 +15,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
 import net.phoenix.core.saveddata.SoulSavedData;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
 
+    @Getter
     private float reactorStability = 1.0f;
 
     public SourceReactorMachine(IMachineBlockEntity holder) {
         super(holder);
-    }
-
-    public float getReactorStability() {
-        return reactorStability;
     }
 
     @Override
@@ -62,8 +60,9 @@ public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
                             if (id.contains("source_gem_block")) stabilizers += 0.04f;
                             else if (id.contains("magebloom_block")) stabilizers += 0.06f;
                             else if (id.contains("arcane_core")) stabilizers += 0.12f;
+                            else if (id.contains(""))
 
-                            if (stabilizers >= 4.0f) return 5.0f;
+                                if (stabilizers >= 4.0f) return 5.0f;
                         }
                     }
                 }
