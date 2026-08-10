@@ -17,6 +17,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.item.PhoenixItems;
+import net.phoenix.core.integration.astral.api.capability.AstralThreadIngredient;
+import net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability;
+import net.phoenix.core.common.data.materials.AstralMaterials;
 import net.phoenix.core.common.data.materials.PhoenixBeeMaterials;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.common.data.materials.PhoenixOres;
@@ -162,6 +165,42 @@ public class PhoenixMachineRecipes {
                 .inputItems(Items.EMERALD, 4)
                 .EUt(30)
                 .duration(200)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread")
+                .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 4)
+                .output(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1000))
+                .EUt(VA[IV])
+                .duration(200)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread_source_bonus")
+                .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 4)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(200))
+                .output(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1500))
+                .EUt(VA[IV])
+                .duration(100)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_thread_to_skein")
+                .input(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1000))
+                .outputFluids(AstralMaterials.SKEIN.getFluid(144))
+                .EUt(VA[LuV])
+                .duration(300)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_skein_to_ensorcelled_weave_zpm")
+                .inputFluids(AstralMaterials.SKEIN.getFluid(4608))
+                .outputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(144))
+                .EUt(VA[ZPM])
+                .duration(1200)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_skein_to_ensorcelled_weave_uv")
+                .inputFluids(AstralMaterials.SKEIN.getFluid(576))
+                .outputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(144))
+                .EUt(VA[UV])
+                .duration(300)
                 .save(provider);
 
         PhoenixRecipeTypes.HONEY_CHAMBER_RECIPES.recipeBuilder("mercury_and_magnesium_to_uranium_235_plasma")

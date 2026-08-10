@@ -20,6 +20,8 @@ public class PhoenixDataGenerators {
 
     static {
 
+        PhoenixDatagen.init();
+
         REGISTRATE.addDataGenerator(ProviderType.LOOT,
                 prov -> prov.addLootAction(RegistrateLootTableProvider.LootType.BLOCK, blockLoot -> {
                     for (var entry : GTMaterialBlocks.MATERIAL_BLOCKS.row(PhoenixMaterialFlags.crystal_rose)

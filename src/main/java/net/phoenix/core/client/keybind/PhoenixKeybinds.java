@@ -51,6 +51,12 @@ public class PhoenixKeybinds {
             InputConstants.UNKNOWN.getValue(),
             "key.categories.phoenixcore");
 
+    public static final KeyMapping OPEN_ASTRAL_CODEX = new KeyMapping(
+            "key.phoenixcore.open_astral_codex",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_6,
+            "key.categories.phoenixcore");
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_WING_GUI);
@@ -60,5 +66,6 @@ public class PhoenixKeybinds {
         event.register(OPEN_RECIPE_BUILDER);
         event.register(SPRAY_CAN_MENU);
         event.register(OPEN_EMI_FAVORITE_PAGES);
+        event.register(OPEN_ASTRAL_CODEX);
     }
 }

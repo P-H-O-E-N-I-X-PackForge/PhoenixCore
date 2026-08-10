@@ -2,7 +2,7 @@ package net.phoenix.core.integration.vocal_resonance.ingredient;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
+
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIngredient> {
-
-    public static final MachineTraitType<NotifiableSoundHandler> TRAIT_TYPE = new MachineTraitType<>(
-            NotifiableSoundHandler.class);
 
     private final ResonantJukeboxMachine controller;
     private final IO handlerIO;
@@ -94,8 +91,4 @@ public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIn
         return (data != null && (data.bpm > 0 || data.bass > 0f || data.mid > 0f || data.treble > 0f)) ? 1.0 : 0.0;
     }
 
-    @Override
-    public MachineTraitType<?> getTraitType() {
-        return TRAIT_TYPE;
-    }
 }

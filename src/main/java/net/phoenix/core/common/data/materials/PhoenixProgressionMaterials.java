@@ -61,6 +61,7 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
 
         RESONANT_ENDER = new Material.Builder(PhoenixCore.id("resonant_ender"))
+                .langValue("§3Resonant Ender")
                 .ingot()
                 .fluid()
                 .color(0x032620)
@@ -69,6 +70,7 @@ public class PhoenixProgressionMaterials {
         ingot.setIgnored(RESONANT_ENDER, Items.ENDER_PEARL.asItem());
 
         FLUIX = new Material.Builder(PhoenixCore.id("fluix"))
+                .langValue("§dFluix")
                 .ingot()
                 .color(0x6E00FF)
                 .secondaryColor(0xB266FF)
@@ -77,6 +79,7 @@ public class PhoenixProgressionMaterials {
         ingot.setIgnored(FLUIX, FLUIX_CRYSTAL.asItem());
 
         SLIME = new Material.Builder(PhoenixCore.id("slime"))
+                .langValue("§aSlime")
                 .ingot()
                 .color(0x2ce551)
                 .secondaryColor(0x1c9234)
@@ -110,6 +113,7 @@ public class PhoenixProgressionMaterials {
         ingot.setIgnored(SILKY, Items.STRING.asItem());
 
         MAGMA = new Material.Builder(PhoenixCore.id("magma"))
+                .langValue("§cMagma")
                 .dust()
                 .ingot()
                 .fluid()
@@ -151,6 +155,7 @@ public class PhoenixProgressionMaterials {
         ingot.setIgnored(GHOSTLY, Items.GHAST_TEAR.asItem());
 
         SOURCE_GEM = new Material.Builder(PhoenixCore.id("source_gem"))
+                .langValue("§zSource Gem")
                 .dust()
                 .color(0xBF00FF)
                 .iconSet(MaterialIconSet.DULL)
@@ -159,7 +164,7 @@ public class PhoenixProgressionMaterials {
         ingot.setIgnored(SOURCE_GEM, ItemsRegistry.SOURCE_GEM::get);
 
         FROST = new Material.Builder(PhoenixCore.id("frost"))
-                .langValue("Frost")
+                .langValue("§bFrost")
                 .fluid()
                 .color(0xA7D1EB)
                 .secondaryColor(0x778899)
@@ -174,7 +179,8 @@ public class PhoenixProgressionMaterials {
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
 
-        ALUMINFROST = new Material.Builder(PhoenixCore.id("aluminfrost")).ingot().fluid().color(0xadd8e6)
+        ALUMINFROST = new Material.Builder(PhoenixCore.id("aluminfrost")).langValue("§bAluminfrost").ingot().fluid()
+                .color(0xadd8e6)
                 .secondaryColor(0xc0c0c0).iconSet(MaterialIconSet.BRIGHT)
                 .fluidPipeProperties(1200, 110, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, GENERATE_SMALL_GEAR,
@@ -182,7 +188,8 @@ public class PhoenixProgressionMaterials {
                         GENERATE_ROD, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR,
                         GENERATE_FOIL)
                 .buildAndRegister();
-        SOURCE_IMBUED_TITANIUM = new Material.Builder(PhoenixCore.id("source_imbued_titanium")).ingot().fluid()
+        SOURCE_IMBUED_TITANIUM = new Material.Builder(PhoenixCore.id("source_imbued_titanium"))
+                .langValue("§5Source Imbued Titanium").ingot().fluid()
                 .color(0xc600ff).formula("✨C✨Ti").iconSet(MaterialIconSet.METALLIC)
                 .cableProperties(GTValues.EV, 1, 2, false)
                 .fluidPipeProperties(2800, 200, true, true, false, false)
@@ -192,6 +199,7 @@ public class PhoenixProgressionMaterials {
                         GENERATE_ROTOR)
                 .buildAndRegister();
         RESONANT_RHODIUM_ALLOY = new Material.Builder(PhoenixCore.id("resonant_rhodium_alloy"))
+                .langValue("§dResonant Rhodium Alloy")
                 .ingot().fluid()
                 .color(0xE245F8).secondaryColor(0xA345B0).iconSet(MaterialIconSet.METALLIC)
                 .components(GTMaterials.Rhodium, 3, GTMaterials.Palladium, 4, PhoenixOres.POLARITY_FLIPPED_BISMUTHITE,
@@ -204,6 +212,7 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
 
         ADVANCED_QUIN_NAQUADIAN_ALLOY = new Material.Builder(PhoenixCore.id("advanced_quin_naquadian_alloy"))
+                .langValue("Advanced Quin-Naquadian Alloy")
                 .ingot()
                 .liquid(7400)
                 .color(0x000000)
@@ -228,6 +237,7 @@ public class PhoenixProgressionMaterials {
                 .buildAndRegister();
 
         FROST_REINFORCED_STAINED_STEEL = new Material.Builder(PhoenixCore.id("frost_reinforced_stained_steel"))
+                .langValue("§bFrost-Reinforced Stained Steel")
                 .ingot()
                 .fluid()
                 .color(0xB0E0E6).secondaryColor(0x708090)
@@ -249,13 +259,15 @@ public class PhoenixProgressionMaterials {
                         GENERATE_FOIL)
                 .buildAndRegister();
         EightyFivePercentPureNevonianSteel = new Material.Builder(
-                PhoenixCore.id("eighty_five_percent_pure_nevonian_steel")).ingot().color(0xFFFFE0)
+                PhoenixCore.id("eighty_five_percent_pure_nevonian_steel"))
+                .langValue("§6Eighty Five Percent Pure Nevonian Steel").ingot().color(0xFFFFE0)
                 .secondaryColor(0xFFD700).iconSet(PhoenixMaterialSet.ALMOST_PURE_NEVONIAN_STEEL)
                 .blastTemp(3800, MID, GTValues.VA[GTValues.EV], 1200)
                 .flags(GENERATE_PLATE, GENERATE_GEAR, GENERATE_SMALL_GEAR, GENERATE_SPRING, PHOSPHORESCENT,
                         GENERATE_ROD, GENERATE_DENSE, GENERATE_BOLT_SCREW, GENERATE_FRAME)
                 .buildAndRegister();
         VOID_TOUCHED_TUNGSTEN_STEEL = new Material.Builder(PhoenixCore.id("void_touched_tungsten_steel"))
+                .langValue("§5Void Touched Tungsten Steel")
                 .ingot()
                 .liquid(3100)
                 .color(0x4B0082).secondaryColor(0x000000)
@@ -304,33 +316,39 @@ public class PhoenixProgressionMaterials {
                 .color(0x8B008B).secondaryColor(0x454545).cableProperties(GTValues.V[GTValues.EV], 16, 0, true)
                 .buildAndRegister();
         BLAZING_DRILLING_FLUID = new Material.Builder(PhoenixCore.id("blazing_drilling_fluid"))
+                .langValue("§cBlazing Drilling Fluid")
                 .fluid()
                 .color(0xFF6600)
                 .secondaryColor(0xEE4400)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
         VOIDIC_DRILLING_FLUID = new Material.Builder(PhoenixCore.id("voidic_drilling_fluid"))
+                .langValue("§dVoidic Drilling Fluid")
                 .fluid()
                 .color(0x400080)
                 .secondaryColor(0x7B68EE)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
         CRYO_EMBER_FLUID = new Material.Builder(PhoenixCore.id("cryo_ember_fluid"))
+                .langValue("§bCryo§f-§cEmber§f Fluid")
                 .liquid(6000)
                 .color(0xFF4500)
                 .secondaryColor(0xA020F0)
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
 
-        AKASHIC_ZERONIUM = new Material.Builder(PhoenixCore.id("akashic_zeronium")).ingot().fluid().color(0x8F00FF)
+        AKASHIC_ZERONIUM = new Material.Builder(PhoenixCore.id("akashic_zeronium")).langValue("§dAkashic Zeronium")
+                .ingot().fluid().color(0x8F00FF)
                 .cableProperties(GTValues.V[GTValues.MAX], 400000, 400000, true)
                 .blastTemp(200000, HIGHEST, GTValues.VA[GTValues.MAX], 100000000).flags(GENERATE_PLATE, GENERATE_ROD)
                 .buildAndRegister();
-        PHOENIX_ENRICHED_NAQUADAH = new Material.Builder(PhoenixCore.id("phoenix_enriched_naquadah")).ingot()
+        PHOENIX_ENRICHED_NAQUADAH = new Material.Builder(PhoenixCore.id("phoenix_enriched_naquadah"))
+                .langValue("§6Phoenix Enriched Naquadah").ingot()
                 .color(0xFFA500).iconSet(MaterialIconSet.SHINY).cableProperties(GTValues.V[GTValues.ZPM], 64, 8, true)
                 .blastTemp(1500, MID, GTValues.VA[GTValues.ZPM], 750000)
                 .flags(GENERATE_FRAME, PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE).buildAndRegister();
-        PHOENIX_ENRICHED_TRITANIUM = new Material.Builder(PhoenixCore.id("phoenix_enriched_tritanium")).ingot()
+        PHOENIX_ENRICHED_TRITANIUM = new Material.Builder(PhoenixCore.id("phoenix_enriched_tritanium"))
+                .langValue("§cPhoenix Enriched Tritanium").ingot()
                 .color(0xFF0000).iconSet(PhoenixMaterialSet.ALMOST_PURE_NEVONIAN_STEEL)
                 .cableProperties(GTValues.V[GTValues.ZPM], 64, 8, true)
                 .blastTemp(1800, MID, GTValues.VA[GTValues.ZPM], 900000)
@@ -341,7 +359,8 @@ public class PhoenixProgressionMaterials {
         SUBSPACE_COBALT = new Material.Builder(PhoenixCore.id("subspace_cobalt")).ingot().fluid().color(0x00FFFF)
                 .cableProperties(GTValues.V[GTValues.UV], 32, 4, true)
                 .blastTemp(1600, MID, GTValues.VA[GTValues.UV], 700000).flags(GENERATE_PLATE).buildAndRegister();
-        SINGULARITY_FORGED_TITANIUM = new Material.Builder(PhoenixCore.id("singularity_forged_titanium")).ingot()
+        SINGULARITY_FORGED_TITANIUM = new Material.Builder(PhoenixCore.id("singularity_forged_titanium"))
+                .langValue("Singularity-Forged Titanium").ingot()
                 .fluid().color(0x808080).cableProperties(GTValues.V[GTValues.UV], 64, 8, true)
                 .blastTemp(1700, MID, GTValues.VA[GTValues.UV], 850000).flags(GENERATE_PLATE).buildAndRegister();
         EXOTIC_VANADIUM_COMPOSITE = new Material.Builder(PhoenixCore.id("exotic_vanadium_composite")).ingot().fluid()
@@ -353,10 +372,12 @@ public class PhoenixProgressionMaterials {
         CORRUPTED_HYPERALLOY = new Material.Builder(PhoenixCore.id("corrupted_hyperalloy")).ingot().fluid()
                 .color(0xFF00FF).cableProperties(GTValues.V[GTValues.UEV], 64, 8, true)
                 .blastTemp(1650, MID, GTValues.VA[GTValues.UEV], 820000).flags(GENERATE_PLATE).buildAndRegister();
-        REALITY_BOUND_OSMIUM = new Material.Builder(PhoenixCore.id("reality_bound_osmium")).ingot().fluid()
+        REALITY_BOUND_OSMIUM = new Material.Builder(PhoenixCore.id("reality_bound_osmium"))
+                .langValue("Reality-Bound Osmium").ingot().fluid()
                 .color(0x00FF00).cableProperties(GTValues.V[GTValues.UEV], 128, 16, true)
                 .blastTemp(2000, MID, GTValues.VA[GTValues.UEV], 1050000).flags(GENERATE_PLATE).buildAndRegister();
-        VOID_STITCHED_NEODYMIUM = new Material.Builder(PhoenixCore.id("void_stitched_neodymium")).ingot().fluid()
+        VOID_STITCHED_NEODYMIUM = new Material.Builder(PhoenixCore.id("void_stitched_neodymium"))
+                .langValue("Void-Stitched Neodymium").ingot().fluid()
                 .color(0x9400D3).cableProperties(GTValues.V[GTValues.UEV], 64, 8, true)
                 .blastTemp(1550, MID, GTValues.VA[GTValues.UEV], 900000).flags(GENERATE_PLATE).buildAndRegister();
         CELESTIAL_AURORIUM = new Material.Builder(PhoenixCore.id("celestial_aurorium")).ingot().fluid().color(0xFFD700)
@@ -377,7 +398,8 @@ public class PhoenixProgressionMaterials {
         SOULBOUND_ETHERSTEEL = new Material.Builder(PhoenixCore.id("soulbound_ethersteel")).ingot().fluid()
                 .color(0x87CEEB).cableProperties(GTValues.V[GTValues.UIV], 512, 64, true)
                 .blastTemp(2000, MID, GTValues.VA[GTValues.UIV], 1500000).flags(GENERATE_PLATE).buildAndRegister();
-        TACHYON_INFUSED_CHROMIUM = new Material.Builder(PhoenixCore.id("tachyon_infused_chromium")).ingot().fluid()
+        TACHYON_INFUSED_CHROMIUM = new Material.Builder(PhoenixCore.id("tachyon_infused_chromium"))
+                .langValue("Tachyon-Infused Chromium").ingot().fluid()
                 .color(0xB0C4DE).cableProperties(GTValues.V[GTValues.OpV], 1024, 128, true)
                 .blastTemp(2450, MID, GTValues.VA[GTValues.OpV], 1750000).flags(GENERATE_PLATE).buildAndRegister();
         ECHO_CRYSTAL_ALLOY = new Material.Builder(PhoenixCore.id("echo_crystal_alloy")).ingot().fluid().color(0xDA70D6)
@@ -392,7 +414,8 @@ public class PhoenixProgressionMaterials {
         PHOENIX_TEMPERED_MITHRIL = new Material.Builder(PhoenixCore.id("phoenix_tempered_mithril")).ingot().fluid()
                 .color(0xE0FFFF).cableProperties(GTValues.V[GTValues.UIV], 128, 16, true)
                 .blastTemp(2100, MID, GTValues.VA[GTValues.UIV], 1150000).flags(GENERATE_PLATE).buildAndRegister();
-        VOID_SUNG_ADAMANTITE = new Material.Builder(PhoenixCore.id("void_sung_adamantite")).ingot().fluid()
+        VOID_SUNG_ADAMANTITE = new Material.Builder(PhoenixCore.id("void_sung_adamantite"))
+                .langValue("Void-Sung Adamantite").ingot().fluid()
                 .color(0x2F4F4F).cableProperties(GTValues.V[GTValues.UIV], 256, 32, true)
                 .blastTemp(1850, MID, GTValues.VA[GTValues.UIV], 1200000).flags(GENERATE_PLATE).buildAndRegister();
         ENTANGLED_PALLADIUM = new Material.Builder(PhoenixCore.id("entangled_palladium")).ingot().fluid()
@@ -404,7 +427,8 @@ public class PhoenixProgressionMaterials {
         SUPERPOSITION_TUNGSTEN_MATRIX = new Material.Builder(PhoenixCore.id("superposition_tungsten_matrix")).ingot()
                 .fluid().color(0xD3D3D3).cableProperties(GTValues.V[GTValues.UXV], 512, 64, true)
                 .blastTemp(2050, MID, GTValues.VA[GTValues.UXV], 1400000).flags(GENERATE_PLATE).buildAndRegister();
-        EXO_TEMPORAL_ORICHALCUM = new Material.Builder(PhoenixCore.id("exo_temporal_orichalcum")).ingot().fluid()
+        EXO_TEMPORAL_ORICHALCUM = new Material.Builder(PhoenixCore.id("exo_temporal_orichalcum"))
+                .langValue("Exo-Temporal Orichalcum").ingot().fluid()
                 .color(0xFFD700).cableProperties(GTValues.V[GTValues.UXV], 256, 32, true)
                 .blastTemp(2250, MID, GTValues.VA[GTValues.UXV], 1250000).flags(GENERATE_PLATE).buildAndRegister();
         GALACTIC_HEART_MATTER = new Material.Builder(PhoenixCore.id("galactic_heart_matter")).ingot().fluid()
@@ -450,6 +474,7 @@ public class PhoenixProgressionMaterials {
 
         RADIOACTIVE_AND_HEAVY_METAL_CONTAMINATED_NAQUADATITE = new Material.Builder(
                 PhoenixCore.id("radioactive_and_heavy_metal_contaminated_naquadatite"))
+                .langValue("Radioactive and Heavy Metal Contaminated Naquadatite")
                 .dust()
                 .color(0x2B3A2C)
                 .iconSet(MaterialIconSet.RADIOACTIVE)

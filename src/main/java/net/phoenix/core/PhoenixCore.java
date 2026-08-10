@@ -37,6 +37,9 @@ import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.client.PhoenixClient;
 import net.phoenix.core.client.keybind.PhoenixKeybinds;
 import net.phoenix.core.client.particle.PhoenixParticles;
+import net.phoenix.core.integration.astral.AstralBlocks;
+import net.phoenix.core.integration.astral.AstralItems;
+import net.phoenix.core.integration.astral.AstralMachines;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.common.data.item.PhoenixItems;
@@ -46,15 +49,15 @@ import net.phoenix.core.common.data.worldgen.CrystalRoseIndicatorGenerator;
 import net.phoenix.core.common.machine.*;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.conflux.ConfluxRegistry;
-import net.phoenix.core.conflux.multiblock.ConfluxMultiblockRegistry;
-import net.phoenix.core.conflux.network.ConfluxNetwork;
-import net.phoenix.core.conflux.producer.ConfluxProducerMachines;
-import net.phoenix.core.conflux.research.AxiomResearchCondition;
-import net.phoenix.core.conflux.research.PlayerResearchCapability;
-import net.phoenix.core.conflux.research.ResearchTreeRegistry;
-import net.phoenix.core.growth.GrowthBlocks;
-import net.phoenix.core.growth.GrowthMachines;
+import net.phoenix.core.integration.conflux.ConfluxRegistry;
+import net.phoenix.core.integration.conflux.multiblock.ConfluxMultiblockRegistry;
+import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
+import net.phoenix.core.integration.conflux.producer.ConfluxProducerMachines;
+import net.phoenix.core.integration.conflux.research.AxiomResearchCondition;
+import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
+import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
+import net.phoenix.core.integration.growth.GrowthBlocks;
+import net.phoenix.core.integration.growth.GrowthMachines;
 import net.phoenix.core.integration.ars_nouveau.api.recipe.lookup.MapSourceIngredient;
 import net.phoenix.core.integration.ars_nouveau.client.gui.SourceHatchMenu;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
@@ -68,8 +71,6 @@ import net.phoenix.core.network.PhoenixNetwork;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.*;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
@@ -124,6 +125,7 @@ public class PhoenixCore {
         ConfluxRegistry.register(modEventBus);
         modEventBus.addListener(ConfluxRegistry::registerCapabilities);
         ConfluxNetwork.register();
+        AstralBlocks.registerDeferred(modEventBus);
         modEventBus.addListener(PlayerResearchCapability::register);
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -137,8 +139,11 @@ public class PhoenixCore {
     private void onRegisterBlocksAndItems(net.minecraftforge.registries.RegisterEvent event) {
         PhoenixBlocks.init();
         GrowthBlocks.init();
+        AstralBlocks.init();
+        AstralItems.init();
         PhoenixItems.init();
         ManipulaterItems.init();
+        net.phoenix.core.integration.drone.DroneItems.init();
     }
 
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES,
@@ -199,6 +204,7 @@ public class PhoenixCore {
         PhoenixPolymerMaterials.register();
         PhoenixBeeMaterials.register();
         PhoenixFissionMaterials.register();
+        AstralMaterials.register();
         PhoenixMaterialFlags.init();
     }
 
@@ -221,6 +227,7 @@ public class PhoenixCore {
         ConfluxProducerMachines.init();
         ConfluxMultiblockRegistry.init();
         GrowthMachines.init();
+        AstralMachines.init();
     }
 
     public static ResourceLocation id(String path) {

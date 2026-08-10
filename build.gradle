@@ -291,7 +291,7 @@ tasks.register('exportAxiomSprites', JavaExec) {
     description = 'Pre-bake Axiom Research Terminal background sprites to textures/gui/axiom/'
     dependsOn compileJava
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'net.phoenix.core.conflux.tools.AxiomSpriteExporter'
+    mainClass = 'net.phoenix.core.integration.conflux.tools.AxiomSpriteExporter'
     args = ["${projectDir}/src/main/resources/assets/phoenixcore/textures/gui/axiom"]
 }
 

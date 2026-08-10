@@ -91,6 +91,11 @@ public class PhoenixLangHandler {
         provider.add("jade.phoenixcore.source_tank_format", "Capacity %s / %s - %d%%");
         provider.add("config.jade.plugin_phoenixcore.source_tank_info", "Source Tank Info");
 
+        provider.add("block.phoenixcore.astral_ritual_pedestal", "§dAstral Ritual Pedestal");
+
+        provider.add("config.jade.plugin_phoenixcore.source_hatch_info", "Source Hatch Info");
+        provider.add("config.jade.plugin_phoenixcore.astral_thread_hatch_info", "Astral Thread Hatch Info");
+
         provider.add("key.categories.phoenixcore", "PhoenixCore");
         provider.add("key.phoenixcore.wing_flight_gui", "Wing Flight Settings");
         provider.add("key.phoenixcore.tesla_mode", "Enable Tesla Mode");

@@ -14,6 +14,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fml.ModList;
+import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 
 import dev.emi.emi.api.EmiDragDropHandler;
@@ -42,6 +43,10 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             new ResourceLocation("phoenixcore", "fission_breeding"),
             EmiStack.of(Items.CAULDRON));
 
+    public static final EmiRecipeCategory ASTRAL_RITUAL = new EmiRecipeCategory(
+            new ResourceLocation("phoenixcore", "astral_ritual"),
+            EmiStack.of(new ItemStack(net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL.get())));
+
     @Override
     public void register(EmiRegistry registry) {
         boolean fissionLoaded = ModList.get().isLoaded("phoenix_fission");
@@ -50,12 +55,20 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         registry.addCategory(FISSION_COOLANT);
         registry.addCategory(FISSION_BREEDING);
 
+        registry.addCategory(ASTRAL_RITUAL);
+        registerAstralRituals(registry);
+
         registry.addExclusionArea(RecipeBuilderScreen.class, (screen, consumer) -> consumer.accept(new Bounds(
                 screen.getGuiLeft(), screen.getGuiTop(),
                 screen.getXSize(), screen.getYSize())));
         registry.addDragDropHandler(RecipeBuilderScreen.class, new RecipeBuilderDragDrop());
 
         registerMaterialFluidSearchAliases(registry);
+    }
+
+    private static void registerAstralRituals(EmiRegistry registry) {
+        AstralRitualPedestalBlockEntity.RITUAL_TABLE
+                .forEach((catalyst, result) -> registry.addRecipe(new AstralRitualEmiRecipe(catalyst, result)));
     }
 
     private static void registerMaterialFluidSearchAliases(EmiRegistry registry) {

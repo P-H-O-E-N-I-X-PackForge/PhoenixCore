@@ -35,10 +35,20 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
     public static GTRecipeType DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
     public static GTRecipeType GROWTH_RECIPES;
+    public static GTRecipeType ASTRAL_WEAVING_RECIPES;
 
     public static void init() {
         GROWTH_RECIPES = register("growth", MULTIBLOCK)
                 .setMaxIOSize(4, 1, 1, 1)
+                .setEUIO(IO.IN)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .setSound(GTSoundEntries.MIXER);
+
+        ASTRAL_WEAVING_RECIPES = register("astral_weaving", MULTIBLOCK)
+                .setMaxIOSize(2, 2, 2, 2)
+                .setMaxSize(IO.IN, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP, 1)
+                .setMaxSize(IO.OUT, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP, 1)
+                .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
                 .setSound(GTSoundEntries.MIXER);

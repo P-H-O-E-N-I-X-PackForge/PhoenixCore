@@ -15,4 +15,6 @@ public class PhoenixPartAbility extends PartAbility {
     public static final PartAbility TESLA_OUTPUT = new PartAbility("output_tesla");
     public static final PartAbility FISSION_SCRAM = new PartAbility("fission_scram");
     public static final PartAbility FISSION_SENSOR = new PartAbility("fission_sensor");
+    public static final PartAbility ASTRAL_THREAD_INPUT = new PartAbility("input_astral_thread");
+    public static final PartAbility ASTRAL_THREAD_OUTPUT = new PartAbility("output_astral_thread");
 }

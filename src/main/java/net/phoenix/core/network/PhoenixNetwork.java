@@ -5,6 +5,10 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.phoenix.core.network.packet.*;
+import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
+import net.phoenix.core.shop.network.C2SBuyShopEntryPacket;
+import net.phoenix.core.shop.network.C2SRemoveShopEntryPacket;
+import net.phoenix.core.shop.network.S2CShopSyncPacket;
 
 import java.util.Optional;
 
@@ -111,5 +115,34 @@ public class PhoenixNetwork {
                 C2SToggleTeslaModePacket::new,
                 C2SToggleTeslaModePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                S2CShopSyncPacket.class,
+                S2CShopSyncPacket::encode,
+                S2CShopSyncPacket::decode,
+                S2CShopSyncPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
+        CHANNEL.registerMessage(id++,
+                C2SBuyShopEntryPacket.class,
+                C2SBuyShopEntryPacket::encode,
+                C2SBuyShopEntryPacket::decode,
+                C2SBuyShopEntryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SAddShopEntryPacket.class,
+                C2SAddShopEntryPacket::encode,
+                C2SAddShopEntryPacket::decode,
+                C2SAddShopEntryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SRemoveShopEntryPacket.class,
+                C2SRemoveShopEntryPacket::encode,
+                C2SRemoveShopEntryPacket::decode,
+                C2SRemoveShopEntryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
     }
 }

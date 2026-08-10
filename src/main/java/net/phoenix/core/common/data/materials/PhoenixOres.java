@@ -42,6 +42,7 @@ public class PhoenixOres {
 
     public static void register() {
         NEVVONIAN_IRON = new Material.Builder(PhoenixCore.id("nevvonian_iron"))
+                .langValue("§7Nevvonian Iron")
                 .ingot()
                 .ore()
                 .color(0x7A687F)
@@ -49,6 +50,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         VOIDGLASS_SHARD = new Material.Builder(PhoenixCore.id("voidglass_shard"))
+                .langValue("§dVoidglass Shard")
                 .gem()
                 .ore()
                 .color(0x6A00AA)
@@ -65,6 +67,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         POLARITY_FLIPPED_BISMUTHITE = new Material.Builder(PhoenixCore.id("polarity_flipped_bismuthite"))
+                .langValue("§bPolarity Flipped Bismuthite")
                 .dust()
                 .ore()
                 .color(0xE4D6FF)
@@ -73,6 +76,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         PERMAFROST = new Material.Builder(PhoenixCore.id("permafrost"))
+                .langValue("§bPermafrost")
                 .dust()
                 .ore()
                 .color(0xA7D1EB)
@@ -80,6 +84,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         FLUORITE = new Material.Builder(PhoenixCore.id("fluorite"))
+                .langValue("§aFluorite")
                 .gem()
                 .ore()
                 .color(0x0C9949)
@@ -88,6 +93,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         IGNISIUM = new Material.Builder(PhoenixCore.id("ignisium"))
+                .langValue("§cIgnisium")
                 .dust()
                 .ore()
                 .color(0xFF4500)
@@ -95,6 +101,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         CRYSTALLIZED_FLUXSTONE = new Material.Builder(PhoenixCore.id("crystallized_fluxstone"))
+                .langValue("§dCrystallized Fluxstone")
                 .dust()
                 .ore()
                 .color(0xD4BFFF)
@@ -113,25 +120,26 @@ public class PhoenixOres {
         STARNITE = new Material.Builder(PhoenixCore.id("starnite"))
                 .gem().ore().color(0xFFCCFF).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
-        ENTROPY_RICH_ORE = new Material.Builder(PhoenixCore.id("entropy_rich_ore"))
+        ENTROPY_RICH_ORE = new Material.Builder(PhoenixCore.id("entropy_rich_ore")).langValue("Entropy-Rich Ore")
                 .dust().ore().color(0xDE00E0).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
         FRACTALINE_CORE = new Material.Builder(PhoenixCore.id("fractaline_core"))
                 .gem().ore().color(0xFF0080).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
-        VOLTANITE = new Material.Builder(PhoenixCore.id("voltanite_ore"))
+        VOLTANITE = new Material.Builder(PhoenixCore.id("voltanite_ore")).langValue("Voltanite")
                 .dust().ore().color(0x00CFFF).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
         QUANTUM_ENTROPITE = new Material.Builder(PhoenixCore.id("quantum_entropite"))
                 .dust().ore().color(0xC710FF).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
         MYCELIAL_NETHERITE = new Material.Builder(PhoenixCore.id("mycelial_netherite_ore"))
+                .langValue("Mycelial Netherite")
                 .dust().ore().color(0x643A3A).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
-        GLACIAL_CRYONITE = new Material.Builder(PhoenixCore.id("glacial_cryonite_ore"))
+        GLACIAL_CRYONITE = new Material.Builder(PhoenixCore.id("glacial_cryonite_ore")).langValue("Glacial Cryonite")
                 .gem().ore().color(0xADD8E6).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
-        CHRONOTON = new Material.Builder(PhoenixCore.id("chronoton_ore"))
+        CHRONOTON = new Material.Builder(PhoenixCore.id("chronoton_ore")).langValue("Chronoton")
                 .dust().ore().color(0x77E3FF).iconSet(MaterialIconSet.DIAMOND).buildAndRegister();
 
         SINGULIUM_CLUSTER = new Material.Builder(PhoenixCore.id("singulium_cluster"))
@@ -161,12 +169,12 @@ public class PhoenixOres {
                 .element(PhoenixElements.EMBER)
                 .buildAndRegister();
 
-        OSMIRIDIUM_80_20 = new Material.Builder(PhoenixCore.id("osmiridium_80_20"))
+        OSMIRIDIUM_80_20 = new Material.Builder(PhoenixCore.id("osmiridium_80_20")).langValue("Osmiridium 80/20")
                 .dust().ore().color(0xD3D3D3).iconSet(MaterialIconSet.SHINY)
                 .components(GTMaterials.Osmium, 4, GTMaterials.Iridium, 1)
                 .buildAndRegister();
 
-        ISMIRIDIUM_80_20 = new Material.Builder(PhoenixCore.id("ismiridium_80_20"))
+        ISMIRIDIUM_80_20 = new Material.Builder(PhoenixCore.id("ismiridium_80_20")).langValue("Ismiridium 80/20")
                 .dust().ore().color(0xE0E0E0).iconSet(MaterialIconSet.SHINY)
                 .components(GTMaterials.Iridium, 4, GTMaterials.Osmium, 1)
                 .buildAndRegister();

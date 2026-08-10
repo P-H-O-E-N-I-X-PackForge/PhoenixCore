@@ -74,7 +74,6 @@ import static com.gregtechceu.gtceu.api.capability.recipe.IO.IN;
 import static com.gregtechceu.gtceu.api.capability.recipe.IO.OUT;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.frameGt;
 import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.IS_FORMED;
-import static com.gregtechceu.gtceu.api.multiblock.Predicates.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
@@ -89,7 +88,6 @@ import static net.phoenix.core.client.tooltips.PhoenixMachineTooltips.*;
 import static net.phoenix.core.common.block.PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.*;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
-import static net.phoenix.core.configs.PhoenixConfigs.INSTANCE;
 
 @SuppressWarnings("all")
 public class PhoenixMachines {
@@ -173,6 +171,31 @@ public class PhoenixMachines {
                             new ResourceLocation(PhoenixCore.MOD_ID,
                                     "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                             overlay));
+
+    public static final MultiblockMachineDefinition DRONE_CONTROLLER = REGISTRATE
+            .multiblock("drone_controller", net.phoenix.core.integration.drone.DroneControllerMachine::new)
+            .langValue("Drone Controller")
+            .tooltips(Component.literal("Right-click to open the control panel for every formed "
+                    + "multiblock within " + net.phoenix.core.integration.drone.DroneControllerMachine.RADIUS + " blocks."))
+            .rotationState(RotationState.ALL)
+            .recipeType(DUMMY_RECIPES)
+            .pattern(definition -> MultiblockPatternBuilder
+                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
+                    .slice("CCC", "CCC", "CCC")
+                    .slice("CCC", "C#C", "CCC")
+                    .slice("CCC", "CSC", "CCC")
+                    .where('S', Predicates.controller(definition))
+                    .where('C', Predicates.blocks(SOURCE_FIBER_MACHINE_CASING.get())
+                            .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                            .or(Predicates.controller(definition)))
+                    .where('#', Predicates.air())
+                    .build())
+            .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
+            .workableCasingModel(
+                    new ResourceLocation(PhoenixCore.MOD_ID,
+                            "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    GTCEu.id("block/multiblock/multiblock_tank"))
+            .register();
 
     public static final PartAbility SOUND_DISC = new PartAbility("sound_disc");
     public static final PartAbility SOUND_LIBRARY = new PartAbility("sound_library");

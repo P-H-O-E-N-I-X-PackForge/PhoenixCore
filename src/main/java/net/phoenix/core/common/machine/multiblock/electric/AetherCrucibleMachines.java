@@ -49,9 +49,7 @@ public final class AetherCrucibleMachines {
                     GTRecipeModifiers.OC_NON_PERFECT,
                     AetherCrucibleMachine::recipeModifier)
             .appearanceBlock(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING)
-
             .modelProperty(PhoenixMultiblockProperties.FORMATION_TIER, 0)
-
             .partAppearance(PhoenixPartAppearance.rules()
                     .ownTextureForAbilitiesAtTier(1,
                             PartAbility.IMPORT_ITEMS, PartAbility.EXPORT_ITEMS,

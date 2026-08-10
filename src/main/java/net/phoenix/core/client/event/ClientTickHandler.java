@@ -84,6 +84,12 @@ public class ClientTickHandler {
         while (PhoenixKeybinds.OPEN_EMI_FAVORITE_PAGES.consumeClick()) {
             mc.setScreen(new net.phoenix.core.client.emi.EmiFavoritePagesScreen(mc.screen));
         }
+
+        while (PhoenixKeybinds.OPEN_ASTRAL_CODEX.consumeClick()) {
+            if (mc.screen == null) {
+                net.phoenix.core.integration.astral.client.AstralCodexScreen.open();
+            }
+        }
     }
 
     @SubscribeEvent

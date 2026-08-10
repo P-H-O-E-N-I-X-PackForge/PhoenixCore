@@ -61,7 +61,7 @@ public class CustomFluidRender extends DynamicRender<WorkableMultiblockMachine, 
                        int packedLight, int packedOverlay) {
         if (!ConfigHolder.INSTANCE.client.renderer.renderFluids) return;
 
-        var fluidTrait = machine.getTrait(MultiblockFluidRendererTrait.TYPE);
+        var fluidTrait = machine.getTrait(MultiblockFluidRendererTrait.class);
         if (fluidTrait == null || !machine.isFormed()) return;
 
         Set<BlockPos> fluidOffsets = fluidTrait.getFluidOffsets();

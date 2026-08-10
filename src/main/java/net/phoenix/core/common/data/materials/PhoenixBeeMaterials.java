@@ -27,9 +27,10 @@ public class PhoenixBeeMaterials {
     public static final Map<String, Material> RAW_WAX_MATERIALS = new HashMap<>();
 
     public static void register() {
-        HONEY = new Material.Builder(PhoenixCore.id("honey")).fluid().ingot().color(0xf9c901)
+        HONEY = new Material.Builder(PhoenixCore.id("honey")).langValue("§6Honey").fluid().ingot().color(0xf9c901)
                 .iconSet(MaterialIconSet.BRIGHT).buildAndRegister();
         SUPERCONDUCTIVE_HONEY = new Material.Builder(PhoenixCore.id("superconductive_honey"))
+                .langValue("§6Superconductive Honey")
                 .ingot().fluid()
                 .color(0xFFBF00)
                 .secondaryColor(0x87CEFA)
@@ -70,16 +71,20 @@ public class PhoenixBeeMaterials {
         AMINO_ACIDS = new Material.Builder(PhoenixCore.id("amino_acids")).fluid().color(0xFFFFFF)
                 .iconSet(MaterialIconSet.DULL).buildAndRegister();
 
-        HONEY_CATALYST = new Material.Builder(PhoenixCore.id("honey_catalyst")).fluid().color(0xFFF9E3)
+        HONEY_CATALYST = new Material.Builder(PhoenixCore.id("honey_catalyst")).langValue("§6Honey Catalyst").fluid()
+                .color(0xFFF9E3)
                 .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        HONEY_COMB_BASE_MIXTURE = new Material.Builder(PhoenixCore.id("honey_comb_base_mixture")).fluid()
+        HONEY_COMB_BASE_MIXTURE = new Material.Builder(PhoenixCore.id("honey_comb_base_mixture"))
+                .langValue("Honeycomb Base Mixture").fluid()
                 .color(0xFFF0F5).iconSet(MaterialIconSet.DULL).buildAndRegister();
-        POLLEN_CONCENTRATE_FLUID = new Material.Builder(PhoenixCore.id("pollen_concentrate_fluid")).fluid()
+        POLLEN_CONCENTRATE_FLUID = new Material.Builder(PhoenixCore.id("pollen_concentrate_fluid"))
+                .langValue("§6Pollen Concentrate Fluid").fluid()
                 .color(0xFFC200).iconSet(MaterialIconSet.DULL).buildAndRegister();
         WAX_MELTING_CATALYST = new Material.Builder(PhoenixCore.id("wax_melting_catalyst")).fluid().color(0xADD8E6)
                 .secondaryColor(0x6A5ACD).iconSet(MaterialIconSet.DULL).buildAndRegister();
 
-        AURUM_WOOD = new Material.Builder(PhoenixCore.id("aurum_wood")).dust().color(0x291306).secondaryColor(0xfccd31)
+        AURUM_WOOD = new Material.Builder(PhoenixCore.id("aurum_wood")).langValue("§6Aurum Wood").dust()
+                .color(0x291306).secondaryColor(0xfccd31)
                 .iconSet(MaterialIconSet.DULL).buildAndRegister();
 
         IMPURE_WAX = new Material.Builder(PhoenixCore.id("impure_wax")).fluid().color(0xFFA500).secondaryColor(0xD2691E)

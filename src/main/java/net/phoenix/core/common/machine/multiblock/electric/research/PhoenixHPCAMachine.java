@@ -105,7 +105,7 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
         List<HPCAComponentTrait> componentTraits = new ArrayList<>();
 
         for (MultiblockPartMachine part : getParts()) {
-            componentTraits.addAll(part.self().getTraits(HPCAComponentTrait.TYPE));
+            componentTraits.addAll(part.self().getTraits(HPCAComponentTrait.class));
             if (part instanceof MaintenanceHatchPartMachine maintenanceMachine) {
                 this.maintenance = maintenanceMachine;
             }
@@ -653,7 +653,7 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
                         BlockPos tempPos = testPos.relative(frontFacing, j).relative(relativeUp.getOpposite(), i);
                         MetaMachine machine = MetaMachine.getMachine(world, tempPos);
                         if (machine != null) {
-                            HPCAComponentTrait trait = machine.getTrait(HPCAComponentTrait.TYPE);
+                            HPCAComponentTrait trait = machine.getTrait(HPCAComponentTrait.class);
                             if (trait != null) {
                                 components.add(trait);
                             }

@@ -1,6 +1,7 @@
 package net.phoenix.core.configs;
 
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.shop.client.ShopTheme;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.Config;
@@ -42,6 +43,14 @@ public class PhoenixConfigs {
 
     @Configurable
     public PhantasiaUIConfig phantasiaUI = new PhantasiaUIConfig();
+
+    @Configurable
+    @Configurable.Comment("Which color theme the Phoenix Feather Shop screen opens in.")
+    public ShopTheme shopTheme = ShopTheme.PHOENIX;
+
+    @Configurable
+    @Configurable.Comment("Whether buying a shop entry requires winning a quick timing minigame first.")
+    public boolean shopMinigameEnabled = true;
 
     public static class PhantasiaUIConfig {
 
