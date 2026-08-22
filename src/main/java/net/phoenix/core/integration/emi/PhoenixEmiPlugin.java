@@ -32,19 +32,19 @@ import dev.emi.emi.api.widget.Bounds;
 public class PhoenixEmiPlugin implements EmiPlugin {
 
     public static final EmiRecipeCategory FISSION_FUEL = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_fuel"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_fuel"),
             EmiStack.of(ChemicalHelper.get(TagPrefix.ingot, GTMaterials.Uranium235)));
 
     public static final EmiRecipeCategory FISSION_COOLANT = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_coolant"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_coolant"),
             EmiStack.of(Items.WATER_BUCKET));
 
     public static final EmiRecipeCategory FISSION_BREEDING = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_breeding"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_breeding"),
             EmiStack.of(Items.CAULDRON));
 
     public static final EmiRecipeCategory ASTRAL_RITUAL = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "astral_ritual"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "astral_ritual"),
             EmiStack.of(new ItemStack(net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL.get())));
 
     @Override

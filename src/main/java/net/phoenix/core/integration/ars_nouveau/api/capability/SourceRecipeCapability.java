@@ -18,7 +18,7 @@ public class SourceRecipeCapability extends RecipeCapability<SourceIngredient> {
     public static final SourceRecipeCapability CAP = new SourceRecipeCapability();
 
     protected SourceRecipeCapability() {
-        super(new ResourceLocation("phoenixcore", "source"), 0xC85CCFFF, false, 13,
+        super(ResourceLocation.fromNamespaceAndPath("phoenixcore", "source"), 0xC85CCFFF, false, 13,
                 SourceIngredient.Serializer.INSTANCE);
     }
 

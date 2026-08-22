@@ -67,6 +67,19 @@ public class WorldResearchData extends SavedData {
         return discipline.get(team);
     }
 
+    public boolean chooseDiscipline(UUID team, String disciplineId, ResearchTreeRegistry registry) {
+        if (isCommitted(team)) return false;
+
+        boolean known = registry.getAllTrees().stream()
+                .filter(ResearchTree::isDisciplineTree)
+                .anyMatch(t -> disciplineId.equals(t.discipline));
+        if (!known) return false;
+
+        discipline.put(team, disciplineId);
+        setDirty();
+        return true;
+    }
+
     public boolean isCommitted(UUID team) {
         return Boolean.TRUE.equals(committed.get(team));
     }
@@ -122,6 +135,13 @@ public class WorldResearchData extends SavedData {
                 case "multiblock" -> {
                     ResourceLocation machineId = ResourceLocation.tryParse(unlock.value());
                     if (machineId != null) teamSet(multiblocks, team).add(machineId);
+                }
+                case "world_stage" -> {
+                    if (terminal.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData progData =
+                            net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData.get(serverLevel);
+                        progData.unlockWorldStage(team, unlock.value());
+                    }
                 }
             }
         }

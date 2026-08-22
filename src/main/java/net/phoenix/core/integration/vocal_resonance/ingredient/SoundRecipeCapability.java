@@ -17,7 +17,7 @@ public class SoundRecipeCapability extends RecipeCapability<SoundIngredient> {
     public static final SoundRecipeCapability CAP = new SoundRecipeCapability();
 
     protected SoundRecipeCapability() {
-        super(new ResourceLocation("phoenixcore", "sound"), 0x00FFFF, false, 14, SoundIngredient.Serializer.INSTANCE);
+        super(ResourceLocation.fromNamespaceAndPath("phoenixcore", "sound"), 0x00FFFF, false, 14, SoundIngredient.Serializer.INSTANCE);
     }
 
     @Override

@@ -216,7 +216,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
 
         PhoenixNetwork.CHANNEL.send(
                 PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
-                new S2CPlaySoundPacket(getBlockPos(), new ResourceLocation("minecraft", "empty"), 0.0f, 1.0f,
+                new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f, 1.0f,
                         (float) getFinalRange()));
 
         this.lastPlayingLibrarySound = "";

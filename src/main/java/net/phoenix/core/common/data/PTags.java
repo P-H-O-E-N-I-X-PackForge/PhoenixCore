@@ -11,13 +11,13 @@ import net.minecraft.world.level.block.Block;
 public class PTags {
 
     public static final TagKey<Item> FLOWERS = TagKey.create(Registries.ITEM,
-            new ResourceLocation("minecraft", "flowers"));
-    public static final TagKey<Item> CROPS = TagKey.create(Registries.ITEM, new ResourceLocation("forge", "crops"));
+            ResourceLocation.fromNamespaceAndPath("minecraft", "flowers"));
+    public static final TagKey<Item> CROPS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", "crops"));
     public static final TagKey<Item> MUSHROOMS = TagKey.create(Registries.ITEM,
-            new ResourceLocation("forge", "mushrooms"));
-    public static final TagKey<Item> LOGS = TagKey.create(Registries.ITEM, new ResourceLocation("minecraft", "logs"));
+            ResourceLocation.fromNamespaceAndPath("forge", "mushrooms"));
+    public static final TagKey<Item> LOGS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("minecraft", "logs"));
     public static final TagKey<Item> PLANKS = TagKey.create(Registries.ITEM,
-            new ResourceLocation("minecraft", "planks"));
+            ResourceLocation.fromNamespaceAndPath("minecraft", "planks"));
     public static final TagKey<Block> SOUL_FLOWERS = BlockTags.create(
-            new ResourceLocation("phoenixcore", "soul_flowers"));
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "soul_flowers"));
 }

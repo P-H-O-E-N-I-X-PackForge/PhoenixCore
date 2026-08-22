@@ -19,6 +19,6 @@ public class PhoenixArmorModel extends DefaultedGeoModel<PhoenixArmorItem> {
 
     @Override
     public ResourceLocation getAnimationResource(PhoenixArmorItem animatable) {
-        return new ResourceLocation("phoenixcore", "animations/phoenix_armor.animation.json");
+        return ResourceLocation.fromNamespaceAndPath("phoenixcore", "animations/phoenix_armor.animation.json");
     }
 }

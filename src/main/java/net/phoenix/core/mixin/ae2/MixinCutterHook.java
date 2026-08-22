@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.registries.ForgeRegistries;
 
+import appeng.items.tools.quartz.QuartzCuttingKnifeItem;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuLocators;
 import com.glodblock.github.extendedae.common.hooks.CutterHook;
@@ -29,25 +29,14 @@ public class MixinCutterHook {
         if (player.isSpectator() || hand != InteractionHand.MAIN_HAND) return;
 
         ItemStack stack = player.getItemInHand(hand);
-
-        var certusId = new net.minecraft.resources.ResourceLocation("ae2", "certus_quartz_cutting_knife");
-        var netherId = new net.minecraft.resources.ResourceLocation("ae2", "nether_quartz_cutting_knife");
-
-        boolean isKnife = stack.is(ForgeRegistries.ITEMS.getValue(certusId)) ||
-                stack.is(ForgeRegistries.ITEMS.getValue(netherId));
-
-        if (!isKnife) {
-            return;
-        }
+        if (!(stack.getItem() instanceof QuartzCuttingKnifeItem)) return;
 
         BlockEntity tile = level.getBlockEntity(hitResult.getBlockPos());
+        if (!(tile instanceof MEPatternBufferPartMachine bufferMachine)) return;
 
-        if (tile instanceof MEPatternBufferPartMachine bufferMachine) {
-            if (!level.isClientSide) {
-
-                MenuOpener.open(ContainerRenamer.TYPE, player, MenuLocators.forBlockEntity(bufferMachine));
-            }
-            cir.setReturnValue(InteractionResult.sidedSuccess(level.isClientSide));
+        if (!level.isClientSide) {
+            MenuOpener.open(ContainerRenamer.TYPE, player, MenuLocators.forBlockEntity(bufferMachine));
         }
+        cir.setReturnValue(InteractionResult.sidedSuccess(level.isClientSide));
     }
 }

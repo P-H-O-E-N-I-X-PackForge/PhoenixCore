@@ -1,6 +1,6 @@
 package net.phoenix.core.api.pattern;
 
-import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
+import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.error.PlaceholderError;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
@@ -27,46 +27,55 @@ import static com.gregtechceu.gtceu.common.data.GTBlocks.LAMPS;
 
 public class PhoenixPredicates {
 
-    public static PatternPredicate teslaBatteries() {
+    public static MultiPredicate teslaBatteries() {
         List<BlockInfo> candidates = PhoenixAPI.TESLA_BATTERIES.entrySet().stream()
                 .sorted(Comparator.comparingInt(e -> e.getKey().getTier()))
                 .map(e -> new BlockInfo(e.getValue().get().defaultBlockState()))
                 .collect(Collectors.toList());
 
-        return Predicates.custom(info -> {
-            BlockState state = info.getBlockState();
-            for (Map.Entry<ITeslaBattery, Supplier<TeslaBatteryBlock>> entry : PhoenixAPI.TESLA_BATTERIES.entrySet()) {
-                if (state.is(entry.getValue().get())) {
-                    return null;
-                }
-            }
-            return new PlaceholderError(info.getBlockPos(), List.of(candidates));
-        }, candidates).addTooltips(Component.translatable("gtceu.multiblock.pattern.error.batteries"));
+        return Predicates.builder("tesla_battery")
+                .candidates(candidates)
+                .predicate(ctx -> {
+                    BlockState state = ctx.state();
+                    for (Map.Entry<ITeslaBattery, Supplier<TeslaBatteryBlock>> entry : PhoenixAPI.TESLA_BATTERIES.entrySet()) {
+                        if (state.is(entry.getValue().get())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .errorFunction(ctx -> PlaceholderError.instance())
+                .toMultiPredicate()
+                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.batteries"));
     }
 
     @SafeVarargs
-    public static PatternPredicate lamps(BlockEntry<LampBlock>... lampEntries) {
+    public static MultiPredicate lamps(BlockEntry<LampBlock>... lampEntries) {
         List<BlockInfo> candidates = Arrays.stream(lampEntries)
                 .map(e -> new BlockInfo(e.get().defaultBlockState()))
                 .collect(Collectors.toList());
 
-        return Predicates.custom(info -> {
-            BlockState state = info.getBlockState();
-            for (BlockEntry<LampBlock> entry : lampEntries) {
-                if (state.is(entry.get())) return null;
-            }
-            return new PlaceholderError(info.getBlockPos(), List.of(candidates));
-        }, candidates);
+        return Predicates.builder("lamp")
+                .candidates(candidates)
+                .predicate(ctx -> {
+                    BlockState state = ctx.state();
+                    for (BlockEntry<LampBlock> entry : lampEntries) {
+                        if (state.is(entry.get())) return true;
+                    }
+                    return false;
+                })
+                .errorFunction(ctx -> PlaceholderError.instance())
+                .toMultiPredicate();
     }
 
-    public static PatternPredicate anyLamp() {
+    public static MultiPredicate anyLamp() {
         List<BlockEntry<LampBlock>> all = new ArrayList<>();
         all.addAll(LAMPS.values());
         all.addAll(BORDERLESS_LAMPS.values());
         return lamps(all.toArray(BlockEntry[]::new));
     }
 
-    private static final Map<DyeColor, PatternPredicate> LAMPS_BY_COLOR = new EnumMap<>(DyeColor.class);
+    private static final Map<DyeColor, MultiPredicate> LAMPS_BY_COLOR = new EnumMap<>(DyeColor.class);
 
     static {
         for (DyeColor color : DyeColor.values()) {
@@ -74,11 +83,11 @@ public class PhoenixPredicates {
         }
     }
 
-    public static PatternPredicate lampsByColor(DyeColor color) {
+    public static MultiPredicate lampsByColor(DyeColor color) {
         return LAMPS_BY_COLOR.getOrDefault(color, anyLamp());
     }
 
-    public static PatternPredicate soundHatches() {
+    public static MultiPredicate soundHatches() {
         List<BlockInfo> candidates = new ArrayList<>();
         for (var machine : PhoenixMachines.DISC_HATCH) {
             if (machine != null) candidates.add(BlockInfo.fromBlockState(machine.getBlock().defaultBlockState()));
@@ -90,21 +99,14 @@ public class PhoenixPredicates {
             if (machine != null) candidates.add(BlockInfo.fromBlockState(machine.getBlock().defaultBlockState()));
         }
 
-        return Predicates.custom(info -> {
-            var level = info.getLevel();
-            var pos = info.getBlockPos();
-            if (level == null || pos == null)
-                return new PlaceholderError(pos != null ? pos : net.minecraft.core.BlockPos.ZERO, List.of(candidates));
-
-            var blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof SoundHatchPartMachine) {
-                return null;
-            }
-            return new PlaceholderError(pos, List.of(candidates));
-        }, candidates);
+        return Predicates.builder("sound_hatch")
+                .candidates(candidates)
+                .predicate(ctx -> ctx.blockEntity() instanceof SoundHatchPartMachine)
+                .errorFunction(ctx -> PlaceholderError.instance())
+                .toMultiPredicate();
     }
 
-    public static PatternPredicate tieredSpeakers() {
+    public static MultiPredicate tieredSpeakers() {
         var lvBlock = net.phoenix.core.common.block.PhoenixBlocks.SPEAKER_LV.get();
         List<BlockInfo> candidates = lvBlock != null ? List.of(
                 BlockInfo.fromBlockState(lvBlock.defaultBlockState()),
@@ -114,9 +116,10 @@ public class PhoenixPredicates {
                         net.phoenix.core.common.block.PhoenixBlocks.SPEAKER_HV.get().defaultBlockState())) :
                 List.of();
 
-        return Predicates.custom(info -> {
-            if (info.getBlockState().getBlock() instanceof SpeakerBlock) return null;
-            return new PlaceholderError(info.getBlockPos(), List.of(candidates));
-        }, candidates);
+        return Predicates.builder("speaker")
+                .candidates(candidates)
+                .predicate(ctx -> ctx.state().getBlock() instanceof SpeakerBlock)
+                .errorFunction(ctx -> PlaceholderError.instance())
+                .toMultiPredicate();
     }
 }

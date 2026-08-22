@@ -1,6 +1,8 @@
 package net.phoenix.core.configs;
 
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.integration.gregvaults.common.blocks.CoreTier;
+
 import net.phoenix.core.shop.client.ShopTheme;
 
 import dev.toma.configuration.Configuration;
@@ -24,25 +26,18 @@ public class PhoenixConfigs {
     public FeatureConfigs features = new FeatureConfigs();
 
     @Configurable
-    public CleanroomConfig cleanroom = new CleanroomConfig();
-
-    @Configurable
-    public SourceHatchConfig sourceHatch = new SourceHatchConfig();
-
-    @Configurable
-    public ColorConfig colors = new ColorConfig();
-
-    @Configurable
-    public FissionConfigs fission = new FissionConfigs();
-
-    @Configurable
     public static WingFlightConfigs wingFlight = new WingFlightConfigs();
 
     @Configurable
-    public FissionBlockStatsConfigs fissionStats = new FissionBlockStatsConfigs();
+    public SourceHatchConfig sourceHatch = new SourceHatchConfig();
+    @Configurable
+    public PhoenixConfigs.CoreValues coreValues = new PhoenixConfigs.CoreValues();
 
     @Configurable
-    public PhantasiaUIConfig phantasiaUI = new PhantasiaUIConfig();
+    public PhoenixConfigs.VaultValues vaultValues = new PhoenixConfigs.VaultValues();
+
+    @Configurable
+    public PhoenixConfigs.WirelessTerminal wirelessTerminal = new PhoenixConfigs.WirelessTerminal();
 
     @Configurable
     @Configurable.Comment("Which color theme the Phoenix Feather Shop screen opens in.")
@@ -52,51 +47,131 @@ public class PhoenixConfigs {
     @Configurable.Comment("Whether buying a shop entry requires winning a quick timing minigame first.")
     public boolean shopMinigameEnabled = true;
 
-    public static class PhantasiaUIConfig {
+    public static class CoreValues {
 
         @Configurable
-        @Configurable.Comment({
-                "LOOK_AT: Bar appears when looking at a placed controller.",
-                "HELD_ITEM: Bar appears when holding a controller in your hand.",
-                "PERSISTENT: Bar stays on screen for the last accessed machine."
-        })
-        public DisplayMode displayMode = DisplayMode.TOOLTIP_HOTBAR;
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK I", "Default: 100" })
+        public int mk1SlotValue = 100;
 
         @Configurable
-        @Configurable.Comment("Ticks required to hold the key to open the menu (20 ticks = 1 second).")
-        public int activationTicks = 20;
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK II", "Default: 200" })
+        public int mk2SlotValue = 200;
 
         @Configurable
-        @Configurable.Comment({
-                "Visual theme for the Phantasia scene viewer.",
-                "COBALT   - Default. Deep navy with sky-blue accents.",
-                "RAINBOW  - Hue-cycling accent on a neutral dark base.",
-                "AMETHYST - Soft purple with gold progress bars.",
-                "MINECRAFT - Classic vanilla inventory look (stone grey, gold accent)."
-        })
-        public String theme = "COBALT";
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK III", "Default: 500" })
+        public int mk3SlotValue = 500;
+    }
 
-        public enum DisplayMode {
-            TOOLTIP_ONLY,
-            JADE_ONLY,
-            HOTBAR_ONLY,
-            TOOLTIP_JADE,
-            TOOLTIP_HOTBAR
+    public static class VaultValues {
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.BronzeVault bronzeVault = new PhoenixConfigs.VaultValues.BronzeVault();
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.SteelVault steelVault = new PhoenixConfigs.VaultValues.SteelVault();
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.TitaniumVault titaniumVault = new PhoenixConfigs.VaultValues.TitaniumVault();
+
+        public static class BronzeVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Bronze Vault", "Default: 36" })
+            public int bronzeBaseSlots = 36;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large Bronze Vault", "Default: 2" })
+            public int bronzeInterfaceLimit = 2;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large  Vault", "Default: true" })
+            public boolean bronzeWireless = true;
+        }
+
+        public static class SteelVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Steel Vault", "Default: 72" })
+            public int steelBaseSlots = 72;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large  Vault", "Default: 4" })
+            public int steelInterfaceLimit = 4;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large Steel Vault",
+                    "Default: true" })
+            public boolean steelWireless = true;
+        }
+
+        public static class TitaniumVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Titanium Vault", "Default: 108" })
+            public int titaniumBaseSlots = 108;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large Titanium Vault", "Default: 8" })
+            public int titaniumInterfaceLimit = 8;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large Titanium Vault",
+                    "Default: true" })
+            public boolean titaniumWireless = true;
         }
     }
 
-    public static class ColorConfig {
+    public static class WirelessTerminal {
+
+        @Configurable
+        @Configurable.Comment({ "Base distance in blocks that the wireless terminal can connect to a vault",
+                "Default: 64" })
+        public int connectionDistance = 64;
 
         @Configurable
         @Configurable.Comment({
-                "Add custom formatting codes here.",
-                "Format: 'char:hex' (e.g., 'z:BF00FF')",
-                "Note: The code is a single character, and hex should not include #"
-        })
-        public String[] customColors = new String[] {
-                "z:BF00FF",
-                "°:00F2FF",
-                "p:FF2100"
+                "Whether infinite range is enabled for the wireless terminal, also enables cross-dimension connection",
+                "If true, connectionDistance will be ignored entirely", "Default: false" })
+        public boolean infiniteRange = false;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the LV emitter", "Default: 1.5" })
+        public double lvEmitterBonus = 1.5;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the MV emitter", "Default: 2.0" })
+        public double mvEmitterBonus = 2.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the HV emitter", "Default: 2.5" })
+        public double hvEmitterBonus = 2.5;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the EV emitter", "Default: 3.0" })
+        public double evEmitterBonus = 3.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the IV emitter", "Default: 4.0" })
+        public double ivEmitterBonus = 4.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the LuV emitter", "Default: 5.0" })
+        public double luvEmitterBonus = 5.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the ZPM emitter", "Default: 6.0" })
+        public double zpmEmitterBonus = 6.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the UV emitter", "Default: 8.0" })
+        public double uvEmitterBonus = 8.0;
+    }
+
+    public static int getSlotValue(CoreTier tier) {
+        return switch (tier) {
+            case MK1 -> INSTANCE.coreValues.mk1SlotValue;
+            case MK2 -> INSTANCE.coreValues.mk2SlotValue;
+            case MK3 -> INSTANCE.coreValues.mk3SlotValue;
         };
     }
 
@@ -347,351 +422,115 @@ public class PhoenixConfigs {
         }
     }
 
-    public static class FissionConfigs {
+    @Configurable
+    @Configurable.Comment({ "Config options for OmniPacks base values" })
+    public PhoenixConfigs.PackValueConfigs OmniPackBaseValues = new PhoenixConfigs.PackValueConfigs();
+    @Configurable
+    @Configurable.Comment({ "Config options for Upgrade Modules" })
+    public PhoenixConfigs.UpgradeConfigs ModuleValues = new PhoenixConfigs.UpgradeConfigs();
+
+    public static class PackValueConfigs {
 
         @Configurable
-        @Configurable.Comment("Enable the nuke block.")
-        public boolean nukeEnabled = true;
-
+        @Configurable.Comment({ "Basic OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.BasicPack basicPack = new PhoenixConfigs.PackValueConfigs.BasicPack();
         @Configurable
-        @Configurable.Comment("Cube radius in blocks. Total affected volume is (2r+1)^3.")
-        public int nukeCubeRadius = 16;
-
+        @Configurable.Comment({ "Advanced OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.AdvancedPack advancedPack = new PhoenixConfigs.PackValueConfigs.AdvancedPack();
         @Configurable
-        @Configurable.Comment("Hard cap to prevent insane values.")
-        public int nukeCubeRadiusCap = 48;
+        @Configurable.Comment({ "Elite OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.ElitePack elitePack = new PhoenixConfigs.PackValueConfigs.ElitePack();
 
-        @Configurable
-        @Configurable.Comment("Fuse time in ticks (20 ticks = 1 second). TNT is 80.")
-        public int nukeFuseTicks = 120;
-
-        @Configurable
-        @Configurable.Comment("How many blocks to process per tick during cube wipe.")
-        public int nukeBatchPerTick = 4000;
-
-        @Configurable
-        @Configurable.Comment("Skip blocks that have a BlockEntity (machines/chests).")
-        public boolean nukeSkipBlockEntities = true;
-
-        @Configurable
-        @Configurable.Comment("Skip blocks in unloaded chunks (prevents chunk-forcing).")
-        public boolean nukeSkipUnloadedChunks = true;
-
-        @Configurable
-        @Configurable.Comment("If true, replace removed blocks with fire instead of air.")
-        public boolean nukeReplaceWithFire = false;
-
-        @Configurable
-        @Configurable.Comment("Flat heat added per tick while running (before rods/moderators/parallels).")
-        public double baseHeatPerTick = 0.0;
-
-        @Configurable
-        @Configurable.Comment("Max bonus percent from continuous running (power + breeder output). Example: 60 = up to +60%.")
-        public double burnBonusMaxPercent = 30.0;
-
-        @Configurable
-        @Configurable.Comment("Seconds of continuous running required to reach the max burn bonus. Example: 1200 = 20 minutes.")
-        public double burnBonusRampSeconds = 1200.0;
-
-        @Configurable
-        @Configurable.Comment("The maximum heat a reactor can hold before starting the meltdown timer.")
-        public double maxSafeHeat = 100000.0;
-
-        @Configurable
-        @Configurable.Comment("Minimum heat clamp.")
-        public double minHeat = 0.0;
-
-        @Configurable
-        @Configurable.Comment("Maximum heat clamp to prevent runaway numeric overflow (meltdown still happens).")
-        public double maxHeatClamp = 250000.0;
-
-        @Configurable
-        @Configurable.Comment("Does the reactor naturally lose heat when not running?")
-        public boolean passiveCooling = true;
-
-        @Configurable
-        @Configurable.Comment("Heat lost per tick when idling.")
-        public double idleHeatLoss = 1.0;
-
-        @Configurable
-        @Configurable.Comment("Base parallels added per fuel rod (before heat-based parallels).")
-        public int parallelsPerFuelRod = 1;
-
-        @Configurable
-        @Configurable.Comment("How much heat is required to add +1 to the recipe parallel multiplier.")
-        public double heatPerParallel = 10000.0;
-
-        @Configurable
-        @Configurable.Comment("Hard cap for parallels.")
-        public int maxParallels = 256;
-
-        @Configurable
-        @Configurable.Comment("How much EU/t is generated per unit of CURRENT heat (power scales with current heat).")
-        public double euPerHeatUnit = 1.0;
-
-        @Configurable
-        @Configurable.Comment("Optional cap on generated EU/t. Set <= 0 for no cap.")
-        public long maxGeneratedEUt = 0;
-
-        @Configurable
-        @Configurable.Comment("If true, fuel usage scales with parallels (recommended).")
-        public boolean fuelUsageScalesWithParallels = true;
-
-        @Configurable
-        @Configurable.Comment("If true, fuel usage scales with rod count (usually true).")
-        public boolean fuelUsageScalesWithRodCount = true;
-
-        @Configurable
-        @Configurable.Comment("If true, blanket usage/output is additive across ALL blankets. If false, only the primary blanket is processed.")
-        public boolean blanketUsageAdditive = true;
-
-        @Configurable
-        @Configurable.Comment("Clamp for total fuel discount percent from moderators.")
-        public int maxFuelDiscountPercent = 90;
-
-        @Configurable
-        @Configurable.Comment("Clamp for total EU boost percent from moderators.")
-        public int maxEUBoostPercent = 100;
-
-        @Configurable
-        @Configurable.Comment("If true, cooling only applies when coolant is present.")
-        public boolean coolingRequiresCoolant = true;
-
-        @Configurable
-        @Configurable.Comment("If true, coolant usage is additive across all coolers. If false, uses primary cooler only.")
-        public boolean coolantUsageAdditive = false;
-
-        @Configurable
-        @Configurable.Comment("Minimum EU/t produced while running (prevents 0). Set 0 to allow 0.")
-        public long minGeneratedEUt = 1024;
-
-        @Configurable
-        @Configurable.Comment("Exponent for heat->power curve. 1 = linear, >1 rewards high heat.")
-        public double powerCurveExponent = 2.0;
-
-        @Configurable
-        @Configurable.Comment("Heat fraction of maxSafeHeat where generation begins. 0.0 = always, 0.1 = starts at 10% of maxSafeHeat.")
-        public double powerStartFraction = 0.0;
-
-        @Configurable
-        public MeltdownConfigs meltdown = new MeltdownConfigs();
-
-        @Configurable
-        public ExplosionConfigs explosion = new ExplosionConfigs();
-
-        @Configurable
-        @Configurable.Comment("If true, all fuel rods in the multiblock must be the same tier.")
-        public boolean restrictFuelRodTier = true;
-
-        @Configurable
-        @Configurable.Comment("If true, all coolers in the multiblock must be the same tier.")
-        public boolean restrictCoolerTier = true;
-
-        @Configurable
-        @Configurable.Comment("If >= 0, all fuel rods must be exactly this tier. Set to -1 to disable.")
-        public int requiredFuelRodTier = -1;
-
-        @Configurable
-        @Configurable.Comment("If >= 0, all coolers must be exactly this tier. Set to -1 to disable.")
-        public int requiredCoolerTier = -1;
-    }
-
-    public static class MeltdownConfigs {
-
-        @Configurable
-        @Configurable.Comment("Base grace seconds when barely above safe heat.")
-        public double baseGraceSeconds = 60.0;
-
-        @Configurable
-        @Configurable.Comment("Minimum grace seconds when extremely above safe heat.")
-        public double minGraceSeconds = 15.0;
-
-        @Configurable
-        @Configurable.Comment("Severity multiplier: higher = faster meltdown when over safe heat.")
-        public double excessHeatSeverity = 1.0;
-
-        @Configurable
-        @Configurable.Comment("If true, falling back under safe heat clears the timer.")
-        public boolean clearTimerWhenSafe = true;
-    }
-
-    public static class FissionBlockStatsConfigs {
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Coolers")
-        public CoolerConfigs coolers = new CoolerConfigs();
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Moderators")
-        public ModeratorConfigs moderators = new ModeratorConfigs();
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Fuel Rods")
-        public FuelRodConfigs fuelRods = new FuelRodConfigs();
-
-        public static class CoolerConfigs {
+        public static class BasicPack {
 
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the basic cooler.")
-            public int coolingPowerBasicCooler = 2;
+            @Configurable.Comment({ "Base number of slots for the Basic OmniPack", "Default: 27" })
+            public int basicPackItemSlots = 27;
+            @Configurable
+            @Configurable.Comment({ "Base fluid capacity for the Basic OmniPack in millibuckets", "Default: 32000" })
+            public int basicPackFluidStorage = 32_000;
+            @Configurable
+            @Configurable.Comment({ "Base EU capacity for the Basic OmniPack", "Default: 200000" })
+            public int basicPackEUStorage = 200_000;
+            @Configurable
+            @Configurable.Comment({ "Number of upgrade slots on the Basic OmniPack", "Default: 6" })
+            public int basicPackUpgradeSlots = 6;
         }
 
-        public static class ModeratorConfigs {
+        public static class AdvancedPack {
 
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the graphite moderator.")
-            public int euBoostGraphiteModerator = 2;
+            @Configurable.Comment({ "Base number of slots for the Advanced OmniPack", "Default: 45" })
+            public int advancedPackItemSlots = 45;
             @Configurable
-            @Configurable.Comment("Fuel Discount for the graphite moderator.")
-            public int fuelDiscountGraphiteModerator = 1;
+            @Configurable.Comment({ "Base fluid capacity for the Advanced OmniPack in millibuckets",
+                    "Default: 128000" })
+            public int advancedPackFluidStorage = 128_000;
             @Configurable
-            @Configurable.Comment("Tier for the graphite moderator.")
-            public int tierGraphiteModerator = 1;
+            @Configurable.Comment({ "Base EU capacity for the Advanced OmniPack", "Default: 1000000" })
+            public int advancedPackEUStorage = 1_000_000;
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the beryllium moderator.")
-            public int euBoostBerylliumModerator = 5;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the beryllium moderator.")
-            public int fuelDiscountBerylliumModerator = 2;
-            @Configurable
-            @Configurable.Comment("Tier for the beryllium moderator.")
-            public int tierBerylliumModerator = 2;
-            @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the heavy water moderator.")
-            public int euBoostHeavyWaterModerator = 12;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the heavy water moderator.")
-            public int fuelDiscountHeavyWaterModerator = 5;
-            @Configurable
-            @Configurable.Comment("Tier for the heay water moderator.")
-            public int tierHeavyWaterModerator = 3;
-            @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the niobium sic moderator.")
-            public int euBoostNiobiumSicModerator = 30;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the niobium sic moderator.")
-            public int fuelDiscountNiobiumSicModerator = 10;
-            @Configurable
-            @Configurable.Comment("Tier for the niobium sic moderator.")
-            public int tierNiobiumSicModerator = 4;
+            @Configurable.Comment({ "Number of upgrade slots on the Advanced OmniPack", "Default: 10" })
+            public int advancedPackUpgradeSlots = 10;
         }
 
-        public static class FuelRodConfigs {
+        public static class ElitePack {
 
             @Configurable
-            @Configurable.Comment("Base heat production for the T1 fuel rod.")
-            public int heatProductionT1 = 50;
+            @Configurable.Comment({ "Base number of slots for the Elite OmniPack", "Default: 90" })
+            public int elitePackItemSlots = 90;
             @Configurable
-            @Configurable.Comment("Base heat production for the T2 fuel rod.")
-            public int heatProductionT2 = 150;
+            @Configurable.Comment({ "Base fluid capacity for the Elite OmniPack in millibuckets", "Default: 512000" })
+            public int elitePackFluidStorage = 512_000;
             @Configurable
-            @Configurable.Comment("Base heat production for the T3 fuel rod.")
-            public int heatProductionT3 = 500;
+            @Configurable.Comment({ "Base EU capacity for the Elite OmniPack", "Default: 200000000" })
+            public int elitePackEUStorage = 200_000_000;
             @Configurable
-            @Configurable.Comment("Base heat production for the T4 fuel rod.")
-            public int heatProductionT4 = 1200;
-            @Configurable
-            @Configurable.Comment("Base heat production for the Tt fuel rod.")
-            public int heatProductionT5 = 3000;
-
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T1 fuel rod.")
-            public int neutronBiasT1 = 0;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T2 fuel rod.")
-            public int neutronBiasT2 = 1;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T3 fuel rod.")
-            public int neutronBiasT3 = 5;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T4 fuel rod.")
-            public int neutronBiasT4 = 12;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T5 fuel rod.")
-            public int neutronBiasT5 = 30;
-
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T1 fuel rod.")
-            public int cycleDurationT1 = 2500;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T2 fuel rod.")
-            public int cycleDurationT2 = 3000;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T3 fuel rod.")
-            public int cycleDurationT3 = 3500;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T4 fuel rod.")
-            public int cycleDurationT4 = 4000;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T5 fuel rod.")
-            public int cycleDurationT5 = 8000;
-
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T1 fuel rod.")
-            public int cycleAmountT1 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T2 fuel rod.")
-            public int cycleAmountT2 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T3 fuel rod.")
-            public int cycleAmountT3 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T4 fuel rod.")
-            public int cycleAmountT4 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T5 fuel rod.")
-            public int cycleAmountT5 = 1;
-
-            @Configurable
-            @Configurable.Comment("Fuel used for the T1 fuel rod. (Registry name string)")
-            public String fuelUsedT1 = "phoenixcore:basic_fuel_rod";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T2 fuel rod. (Registry name string)")
-            public String fuelUsedT2 = "phoenixcore:basic_fuel_rod";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T3 fuel rod. (Registry name string)")
-            public String fuelUsedT3 = "phoenixcore:u235_fuel_pellet";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T4 fuel rod. (Registry name string)")
-            public String fuelUsedT4 = "phoenixcore:plutonium_241_fuel_pellet";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T5 fuel rod. (Registry name string)")
-            public String fuelUsedT5 = "phoenixcore:u242_fuel_pellet";
-
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T1 fuel rod. (Registry name string)")
-            public String depletedGivenT1 = "phoenixcore:low_level_radioactive_waste";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T2 fuel rod. (Registry name string)")
-            public String depletedGivenT2 = "phoenixcore:low_level_radioactive_waste";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T3 fuel rod. (Registry name string)")
-            public String depletedGivenT3 = "phoenixcore:spent_uranium_235_nugget";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T4 fuel rod. (Registry name string)")
-            public String depletedGivenT4 = "phoenixcore:depleted_plutonium_241_nugget";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T5 fuel rod. (Registry name string)")
-            public String depletedGivenT5 = "phoenixcore:spent_uranium_242_nugget";
+            @Configurable.Comment({ "Number of upgrade slots on the Elite OmniPack", "Default: 16" })
+            public int elitePackUpgradeSlots = 16;
         }
     }
 
-    public static class ExplosionConfigs {
+    public static class UpgradeConfigs {
 
         @Configurable
-        @Configurable.Comment("If true, replaces blocks with air/fire. If false, uses standard GT explosion (drops items).")
-        public boolean destructiveExplosion = false;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module I")
+        public int itemModule1Bonus = 9;
         @Configurable
-        @Configurable.Comment("Explosion power scales with fuel rod count: power = base + rods * multiplier.")
-        public double explosionPowerPerFuelRod = 1.5;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module II")
+        public int itemModule2Bonus = 18;
         @Configurable
-        @Configurable.Comment("The base power of the meltdown explosion.")
-        public float baseExplosionPower = 2.0f;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module III")
+        public int itemModule3Bonus = 27;
         @Configurable
-        @Configurable.Comment("Max radius used for destructive bypass block wiping.")
-        public int maxDestructiveRadius = 6;
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module I")
+        public double fluidModule1Bonus = 2.00;
+        @Configurable
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module II")
+        public double fluidModule2Bonus = 4.00;
+        @Configurable
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module III")
+        public double fluidModule3Bonus = 8.00;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module I")
+        public double energyModule1Bonus = 1.25;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module II")
+        public double energyModule2Bonus = 1.50;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module III")
+        public double energyModule3Bonus = 2.00;
+        @Configurable
+        @Configurable.Comment("EU per tick cost of the Jetpack Module I")
+        public int jetpackModule1EUCost = 90;
+        @Configurable
+        @Configurable.Comment("EU per tick cost of the Jetpack Module II")
+        public int jetpackModule2EUCost = 30;
+        @Configurable
+        @Configurable.Comment("Pickup radius in blocks of the Magnet Module I")
+        public int magnetModule1Radius = 5;
+        @Configurable
+        @Configurable.Comment("Pickup radius in blocks of the Magnet Module II")
+        public int magnetModule2Radius = 10;
     }
 }

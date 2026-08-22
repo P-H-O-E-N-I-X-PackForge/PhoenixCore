@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -20,7 +21,8 @@ public class CrystalRoseBlock extends MaterialBlock {
 
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
 
-    public CrystalRoseBlock(BlockBehaviour.Properties properties, TagPrefix tagPrefix, Material material) {
+    public CrystalRoseBlock(BlockBehaviour.Properties properties,
+                            TagPrefix tagPrefix, Material material) {
         super(BlockBehaviour.Properties.of()
                 .noCollission()
                 .instabreak()
@@ -30,7 +32,8 @@ public class CrystalRoseBlock extends MaterialBlock {
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos,
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world,
+                                        @NotNull BlockPos pos,
                                         @NotNull CollisionContext context) {
         return SHAPE;
     }
@@ -40,6 +43,6 @@ public class CrystalRoseBlock extends MaterialBlock {
         BlockPos floorPos = pos.below();
         BlockState floorState = world.getBlockState(floorPos);
 
-        return floorState.isFaceSturdy(world, floorPos, net.minecraft.core.Direction.UP);
+        return floorState.isFaceSturdy(world, floorPos, Direction.UP);
     }
 }

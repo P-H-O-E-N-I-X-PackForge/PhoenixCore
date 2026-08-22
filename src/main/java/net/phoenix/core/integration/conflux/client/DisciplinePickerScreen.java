@@ -17,14 +17,14 @@ public class DisciplinePickerScreen extends Screen {
     private static final float ARC_RADIUS = 380f;
 
     private record DisciplineCard(
-                                  String id,
-                                  String name,
-                                  String tagline,
-                                  String[] loreLines,
-                                  int accentColor,
-                                  int glowColor,
-                                  int bgColor,
-                                  boolean sealed) {}
+            String id,
+            String name,
+            String tagline,
+            String[] loreLines,
+            int accentColor,
+            int glowColor,
+            int bgColor,
+            boolean sealed) {}
 
     private static final DisciplineCard[] CARDS = {
             new DisciplineCard(
@@ -498,8 +498,16 @@ public class DisciplinePickerScreen extends Screen {
         if (minecraft != null && minecraft.player != null) {
             minecraft.player.displayClientMessage(
                     Component.literal("§6[Axiom] §7Path chosen: §r" + card.name +
-                            "§7. Costs will be applied in a future update."),
+                            "§7. Entering your discipline realm..."),
                     false);
+
+            net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket choosePacket =
+                    new net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket(card.id);
+            net.phoenix.core.integration.conflux.network.ConfluxNetwork.CHANNEL.sendToServer(choosePacket);
+
+            net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket packet =
+                    new net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket("enter");
+            net.phoenix.core.integration.conflux.network.ConfluxNetwork.CHANNEL.sendToServer(packet);
         }
         onClose();
     }

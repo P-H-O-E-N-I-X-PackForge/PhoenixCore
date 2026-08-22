@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.conflux.client.ResearchTerminalScreen;
 
 import org.jetbrains.annotations.Nullable;
@@ -33,8 +35,7 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
         if (level.isClientSide) {
 
             if (level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
-                Minecraft.getInstance()
-                        .setScreen(new ResearchTerminalScreen(terminal));
+                openScreen(terminal);
             }
             return InteractionResult.SUCCESS;
         }
@@ -44,5 +45,10 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void openScreen(ResearchTerminalBlockEntity terminal) {
+        Minecraft.getInstance().setScreen(new ResearchTerminalScreen(terminal));
     }
 }

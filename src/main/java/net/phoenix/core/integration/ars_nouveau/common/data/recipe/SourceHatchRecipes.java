@@ -37,7 +37,7 @@ public class SourceHatchRecipes {
     }
 
     private static void processSourceHatches(@NotNull Consumer<FinishedRecipe> provider, int tier) {
-        var sourceStone = ForgeRegistries.ITEMS.getValue(new ResourceLocation("ars_nouveau", "sourcestone"));
+        var sourceStone = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone"));
 
         if (sourceStone == null || sourceStone.toString().contains("air")) return;
 

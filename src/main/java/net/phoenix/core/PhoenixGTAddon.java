@@ -13,6 +13,10 @@ import net.phoenix.core.common.data.PhoenixToolRecipes;
 import net.phoenix.core.common.data.materials.PhoenixElements;
 import net.phoenix.core.common.data.recipe.generated.*;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.SourceHatchRecipes;
+import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksModuleBaseRecipes;
+import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksModuleRecipes;
+import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksOmniPacksRecipes;
+import net.phoenix.core.integration.gregvaults.common.recipe.GTVaultsRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaHatchRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaMultiAmpHatchRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.WirelessChargerRecipes;
@@ -53,6 +57,10 @@ public class PhoenixGTAddon implements IGTAddon {
         CustomComponetRecipes.init(provider);
         WirelessChargerRecipes.init(provider);
         SourceHatchRecipes.init(provider);
+        GTVaultsRecipes.init(provider);
+        GregPacksModuleBaseRecipes.init(provider);
+        GregPacksModuleRecipes.init(provider);
+        GregPacksOmniPacksRecipes.init(provider);
     }
 
     @Override

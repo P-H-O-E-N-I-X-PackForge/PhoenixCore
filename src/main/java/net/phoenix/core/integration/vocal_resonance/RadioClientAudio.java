@@ -45,7 +45,7 @@ public class RadioClientAudio extends AbstractSoundInstance implements TickableS
     private int debugLogTick = 0;
 
     public RadioClientAudio(String url, BlockPos pos, float range, float baseVolume) {
-        super(new ResourceLocation("minecraft", "intentionally_empty"),
+        super(ResourceLocation.fromNamespaceAndPath("minecraft", "intentionally_empty"),
                 SoundSource.RECORDS, RandomSource.create());
         this.rawUrl = url;
         this.maxRange = range;

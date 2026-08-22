@@ -23,6 +23,8 @@
     "minecraft.RecipeManagerMixin"
   ],
   "client": [
+    "MixinAbstractContainerScreen",
+    "MixinMachineModel",
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "emi.EmiFavoritesMixin",

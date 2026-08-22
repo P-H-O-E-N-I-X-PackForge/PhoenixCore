@@ -1,5 +1,8 @@
 {
   "values": [
+    "phoenixcore:vault_core_mk1",
+    "phoenixcore:vault_core_mk2",
+    "phoenixcore:vault_core_mk3",
     "phoenixcore:astral_rune_block",
     "phoenixcore:phoenix_enriched_tritanium_casing",
     "phoenixcore:phoenix_gaze_panel",

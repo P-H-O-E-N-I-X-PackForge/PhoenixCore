@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.growth;
 
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
-import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
+import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.ExpandableMultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
@@ -26,7 +26,7 @@ public final class GrowthPatternHelper {
 
     private GrowthPatternHelper() {}
 
-    public static IBlockPattern getPattern(MultiblockMachineDefinition definition, PatternPredicate shellPredicate,
+    public static IBlockPattern getPattern(MultiblockMachineDefinition definition, MultiPredicate shellPredicate,
                                            IntList maxBounds) {
         return ExpandableMultiblockPatternBuilder.start()
                 .boundsProvider(GrowthPatternHelper::boundsFor)

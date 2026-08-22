@@ -15,7 +15,7 @@ public final class BakeRenderContext {
     private BakeRenderContext() {}
 
     private static final ResearchTree EMPTY_TREE = new ResearchTree(
-            new ResourceLocation("phoenixcore", "bake_stub"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "bake_stub"),
             "Bake Stub", "", null, Map.of(), List.of());
 
     public static RenderContext of(int w, int h, float elapsed) {

@@ -958,7 +958,7 @@ public class PhoenixMachines {
             })
             .workableCasingModel(
                     GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
-                    new ResourceLocation("minecraft", "block/note_block"))
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "block/note_block"))
             .register();
 
     public static void init() {}

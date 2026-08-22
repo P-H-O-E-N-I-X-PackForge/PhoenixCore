@@ -17,7 +17,7 @@ public class PhoenixNetwork {
 
     private static final String PROTOCOL = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation("phoenixcore", "main"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "main"),
             () -> PROTOCOL,
             PROTOCOL::equals,
             PROTOCOL::equals);

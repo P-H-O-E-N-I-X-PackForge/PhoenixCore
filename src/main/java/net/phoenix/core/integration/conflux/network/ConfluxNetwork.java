@@ -36,10 +36,28 @@ public final class ConfluxNetwork {
                 C2SAbandonDisciplinePacket::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        CHANNEL.registerMessage(id++, C2SChooseDisciplinePacket.class,
+                C2SChooseDisciplinePacket::encode,
+                C2SChooseDisciplinePacket::decode,
+                C2SChooseDisciplinePacket::handle,
+                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
         CHANNEL.registerMessage(id++, S2CResearchSyncPacket.class,
                 S2CResearchSyncPacket::encode,
                 S2CResearchSyncPacket::decode,
                 S2CResearchSyncPacket::handle,
+                java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.class,
+                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::toBytes,
+                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::new,
+                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::handle,
+                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.class,
+                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::toBytes,
+                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::new,
+                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 

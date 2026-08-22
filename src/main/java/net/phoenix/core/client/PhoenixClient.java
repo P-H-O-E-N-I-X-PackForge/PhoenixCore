@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.SuspendedTownParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.command.TerrainPreviewCommand;
 import net.phoenix.core.client.particle.PhoenixParticles;
+import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
 import net.phoenix.core.client.renderer.machine.*;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
@@ -48,6 +50,7 @@ public class PhoenixClient {
     public static void init(IEventBus modBus) {
         MinecraftForge.EVENT_BUS.register(PhoenixShaders.class);
         MinecraftForge.EVENT_BUS.register(VocalVibrancyClientTick.class);
+        net.phoenix.core.integration.gregvaults.client.GregTechVaultsClient.init(modBus);
         modBus.addListener(PhoenixClient::registerDynamicPipeModels);
         modBus.addListener(WorldFXShaders::onRegisterShaders);
     }
@@ -75,6 +78,22 @@ public class PhoenixClient {
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(PhoenixParticles.TESLA_SPARK.get(), TeslaSparkProvider::new);
+
+        event.registerSpriteSet(DimensionParticleTypes.VOLCANIC_ASH.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.HEAT_SHIMMER.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.LAVA_SPARK.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.SCULK_SPORE.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.BIOLUM_GLOW.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.SCULK_TENDRIL.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.COSMIC_DUST.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.VOID_SHIMMER.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.STAR_SPARKLE.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.NEON_SPARK.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.INDUSTRIAL_SMOKE.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.ENERGY_BOLT.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.GLITCH_EFFECT.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.REALITY_TEAR.get(), SuspendedTownParticle.Provider::new);
+        event.registerSpriteSet(DimensionParticleTypes.INVERTED_GLOW.get(), SuspendedTownParticle.Provider::new);
     }
 
     public static class TeslaSparkProvider implements ParticleProvider<SimpleParticleType> {

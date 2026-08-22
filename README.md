@@ -3,7 +3,11 @@
 
 Contributions are more than welcome here and in Phoenix Forge Technologies [PFT Github](https://github.com/Phoenixvine32908/Phoenix-Forge-Technologies)
 
-Most assets and code are licensed under LPGL 3.0 as I use code/assets from other wonderful creators
+Most assets and code are licensed under LPGL 3.0 as I use code/assets from other wonderful creators.
+
+All assets for the GregPacks and GregVaults systems are from https://github.com/HazeVista/GregPacks aand https://github.com/HazeVista/GregVaults.
+
+Most code is from there as well with some additons made by this project.
 
 However for the code involving cleanroom and hpca componet parts, these are an exception as these are licensed under MIT
 

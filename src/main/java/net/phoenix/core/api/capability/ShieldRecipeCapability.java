@@ -13,7 +13,7 @@ public class ShieldRecipeCapability extends RecipeCapability<ShieldTypes> {
     public static ShieldRecipeCapability CAP = new ShieldRecipeCapability();
 
     protected ShieldRecipeCapability() {
-        super(new ResourceLocation("phoenixcore", "shield"), 0xFF00FFFF, false, 11, SerializerShield.INSTANCE);
+        super(ResourceLocation.fromNamespaceAndPath("phoenixcore", "shield"), 0xFF00FFFF, false, 11, SerializerShield.INSTANCE);
     }
 
     @Override

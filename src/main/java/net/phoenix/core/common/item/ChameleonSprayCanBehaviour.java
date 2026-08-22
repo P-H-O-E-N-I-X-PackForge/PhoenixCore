@@ -322,9 +322,15 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             }
             return false;
         } else if (first instanceof IPipeNode pipe) {
-            var collected = BreadthFirstBlockSearch.conditionalSearch(IPipeNode.class, pipe,
-                    first.getLevel(), IPipeNode::getBlockPos,
-                    gtPipePredicate, limit, limit * 6);
+            var collected = BreadthFirstBlockSearch.conditionalSearch(
+                    IPipeNode.class,
+                    pipe,
+                    first.getLevel(),
+                    node -> node.self().getBlockPos(),
+                    gtPipePredicate,
+                    limit,
+                    limit * 6
+            );
 
             int successfullyPainted = 0;
             long targetNativeColor = color == null ? IPaintable.UNPAINTED_COLOR : color.getMapColor().col;
