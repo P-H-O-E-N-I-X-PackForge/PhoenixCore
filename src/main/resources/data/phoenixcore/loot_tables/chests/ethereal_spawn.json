@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 3, "max": 5 },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_ingot",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "min": 1, "max": 4 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bread",
+          "weight": 8,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "min": 2, "max": 5 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:torch",
+          "weight": 8,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "min": 4, "max": 8 } }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:coal",
+          "weight": 6,
+          "functions": [
+            { "function": "minecraft:set_count", "count": { "min": 2, "max": 6 } }
+          ]
+        },
+        { "type": "minecraft:item", "name": "minecraft:stone_axe", "weight": 3 },
+        { "type": "minecraft:item", "name": "minecraft:stone_pickaxe", "weight": 3 },
+        { "type": "minecraft:item", "name": "minecraft:leather_boots", "weight": 2 },
+        { "type": "minecraft:item", "name": "minecraft:leather_chestplate", "weight": 2 }
+      ]
+    }
+  ]
+}

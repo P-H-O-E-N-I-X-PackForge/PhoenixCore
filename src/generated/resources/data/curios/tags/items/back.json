@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "phoenixcore:basic_omnipack",
+    "phoenixcore:advanced_omnipack",
+    "phoenixcore:elite_omnipack"
+  ]
+}

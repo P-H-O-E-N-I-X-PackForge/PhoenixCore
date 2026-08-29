@@ -1,0 +1,9 @@
+{
+  "gtceu.please": "Please",
+  "material.gtceu.test": "Test",
+  "material.gtceu.dance": "§6Dance",
+  "gtceu.recipe.cleanroom_blazing.display_name": "Blazing Cleanroom",
+  "Uses PCB Coolant if in normal HPCA": "gtceu.machine.hpca.componet_type_cooler_active_other_coolant",
+  "gtceu.tooltip.uses_custom_coolant": "Uses %s if in the High-Yield Photon Emission Regulator HPCA and PCB Coolant if in the normal HPCA",
+  "gtceu.tooltip.custom_coolant": "%s, or %s, or %s"
+}

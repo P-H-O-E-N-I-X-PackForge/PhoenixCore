@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "phoenixcore:item/material_sets/dull/honeycomb",
+    "layer1": "phoenixcore:item/material_sets/dull/honeycomb_secondary"
+  }
+}

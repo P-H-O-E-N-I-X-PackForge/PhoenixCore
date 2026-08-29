@@ -1,0 +1,68 @@
+{
+  "display_name": "The Sculk",
+  "biome_palette": {
+    "stages": [
+      {
+        "stage": "initial",
+        "biomes": ["minecraft:deep_dark", "minecraft:lush_caves", "minecraft:dripstone_caves"]
+      },
+      {
+        "stage": "sculk_resonance",
+        "biomes": ["minecraft:deep_dark", "minecraft:deep_dark", "minecraft:lush_caves"]
+      },
+      {
+        "stage": "echo_chamber",
+        "biomes": ["minecraft:deep_dark", "minecraft:dripstone_caves", "minecraft:lush_caves"]
+      },
+      {
+        "stage": "warden_presence",
+        "biomes": ["minecraft:deep_dark", "minecraft:deep_dark", "minecraft:deep_dark"]
+      }
+    ],
+    "default_biomes": {
+      "deep": "minecraft:deep_dark",
+      "lush": "minecraft:lush_caves",
+      "dripstone": "minecraft:dripstone_caves"
+    }
+  },
+  "structures": {
+    "texture_overrides": {
+      "sculk": "minecraft:sculk",
+      "sculk_vein": "minecraft:sculk_vein",
+      "sculk_catalyst": "minecraft:sculk_catalyst"
+    },
+    "particle_density": 0.9
+  },
+  "skybox": {
+    "sky_color": "#1A4D6D",
+    "fog_color": "#2E8B9E",
+    "fog_density": 0.8,
+    "render_mode": "bioluminescent"
+  },
+  "color_progression": [
+    {
+      "milestone": "initial",
+      "grass_color": "#2D5016",
+      "water_color": "#4A7C7E",
+      "foliage_color": "#3D7A45"
+    },
+    {
+      "milestone": "sculk_resonance",
+      "grass_color": "#1A4D2E",
+      "water_color": "#2E8B9E",
+      "foliage_color": "#2D5016"
+    },
+    {
+      "milestone": "echo_chamber",
+      "grass_color": "#0F3B2C",
+      "water_color": "#1E6F7B",
+      "foliage_color": "#1A4D2E"
+    },
+    {
+      "milestone": "warden_presence",
+      "grass_color": "#08291F",
+      "water_color": "#0F5A66",
+      "foliage_color": "#0F3B2C"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:overworld",
+  "generator": {
+    "type": "phoenixcore:ethereal_spawn",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:the_void"
+    }
+  }
+}

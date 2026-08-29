@@ -1,0 +1,68 @@
+{
+  "display_name": "The Void",
+  "biome_palette": {
+    "stages": [
+      {
+        "stage": "initial",
+        "biomes": ["minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands"]
+      },
+      {
+        "stage": "void_convergence",
+        "biomes": ["minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_midlands"]
+      },
+      {
+        "stage": "dimensional_fracture",
+        "biomes": ["minecraft:end_highlands", "minecraft:end_highlands", "minecraft:end_midlands"]
+      },
+      {
+        "stage": "stellar_ascendance",
+        "biomes": ["minecraft:end_highlands", "minecraft:end_highlands", "minecraft:end_highlands"]
+      }
+    ],
+    "default_biomes": {
+      "barrens": "minecraft:end_barrens",
+      "midlands": "minecraft:end_midlands",
+      "highlands": "minecraft:end_highlands"
+    }
+  },
+  "structures": {
+    "texture_overrides": {
+      "end_stone": "minecraft:end_stone",
+      "end_stone_bricks": "minecraft:end_stone_bricks",
+      "chorus_plant": "minecraft:chorus_plant"
+    },
+    "particle_density": 0.6
+  },
+  "skybox": {
+    "sky_color": "#0B0014",
+    "fog_color": "#1A0033",
+    "fog_density": 0.5,
+    "render_mode": "stellar"
+  },
+  "color_progression": [
+    {
+      "milestone": "initial",
+      "grass_color": "#3D2835",
+      "water_color": "#4B3680",
+      "foliage_color": "#2A1A3F"
+    },
+    {
+      "milestone": "void_convergence",
+      "grass_color": "#2A1A3F",
+      "water_color": "#3D2580",
+      "foliage_color": "#1F0F33"
+    },
+    {
+      "milestone": "dimensional_fracture",
+      "grass_color": "#1F0F33",
+      "water_color": "#2D1570",
+      "foliage_color": "#140628"
+    },
+    {
+      "milestone": "stellar_ascendance",
+      "grass_color": "#0B0014",
+      "water_color": "#1A0048",
+      "foliage_color": "#0F001F"
+    }
+  ]
+}
