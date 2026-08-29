@@ -1,7 +1,0 @@
-{
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "phoenixcore:item/tools/electric_wirecutter_base_luv",
-    "layer1": "gtceu:item/tools/electric_wirecutter_head"
-  }
-}

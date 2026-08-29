@@ -106,6 +106,10 @@ repositories {
         )
         filter { includeGroup("dev.toma.configuration") }
     }
+
+    flatDir {
+        dir 'libs'
+    }
 }
 
 version = mod_version
@@ -204,7 +208,17 @@ dependencies {
     modImplementation("curse.maven:ex-pattern-provider-892005:7248944")
     modImplementation("curse.maven:glodium-957920:5226922")
     modImplementation("curse.maven:guideme-1173950:7127447")
-    modImplementation("curse.maven:phoenixs-chromatic-colors-1483210:7980147")
+    modImplementation("curse.maven:phoenixs-chromatic-colors-1483210:8494864")
+
+
+
+    modRuntimeOnly("curse.maven:fancymenu-367706:8652266")
+    modRuntimeOnly("curse.maven:konkrete-410295:5028413")
+    modRuntimeOnly("curse.maven:melody-938643:5109692")
+    modCompileOnly("curse.maven:konkrete-410295:5028413")
+    modCompileOnly("curse.maven:melody-938643:5109692")
+    modCompileOnly("curse.maven:fancymenu-367706:8652266")
+
 
     modRuntimeOnly("curse.maven:jade-324717:5390389")
     modCompileOnly("curse.maven:jade-324717:5390389")
@@ -237,6 +251,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
+
+
+    jarJar(modImplementation("local:phoenix_wiki:0.1.0"))
 }
 
 configurations.configureEach {
@@ -271,9 +288,7 @@ tasks.named('jar', Jar).configure {
     finalizedBy 'reobfJar'
 }
 
-// Publishes the reobfuscated 'slim' jar to the local maven repo so sibling projects
-// (e.g. PhoenixChronicles' optional Conflux integration) can depend on it via
-// `net.phoenix.core:PhoenixCore:<version>:slim`. Run `./gradlew publishToMavenLocal`.
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

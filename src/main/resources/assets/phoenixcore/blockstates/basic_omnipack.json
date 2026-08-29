@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "phoenixcore:block/basic_omnipack" },
-    "facing=south": { "model": "phoenixcore:block/basic_omnipack", "y": 180 },
-    "facing=east":  { "model": "phoenixcore:block/basic_omnipack", "y": 90 },
-    "facing=west":  { "model": "phoenixcore:block/basic_omnipack", "y": 270 }
-  }
-}

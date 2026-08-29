@@ -1,7 +1,0 @@
-{
-  "parent": "phoenixcore:block/omnipack_base",
-  "textures": {
-    "pack": "phoenixcore:item/basic_omnipack",
-    "particle": "phoenixcore:item/basic_omnipack"
-  }
-}
