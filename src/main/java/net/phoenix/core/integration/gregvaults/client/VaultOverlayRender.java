@@ -3,6 +3,10 @@ package net.phoenix.core.integration.gregvaults.client;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,11 +22,6 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.model.data.ModelData;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import com.mojang.serialization.Codec;
 
 import java.util.List;
 

@@ -6,7 +6,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
-
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;

@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 
-import net.phoenix.core.integration.ars_nouveau.api.machine.trait.NotifiableSourceContainer;
 import net.phoenix.core.integration.astral.api.machine.trait.NotifiableAstralThreadContainer;
+import net.phoenix.core.integration.ars_nouveau.api.machine.trait.NotifiableSourceContainer;
 
 import lombok.Getter;
 

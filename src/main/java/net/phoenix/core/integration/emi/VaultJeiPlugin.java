@@ -1,14 +1,13 @@
 package net.phoenix.core.integration.emi;
 
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultContainerMenu;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
-
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
 
 @JeiPlugin
 public class VaultJeiPlugin implements IModPlugin {

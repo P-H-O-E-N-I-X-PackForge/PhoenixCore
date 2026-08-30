@@ -27,8 +27,12 @@ public class WingFlightScreen extends Screen {
     private static final int H = 220;
     private static final int STEPS = 10;
 
+    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cTitle, cLabel, cBasic, cPowered, cCreative, cWinged, cFilled, cEmpty, cPanelBg, cBorder;
 
+    // The panel is a fixed 200x220 with no clamp at all; below that we shrink the whole screen
+    // via a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
+    // it run off-screen at small windows/high GUI scale.
     private float uiScale = 1f;
     private int vw, vh;
 

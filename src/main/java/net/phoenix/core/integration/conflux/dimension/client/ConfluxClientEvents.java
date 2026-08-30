@@ -1,14 +1,14 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ConfluxClientEvents {
@@ -33,5 +33,7 @@ public class ConfluxClientEvents {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void onClientTick(TickEvent.ClientTickEvent event) {}
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        
+    }
 }

@@ -15,7 +15,7 @@ import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.MapIngredientTypeManag
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
-
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
@@ -79,6 +79,7 @@ import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachineDefinition;
 import net.phoenix.core.integration.gregvaults.common.recipe.VaultRecipes;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
+
 import net.phoenix.core.integration.gregvaults.datagen.VaultDatagen;
 import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
 import net.phoenix.core.integration.growth.GrowthBlocks;
@@ -87,8 +88,6 @@ import net.phoenix.core.integration.matter_manipulater.common.data.item.Manipula
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.network.PhoenixNetwork;
-
-import com.tterrag.registrate.util.entry.RegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -171,8 +170,7 @@ public class PhoenixCore {
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
-        MinecraftForge.EVENT_BUS
-                .register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
+        MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
         MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
         MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
         MinecraftForge.EVENT_BUS.addGenericListener(net.minecraft.world.entity.Entity.class,
@@ -290,6 +288,10 @@ public class PhoenixCore {
     }
 
     private void registerWorldGenLayers(GTCEuAPI.RegisterEvent<ResourceLocation, IWorldGenLayer> event) {
+        // Touching the class runs ConfluxWorldGenLayers.CONFLUX_STONE's static initializer, whose
+        // SimpleWorldGenLayer constructor self-registers into GT's world gen layer registry. This must
+        // happen here (before GT freezes that registry) and before registerOreVeins runs, since the
+        // discipline veins reference this layer object directly.
         net.phoenix.core.integration.conflux.dimension.worldgen.ConfluxWorldGenLayers.init();
     }
 

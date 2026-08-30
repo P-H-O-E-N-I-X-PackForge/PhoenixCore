@@ -1,9 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.effects;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PhysicsEffectsSystem {
@@ -11,7 +10,6 @@ public abstract class PhysicsEffectsSystem {
     public abstract void update(Level level, @Nullable Player player);
 
     public static class GravityAnomalies extends PhysicsEffectsSystem {
-
         private static final float NORMAL_GRAVITY = 0.08f;
         private static final float LOW_GRAVITY = 0.04f;
         private static final float REVERSE_GRAVITY = -0.08f;
@@ -25,11 +23,12 @@ public abstract class PhysicsEffectsSystem {
             modifyGravityForPlayer(player, playerPos);
         }
 
-        private void modifyGravityForPlayer(Player player, BlockPos pos) {}
+        private void modifyGravityForPlayer(Player player, BlockPos pos) {
+
+        }
     }
 
     public static class SculkTendrilGrowth extends PhysicsEffectsSystem {
-
         @Override
         public void update(Level level, @Nullable Player player) {
             if (player == null || level.getGameTime() % 10 != 0) return;
@@ -39,11 +38,12 @@ public abstract class PhysicsEffectsSystem {
             growSculkTendrils(level, playerPos);
         }
 
-        private void growSculkTendrils(Level level, BlockPos playerPos) {}
+        private void growSculkTendrils(Level level, BlockPos playerPos) {
+
+        }
     }
 
     public static class GravityBridges extends PhysicsEffectsSystem {
-
         @Override
         public void update(Level level, @Nullable Player player) {
             if (player == null) return;
@@ -53,11 +53,12 @@ public abstract class PhysicsEffectsSystem {
             applyBridgeGravity(level, player, playerPos);
         }
 
-        private void applyBridgeGravity(Level level, Player player, BlockPos pos) {}
+        private void applyBridgeGravity(Level level, Player player, BlockPos pos) {
+
+        }
     }
 
     public static class MovingPlatforms extends PhysicsEffectsSystem {
-
         @Override
         public void update(Level level, @Nullable Player player) {
             if (player == null) return;
@@ -67,15 +68,20 @@ public abstract class PhysicsEffectsSystem {
             handleMovingPlatformMotion(level, player, playerPos);
         }
 
-        private void handleMovingPlatformMotion(Level level, Player player, BlockPos pos) {}
+        private void handleMovingPlatformMotion(Level level, Player player, BlockPos pos) {
 
-        public void createElevator(Level level, BlockPos basePos, int height) {}
+        }
 
-        public void createConveyorBelt(Level level, BlockPos start, BlockPos end, int direction) {}
+        public void createElevator(Level level, BlockPos basePos, int height) {
+
+        }
+
+        public void createConveyorBelt(Level level, BlockPos start, BlockPos end, int direction) {
+
+        }
     }
 
     public static class RealityGlitches extends PhysicsEffectsSystem {
-
         @Override
         public void update(Level level, @Nullable Player player) {
             if (level.getGameTime() % 15 != 0) return;
@@ -99,6 +105,8 @@ public abstract class PhysicsEffectsSystem {
             glitchBlock(level, randomPos);
         }
 
-        private void glitchBlock(Level level, BlockPos pos) {}
+        private void glitchBlock(Level level, BlockPos pos) {
+
+        }
     }
 }

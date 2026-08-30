@@ -24,8 +24,8 @@ public abstract class CreateWorldScreenMixin {
 
     @Inject(method = "tryApplyNewDataPacks",
             at = { @At(value = "INVOKE",
-                       target = "Lnet/minecraft/server/packs/repository/PackRepository;getRequestedFeatureFlags()Lnet/minecraft/world/flag/FeatureFlagSet;",
-                       shift = At.Shift.BEFORE) },
+                    target = "Lnet/minecraft/server/packs/repository/PackRepository;getRequestedFeatureFlags()Lnet/minecraft/world/flag/FeatureFlagSet;",
+                    shift = At.Shift.BEFORE) },
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true)
     public void onTryApplyNewDataPacks(PackRepository packRepository, boolean bo,

@@ -13,6 +13,10 @@ public class PhysicsHook {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
+        // Must run at END, after vanilla's own per-tick gravity has already been added to
+        // entity velocity - applying our modifier at START just gets overwritten by that
+        // gravity addition later in the same tick, mostly canceling the effect (worst for
+        // zero-G zones, which would otherwise fall at full normal gravity every tick).
         if (event.phase != TickEvent.Phase.END) {
             return;
         }
@@ -53,6 +57,7 @@ public class PhysicsHook {
     }
 
     private static void applyGravityZones(Entity entity, java.util.List<GravityZone> zones) {
+        
         float maxMultiplier = 1.0f;
 
         for (GravityZone zone : zones) {
@@ -68,6 +73,7 @@ public class PhysicsHook {
     }
 
     private static void applyGravityModifier(Entity entity, float gravityMultiplier) {
+        
         if (entity.onGround() && gravityMultiplier > 0.8f) {
             return;
         }
@@ -89,6 +95,7 @@ public class PhysicsHook {
     }
 
     private static String getDimensionId(Level level) {
+
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

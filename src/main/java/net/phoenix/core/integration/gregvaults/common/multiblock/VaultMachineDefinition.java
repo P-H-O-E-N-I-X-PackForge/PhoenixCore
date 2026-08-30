@@ -2,12 +2,12 @@ package net.phoenix.core.integration.gregvaults.common.multiblock;
 
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
+
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.client.model.machine.overlays.WorkableOverlays;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -20,6 +20,7 @@ import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
 
 import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.RECIPE_LOGIC_STATUS;
 import static com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection.*;
+
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.CUBE_ALL_SIDED_OVERLAY_MODEL;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.addWorkableOverlays;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
@@ -95,12 +96,9 @@ public class VaultMachineDefinition {
         };
 
         ResourceLocation casingTexture = switch (tier) {
-            case BRONZE -> ResourceLocation.fromNamespaceAndPath("gtceu",
-                    "block/casings/solid/machine_casing_bronze_plated_bricks");
-            case STEEL -> ResourceLocation.fromNamespaceAndPath("gtceu",
-                    "block/casings/solid/machine_casing_solid_steel");
-            case TITANIUM -> ResourceLocation.fromNamespaceAndPath("gtceu",
-                    "block/casings/solid/machine_casing_stable_titanium");
+            case BRONZE -> ResourceLocation.fromNamespaceAndPath("gtceu", "block/casings/solid/machine_casing_bronze_plated_bricks");
+            case STEEL -> ResourceLocation.fromNamespaceAndPath("gtceu", "block/casings/solid/machine_casing_solid_steel");
+            case TITANIUM -> ResourceLocation.fromNamespaceAndPath("gtceu", "block/casings/solid/machine_casing_stable_titanium");
         };
 
         return REGISTRATE.multiblock(name, holder -> new VaultMachine(holder, tier))

@@ -1,13 +1,14 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
@@ -17,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public class DisciplineThemeRegistry {
-
     private static final Map<String, DisciplineTheme> THEMES = new HashMap<>();
     private static final Gson GSON = new Gson();
 
@@ -45,24 +45,25 @@ public class DisciplineThemeRegistry {
         THEMES.put(theme.disciplineId, theme);
     }
 
-    private static void loadDefaultThemes() {}
+    private static void loadDefaultThemes() {
+
+    }
 
     @SubscribeEvent
     public static void onResourceReload(AddReloadListenerEvent event) {
-        event.addListener((stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor,
-                           gameExecutor) -> CompletableFuture
-                                   .runAsync(() -> loadThemesFromResources(resourceManager), backgroundExecutor)
-                                   .thenCompose(stage::wait));
+        event.addListener((stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) ->
+                CompletableFuture.runAsync(() -> loadThemesFromResources(resourceManager), backgroundExecutor)
+                        .thenCompose(stage::wait)
+        );
     }
 
     private static void loadThemesFromResources(ResourceManager resourceManager) {
         THEMES.clear();
 
-        String[] disciplineIds = { "phoenix", "sculk", "void", "sealed_a", "sealed_b" };
+        String[] disciplineIds = {"phoenix", "sculk", "void", "sealed_a", "sealed_b"};
 
         for (String disciplineId : disciplineIds) {
-            ResourceLocation location = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-                    "conflux/themes/" + disciplineId + ".json");
+            ResourceLocation location = ResourceLocation.fromNamespaceAndPath("phoenixcore", "conflux/themes/" + disciplineId + ".json");
 
             var resources = resourceManager.getResourceStack(location);
             for (var resource : resources) {

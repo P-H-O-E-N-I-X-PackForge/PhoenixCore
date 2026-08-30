@@ -1,7 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
 import net.minecraftforge.fml.ModList;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -32,7 +31,6 @@ public class GTVeinAPI {
     }
 
     public static class VeinBuilder {
-
         private String veinName;
         private String primaryMaterial;
         private String secondaryMaterial;
@@ -85,13 +83,12 @@ public class GTVeinAPI {
 
         public VeinConfiguration build() {
             return new VeinConfiguration(
-                    veinName, primaryMaterial, secondaryMaterial,
-                    veinsPerChunk, minY, maxY, density, enabled, properties);
+                veinName, primaryMaterial, secondaryMaterial,
+                veinsPerChunk, minY, maxY, density, enabled, properties);
         }
     }
 
     public static class VeinConfiguration {
-
         public final String veinName;
         public final String primaryMaterial;
         public final String secondaryMaterial;
@@ -103,15 +100,15 @@ public class GTVeinAPI {
         public final Map<String, String> properties;
 
         public VeinConfiguration(
-                                 String veinName,
-                                 String primaryMaterial,
-                                 String secondaryMaterial,
-                                 int veinsPerChunk,
-                                 int minY,
-                                 int maxY,
-                                 float density,
-                                 boolean enabled,
-                                 Map<String, String> properties) {
+                String veinName,
+                String primaryMaterial,
+                String secondaryMaterial,
+                int veinsPerChunk,
+                int minY,
+                int maxY,
+                float density,
+                boolean enabled,
+                Map<String, String> properties) {
             this.veinName = veinName;
             this.primaryMaterial = primaryMaterial;
             this.secondaryMaterial = secondaryMaterial;
@@ -124,6 +121,7 @@ public class GTVeinAPI {
         }
 
         public static VeinConfiguration fromGTVein(String veinName) {
+            
             if (veinManager != null) {
                 return veinManager.queryVeinConfiguration(veinName);
             }
@@ -132,7 +130,6 @@ public class GTVeinAPI {
     }
 
     public static class VeinFilter {
-
         private String namePattern;
         private Integer minYFilter;
         private Integer maxYFilter;
@@ -167,7 +164,6 @@ public class GTVeinAPI {
     }
 
     public static class GTVeinManager {
-
         private final Class<?> veinWorldHandlerClass;
         private final Method getVeinWorldMethod;
         private final Method placeVeinsMethod;
@@ -175,21 +171,23 @@ public class GTVeinAPI {
         private final Method registerVeinMethod;
 
         GTVeinManager() throws Exception {
+            
             this.veinWorldHandlerClass = Class.forName(
-                    "com.gregtechceu.gtceu.api.data.chemical.material.properties.VeinWorldHandler");
+                "com.gregtechceu.gtceu.api.data.chemical.material.properties.VeinWorldHandler");
 
             this.getVeinWorldMethod = veinWorldHandlerClass.getMethod("getVeinWorld");
             this.placeVeinsMethod = veinWorldHandlerClass.getMethod(
-                    "placeVeins",
-                    net.minecraft.world.level.WorldGenLevel.class,
-                    net.minecraft.util.RandomSource.class,
-                    int.class,
-                    int.class,
-                    String[].class);
+                "placeVeins",
+                net.minecraft.world.level.WorldGenLevel.class,
+                net.minecraft.util.RandomSource.class,
+                int.class,
+                int.class,
+                String[].class
+            );
 
             try {
                 this.getMaterialMethod = veinWorldHandlerClass.getMethod(
-                        "getMaterial", String.class);
+                    "getMaterial", String.class);
             } catch (NoSuchMethodException e) {
                 throw new Exception("GT version incompatible: getMaterial method not found", e);
             }
@@ -197,19 +195,20 @@ public class GTVeinAPI {
             Method registerMethod = null;
             try {
                 registerMethod = veinWorldHandlerClass.getMethod(
-                        "registerVein", String.class, VeinConfiguration.class);
+                    "registerVein", String.class, VeinConfiguration.class);
             } catch (NoSuchMethodException e) {
-
+                
             }
             this.registerVeinMethod = registerMethod;
         }
 
         public void placeVeins(
-                               net.minecraft.world.level.WorldGenLevel level,
-                               net.minecraft.util.RandomSource random,
-                               int chunkX,
-                               int chunkZ,
-                               String[] veinNames) {
+                net.minecraft.world.level.WorldGenLevel level,
+                net.minecraft.util.RandomSource random,
+                int chunkX,
+                int chunkZ,
+                String[] veinNames) {
+
             try {
                 placeVeinsMethod.invoke(null, level, random, chunkX, chunkZ, veinNames);
             } catch (Exception e) {
@@ -222,11 +221,11 @@ public class GTVeinAPI {
             try {
                 Object gtVein = getMaterialMethod.invoke(null, veinName);
                 if (gtVein != null) {
-
+                    
                     return extractVeinConfig(gtVein, veinName);
                 }
             } catch (Exception e) {
-
+                
             }
             return null;
         }
@@ -253,8 +252,9 @@ public class GTVeinAPI {
         }
 
         private VeinConfiguration extractVeinConfig(Object gtVein, String veinName) {
+            
             try {
-
+                
                 Method getPrimaryMethod = gtVein.getClass().getMethod("getPrimaryMaterial");
                 Object primaryMaterial = getPrimaryMethod.invoke(gtVein);
                 String primaryName = primaryMaterial != null ? primaryMaterial.toString() : "unknown";
@@ -269,8 +269,8 @@ public class GTVeinAPI {
                 int maxY = (int) getMaxYMethod.invoke(gtVein);
 
                 return new VeinConfiguration(
-                        veinName, primaryName, secondaryName,
-                        1, minY, maxY, 1.0f, true, new HashMap<>());
+                    veinName, primaryName, secondaryName,
+                    1, minY, maxY, 1.0f, true, new HashMap<>());
             } catch (Exception e) {
                 System.err.println("[PhoenixCore] Error extracting vein config: " + e.getMessage());
                 return null;
@@ -287,11 +287,12 @@ public class GTVeinAPI {
     }
 
     public static void placeVeinsInChunk(
-                                         net.minecraft.world.level.WorldGenLevel level,
-                                         net.minecraft.util.RandomSource random,
-                                         int chunkX,
-                                         int chunkZ,
-                                         String... veinNames) {
+            net.minecraft.world.level.WorldGenLevel level,
+            net.minecraft.util.RandomSource random,
+            int chunkX,
+            int chunkZ,
+            String... veinNames) {
+
         if (veinManager != null) {
             veinManager.placeVeins(level, random, chunkX, chunkZ, veinNames);
         }
@@ -303,6 +304,7 @@ public class GTVeinAPI {
     }
 
     public static List<String> getAvailableVeins() {
+
         return new ArrayList<>();
     }
 
@@ -329,7 +331,6 @@ public class GTVeinAPI {
             }
         }
 
-        return new VeinConfiguration(veinName, primary, secondary, veinsPerChunk, minY, maxY, density, enabled,
-                properties);
+        return new VeinConfiguration(veinName, primary, secondary, veinsPerChunk, minY, maxY, density, enabled, properties);
     }
 }

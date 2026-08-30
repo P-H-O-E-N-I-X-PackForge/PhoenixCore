@@ -8,9 +8,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.common.data.materials.AstralMaterials;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity.RitualResult;
+import net.phoenix.core.common.data.materials.AstralMaterials;
 
 import dev.emi.emi.api.recipe.BasicEmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
@@ -28,8 +29,7 @@ public class AstralRitualEmiRecipe extends BasicEmiRecipe {
         this.result = result;
         this.inputs = List.of(EmiStack.of(new ItemStack(catalyst)));
         this.outputs = List
-                .of(EmiStack.of(
-                        ChemicalHelper.get(TagPrefix.dust, AstralMaterials.ASTRAL_FILAMENT, result.filamentCount())));
+                .of(EmiStack.of(ChemicalHelper.get(TagPrefix.dust, AstralMaterials.ASTRAL_FILAMENT, result.filamentCount())));
     }
 
     @Override
@@ -37,8 +37,7 @@ public class AstralRitualEmiRecipe extends BasicEmiRecipe {
         widgets.addSlot(inputs.get(0), 4, 12).drawBack(true);
         widgets.addText(Component.literal("→"), 38, 18, 0xFFFFFF, false);
         widgets.addSlot(outputs.get(0), 54, 12).drawBack(true).recipeContext(this);
-        widgets.addText(
-                Component.literal("or +" + result.threadAmount() + " Thread").withStyle(ChatFormatting.LIGHT_PURPLE),
+        widgets.addText(Component.literal("or +" + result.threadAmount() + " Thread").withStyle(ChatFormatting.LIGHT_PURPLE),
                 4, 30, 0x9C6CE0, false);
 
         widgets.addTooltipText(

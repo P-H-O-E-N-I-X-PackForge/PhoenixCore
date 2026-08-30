@@ -5,13 +5,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class DisciplineProgressionData extends SavedData {
-
     private static final String ID = "conflux_dimension_progression";
 
     private final Map<UUID, ProgressionState> progressions = new HashMap<>();
@@ -45,7 +43,6 @@ public class DisciplineProgressionData extends SavedData {
     }
 
     public static class ProgressionState {
-
         public String disciplineId;
         public String currentStage;
         public final Set<String> unlockedStages;

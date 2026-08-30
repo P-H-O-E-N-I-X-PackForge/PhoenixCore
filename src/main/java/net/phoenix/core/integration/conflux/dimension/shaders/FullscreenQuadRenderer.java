@@ -1,7 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -9,23 +14,23 @@ import org.lwjgl.opengl.GL30;
 
 public class FullscreenQuadRenderer {
 
-    private static final int VERTEX_COUNT = 6;
+    private static final int VERTEX_COUNT = 6; 
     private int vertexArrayObject = -1;
     private int vertexBufferObject = -1;
 
     private static final float[] QUAD_VERTICES = {
+        
+        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,  
+        1.0f, -1.0f, 0.0f,   1.0f, 0.0f,  
+        1.0f, 1.0f, 0.0f,    1.0f, 1.0f,  
 
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,  
+        1.0f, 1.0f, 0.0f,    1.0f, 1.0f,  
+        -1.0f, 1.0f, 0.0f,   0.0f, 1.0f   
     };
 
     public void init() {
-        if (vertexArrayObject != -1) return;
+        if (vertexArrayObject != -1) return; 
 
         try {
 

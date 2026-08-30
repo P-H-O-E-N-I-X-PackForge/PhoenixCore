@@ -28,8 +28,12 @@ public class ColorRadialMenuScreen extends Screen {
     private static final int BTN_W = 110;
     private static final int BTN_H = 20;
 
+    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cAccent, cText, cBorder, cPanel;
 
+    // The wheel + custom-effects button below it needs a fixed amount of room around screen
+    // center; below that we shrink the whole screen via a pose scale (same idea as the rest of
+    // the Phoenix Suite) instead of letting the un-clamped radius/button run off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 
@@ -122,8 +126,7 @@ public class ColorRadialMenuScreen extends Screen {
         boolean hoveringCustom = mouseX >= buttonX && mouseX <= buttonX + BTN_W && mouseY >= buttonY &&
                 mouseY <= buttonY + BTN_H;
 
-        guiGraphics.fill(buttonX, buttonY, buttonX + BTN_W, buttonY + BTN_H,
-                hoveringCustom ? cPanel : (cPanel & 0x00FFFFFF) | 0x77000000);
+        guiGraphics.fill(buttonX, buttonY, buttonX + BTN_W, buttonY + BTN_H, hoveringCustom ? cPanel : (cPanel & 0x00FFFFFF) | 0x77000000);
         guiGraphics.renderOutline(buttonX, buttonY, BTN_W, BTN_H, cBorder);
 
         guiGraphics.drawCenteredString(this.font, "Chromatic Effects", centerX, buttonY + 6, cText);

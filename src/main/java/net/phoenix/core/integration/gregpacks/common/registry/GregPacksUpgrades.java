@@ -1,9 +1,8 @@
 package net.phoenix.core.integration.gregpacks.common.registry;
 
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.phoenix.core.integration.gregpacks.common.item.UpgradeItem;
 import net.phoenix.core.integration.gregpacks.common.item.UpgradeType;
-
-import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 

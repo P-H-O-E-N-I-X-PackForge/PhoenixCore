@@ -3,6 +3,7 @@ package net.phoenix.core.shop;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
+
 import net.phoenix.core.shop.reward.ShopReward;
 import net.phoenix.core.shop.reward.ShopRewardTypes;
 
@@ -30,7 +31,7 @@ public class ShopEntry {
     }
 
     public static ShopEntry create(String name, ItemStack icon, int cost, List<ShopReward> rewards,
-                                   String category) {
+            String category) {
         return new ShopEntry(UUID.randomUUID(), name, icon, cost, rewards, category);
     }
 

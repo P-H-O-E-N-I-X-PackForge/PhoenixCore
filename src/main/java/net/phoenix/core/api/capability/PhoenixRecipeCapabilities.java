@@ -2,8 +2,8 @@ package net.phoenix.core.api.capability;
 
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
-import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapability;
 import net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability;
+import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapability;
 
 @SuppressWarnings("all")
 public class PhoenixRecipeCapabilities {

@@ -1,15 +1,16 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.phoenix.core.integration.conflux.network.C2SResearchUnlockPacket;
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.conflux.research.ResearchUnlock;
 import net.phoenix.core.integration.conflux.research.WorldResearchData;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -50,8 +51,7 @@ public class ConfluxProgressionEvents {
 
                 WorldProgressionApplier.applyWorldStageToTeam(level, teamId, stageName);
 
-                WorldProgressionApplier.applyBiomeColorTransition(level, discipline, getPreviousStage(theme),
-                        stageName);
+                WorldProgressionApplier.applyBiomeColorTransition(level, discipline, getPreviousStage(theme), stageName);
                 WorldProgressionApplier.applyStructureRetheming(level, discipline, stageName);
                 WorldProgressionApplier.applySkyboxTransition(level, discipline, stageName);
             }
@@ -67,17 +67,19 @@ public class ConfluxProgressionEvents {
 
     @Nullable
     private static UUID getTeamIdForPlayer(ServerPlayer player) {
+
         if (net.minecraftforge.fml.ModList.get().isLoaded("ftbteams")) {
             try {
                 return getTeamFromFTB(player);
             } catch (Exception e) {
-
+                
             }
         }
         return null;
     }
 
     private static UUID getTeamFromFTB(ServerPlayer player) {
+        
         return null;
     }
 }

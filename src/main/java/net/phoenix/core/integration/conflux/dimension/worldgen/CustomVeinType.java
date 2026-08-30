@@ -3,6 +3,7 @@ package net.phoenix.core.integration.conflux.dimension.worldgen;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class CustomVeinType {
 
@@ -15,11 +16,11 @@ public abstract class CustomVeinType {
     }
 
     public abstract void generate(
-                                  WorldGenLevel level,
-                                  int chunkX,
-                                  int chunkZ,
-                                  RandomSource random,
-                                  VeinGenerationContext context);
+            WorldGenLevel level,
+            int chunkX,
+            int chunkZ,
+            RandomSource random,
+            VeinGenerationContext context);
 
     public String getName() {
         return name;
@@ -30,7 +31,6 @@ public abstract class CustomVeinType {
     }
 
     public static class VeinGenerationContext {
-
         public final String materialName;
         public final int minY;
         public final int maxY;
@@ -38,11 +38,11 @@ public abstract class CustomVeinType {
         public final BlockState blockState;
 
         public VeinGenerationContext(
-                                     String materialName,
-                                     int minY,
-                                     int maxY,
-                                     int density,
-                                     BlockState blockState) {
+                String materialName,
+                int minY,
+                int maxY,
+                int density,
+                BlockState blockState) {
             this.materialName = materialName;
             this.minY = minY;
             this.maxY = maxY;

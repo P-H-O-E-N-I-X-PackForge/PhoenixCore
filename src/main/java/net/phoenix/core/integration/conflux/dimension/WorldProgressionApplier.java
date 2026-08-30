@@ -1,13 +1,15 @@
 package net.phoenix.core.integration.conflux.dimension;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
-
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class WorldProgressionApplier {
@@ -27,6 +29,7 @@ public class WorldProgressionApplier {
     }
 
     private static void markChunksForUpdate(ServerLevel level, UUID teamId, String newStage) {
+
         int viewDistance = level.getServer().getPlayerList().getViewDistance();
 
         for (ServerPlayer player : level.players()) {
@@ -44,15 +47,14 @@ public class WorldProgressionApplier {
 
                     level.getChunkSource().blockChanged(
                             new BlockPos(levelChunk.getPos().getMinBlockX(),
-                                    level.getMinBuildHeight(),
-                                    levelChunk.getPos().getMinBlockZ()));
+                                         level.getMinBuildHeight(),
+                                         levelChunk.getPos().getMinBlockZ()));
                 }
             }
         }
     }
 
-    public static void applyBiomeColorTransition(ServerLevel level, String disciplineId, String fromStage,
-                                                 String toStage) {
+    public static void applyBiomeColorTransition(ServerLevel level, String disciplineId, String fromStage, String toStage) {
         DisciplineTheme theme = DisciplineThemeRegistry.getTheme(disciplineId);
         if (theme == null) return;
 
@@ -60,16 +62,19 @@ public class WorldProgressionApplier {
         DisciplineTheme.ColorProgression toColor = findColorProgression(theme, toStage);
 
         if (fromColor == null || toColor == null) return;
+
     }
 
     public static void applyStructureRetheming(ServerLevel level, String disciplineId, String newStage) {
         DisciplineTheme theme = DisciplineThemeRegistry.getTheme(disciplineId);
         if (theme == null) return;
+
     }
 
     public static void applySkyboxTransition(ServerLevel level, String disciplineId, String newStage) {
         DisciplineTheme theme = DisciplineThemeRegistry.getTheme(disciplineId);
         if (theme == null) return;
+
     }
 
     @Nullable

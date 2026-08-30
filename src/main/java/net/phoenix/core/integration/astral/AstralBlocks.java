@@ -9,10 +9,12 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlock;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
@@ -64,8 +66,7 @@ public class AstralBlocks {
 
         beHolder[0] = ASTRAL_RITUAL_PEDESTAL_BE;
 
-        ITEMS.register("astral_ritual_pedestal",
-                () -> new BlockItem(ASTRAL_RITUAL_PEDESTAL.get(), new Item.Properties()));
+        ITEMS.register("astral_ritual_pedestal", () -> new BlockItem(ASTRAL_RITUAL_PEDESTAL.get(), new Item.Properties()));
     }
 
     public static void registerDeferred(IEventBus bus) {

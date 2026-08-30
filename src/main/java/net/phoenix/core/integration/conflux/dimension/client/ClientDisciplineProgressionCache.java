@@ -1,24 +1,23 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientDisciplineProgressionCache {
-
     private static final Map<UUID, CachedProgression> progressionCache = new HashMap<>();
     private static String currentDiscipline;
     private static String currentStage = "initial";
 
     public static class CachedProgression {
-
         public String disciplineId;
         public String currentStage;
         public Set<String> unlockedStages;
@@ -32,8 +31,7 @@ public class ClientDisciplineProgressionCache {
         }
     }
 
-    public static void updateProgression(UUID teamId, String disciplineId, String currentStage,
-                                         Set<String> unlockedStages) {
+    public static void updateProgression(UUID teamId, String disciplineId, String currentStage, Set<String> unlockedStages) {
         CachedProgression prog = progressionCache.computeIfAbsent(teamId, k -> new CachedProgression(disciplineId));
         prog.currentStage = currentStage;
         prog.unlockedStages.addAll(unlockedStages);

@@ -15,8 +15,8 @@ public class PhysicsRegistry {
 
     public void registerGravityZone(String dimensionId, GravityZone zone) {
         gravityZonesByDimension
-                .computeIfAbsent(dimensionId, k -> new ArrayList<>())
-                .add(zone);
+            .computeIfAbsent(dimensionId, k -> new ArrayList<>())
+            .add(zone);
 
         System.out.println("[PhoenixCore] Registered gravity zone: " + zone);
     }
@@ -38,8 +38,8 @@ public class PhysicsRegistry {
 
     public void registerPlatform(String dimensionId, MovingPlatform platform) {
         platformsByDimension
-                .computeIfAbsent(dimensionId, k -> new ArrayList<>())
-                .add(platform);
+            .computeIfAbsent(dimensionId, k -> new ArrayList<>())
+            .add(platform);
 
         System.out.println("[PhoenixCore] Registered platform: " + platform);
     }
@@ -71,14 +71,14 @@ public class PhysicsRegistry {
 
     public int getTotalGravityZones() {
         return gravityZonesByDimension.values().stream()
-                .mapToInt(List::size)
-                .sum();
+            .mapToInt(List::size)
+            .sum();
     }
 
     public int getTotalPlatforms() {
         return platformsByDimension.values().stream()
-                .mapToInt(List::size)
-                .sum();
+            .mapToInt(List::size)
+            .sum();
     }
 
     public void logStatistics() {

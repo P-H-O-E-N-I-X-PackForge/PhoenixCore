@@ -12,6 +12,7 @@ public class PhoenixMaterialLangHandler {
         provider.add("tagprefix.tier_three_bee", "%s Stronk Bee");
         provider.add("tagprefix.honeycomb_block", "%s Rich Honey Comb (Block)");
         provider.add("tagprefix.honeycomb", "%s Rich Honey Comb");
+
     }
 
     private static String formatName(String name) {

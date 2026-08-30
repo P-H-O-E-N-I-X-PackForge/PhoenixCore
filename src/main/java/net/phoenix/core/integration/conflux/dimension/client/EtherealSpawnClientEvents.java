@@ -1,11 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.phoenix.core.integration.conflux.client.DisciplinePickerScreen;
 import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
 
@@ -37,7 +37,7 @@ public class EtherealSpawnClientEvents {
 
     private static boolean isInEtherealSpawn(Minecraft mc) {
         if (mc.level == null) return false;
-
+        
         return mc.level.dimension().equals(EtherealSpawnDimension.DIMENSION_KEY);
     }
 

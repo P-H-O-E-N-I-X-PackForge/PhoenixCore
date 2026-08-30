@@ -2,6 +2,7 @@ package net.phoenix.core.integration.vocal_resonance.ingredient;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
@@ -89,4 +90,5 @@ public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIn
         WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getBlockPos());
         return (data != null && (data.bpm > 0 || data.bass > 0f || data.mid > 0f || data.treble > 0f)) ? 1.0 : 0.0;
     }
+
 }

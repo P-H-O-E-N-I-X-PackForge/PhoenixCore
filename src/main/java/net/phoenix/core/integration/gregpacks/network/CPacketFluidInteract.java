@@ -47,17 +47,14 @@ public class CPacketFluidInteract {
 
                 if (!result.isSuccess()) {
                     result = carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(itemHandler -> {
-
-                        int moved = FluidUtil.tryFluidTransfer(packHandler, itemHandler, Integer.MAX_VALUE, true)
-                                .getAmount();
-                        return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) :
-                                FluidActionResult.FAILURE;
+                        
+                        int moved = FluidUtil.tryFluidTransfer(packHandler, itemHandler, Integer.MAX_VALUE, true).getAmount();
+                        return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) : FluidActionResult.FAILURE;
                     }).orElse(FluidActionResult.FAILURE);
                 }
             } else {
                 result = carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(itemHandler -> {
-                    int moved = FluidUtil.tryFluidTransfer(itemHandler, packHandler, Integer.MAX_VALUE, true)
-                            .getAmount();
+                    int moved = FluidUtil.tryFluidTransfer(itemHandler, packHandler, Integer.MAX_VALUE, true).getAmount();
                     return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) : FluidActionResult.FAILURE;
                 }).orElse(FluidActionResult.FAILURE);
 

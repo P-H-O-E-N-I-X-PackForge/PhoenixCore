@@ -138,8 +138,8 @@ public class WorldResearchData extends SavedData {
                 }
                 case "world_stage" -> {
                     if (terminal.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData progData = net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData
-                                .get(serverLevel);
+                        net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData progData =
+                            net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData.get(serverLevel);
                         progData.unlockWorldStage(team, unlock.value());
                     }
                 }

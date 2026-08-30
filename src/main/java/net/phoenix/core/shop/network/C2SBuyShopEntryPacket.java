@@ -5,6 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+
 import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.shop.ShopEntry;
 import net.phoenix.core.shop.WorldShopData;
@@ -55,8 +56,7 @@ public class C2SBuyShopEntryPacket {
             }
 
             player.getInventory().clearOrCountMatchingItems(
-                    stack -> stack.getItem() == PhoenixItems.PHOENIX_FEATHER.get(), entry.cost,
-                    player.inventoryMenu.getCraftSlots());
+                    stack -> stack.getItem() == PhoenixItems.PHOENIX_FEATHER.get(), entry.cost, player.inventoryMenu.getCraftSlots());
 
             for (var reward : entry.rewards) reward.grant(player);
             player.displayClientMessage(

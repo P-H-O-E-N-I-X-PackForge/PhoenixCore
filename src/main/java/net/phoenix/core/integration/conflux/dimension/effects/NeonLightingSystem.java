@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.effects;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class NeonLightingSystem {
@@ -42,7 +41,7 @@ public class NeonLightingSystem {
                         var block = blockState.getBlock();
 
                         if (isNeonBlock(block)) {
-
+                            
                             applyNeonEffectToBlock(level, pos, getNeonColor(block), intensity);
                         }
                     }
@@ -52,17 +51,18 @@ public class NeonLightingSystem {
     }
 
     private boolean isNeonBlock(net.minecraft.world.level.block.Block block) {
+        
         String blockName = block.getName().getString().toLowerCase();
 
         return blockName.contains("light") ||
-                blockName.contains("lamp") ||
-                blockName.contains("glow") ||
-                blockName.contains("glowstone") ||
-                blockName.contains("amethyst") ||
-                blockName.contains("neon") ||
-                block == Blocks.AMETHYST_CLUSTER ||
-                block == Blocks.GLOWSTONE ||
-                block == Blocks.SHROOMLIGHT;
+               blockName.contains("lamp") ||
+               blockName.contains("glow") ||
+               blockName.contains("glowstone") ||
+               blockName.contains("amethyst") ||
+               blockName.contains("neon") ||
+               block == Blocks.AMETHYST_CLUSTER ||
+               block == Blocks.GLOWSTONE ||
+               block == Blocks.SHROOMLIGHT;
     }
 
     private int getNeonColor(net.minecraft.world.level.block.Block block) {
@@ -84,13 +84,23 @@ public class NeonLightingSystem {
         };
     }
 
-    private void applyNeonEffectToBlock(Level level, BlockPos pos, int color, float intensity) {}
+    private void applyNeonEffectToBlock(Level level, BlockPos pos, int color, float intensity) {
 
-    private void spawnNeonParticles(Level level, BlockPos center) {}
+    }
 
-    public void createNeonSign(Level level, BlockPos pos, String text, int color) {}
+    private void spawnNeonParticles(Level level, BlockPos center) {
 
-    public void pulsateNeon(BlockPos center, float frequency) {}
+    }
 
-    public void createLightBeam(Level level, BlockPos start, BlockPos end, int color) {}
+    public void createNeonSign(Level level, BlockPos pos, String text, int color) {
+
+    }
+
+    public void pulsateNeon(BlockPos center, float frequency) {
+
+    }
+
+    public void createLightBeam(Level level, BlockPos start, BlockPos end, int color) {
+
+    }
 }

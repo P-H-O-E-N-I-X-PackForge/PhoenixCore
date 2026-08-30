@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
+
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultContainerMenu;
 import net.phoenix.core.integration.gregvaults.common.blocks.CoreTier;
@@ -43,7 +44,6 @@ import java.util.*;
 public class VaultMachine extends MultiblockControllerMachine {
 
     public enum VaultTier {
-
         BRONZE,
         STEEL,
         TITANIUM;
@@ -109,7 +109,6 @@ public class VaultMachine extends MultiblockControllerMachine {
 
     private ItemStackHandler createHandler(int size) {
         return new ItemStackHandler(size) {
-
             @Override
             protected void onContentsChanged(int slot) {
                 markAsChanged();
@@ -327,8 +326,7 @@ public class VaultMachine extends MultiblockControllerMachine {
             MenuProvider provider = new SimpleMenuProvider(
                     (windowId, playerInv, p) -> {
                         windowIdHolder[0] = windowId;
-                        VaultContainerMenu menu = new VaultContainerMenu(windowId, playerInv, itemHandler,
-                                VaultMachine.this);
+                        VaultContainerMenu menu = new VaultContainerMenu(windowId, playerInv, itemHandler, VaultMachine.this);
                         menu.initCraftingGrid(savedCraftingGrid);
                         menu.setOnGridClose(grid -> {
                             savedCraftingGrid = grid;

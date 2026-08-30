@@ -1,12 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.audio;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Player;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class AudioEventHook {
@@ -39,7 +39,7 @@ public class AudioEventHook {
             onDimensionChanged(currentDimension);
         }
 
-        AudioManager.getInstance().updateAmbience(0.05f);
+        AudioManager.getInstance().updateAmbience(0.05f); 
     }
 
     private static void initializeAudio() {
@@ -135,6 +135,7 @@ public class AudioEventHook {
     }
 
     private static String getDimensionId(Level level) {
+
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

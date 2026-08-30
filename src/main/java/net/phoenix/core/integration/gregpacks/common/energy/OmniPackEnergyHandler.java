@@ -21,7 +21,7 @@ public class OmniPackEnergyHandler implements IEnergyStorage {
     public int getMaxEnergyStored() {
         OmniPackInventory upgradeInv = OmniPackInventory.fromUpgradeItem(container, tier.defaultMaxUpgrades);
         UpgradeEffects effects = new UpgradeEffects(tier, upgradeInv);
-
+        
         return (int) Math.min(effects.totalEnergyStorage, Integer.MAX_VALUE);
     }
 

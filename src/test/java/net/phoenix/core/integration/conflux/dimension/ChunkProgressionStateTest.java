@@ -1,7 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension;
 
 import net.minecraft.nbt.CompoundTag;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +49,7 @@ public class ChunkProgressionStateTest {
         assertFalse(chunkState.isDirty());
 
         chunkState.applyMilestone("thermal_recursion");
-        assertFalse(chunkState.isDirty());
+        assertFalse(chunkState.isDirty()); 
     }
 
     @Test
@@ -69,6 +68,7 @@ public class ChunkProgressionStateTest {
 
     @Test
     public void testNBTDeserialization() {
+        
         chunkState.applyMilestone("thermal_recursion");
         chunkState.applyMilestone("molten_path");
 

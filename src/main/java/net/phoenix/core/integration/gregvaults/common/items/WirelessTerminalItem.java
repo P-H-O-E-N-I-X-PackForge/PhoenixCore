@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.items;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -23,8 +23,6 @@ import net.minecraftforge.network.NetworkHooks;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
-
-import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

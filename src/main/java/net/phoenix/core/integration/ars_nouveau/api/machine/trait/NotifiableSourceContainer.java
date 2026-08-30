@@ -3,6 +3,7 @@ package net.phoenix.core.integration.ars_nouveau.api.machine.trait;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -180,4 +181,5 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
         this.getSyncDataHolder().markClientSyncFieldDirty("currentSource");
         return extracted;
     }
+
 }

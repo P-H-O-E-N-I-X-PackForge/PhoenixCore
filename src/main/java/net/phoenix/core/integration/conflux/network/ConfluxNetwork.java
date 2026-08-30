@@ -48,15 +48,13 @@ public final class ConfluxNetwork {
                 S2CResearchSyncPacket::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
-        CHANNEL.registerMessage(id++,
-                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.class,
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.class,
                 net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::toBytes,
                 net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::new,
                 net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
-        CHANNEL.registerMessage(id++,
-                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.class,
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.class,
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::toBytes,
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::new,
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::handle,

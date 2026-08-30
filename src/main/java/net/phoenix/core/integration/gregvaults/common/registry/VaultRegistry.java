@@ -3,7 +3,8 @@ package net.phoenix.core.integration.gregvaults.common.registry;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
-
+import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.inventory.MenuType;
@@ -21,9 +22,6 @@ import net.phoenix.core.integration.gregvaults.common.blocks.VaultCoreBlock;
 import net.phoenix.core.integration.gregvaults.common.items.VaultLinkables;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultInterfacePart;
-
-import com.tterrag.registrate.util.entry.BlockEntry;
-import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 

@@ -23,7 +23,8 @@ public class DroneConfig {
 
     public void removeGroup(String groupId) {
         groups.removeIf(g -> g.id().equals(groupId));
-        assignments.replaceAll((pos, a) -> a.groupId().equals(groupId) ? new MachineAssignment("", a.priority()) : a);
+        assignments.replaceAll((pos, a) -> a.groupId().equals(groupId) ? new MachineAssignment("", a.priority())
+                : a);
     }
 
     public void setGroupPriorityFloor(String groupId, int floor) {

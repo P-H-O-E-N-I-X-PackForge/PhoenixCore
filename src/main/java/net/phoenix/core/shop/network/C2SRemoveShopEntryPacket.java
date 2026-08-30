@@ -3,6 +3,7 @@ package net.phoenix.core.shop.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+
 import net.phoenix.core.shop.WorldShopData;
 
 import java.util.UUID;

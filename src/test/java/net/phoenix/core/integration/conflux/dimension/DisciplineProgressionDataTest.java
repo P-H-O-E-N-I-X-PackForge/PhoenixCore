@@ -2,8 +2,8 @@ package net.phoenix.core.integration.conflux.dimension;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +63,7 @@ public class DisciplineProgressionDataTest {
 
     @Test
     public void testNBTDeserialization() {
+        
         progressionData.setProgression(testTeamId, "sculk", "initial");
         progressionData.unlockWorldStage(testTeamId, "sculk_resonance");
 

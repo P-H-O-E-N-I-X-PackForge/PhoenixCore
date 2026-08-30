@@ -53,11 +53,11 @@ public class ClientTickHandler {
         }
 
         while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
-            net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager = net.phoenix.core.integration.conflux.dimension.sky.SkyManager
-                    .getInstance();
+            net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager =
+                    net.phoenix.core.integration.conflux.dimension.sky.SkyManager.getInstance();
             manager.toggleSkyRendering();
-            mc.player.displayClientMessage(Component.literal(
-                    "[PhoenixCore] Discipline sky shaders: " + (manager.isSkyRenderingEnabled() ? "ON" : "OFF")), true);
+            mc.player.displayClientMessage(Component.literal("[PhoenixCore] Discipline sky shaders: "
+                    + (manager.isSkyRenderingEnabled() ? "ON" : "OFF")), true);
         }
 
         while (PhoenixKeybinds.SHOW_SHADER_PROFILER.consumeClick()) {
@@ -65,8 +65,8 @@ public class ClientTickHandler {
             if (!net.phoenix.core.client.worldfx.ShaderProfiler.enabled) {
                 net.phoenix.core.client.worldfx.ShaderProfiler.clear();
             }
-            mc.player.displayClientMessage(Component.literal("[PhoenixCore] Shader profiler HUD: " +
-                    (net.phoenix.core.client.worldfx.ShaderProfiler.enabled ? "ON" : "OFF")), true);
+            mc.player.displayClientMessage(Component.literal("[PhoenixCore] Shader profiler HUD: "
+                    + (net.phoenix.core.client.worldfx.ShaderProfiler.enabled ? "ON" : "OFF")), true);
         }
 
         while (PhoenixKeybinds.OPEN_RECIPE_BUILDER.consumeClick()) {

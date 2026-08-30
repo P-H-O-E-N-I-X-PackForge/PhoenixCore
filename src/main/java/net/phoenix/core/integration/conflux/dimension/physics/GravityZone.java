@@ -1,8 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.AABB;
 
 public class GravityZone {
 
@@ -19,8 +20,9 @@ public class GravityZone {
         this.gravityMultiplier = gravityMultiplier;
         this.dimensionId = dimensionId;
         this.bounds = new AABB(
-                center.x - radius, center.y - radius, center.z - radius,
-                center.x + radius, center.y + radius, center.z + radius);
+            center.x - radius, center.y - radius, center.z - radius,
+            center.x + radius, center.y + radius, center.z + radius
+        );
         this.isActive = true;
     }
 
@@ -57,29 +59,15 @@ public class GravityZone {
         entity.setDeltaMovement(velocity.x, newY, velocity.z);
     }
 
-    public Vec3 getCenter() {
-        return center;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public float getGravityMultiplier() {
-        return gravityMultiplier;
-    }
-
-    public String getDimensionId() {
-        return dimensionId;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
+    public Vec3 getCenter() { return center; }
+    public double getRadius() { return radius; }
+    public float getGravityMultiplier() { return gravityMultiplier; }
+    public String getDimensionId() { return dimensionId; }
+    public boolean isActive() { return isActive; }
 
     @Override
     public String toString() {
         return String.format("GravityZone[center=%.1f,%.1f,%.1f radius=%.1f gravity=%.2f]",
-                center.x, center.y, center.z, radius, gravityMultiplier);
+            center.x, center.y, center.z, radius, gravityMultiplier);
     }
 }

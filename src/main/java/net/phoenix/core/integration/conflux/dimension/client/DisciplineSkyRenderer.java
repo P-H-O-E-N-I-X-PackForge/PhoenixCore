@@ -1,13 +1,17 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.integration.conflux.dimension.DisciplineTheme;
 import net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.lwjgl.opengl.GL11;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class DisciplineSkyRenderer {
@@ -28,7 +32,7 @@ public class DisciplineSkyRenderer {
         if (skyboxProfile != null) {
             return skyboxProfile.skyColor;
         }
-        return 0xFF8080FF;
+        return 0xFF8080FF; 
     }
 
     public static int getFogColor() {
@@ -67,6 +71,7 @@ public class DisciplineSkyRenderer {
     }
 
     private static void renderSunsetSky(PoseStack poseStack, float partialTick) {
+        
         float cycle = (System.currentTimeMillis() % 24000) / 24000.0f;
         float intensity = (float) Math.sin(cycle * Math.PI);
 
@@ -74,6 +79,7 @@ public class DisciplineSkyRenderer {
     }
 
     private static void renderBioluminescentSky(PoseStack poseStack, float partialTick) {
+        
         float cycle = (System.currentTimeMillis() % 8000) / 8000.0f;
         float glow = 0.5f + 0.5f * (float) Math.sin(cycle * Math.PI * 2);
 
@@ -82,11 +88,13 @@ public class DisciplineSkyRenderer {
     }
 
     private static void renderStellarSky(PoseStack poseStack, float partialTick) {
+        
         renderGradientSky(poseStack, 0xFF4B0082, 0xFF0B0014, 1.0f);
         renderStars(poseStack);
     }
 
     private static void renderDistortedSky(PoseStack poseStack, float partialTick) {
+        
         float time = System.currentTimeMillis() / 1000.0f;
         int glitchR = (int) (Math.sin(time * 2.3) * 127 + 128);
         int glitchG = (int) (Math.cos(time * 1.7) * 127 + 128);
@@ -97,6 +105,7 @@ public class DisciplineSkyRenderer {
     }
 
     private static void renderGradientSky(PoseStack poseStack, int topColor, int bottomColor, float intensity) {
+
         float r1 = ((topColor >> 16) & 0xFF) / 255.0f * intensity;
         float g1 = ((topColor >> 8) & 0xFF) / 255.0f * intensity;
         float b1 = (topColor & 0xFF) / 255.0f * intensity;
@@ -110,9 +119,13 @@ public class DisciplineSkyRenderer {
         RenderSystem.setShaderFogColor(r2, g2, b2, 1.0f);
     }
 
-    private static void renderGlowingParticles(PoseStack poseStack, float time) {}
+    private static void renderGlowingParticles(PoseStack poseStack, float time) {
 
-    private static void renderStars(PoseStack poseStack) {}
+    }
+
+    private static void renderStars(PoseStack poseStack) {
+
+    }
 
     public static void reset() {
         currentDiscipline = null;

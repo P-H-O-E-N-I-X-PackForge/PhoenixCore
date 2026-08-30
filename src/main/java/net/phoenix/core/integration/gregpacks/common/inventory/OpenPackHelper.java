@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkHooks;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
-
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPackHelper {
@@ -37,9 +36,9 @@ public class OpenPackHelper {
                 return menu;
             }
         }, buf -> {
-            buf.writeShort(effects.totalSlots);
-            buf.writeByte(tier.defaultMaxUpgrades);
-            buf.writeByte(tier.ordinal());
+            buf.writeShort(effects.totalSlots);          
+            buf.writeByte(tier.defaultMaxUpgrades);      
+            buf.writeByte(tier.ordinal());               
         });
     }
 

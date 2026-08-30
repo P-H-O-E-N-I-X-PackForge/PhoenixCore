@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.gregpacks.datagen;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.phoenix.core.PhoenixCore;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;

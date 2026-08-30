@@ -46,10 +46,8 @@ public class PhoenixRecipeTypes {
 
         ASTRAL_WEAVING_RECIPES = register("astral_weaving", MULTIBLOCK)
                 .setMaxIOSize(2, 2, 2, 2)
-                .setMaxSize(IO.IN, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP,
-                        1)
-                .setMaxSize(IO.OUT, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP,
-                        1)
+                .setMaxSize(IO.IN, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP, 1)
+                .setMaxSize(IO.OUT, net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability.CAP, 1)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))

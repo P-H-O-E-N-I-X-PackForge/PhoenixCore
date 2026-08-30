@@ -1,11 +1,10 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
-
-import com.mojang.serialization.Codec;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -18,9 +17,9 @@ public class ProgressionAwareBiomeProvider extends BiomeSource {
     private final Holder<Biome> defaultBiome;
 
     public ProgressionAwareBiomeProvider(
-                                         String disciplineId,
-                                         UUID teamId,
-                                         Holder<Biome> defaultBiome) {
+            String disciplineId,
+            UUID teamId,
+            Holder<Biome> defaultBiome) {
         super();
         this.disciplineId = disciplineId;
         this.teamId = teamId;
@@ -49,6 +48,7 @@ public class ProgressionAwareBiomeProvider extends BiomeSource {
     }
 
     private Holder<Biome> getBiomeForProgression(int quartX, int quartZ) {
+        
         return defaultBiome;
     }
 

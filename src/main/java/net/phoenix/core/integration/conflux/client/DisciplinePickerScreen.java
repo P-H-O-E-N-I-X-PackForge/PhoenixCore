@@ -17,14 +17,14 @@ public class DisciplinePickerScreen extends Screen {
     private static final float ARC_RADIUS = 380f;
 
     private record DisciplineCard(
-                                  String id,
-                                  String name,
-                                  String tagline,
-                                  String[] loreLines,
-                                  int accentColor,
-                                  int glowColor,
-                                  int bgColor,
-                                  boolean sealed) {}
+            String id,
+            String name,
+            String tagline,
+            String[] loreLines,
+            int accentColor,
+            int glowColor,
+            int bgColor,
+            boolean sealed) {}
 
     private static final DisciplineCard[] CARDS = {
             new DisciplineCard(
@@ -126,6 +126,9 @@ public class DisciplinePickerScreen extends Screen {
     private float confirmAlpha = 0f;
     private boolean confirming = false;
 
+    // The confirm-choice overlay is a fixed 360x220 with no clamp at all; below the room it needs
+    // we shrink the whole screen via a pose scale (same idea used across the rest of the Phoenix
+    // Suite) instead of letting it run off-screen.
     private static final int CONFIRM_W = 360;
     private static final int CONFIRM_H = 220;
     private float uiScale = 1f;
@@ -530,12 +533,12 @@ public class DisciplinePickerScreen extends Screen {
                             "§7. Entering your discipline realm..."),
                     false);
 
-            net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket choosePacket = new net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket(
-                    card.id);
+            net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket choosePacket =
+                    new net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket(card.id);
             net.phoenix.core.integration.conflux.network.ConfluxNetwork.CHANNEL.sendToServer(choosePacket);
 
-            net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket packet = new net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket(
-                    "enter");
+            net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket packet =
+                    new net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket("enter");
             net.phoenix.core.integration.conflux.network.ConfluxNetwork.CHANNEL.sendToServer(packet);
         }
         onClose();

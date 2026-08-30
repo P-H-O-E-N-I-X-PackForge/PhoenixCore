@@ -1,7 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,18 +18,19 @@ public class EtherealSpawnManager {
     }
 
     public static void initializeEtherealSpawnDimension(MinecraftServer server) {
+        
         ServerLevel etherealDim = server.getLevel(EtherealSpawnDimension.DIMENSION_KEY);
 
         if (etherealDim == null) {
 
             System.out.println("[PhoenixCore] Ethereal spawn dimension not found. " +
-                    "Ensure datapacks/dimension.json defines: " + EtherealSpawnDimension.DIMENSION_KEY);
+                "Ensure datapacks/dimension.json defines: " + EtherealSpawnDimension.DIMENSION_KEY);
             return;
         }
 
-        etherealDim.setSpawnSettings(true, true);
+        etherealDim.setSpawnSettings(true, true); 
         System.out.println("[PhoenixCore] Ethereal spawn dimension initialized at " +
-                EtherealSpawnDimension.DIMENSION_KEY);
+            EtherealSpawnDimension.DIMENSION_KEY);
     }
 
     public static ServerLevel getOrCreateEtherealDimension(MinecraftServer server) {

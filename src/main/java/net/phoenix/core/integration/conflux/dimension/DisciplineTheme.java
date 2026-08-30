@@ -1,15 +1,15 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import net.minecraft.resources.ResourceLocation;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class DisciplineTheme {
-
     public final String disciplineId;
     public final String displayName;
     public final BiomePalette biomePalette;
@@ -19,13 +19,13 @@ public class DisciplineTheme {
     public final net.phoenix.core.integration.conflux.dimension.worldgen.DisciplineWorldgenConfig worldgenConfig;
 
     public DisciplineTheme(
-                           String disciplineId,
-                           String displayName,
-                           BiomePalette biomePalette,
-                           StructureThemeSet structures,
-                           SkyboxProfile skybox,
-                           ColorProgression[] colorProgression,
-                           net.phoenix.core.integration.conflux.dimension.worldgen.DisciplineWorldgenConfig worldgenConfig) {
+            String disciplineId,
+            String displayName,
+            BiomePalette biomePalette,
+            StructureThemeSet structures,
+            SkyboxProfile skybox,
+            ColorProgression[] colorProgression,
+            net.phoenix.core.integration.conflux.dimension.worldgen.DisciplineWorldgenConfig worldgenConfig) {
         this.disciplineId = disciplineId;
         this.displayName = displayName;
         this.biomePalette = biomePalette;
@@ -65,7 +65,6 @@ public class DisciplineTheme {
     }
 
     public static class BiomePalette {
-
         public final List<StageEntry> stages;
         public final Map<String, ResourceLocation> defaultBiomes;
 
@@ -93,7 +92,6 @@ public class DisciplineTheme {
         }
 
         public static class StageEntry {
-
             public final String stageName;
             public final List<ResourceLocation> biomes;
 
@@ -114,7 +112,6 @@ public class DisciplineTheme {
     }
 
     public static class StructureThemeSet {
-
         public final Map<String, String> structureTextures;
         public final float particleDensity;
 
@@ -137,7 +134,6 @@ public class DisciplineTheme {
     }
 
     public static class SkyboxProfile {
-
         public final int skyColor;
         public final int fogColor;
         public final float fogDensity;
@@ -164,7 +160,6 @@ public class DisciplineTheme {
     }
 
     public static class ColorProgression {
-
         public final String milestone;
         public final int grassColor;
         public final int waterColor;

@@ -6,6 +6,11 @@ import net.phoenix.core.client.worldfx.ShaderProfiler;
 
 import java.util.Map;
 
+/**
+ * Displays ShaderProfiler's per-shader timing in the top-left corner, only while
+ * ShaderProfiler.enabled is on (toggled via PhoenixKeybinds.SHOW_SHADER_PROFILER) - a direct
+ * answer to "which discipline sky shader is actually costing FPS" instead of guessing.
+ */
 public class ShaderProfilerOverlay {
 
     public static final IGuiOverlay HUD_SHADER_PROFILER = (gui, guiGraphics, partialTick, width, height) -> {

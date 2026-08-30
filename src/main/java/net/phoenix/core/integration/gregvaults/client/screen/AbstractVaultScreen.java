@@ -17,49 +17,51 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
-                                         extends AbstractContainerScreen<T> {
+        extends AbstractContainerScreen<T> {
 
-    protected static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft",
-            "textures/gui/container/generic_54.png");
-    protected static final ResourceLocation ARROW_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/crafting_table.png");
-    protected static final ResourceLocation SORT_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/sort_inventory.png");
-    protected static final ResourceLocation STACKED_VIEW_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/stacked_view.png");
-    protected static final ResourceLocation SLOT_VIEW_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/slot_view.png");
-    protected static final ResourceLocation A_FIRST_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/a_first.png");
-    protected static final ResourceLocation Z_FIRST_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/z_first.png");
-    protected static final ResourceLocation HIGHEST_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/highest_first.png");
-    protected static final ResourceLocation LOWEST_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "textures/gui/overlay/lowest_first.png");
+    protected static final ResourceLocation TEXTURE =
+            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/generic_54.png");
+    protected static final ResourceLocation ARROW_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/crafting_table.png");
+    protected static final ResourceLocation SORT_TEXTURE         = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/sort_inventory.png");
+    protected static final ResourceLocation STACKED_VIEW_TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/stacked_view.png");
+    protected static final ResourceLocation SLOT_VIEW_TEXTURE    = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/slot_view.png");
+    protected static final ResourceLocation A_FIRST_TEXTURE      = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/a_first.png");
+    protected static final ResourceLocation Z_FIRST_TEXTURE      = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/z_first.png");
+    protected static final ResourceLocation HIGHEST_TEXTURE      = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/highest_first.png");
+    protected static final ResourceLocation LOWEST_TEXTURE       = ResourceLocation.fromNamespaceAndPath("phoenixcore","textures/gui/overlay/lowest_first.png");
 
-    protected static final int TEX_W = 176;
-    protected static final int TEX_TOP_H = 17;
-    protected static final int TEX_ROW_H = 18;
+    protected static final int TEX_W        = 176;
+    protected static final int TEX_TOP_H    = 17;
+    protected static final int TEX_ROW_H    = 18;
     protected static final int TEX_PLAYER_V = 125;
     protected static final int TEX_PLAYER_H = 96;
 
-    protected static final int SB_X = TEX_W + 2;
-    protected static final int SB_W = 12;
-    protected static final int SB_BTN = 12;
-    private static final int C_INACTIVE = 0x99111111;
+    protected static final int SB_X       = TEX_W + 2;
+    protected static final int SB_W       = 12;
+    protected static final int SB_BTN     = 12;
+    private   static final int C_INACTIVE  = 0x99111111;
 
+    // Refreshed from the shared Phoenix theme at the top of every render() call - the vanilla
+    // chest-style background texture stays as-is (re-theming it would mean drawing a whole custom
+    // panel instead of the familiar inventory chrome), but everything we draw ourselves - the
+    // scrollbar and the icon-button hover highlight - follows the user's chosen theme like the
+    // rest of the Phoenix Suite.
     private int cSbTrack, cSbThumb, cSbBtn, cAccent;
 
     protected static final int BTN_X_OFFSET = -20;
-    protected static final int BTN_SIZE = 18;
-    protected static final int BTN_GAP = 2;
+    protected static final int BTN_SIZE     = 18;
+    protected static final int BTN_GAP      = 2;
 
+    // Minimum on-screen real-estate the fixed-size vault panel needs; below this (small window or
+    // high GUI scale, especially for a large vault with many visible rows) we shrink the whole
+    // screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead of
+    // letting AbstractContainerScreen's un-clamped centering push leftPos/topPos negative and
+    // clip the panel off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 
     private record IconBtn(int relX, int relY, int size, Component tooltip, Runnable action) {
-
         boolean isHovered(int screenX, int screenY, int mx, int my) {
             int ax = screenX + relX, ay = screenY + relY;
             return mx >= ax && mx < ax + size && my >= ay && my < ay + size;
@@ -71,22 +73,22 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
     protected final int sbTrackH;
     private int btnScreenX, btnScreenY;
 
-    protected EditBox searchBox;
-    private List<IconBtn> iconButtons;
-    protected int scrollOffset = 0;
-    protected int sbScreenX, sbScreenTopY, sbScreenBotY;
+    protected EditBox         searchBox;
+    private   List<IconBtn>   iconButtons;
+    protected int             scrollOffset = 0;
+    protected int        sbScreenX, sbScreenTopY, sbScreenBotY;
 
-    private VaultSortMode currentSortMode = VaultSortMode.NAME;
-    private boolean currentSortReversed = false;
-    private boolean nameSortReversed = false;
-    private boolean amountSortReversed = false;
+    private   VaultSortMode   currentSortMode = VaultSortMode.NAME;
+    private   boolean         currentSortReversed = false;
+    private   boolean         nameSortReversed = false;
+    private   boolean         amountSortReversed = false;
 
     protected AbstractVaultScreen(T menu, Inventory playerInv, Component title) {
         super(menu, playerInv, title);
         this.visibleRows = menu.visibleRows;
-        this.sbH = visibleRows * TEX_ROW_H;
-        this.sbTrackH = sbH - 2 * SB_BTN;
-        this.imageWidth = TEX_W + 2 + SB_W;
+        this.sbH         = visibleRows * TEX_ROW_H;
+        this.sbTrackH    = sbH - 2 * SB_BTN;
+        this.imageWidth  = TEX_W + 2 + SB_W;
         this.imageHeight = menu.hotbarY + AbstractVaultMenu.SLOT_SIZE + 4;
     }
 
@@ -104,11 +106,11 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         leftPos = (vw - imageWidth) / 2;
         topPos = (vh - imageHeight) / 2;
 
-        sbScreenX = leftPos + SB_X;
+        sbScreenX    = leftPos + SB_X;
         sbScreenTopY = topPos + TEX_TOP_H;
         sbScreenBotY = sbScreenTopY + sbH - SB_BTN;
-        btnScreenX = leftPos;
-        btnScreenY = topPos;
+        btnScreenX   = leftPos;
+        btnScreenY   = topPos;
 
         searchBox = new EditBox(font,
                 leftPos + AbstractVaultMenu.SLOTS_X, topPos + 4,
@@ -233,9 +235,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         g.pose().popPose();
     }
 
-    public boolean isStackedMode() {
-        return menu.getDisplayMode() == VaultDisplayMode.STACKED;
-    }
+    public boolean isStackedMode() { return menu.getDisplayMode() == VaultDisplayMode.STACKED; }
 
     public int getSlotIndex(Slot slot) {
         return menu.slots.indexOf(slot);
@@ -249,8 +249,9 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         if (inSlot == null || inSlot.isEmpty()) return;
         int amount = half ? Math.max(1, inSlot.getCount() / 2) : inSlot.getCount();
         int remaining = inSlot.getCount() - amount;
-        menu.clientCache[backingSlot] = remaining > 0 ? inSlot.copyWithCount(remaining) :
-                net.minecraft.world.item.ItemStack.EMPTY;
+        menu.clientCache[backingSlot] = remaining > 0
+                ? inSlot.copyWithCount(remaining)
+                : net.minecraft.world.item.ItemStack.EMPTY;
         menu.applyDeltaUpdate();
     }
 
@@ -270,9 +271,9 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         net.minecraft.world.item.ItemStack display = agg.displayStack.copy();
         display.setCount(1);
         List<Component> lines = display.getTooltipLines(
-                minecraft.player,
-                minecraft.options.advancedItemTooltips ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED :
-                        net.minecraft.world.item.TooltipFlag.Default.NORMAL);
+                minecraft.player, minecraft.options.advancedItemTooltips
+                        ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED
+                        : net.minecraft.world.item.TooltipFlag.Default.NORMAL);
         lines.add(1, Component.literal(
                 formatStackedCount(agg.totalCount())).withStyle(net.minecraft.ChatFormatting.GRAY));
         g.renderComponentTooltip(font, lines, x, y);
@@ -280,8 +281,8 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
     }
 
     private static String formatStackedCount(long count) {
-        if (count < 10_000L) return Long.toString(count);
-        if (count < 1_000_000L) return (count / 1_000L) + "k";
+        if (count < 10_000L)        return Long.toString(count);
+        if (count < 1_000_000L)     return (count / 1_000L) + "k";
         if (count < 1_000_000_000L) return (count / 1_000_000L) + "m";
         return (count / 1_000_000_000L) + "b";
     }
@@ -318,10 +319,10 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
 
         int craftSecY = y + menu.craftSectionY;
         int craftSecH = 4 * TEX_ROW_H;
-        g.fill(x, craftSecY, x + TEX_W, craftSecY + craftSecH, 0xFFC6C6C6);
-        g.fill(x, craftSecY, x + 1, craftSecY + craftSecH, 0xFF000000);
-        g.fill(x + 1, craftSecY, x + 3, craftSecY + craftSecH, 0xFFFFFFFE);
-        g.fill(x + TEX_W - 1, craftSecY, x + TEX_W, craftSecY + craftSecH, 0xFF000000);
+        g.fill(x,             craftSecY, x + TEX_W,     craftSecY + craftSecH, 0xFFC6C6C6);
+        g.fill(x,             craftSecY, x + 1,          craftSecY + craftSecH, 0xFF000000);
+        g.fill(x + 1,         craftSecY, x + 3,          craftSecY + craftSecH, 0xFFFFFFFE);
+        g.fill(x + TEX_W - 1, craftSecY, x + TEX_W,     craftSecY + craftSecH, 0xFF000000);
         g.fill(x + TEX_W - 3, craftSecY, x + TEX_W - 1, craftSecY + craftSecH, 0xFF4F4F4F);
 
         int craftGY = y + menu.craftGridY;
@@ -381,7 +382,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
             int ix = (int) mx;
             if (ix >= sbScreenX && ix < sbScreenX + SB_W) {
                 int trackTop = sbScreenTopY + SB_BTN;
-                int trackH = sbScreenBotY - trackTop;
+                int trackH   = sbScreenBotY - trackTop;
                 if (trackH > 0) {
                     float ratio = (float) ((int) my - trackTop) / trackH;
                     applyScroll(Math.round(ratio * maxScroll()));
@@ -405,14 +406,8 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         if (button == 0) {
             int ix = (int) mx, iy = (int) my;
             if (ix >= sbScreenX && ix < sbScreenX + SB_W) {
-                if (iy >= sbScreenTopY && iy < sbScreenTopY + SB_BTN) {
-                    applyScroll(scrollOffset - 1);
-                    return true;
-                }
-                if (iy >= sbScreenBotY && iy < sbScreenBotY + SB_BTN) {
-                    applyScroll(scrollOffset + 1);
-                    return true;
-                }
+                if (iy >= sbScreenTopY && iy < sbScreenTopY + SB_BTN) { applyScroll(scrollOffset - 1); return true; }
+                if (iy >= sbScreenBotY && iy < sbScreenBotY + SB_BTN) { applyScroll(scrollOffset + 1); return true; }
             }
             for (IconBtn btn : iconButtons) {
                 if (btn.isHovered(btnScreenX, btnScreenY, ix, iy)) {
@@ -441,10 +436,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.onClose();
-            return true;
-        }
+        if (keyCode == 256) { this.onClose(); return true; }
         if (searchBox.isFocused()) return searchBox.keyPressed(keyCode, scanCode, modifiers);
         return super.keyPressed(keyCode, scanCode, modifiers);
     }

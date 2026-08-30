@@ -37,8 +37,7 @@ public class PhoenixPredicates {
                 .candidates(candidates)
                 .predicate(ctx -> {
                     BlockState state = ctx.state();
-                    for (Map.Entry<ITeslaBattery, Supplier<TeslaBatteryBlock>> entry : PhoenixAPI.TESLA_BATTERIES
-                            .entrySet()) {
+                    for (Map.Entry<ITeslaBattery, Supplier<TeslaBatteryBlock>> entry : PhoenixAPI.TESLA_BATTERIES.entrySet()) {
                         if (state.is(entry.getValue().get())) {
                             return true;
                         }

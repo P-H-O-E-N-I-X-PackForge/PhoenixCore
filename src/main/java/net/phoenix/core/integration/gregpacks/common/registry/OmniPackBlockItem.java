@@ -17,7 +17,6 @@ import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlock;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.inventory.OpenPackHelper;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;

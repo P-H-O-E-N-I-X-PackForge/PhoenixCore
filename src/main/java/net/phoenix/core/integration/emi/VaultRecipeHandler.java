@@ -1,17 +1,16 @@
 package net.phoenix.core.integration.emi;
 
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
-
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.stack.EmiStack;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 
 import java.util.ArrayList;
 import java.util.Arrays;

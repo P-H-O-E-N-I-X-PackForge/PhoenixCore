@@ -18,13 +18,14 @@ public class AmbientTrack {
     private boolean isPlaying;
 
     public AmbientTrack(
-                        ResourceLocation soundId,
-                        float volume,
-                        float pitch,
-                        boolean loop,
-                        float fadeInTime,
-                        float fadeOutTime,
-                        String description) {
+        ResourceLocation soundId,
+        float volume,
+        float pitch,
+        boolean loop,
+        float fadeInTime,
+        float fadeOutTime,
+        String description
+    ) {
         this.soundId = soundId;
         this.soundEvent = SoundEvent.createVariableRangeEvent(soundId);
         this.volume = volume;
@@ -50,14 +51,14 @@ public class AmbientTrack {
 
     public void updateVolume(float deltaTime) {
         if (isPlaying) {
-
+            
             if (currentVolume < volume && fadeInTime > 0) {
                 currentVolume = Math.min(volume, currentVolume + (volume / fadeInTime) * deltaTime);
             } else if (currentVolume < volume) {
                 currentVolume = volume;
             }
         } else {
-
+            
             if (currentVolume > 0 && fadeOutTime > 0) {
                 currentVolume = Math.max(0, currentVolume - (volume / fadeOutTime) * deltaTime);
             } else {
@@ -76,44 +77,21 @@ public class AmbientTrack {
 
     public boolean isFading() {
         return (isPlaying && currentVolume < volume) ||
-                (!isPlaying && currentVolume > 0);
+               (!isPlaying && currentVolume > 0);
     }
 
-    public ResourceLocation getSoundId() {
-        return soundId;
-    }
-
-    public SoundEvent getSoundEvent() {
-        return soundEvent;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public boolean isLooping() {
-        return loop;
-    }
-
-    public float getFadeInTime() {
-        return fadeInTime;
-    }
-
-    public float getFadeOutTime() {
-        return fadeOutTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    public ResourceLocation getSoundId() { return soundId; }
+    public SoundEvent getSoundEvent() { return soundEvent; }
+    public float getVolume() { return volume; }
+    public float getPitch() { return pitch; }
+    public boolean isLooping() { return loop; }
+    public float getFadeInTime() { return fadeInTime; }
+    public float getFadeOutTime() { return fadeOutTime; }
+    public String getDescription() { return description; }
 
     @Override
     public String toString() {
         return String.format("AmbientTrack[%s vol=%.2f pitch=%.2f loop=%b]",
-                description, volume, pitch, loop);
+            description, volume, pitch, loop);
     }
 }

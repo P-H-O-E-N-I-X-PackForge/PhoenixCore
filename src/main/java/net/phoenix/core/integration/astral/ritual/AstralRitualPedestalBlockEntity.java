@@ -14,9 +14,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.phoenix.core.common.data.materials.AstralMaterials;
+
 import net.phoenix.core.integration.astral.AstralBlocks;
 import net.phoenix.core.integration.astral.item.AstralThreadCellItem;
+import net.phoenix.core.common.data.materials.AstralMaterials;
 
 import java.util.Map;
 
@@ -65,8 +66,8 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
 
         if (!isRingFormed()) {
             player.displayClientMessage(
-                    Component.literal("The rune ring is incomplete - place Astral Rune Blocks 2 blocks north, " +
-                            "south, east, and west (marked)."),
+                    Component.literal("The rune ring is incomplete - place Astral Rune Blocks 2 blocks north, "
+                            + "south, east, and west (marked)."),
                     true);
             showMissingRingPositions(serverLevel);
             return false;
@@ -99,8 +100,7 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
 
     private ItemStack findThreadCell(Player player) {
         for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof AstralThreadCellItem &&
-                    AstralThreadCellItem.getThread(stack) < AstralThreadCellItem.CAPACITY) {
+            if (stack.getItem() instanceof AstralThreadCellItem && AstralThreadCellItem.getThread(stack) < AstralThreadCellItem.CAPACITY) {
                 return stack;
             }
         }

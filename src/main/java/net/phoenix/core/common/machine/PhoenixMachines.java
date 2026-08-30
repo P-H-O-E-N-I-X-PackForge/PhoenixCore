@@ -175,9 +175,8 @@ public class PhoenixMachines {
     public static final MultiblockMachineDefinition DRONE_CONTROLLER = REGISTRATE
             .multiblock("drone_controller", net.phoenix.core.integration.drone.DroneControllerMachine::new)
             .langValue("Drone Controller")
-            .tooltips(
-                    Component.literal("Right-click to open the control panel for every formed " + "multiblock within " +
-                            net.phoenix.core.integration.drone.DroneControllerMachine.RADIUS + " blocks."))
+            .tooltips(Component.literal("Right-click to open the control panel for every formed "
+                    + "multiblock within " + net.phoenix.core.integration.drone.DroneControllerMachine.RADIUS + " blocks."))
             .rotationState(RotationState.ALL)
             .recipeType(DUMMY_RECIPES)
             .pattern(definition -> MultiblockPatternBuilder

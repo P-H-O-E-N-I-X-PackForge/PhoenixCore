@@ -5,12 +5,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.dimension.client.ClientDisciplineProgressionCache;
 
 import java.util.function.Supplier;
 
 public class S2CDisciplineProgressionSyncPacket {
-
     private final CompoundTag data;
 
     public S2CDisciplineProgressionSyncPacket(CompoundTag data) {
@@ -37,5 +37,7 @@ public class S2CDisciplineProgressionSyncPacket {
         return true;
     }
 
-    public static void send(CompoundTag data) {}
+    public static void send(CompoundTag data) {
+
+    }
 }

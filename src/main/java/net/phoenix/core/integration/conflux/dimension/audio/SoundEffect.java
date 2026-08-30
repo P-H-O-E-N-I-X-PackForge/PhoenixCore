@@ -27,12 +27,13 @@ public class SoundEffect {
     private final String description;
 
     public SoundEffect(
-                       ResourceLocation soundId,
-                       SoundType type,
-                       float volume,
-                       float pitch,
-                       float range,
-                       String description) {
+        ResourceLocation soundId,
+        SoundType type,
+        float volume,
+        float pitch,
+        float range,
+        String description
+    ) {
         this.soundId = soundId;
         this.soundEvent = SoundEvent.createVariableRangeEvent(soundId);
         this.type = type;
@@ -43,13 +44,14 @@ public class SoundEffect {
     }
 
     public static SoundEffect withPitchVariation(
-                                                 ResourceLocation soundId,
-                                                 SoundType type,
-                                                 float volume,
-                                                 float basePitch,
-                                                 float pitchVariation,
-                                                 float range,
-                                                 String description) {
+        ResourceLocation soundId,
+        SoundType type,
+        float volume,
+        float basePitch,
+        float pitchVariation,
+        float range,
+        String description
+    ) {
         float randomPitch = basePitch + (float) (Math.random() - 0.5f) * pitchVariation;
         return new SoundEffect(soundId, type, volume, randomPitch, range, description);
     }
@@ -68,37 +70,17 @@ public class SoundEffect {
         return (float) (volume * (1.0 - normalized * 0.7));
     }
 
-    public ResourceLocation getSoundId() {
-        return soundId;
-    }
-
-    public SoundEvent getSoundEvent() {
-        return soundEvent;
-    }
-
-    public SoundType getType() {
-        return type;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public float getRange() {
-        return range;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    public ResourceLocation getSoundId() { return soundId; }
+    public SoundEvent getSoundEvent() { return soundEvent; }
+    public SoundType getType() { return type; }
+    public float getVolume() { return volume; }
+    public float getPitch() { return pitch; }
+    public float getRange() { return range; }
+    public String getDescription() { return description; }
 
     @Override
     public String toString() {
         return String.format("SoundEffect[%s type=%s vol=%.2f pitch=%.2f range=%.1f]",
-                description, type, volume, pitch, range);
+            description, type, volume, pitch, range);
     }
 }

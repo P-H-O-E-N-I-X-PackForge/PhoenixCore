@@ -1,11 +1,10 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;

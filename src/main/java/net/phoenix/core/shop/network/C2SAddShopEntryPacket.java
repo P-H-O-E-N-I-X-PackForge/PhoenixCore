@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
+
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
@@ -32,12 +33,12 @@ public class C2SAddShopEntryPacket {
     private final UUID editId;
 
     public C2SAddShopEntryPacket(String name, ItemStack icon, int cost, List<RewardSpec> rewardSpecs,
-                                 String category) {
+            String category) {
         this(name, icon, cost, rewardSpecs, category, null);
     }
 
     public C2SAddShopEntryPacket(String name, ItemStack icon, int cost, List<RewardSpec> rewardSpecs,
-                                 String category, UUID editId) {
+            String category, UUID editId) {
         this.name = name;
         this.icon = icon;
         this.cost = cost;

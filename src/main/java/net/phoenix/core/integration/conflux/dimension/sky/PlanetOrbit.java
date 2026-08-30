@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.phys.Vec3;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -12,6 +8,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.phys.Vec3;
+import org.lwjgl.opengl.GL11;
 
 public class PlanetOrbit {
 
@@ -52,7 +52,7 @@ public class PlanetOrbit {
 
         float x = (float) Math.cos(radians) * orbitRadius;
         float z = (float) Math.sin(radians) * orbitRadius;
-        float y = (float) Math.sin(radians * 0.5f) * (orbitRadius * 0.3f);
+        float y = (float) Math.sin(radians * 0.5f) * (orbitRadius * 0.3f); 
 
         return orbitCenter.add(x, y, z);
     }
@@ -72,8 +72,21 @@ public class PlanetOrbit {
         poseStack.popPose();
     }
 
+    // Fixed "upper-front-right" light direction for a simple Lambertian shading pass - every
+    // vertex previously got the exact same flat color regardless of position, which is why the
+    // sphere read as a flat painted disc instead of a lit 3D body no matter how many segments it
+    // had (flat per-triangle coloring always looks faceted; smoothly-varying per-vertex color is
+    // what actually reads as round, since the GPU interpolates it across each triangle).
+    // Strongly lateral (dominant x component) rather than pointing roughly toward where the
+    // camera usually is (out and up from the player) - a light coming from near the viewer's own
+    // direction lights almost the whole visible face nearly evenly, which is exactly what reads
+    // as flat/2D even with correct per-vertex shading, since there's no dark side sweeping across
+    // the visible hemisphere to sell the roundness. A strong side light guarantees a clear
+    // light/dark terminator crosses the visible face from most viewing angles.
     private static final Vec3 LIGHT_DIR = new Vec3(1.0, 0.25, -0.15).normalize();
-
+    // Lower ambient floor = harder contrast between lit and shadowed sides. 0.35 was keeping the
+    // "dark" hemisphere nearly as bright as the lit one, which mutes the exact cue that reads as
+    // volumetric rather than a flat painted disc.
     private static final double AMBIENT_FLOOR = 0.15;
 
     private void renderPlanetSphere(PoseStack poseStack, MultiBufferSource bufferSource) {
@@ -138,6 +151,12 @@ public class PlanetOrbit {
         RenderSystem.disableBlend();
     }
 
+    /**
+     * Lambertian-lit, subtly banded color for one sphere vertex. The normal is just the
+     * vertex's own position direction (the sphere is centered at the origin in local space),
+     * so no separate normal data needs to be tracked - and a faint latitude-based brightness
+     * ripple gives the surface some texture instead of a single uniform base color.
+     */
     private static int[] litColor(float x, float y, float z, float latitude, int baseR, int baseG, int baseB) {
         double len = Math.sqrt(x * x + y * y + z * z);
         double nx = x / len;
@@ -160,6 +179,16 @@ public class PlanetOrbit {
         return Math.max(0, Math.min(255, (int) Math.round(value)));
     }
 
+    /**
+     * The glow used to be a flat disc lying in the XZ plane with no camera-facing billboard
+     * logic at all - viewed from a typical "looking up at the sky" angle it would foreshorten
+     * into a thin sliver or ellipse instead of a soft round halo, which reads as flat/wrong
+     * regardless of anything else. A real camera-facing billboard would need the camera's view
+     * basis, which isn't available here, so instead this is just a low-poly sphere: it looks
+     * like a round haze from every angle by construction, no camera info required. Kept dim and
+     * uniform rather than a strong center-bright gradient so it doesn't wash out the body's own
+     * shading underneath it.
+     */
     private void renderGlow(PoseStack poseStack, MultiBufferSource bufferSource) {
         poseStack.pushPose();
 
@@ -223,35 +252,21 @@ public class PlanetOrbit {
     }
 
     private void addVertex(VertexConsumer consumer, PoseStack poseStack,
-                           float x, float y, float z, int r, int g, int b, int a) {
+                          float x, float y, float z, int r, int g, int b, int a) {
         consumer.vertex(poseStack.last().pose(), x, y, z)
                 .color(r, g, b, a)
                 .endVertex();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public PlanetType getType() {
-        return type;
-    }
-
-    public float getOrbitRadius() {
-        return orbitRadius;
-    }
-
-    public float getBodyRadius() {
-        return bodyRadius;
-    }
-
-    public Vec3 getOrbitCenter() {
-        return orbitCenter;
-    }
+    public String getName() { return name; }
+    public PlanetType getType() { return type; }
+    public float getOrbitRadius() { return orbitRadius; }
+    public float getBodyRadius() { return bodyRadius; }
+    public Vec3 getOrbitCenter() { return orbitCenter; }
 
     @Override
     public String toString() {
         return String.format("PlanetOrbit[%s type=%s orbit=%.1f body=%.1f glow=%b]",
-                name, type, orbitRadius, bodyRadius, hasGlow);
+            name, type, orbitRadius, bodyRadius, hasGlow);
     }
 }

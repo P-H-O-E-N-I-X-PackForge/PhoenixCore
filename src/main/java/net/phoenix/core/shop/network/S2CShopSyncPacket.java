@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
+
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class S2CShopSyncPacket {
 
     public record ShopEntryView(UUID id, String name, ItemStack icon, int cost, List<String> rewardDescriptions,
-                                List<RewardSpec> rewardSpecs, String category) {}
+            List<RewardSpec> rewardSpecs, String category) {}
 
     private final List<ShopEntryView> entries;
 

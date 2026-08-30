@@ -44,8 +44,11 @@ public final class PlayerResearchCapability {
     public static void onPlayerClone(PlayerEvent.Clone event) {
         if (!(event.getOriginal().isDeadOrDying() || event.isWasDeath())) return;
 
-        event.getOriginal().getCapability(RESEARCH).ifPresent(
-                original -> event.getEntity().getCapability(RESEARCH).ifPresent(clone -> clone.copyFrom(original)));
+        // The original entity's capability can already be invalidated by the time this fires
+        // (observed on a respawn-after-death in practice) - copying research progress is best
+        // effort, not something worth crashing the whole clone event bus over.
+        event.getOriginal().getCapability(RESEARCH).ifPresent(original ->
+                event.getEntity().getCapability(RESEARCH).ifPresent(clone -> clone.copyFrom(original)));
     }
 
     private static class Provider implements ICapabilitySerializable<CompoundTag> {

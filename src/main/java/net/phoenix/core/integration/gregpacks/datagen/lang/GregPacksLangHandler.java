@@ -6,6 +6,7 @@ import com.tterrag.registrate.providers.RegistrateLangProvider;
 public class GregPacksLangHandler {
 
     public static void init(RegistrateLangProvider provider) {
+        
         provider.add("item.gregpacks.omnipack.tooltip.slots", "§6Item Slots:§r %s");
         provider.add("item.gregpacks.omnipack.tooltip.fluid", "§9Fluid Capacity:§r %s mB");
         provider.add("item.gregpacks.omnipack.tooltip.energy", "§cEnergy Capacity:§r %s EU");

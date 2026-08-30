@@ -124,7 +124,7 @@ public class OmniPackTickHandler {
         List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, area);
         for (ItemEntity entity : items) {
             if (entity.hasPickUpDelay()) continue;
-            if (getTier(entity.getItem()) != null) continue;
+            if (getTier(entity.getItem()) != null) continue; 
             entity.playerTouch(player);
         }
     }
@@ -169,19 +169,19 @@ public class OmniPackTickHandler {
         double newY;
 
         if (jumping && !sneaking) {
-
+            
             if (storedEU < baseCost) return;
             double accel = thrustY * (vel.y < 0.3 ? 2.5 : 1.0);
             newY = Math.min(vel.y + accel, capY);
             setStoredEU(packStack, storedEU - baseCost, effects.totalEnergyStorage);
         } else if (sneaking && !jumping) {
-
+            
             newY = Math.max(vel.y - 0.08, -0.3);
         } else {
-
+            
             long hoverCost = Math.max(1, baseCost / 4);
             if (storedEU < hoverCost) return;
-            newY = 0;
+            newY = 0; 
             setStoredEU(packStack, storedEU - hoverCost, effects.totalEnergyStorage);
         }
 

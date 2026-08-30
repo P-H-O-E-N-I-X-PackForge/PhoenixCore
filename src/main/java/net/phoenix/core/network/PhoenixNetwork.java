@@ -143,5 +143,6 @@ public class PhoenixNetwork {
                 C2SRemoveShopEntryPacket::decode,
                 C2SRemoveShopEntryPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
     }
 }

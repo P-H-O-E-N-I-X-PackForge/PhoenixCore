@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record DroneTargetView(BlockPos pos, String name, ItemStack icon, boolean controllable,
-                              boolean workingEnabled, String status, int progress, int duration, String recipeTypeName,
-                              boolean multiRecipe, boolean electric, long inputVoltage, long outputVoltage,
-                              String groupName,
-                              int priority) {
+        boolean workingEnabled, String status, int progress, int duration, String recipeTypeName,
+        boolean multiRecipe, boolean electric, long inputVoltage, long outputVoltage, String groupName,
+        int priority) {
 
     public static void encodeList(List<DroneTargetView> views, FriendlyByteBuf buf) {
         buf.writeVarInt(views.size());

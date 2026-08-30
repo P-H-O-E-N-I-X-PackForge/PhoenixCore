@@ -1,5 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -9,14 +16,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -86,17 +85,11 @@ public class PhysicsDebugRenderer {
         float multiplier = zone.getGravityMultiplier();
 
         if (multiplier < 0.3f) {
-            r = 0.0f;
-            g = 1.0f;
-            b = 1.0f;
+            r = 0.0f; g = 1.0f; b = 1.0f;
         } else if (multiplier < 0.7f) {
-            r = 0.5f;
-            g = 0.5f;
-            b = 1.0f;
+            r = 0.5f; g = 0.5f; b = 1.0f;
         } else {
-            r = 1.0f;
-            g = 1.0f;
-            b = 0.0f;
+            r = 1.0f; g = 1.0f; b = 0.0f;
         }
 
         renderSphere(poseStack, zone.getRadius(), r, g, b, 0.5f);
@@ -117,26 +110,10 @@ public class PhysicsDebugRenderer {
         float r = 1.0f, g = 1.0f, b = 1.0f;
 
         switch (platform.getType()) {
-            case CONVEYOR_BELT -> {
-                r = 1.0f;
-                g = 0.5f;
-                b = 0.0f;
-            }
-            case ELEVATOR_UP -> {
-                r = 0.0f;
-                g = 1.0f;
-                b = 0.0f;
-            }
-            case ELEVATOR_DOWN -> {
-                r = 1.0f;
-                g = 0.0f;
-                b = 0.0f;
-            }
-            case SPIRAL -> {
-                r = 1.0f;
-                g = 0.0f;
-                b = 1.0f;
-            }
+            case CONVEYOR_BELT -> { r = 1.0f; g = 0.5f; b = 0.0f; }
+            case ELEVATOR_UP -> { r = 0.0f; g = 1.0f; b = 0.0f; }
+            case ELEVATOR_DOWN -> { r = 1.0f; g = 0.0f; b = 0.0f; }
+            case SPIRAL -> { r = 1.0f; g = 0.0f; b = 1.0f; }
         }
 
         var size = platform.getSize();
@@ -210,11 +187,12 @@ public class PhysicsDebugRenderer {
 
     private static void addLine(VertexConsumer consumer, Matrix4f matrix, double x1, double y1, double z1,
                                 double x2, double y2, double z2, float r, float g, float b, float a) {
-        consumer.vertex(matrix, (float) x1, (float) y1, (float) z1).color(r, g, b, a).endVertex();
-        consumer.vertex(matrix, (float) x2, (float) y2, (float) z2).color(r, g, b, a).endVertex();
+        consumer.vertex(matrix, (float)x1, (float)y1, (float)z1).color(r, g, b, a).endVertex();
+        consumer.vertex(matrix, (float)x2, (float)y2, (float)z2).color(r, g, b, a).endVertex();
     }
 
     private static String getDimensionId(Level level) {
+
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

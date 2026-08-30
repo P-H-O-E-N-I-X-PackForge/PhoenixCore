@@ -10,6 +10,16 @@ import net.phoenix.core.integration.conflux.dimension.ConfluxDimensionFactory;
 
 import java.util.Set;
 
+/**
+ * GT's own {@code WorldGenLayers.STONE} is hardcoded to {@code Set.of(Level.OVERWORLD.location())} - checked in
+ * {@code OreGenerator#getEntries} before a vein's own {@code dimensions()} filter is ever consulted. Every
+ * discipline vein in {@code DefaultDisciplineOres} using that layer was therefore filtered out before candidate
+ * selection even began, no matter how correctly its own dimension set was configured - GT never even looked at
+ * Conflux dimensions for a "stone" layer.
+ * <p>
+ * This registers our own layer, using the same replaceable-block target (Conflux terrain is real
+ * {@code Blocks.STONE}), but applicable to every discipline's shared dimension instead.
+ */
 public class ConfluxWorldGenLayers {
 
     private static final String[] DISCIPLINE_IDS = { "phoenix", "sculk", "void", "sealed_a", "sealed_b" };
@@ -27,5 +37,6 @@ public class ConfluxWorldGenLayers {
         return Set.copyOf(locations);
     }
 
+    /** Forces this class to load (and its fields' constructors, which self-register into GT's registry) to run. */
     public static void init() {}
 }

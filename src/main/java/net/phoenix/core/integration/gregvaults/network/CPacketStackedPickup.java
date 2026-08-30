@@ -17,7 +17,7 @@ public class CPacketStackedPickup {
 
     public CPacketStackedPickup(int slotIndex, boolean half) {
         this.slotIndex = slotIndex;
-        this.half = half;
+        this.half      = half;
     }
 
     public static void encode(CPacketStackedPickup p, FriendlyByteBuf buf) {
@@ -43,7 +43,9 @@ public class CPacketStackedPickup {
             ItemStack visible = slot.getItem();
             if (visible.isEmpty()) return;
 
-            int amount = packet.half ? Math.max(1, slot.getMaxStackSize() / 2) : slot.getMaxStackSize();
+            int amount = packet.half
+                    ? Math.max(1, slot.getMaxStackSize() / 2)
+                    : slot.getMaxStackSize();
 
             ItemStack carried = player.containerMenu.getCarried();
             if (!carried.isEmpty()) {

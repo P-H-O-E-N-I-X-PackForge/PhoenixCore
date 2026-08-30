@@ -5,8 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
@@ -18,18 +20,16 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class AstralCodexScreen extends Screen {
 
+    // Refreshed from the shared Phoenix theme at the top of every render() call - palette feeds
+    // the drifting mote particles, the rest color the panel chrome/text. Re-read every frame (not
+    // cached) because an animated theme choice (e.g. a rainbow-style theme) changes color from
+    // frame to frame.
     private int[] palette;
     private int cText, cDim, cBorder, cBorderDim, cBg1, cBg2, cPanel1, cPanel2;
 
     private static final String[] PAGE_NAMES = { "Overview", "The Machine Chain", "The Ritual Pedestal", "The Wand" };
 
-    private enum LT {
-        HEADING,
-        SUBHEADING,
-        TEXT,
-        SPACER,
-        DIVIDER
-    }
+    private enum LT { HEADING, SUBHEADING, TEXT, SPACER, DIVIDER }
 
     private record WLine(LT type, String a) {
 
@@ -67,6 +67,10 @@ public class AstralCodexScreen extends Screen {
 
     private float pageFade = 1f;
 
+    // Minimum usable real-estate for the two-page book layout; below this we shrink the whole
+    // screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead of
+    // letting the un-clamped Math.min(width-40, 480) sizing squeeze the two page panels' fixed
+    // internal layout (index rows, wrapped text) at small windows/high GUI scale.
     private static final int MIN_BOOK_W = 480;
     private static final int MIN_BOOK_H = 300;
     private float uiScale = 1f;

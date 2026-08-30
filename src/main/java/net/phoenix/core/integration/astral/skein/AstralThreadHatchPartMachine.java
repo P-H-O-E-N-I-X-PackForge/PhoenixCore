@@ -11,10 +11,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.integration.ars_nouveau.client.gui.SourceHatchBackground;
+
 import net.phoenix.core.integration.astral.api.machine.trait.NotifiableAstralThreadContainer;
 import net.phoenix.core.integration.astral.item.AstralThreadCellItem;
 import net.phoenix.core.integration.astral.item.AstralWandItem;
+import net.phoenix.core.integration.ars_nouveau.client.gui.SourceHatchBackground;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;

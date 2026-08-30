@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
-import net.minecraft.resources.ResourceLocation;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -20,13 +19,13 @@ public class DisciplineWorldgenConfig {
     public final CaveConfig caves;
 
     public DisciplineWorldgenConfig(
-                                    String disciplineId,
-                                    OreConfig[] ores,
-                                    BiomeBlockPalette blockPalette,
-                                    SurfaceRuleSet[] surfaceRules,
-                                    StructureSet structures,
-                                    DecorationConfig decorations,
-                                    CaveConfig caves) {
+            String disciplineId,
+            OreConfig[] ores,
+            BiomeBlockPalette blockPalette,
+            SurfaceRuleSet[] surfaceRules,
+            StructureSet structures,
+            DecorationConfig decorations,
+            CaveConfig caves) {
         this.disciplineId = disciplineId;
         this.ores = ores;
         this.blockPalette = blockPalette;
@@ -76,7 +75,6 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class OreConfig {
-
         public final ResourceLocation oreBlock;
         public final int veinSize;
         public final int veinsPerChunk;
@@ -84,8 +82,7 @@ public class DisciplineWorldgenConfig {
         public final int maxY;
         public final String targetBlock;
 
-        public OreConfig(ResourceLocation oreBlock, int veinSize, int veinsPerChunk, int minY, int maxY,
-                         String targetBlock) {
+        public OreConfig(ResourceLocation oreBlock, int veinSize, int veinsPerChunk, int minY, int maxY, String targetBlock) {
             this.oreBlock = oreBlock;
             this.veinSize = veinSize;
             this.veinsPerChunk = veinsPerChunk;
@@ -107,7 +104,6 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class BiomeBlockPalette {
-
         public final Map<String, BlockTypeSet> blocksByStage;
 
         public BiomeBlockPalette(Map<String, BlockTypeSet> blocksByStage) {
@@ -128,7 +124,6 @@ public class DisciplineWorldgenConfig {
         }
 
         public static class BlockTypeSet {
-
             public final String stone;
             public final String dirt;
             public final String grass;
@@ -153,9 +148,8 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class SurfaceRuleSet {
-
         public final String stage;
-        public final String ruleSetName;
+        public final String ruleSetName; 
 
         public SurfaceRuleSet(String stage, String ruleSetName) {
             this.stage = stage;
@@ -164,7 +158,6 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class StructureSet {
-
         public final List<StructureConfig> structures;
         public final float density;
 
@@ -192,7 +185,6 @@ public class DisciplineWorldgenConfig {
         }
 
         public static class StructureConfig {
-
             public final String name;
             public final String type;
             public final float rarity;
@@ -220,14 +212,12 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class DecorationConfig {
-
         public final float grassDensity;
         public final float treeDensity;
         public final float flowerDensity;
         public final Map<String, Integer> customDecorations;
 
-        public DecorationConfig(float grassDensity, float treeDensity, float flowerDensity,
-                                Map<String, Integer> customDecorations) {
+        public DecorationConfig(float grassDensity, float treeDensity, float flowerDensity, Map<String, Integer> customDecorations) {
             this.grassDensity = grassDensity;
             this.treeDensity = treeDensity;
             this.flowerDensity = flowerDensity;
@@ -252,7 +242,6 @@ public class DisciplineWorldgenConfig {
     }
 
     public static class CaveConfig {
-
         public final float frequency;
         public final float density;
         public final boolean enabled;

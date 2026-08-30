@@ -9,33 +9,39 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.phoenix.core.integration.gregpacks.network.CPacketFluidInteract;
 import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
-
 import org.jetbrains.annotations.NotNull;
 
 public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
 
+    // Fallback tint for the fluid bar when no fluid is stored yet - EU stays its familiar gold
+    // regardless of theme since that color is a widely-recognized GT convention.
     private static final int C_FLUID = 0xFF0099FF;
-    private static final int C_EU = 0xFFFFD700;
+    private static final int C_EU    = 0xFFFFD700;
 
+    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cBg, cDark, cLight, cSlot, cText, cBar;
 
+    // The pack's slot count (and thus imageWidth/imageHeight) is config-driven and can be large;
+    // below the room it needs (plus the side bars and upgrades tab) we shrink the whole screen
+    // via a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
+    // vanilla's un-clamped centering push it off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 
-    private static final int PAD = 7;
+    private static final int PAD  = 7;
     private static final int COLS = 9;
-    private static final int SS = 18;
+    private static final int SS   = 18;
 
-    private static final int BAR_W = 10;
+    private static final int BAR_W   = 10;
     private static final int BAR_SEP = 4;
     private static final int BAR_GAP = 3;
 
-    private static final int TAB_W = 70;
-    private static final int TAB_H = 14;
+    private static final int TAB_W   = 70;
+    private static final int TAB_H   = 14;
     private static final int TAB_OFF = 0;
 
     private static final int UP_COLS = 2;
-    private static final int UP_PAD = 6;
+    private static final int UP_PAD  = 6;
 
     private boolean upOpen = false;
     private int popX, popY, popW, popH;
@@ -45,7 +51,7 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
     public OmniPackScreen(OmniPackMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         packRows = (int) Math.ceil(menu.getPackSlots() / (double) COLS);
-        imageWidth = PAD + COLS * SS + PAD;
+        imageWidth  = PAD + COLS * SS + PAD;
         imageHeight = PAD + 10 + packRows * SS + PAD + 4 + 3 * SS + PAD + 4 + SS + PAD;
     }
 
@@ -154,25 +160,26 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
     private void renderBars(GuiGraphics g, int mx, int my) {
         int bx1 = leftPos + imageWidth + BAR_GAP;
         int bx2 = bx1 + BAR_W + BAR_SEP;
-        int by = topPos;
-        int bh = imageHeight;
+        int by  = topPos;
+        int bh  = imageHeight;
 
         bar(g, bx1, by, BAR_W, bh);
         int amt = menu.getSyncedFluidAmount(), cap = menu.getSyncedFluidCapacity();
         if (amt > 0 && cap > 0) {
             int fh = (int) ((float) amt / cap * (bh - 2));
             Fluid fl = menu.getSyncedFluid();
-            int fc = fl != null ? IClientFluidTypeExtensions.of(fl.getFluidType()).getTintColor() | 0xFF000000 :
-                    C_FLUID;
+            int fc = fl != null
+                    ? IClientFluidTypeExtensions.of(fl.getFluidType()).getTintColor() | 0xFF000000
+                    : C_FLUID;
             g.fill(bx1 + 1, by + bh - 1 - fh, bx1 + BAR_W - 1, by + bh - 1, fc);
         }
         if (mx >= bx1 && mx < bx1 + BAR_W && my >= by && my < by + bh) {
             Fluid fl = menu.getSyncedFluid();
             String nm = fl != null ? fl.getFluidType().getDescription().getString() : "Empty";
             g.renderTooltip(font, java.util.List.of(
-                    Component.literal("§bFluid: " + nm),
-                    Component.literal(amt + " / " + cap + " mB"),
-                    Component.literal("§7Left-click to fill, Right-click to drain")),
+                            Component.literal("§bFluid: " + nm),
+                            Component.literal(amt + " / " + cap + " mB"),
+                            Component.literal("§7Left-click to fill, Right-click to drain")),
                     java.util.Optional.empty(), mx, my);
         }
 
@@ -184,8 +191,8 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
         }
         if (mx >= bx2 && mx < bx2 + BAR_W && my >= by && my < by + bh) {
             g.renderTooltip(font, java.util.List.of(
-                    Component.literal("§6Energy (EU)"),
-                    Component.literal(eu + " / " + euMax + " EU")),
+                            Component.literal("§6Energy (EU)"),
+                            Component.literal(eu + " / " + euMax + " EU")),
                     java.util.Optional.empty(), mx, my);
         }
     }
@@ -281,18 +288,18 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
     }
 
     private void bevel(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + 1, cDark);
-        g.fill(x, y, x + 1, y + h, cDark);
-        g.fill(x, y + h - 1, x + w, y + h, cLight);
-        g.fill(x + w - 1, y, x + w, y + h, cLight);
+        g.fill(x,         y,         x + w,     y + 1,     cDark);
+        g.fill(x,         y,         x + 1,     y + h,     cDark);
+        g.fill(x,         y + h - 1, x + w,     y + h,     cLight);
+        g.fill(x + w - 1, y,         x + w,     y + h,     cLight);
     }
 
     private void slotInset(GuiGraphics g, int x, int y) {
-        g.fill(x, y, x + SS, y + 1, cDark);
-        g.fill(x, y, x + 1, y + SS, cDark);
-        g.fill(x, y + SS - 1, x + SS, y + SS, cLight);
-        g.fill(x + SS - 1, y, x + SS, y + SS, cLight);
-        g.fill(x + 1, y + 1, x + SS - 1, y + SS - 1, cSlot);
+        g.fill(x,          y,          x + SS,     y + 1,      cDark);
+        g.fill(x,          y,          x + 1,      y + SS,     cDark);
+        g.fill(x,          y + SS - 1, x + SS,     y + SS,     cLight);
+        g.fill(x + SS - 1, y,          x + SS,     y + SS,     cLight);
+        g.fill(x + 1,      y + 1,      x + SS - 1, y + SS - 1, cSlot);
     }
 
     private void bar(GuiGraphics g, int x, int y, int w, int h) {

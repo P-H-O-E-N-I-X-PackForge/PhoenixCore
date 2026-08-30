@@ -1,8 +1,7 @@
 package net.phoenix.core.integration.gregvaults.datagen.lang;
 
-import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
-
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 
 @SuppressWarnings("all")
 public class VaultLangHandler {

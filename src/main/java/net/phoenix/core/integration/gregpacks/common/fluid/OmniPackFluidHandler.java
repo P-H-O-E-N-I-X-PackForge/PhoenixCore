@@ -7,7 +7,6 @@ import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackInventory;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
-
 import org.jetbrains.annotations.NotNull;
 
 public class OmniPackFluidHandler implements IFluidHandlerItem {
@@ -45,7 +44,7 @@ public class OmniPackFluidHandler implements IFluidHandlerItem {
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
         FluidStack current = FluidNBTHelper.getFluid(container);
-
+        
         return current.isEmpty() || current.isFluidEqual(stack);
     }
 

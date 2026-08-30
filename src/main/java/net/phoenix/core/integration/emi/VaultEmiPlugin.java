@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.emi;
 
-import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
-
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
+import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
 
 @EmiEntrypoint
 public class VaultEmiPlugin implements EmiPlugin {

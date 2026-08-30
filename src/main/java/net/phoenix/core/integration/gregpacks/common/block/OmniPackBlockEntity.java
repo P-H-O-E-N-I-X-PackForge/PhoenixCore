@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -29,8 +30,6 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlockEntities;
 import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlocks;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
-
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -149,21 +148,13 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
 
         if (cap == ForgeCapabilities.ENERGY) {
             return LazyOptional.of(() -> new IEnergyStorage() {
-
-                @Override
-                public int getEnergyStored() {
-                    return (int) Math.min(storedEU, Integer.MAX_VALUE);
-                }
-
-                @Override
-                public int getMaxEnergyStored() {
+                @Override public int getEnergyStored() { return (int) Math.min(storedEU, Integer.MAX_VALUE); }
+                @Override public int getMaxEnergyStored() {
                     return (int) Math.min(
                             new UpgradeEffects(tier, upgradeInventory).totalEnergyStorage,
                             Integer.MAX_VALUE);
                 }
-
-                @Override
-                public int receiveEnergy(int max, boolean sim) {
+                @Override public int receiveEnergy(int max, boolean sim) {
                     long space = (long) getMaxEnergyStored() - storedEU;
                     int accepted = (int) Math.min(space, max);
                     if (!sim && accepted > 0) {
@@ -172,21 +163,9 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
                     }
                     return accepted;
                 }
-
-                @Override
-                public int extractEnergy(int max, boolean sim) {
-                    return 0;
-                }
-
-                @Override
-                public boolean canExtract() {
-                    return false;
-                }
-
-                @Override
-                public boolean canReceive() {
-                    return true;
-                }
+                @Override public int extractEnergy(int max, boolean sim) { return 0; }
+                @Override public boolean canExtract() { return false; }
+                @Override public boolean canReceive() { return true; }
             }).cast();
         }
         return super.getCapability(cap, side);
@@ -238,7 +217,10 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         packInventory.deserializeFromTag(tag.getList("Items", 10));
         upgradeInventory.deserializeFromTag(tag.getList("Upgrades", 10));
         storedEU = tag.getLong("StoredEU");
-        fluid = tag.contains("Fluid") ? FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid")) : FluidStack.EMPTY;
+        fluid = tag.contains("Fluid")
+                ? FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid"))
+                : FluidStack.EMPTY;
+
     }
 
     @Override
@@ -257,23 +239,9 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         return this.fluid != null ? this.fluid : FluidStack.EMPTY;
     }
 
-    public boolean isPickedUp() {
-        return pickedUp;
-    }
-
-    public OmniPackTier getTier() {
-        return tier;
-    }
-
-    public OmniPackInventory getPackInventory() {
-        return packInventory;
-    }
-
-    public OmniPackInventory getUpgradeInventory() {
-        return upgradeInventory;
-    }
-
-    public long getStoredEU() {
-        return storedEU;
-    }
+    public boolean isPickedUp() { return pickedUp; }
+    public OmniPackTier getTier() { return tier; }
+    public OmniPackInventory getPackInventory() { return packInventory; }
+    public OmniPackInventory getUpgradeInventory() { return upgradeInventory; }
+    public long getStoredEU() { return storedEU; }
 }

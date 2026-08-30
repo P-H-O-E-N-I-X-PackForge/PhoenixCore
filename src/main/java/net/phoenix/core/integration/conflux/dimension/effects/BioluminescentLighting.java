@@ -1,15 +1,15 @@
 package net.phoenix.core.integration.conflux.dimension.effects;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class BioluminescentLighting {
 
     private static final float GLOW_RANGE = 24.0f;
-    private static final int GLOW_COLOR = 0x00FF88;
+    private static final int GLOW_COLOR = 0x00FF88;  
     private static final float GLOW_INTENSITY = 0.9f;
 
     public void update(Level level, @Nullable Player player) {
@@ -32,7 +32,7 @@ public class BioluminescentLighting {
                     double distance = center.distSqr(pos);
 
                     if (distance <= GLOW_RANGE * GLOW_RANGE) {
-
+                        
                         if (shouldGlow(level, pos)) {
 
                             applyGlowToBlock(level, pos);
@@ -51,19 +51,22 @@ public class BioluminescentLighting {
         }
 
         if (block.toString().contains("flower") ||
-                block.toString().contains("plant") ||
-                block.toString().contains("vine")) {
+            block.toString().contains("plant") ||
+            block.toString().contains("vine")) {
             return true;
         }
 
         return false;
     }
 
-    private void applyGlowToBlock(Level level, BlockPos pos) {}
+    private void applyGlowToBlock(Level level, BlockPos pos) {
+
+    }
 
     private void spawnSculkEyes(Level level, BlockPos playerPos, Player player) {
+        
         if (level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, playerPos) > 8) {
-            return;
+            return;  
         }
 
         int range = 30;
@@ -83,11 +86,16 @@ public class BioluminescentLighting {
     }
 
     private boolean isValidEyePosition(Level level, BlockPos pos) {
+        
         int lightLevel = level.getBrightness(net.minecraft.world.level.LightLayer.SKY, pos);
         return lightLevel < 7;
     }
 
-    public void playAmbientWhispers(Level level, Player player) {}
+    public void playAmbientWhispers(Level level, Player player) {
 
-    public void createSoundRipple(Level level, BlockPos source, float volume) {}
+    }
+
+    public void createSoundRipple(Level level, BlockPos source, float volume) {
+
+    }
 }

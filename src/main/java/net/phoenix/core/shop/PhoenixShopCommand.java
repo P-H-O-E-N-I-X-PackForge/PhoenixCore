@@ -10,6 +10,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
 import net.phoenix.core.shop.network.S2CShopSyncPacket;

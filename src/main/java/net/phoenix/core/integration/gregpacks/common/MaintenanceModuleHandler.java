@@ -2,9 +2,9 @@ package net.phoenix.core.integration.gregpacks.common;
 
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
+
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.MaintenanceHatchPartMachine;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +60,7 @@ public class MaintenanceModuleHandler {
 
         boolean anyToolFound = false;
         for (int i = 0; i < 6; i++) {
-            if (((problems >> i) & 1) == 1) continue;
+            if (((problems >> i) & 1) == 1) continue; 
             GTToolType required = getToolForProblem(i);
             if (findToolInPack(packInv, required) != null) {
                 anyToolFound = true;

@@ -1,9 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
+import com.mojang.blaze3d.shaders.Program;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20;
 
@@ -31,7 +33,7 @@ public class ShaderManager {
 
     private void loadAllShaders() {
         try {
-
+            
             loadShader("phoenix_glow", "core/phoenix_glow");
 
             loadShader("sculk_biolum", "core/sculk_biolum");
@@ -54,8 +56,8 @@ public class ShaderManager {
     }
 
     private void loadShader(String name, String path) throws IOException {
-        String vertexSource = loadShaderSource(
-                ResourceLocation.fromNamespaceAndPath("phoenixcore", "shaders/core/basic.vsh"));
+        
+        String vertexSource = loadShaderSource(ResourceLocation.fromNamespaceAndPath("phoenixcore", "shaders/core/basic.vsh"));
 
         String fragmentSource = loadShaderSource(new ResourceLocation("phoenixcore", "shaders/" + path + ".fsh"));
 
@@ -133,8 +135,7 @@ public class ShaderManager {
 
         if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) == 0) {
             String typeName = type == GL20.GL_VERTEX_SHADER ? "vertex" : "fragment";
-            System.err
-                    .println("[PhoenixCore] " + typeName + " shader compile error: " + GL20.glGetShaderInfoLog(shader));
+            System.err.println("[PhoenixCore] " + typeName + " shader compile error: " + GL20.glGetShaderInfoLog(shader));
             GL20.glDeleteShader(shader);
             return 0;
         }

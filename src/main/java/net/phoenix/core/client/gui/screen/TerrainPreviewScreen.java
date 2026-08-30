@@ -33,12 +33,14 @@ public class TerrainPreviewScreen extends Screen {
     private static final int CTRL_H = 20;
     private static final int CTRL_GAP = 4;
 
+    // The control panel's ~11 fixed-height rows (and a minimum usable preview width) have no
+    // clamp at all; below the room they need we shrink the whole screen via a pose scale (same
+    // idea used across the rest of the Phoenix Suite) instead of letting controls run off-screen.
     private static final int MIN_PREVIEW_W = 220;
     private static final int MIN_PANEL_W = 150;
     private static final int MIN_PANEL_H = 310;
 
-    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-            "terrain_preview");
+    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath("phoenixcore", "terrain_preview");
     private DynamicTexture dynamicTexture;
     private NativeImage nativeImage;
     private final AtomicBoolean generating = new AtomicBoolean(false);

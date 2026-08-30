@@ -70,7 +70,7 @@ public class DroneControlTrait extends MachineTrait {
                 break;
             }
         }
-
+        
         if (idx + 1 >= groups.size()) {
             assign(target, "", current.priority());
             return "Ungrouped";

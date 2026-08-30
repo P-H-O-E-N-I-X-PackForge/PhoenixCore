@@ -6,13 +6,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.phoenix.core.configs.PhoenixConfigs;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class VaultCoreBlock extends Block {
-
     private final CoreTier tier;
 
     @Override

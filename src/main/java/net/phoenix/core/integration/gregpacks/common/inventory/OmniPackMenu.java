@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
+import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,8 +25,6 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.item.UpgradeItem;
 import net.phoenix.core.integration.gregpacks.common.item.UpgradeType;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
-
-import lombok.Setter;
 
 import javax.annotation.Nullable;
 
@@ -295,13 +294,13 @@ public class OmniPackMenu extends AbstractContainerMenu {
             maxEU = new UpgradeEffects(tier, upgradeInventory).totalEnergyStorage;
         }
 
-        int euScaled = (int) Math.min(storedEU / 100, Integer.MAX_VALUE);
-        int maxScaled = (int) Math.min(maxEU / 100, Integer.MAX_VALUE);
+        int euScaled  = (int) Math.min(storedEU / 100, Integer.MAX_VALUE);
+        int maxScaled = (int) Math.min(maxEU   / 100, Integer.MAX_VALUE);
 
-        energyData.set(0, (euScaled >> 16) & 0xFFFF);
-        energyData.set(1, euScaled & 0xFFFF);
+        energyData.set(0, (euScaled  >> 16) & 0xFFFF);
+        energyData.set(1,  euScaled         & 0xFFFF);
         energyData.set(2, (maxScaled >> 16) & 0xFFFF);
-        energyData.set(3, maxScaled & 0xFFFF);
+        energyData.set(3,  maxScaled        & 0xFFFF);
     }
 
     public ItemStack getActiveStack() {

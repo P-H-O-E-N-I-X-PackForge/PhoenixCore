@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.gregvaults.common.recipe;
 
+import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -13,8 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
-
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
 public class EmitterUpgradeRecipe extends CustomRecipe {

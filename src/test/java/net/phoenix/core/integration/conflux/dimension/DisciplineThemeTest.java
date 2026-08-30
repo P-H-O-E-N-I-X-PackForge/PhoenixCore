@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DisciplineThemeTest {
@@ -13,6 +15,7 @@ public class DisciplineThemeTest {
 
     @BeforeEach
     public void setUp() {
+        
         JsonObject json = new JsonObject();
         json.addProperty("display_name", "The Phoenix");
 

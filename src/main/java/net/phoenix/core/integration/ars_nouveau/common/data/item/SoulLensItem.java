@@ -51,6 +51,7 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
     private static final int UI_WIDTH = 220;
     private static final int UI_HEIGHT = 200;
 
+    /** Chunk radius scanned around the holder each tick; shared with {@link SoulVisionManager}. */
     public static final int VISION_RADIUS = 8;
 
     public SoulLensItem(Properties properties) {
@@ -197,6 +198,9 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
         }
         tag.put("MapData", mapList);
 
+        // Force an immediate sync of the NBT changes above to the client - the Soul Vision
+        // shader reads this data straight off the held stack, so it can't wait for the next
+        // incidental container sync the way a purely cosmetic tooltip update could.
         player.containerMenu.broadcastChanges();
     }
 

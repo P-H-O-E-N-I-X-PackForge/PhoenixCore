@@ -8,14 +8,12 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkProgressionProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-    public static final Capability<ChunkProgressionState> CHUNK_PROGRESSION_CAP = CapabilityManager
-            .get(new CapabilityToken<>() {});
+    public static final Capability<ChunkProgressionState> CHUNK_PROGRESSION_CAP = CapabilityManager.get(new CapabilityToken<>() {});
 
     private ChunkProgressionState progression = null;
     private final LazyOptional<ChunkProgressionState> optional = LazyOptional.of(this::createProgression);
@@ -44,8 +42,9 @@ public class ChunkProgressionProvider implements ICapabilityProvider, INBTSerial
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
+
         ChunkProgressionState loadedState = ChunkProgressionState.load(nbt);
-        createProgression().getAppliedMilestones().clear();
+        createProgression().getAppliedMilestones().clear(); 
         for (String milestone : loadedState.getAppliedMilestones()) {
             createProgression().applyMilestone(milestone);
         }

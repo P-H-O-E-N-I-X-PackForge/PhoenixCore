@@ -8,7 +8,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.phoenix.core.integration.gregpacks.common.energy.OmniPackEnergyHandler;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

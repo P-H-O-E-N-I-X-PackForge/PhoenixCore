@@ -12,8 +12,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class C2SDimensionTeleportPacket {
-
-    private final String action;
+    private final String action; 
 
     public C2SDimensionTeleportPacket(String action) {
         this.action = action;

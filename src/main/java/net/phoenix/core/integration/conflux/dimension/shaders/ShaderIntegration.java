@@ -1,12 +1,15 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.phoenix.core.integration.conflux.dimension.effects.DimensionEffectsManager;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ShaderIntegration {
@@ -35,7 +38,7 @@ public class ShaderIntegration {
         String dimensionId = getDimensionId(level);
 
         if (!dimensionId.equals(currentDimension)) {
-
+            
             currentDimension = dimensionId;
             initializeShadersForDimension(dimensionId);
         }
@@ -73,42 +76,48 @@ public class ShaderIntegration {
         String primaryShader = getPrimaryShaderForDimension(dimensionId);
         if (primaryShader != null) {
             shaderManager.useShader(primaryShader);
-
+            
         }
 
         String secondaryShader = getSecondaryShaderForDimension(dimensionId);
         if (secondaryShader != null) {
             shaderManager.useShader(secondaryShader);
-
+            
         }
     }
 
     private static void updatePhoenixShaders(ShaderManager manager, Level level) {
+        
         float heat = 0.6f + (float) Math.sin(level.getGameTime() * 0.02f) * 0.4f;
         manager.setUniform("phoenix_glow", "HeatIntensity", heat);
     }
 
     private static void updateSculkShaders(ShaderManager manager, Level level, Player player) {
+        
         manager.setUniform3f("sculk_biolum", "PlayerPos",
-                (float) player.getX(),
-                (float) player.getY(),
-                (float) player.getZ());
+            (float) player.getX(),
+            (float) player.getY(),
+            (float) player.getZ()
+        );
 
         float soundIntensity = (float) Math.sin(level.getGameTime() * 0.1f) * 0.5f + 0.5f;
         manager.setUniform("sound_ripples", "SoundIntensity", soundIntensity);
     }
 
     private static void updateVoidShaders(ShaderManager manager, Level level, Player player) {
+        
         manager.setUniform3f("gravity_bridge", "BridgeCenter",
-                (float) player.getX(),
-                (float) player.getY(),
-                (float) player.getZ());
+            (float) player.getX(),
+            (float) player.getY(),
+            (float) player.getZ()
+        );
 
         float bridgePulse = (float) Math.sin(level.getGameTime() * 0.03f) * 0.3f + 0.7f;
         manager.setUniform("gravity_bridge", "BridgeRadius", bridgePulse * 15.0f);
     }
 
     private static void updateSealedAShaders(ShaderManager manager, Level level) {
+        
         float neonPulse = 0.7f + (float) Math.sin(level.getGameTime() * 0.05f) * 0.3f;
         manager.setUniform("neon_glow", "NeonIntensity", neonPulse);
 
@@ -116,10 +125,12 @@ public class ShaderIntegration {
     }
 
     private static void updateSealedBShaders(ShaderManager manager, Level level, Player player) {
+        
         manager.setUniform3f("color_inversion", "InversionZoneCenter",
-                (float) player.getX(),
-                (float) player.getY(),
-                (float) player.getZ());
+            (float) player.getX(),
+            (float) player.getY(),
+            (float) player.getZ()
+        );
 
         float zoneRadius = 15.0f + (float) Math.sin(level.getGameTime() * 0.02f) * 8.0f;
         manager.setUniform("color_inversion", "InversionZoneRadius", zoneRadius);
@@ -179,6 +190,7 @@ public class ShaderIntegration {
     }
 
     private static String getDimensionId(Level level) {
+
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

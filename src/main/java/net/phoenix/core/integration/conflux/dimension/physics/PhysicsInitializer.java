@@ -1,8 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PhysicsInitializer {
@@ -13,7 +17,7 @@ public class PhysicsInitializer {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             try {
-
+                
                 DimensionPhysicsPresets.initializeDimensionPhysics("phoenix");
                 DimensionPhysicsPresets.initializeDimensionPhysics("sculk");
                 DimensionPhysicsPresets.initializeDimensionPhysics("void");

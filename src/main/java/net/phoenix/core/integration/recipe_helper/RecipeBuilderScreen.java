@@ -46,6 +46,9 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
 
     private Page currentPage = Page.GENERAL;
 
+    // The 338x264 panel has no clamp at all; below the room it needs we shrink the whole screen
+    // via a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
+    // it run off-screen at small windows/high GUI scale.
     private float uiScale = 1f;
     private int vw, vh;
 

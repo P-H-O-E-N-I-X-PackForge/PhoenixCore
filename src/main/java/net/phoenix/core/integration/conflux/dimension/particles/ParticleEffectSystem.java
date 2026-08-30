@@ -18,7 +18,7 @@ public class ParticleEffectSystem {
                 double z = position.z + (Math.random() - 0.5) * 20;
 
                 double vx = (Math.random() - 0.5) * 0.5;
-                double vy = -Math.random() * 0.3;
+                double vy = -Math.random() * 0.3; 
                 double vz = (Math.random() - 0.5) * 0.5;
 
                 SimpleParticleType particle = DimensionParticleTypes.VOLCANIC_ASH.get();
@@ -38,7 +38,7 @@ public class ParticleEffectSystem {
                 double z = position.z + (Math.random() - 0.5) * 5;
 
                 double vx = (Math.random() - 0.5) * 0.2;
-                double vy = Math.random() * 0.5;
+                double vy = Math.random() * 0.5; 
                 double vz = (Math.random() - 0.5) * 0.2;
 
                 SimpleParticleType particle = DimensionParticleTypes.HEAT_SHIMMER.get();
@@ -58,7 +58,7 @@ public class ParticleEffectSystem {
                 double z = position.z + (Math.random() - 0.5) * 10;
 
                 double vx = (Math.random() - 0.5) * 2;
-                double vy = Math.random() * 2;
+                double vy = Math.random() * 2; 
                 double vz = (Math.random() - 0.5) * 2;
 
                 SimpleParticleType particle = DimensionParticleTypes.LAVA_SPARK.get();
@@ -178,7 +178,7 @@ public class ParticleEffectSystem {
                 double z = position.z + (Math.random() - 0.5) * 15;
 
                 double vx = (Math.random() - 0.5) * 0.5;
-                double vy = Math.random() * 0.4;
+                double vy = Math.random() * 0.4; 
                 double vz = (Math.random() - 0.5) * 0.5;
 
                 SimpleParticleType particle = DimensionParticleTypes.INDUSTRIAL_SMOKE.get();

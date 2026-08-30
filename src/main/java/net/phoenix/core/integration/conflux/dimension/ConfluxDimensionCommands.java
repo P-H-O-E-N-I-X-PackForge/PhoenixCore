@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -7,16 +11,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
 import net.phoenix.core.integration.conflux.research.WorldResearchData;
-
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 
 import java.util.UUID;
 
@@ -30,22 +30,37 @@ public class ConfluxDimensionCommands {
 
     private static void registerDimensionCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("conflux")
-                        .then(Commands.literal("dimension")
-                                .then(Commands.literal("return")
-                                        .executes(ctx -> returnToEtherealSpawn(ctx.getSource())))
-                                .then(Commands.literal("info")
-                                        .executes(ctx -> dimensionInfo(ctx.getSource())))
-                                .then(Commands.literal("benchmarkworldgen")
-                                        .then(Commands.argument("discipline", StringArgumentType.word())
-                                                .executes(ctx -> benchmarkWorldgen(ctx.getSource(),
-                                                        StringArgumentType.getString(ctx, "discipline"), 8))
-                                                .then(Commands.argument("gridSize", IntegerArgumentType.integer(1, 16))
-                                                        .executes(ctx -> benchmarkWorldgen(ctx.getSource(),
-                                                                StringArgumentType.getString(ctx, "discipline"),
-                                                                IntegerArgumentType.getInteger(ctx, "gridSize"))))))));
+            Commands.literal("conflux")
+                .then(Commands.literal("dimension")
+                    .then(Commands.literal("return")
+                        .executes(ctx -> returnToEtherealSpawn(ctx.getSource())))
+                    .then(Commands.literal("info")
+                        .executes(ctx -> dimensionInfo(ctx.getSource())))
+                    .then(Commands.literal("benchmarkworldgen")
+                        .then(Commands.argument("discipline", StringArgumentType.word())
+                            .executes(ctx -> benchmarkWorldgen(ctx.getSource(),
+                                    StringArgumentType.getString(ctx, "discipline"), 8))
+                            .then(Commands.argument("gridSize", IntegerArgumentType.integer(1, 16))
+                                .executes(ctx -> benchmarkWorldgen(ctx.getSource(),
+                                        StringArgumentType.getString(ctx, "discipline"),
+                                        IntegerArgumentType.getInteger(ctx, "gridSize"))))))
+                )
+        );
     }
 
+    /**
+     * Force-generates a gridSize x gridSize batch of brand-new chunks in the given discipline's
+     * dimension and times it, for an apples-to-apples "is worldgen actually the bottleneck here"
+     * comparison across disciplines. Always picks a fresh, far-off region (seeded from the
+     * current time) so repeat runs measure real generation instead of re-fetching chunks a
+     * previous run already cached - the tradeoff is that every run permanently leaves that many
+     * generated-but-unvisited chunks on disk, same as any chunk pre-generation tool.
+     *
+     * Runs synchronously on the server thread (ChunkStatus.FULL + requireChunk=true blocks until
+     * done, same mechanism vanilla itself uses for e.g. forced spawn-chunk generation) - expect a
+     * multi-second freeze for larger grids, which is the point: a clean, repeatable number rather
+     * than noisy live-exploration timing.
+     */
     private static int benchmarkWorldgen(CommandSourceStack source, String discipline, int gridSize) {
         MinecraftServer server = source.getServer();
         ServerLevel target = server.getLevel(ConfluxDimensionFactory.getDimensionKey(discipline));
@@ -58,8 +73,8 @@ public class ConfluxDimensionCommands {
         int baseChunkX = 100_000 + (int) ((System.nanoTime() / 1_000L) % 50_000L);
         int baseChunkZ = 100_000 + (int) ((System.nanoTime() / 7_919L) % 50_000L);
 
-        source.sendSuccess(() -> Component.literal("§6[PhoenixCore] Benchmarking " + totalChunks + " chunks in '" +
-                discipline + "' - this will freeze the server briefly..."), false);
+        source.sendSuccess(() -> Component.literal("§6[PhoenixCore] Benchmarking " + totalChunks
+                + " chunks in '" + discipline + "' - this will freeze the server briefly..."), false);
 
         long startNanos = System.nanoTime();
         for (int dx = 0; dx < gridSize; dx++) {
@@ -114,14 +129,14 @@ public class ConfluxDimensionCommands {
         boolean committed = researchData.isCommitted(teamId);
 
         source.sendSuccess(
-                () -> Component.literal("§6=== Discipline Info ==="),
-                false);
+                () ->   Component.literal("§6=== Discipline Info ==="),
+            false);
         source.sendSuccess(
-                () -> Component.literal("§7Discipline: §r" + (discipline != null ? discipline : "None")),
-                false);
+                () ->  Component.literal("§7Discipline: §r" + (discipline != null ? discipline : "None")),
+            false);
         source.sendSuccess(
                 () -> Component.literal("§7Status: §r" + (committed ? "§aCommitted" : "§cUncommitted")),
-                false);
+            false);
 
         return Command.SINGLE_SUCCESS;
     }

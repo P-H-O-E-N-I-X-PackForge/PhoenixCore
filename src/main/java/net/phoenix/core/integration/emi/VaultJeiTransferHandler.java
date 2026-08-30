@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.emi;
 
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -8,11 +12,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.network.CPacketFillCraftingGrid;
 import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
-
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

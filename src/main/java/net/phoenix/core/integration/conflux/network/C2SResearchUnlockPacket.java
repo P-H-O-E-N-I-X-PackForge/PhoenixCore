@@ -56,6 +56,9 @@ public class C2SResearchUnlockPacket {
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
 
+                // Unlocking a node can commit the team to a (possibly different) discipline -
+                // when that happens the player needs to actually be sent to that dimension,
+                // not just have the data updated underneath them.
                 String disciplineAfter = researchData.getDiscipline(teamId);
                 if (disciplineAfter != null && !disciplineAfter.equals(disciplineBefore)) {
                     net.phoenix.core.integration.conflux.dimension.ConfluxDimensionFactory

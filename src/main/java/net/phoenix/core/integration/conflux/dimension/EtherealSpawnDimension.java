@@ -14,7 +14,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public class EtherealSpawnDimension {
 
-    public static final ResourceKey<Level> DIMENSION_KEY = ResourceKey.create(Registries.DIMENSION,
+    public static final ResourceKey<Level> DIMENSION_KEY =
+        ResourceKey.create(Registries.DIMENSION,
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "ethereal_spawn"));
 
     public static final String DIMENSION_ID = "ethereal_spawn";

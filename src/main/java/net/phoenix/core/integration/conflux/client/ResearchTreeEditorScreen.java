@@ -80,6 +80,10 @@ public class ResearchTreeEditorScreen extends Screen {
 
     private record UnlockEntry(String type, String value) {}
 
+    // The sidebar's fixed-height rows (tree meta, node fields, cost rows, unlock list) can add
+    // up to more than a small screen's real height with no clamp at all; below the room they need
+    // we shrink the whole screen via a pose scale (same idea used across the rest of the Phoenix
+    // Suite) instead of letting them run off-screen.
     private static final int MIN_CANVAS_W = 320;
     private static final int MIN_CANVAS_H = 300;
     private float uiScale = 1f;

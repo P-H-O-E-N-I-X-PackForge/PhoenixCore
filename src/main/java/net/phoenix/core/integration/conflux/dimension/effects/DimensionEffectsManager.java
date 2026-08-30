@@ -1,9 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.effects;
 
+import net.minecraft.world.level.Level;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-
 import org.jetbrains.annotations.Nullable;
 
 public class DimensionEffectsManager {

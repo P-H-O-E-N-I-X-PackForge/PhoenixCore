@@ -13,12 +13,12 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
-import net.phoenix.core.common.block.PhoenixBlocks;
-import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.integration.astral.skein.AstralConfluenceHatchMachine;
 import net.phoenix.core.integration.astral.skein.AstralLoomMachine;
 import net.phoenix.core.integration.astral.skein.AstralSpinningWheelMachine;
 import net.phoenix.core.integration.astral.skein.AstralThreadHatchPartMachine;
+import net.phoenix.core.common.block.PhoenixBlocks;
+import net.phoenix.core.common.data.PhoenixRecipeTypes;
 
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.blocks;
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.controller;

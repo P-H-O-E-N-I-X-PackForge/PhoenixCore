@@ -13,6 +13,12 @@ import java.util.function.Consumer;
 
 public class GTVeinPlacement {
 
+    /**
+     * Must resolve to the exact same key as the discipline's actual shared dimension
+     * (ConfluxDimensionFactory.getDimensionKey) - GT only places a vein's ore in dimensions
+     * listed in its own dimensions() set, so any drift between the two silently means the
+     * vein never generates anywhere, with no error to point at why.
+     */
     public static ResourceKey<Level> disciplineDimension(String disciplineId) {
         return ConfluxDimensionFactory.getDimensionKey(disciplineId);
     }

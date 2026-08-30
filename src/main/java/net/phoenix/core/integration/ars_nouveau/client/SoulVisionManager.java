@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.nbt.CompoundTag;
@@ -10,15 +11,26 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
 
-import com.mojang.blaze3d.platform.NativeImage;
-
+/**
+ * Drives the Soul Lens' "soul vision" post-process shader: a shift-right-click toggle that
+ * tints the world by how much soul each nearby chunk holds (gray = depleted, purple = vibrant),
+ * matching the color scale shown on the lens' in-hand minimap ({@link SoulMapWidget}).
+ * <p>
+ * The chunk data itself is never fetched over the network directly - it rides along on the
+ * held lens' "MapData" tag, which {@link SoulLensItem#inventoryTick} already keeps in sync.
+ * This class just repackages that same data into a small texture the fragment shader can
+ * sample. The camera matrices the shader needs are read directly off {@code RenderSystem} by
+ * {@code GameRendererMixin} at the moment the post pass runs, rather than captured here -
+ * see that class for why.
+ */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class SoulVisionManager {
 
@@ -73,6 +85,7 @@ public final class SoulVisionManager {
         return active;
     }
 
+    /** Whether there's an uploaded density grid for the shader to sample this frame. */
     public static boolean hasDensityData() {
         return active && densityTexture != null;
     }
@@ -128,7 +141,8 @@ public final class SoulVisionManager {
 
             float density = chunk.getFloat("density");
             int level = (int) (Math.min(density / DENSITY_SCALE, 1f) * 255f);
-
+            // Same value in every channel so NativeImage's byte order never matters - the
+            // shader only ever reads the red channel back out.
             int color = 0xFF000000 | (level << 16) | (level << 8) | level;
             image.setPixelRGBA(px, pz, color);
         }

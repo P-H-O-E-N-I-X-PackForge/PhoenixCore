@@ -31,6 +31,11 @@ public class GameRendererMixin {
 
                 var effect = pass.getEffect();
 
+                // Read the actual matrices the just-finished 3D pass used, straight off
+                // RenderSystem, rather than trying to capture them mid-frame via an event -
+                // nothing touches these globals between the level render ending and this
+                // PostChain.process() call, so they're guaranteed to still hold that frame's
+                // real camera transform here.
                 Matrix4f invProjMat = new Matrix4f(RenderSystem.getProjectionMatrix()).invert();
                 Matrix4f invViewMat = new Matrix4f(RenderSystem.getModelViewStack().last().pose()).invert();
                 Vec3 camPos = mc.gameRenderer.getMainCamera().getPosition();

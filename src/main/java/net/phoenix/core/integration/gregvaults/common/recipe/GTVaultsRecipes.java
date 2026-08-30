@@ -1,20 +1,18 @@
 package net.phoenix.core.integration.gregvaults.common.recipe;
 
+import com.google.gson.JsonObject;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
-
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
-
-import com.google.gson.JsonObject;
 
 import java.util.function.Consumer;
 
@@ -73,8 +71,7 @@ public class GTVaultsRecipes {
     }
 
     private static void addEmitterUpgrade(Consumer<FinishedRecipe> provider,
-                                          WirelessTerminalItem.EmitterTier tier,
-                                          net.minecraft.world.item.Item emitterItem) {
+                                          WirelessTerminalItem.EmitterTier tier, net.minecraft.world.item.Item emitterItem) {
         ResourceLocation recipeId = PhoenixCore.id("terminal_emitter_" + tier.name().toLowerCase());
         ResourceLocation emitterId = ForgeRegistries.ITEMS.getKey(emitterItem);
 

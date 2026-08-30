@@ -13,7 +13,7 @@ public class AggregatedStack {
     public AggregatedStack(ItemStack displayStack, List<Integer> backingSlots) {
         this.displayStack = displayStack;
         this.backingSlots = backingSlots;
-        this.totalCount = displayStack.getCount();
+        this.totalCount   = displayStack.getCount();
     }
 
     public void addCount(long count) {

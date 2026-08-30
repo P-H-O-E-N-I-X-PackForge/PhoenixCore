@@ -26,7 +26,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
-
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("all")
@@ -111,7 +110,8 @@ public class OmniPackBlock extends BaseEntityBlock {
         }
 
         if (level.getBlockEntity(pos) instanceof OmniPackBlockEntity be) {
-            net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects effects = new net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects(
+                    net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects effects =
+                            new  net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects(
                     tier, be.getUpgradeInventory());
             int realSlots = effects.totalSlots;
 

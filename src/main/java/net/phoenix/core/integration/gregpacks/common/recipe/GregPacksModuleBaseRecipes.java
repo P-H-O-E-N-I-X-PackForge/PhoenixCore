@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
-
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -22,6 +21,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 public class GregPacksModuleBaseRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+
         registerModuleBase(provider, "lv", GregPacksItems.LV_MODULE_BASE, GTMaterials.Steel);
         registerModuleBase(provider, "mv", GregPacksItems.MV_MODULE_BASE, GTMaterials.Aluminium);
         registerModuleBase(provider, "hv", GregPacksItems.HV_MODULE_BASE, GTMaterials.StainlessSteel);

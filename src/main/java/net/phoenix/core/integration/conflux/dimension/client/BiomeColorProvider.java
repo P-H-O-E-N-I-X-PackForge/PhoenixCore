@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
+import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.integration.conflux.dimension.DisciplineTheme;

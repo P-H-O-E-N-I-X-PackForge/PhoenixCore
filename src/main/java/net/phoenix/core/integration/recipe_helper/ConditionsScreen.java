@@ -92,6 +92,9 @@ public class ConditionsScreen extends Screen {
     private final List<ConditionEntry> conditions;
     private int pillScroll = 0;
 
+    // The fixed 320x220 panel has no clamp at all; below the room it needs we shrink the whole
+    // screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead of
+    // letting it run off-screen at small windows/high GUI scale.
     private float uiScale = 1f;
     private int vw, vh;
 

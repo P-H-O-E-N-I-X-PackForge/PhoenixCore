@@ -1,7 +1,6 @@
 package net.phoenix.core.integration.gregvaults.client;
 
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
-
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

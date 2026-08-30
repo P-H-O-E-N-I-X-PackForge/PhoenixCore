@@ -1,11 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -45,13 +46,23 @@ public class ChunkGenerationEvents {
         }
     }
 
-    private static void applyPhoenixSignature(Level level, int chunkX, int chunkZ) {}
+    private static void applyPhoenixSignature(Level level, int chunkX, int chunkZ) {
 
-    private static void applySculkSignature(Level level, int chunkX, int chunkZ) {}
+    }
 
-    private static void applyVoidSignature(Level level, int chunkX, int chunkZ) {}
+    private static void applySculkSignature(Level level, int chunkX, int chunkZ) {
 
-    private static void applySealedASignature(Level level, int chunkX, int chunkZ) {}
+    }
 
-    private static void applySealedBSignature(Level level, int chunkX, int chunkZ) {}
+    private static void applyVoidSignature(Level level, int chunkX, int chunkZ) {
+
+    }
+
+    private static void applySealedASignature(Level level, int chunkX, int chunkZ) {
+
+    }
+
+    private static void applySealedBSignature(Level level, int chunkX, int chunkZ) {
+
+    }
 }

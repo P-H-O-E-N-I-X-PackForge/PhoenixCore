@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+
 import net.phoenix.core.integration.astral.item.AstralWandItem;
 
 import org.jetbrains.annotations.Nullable;
@@ -25,10 +26,8 @@ public class AstralRitualPedestalBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new AstralRitualPedestalBlockEntity(
-                net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL_BE
-                        .get(),
-                pos, state);
+        return new AstralRitualPedestalBlockEntity(net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL_BE
+                .get(), pos, state);
     }
 
     @Override

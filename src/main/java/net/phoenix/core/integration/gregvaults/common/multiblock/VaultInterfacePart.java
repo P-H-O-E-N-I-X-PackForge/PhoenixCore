@@ -2,7 +2,9 @@ package net.phoenix.core.integration.gregvaults.common.multiblock;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
@@ -15,7 +17,7 @@ import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-
+import lombok.Getter;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +26,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;
@@ -32,9 +36,6 @@ import brachy.modularui.value.sync.EnumSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.CycleButtonWidget;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class VaultInterfacePart extends MultiblockPartMachine implements IMuiMachine {
 

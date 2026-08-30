@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.gregpacks.common.registry;
 
+import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlock;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
-
-import com.tterrag.registrate.util.entry.BlockEntry;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 

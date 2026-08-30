@@ -24,8 +24,7 @@ public class PhoenixArmorRenderer extends GeoArmorRenderer<PhoenixArmorItem> {
                                RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer,
                                float partialTick, int packedLight, int packedOverlay) {
                 if (getCurrentSlot() == EquipmentSlot.CHEST) {
-                    ResourceLocation wingsTex = ResourceLocation.fromNamespaceAndPath("phoenixcore",
-                            "textures/armor/phoenix_wings.png");
+                    ResourceLocation wingsTex = ResourceLocation.fromNamespaceAndPath("phoenixcore", "textures/armor/phoenix_wings.png");
 
                     RenderType wingsRenderType = RenderType.armorCutoutNoCull(wingsTex);
 
