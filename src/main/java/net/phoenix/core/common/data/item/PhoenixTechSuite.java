@@ -384,8 +384,16 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double sigmoid = sigmoidAcceleration(player.tickCount, 5.0, baseThrust, baseThrust * 0.3);
         double thrust = sigmoid * euScale;
 
-        double newX = cur.x + look.x * thrust;
-        double newZ = cur.z + look.z * thrust;
+        // Drift now controls how much of last tick's horizontal velocity carries into this one -
+        // the same retention concept applyCoastDamping already uses when not thrusting. At drift=0
+        // that's 0.0, so horizontal velocity is ENTIRELY this tick's thrust with no old momentum
+        // mixed in at all: turning snaps you straight onto the new look direction instead of
+        // sliding through the old one - true zero drift, not just a lower speed ceiling. The old
+        // design only capped top speed (via poweredDriftMin/Max below) without ever removing
+        // carried-over momentum, which is why drift=0 (and even 1) still felt floaty.
+        double retention = getDriftRetention(cfg, driftMult);
+        double newX = cur.x * retention + look.x * thrust;
+        double newZ = cur.z * retention + look.z * thrust;
 
         double climbMultiplier = cfg.poweredVerticalBase * verticalScale;
 
@@ -398,11 +406,21 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             newY = cur.y + look.y * thrust;
         }
 
+        // Horizontal-only safety ceiling on top speed - at drift=10 (retention=1.0, no decay at
+        // all) horizontal velocity would otherwise accumulate unbounded under sustained thrust.
+        // This must exclude Y: it used to clamp the FULL 3D vector, which silently crushed
+        // whatever climbMultiplier computed above back down to whatever this cap allowed -
+        // "vertical speed 20" barely climbing was that cap fighting the vertical slider, not the
+        // vertical slider being weak.
         double maxSpeed = cfg.poweredDriftMin + (driftMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
-        Vec3 newVel = new Vec3(newX, newY, newZ);
-        if (newVel.length() > maxSpeed) {
-            newVel = newVel.scale(maxSpeed / newVel.length());
+        double horizLen = Math.sqrt(newX * newX + newZ * newZ);
+        if (horizLen > maxSpeed) {
+            double scale = maxSpeed / horizLen;
+            newX *= scale;
+            newZ *= scale;
         }
+
+        Vec3 newVel = new Vec3(newX, newY, newZ);
 
         player.setDeltaMovement(newVel);
         player.fallDistance = 0;
@@ -416,9 +434,13 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
     }
 
+    private static double getDriftRetention(PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
+        return cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
+    }
+
     private void applyCoastDamping(Player player, PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
-        double retention = cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
-        if (retention >= 1.0) return; 
+        double retention = getDriftRetention(cfg, driftMult);
+        if (retention >= 1.0) return;
         Vec3 cur = player.getDeltaMovement();
         player.setDeltaMovement(cur.x * retention, cur.y, cur.z * retention);
         player.hurtMarked = true;

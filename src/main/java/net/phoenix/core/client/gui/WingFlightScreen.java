@@ -38,6 +38,7 @@ public class WingFlightScreen extends Screen {
     private static final int COLOR_CREATIVE = 0xFF55FF;
     private static final int COLOR_WINGED = 0x55FFFF;
     private static final int COLOR_FILLED = 0x8800CC;
+    private static final int COLOR_HIGHLIGHT = 0xC480E6;
     private static final int COLOR_EMPTY = 0x333333;
     private static final int COLOR_PANEL_BG = 0xEE050010;
     private static final int COLOR_BORDER = 0x66BF00FF;
@@ -180,14 +181,11 @@ public class WingFlightScreen extends Screen {
         for (int i = 0; i < max; i++) {
             int step = i + 1;
             int xPos = x + (i * segW);
-            int color = step <= val ? COLOR_FILLED : COLOR_EMPTY;
+            // The current value reads as its own brighter segment instead of a printed digit -
+            // cleaner at a glance, no font rendering needed inside a thin 18px-tall bar.
+            int color = step == val ? COLOR_HIGHLIGHT : step < val ? COLOR_FILLED : COLOR_EMPTY;
 
             gfx.fill(xPos, y, xPos + segW - 2, y + 18, color);
-
-            if (step == val) {
-                String s = String.valueOf(step);
-                gfx.drawCenteredString(font, s, xPos + (segW / 2), y + 5, 0xFFFFFF);
-            }
         }
     }
 
