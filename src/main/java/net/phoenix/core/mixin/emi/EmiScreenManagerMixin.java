@@ -11,10 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * EMI's favorites button only applies to the global (per instance) favorites.
- * So this mixin makes clicking that button open our own GUI.
- */
 @Mixin(value = EmiScreenManager.class, remap = false)
 public abstract class EmiScreenManagerMixin {
 

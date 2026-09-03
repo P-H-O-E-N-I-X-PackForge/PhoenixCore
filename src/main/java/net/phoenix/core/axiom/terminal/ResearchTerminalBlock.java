@@ -33,7 +33,7 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) {
             if (level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
-                // Safely execute client-side code only when on a CLIENT environment
+                
                 DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                         () -> () -> PhoenixClient.openResearchTerminalScreen(terminal));
             }

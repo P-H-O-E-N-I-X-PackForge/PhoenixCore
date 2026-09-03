@@ -95,7 +95,6 @@ public class PhoenixFavoriteSets {
         worldId = null;
     }
 
-    /** Called after every favorite add/remove so the active page stays in sync with EMI's live list. */
     public static synchronized void onFavoritesMutated() {
         if (!loaded) return;
         snapshotActivePage();
@@ -127,7 +126,6 @@ public class PhoenixFavoriteSets {
         return displayName(activeRawKey);
     }
 
-    /** Page names visible under the current scope (every page, for GLOBAL; just this world's, for PER_WORLD). */
     public static synchronized List<String> getSetNames() {
         return pages.keySet().stream()
                 .filter(PhoenixFavoriteSets::isVisibleKey)

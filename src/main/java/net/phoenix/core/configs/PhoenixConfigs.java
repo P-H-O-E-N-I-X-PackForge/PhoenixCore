@@ -180,17 +180,12 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
-                "Climb-speed multiplier for powered/sonic flight at vertical-speed slider = 0.",
-                "Default: 3.0"
+                "Climb-speed multiplier for powered/sonic flight at vertical-speed slider = 5",
+                "(the slider's \"normal\" midpoint, range 0-20). Scales proportionally with the",
+                "slider on both sides: 0 = none, 10 = double this, 20 = quadruple this.",
+                "Default: 5.0"
         })
-        public double poweredVerticalMin = 3.0;
-
-        @Configurable
-        @Configurable.Comment({
-                "Climb-speed multiplier for powered/sonic flight at vertical-speed slider = 10.",
-                "Default: 8.0"
-        })
-        public double poweredVerticalMax = 8.0;
+        public double poweredVerticalBase = 5.0;
     }
 
     public static class CleanroomConfig {

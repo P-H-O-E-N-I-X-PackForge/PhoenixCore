@@ -44,15 +44,6 @@ public class TeslaTeamEnergyData extends SavedData {
         }
     }
 
-    /**
-     * Null means "can't tell right now" (dimension/chunk not loaded) - callers must leave the
-     * entry alone in that case rather than treating it as confirmed-gone, since a hatch sitting in
-     * an unloaded chunk is still a real hatch. Only a loaded chunk with no matching machine on it
-     * counts as confirmation that a persisted energyBuffered/HatchInfo entry has outlived its
-     * block - which happens whenever a hatch is removed through a path that skips onUnload (e.g.
-     * external world edits), and shows up as a phantom "Tesla Hatch" entry in the Binder UI/Jade
-     * until something notices and cleans it up.
-     */
     @Nullable
     public static Boolean isLivePhysicalHatch(MinecraftServer server, HatchInfo hatch) {
         ServerLevel hatchLevel = server.getLevel(hatch.dimension);

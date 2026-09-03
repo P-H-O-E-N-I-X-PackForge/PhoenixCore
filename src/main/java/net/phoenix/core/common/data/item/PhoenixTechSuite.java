@@ -331,18 +331,16 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         int rawDrift = data.contains("FlightDrift") ? data.getInt("FlightDrift") : 5;
         int rawVertical = data.contains("FlightVertical") ? data.getInt("FlightVertical") : 5;
 
-        float speedPercent = (Math.max(1, rawSpeed) - 1) / 9.0f;
-        // The GUI's slider only ever sends 1-10 (see WingFlightScreen#createSliderRow), so this
-        // reaches exactly 0.0 at the slider's actual minimum (1), not just in theory - that 0.0 is
-        // what makes coastRetentionMin (full inertia canceling) reachable at all.
-        float driftPercent = (Math.max(1, rawDrift) - 1) / 9.0f;
-        float verticalPercent = (Math.max(1, rawVertical) - 1) / 9.0f;
+        float speedPercent = Math.max(0, Math.min(10, rawSpeed)) / 10.0f;
+        float driftPercent = Math.max(0, Math.min(10, rawDrift)) / 10.0f;
+
+        float verticalScale = Math.max(0, Math.min(20, rawVertical)) / 5.0f;
 
         if (flightMode.startsWith("creative")) {
-            handleCreativeFlight(player, data, world, cfg, speedPercent, driftPercent, verticalPercent,
+            handleCreativeFlight(player, data, world, cfg, speedPercent, driftPercent, verticalScale,
                     networkOnline, teslaData, teamID);
         } else {
-            handleElytraFlight(player, data, world, cfg, speedPercent, driftPercent, verticalPercent,
+            handleElytraFlight(player, data, world, cfg, speedPercent, driftPercent, verticalScale,
                     networkOnline, teslaData, teamID);
         }
     }
@@ -376,7 +374,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void applyWingThrust(Player player, Level world, CompoundTag data,
                                  PhoenixConfigs.WingFlightConfigs cfg,
-                                 float speedMult, float driftMult, float verticalMult,
+                                 float speedMult, float driftMult, float verticalScale,
                                  TeslaTeamEnergyData teslaData, UUID teamID) {
         Vec3 look = player.getLookAngle();
         Vec3 cur = player.getDeltaMovement();
@@ -389,8 +387,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double newX = cur.x + look.x * thrust;
         double newZ = cur.z + look.z * thrust;
 
-        double climbMultiplier = cfg.poweredVerticalMin
-                + (verticalMult * (cfg.poweredVerticalMax - cfg.poweredVerticalMin));
+        double climbMultiplier = cfg.poweredVerticalBase * verticalScale;
 
         double newY;
         if (look.y > 0) {
@@ -419,18 +416,9 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
     }
 
-    /**
-     * Runs every tick a wing-flight mode is airborne but NOT actively thrusting - without this,
-     * whatever velocity applyWingThrust last set just persists via plain vanilla elytra physics
-     * regardless of the drift setting, which is exactly the bug this fixes: at drift slider = 0
-     * (coastRetentionMin = 0.0), horizontal velocity now snaps to zero the instant thrust stops
-     * (full inertia canceling) instead of continuing to glide on leftover momentum. Only damps
-     * horizontal (X/Z) - vertical stays untouched so gravity/glide-fall still feels like normal
-     * elytra flight rather than freezing your altitude the moment you let go.
-     */
     private void applyCoastDamping(Player player, PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
         double retention = cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
-        if (retention >= 1.0) return; // full retention - nothing to dampen, avoid a needless velocity write
+        if (retention >= 1.0) return; 
         Vec3 cur = player.getDeltaMovement();
         player.setDeltaMovement(cur.x * retention, cur.y, cur.z * retention);
         player.hurtMarked = true;
@@ -444,7 +432,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void handleElytraFlight(Player player, CompoundTag data, Level world,
                                     PhoenixConfigs.WingFlightConfigs cfg,
-                                    float speedMult, float driftMult, float verticalMult,
+                                    float speedMult, float driftMult, float verticalScale,
                                     boolean networkOnline, TeslaTeamEnergyData teslaData,
                                     UUID teamID) {
         if (player.getAbilities().mayfly && !player.isCreative() && !player.isSpectator()) {
@@ -488,7 +476,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
                 if (hasPower) {
 
-                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalMult, teslaData, teamID);
+                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalScale, teslaData, teamID);
 
                     if (!world.isClientSide && world instanceof ServerLevel sl) {
                         Vec3 look = player.getLookAngle();
@@ -503,9 +491,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
                 }
             } else if (isPowered) {
-                // Powered mode but not currently thrusting (released sneak) - without this,
-                // whatever momentum was built up just carries on via plain elytra physics
-                // regardless of the drift setting, which is exactly "drift=0 still drifts".
+
                 applyCoastDamping(player, cfg, driftMult);
                 if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
             } else {
@@ -516,7 +502,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void handleCreativeFlight(Player player, CompoundTag data, Level world,
                                       PhoenixConfigs.WingFlightConfigs cfg,
-                                      float speedMult, float driftMult, float verticalMult,
+                                      float speedMult, float driftMult, float verticalScale,
                                       boolean networkOnline, TeslaTeamEnergyData teslaData,
                                       UUID teamID) {
         String flightMode = data.getString("FlightMode");
@@ -563,10 +549,9 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
 
                 if (isSprinting && canAfford) {
-                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalMult, teslaData, teamID);
+                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalScale, teslaData, teamID);
                 } else {
-                    // Not currently thrusting - without this, leftover momentum just carries on
-                    // via plain elytra physics regardless of the drift setting.
+
                     applyCoastDamping(player, cfg, driftMult);
                     if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
                 }

@@ -48,8 +48,7 @@ public class PhoenixEmiPlugin implements EmiPlugin {
 
     @Override
     public void register(EmiRegistry registry) {
-        // Phoenix Fission is being split out of PhoenixCore into its own mod. Fission-specific formula
-        // search aliases only make sense while that content is actually present.
+
         boolean fissionLoaded = ModList.get().isLoaded("phoenix_fission");
 
         registry.addCategory(FISSION_FUEL);
@@ -117,12 +116,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         registerMaterialFluidSearchAliases(registry);
     }
 
-    /**
-     * GTCEU material fluids are indexed by EMI as their own EmiStack, but their baked search name often
-     * doesn't resolve to the material's real display name (missing/mismatched fluid translation keys), so
-     * searching by material name only ever matches the bucket item. Aliasing the fluid stack to the material's
-     * known localized name fixes lookup regardless of the fluid's own translation state.
-     */
     private static void registerMaterialFluidSearchAliases(EmiRegistry registry) {
         for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
             if (!material.hasProperty(PropertyKey.FLUID)) continue;

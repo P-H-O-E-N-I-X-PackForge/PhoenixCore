@@ -10,11 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * Popup for picking which named EMI favorites page is active, creating a new one, and switching
- * whether pages are shared across every world or private to each one. Reopens {@link #parent} on
- * close instead of kicking the player all the way back to the main game screen.
- */
 public class EmiFavoritePagesScreen extends Screen {
 
     private static final int PANEL_WIDTH = 240;

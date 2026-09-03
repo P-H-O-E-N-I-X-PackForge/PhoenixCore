@@ -479,7 +479,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_1k")), 1)
                 .duration(100).EUt(30).save(provider);
 
-        // --- AE2 4k Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_4k"))
                 .inputItems(RANDOM_ACCESS_MEMORY)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_1k")), 3)
@@ -499,7 +498,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_4k")), 2)
                 .duration(100).EUt(30).save(provider);
 
-        // --- AE2 16k Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_16k"))
                 .inputItems(ULTRA_LOW_POWER_INTEGRATED_CIRCUIT)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_4k")), 3)
@@ -519,7 +517,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_16k")), 3)
                 .duration(100).EUt(120).save(provider);
 
-        // --- AE2 64k Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_64k"))
                 .inputItems(LOW_POWER_INTEGRATED_CIRCUIT)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_16k")), 3)
@@ -539,7 +536,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_64k")), 4)
                 .duration(100).EUt(480).save(provider);
 
-        // --- AE2 256k Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_256k"))
                 .inputItems(QUBIT_CENTRAL_PROCESSING_UNIT)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_64k")), 3)
@@ -559,7 +555,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_256k")), 4)
                 .duration(100).EUt(1920).save(provider);
 
-        // --- MegaCells 1m Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_1m"))
                 .inputItems(NAND_MEMORY_CHIP)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_256k")), 3)
@@ -581,7 +576,6 @@ public class PhoenixMachineRecipes {
                         5)
                 .duration(100).EUt(7680).save(provider);
 
-        // --- MegaCells 4m Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_4m"))
                 .inputItems(NOR_MEMORY_CHIP)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")), 3)
@@ -603,7 +597,6 @@ public class PhoenixMachineRecipes {
                         6)
                 .duration(100).EUt(30720).save(provider);
 
-        // --- MegaCells 16m Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_16m"))
                 .inputItems(ADVANCED_SYSTEM_ON_CHIP)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_4m")), 3)
@@ -625,7 +618,6 @@ public class PhoenixMachineRecipes {
                         ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_16m")), 7)
                 .duration(100).EUt(122880).save(provider);
 
-        // --- MegaCells 64m Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_64m"))
                 .inputItems(HIGHLY_ADVANCED_SOC)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_16m")), 3)
@@ -647,7 +639,6 @@ public class PhoenixMachineRecipes {
                         ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_64m")), 8)
                 .duration(100).EUt(491520).save(provider);
 
-        // --- MegaCells 256m Tier ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_256m"))
                 .inputItems(HIGHLY_ADVANCED_SOC, 4)
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_64m")), 3)
@@ -671,7 +662,6 @@ public class PhoenixMachineRecipes {
                         10)
                 .duration(100).EUt(1966080).save(provider);
 
-        // --- Special Recipes ---
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_bulk_cell_component"))
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")))
                 .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "spatial_cell_component_2")))

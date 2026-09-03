@@ -9,10 +9,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Emi's favorite list is merely a list of a global favorites instance.
- * This mixin adds our own favorites from our added EMI tabs.
- */
 @Mixin(value = EmiFavorites.class, remap = false)
 public abstract class EmiFavoritesMixin {
 
