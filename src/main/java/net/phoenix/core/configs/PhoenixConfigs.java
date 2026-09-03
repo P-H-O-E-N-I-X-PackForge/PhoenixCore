@@ -151,6 +151,25 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Min horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
+                "flight (at speed slider = 0). This is a direct velocity, not creativeSpeedMin/Max's",
+                "vanilla Abilities.flyingSpeed units - vanilla's own flight accumulates well beyond",
+                "that value tick over tick via friction, but free-strafing sets velocity directly with",
+                "no such buildup, so it needed its own, much larger-looking range to feel equivalent.",
+                "Default: 1.0"
+        })
+        public double creativeFreeSpeedMin = 1.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
+                "flight (at speed slider = 20). See creativeFreeSpeedMin.",
+                "Default: 8.0"
+        })
+        public double creativeFreeSpeedMax = 8.0;
+
+        @Configurable
+        @Configurable.Comment({
                 "Min speed clamp for powered flight (at drift slider = 0, tightest handling).",
                 "Default: 0.6"
         })

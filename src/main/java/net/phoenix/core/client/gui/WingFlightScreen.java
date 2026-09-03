@@ -16,23 +16,6 @@ import net.phoenix.core.network.packet.UpdateWingSettingsPacket;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Deliberately a plain Screen rather than a ModularUI panel - ModularUI's own API differs
- * incompatibly between branches (brachy modularui on 8.0 vs lowdraglib's older ModularUI here,
- * and even GTCEu's own texture-drawable classes don't have a common standalone draw() that works
- * outside each framework's own widget/render context), so a raw Screen using only vanilla
- * GuiGraphics primitives is the one implementation that ports cleanly across both without a
- * rewrite. The panel/button look is hand-drawn (drawPanel: flat fill + a light bevel edge
- * top-left, dark shadow edge bottom-right) rather than borrowed GT textures, purely so this file
- * has zero framework dependency at all.
- * <p>
- * Every interactive element (mode button, +/-, slider segments) is hit-tested manually in
- * mouseClicked() against the clickRegions list render() just rebuilt, instead of using vanilla
- * Button widgets - a vanilla Button still paints its own grey sprite/hover overlay even with an
- * empty label, which was rendering on top of the segmented bars' color fill every frame
- * (super.render() draws all added widgets after this class's own render() body) and is what
- * actually read as "a bunch of vanilla buttons" pasted over the custom bar.
- */
 @OnlyIn(Dist.CLIENT)
 public class WingFlightScreen extends Screen {
 
@@ -100,7 +83,7 @@ public class WingFlightScreen extends Screen {
     }
 
     private int getSliderMax(int kind) {
-        return kind == SLIDER_VERTICAL ? 20 : STEPS;
+        return kind == SLIDER_DRIFT ? STEPS : 20;
     }
 
     private int getSliderValue(int kind) {
@@ -207,8 +190,6 @@ public class WingFlightScreen extends Screen {
         }
     }
 
-    /** Flat fill + a light bevel edge (top/left) and dark shadow edge (bottom/right) - a cheap
-     *  "raised panel" look using only plain fills, no textures at all. */
     private void drawPanel(GuiGraphics gfx, int x, int y, int w, int h, int bgColor) {
         gfx.fill(x, y, x + w, y + h, bgColor);
         gfx.fill(x, y, x + w, y + 1, PANEL_BEVEL);
@@ -274,19 +255,19 @@ public class WingFlightScreen extends Screen {
 
             case "powered" -> {
                 long base = cfg.poweredFlightEUt;
-                long actualDrain = base + (long) (base * (flightSpeed / 10.0));
+                long actualDrain = base + (long) (base * (flightSpeed / 20.0));
                 yield fmt.apply(actualDrain) + " - High EU Sonic Flight";
             }
 
             case "creative" -> {
                 if (cfg.creativeFlightEUt <= 0) yield "FREE - Precision Hover";
-                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 5.0));
+                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 10.0));
                 yield fmt.apply(actualDrain) + " - Precision Hover";
             }
 
             case "creative+wings" -> {
                 if (cfg.creativeFlightEUt <= 0) yield "FREE - Hover & Glide";
-                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 5.0));
+                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 10.0));
                 yield fmt.apply(actualDrain) + " - Hover & Glide";
             }
 

@@ -54,7 +54,7 @@ public class UpdateWingSettingsPacket {
             if (!(chest.getItem() instanceof PhoenixArmorItem)) return;
 
             String mode = VALID_MODES.contains(flightMode) ? flightMode : "basic";
-            int speed = Math.max(0, Math.min(10, flightSpeed));
+            int speed = Math.max(0, Math.min(20, flightSpeed));
             int drift = Math.max(0, Math.min(10, flightDrift));
             int vertical = Math.max(0, Math.min(20, flightVertical));
 

@@ -332,7 +332,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         int rawDrift = data.contains("FlightDrift") ? data.getInt("FlightDrift") : 5;
         int rawVertical = data.contains("FlightVertical") ? data.getInt("FlightVertical") : 5;
 
-        float speedPercent = Math.max(0, Math.min(10, rawSpeed)) / 10.0f;
+        float speedPercent = Math.max(0, Math.min(20, rawSpeed)) / 20.0f;
         float driftPercent = Math.max(0, Math.min(10, rawDrift)) / 10.0f;
 
         float verticalScale = Math.max(0, Math.min(20, rawVertical)) / 5.0f;
@@ -385,13 +385,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double sigmoid = sigmoidAcceleration(player.tickCount, 5.0, baseThrust, baseThrust * 0.3);
         double thrust = sigmoid * euScale;
 
-        // Drift now controls how much of last tick's horizontal velocity carries into this one -
-        // the same retention concept applyCoastDamping already uses when not thrusting. At drift=0
-        // that's 0.0, so horizontal velocity is ENTIRELY this tick's thrust with no old momentum
-        // mixed in at all: turning snaps you straight onto the new look direction instead of
-        // sliding through the old one - true zero drift, not just a lower speed ceiling. The old
-        // design only capped top speed (via poweredDriftMin/Max below) without ever removing
-        // carried-over momentum, which is why drift=0 (and even 1) still felt floaty.
         double retention = getDriftRetention(cfg, driftMult);
         double newX = cur.x * retention + look.x * thrust;
         double newZ = cur.z * retention + look.z * thrust;
@@ -407,12 +400,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             newY = cur.y + look.y * thrust;
         }
 
-        // Horizontal-only safety ceiling on top speed - at drift=10 (retention=1.0, no decay at
-        // all) horizontal velocity would otherwise accumulate unbounded under sustained thrust.
-        // This must exclude Y: it used to clamp the FULL 3D vector, which silently crushed
-        // whatever climbMultiplier computed above back down to whatever this cap allowed -
-        // "vertical speed 20" barely climbing was that cap fighting the vertical slider, not the
-        // vertical slider being weak.
         double maxSpeed = cfg.poweredDriftMin + (driftMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
         double horizLen = Math.sqrt(newX * newX + newZ * newZ);
         if (horizLen > maxSpeed) {
@@ -590,10 +577,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         if (player.getAbilities().flying) {
             if (flightMode.equals("creative")) {
-                // Plain "creative" keeps vanilla's free WASD-in-any-direction strafing (unlike the
-                // forward-look thrust style above), but drift and vertical speed need somewhere to
-                // apply - see applyCreativeFreeFlight for why that means replacing vanilla's own
-                // flyingSpeed-driven movement instead of layering on top of it.
+
                 applyCreativeFreeFlight(player, world, cfg, speedMult, driftMult, verticalScale);
                 if (!world.isClientSide) consumeFlightEnergy(item, teslaData, teamID, networkOnline, requiredBI, cost);
             } else if (world.isClientSide) {
@@ -609,18 +593,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
     }
 
-    /**
-     * Vanilla creative-fly moves the player by scaling raw WASD/jump input by Abilities.flyingSpeed
-     * inside its own travel() every tick, entirely independent of anything set here - left alone,
-     * that would either fight or silently double up with our own velocity. Zeroing flyingSpeed
-     * (client-side, since that's where vanilla's own creative-fly input handling lives) hands 100%
-     * of the movement to us instead, the same way "creative+wings" sidesteps the exact same conflict
-     * by switching to elytra-glide physics, which vanilla never drives via flyingSpeed at all.
-     * <p>
-     * Runs on both sides unconditionally (matching applyWingThrust) so client and server compute
-     * the same velocity independently from the same synced inputs, rather than one side setting it
-     * and hoping it syncs cleanly to the other.
-     */
     private void applyCreativeFreeFlight(Player player, Level world, PhoenixConfigs.WingFlightConfigs cfg,
                                          float speedMult, float driftMult, float verticalScale) {
         if (world.isClientSide) {
@@ -638,8 +610,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         float forwardAxis = (forward ? 1f : 0f) - (back ? 1f : 0f);
         float strafeAxis = (right ? 1f : 0f) - (left ? 1f : 0f);
 
-        // Same yaw-relative axis-to-world-direction transform vanilla's own Entity.getInputVector
-        // uses, so WASD still feels like normal creative flying rather than always-forward thrust.
         float yawRad = player.getYRot() * ((float) Math.PI / 180F);
         float sinYaw = Mth.sin(yawRad);
         float cosYaw = Mth.cos(yawRad);
@@ -652,19 +622,12 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        double horizSpeed = cfg.creativeSpeedMin + (speedMult * (cfg.creativeSpeedMax - cfg.creativeSpeedMin));
-        // Vertical speed slider scales relative to this mode's own horizontal speed rather than a
-        // separate baseline - at 5 (1.0x) ascending/descending matches horizontal flying speed.
+        double horizSpeed = cfg.creativeFreeSpeedMin
+                + (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
+
         double vertSpeed = horizSpeed * verticalScale;
         double retention = getDriftRetention(cfg, driftMult);
 
-        // Drift only governs COASTING - while a direction is actively held, movement is always
-        // 100% direct/responsive to current input regardless of the drift setting. Retention only
-        // kicks in on an axis with no input at all this tick, decaying whatever velocity is left
-        // over on that axis from before. Blending retention in unconditionally (old behavior) made
-        // drift bleed into active movement too - e.g. changing direction while holding a key would
-        // still slide through the old direction, which read as "drift affects moving, not just
-        // stopping" and felt wrong even at low settings.
         Vec3 cur = player.getDeltaMovement();
         boolean horizInput = dirLen > 1.0E-4;
         double newX = horizInput ? dirX * horizSpeed : cur.x * retention;
@@ -830,14 +793,15 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         int speed = nbt.getInt("FlightSpeed");
         int drift = nbt.getInt("FlightDrift");
+        int vertical = nbt.getInt("FlightVertical");
 
         this.HUD.newString(Component.literal("✈ " + getModeDisplayName(fMode))
                 .withStyle(getChatColorForMode(fMode), ChatFormatting.BOLD));
 
-        if (fMode.equals("powered") || fMode.startsWith("creative")) {
-            this.HUD.newString(Component.literal("  » SPEED: " + speed + "/10").withStyle(ChatFormatting.GRAY));
-        }
-        if (fMode.startsWith("creative")) {
+        boolean showTuning = fMode.equals("powered") || fMode.startsWith("creative");
+        if (showTuning) {
+            this.HUD.newString(Component.literal("  » SPEED: " + speed + "/20").withStyle(ChatFormatting.GRAY));
+            this.HUD.newString(Component.literal("  » VERTICAL: " + vertical + "/20").withStyle(ChatFormatting.GRAY));
             this.HUD.newString(Component.literal("  » DRIFT: " + drift + "/10").withStyle(ChatFormatting.GRAY));
         }
 
@@ -874,7 +838,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     long netLoad = nbt.getLong("netDrain");
 
                     var cfg = PhoenixConfigs.wingFlight;
-                    float speedPercent = (Math.max(1, speed) - 1) / 9.0f;
+                    float speedPercent = Math.max(0, Math.min(20, speed)) / 20.0f;
 
                     long baseFlightDrain = 0;
                     if (fMode.equals("powered")) {
