@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.core.BlockPos;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
 
 import org.joml.Matrix4f;
@@ -22,28 +23,30 @@ public final class CinemaRenderTarget {
     private CinemaRenderTarget() {}
 
     private static final int SIZE = 256;
-    private static final long REFRESH_INTERVAL_MS = 50; 
+    private static final long REFRESH_INTERVAL_MS = 50;
 
-    private record CellKey(int col, int row, int width, int height) {}
+    private record GroupKey(BlockPos anchor, int width, int height) {}
     private record CacheEntry(RenderTarget target, long[] lastRenderTime) {}
 
-    private static final Map<CellKey, CacheEntry> cache = new HashMap<>();
+    private static final Map<GroupKey, CacheEntry> cache = new HashMap<>();
 
     public static int getOrRenderTexture(CinemaGroupUtil.GroupLayout layout) {
-        CellKey key = new CellKey(layout.col(), layout.row(), layout.width(), layout.height());
+        int width = layout.width();
+        int height = layout.height();
+        GroupKey key = new GroupKey(layout.anchor(), width, height);
         CacheEntry entry = cache.computeIfAbsent(key,
-                k -> new CacheEntry(new MainTarget(SIZE, SIZE), new long[] { -1 }));
+                k -> new CacheEntry(new MainTarget(SIZE * width, SIZE * height), new long[] { -1 }));
 
         long now = System.currentTimeMillis();
         if (now - entry.lastRenderTime()[0] >= REFRESH_INTERVAL_MS) {
             entry.lastRenderTime()[0] = now;
-            renderShader(entry.target(), layout);
+            renderShader(entry.target(), width, height);
         }
 
         return entry.target().getColorTextureId();
     }
 
-    private static void renderShader(RenderTarget target, CinemaGroupUtil.GroupLayout layout) {
+    private static void renderShader(RenderTarget target, int width, int height) {
         ShaderInstance shader = WorldFXShaders.VOID_GALAXY;
         if (shader == null) return;
 
@@ -58,7 +61,7 @@ public final class CinemaRenderTarget {
 
         Matrix4f identity = new Matrix4f();
 
-        shader.safeGetUniform("OutSize").set((float) SIZE, (float) SIZE);
+        shader.safeGetUniform("OutSize").set((float) (SIZE * width), (float) (SIZE * height));
         shader.safeGetUniform("InvViewMat").set(identity);
         shader.safeGetUniform("InvProjMat").set(identity);
         shader.safeGetUniform("PrimaryColor").set(0.7f, 0.15f, 0.9f);
@@ -70,28 +73,21 @@ public final class CinemaRenderTarget {
         shader.safeGetUniform("Time").set((float) (System.currentTimeMillis() % 10000000L) / 10000.0f);
 
         shader.apply();
-        drawCroppedNdcQuad(layout);
+        drawFullNdcQuad();
         shader.clear();
 
         previous.bindWrite(true);
         RenderSystem.enableDepthTest();
+        RenderSystem.enableBlend();
     }
 
-    private static void drawCroppedNdcQuad(CinemaGroupUtil.GroupLayout layout) {
-        float cellW = 2.0f / layout.width();
-        float cellH = 2.0f / layout.height();
-        float x0 = -1.0f + layout.col() * cellW;
-        float x1 = x0 + cellW;
-
-        float y1 = 1.0f - layout.row() * cellH;
-        float y0 = y1 - cellH;
-
+    private static void drawFullNdcQuad() {
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bb.vertex(x0, y0, 0).endVertex();
-        bb.vertex(x1, y0, 0).endVertex();
-        bb.vertex(x1, y1, 0).endVertex();
-        bb.vertex(x0, y1, 0).endVertex();
+        bb.vertex(-1, -1, 0).endVertex();
+        bb.vertex(1, -1, 0).endVertex();
+        bb.vertex(1, 1, 0).endVertex();
+        bb.vertex(-1, 1, 0).endVertex();
         Tesselator.getInstance().end();
     }
 }

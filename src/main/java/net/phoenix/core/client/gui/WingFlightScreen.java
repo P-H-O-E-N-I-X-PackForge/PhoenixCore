@@ -101,10 +101,15 @@ public class WingFlightScreen extends Screen {
         cBorder = (t.accent.getColor() & 0x00FFFFFF) | 0x66000000;
     }
 
+    private int getSliderMax(int kind) {
+        return kind == SLIDER_VERTICAL ? 20 : STEPS;
+    }
+
     private void createSliderRow(int left, int y, int kind) {
+        int max = getSliderMax(kind);
         int barLeft = left + 27;
         int barWidth = W - 10 - 44;
-        int segW = barWidth / STEPS;
+        int segW = barWidth / max;
 
         addRenderableWidget(Button.builder(Component.literal("-"), btn -> {
             setSliderValue(kind, getSliderValue(kind) - 1);
@@ -116,7 +121,7 @@ public class WingFlightScreen extends Screen {
             sendUpdate();
         }).bounds(left + W - 23, y, 18, 18).build());
 
-        for (int i = 0; i < STEPS; i++) {
+        for (int i = 0; i < max; i++) {
             final int seg = i + 1;
             addRenderableWidget(Button.builder(Component.empty(), btn -> {
                 setSliderValue(kind, seg);
@@ -134,7 +139,7 @@ public class WingFlightScreen extends Screen {
     }
 
     private void setSliderValue(int kind, int value) {
-        value = Math.max(1, Math.min(STEPS, value));
+        value = Math.max(0, Math.min(getSliderMax(kind), value));
         switch (kind) {
             case SLIDER_SPEED -> flightSpeed = value;
             case SLIDER_VERTICAL -> flightVertical = value;
@@ -178,17 +183,17 @@ public class WingFlightScreen extends Screen {
 
         if (showSpeed) {
             gfx.drawString(font, "Flight Speed", left + 8, top + 104, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 118, flightSpeed);
+            renderSegmentedBar(gfx, left + 27, top + 118, flightSpeed, getSliderMax(SLIDER_SPEED));
         }
 
         if (showVertical) {
             gfx.drawString(font, "Flight Vertical Speed", left + 8, top + 154, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 168, flightVertical);
+            renderSegmentedBar(gfx, left + 27, top + 168, flightVertical, getSliderMax(SLIDER_VERTICAL));
         }
 
         if (showDrift) {
             gfx.drawString(font, "Flight Drift", left + 8, top + 204, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 218, flightDrift);
+            renderSegmentedBar(gfx, left + 27, top + 218, flightDrift, getSliderMax(SLIDER_DRIFT));
         }
 
         super.render(gfx, mouseX, mouseY, partialTick);
@@ -196,22 +201,29 @@ public class WingFlightScreen extends Screen {
         gfx.pose().popPose();
     }
 
-    private void renderSegmentedBar(GuiGraphics gfx, int x, int y, int val) {
+    private void renderSegmentedBar(GuiGraphics gfx, int x, int y, int val, int max) {
         int barWidth = W - 10 - 44;
-        int segW = barWidth / STEPS;
+        int segW = barWidth / max;
 
-        for (int i = 0; i < STEPS; i++) {
+        for (int i = 0; i < max; i++) {
             int step = i + 1;
             int xPos = x + (i * segW);
-            int color = step <= val ? cFilled : cEmpty;
+
+            int color = step == val ? cHighlight : step < val ? cFilled : cEmpty;
 
             gfx.fill(xPos, y, xPos + segW - 2, y + 18, color);
-
-            if (step == val) {
-                String s = String.valueOf(step);
-                gfx.drawCenteredString(font, s, xPos + (segW / 2), y + 5, 0xFFFFFF);
-            }
         }
+    }
+
+    private static int brighten(int argb, float amount) {
+        int a = (argb >> 24) & 0xFF;
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        r += (255 - r) * amount;
+        g += (255 - g) * amount;
+        b += (255 - b) * amount;
+        return (a << 24) | (Math.min(255, r) << 16) | (Math.min(255, g) << 8) | Math.min(255, b);
     }
 
     private void renderBorders(GuiGraphics gfx, int left, int top, int w, int h) {
@@ -263,7 +275,7 @@ public class WingFlightScreen extends Screen {
 
             case "powered" -> {
                 long base = cfg.poweredFlightEUt;
-                long actualDrain = base + (long) (base * ((flightSpeed - 1) / 9.0));
+                long actualDrain = base + (long) (base * (flightSpeed / 10.0));
                 yield fmt.apply(actualDrain) + " - High EU Sonic Flight";
             }
 

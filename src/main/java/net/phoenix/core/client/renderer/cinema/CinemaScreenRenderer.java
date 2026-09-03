@@ -38,7 +38,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         Level level = blockEntity.getLevel();
         CinemaGroupUtil.GroupLayout layout = level != null
                 ? CinemaGroupUtil.getLayout(level, blockEntity.getBlockPos())
-                : new CinemaGroupUtil.GroupLayout(0, 0, 1, 1);
+                : new CinemaGroupUtil.GroupLayout(0, 0, 1, 1, blockEntity.getBlockPos());
         boolean solo = layout.width() == 1 && layout.height() == 1;
         float halfSize = solo ? SOLO_HALF_SIZE : GROUPED_HALF_SIZE;
 
@@ -52,18 +52,28 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
         Matrix4f matrix = poseStack.last().pose();
 
+        float uCellW = 1f / layout.width();
+        float vCellH = 1f / layout.height();
+        float u0 = layout.col() * uCellW;
+        float u1 = u0 + uCellW;
+        float v0 = layout.row() * vCellH;
+        float v1 = v0 + vCellH;
+
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, textureId);
-        RenderSystem.disableCull(); 
+        RenderSystem.disableCull();
+
+        RenderSystem.disableBlend();
 
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(matrix, -halfSize, -halfSize, 0).uv(0, 1).endVertex();
-        buffer.vertex(matrix, halfSize, -halfSize, 0).uv(1, 1).endVertex();
-        buffer.vertex(matrix, halfSize, halfSize, 0).uv(1, 0).endVertex();
-        buffer.vertex(matrix, -halfSize, halfSize, 0).uv(0, 0).endVertex();
+        buffer.vertex(matrix, -halfSize, -halfSize, 0).uv(u0, v1).endVertex();
+        buffer.vertex(matrix, halfSize, -halfSize, 0).uv(u1, v1).endVertex();
+        buffer.vertex(matrix, halfSize, halfSize, 0).uv(u1, v0).endVertex();
+        buffer.vertex(matrix, -halfSize, halfSize, 0).uv(u0, v0).endVertex();
         Tesselator.getInstance().end();
 
+        RenderSystem.enableBlend();
         RenderSystem.enableCull();
 
         if (solo || layout.isCenterCell()) {

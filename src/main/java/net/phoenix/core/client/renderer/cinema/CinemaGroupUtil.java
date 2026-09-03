@@ -16,14 +16,14 @@ public final class CinemaGroupUtil {
 
     private CinemaGroupUtil() {}
 
-    public record GroupLayout(int col, int row, int width, int height) {
-        
+    public record GroupLayout(int col, int row, int width, int height, BlockPos anchor) {
+
         public boolean isCenterCell() {
             return col == (width - 1) / 2 && row == (height - 1) / 2;
         }
     }
 
-    private static final GroupLayout SOLO = new GroupLayout(0, 0, 1, 1);
+    private static final GroupLayout SOLO = new GroupLayout(0, 0, 1, 1, null);
     private static final long REFRESH_INTERVAL_MS = 500;
 
     private static final int MAX_GROUP_SIZE = 64;
@@ -78,11 +78,19 @@ public final class CinemaGroupUtil {
         int width = maxRight - minRight + 1;
         int height = maxUp - minUp + 1;
 
+        BlockPos anchor = null;
+        for (Map.Entry<BlockPos, int[]> entry : offsets.entrySet()) {
+            if (entry.getValue()[0] == minRight && entry.getValue()[1] == maxUp) {
+                anchor = entry.getKey();
+                break;
+            }
+        }
+
         Map<BlockPos, GroupLayout> result = new HashMap<>();
         for (Map.Entry<BlockPos, int[]> entry : offsets.entrySet()) {
             int col = entry.getValue()[0] - minRight;
-            int rowFromTop = maxUp - entry.getValue()[1]; 
-            result.put(entry.getKey(), new GroupLayout(col, rowFromTop, width, height));
+            int rowFromTop = maxUp - entry.getValue()[1];
+            result.put(entry.getKey(), new GroupLayout(col, rowFromTop, width, height, anchor));
         }
         return result;
     }
