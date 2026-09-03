@@ -67,7 +67,7 @@ public class WingFlightScreen extends Screen {
         boolean isCreativeType = flightMode.startsWith("creative");
         boolean showSpeed = isCreativeType || flightMode.equals("powered");
         boolean showVertical = showSpeed;
-        boolean showDrift = isCreativeType;
+        boolean showDrift = showSpeed;
 
         if (showSpeed) {
             createSliderRow(left, top + 118, SLIDER_SPEED);
@@ -130,7 +130,7 @@ public class WingFlightScreen extends Screen {
         boolean isCreativeType = flightMode.startsWith("creative");
         boolean showSpeed = isCreativeType || flightMode.equals("powered");
         boolean showVertical = showSpeed;
-        boolean showDrift = isCreativeType;
+        boolean showDrift = showSpeed;
 
         int currentH = 100;
         if (showSpeed) currentH = 150;

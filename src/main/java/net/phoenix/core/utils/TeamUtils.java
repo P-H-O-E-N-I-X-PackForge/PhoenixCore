@@ -3,54 +3,34 @@ package net.phoenix.core.utils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-import dev.ftb.mods.ftbteams.api.FTBTeamsAPI;
+import net.minecraftforge.fml.ModList;
 
 import java.util.UUID;
 
 public final class TeamUtils {
 
+    private static final boolean FTB_TEAMS_LOADED = ModList.get().isLoaded("ftbteams");
+
     private TeamUtils() {}
 
     public static UUID getTeamIdOrPlayerFallback(UUID playerUUID) {
         if (playerUUID == null) return null;
+        if (!FTB_TEAMS_LOADED) return playerUUID;
 
-        if (!FTBTeamsAPI.api().isManagerLoaded()) {
-            return playerUUID;
-        }
-
-        return FTBTeamsAPI.api().getManager().getTeamForPlayerID(playerUUID)
-                .map(team -> {
-                    if (team.isPartyTeam() || team.isServerTeam()) {
-                        return team.getTeamId();
-                    }
-                    return playerUUID;
-                })
-                .orElse(playerUUID);
+        return FTBTeamsCompat.getTeamIdOrPlayerFallback(playerUUID);
     }
 
     public static String getTeamName(UUID teamId) {
         if (teamId == null) return "Unknown";
+        if (!FTB_TEAMS_LOADED) return "Player: " + teamId.toString().substring(0, 8);
 
-        if (!FTBTeamsAPI.api().isManagerLoaded()) {
-            return "Player: " + teamId.toString().substring(0, 8);
-        }
-
-        return FTBTeamsAPI.api().getManager().getTeamByID(teamId)
-                .map(team -> team.getShortName())
-                .orElse("Player: " + teamId.toString().substring(0, 8));
+        return FTBTeamsCompat.getTeamName(teamId);
     }
 
     public static boolean isPlayerOnTeam(Player player, UUID teamUUID) {
-        if (player instanceof ServerPlayer) {
+        if (!(player instanceof ServerPlayer)) return false;
+        if (!FTB_TEAMS_LOADED) return player.getUUID().equals(teamUUID);
 
-            if (!FTBTeamsAPI.api().isManagerLoaded()) {
-                return player.getUUID().equals(teamUUID);
-            }
-
-            return FTBTeamsAPI.api().getManager().getTeamByID(teamUUID)
-                    .map(team -> team.getMembers().contains(player.getUUID()))
-                    .orElse(player.getUUID().equals(teamUUID));
-        }
-        return false;
+        return FTBTeamsCompat.isPlayerOnTeam(player, teamUUID);
     }
 }
