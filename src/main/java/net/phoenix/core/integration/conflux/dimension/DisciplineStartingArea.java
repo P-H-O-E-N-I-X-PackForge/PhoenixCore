@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class DisciplineStartingArea {
 
-    /** Where the platform is built, in this discipline's shared dimension. */
     public static final BlockPos ANCHOR = new BlockPos(0, 64, 0);
 
     private final String disciplineId;

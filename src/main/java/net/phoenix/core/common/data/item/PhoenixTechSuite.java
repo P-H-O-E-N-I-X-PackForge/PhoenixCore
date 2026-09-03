@@ -329,15 +329,19 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         int rawSpeed = data.contains("FlightSpeed") ? data.getInt("FlightSpeed") : 5;
         int rawDrift = data.contains("FlightDrift") ? data.getInt("FlightDrift") : 5;
+        int rawVertical = data.contains("FlightVertical") ? data.getInt("FlightVertical") : 5;
 
         float speedPercent = (Math.max(1, rawSpeed) - 1) / 9.0f;
+
         float driftPercent = (Math.max(1, rawDrift) - 1) / 9.0f;
+        float verticalPercent = (Math.max(1, rawVertical) - 1) / 9.0f;
 
         if (flightMode.startsWith("creative")) {
-            handleCreativeFlight(player, data, world, cfg, speedPercent, driftPercent, networkOnline, teslaData,
-                    teamID);
+            handleCreativeFlight(player, data, world, cfg, speedPercent, driftPercent, verticalPercent,
+                    networkOnline, teslaData, teamID);
         } else {
-            handleElytraFlight(player, data, world, cfg, speedPercent, driftPercent, networkOnline, teslaData, teamID);
+            handleElytraFlight(player, data, world, cfg, speedPercent, driftPercent, verticalPercent,
+                    networkOnline, teslaData, teamID);
         }
     }
 
@@ -370,7 +374,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void applyWingThrust(Player player, Level world, CompoundTag data,
                                  PhoenixConfigs.WingFlightConfigs cfg,
-                                 float speedMult, float driftMult,
+                                 float speedMult, float driftMult, float verticalMult,
                                  TeslaTeamEnergyData teslaData, UUID teamID) {
         Vec3 look = player.getLookAngle();
         Vec3 cur = player.getDeltaMovement();
@@ -383,10 +387,13 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double newX = cur.x + look.x * thrust;
         double newZ = cur.z + look.z * thrust;
 
+        double climbMultiplier = cfg.poweredVerticalMin
+                + (verticalMult * (cfg.poweredVerticalMax - cfg.poweredVerticalMin));
+
         double newY;
         if (look.y > 0) {
 
-            newY = Math.max(cur.y, look.y * thrust * 8.0);
+            newY = Math.max(cur.y, look.y * thrust * climbMultiplier);
         } else {
 
             newY = cur.y + look.y * thrust;
@@ -410,6 +417,14 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
     }
 
+    private void applyCoastDamping(Player player, PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
+        double retention = cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
+        if (retention >= 1.0) return; 
+        Vec3 cur = player.getDeltaMovement();
+        player.setDeltaMovement(cur.x * retention, cur.y, cur.z * retention);
+        player.hurtMarked = true;
+    }
+
     private static double sigmoidAcceleration(double t, double peakTime,
                                               double peakAcceleration,
                                               double initialAcceleration) {
@@ -418,7 +433,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void handleElytraFlight(Player player, CompoundTag data, Level world,
                                     PhoenixConfigs.WingFlightConfigs cfg,
-                                    float speedMult, float driftMult,
+                                    float speedMult, float driftMult, float verticalMult,
                                     boolean networkOnline, TeslaTeamEnergyData teslaData,
                                     UUID teamID) {
         if (player.getAbilities().mayfly && !player.isCreative() && !player.isSpectator()) {
@@ -462,7 +477,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
                 if (hasPower) {
 
-                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, teslaData, teamID);
+                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalMult, teslaData, teamID);
 
                     if (!world.isClientSide && world instanceof ServerLevel sl) {
                         Vec3 look = player.getLookAngle();
@@ -473,8 +488,13 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                         sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, tx, ty, tz, 2, 0.1, 0.1, 0.1, 0.05);
                     }
                 } else {
+                    applyCoastDamping(player, cfg, driftMult);
                     if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
                 }
+            } else if (isPowered) {
+
+                applyCoastDamping(player, cfg, driftMult);
+                if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
             } else {
                 if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
             }
@@ -483,7 +503,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     private void handleCreativeFlight(Player player, CompoundTag data, Level world,
                                       PhoenixConfigs.WingFlightConfigs cfg,
-                                      float speedMult, float driftMult,
+                                      float speedMult, float driftMult, float verticalMult,
                                       boolean networkOnline, TeslaTeamEnergyData teslaData,
                                       UUID teamID) {
         String flightMode = data.getString("FlightMode");
@@ -530,8 +550,10 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
 
                 if (isSprinting && canAfford) {
-                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, teslaData, teamID);
+                    applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalMult, teslaData, teamID);
                 } else {
+
+                    applyCoastDamping(player, cfg, driftMult);
                     if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
                 }
 

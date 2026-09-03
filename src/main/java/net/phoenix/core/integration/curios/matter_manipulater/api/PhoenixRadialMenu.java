@@ -23,12 +23,8 @@ public class PhoenixRadialMenu extends Screen {
     private final int radius = 100;
     private final int innerRadius = 35;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cAccent, cText, cPanel, cCore;
 
-    // The wheel needs a fixed amount of room around screen center; below that we shrink the
-    // whole screen via a pose scale (same idea as the rest of the Phoenix Suite) instead of
-    // letting the un-clamped radius run off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 

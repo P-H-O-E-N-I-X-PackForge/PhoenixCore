@@ -183,6 +183,7 @@ public class PhoenixCore {
 
     private void onRegisterBlocksAndItems(net.minecraftforge.registries.RegisterEvent event) {
         PhoenixBlocks.init();
+        net.phoenix.core.common.block.cinema.CinemaBlocks.init();
         GrowthBlocks.init();
         AstralBlocks.init();
         AstralItems.init();
@@ -288,10 +289,7 @@ public class PhoenixCore {
     }
 
     private void registerWorldGenLayers(GTCEuAPI.RegisterEvent<ResourceLocation, IWorldGenLayer> event) {
-        // Touching the class runs ConfluxWorldGenLayers.CONFLUX_STONE's static initializer, whose
-        // SimpleWorldGenLayer constructor self-registers into GT's world gen layer registry. This must
-        // happen here (before GT freezes that registry) and before registerOreVeins runs, since the
-        // discipline veins reference this layer object directly.
+
         net.phoenix.core.integration.conflux.dimension.worldgen.ConfluxWorldGenLayers.init();
     }
 

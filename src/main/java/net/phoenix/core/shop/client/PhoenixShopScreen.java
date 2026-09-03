@@ -50,15 +50,9 @@ public class PhoenixShopScreen extends Screen {
     private List<ShopEntryView> entries;
     private boolean editing = false;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call - PALETTE feeds
-    // the drifting mote particles and per-card accent colors, the rest color the panel chrome.
     private int[] palette;
     private int cText, cDim, cBorder, cBorderDim, cPanel1, cPanel2, cBg1, cBg2;
 
-    // Minimum usable real-estate for the fixed 520x420 panel; below this we shrink the whole
-    // screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead of
-    // letting the browse/editor rows' fixed internal layout overlap at small windows/high GUI
-    // scale.
     private static final int MIN_PANEL_W = 520;
     private static final int MIN_PANEL_H = 420;
     private float uiScale = 1f;
@@ -846,8 +840,6 @@ public class PhoenixShopScreen extends Screen {
         }
     }
 
-    // enableScissor operates in raw real screen pixels and ignores pose().scale(), so any scissor
-    // call made inside the uiScale transform below must have its bounds pre-multiplied by uiScale.
     private void enableScissorScaled(GuiGraphics g, int x1, int y1, int x2, int y2) {
         g.enableScissor(Math.round(x1 * uiScale), Math.round(y1 * uiScale), Math.round(x2 * uiScale),
                 Math.round(y2 * uiScale));

@@ -60,9 +60,6 @@ public class ResearchTerminalScreen extends Screen {
     private String lastDisciplineId = null;
     private long lastFrameNanos = -1;
 
-    // Below this the fixed detail sidebar (DETAIL_W) plus header/footer would squeeze the canvas
-    // to nothing or clip the detail panel's fixed-height rows; we shrink the whole screen via a
-    // pose scale (same idea used across the rest of the Phoenix Suite) instead.
     private static final int MIN_CANVAS_W = 320;
     private static final int MIN_CANVAS_H = 240;
     private float uiScale = 1f;
@@ -235,10 +232,6 @@ public class ResearchTerminalScreen extends Screen {
             return;
         }
 
-        // RenderSystem.enableScissor works in real framebuffer pixels (via GUI scale) and ignores
-        // both the pose transform and our own uiScale, so ct/ch/cw (in our virtual space) must be
-        // converted to real GUI pixels (* uiScale) before converting to framebuffer pixels
-        // (* guiScale).
         double guiScale = minecraft.getWindow().getGuiScale();
         double realCt = ct * uiScale, realCh = ch * uiScale, realCw = cw * uiScale;
         RenderSystem.enableScissor(
@@ -638,11 +631,6 @@ public class ResearchTerminalScreen extends Screen {
         return terminal != null;
     }
 
-    // The shader operates on the real framebuffer (its size, and every position it's fed, must
-    // be real screen pixels), but panX/panY/zoom/canvasTop() are all maintained in our virtual
-    // (uiScale-shrunk) space - so node/ripple screen positions computed here are converted to
-    // real pixels via * uiScale before being handed to the shader, while rmx/rmy (already real)
-    // are passed straight through.
     private void pushShaderData(int rmx, int rmy) {
         if (!AxiomShaderManager.isActive() || trees.isEmpty()) return;
         ResearchTree tree = trees.get(activeTreeIdx);

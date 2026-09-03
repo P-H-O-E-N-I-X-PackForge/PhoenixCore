@@ -33,7 +33,6 @@
     "minecraft.ChannelMixin",
     "minecraft.CreateWorldScreenMixin",
     "minecraft.FeatureFlagsMixin",
-    "minecraft.GameRendererMixin",
     "minecraft.GuiGraphicsCountSuffixMixin",
     "minecraft.LevelRendererMixin",
     "minecraft.MixinOggAudioStream",

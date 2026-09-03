@@ -357,11 +357,15 @@ public class PhoenixTeslaMachines {
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(10)
                                     .setPreviewCount(1))
+                            .or(Predicates.abilities(PartAbility.OUTPUT_ENERGY).setMaxGlobalLimited(10)
+                                    .setPreviewCount(1))
                             .or(Predicates.abilities(PartAbility.SUBSTATION_INPUT_ENERGY).setMaxGlobalLimited(10)
                                     .setPreviewCount(1))
                             .or(Predicates.abilities(PartAbility.SUBSTATION_OUTPUT_ENERGY).setMaxGlobalLimited(10)
                                     .setPreviewCount(1))
                             .or(Predicates.abilities(PartAbility.INPUT_LASER).setMaxGlobalLimited(10)
+                                    .setPreviewCount(1))
+                            .or(Predicates.abilities(PartAbility.OUTPUT_LASER).setMaxGlobalLimited(10)
                                     .setPreviewCount(1)))
                     .where('K', blocks(GCYMBlocks.CASING_HIGH_TEMPERATURE_SMELTING.get()))
                     .where('L', blocks(PhoenixBlocks.RELIABLE_NAQUADAH_ALLOY_MACHINE_CASING.get()))
@@ -461,24 +465,24 @@ public class PhoenixTeslaMachines {
 
     public static final MachineDefinition[] TESLA_LASER_INPUT_256A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_256a", IO.OUT, 256,
-            PartAbility.INPUT_LASER);
+            PartAbility.OUTPUT_LASER);
     public static final MachineDefinition[] TESLA_LASER_OUTPUT_256A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_256a", IO.IN, 256,
-            PartAbility.OUTPUT_LASER);
+            PartAbility.INPUT_LASER);
 
     public static final MachineDefinition[] TESLA_LASER_INPUT_1024A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_1024a", IO.OUT, 1024,
-            PartAbility.INPUT_LASER);
+            PartAbility.OUTPUT_LASER);
     public static final MachineDefinition[] TESLA_LASER_OUTPUT_1024A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_1024a", IO.IN, 1024,
-            PartAbility.OUTPUT_LASER);
+            PartAbility.INPUT_LASER);
 
     public static final MachineDefinition[] TESLA_LASER_INPUT_4096A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_4096a", IO.OUT, 4096,
-            PartAbility.INPUT_LASER);
+            PartAbility.OUTPUT_LASER);
     public static final MachineDefinition[] TESLA_LASER_OUTPUT_4096A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_4096a", IO.IN, 4096,
-            PartAbility.OUTPUT_LASER);
+            PartAbility.INPUT_LASER);
 
     public static final MachineDefinition[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
             PartAbility.OUTPUT_ENERGY, GTValues.ALL_TIERS);

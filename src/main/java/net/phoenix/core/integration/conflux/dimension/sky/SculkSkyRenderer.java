@@ -19,9 +19,7 @@ public class SculkSkyRenderer extends SkyRenderer {
     }
 
     private void initializeSculkSky() {
-        
-        // Scaled to fit the world's normal projection frustum (see PhoenixSkyRenderer) -
-        // vanilla's own sun/moon sit around +/-100 units for this same reason.
+
         orbitingBodies.add(new PlanetOrbit(
             "Sculk Moon 1",
             PlanetOrbit.PlanetType.MOON,

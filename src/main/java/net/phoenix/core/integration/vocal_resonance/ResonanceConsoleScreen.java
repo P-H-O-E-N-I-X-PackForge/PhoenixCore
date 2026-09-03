@@ -19,10 +19,6 @@ public class ResonanceConsoleScreen extends Screen {
 
     private final ResonantJukeboxMachine machine;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call. This screen's
-    // three-column layout is already sized as fractions of the real screen (width/3 etc.), so it
-    // doesn't need the uiScale pose-transform fix - it stays proportionally correct at any window
-    // size on its own.
     private int cPanel, cText, cStatusBox, cAccent;
 
     private EditBox searchBox, urlBox;

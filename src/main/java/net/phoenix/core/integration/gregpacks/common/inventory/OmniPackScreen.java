@@ -13,18 +13,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
 
-    // Fallback tint for the fluid bar when no fluid is stored yet - EU stays its familiar gold
-    // regardless of theme since that color is a widely-recognized GT convention.
     private static final int C_FLUID = 0xFF0099FF;
     private static final int C_EU    = 0xFFFFD700;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cBg, cDark, cLight, cSlot, cText, cBar;
 
-    // The pack's slot count (and thus imageWidth/imageHeight) is config-driven and can be large;
-    // below the room it needs (plus the side bars and upgrades tab) we shrink the whole screen
-    // via a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
-    // vanilla's un-clamped centering push it off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 

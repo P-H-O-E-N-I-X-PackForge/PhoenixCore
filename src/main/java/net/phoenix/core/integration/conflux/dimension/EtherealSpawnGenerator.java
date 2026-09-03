@@ -81,8 +81,6 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
                                 Blocks.CALCITE.defaultBlockState(), false);
                     }
 
-                    // Sparse ethereal twinkle across the wider platform - deterministic on
-                    // position so it's stable across regeneration/reload, not stored RNG state.
                     if (!isInShrine(x, z) && Math.floorMod(x * 928371 + z * 12289, 97) == 0) {
                         chunk.setBlockState(new BlockPos(x, PLATFORM_Y + 1, z),
                                 Blocks.AMETHYST_CLUSTER.defaultBlockState(), false);
@@ -103,10 +101,6 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
         return x * x + z * z <= SHRINE_RADIUS * SHRINE_RADIUS;
     }
 
-    /**
-     * The starting shrine: four glowstone-capped pillars around a loot chest, centered on
-     * the dimension's origin (matching {@code EtherealSpawnManager}'s teleport target).
-     */
     private void placeShrine(ChunkAccess chunk, int minX, int minZ) {
         for (int[] offset : PILLAR_OFFSETS) {
             placePillarIfInChunk(chunk, minX, minZ, offset[0], offset[1]);

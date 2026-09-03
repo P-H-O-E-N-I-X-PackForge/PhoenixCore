@@ -66,10 +66,6 @@ public class ShaderRenderingIntegration {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
 
-            // Bind the already-rendered frame to Sampler0 - every fragment shader here reads
-            // it via texture(Sampler0, uv) to tint/distort the scene. Without this the sampler
-            // reads whatever texture unit 0 was last left bound to (usually nothing meaningful),
-            // so the effect renders but comes out fully transparent.
             RenderTarget mainTarget = Minecraft.getInstance().getMainRenderTarget();
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             RenderSystem.bindTexture(mainTarget.getColorTextureId());

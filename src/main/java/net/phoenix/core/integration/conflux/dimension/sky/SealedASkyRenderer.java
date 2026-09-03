@@ -19,9 +19,7 @@ public class SealedASkyRenderer extends SkyRenderer {
     }
 
     private void initializeSealedASky() {
-        
-        // Scaled to fit the world's normal projection frustum (see PhoenixSkyRenderer) -
-        // vanilla's own sun/moon sit around +/-100 units for this same reason.
+
         orbitingStructures.add(new PlanetOrbit(
             "Industrial Satellite 1",
             PlanetOrbit.PlanetType.NEBULA,

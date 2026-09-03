@@ -57,18 +57,12 @@ public class PhoenixKeybinds {
             GLFW.GLFW_KEY_KP_6,
             "key.categories.phoenixcore");
 
-    // Quick A/B diagnostic for "is it the shaders?" - toggles every discipline sky shader
-    // (nebula/black hole/sunflare/veins/etc.) off entirely without needing to leave the dimension
-    // or rebuild anything, so FPS with vs. without can be compared directly. See
-    // ClientTickHandler for the toggle handler and SkyManager#toggleSkyRendering.
     public static final KeyMapping TOGGLE_DISCIPLINE_SKY = new KeyMapping(
             "key.phoenixcore.toggle_discipline_sky",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_KP_5,
             "key.categories.phoenixcore");
 
-    // Shows ShaderProfiler's live per-shader ms readout in the corner - the finer-grained
-    // "which one specifically" follow-up to TOGGLE_DISCIPLINE_SKY's blunter on/off A-B test.
     public static final KeyMapping SHOW_SHADER_PROFILER = new KeyMapping(
             "key.phoenixcore.show_shader_profiler",
             InputConstants.Type.KEYSYM,

@@ -27,9 +27,6 @@ public class SkyRenderingHook {
             return;
         }
 
-        // Each dimension switch hands the client a brand new Level instance - re-init so the
-        // sky renderers aren't left holding a stale reference to whichever level was loaded
-        // first (previously they only ever got built once, on the very first tick).
         if (level != lastLevel) {
             SkyManager.getInstance().init(level);
             skyManagerInitialized = true;
@@ -44,12 +41,6 @@ public class SkyRenderingHook {
 
         SkyManager.getInstance().update();
     }
-
-    // Actual sky rendering happens in DisciplineSkyEffects.renderSky() - registered via
-    // RegisterDimensionSpecialEffectsEvent against the "phoenixcore:discipline" dimension_type,
-    // which fully replaces vanilla's own sun/moon/star/cloud rendering instead of drawing
-    // alongside it. This class only tracks which discipline is active and keeps SkyManager's
-    // per-frame state (time, brightness) up to date.
 
     private static String getDimensionId(Level level) {
 

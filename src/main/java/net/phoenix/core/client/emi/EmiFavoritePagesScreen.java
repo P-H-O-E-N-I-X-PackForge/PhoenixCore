@@ -26,12 +26,8 @@ public class EmiFavoritePagesScreen extends Screen {
     private @Nullable String renaming;
     private EditBox renameBox;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cPanel, cBorderLight, cBorderDark, cTitleBar, cText;
 
-    // The panel's height grows with the favorite-page count (unbounded) with no clamp at all;
-    // below the room it needs we shrink the whole screen via a pose scale (same idea used across
-    // the rest of the Phoenix Suite) instead of letting it run off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 

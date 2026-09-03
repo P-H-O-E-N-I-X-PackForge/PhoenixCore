@@ -16,7 +16,6 @@ import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.BulkSectionAccess;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -26,12 +25,11 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.synth.SimplexNoise;
-import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
-import com.gregtechceu.gtceu.api.data.worldgen.ores.GeneratedVein;
-import com.gregtechceu.gtceu.api.data.worldgen.ores.OreBlockPlacer;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.worldgen.TerrainProfile;
 import net.phoenix.core.integration.conflux.dimension.worldgen.*;
@@ -44,14 +42,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-/**
- * One shared, permanent world per discipline (like the vanilla Nether/End) - every team that
- * picks a given discipline enters the same dimension instance, keyed only by discipline id.
- * This is required, not just a design choice: GT registers each ore vein against a fixed
- * dimension key at mod load, so a per-team dynamically-created dimension (whose key isn't
- * known until a team actually creates it) can never match a vein's registered dimension set -
- * GT ore veins silently never generated under the old per-team-instance design.
- */
 public class DisciplineChunkGenerator extends ChunkGenerator {
     public static final Codec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
@@ -59,46 +49,40 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
             Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed)
     ).apply(instance, instance.stable(DisciplineChunkGenerator::new)));
 
-    // Built eagerly from the codec's placeholder seed - datapack dimension JSON is decoded
-    // before the real world seed is known, so this only supplies minY/maxY/seaLevel (fixed
-    // per discipline, independent of seed value) for the handful of ChunkGenerator methods
-    // that run without a RandomState. Actual terrain shape comes from worldSeededProfile below.
     private final TerrainProfile terrainProfile;
     private final WorldgenProfile worldgenProfile;
     private final String disciplineId;
     private final long seed;
 
-    // Lazily built the first time a RandomState (carrying the real, per-world seed) becomes
-    // available, so terrain genuinely varies between playthroughs instead of every world/save
-    // generating identical terrain from the fixed seed baked into the dimension JSON.
     private volatile TerrainProfile worldSeededProfile;
 
-    // GT places its registered ore veins (see GTVeinPlacement/DefaultDisciplineOres) via a mixin
-    // injected into the TAIL of ChunkGenerator#applyBiomeDecoration - but that mixin is woven
-    // into the base class's OWN method body, and applyBiomeDecoration below completely overrides
-    // that method rather than extending it. Virtual dispatch means the base class's version
-    // (carrying the mixin's injected call) never runs at all for this subclass, so every
-    // registered vein was silently never placed. OrePlacer is GT's actual public ore-placement
-    // API (what the mixin itself calls) - invoking it directly here gets real vein placement
-    // without pulling in the rest of vanilla's applyBiomeDecoration (which is what needed
-    // avoiding in the first place, for the tree-duplication reason below). One instance per
-    // chunk generator, not per chunk - it caches in-progress vein state across chunks internally.
     private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer =
             new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
 
-    // Phoenix's noise-based ore province system (see placeProvinceOres below) - never used by
-    // the other 4 disciplines, which still register through GT's normal per-dimension vein
-    // pipeline. Keyed by cell coordinate, not chunk: a cell is much bigger than a chunk, so many
-    // chunks share (and must agree on) the same cell's vein without recomputing it from scratch
-    // each time. computeIfAbsent below is what actually fills it in.
     private static final int PROVINCE_CELL_SIZE = 160;
     private static final float PROVINCE_VEIN_CHANCE = 0.4f;
-    private final Map<Long, GeneratedVein> provinceCellCache = new ConcurrentHashMap<>();
+    private final Map<Long, ProvinceVeinInstance> provinceCellCache = new ConcurrentHashMap<>();
 
-    // Picks which of the discipline's authored BiomeDefinitions covers a given column, so a
-    // dimension reads as several distinct regions (its own biome list already existed with
-    // real per-biome surface blocks and colors, just unused beyond the single "primary" one).
-    // Same lazy-from-RandomState treatment as the terrain profile, for the same reason.
+    private record ProvinceVeinInstance(BlockPos origin, int radius, long seed, ProvinceVeinTemplates.Template template) {}
+
+    private static final java.util.concurrent.atomic.AtomicLong terrainNanos = new java.util.concurrent.atomic.AtomicLong();
+    private static final java.util.concurrent.atomic.AtomicLong decorationNanos = new java.util.concurrent.atomic.AtomicLong();
+    private static final java.util.concurrent.atomic.AtomicLong oreNanos = new java.util.concurrent.atomic.AtomicLong();
+    private static final java.util.concurrent.atomic.AtomicLong provinceOreNanos = new java.util.concurrent.atomic.AtomicLong();
+
+    public static void resetProfiling() {
+        terrainNanos.set(0);
+        decorationNanos.set(0);
+        oreNanos.set(0);
+        provinceOreNanos.set(0);
+    }
+
+    public static String getProfilingSummary() {
+        return String.format("terrain=%.1fms decoration=%.1fms gtOres=%.1fms provinceOres=%.1fms",
+                terrainNanos.get() / 1_000_000.0, decorationNanos.get() / 1_000_000.0,
+                oreNanos.get() / 1_000_000.0, provinceOreNanos.get() / 1_000_000.0);
+    }
+
     private static final double BIOME_REGION_FREQUENCY = 0.0035;
     private volatile SimplexNoise biomeRegionNoise;
 
@@ -114,15 +98,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         this.worldgenProfile = DisciplineWorldgenPresets.getPreset(disciplineId);
     }
 
-    /**
-     * Derives a terrain profile from the real world seed carried by {@link RandomState} rather
-     * than the placeholder seed baked into the dimension JSON, so terrain actually differs
-     * between worlds. RandomState exposes no raw seed accessor, so a seed-derived
-     * PositionalRandomFactory (namespaced per discipline, so each discipline still varies
-     * independently within the same world) stands in for it. Cached after first use - rebuilding
-     * only constructs a handful of noise samplers, done once per dimension per server run, not
-     * per chunk.
-     */
     private TerrainProfile resolveTerrainProfile(RandomState randomState) {
         TerrainProfile cached = worldSeededProfile;
         if (cached != null) return cached;
@@ -149,28 +124,11 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         return built;
     }
 
-    // How much extra weight the primary (plain, walkable grass/dirt) biome gets over each
-    // exotic accent biome when picking a winner below - not a literal area percentage, just how
-    // hard the scale is tipped in its favor. These dimensions are meant to replace the overworld
-    // outright, so most of the world needs to actually be liveable, with "cool" biome variety
-    // showing up as pockets rather than everywhere. Taking the max of several independent noise
-    // fields tends to produce a higher value the more fields there are (order statistics), so
-    // with 6-7 accent biomes now competing (up from 1-2) this needs to sit noticeably higher
-    // than it would with only a couple of accents, or the primary stops actually being primary.
     private static final double PRIMARY_BIOME_BIAS = 0.65;
 
-    /**
-     * Picks a biome region for this column by sampling one independent noise field per biome
-     * (same noise source, offset to a different coordinate per biome so the fields don't
-     * correlate) and taking whichever scores highest, with the primary biome's field pre-biased
-     * upward. Unlike slicing a single noise value into ordered bands - which forces every accent
-     * biome into the same fixed position relative to the others, reading as nested rings instead
-     * of natural terrain - independent fields let any biome border any other and form organically
-     * shaped, randomly scattered patches, the same trick behind most "biome splatting" techniques.
-     */
     private static WorldgenProfile.BiomeDefinition selectBiome(List<WorldgenProfile.BiomeDefinition> biomes,
-                                                               String primaryBiomeId,
-                                                               SimplexNoise regionNoise, int x, int z) {
+                                                                 String primaryBiomeId,
+                                                                 SimplexNoise regionNoise, int x, int z) {
         if (biomes.isEmpty()) return null;
         if (biomes.size() == 1) return biomes.get(0);
 
@@ -194,23 +152,15 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     private static TerrainProfile createTerrainForDiscipline(String disciplineId, long seed) {
-        // Each discipline uses a genuinely different terrain algorithm, not just different
-        // amplitude/frequency numbers on the same heightmap noise - otherwise every dimension
-        // reads as the same rolling-hill shape no matter the theme.
+
         return switch (disciplineId) {
             case "phoenix" -> TerrainProfile.builder("phoenix")
                     .seed(seed)
                     .baseY(72).amplitude(100).frequency(0.004).octaves(6)
-                    .style(TerrainProfile.Style.RIDGED) // sharp volcanic peaks, not round hills
+                    .style(TerrainProfile.Style.RIDGED) 
                     .ocean(0.0007, 0.18, 25).river(0.0025, 0.07, 5)
                     .caves(true).build();
 
-            // sculk and void used VOLUMETRIC as their base terrain shape - a true 3D density
-            // field, which reads as disconnected floating blobs/cave honeycomb rather than
-            // normal walkable ground. These dimensions are meant to replace the overworld
-            // outright, so the base shape now uses ordinary rolling terrain (matching every
-            // other discipline); the cavernous/floating character still comes through via
-            // caves, surface theming and decorations instead of the terrain math itself.
             case "sculk" -> TerrainProfile.builder("sculk")
                     .seed(seed).baseY(66).amplitude(45)
                     .frequency(0.0035).octaves(5)
@@ -228,14 +178,14 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
             case "sealed_a" -> TerrainProfile.builder("sealed_a")
                     .seed(seed).baseY(68).amplitude(40)
                     .frequency(0.003).octaves(4)
-                    .style(TerrainProfile.Style.TERRACED).terraceStep(6.0) // stacked industrial platforms
+                    .style(TerrainProfile.Style.TERRACED).terraceStep(6.0) 
                     .ocean(0.0007, 0.17, 22).river(0.0024, 0.07, 4)
                     .caves(true).build();
 
             case "sealed_b" -> TerrainProfile.builder("sealed_b")
                     .seed(seed).baseY(65).amplitude(75)
                     .frequency(0.0032).octaves(6)
-                    .style(TerrainProfile.Style.WARPED).warpStrength(20.0) // distorted, reality-glitch terrain
+                    .style(TerrainProfile.Style.WARPED).warpStrength(20.0) 
                     .ocean(0.0006, 0.07, 15).river(0.002, 0.045, 3)
                     .caves(true).build();
 
@@ -276,18 +226,26 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Override
     public void applyCarvers(WorldGenRegion level, long seed, RandomState randomState, BiomeManager biomeManager,
-                             StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving step) {
-
+                              StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving step) {
+        
     }
 
     @Override
     public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
+        long profileStart = System.nanoTime();
+        try {
+            buildSurface0(level, randomState, chunk);
+        } finally {
+            terrainNanos.addAndGet(System.nanoTime() - profileStart);
+        }
+    }
+
+    private void buildSurface0(WorldGenRegion level, RandomState randomState, ChunkAccess chunk) {
         List<WorldgenProfile.BiomeDefinition> biomes = worldgenProfile.biomes.biomes;
         if (biomes.isEmpty()) return;
 
         SimplexNoise regionNoise = resolveBiomeRegionNoise(randomState);
-        // Only used for its (cheap, already-cached) waterMask() below, not the expensive
-        // sampler() density chain - resolveTerrainProfile just returns the cached instance.
+
         net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask =
                 resolveTerrainProfile(randomState).waterMask();
 
@@ -300,16 +258,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
-                // fillFromNoise already ran this exact density scan for this same chunk and wrote
-                // STONE wherever it was positive - re-sampling the (expensive: terrain + water
-                // mask + two cave-carving layers) density function here again was pure duplicated
-                // work. Reading the blocks fillFromNoise already placed finds the identical
-                // "topmost solid" answer for a fraction of the cost. Checking specifically for
-                // STONE (not just "non-air") matters: fillFromNoise also fills river/ocean
-                // columns with WATER above the rock, and the original density scan (testing
-                // sample()>0, which is false for water) would skip straight past that water to
-                // the real rock surface underneath - a plain "non-air" check would instead stop
-                // at the water and paint grass on top of it.
+
                 int topY = minY - 1;
                 for (int y = maxY - 1; y >= minY; y--) {
                     if (chunk.getBlockState(pos.set(x, y, z)).is(Blocks.STONE)) {
@@ -324,11 +273,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 BlockState surface;
                 BlockState subSurface;
                 if (waterMask != null && waterMask.isWaterColumn(x, z)) {
-                    // Real lake/river/ocean beds are sand and gravel, not the same grass a dry
-                    // hillside gets - painting the biome's ordinary surface block under the water
-                    // (what happened before this check existed) is exactly what makes a river
-                    // read as "water poured onto normal ground" instead of an actual formed body
-                    // of water with its own distinct floor.
+
                     surface = Blocks.SAND.defaultBlockState();
                     subSurface = Blocks.GRAVEL.defaultBlockState();
                 } else {
@@ -353,68 +298,139 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Override
     public void spawnOriginalMobs(WorldGenRegion level) {
-
+        
     }
 
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-        // Deliberately skips super.applyBiomeDecoration(...) - the biome_source here is a
-        // "minecraft:fixed" pointing at a real vanilla biome (badlands, dark_forest,
-        // cherry_grove, stony_peaks, warped_forest) purely for ambient/color purposes, but that
-        // super call would also run THAT biome's own full feature pipeline, including its
-        // natural tree generation - vanilla oak/dark oak/cherry/warped fungus trees placing
-        // themselves right alongside our own custom ones. This dimension owns its own
-        // decoration entirely via applyWorldgenFeatures below.
-        //
-        // orePlacer.placeOres(...) runs last, matching where GT's own mixin would have placed it
-        // (TAIL of applyBiomeDecoration, i.e. after every other decoration) - see the orePlacer
-        // field comment for why this direct call is needed at all instead of the mixin firing on
-        // its own.
+
         ChunkPos chunkPos = chunk.getPos();
+
+        long t0 = System.nanoTime();
         applyWorldgenFeatures(level, chunkPos.x, chunkPos.z);
+        long t1 = System.nanoTime();
+        decorationNanos.addAndGet(t1 - t0);
+
         orePlacer.placeOres(level, this, chunk);
+        long t2 = System.nanoTime();
+        oreNanos.addAndGet(t2 - t1);
+
         if ("phoenix".equals(disciplineId) || "void".equals(disciplineId) || "sculk".equals(disciplineId)) {
             placeProvinceOres(level, chunk);
+            provinceOreNanos.addAndGet(System.nanoTime() - t2);
         }
     }
 
-    /**
-     * Phoenix-only ore placement, entirely independent of GT's own biome-keyed vein registry
-     * (see {@link ProvinceVeinTemplates} for why). The dimension is divided into a grid of
-     * {@link #PROVINCE_CELL_SIZE}-block cells; each one independently and deterministically
-     * (so results never depend on generation order or which chunk happens to trigger them
-     * first) rolls whether a vein originates inside it and, if so, which ore. Which ore is
-     * eligible is decided by sampling the exact same region noise {@link #buildSurface} uses
-     * (via {@link #selectBiome}), so a vein's ore always matches the ground above it - walking
-     * into a region visually reads as walking into that region's resources too.
-     */
     private void placeProvinceOres(WorldGenLevel level, ChunkAccess chunk) {
         List<WorldgenProfile.BiomeDefinition> biomes = worldgenProfile.biomes.biomes;
         SimplexNoise regionNoise = biomeRegionNoise;
         if (biomes.isEmpty() || regionNoise == null) return;
 
         ChunkPos chunkPos = chunk.getPos();
-        // A vein's origin can land in a neighboring cell and still spread into this chunk, so
-        // every cell touching this chunk's 1-cell-radius neighborhood needs checking, not just
-        // the one the chunk itself falls in.
-        int minCellX = Math.floorDiv(chunkPos.getMinBlockX(), PROVINCE_CELL_SIZE) - 1;
-        int maxCellX = Math.floorDiv(chunkPos.getMaxBlockX(), PROVINCE_CELL_SIZE) + 1;
-        int minCellZ = Math.floorDiv(chunkPos.getMinBlockZ(), PROVINCE_CELL_SIZE) - 1;
-        int maxCellZ = Math.floorDiv(chunkPos.getMaxBlockZ(), PROVINCE_CELL_SIZE) + 1;
+        int minX = chunkPos.getMinBlockX();
+        int minZ = chunkPos.getMinBlockZ();
+        int maxX = minX + 15;
+        int maxZ = minZ + 15;
 
-        RandomSource placeRandom = new XoroshiroRandomSource(level.getSeed() ^ chunkPos.toLong());
-        try (BulkSectionAccess access = new BulkSectionAccess(level)) {
-            for (int cellX = minCellX; cellX <= maxCellX; cellX++) {
-                for (int cellZ = minCellZ; cellZ <= maxCellZ; cellZ++) {
-                    int finalCellX = cellX;
-                    int finalCellZ = cellZ;
-                    GeneratedVein vein = provinceCellCache.computeIfAbsent(cellKey(cellX, cellZ),
-                            k -> generateCellVein(level, biomes, regionNoise, finalCellX, finalCellZ));
-                    if (vein == null) continue;
-                    orePlacer.placeVein(chunkPos, placeRandom, access, vein, null);
+        int minCellX = Math.floorDiv(minX, PROVINCE_CELL_SIZE) - 1;
+        int maxCellX = Math.floorDiv(maxX, PROVINCE_CELL_SIZE) + 1;
+        int minCellZ = Math.floorDiv(minZ, PROVINCE_CELL_SIZE) - 1;
+        int maxCellZ = Math.floorDiv(maxZ, PROVINCE_CELL_SIZE) + 1;
+
+        int worldMinY = getMinY();
+        int worldMaxY = worldMinY + getGenDepth();
+
+        for (int cellX = minCellX; cellX <= maxCellX; cellX++) {
+            for (int cellZ = minCellZ; cellZ <= maxCellZ; cellZ++) {
+                int finalCellX = cellX;
+                int finalCellZ = cellZ;
+                ProvinceVeinInstance vein = provinceCellCache.computeIfAbsent(cellKey(cellX, cellZ),
+                        k -> generateCellVein(biomes, regionNoise, finalCellX, finalCellZ));
+                if (vein == null) continue;
+
+                BlockPos origin = vein.origin();
+                int radius = vein.radius();
+                if (origin.getX() + radius < minX || origin.getX() - radius > maxX
+                        || origin.getZ() + radius < minZ || origin.getZ() - radius > maxZ) {
+                    continue;
+                }
+
+                placeVeinInChunk(chunk, vein, minX, minZ, worldMinY, worldMaxY);
+            }
+        }
+    }
+
+    private static final float PROVINCE_BASE_DENSITY = 0.85f;
+
+    private static void placeVeinInChunk(ChunkAccess chunk, ProvinceVeinInstance vein,
+                                          int minX, int minZ, int worldMinY, int worldMaxY) {
+        ProvinceVeinTemplates.Template template = vein.template();
+        BlockPos origin = vein.origin();
+        int radius = vein.radius();
+        double radiusSq = (double) radius * radius;
+
+        int loY = Math.max(worldMinY, Math.max(template.minY(), origin.getY() - radius));
+        int hiY = Math.min(worldMaxY - 1, Math.min(template.maxY(), origin.getY() + radius));
+        if (loY > hiY) return;
+
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int x = minX; x < minX + 16; x++) {
+            double dx = x - origin.getX();
+            double dxSq = dx * dx;
+            if (dxSq > radiusSq) continue;
+
+            for (int z = minZ; z < minZ + 16; z++) {
+                double dz = z - origin.getZ();
+                double dxzSq = dxSq + dz * dz;
+                if (dxzSq > radiusSq) continue;
+
+                for (int y = loY; y <= hiY; y++) {
+                    double dy = y - origin.getY();
+                    double distSq = dxzSq + dy * dy;
+                    if (distSq > radiusSq) continue;
+
+                    pos.set(x, y, z);
+                    BlockState current = chunk.getBlockState(pos);
+                    if (!current.is(ProvinceVeinTemplates.STONE_TAG)) continue;
+
+                    long hash = positionHash(vein.seed(), x, y, z);
+
+                    double falloff = 1.0 - Math.sqrt(distSq) / radius;
+                    double densityRoll = ((hash >>> 40) & 0xFFFFFF) / (double) 0x1000000;
+                    if (densityRoll >= PROVINCE_BASE_DENSITY * falloff) continue;
+
+                    int materialRoll = (int) (((hash & 0xFFFFFF) / (double) 0x1000000) * template.totalWeight());
+                    Material material = pickMaterial(template, materialRoll);
+
+                    Optional<TagPrefix> prefix = ChemicalHelper.getOrePrefix(current);
+                    if (prefix.isEmpty()) continue;
+                    net.minecraft.world.level.block.Block toPlace = ChemicalHelper.getBlock(prefix.get(), material);
+                    if (toPlace == null || toPlace.defaultBlockState().isAir()) continue;
+
+                    chunk.setBlockState(pos, toPlace.defaultBlockState(), false);
                 }
             }
         }
+    }
+
+    private static Material pickMaterial(ProvinceVeinTemplates.Template template, int roll) {
+        int cumulative = 0;
+        for (ProvinceVeinTemplates.OreLayer layer : template.layers()) {
+            cumulative += layer.weight();
+            if (roll < cumulative) return layer.material();
+        }
+        return template.layers().get(template.layers().size() - 1).material();
+    }
+
+    private static long positionHash(long seed, int x, int y, int z) {
+        long h = seed;
+        h = h * 6364136223846793005L + x;
+        h = h * 6364136223846793005L + y;
+        h = h * 6364136223846793005L + z;
+        h ^= (h >>> 33);
+        h *= 0xff51afd7ed558ccdL;
+        h ^= (h >>> 33);
+        return h;
     }
 
     private static long cellKey(int cellX, int cellZ) {
@@ -422,8 +438,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     @Nullable
-    private GeneratedVein generateCellVein(WorldGenLevel level, List<WorldgenProfile.BiomeDefinition> biomes,
-                                           SimplexNoise regionNoise, int cellX, int cellZ) {
+    private ProvinceVeinInstance generateCellVein(List<WorldgenProfile.BiomeDefinition> biomes,
+                                                    SimplexNoise regionNoise, int cellX, int cellZ) {
         RandomSource cellRandom = new XoroshiroRandomSource(
                 seed ^ ((long) cellX * 341873128712L) ^ ((long) cellZ * 132897987541L) ^ 0x50484F454E4958L);
 
@@ -437,19 +453,14 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         if (region == null || region.oreVeins.isEmpty()) return null;
 
         String oreId = region.oreVeins.get(cellRandom.nextInt(region.oreVeins.size()));
-        GTOreDefinition template = ProvinceVeinTemplates.get(oreId);
+        ProvinceVeinTemplates.Template template = ProvinceVeinTemplates.get(oreId);
         if (template == null) return null;
 
-        Optional<BlockPos> origin = template.range().getPositions(
-                new PlacementContext(level, this, Optional.empty()),
-                cellRandom, new BlockPos(originX, 0, originZ)).findFirst();
-        if (origin.isEmpty()) return null;
+        int radius = template.minRadius() + cellRandom.nextInt(template.maxRadius() - template.minRadius() + 1);
+        int originY = template.minY() + cellRandom.nextInt(template.maxY() - template.minY() + 1);
+        long veinSeed = cellRandom.nextLong();
 
-        Map<BlockPos, OreBlockPlacer> blocks = template.veinGenerator()
-                .generate(level, cellRandom, template, origin.get());
-        if (blocks.isEmpty()) return null;
-
-        return new GeneratedVein(new ChunkPos(origin.get()), ConfluxWorldGenLayers.CONFLUX_STONE, blocks);
+        return new ProvinceVeinInstance(new BlockPos(originX, originY, originZ), radius, veinSeed, template);
     }
 
     @Override
@@ -461,8 +472,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         for (int i = 0; i < height; i++) {
             int y = minY + i;
             column[i] = profile.sampler().sample(x, y, z) > 0
-                    ? Blocks.STONE.defaultBlockState()
-                    : Blocks.AIR.defaultBlockState();
+                ? Blocks.STONE.defaultBlockState()
+                : Blocks.AIR.defaultBlockState();
         }
         return new NoiseColumn(minY, column);
     }
@@ -474,11 +485,21 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState,
-                                                        StructureManager structureManager, ChunkAccess chunk) {
+                                                          StructureManager structureManager, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(() -> {
-            TerrainProfile profile = resolveTerrainProfile(randomState);
-            ChunkPos chunkPos = chunk.getPos();
-            int minX = chunkPos.getMinBlockX();
+            long profileStart = System.nanoTime();
+            try {
+                return fillFromNoise0(randomState, chunk);
+            } finally {
+                terrainNanos.addAndGet(System.nanoTime() - profileStart);
+            }
+        }, executor);
+    }
+
+    private ChunkAccess fillFromNoise0(RandomState randomState, ChunkAccess chunk) {
+        TerrainProfile profile = resolveTerrainProfile(randomState);
+        ChunkPos chunkPos = chunk.getPos();
+        int minX = chunkPos.getMinBlockX();
             int minZ = chunkPos.getMinBlockZ();
             int minY = getMinY();
             int maxY = minY + getGenDepth();
@@ -493,22 +514,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                         }
                     }
 
-                    // Water only fills the gap between this column's actual surface and its
-                    // local water surface, stopping the instant it hits solid ground - never
-                    // continuing down into a cave below that surface. That surface is global sea
-                    // level for oceans, but the LOCAL land height for rivers - a river running
-                    // through a hillside sits at that hillside's height, not at global sea level,
-                    // so using a single fixed sea-level fill height for rivers was flooding every
-                    // river-through-high-terrain crossing into a solid wall of water. isWaterColumn()
-                    // also only fires for the clear core of an ocean/river band, not "any air
-                    // below the surface", so a cave mouth that happens to open up nearby stays dry.
                     if (waterMask != null && waterMask.isWaterColumn(x, z)) {
-                        // The density field's "topmost solid block" is effectively a floor(), not
-                        // a round-to-nearest - a height of 72.9 still has its highest solid block
-                        // at y=72 (72.9-72=0.9>0 solid, 72.9-73=-0.1<0 air). Using Math.round()
-                        // here bumped the water's starting row a block above the natural bank
-                        // for every column whose fractional height was >= 0.5 - roughly half of
-                        // them - which is exactly the "water sits one block too high" pattern.
+
                         int surfaceY = (int) Math.floor(waterMask.waterSurfaceY(x, z));
                         for (int y = surfaceY; y >= minY; y--) {
                             BlockPos pos = new BlockPos(x, y, z);
@@ -518,8 +525,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     }
                 }
             }
-            return chunk;
-        }, executor);
+        return chunk;
     }
 
     public void applyWorldgenFeatures(WorldGenLevel level, int chunkX, int chunkZ) {

@@ -22,12 +22,8 @@ public class ChromaticEffectSelectScreen extends Screen {
     private static final int ENTRY_HEIGHT = 18;
     private static final int LIST_TOP = 50;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int cAccent, cDim, cText, cHoverFill;
 
-    // The list's content height is fully known up front (entries.size() is fixed once the config
-    // is read in the constructor) - rather than clamp/scroll, we size the pose scale so every row
-    // is guaranteed to fit on-screen at once, same idea as the rest of the Phoenix Suite.
     private float uiScale = 1f;
     private int vw, vh;
 

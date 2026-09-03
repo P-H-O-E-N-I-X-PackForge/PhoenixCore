@@ -42,22 +42,12 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
     protected static final int SB_BTN     = 12;
     private   static final int C_INACTIVE  = 0x99111111;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call - the vanilla
-    // chest-style background texture stays as-is (re-theming it would mean drawing a whole custom
-    // panel instead of the familiar inventory chrome), but everything we draw ourselves - the
-    // scrollbar and the icon-button hover highlight - follows the user's chosen theme like the
-    // rest of the Phoenix Suite.
     private int cSbTrack, cSbThumb, cSbBtn, cAccent;
 
     protected static final int BTN_X_OFFSET = -20;
     protected static final int BTN_SIZE     = 18;
     protected static final int BTN_GAP      = 2;
 
-    // Minimum on-screen real-estate the fixed-size vault panel needs; below this (small window or
-    // high GUI scale, especially for a large vault with many visible rows) we shrink the whole
-    // screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead of
-    // letting AbstractContainerScreen's un-clamped centering push leftPos/topPos negative and
-    // clip the panel off-screen.
     private float uiScale = 1f;
     private int vw, vh;
 

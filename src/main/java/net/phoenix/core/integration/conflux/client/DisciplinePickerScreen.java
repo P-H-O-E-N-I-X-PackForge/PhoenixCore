@@ -126,9 +126,6 @@ public class DisciplinePickerScreen extends Screen {
     private float confirmAlpha = 0f;
     private boolean confirming = false;
 
-    // The confirm-choice overlay is a fixed 360x220 with no clamp at all; below the room it needs
-    // we shrink the whole screen via a pose scale (same idea used across the rest of the Phoenix
-    // Suite) instead of letting it run off-screen.
     private static final int CONFIRM_W = 360;
     private static final int CONFIRM_H = 220;
     private float uiScale = 1f;

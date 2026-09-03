@@ -13,10 +13,7 @@ public class PhysicsHook {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
-        // Must run at END, after vanilla's own per-tick gravity has already been added to
-        // entity velocity - applying our modifier at START just gets overwritten by that
-        // gravity addition later in the same tick, mostly canceling the effect (worst for
-        // zero-G zones, which would otherwise fall at full normal gravity every tick).
+
         if (event.phase != TickEvent.Phase.END) {
             return;
         }

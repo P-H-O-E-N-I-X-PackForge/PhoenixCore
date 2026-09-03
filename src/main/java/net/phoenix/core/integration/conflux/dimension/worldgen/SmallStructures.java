@@ -9,15 +9,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.phoenix.core.PhoenixCore;
 
-/**
- * Small scattered ruins/outposts, one per discipline theme - the concrete "someone lives (or
- * lived) here" signal a dimension needs to read as liveable rather than untouched wilderness.
- * Deliberately simple (a few walls, a doorway, a chest) rather than a full NBT structure-
- * template system - the goal is scattered signs of habitation, not monuments.
- */
 public final class SmallStructures {
 
-    // ~1 per ~85 chunks (~1350 blocks apart on average) - scattered, not a village grid.
     private static final float CHANCE_PER_CHUNK = 0.012f;
 
     private SmallStructures() {}
@@ -32,8 +25,7 @@ public final class SmallStructures {
         BlockPos base = new BlockPos(x, y, z);
 
         if (!level.ensureCanWrite(base)) return;
-        // MOTION_BLOCKING reports the water surface, not the lake/river bed, in a water column -
-        // skip rather than build a ruin floating on top of the water.
+
         if (!level.getBlockState(base.below()).getFluidState().isEmpty()) return;
 
         buildRuin(level, base, themeFor(disciplineId), random);
@@ -59,7 +51,7 @@ public final class SmallStructures {
     }
 
     private static void buildRuin(WorldGenLevel level, BlockPos base, Theme theme, RandomSource random) {
-        int size = 2 + random.nextInt(2); // 2 or 3 -> 5x5 or 7x7 footprint
+        int size = 2 + random.nextInt(2); 
 
         for (int dx = -size; dx <= size; dx++) {
             for (int dz = -size; dz <= size; dz++) {
@@ -76,8 +68,6 @@ public final class SmallStructures {
                 boolean edge = dx == -size || dx == size || dz == -size || dz == size;
                 if (!edge) continue;
 
-                // Ruined look: randomly skip wall segments instead of a pristine box, so it
-                // reads as an abandoned outpost rather than a freshly-built one.
                 if (random.nextFloat() < 0.2f) continue;
 
                 boolean isDoorGap = doorOnX ? (dz == 0 && dx == -size) : (dx == 0 && dz == -size);
@@ -93,9 +83,6 @@ public final class SmallStructures {
             }
         }
 
-        // Standing lanterns/torches/end rods all need solid support directly below them - the
-        // interior is hollow above the floor, so this has to sit at floor level (dy 0), not
-        // floating partway up the room, or it fails to place/immediately drops as an item.
         BlockPos lightPos = base.offset(0, 0, 0);
         if (level.ensureCanWrite(lightPos)) {
             level.setBlock(lightPos, theme.light(), 3);

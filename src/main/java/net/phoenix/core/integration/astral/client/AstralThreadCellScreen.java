@@ -23,7 +23,6 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class AstralThreadCellScreen extends Screen {
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
     private int[] palette;
     private int cText, cDim, cBorder, cBorderDim, cBg1, cBg2, cPanel1, cPanel2, cAccent1, cAccent2, cGaugeBg;
 
@@ -39,9 +38,6 @@ public class AstralThreadCellScreen extends Screen {
     private final MotionClock clock = new MotionClock();
     private long lastNanos = System.nanoTime();
 
-    // Minimum usable real-estate for the gauge panel; below this we shrink the whole screen via a
-    // pose scale (same idea used across the rest of the Phoenix Suite) instead of letting the
-    // fixed panelH = 150 (never clamped to the real screen height at all) run off-screen.
     private static final int MIN_PANEL_W = 220;
     private static final int MIN_PANEL_H = 150;
     private float uiScale = 1f;

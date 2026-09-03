@@ -41,9 +41,6 @@ public class ConfluxWikiScreen extends Screen {
     private int scrollY = 0;
     private int cachedContentH = 0;
 
-    // The fixed sidebar/header have no clamp at all; below the room they need we shrink the
-    // whole screen via a pose scale (same idea used across the rest of the Phoenix Suite) instead
-    // of letting it run off-screen at small windows/high GUI scale.
     private float uiScale = 1f;
     private int vw, vh;
 

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.saveddata;
 
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -7,9 +9,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric.part.TeslaEnergyHatchPartMachine;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +42,13 @@ public class TeslaTeamEnergyData extends SavedData {
             this.pos = pos;
             this.dimension = dimension;
         }
+    }
+
+    @Nullable
+    public static Boolean isLivePhysicalHatch(MinecraftServer server, HatchInfo hatch) {
+        ServerLevel hatchLevel = server.getLevel(hatch.dimension);
+        if (hatchLevel == null || !hatchLevel.isLoaded(hatch.pos)) return null;
+        return MetaMachine.getMachine(hatchLevel, hatch.pos) instanceof TeslaEnergyHatchPartMachine;
     }
 
     public Collection<HatchInfo> getHatches(UUID team) {
@@ -116,17 +127,6 @@ public class TeslaTeamEnergyData extends SavedData {
                 }
             }
             return total;
-        }
-
-        public int getLiveHatchCount(long gameTime) {
-            int count = 0;
-            for (var entry : lastSeen.entrySet()) {
-                if (!energyBuffered.containsKey(entry.getKey())) continue;
-                if (gameTime - entry.getValue() < 40) {
-                    count++;
-                }
-            }
-            return count;
         }
 
         public ResourceKey<Level> getMachineDimension(BlockPos pos) {

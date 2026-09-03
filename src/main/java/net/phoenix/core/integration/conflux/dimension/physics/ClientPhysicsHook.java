@@ -13,8 +13,7 @@ public class ClientPhysicsHook {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        // See PhysicsHook.onServerTick - must run at END, after vanilla's own gravity has
-        // already been applied this tick, or our modifier gets immediately overwritten.
+
         if (event.phase != TickEvent.Phase.END) {
             return;
         }

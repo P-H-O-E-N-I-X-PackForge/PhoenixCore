@@ -21,18 +21,19 @@ public class WingFlightScreen extends Screen {
     private String flightMode;
     private int flightSpeed;
     private int flightDrift;
+    private int flightVertical;
     private int walkSpeed;
 
     private static final int W = 200;
-    private static final int H = 220;
+    private static final int H = 270;
     private static final int STEPS = 10;
 
-    // Refreshed from the shared Phoenix theme at the top of every render() call.
+    private static final int SLIDER_SPEED = 0;
+    private static final int SLIDER_DRIFT = 1;
+    private static final int SLIDER_VERTICAL = 2;
+
     private int cTitle, cLabel, cBasic, cPowered, cCreative, cWinged, cFilled, cEmpty, cPanelBg, cBorder;
 
-    // The panel is a fixed 200x220 with no clamp at all; below that we shrink the whole screen
-    // via a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
-    // it run off-screen at small windows/high GUI scale.
     private float uiScale = 1f;
     private int vw, vh;
 
@@ -43,6 +44,7 @@ public class WingFlightScreen extends Screen {
         this.flightMode = tag.contains("FlightMode") ? tag.getString("FlightMode") : "basic";
         this.flightSpeed = tag.contains("FlightSpeed") ? tag.getInt("FlightSpeed") : 5;
         this.flightDrift = tag.contains("FlightDrift") ? tag.getInt("FlightDrift") : 5;
+        this.flightVertical = tag.contains("FlightVertical") ? tag.getInt("FlightVertical") : 5;
     }
 
     @Override
@@ -69,14 +71,19 @@ public class WingFlightScreen extends Screen {
 
         boolean isCreativeType = flightMode.startsWith("creative");
         boolean showSpeed = isCreativeType || flightMode.equals("powered");
+        boolean showVertical = showSpeed;
         boolean showDrift = isCreativeType;
 
         if (showSpeed) {
-            createSliderRow(left, top + 118, true);
+            createSliderRow(left, top + 118, SLIDER_SPEED);
+        }
+
+        if (showVertical) {
+            createSliderRow(left, top + 168, SLIDER_VERTICAL);
         }
 
         if (showDrift) {
-            createSliderRow(left, top + 168, false);
+            createSliderRow(left, top + 218, SLIDER_DRIFT);
         }
     }
 
@@ -94,30 +101,44 @@ public class WingFlightScreen extends Screen {
         cBorder = (t.accent.getColor() & 0x00FFFFFF) | 0x66000000;
     }
 
-    private void createSliderRow(int left, int y, boolean isSpeed) {
+    private void createSliderRow(int left, int y, int kind) {
         int barLeft = left + 27;
         int barWidth = W - 10 - 44;
         int segW = barWidth / STEPS;
 
         addRenderableWidget(Button.builder(Component.literal("-"), btn -> {
-            if (isSpeed) flightSpeed = Math.max(1, flightSpeed - 1);
-            else flightDrift = Math.max(1, flightDrift - 1);
+            setSliderValue(kind, getSliderValue(kind) - 1);
             sendUpdate();
         }).bounds(left + 5, y, 18, 18).build());
 
         addRenderableWidget(Button.builder(Component.literal("+"), btn -> {
-            if (isSpeed) flightSpeed = Math.min(STEPS, flightSpeed + 1);
-            else flightDrift = Math.min(STEPS, flightDrift + 1);
+            setSliderValue(kind, getSliderValue(kind) + 1);
             sendUpdate();
         }).bounds(left + W - 23, y, 18, 18).build());
 
         for (int i = 0; i < STEPS; i++) {
             final int seg = i + 1;
             addRenderableWidget(Button.builder(Component.empty(), btn -> {
-                if (isSpeed) flightSpeed = seg;
-                else flightDrift = seg;
+                setSliderValue(kind, seg);
                 sendUpdate();
             }).bounds(barLeft + (i * segW), y, segW - 1, 18).build());
+        }
+    }
+
+    private int getSliderValue(int kind) {
+        return switch (kind) {
+            case SLIDER_SPEED -> flightSpeed;
+            case SLIDER_VERTICAL -> flightVertical;
+            default -> flightDrift;
+        };
+    }
+
+    private void setSliderValue(int kind, int value) {
+        value = Math.max(1, Math.min(STEPS, value));
+        switch (kind) {
+            case SLIDER_SPEED -> flightSpeed = value;
+            case SLIDER_VERTICAL -> flightVertical = value;
+            default -> flightDrift = value;
         }
     }
 
@@ -134,11 +155,13 @@ public class WingFlightScreen extends Screen {
 
         boolean isCreativeType = flightMode.startsWith("creative");
         boolean showSpeed = isCreativeType || flightMode.equals("powered");
+        boolean showVertical = showSpeed;
         boolean showDrift = isCreativeType;
 
         int currentH = 100;
         if (showSpeed) currentH = 150;
-        if (showDrift) currentH = 205;
+        if (showVertical) currentH = 200;
+        if (showDrift) currentH = 255;
 
         int left = (vw - W) / 2;
         int top = (vh - H) / 2;
@@ -158,9 +181,14 @@ public class WingFlightScreen extends Screen {
             renderSegmentedBar(gfx, left + 27, top + 118, flightSpeed);
         }
 
+        if (showVertical) {
+            gfx.drawString(font, "Flight Vertical Speed", left + 8, top + 154, cLabel, false);
+            renderSegmentedBar(gfx, left + 27, top + 168, flightVertical);
+        }
+
         if (showDrift) {
-            gfx.drawString(font, "Flight Drift", left + 8, top + 154, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 168, flightDrift);
+            gfx.drawString(font, "Flight Drift", left + 8, top + 204, cLabel, false);
+            renderSegmentedBar(gfx, left + 27, top + 218, flightDrift);
         }
 
         super.render(gfx, mouseX, mouseY, partialTick);
@@ -266,7 +294,8 @@ public class WingFlightScreen extends Screen {
     }
 
     private void sendUpdate() {
-        PhoenixNetwork.CHANNEL.sendToServer(new UpdateWingSettingsPacket(flightMode, flightSpeed, flightDrift));
+        PhoenixNetwork.CHANNEL.sendToServer(
+                new UpdateWingSettingsPacket(flightMode, flightSpeed, flightDrift, flightVertical));
     }
 
     @Override

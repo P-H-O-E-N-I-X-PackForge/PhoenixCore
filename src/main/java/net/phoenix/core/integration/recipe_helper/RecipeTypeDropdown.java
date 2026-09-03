@@ -115,13 +115,9 @@ public class RecipeTypeDropdown extends AbstractWidget {
 
         private boolean searchFocused = true;
 
-        // Refreshed from the shared Phoenix theme at the top of every render() call.
         private int cPanel, cBorder, cHeader, cHeaderLine, cText, cSearchBg, cSearchBorder, cSearchText,
                 cRowSel, cRowHov, cTextSel, cTextHov, cTextDim, cScrollTrack, cScrollThumb, cFaint;
 
-        // The fixed 260x220 panel has no clamp at all; below that we shrink the whole screen via
-        // a pose scale (same idea used across the rest of the Phoenix Suite) instead of letting
-        // it run off-screen at small windows/high GUI scale.
         private float uiScale = 1f;
         private int vw, vh;
 
@@ -171,9 +167,6 @@ public class RecipeTypeDropdown extends AbstractWidget {
             cFaint = t.textFaint.getColor();
         }
 
-        // enableScissor operates in raw real screen pixels and ignores pose().scale(), so any
-        // scissor call made inside the uiScale transform below must have its bounds
-        // pre-multiplied by uiScale.
         private void enableScissorScaled(GuiGraphics g, int x1, int y1, int x2, int y2) {
             g.enableScissor(Math.round(x1 * uiScale), Math.round(y1 * uiScale), Math.round(x2 * uiScale),
                     Math.round(y2 * uiScale));

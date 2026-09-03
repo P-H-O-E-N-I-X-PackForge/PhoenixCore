@@ -226,13 +226,6 @@ public class WorldgenApplier {
         }
     }
 
-    // Every discipline preset names its flowers/shrubs/special decorations after fictional
-    // flavor blocks ("fire_flower", "sculk_moss", "ethereal_crystal"...) that were never real
-    // registry entries - BuiltInRegistries.BLOCK.get() silently resolved every one of them to
-    // Blocks.AIR, and the "!= AIR" guard then skipped placing anything at all. This is why
-    // discipline worldgen read as barren/grandiose despite the presets looking planted: nothing
-    // but trees was ever actually placed. Mapping each flavor name to a real, thematically close
-    // vanilla block (matching the same idea as TREE_PALETTES below) makes them place something.
     private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState> DECORATION_PALETTE =
             new java.util.HashMap<>();
     static {
@@ -240,16 +233,13 @@ public class WorldgenApplier {
         DECORATION_PALETTE.put("lava_rose", Blocks.WITHER_ROSE.defaultBlockState());
         DECORATION_PALETTE.put("sculk_flower", Blocks.GLOW_LICHEN.defaultBlockState());
         DECORATION_PALETTE.put("glowing_vine", Blocks.GLOW_LICHEN.defaultBlockState());
-        // CHORUS_FLOWER only survives on end stone or an existing chorus plant, not ordinary
-        // ground - wrong fit now that void's primary biome is a walkable grass meadow.
+
         DECORATION_PALETTE.put("void_flower", Blocks.ALLIUM.defaultBlockState());
         DECORATION_PALETTE.put("ethereal_crystal", Blocks.SMALL_AMETHYST_BUD.defaultBlockState());
         DECORATION_PALETTE.put("copper_flower", Blocks.DANDELION.defaultBlockState());
         DECORATION_PALETTE.put("warped_flower", Blocks.WARPED_ROOTS.defaultBlockState());
         DECORATION_PALETTE.put("soul_lantern", Blocks.SOUL_LANTERN.defaultBlockState());
-        // HANGING_ROOTS needs a solid ceiling above it to survive - wrong fit for ground-level
-        // placement in open terrain (it would just pop off immediately), so a floor-resting
-        // decorative carpet stands in instead.
+
         DECORATION_PALETTE.put("sculk_moss", Blocks.MOSS_CARPET.defaultBlockState());
         DECORATION_PALETTE.put("sculk_carpet", Blocks.SCULK_VEIN.defaultBlockState());
         DECORATION_PALETTE.put("copper_moss", Blocks.MOSS_CARPET.defaultBlockState());
@@ -259,11 +249,6 @@ public class WorldgenApplier {
         DECORATION_PALETTE.put("void_shard", Blocks.END_ROD.defaultBlockState());
     }
 
-    // level.getHeight(MOTION_BLOCKING, ...) returns the water surface, not the ocean/river
-    // floor, in any column an ocean or river covers (MOTION_BLOCKING treats liquid as
-    // "blocking"). Every ground decoration placement below computes its spot from that height
-    // and only guards against pure open air, so without this check flowers/shrubs/trees/
-    // structures would place themselves floating directly on top of the water.
     private static boolean isAboveWater(WorldGenLevel level, BlockPos groundPos) {
         return !level.getBlockState(groundPos.below()).getFluidState().isEmpty();
     }
@@ -326,16 +311,10 @@ public class WorldgenApplier {
         }
     }
 
-    // Each discipline's "primary" grass biome uses a real log+leaves pair so trees actually
-    // read as foliage; the original exotic combos (solid canopy blocks like sculk/amethyst/
-    // copper) are kept for the rarer accent-biome tree species instead of being the only option.
     private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState[]> TREE_PALETTES =
             new java.util.HashMap<>();
     static {
-        // GT's own rubber tree, added as a low-frequency species in every discipline (see the
-        // "rubber_tree" TreeConfig entries in DisciplineWorldgenPresets) so rubber - a GT early/
-        // mid-game progression requirement - is reachable regardless of which discipline a team
-        // picks, instead of being locked out entirely by their choice.
+
         net.minecraft.world.level.block.Block rubberLog = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("gtceu:rubber_log"));
         net.minecraft.world.level.block.Block rubberLeaves = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("gtceu:rubber_leaves"));
         TREE_PALETTES.put("rubber_tree", new net.minecraft.world.level.block.state.BlockState[] {
@@ -363,9 +342,6 @@ public class WorldgenApplier {
                 Blocks.WARPED_STEM.defaultBlockState(), Blocks.WARPED_WART_BLOCK.defaultBlockState() });
     }
 
-    // Leaves placed directly (not via a proper log-distance scan) default to distance=7, which
-    // reads as "too far from any log" to the game's leaf-decay tick and would strip these
-    // canopies block by block after generation. Marking them persistent turns that check off.
     private static net.minecraft.world.level.block.state.BlockState persistentLeaves(
             net.minecraft.world.level.block.Block leaves) {
         return leaves.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
@@ -384,12 +360,6 @@ public class WorldgenApplier {
         int minX = chunkX * 16;
         int minZ = chunkZ * 16;
 
-        // treeFrequency (a per-discipline "how wooded is this place" dial) drives how many
-        // planting attempts happen in this chunk; each species' own frequency is just its
-        // relative share of those attempts, not a second multiplier on top of it - the old
-        // "chance = tree.frequency * treeFrequency, attempts = round(chance*6)" formula made
-        // both knobs shrink the same number twice, so even "wooded" presets landed under one
-        // tree every several chunks.
         int attempts = Math.max(1, Math.round(treeFrequency * 12));
         for (int i = 0; i < attempts; i++) {
             WorldgenProfile.TreeConfig tree = trees.get(random.nextInt(trees.size()));
@@ -440,10 +410,6 @@ public class WorldgenApplier {
         }
     }
 
-    // A lake only makes sense where the actual local terrain sits near the liquid's intended
-    // level - otherwise, now that terrain height genuinely varies (mixed flat/hilly regions,
-    // per-biome height differences), a lake center landing over a cliff or valley the fixed
-    // waterLevel/lavaLevel never accounted for would place liquid nowhere near the real ground.
     private static final int LAKE_LEVEL_TOLERANCE = 6;
 
     private static void applyLiquidFeatures(
@@ -484,9 +450,7 @@ public class WorldgenApplier {
 
                 int px = x + dx;
                 int pz = z + dz;
-                // Follow each column's own real surface height rather than the lake's fixed
-                // target level, so the liquid always sits on actual ground instead of floating
-                // over whatever the terrain happens to do at that spot.
+
                 int columnSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, px, pz) - 1;
                 BlockPos pos = new BlockPos(px, columnSurfaceY, pz);
                 if (level.ensureCanWrite(pos)) {

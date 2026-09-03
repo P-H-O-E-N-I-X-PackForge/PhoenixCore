@@ -16,10 +16,7 @@ public class DefaultDisciplineOres {
     private static final RuleTest[] STONE_RULES = new RuleTest[] { new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES) };
 
     public static void registerAll() {
-        // Phoenix, Void, and Sculk's ore generation is entirely custom now - see
-        // ProvinceVeinTemplates and DisciplineChunkGenerator#placeProvinceOres. None of them
-        // register through GT's own biome-keyed vein registry, so there's deliberately no call
-        // for any of them here.
+
         registerSealedAOres();
         registerSealedBOres();
     }

@@ -33,6 +33,8 @@ public final class WorldFXShaders {
 
     public static ShaderInstance VOID_BLACK_HOLE;
 
+    public static ShaderInstance SOUL_VISION_COMPOSITE;
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         register(event, "phoenixcore:phoenix_black_hole", DefaultVertexFormat.POSITION, s -> BLACK_HOLE = s);
         register(event, "phoenixcore:phoenix_nebula", DefaultVertexFormat.POSITION, s -> NEBULA = s);
@@ -44,6 +46,8 @@ public final class WorldFXShaders {
         register(event, "phoenixcore:sealed_a_industrial", DefaultVertexFormat.POSITION, s -> SEALED_A_INDUSTRIAL = s);
         register(event, "phoenixcore:sealed_b_chaos", DefaultVertexFormat.POSITION, s -> SEALED_B_CHAOS = s);
         register(event, "phoenixcore:void_black_hole", DefaultVertexFormat.POSITION, s -> VOID_BLACK_HOLE = s);
+        register(event, "phoenixcore:soul_vision_composite", DefaultVertexFormat.POSITION,
+                s -> SOUL_VISION_COMPOSITE = s);
     }
 
     private static void register(RegisterShadersEvent event,

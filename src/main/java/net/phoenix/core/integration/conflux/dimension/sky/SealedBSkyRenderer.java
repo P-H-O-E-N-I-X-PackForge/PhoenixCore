@@ -19,9 +19,7 @@ public class SealedBSkyRenderer extends SkyRenderer {
     }
 
     private void initializeSealedBSky() {
-        
-        // Scaled to fit the world's normal projection frustum (see PhoenixSkyRenderer) -
-        // vanilla's own sun/moon sit around +/-100 units for this same reason.
+
         chaosOrbitals.add(new PlanetOrbit(
             "Reality Fragment 1",
             PlanetOrbit.PlanetType.NEBULA,

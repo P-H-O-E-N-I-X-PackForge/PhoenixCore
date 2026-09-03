@@ -240,6 +240,41 @@ public class PhoenixConfigs {
                 "Default: 1.8"
         })
         public double poweredDriftMax = 1.8;
+
+        @Configurable
+        @Configurable.Comment({
+                "How much horizontal momentum survives each tick you're airborne in a wing flight",
+                "mode but NOT actively thrusting (not sprinting/sneaking-boosting), as a fraction",
+                "kept per tick - at drift slider = 0 this is 0.0 (velocity snaps to zero the instant",
+                "you stop thrusting, i.e. full inertia canceling); at drift slider = 10 it's 1.0",
+                "(no damping at all, momentum carries over exactly like normal elytra gliding).",
+                "The actual retention = driftSlider/10, this constant only exists so the mapping is",
+                "documented in one place rather than a bare 0.0/1.0 buried in code.",
+                "Default: 0.0"
+        })
+        public double coastRetentionMin = 0.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "See coastRetentionMin - the retention fraction at drift slider = 10.",
+                "Default: 1.0"
+        })
+        public double coastRetentionMax = 1.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min vertical climb multiplier for powered flight (at vertical-speed slider = 0).",
+                "Replaces what used to be a hardcoded 8x climb boost with a configurable range.",
+                "Default: 3.0"
+        })
+        public double poweredVerticalMin = 3.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max vertical climb multiplier for powered flight (at vertical-speed slider = 10).",
+                "Default: 8.0"
+        })
+        public double poweredVerticalMax = 8.0;
     }
 
     public static class CleanroomConfig {

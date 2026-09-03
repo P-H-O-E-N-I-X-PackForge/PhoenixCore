@@ -18,9 +18,6 @@ public class PhoenixSkyRenderer extends SkyRenderer {
         initializePhoenixSky();
     }
 
-    // Volcano cone meshes used to live here too, but they're superseded by the phoenix_sunflare
-    // shader (see DisciplineSkyEffects) - a per-pixel fire effect reads far better than a few
-    // flat-shaded cones, so the meshes were removed rather than left drawing underneath it.
     private void initializePhoenixSky() {
         orbitingBodies.add(new PlanetOrbit(
             "Lava Moon",

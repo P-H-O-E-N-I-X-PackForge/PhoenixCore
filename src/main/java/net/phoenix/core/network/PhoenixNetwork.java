@@ -144,5 +144,19 @@ public class PhoenixNetwork {
                 C2SRemoveShopEntryPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        CHANNEL.registerMessage(id++,
+                C2SCinemaScreenConfigPacket.class,
+                C2SCinemaScreenConfigPacket::encode,
+                C2SCinemaScreenConfigPacket::new,
+                C2SCinemaScreenConfigPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinemaActionPacket.class,
+                C2SCinemaActionPacket::encode,
+                C2SCinemaActionPacket::new,
+                C2SCinemaActionPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
     }
 }

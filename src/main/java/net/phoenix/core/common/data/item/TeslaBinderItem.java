@@ -754,6 +754,14 @@ public class TeslaBinderItem extends ComponentItem
             ListTag hatchList = new ListTag();
             for (TeslaTeamEnergyData.HatchInfo hatch : globalData.getHatches(teamUUID)) {
                 if (hatch == null || hatch.isSoulLinked) continue;
+
+                Boolean live = TeslaTeamEnergyData.isLivePhysicalHatch(serverPlayer.server, hatch);
+                if (live == null) continue;
+                if (!live) {
+                    globalData.removeEndpoint(teamUUID, hatch.pos);
+                    continue;
+                }
+
                 CompoundTag hTag = new CompoundTag();
                 hTag.putLong("pos", hatch.pos.asLong());
                 hTag.putBoolean("isOut", hatch.isPhysicalOutput);

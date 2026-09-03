@@ -97,9 +97,7 @@ public class WorldgenProfile {
         public final String surfaceBlock;
         public final String subSurfaceBlock;
         public final float rainfall;         
-        /** Ore ids (see ProvinceVeinTemplates) this region can spawn, for the noise-based ore
-         *  province system. Empty for disciplines that don't use it - GT's normal per-dimension
-         *  vein registration (DefaultDisciplineOres/GTVeinPlacement) is unaffected either way. */
+        
         public final java.util.List<String> oreVeins;
 
         public BiomeDefinition(

@@ -48,19 +48,6 @@ public class ConfluxDimensionCommands {
         );
     }
 
-    /**
-     * Force-generates a gridSize x gridSize batch of brand-new chunks in the given discipline's
-     * dimension and times it, for an apples-to-apples "is worldgen actually the bottleneck here"
-     * comparison across disciplines. Always picks a fresh, far-off region (seeded from the
-     * current time) so repeat runs measure real generation instead of re-fetching chunks a
-     * previous run already cached - the tradeoff is that every run permanently leaves that many
-     * generated-but-unvisited chunks on disk, same as any chunk pre-generation tool.
-     *
-     * Runs synchronously on the server thread (ChunkStatus.FULL + requireChunk=true blocks until
-     * done, same mechanism vanilla itself uses for e.g. forced spawn-chunk generation) - expect a
-     * multi-second freeze for larger grids, which is the point: a clean, repeatable number rather
-     * than noisy live-exploration timing.
-     */
     private static int benchmarkWorldgen(CommandSourceStack source, String discipline, int gridSize) {
         MinecraftServer server = source.getServer();
         ServerLevel target = server.getLevel(ConfluxDimensionFactory.getDimensionKey(discipline));
@@ -76,6 +63,8 @@ public class ConfluxDimensionCommands {
         source.sendSuccess(() -> Component.literal("§6[PhoenixCore] Benchmarking " + totalChunks
                 + " chunks in '" + discipline + "' - this will freeze the server briefly..."), false);
 
+        DisciplineChunkGenerator.resetProfiling();
+
         long startNanos = System.nanoTime();
         for (int dx = 0; dx < gridSize; dx++) {
             for (int dz = 0; dz < gridSize; dz++) {
@@ -87,10 +76,13 @@ public class ConfluxDimensionCommands {
         double totalMs = elapsedNanos / 1_000_000.0;
         double avgMs = totalMs / totalChunks;
         double chunksPerSec = 1000.0 / avgMs;
+        String profileSummary = DisciplineChunkGenerator.getProfilingSummary();
 
         source.sendSuccess(() -> Component.literal(String.format(
                 "§6[PhoenixCore] '%s' worldgen: §r%d chunks in %.1fms total, %.2fms/chunk avg, %.1f chunks/sec",
                 discipline, totalChunks, totalMs, avgMs, chunksPerSec)), false);
+        source.sendSuccess(() -> Component.literal("§6[PhoenixCore] Breakdown (totals across all chunks): §r"
+                + profileSummary), false);
 
         return Command.SINGLE_SUCCESS;
     }

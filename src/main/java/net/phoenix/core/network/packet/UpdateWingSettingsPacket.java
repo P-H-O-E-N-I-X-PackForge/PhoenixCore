@@ -22,23 +22,27 @@ public class UpdateWingSettingsPacket {
     private final String flightMode;
     private final int flightSpeed;
     private final int flightDrift;
+    private final int flightVertical;
 
-    public UpdateWingSettingsPacket(String flightMode, int flightSpeed, int flightDrift) {
+    public UpdateWingSettingsPacket(String flightMode, int flightSpeed, int flightDrift, int flightVertical) {
         this.flightMode = flightMode;
         this.flightSpeed = flightSpeed;
         this.flightDrift = flightDrift;
+        this.flightVertical = flightVertical;
     }
 
     public UpdateWingSettingsPacket(FriendlyByteBuf buf) {
         this.flightMode = buf.readUtf();
         this.flightSpeed = buf.readInt();
         this.flightDrift = buf.readInt();
+        this.flightVertical = buf.readInt();
     }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(flightMode);
         buf.writeInt(flightSpeed);
         buf.writeInt(flightDrift);
+        buf.writeInt(flightVertical);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -52,11 +56,13 @@ public class UpdateWingSettingsPacket {
             String mode = VALID_MODES.contains(flightMode) ? flightMode : "basic";
             int speed = Math.max(0, Math.min(10, flightSpeed));
             int drift = Math.max(0, Math.min(10, flightDrift));
+            int vertical = Math.max(0, Math.min(10, flightVertical));
 
             CompoundTag tag = chest.getOrCreateTag();
             tag.putString("FlightMode", mode);
             tag.putInt("FlightSpeed", speed);
             tag.putInt("FlightDrift", drift);
+            tag.putInt("FlightVertical", vertical);
 
             player.inventoryMenu.sendAllDataToRemote();
         });

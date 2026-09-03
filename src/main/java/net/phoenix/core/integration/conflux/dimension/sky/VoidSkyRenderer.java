@@ -22,11 +22,6 @@ public class VoidSkyRenderer extends SkyRenderer {
 
     private void initializeVoidSky() {
 
-        // The two orbiting planet meshes that used to render here are replaced by the
-        // void_black_hole shader (see DisciplineSkyEffects#renderVoidBlackHole) - a real
-        // lensing/accretion-disk effect anchored to the galaxy's core reads far richer than a
-        // couple of flat-colored spheres, and doubling up on both would just clutter the sky.
-
         stars.add(new PlanetOrbit(
             "Void Star 1",
             PlanetOrbit.PlanetType.STAR,
@@ -64,10 +59,6 @@ public class VoidSkyRenderer extends SkyRenderer {
         for (PlanetOrbit star : stars) {
             star.render(poseStack, bufferSource, worldTime);
         }
-
-        // The mesh-based nebula blobs used to render here too, but they're superseded by the
-        // void_galaxy shader (see DisciplineSkyEffects) - a per-pixel domain-warped cloud reads
-        // far richer than a handful of overlapping translucent spheres ever could.
 
         poseStack.popPose();
     }
