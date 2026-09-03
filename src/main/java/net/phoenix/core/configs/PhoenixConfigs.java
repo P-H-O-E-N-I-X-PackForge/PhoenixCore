@@ -162,6 +162,35 @@ public class PhoenixConfigs {
                 "Default: 1.8"
         })
         public double poweredDriftMax = 1.8;
+
+        @Configurable
+        @Configurable.Comment({
+                "Horizontal velocity retention per tick while airborne but not thrusting, at drift",
+                "slider = 0 (full inertia canceling). 0.0 = stop instantly, 1.0 = never decay.",
+                "Default: 0.0"
+        })
+        public double coastRetentionMin = 0.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "See coastRetentionMin - the retention fraction at drift slider = 10.",
+                "Default: 1.0"
+        })
+        public double coastRetentionMax = 1.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Climb-speed multiplier for powered/sonic flight at vertical-speed slider = 0.",
+                "Default: 3.0"
+        })
+        public double poweredVerticalMin = 3.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Climb-speed multiplier for powered/sonic flight at vertical-speed slider = 10.",
+                "Default: 8.0"
+        })
+        public double poweredVerticalMax = 8.0;
     }
 
     public static class CleanroomConfig {

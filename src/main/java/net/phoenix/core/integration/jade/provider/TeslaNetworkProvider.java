@@ -90,7 +90,18 @@ public class TeslaNetworkProvider implements IBlockComponentProvider, IServerDat
                     tag.putLong("LocalTransfer", transferRate);
                     tag.putInt("TransferMode", mode);
 
-                    int physicalHatches = teamData.getLiveHatchCount(sl.getGameTime());
+                    // getLiveHatchCount() only checked "was this position touched recently", not
+                    // "is there still a real hatch there" - soul-linked machines and chargers get
+                    // touched via the same markHatchActive() call as physical hatches, so it was
+                    // counting them here too, on top of wiredMachines/wirelessChargers below.
+                    // Validate against the loaded world instead, same as the Binder UI does.
+                    int physicalHatches = 0;
+                    for (TeslaTeamEnergyData.HatchInfo hatch : data.getHatches(team)) {
+                        if (hatch.isSoulLinked) continue;
+                        if (Boolean.TRUE.equals(TeslaTeamEnergyData.isLivePhysicalHatch(server, hatch))) {
+                            physicalHatches++;
+                        }
+                    }
                     int wiredMachines = teamData.soulLinkedMachines.size();
                     int wirelessChargers = teamData.activeChargers.size();
 

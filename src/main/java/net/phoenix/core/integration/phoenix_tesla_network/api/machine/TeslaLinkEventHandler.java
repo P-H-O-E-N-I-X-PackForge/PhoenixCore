@@ -8,9 +8,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
 
-@Mod.EventBusSubscriber(modid = "PhoenixCore", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TeslaLinkEventHandler {
 
     @SubscribeEvent

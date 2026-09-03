@@ -596,6 +596,26 @@ public class TeslaBinderItem extends ComponentItem
             ListTag hatchList = new ListTag();
             for (TeslaTeamEnergyData.HatchInfo hatch : globalData.getHatches(teamUUID)) {
                 if (hatch == null || hatch.pos == null || hatch.dimension == null) continue;
+
+                // getHatches() merges physical-hatch entries with soul-linked-machine entries into
+                // one map keyed by position - without this check, every soul-linked machine (which
+                // already gets its own correct row below via MachineData) ALSO produces a second,
+                // unlabeled "Tesla Hatch" row here even though no physical hatch exists there.
+                if (hatch.isSoulLinked) continue;
+
+                // energyBuffered can outlive the physical hatch that wrote it (e.g. the block was
+                // removed through a path that never called onUnload, such as external world edits,
+                // or was left behind by the block-break cleanup event before it was fixed to fire
+                // at all). Self-heal once confirmed gone - but a chunk that's simply not loaded
+                // right now is not confirmation of anything, so leave those entries alone rather
+                // than deleting a hatch we just can't currently see.
+                Boolean live = TeslaTeamEnergyData.isLivePhysicalHatch(serverPlayer.server, hatch);
+                if (live == null) continue;
+                if (!live) {
+                    globalData.removeEndpoint(teamUUID, hatch.pos);
+                    continue;
+                }
+
                 CompoundTag hTag = new CompoundTag();
                 hTag.putLong("pos", hatch.pos.asLong());
                 hTag.putBoolean("isOut", hatch.isPhysicalOutput);
