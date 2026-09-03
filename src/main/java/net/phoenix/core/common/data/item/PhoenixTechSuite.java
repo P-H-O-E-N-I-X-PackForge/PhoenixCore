@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
@@ -575,7 +576,14 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
 
         if (player.getAbilities().flying) {
-            if (world.isClientSide) {
+            if (flightMode.equals("creative")) {
+                // Plain "creative" keeps vanilla's free WASD-in-any-direction strafing (unlike the
+                // forward-look thrust style above), but drift and vertical speed need somewhere to
+                // apply - see applyCreativeFreeFlight for why that means replacing vanilla's own
+                // flyingSpeed-driven movement instead of layering on top of it.
+                applyCreativeFreeFlight(player, world, cfg, speedMult, driftMult, verticalScale);
+                if (!world.isClientSide) consumeFlightEnergy(item, teslaData, teamID, networkOnline, requiredBI, cost);
+            } else if (world.isClientSide) {
                 float flySpeed = (float) (cfg.creativeSpeedMin +
                         (speedMult * (cfg.creativeSpeedMax - cfg.creativeSpeedMin)));
                 ((AbilitiesAccessor) player.getAbilities()).setFlyingSpeed(flySpeed);
@@ -586,6 +594,67 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
 
         if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
+    }
+
+    /**
+     * Vanilla creative-fly moves the player by scaling raw WASD/jump input by Abilities.flyingSpeed
+     * inside its own travel() every tick, entirely independent of anything set here - left alone,
+     * that would either fight or silently double up with our own velocity. Zeroing flyingSpeed
+     * (client-side, since that's where vanilla's own creative-fly input handling lives) hands 100%
+     * of the movement to us instead, the same way "creative+wings" sidesteps the exact same conflict
+     * by switching to elytra-glide physics, which vanilla never drives via flyingSpeed at all.
+     * <p>
+     * Runs on both sides unconditionally (matching applyWingThrust) so client and server compute
+     * the same velocity independently from the same synced inputs, rather than one side setting it
+     * and hoping it syncs cleanly to the other.
+     */
+    private void applyCreativeFreeFlight(Player player, Level world, PhoenixConfigs.WingFlightConfigs cfg,
+                                         float speedMult, float driftMult, float verticalScale) {
+        if (world.isClientSide) {
+            ((AbilitiesAccessor) player.getAbilities()).setFlyingSpeed(0f);
+            player.onUpdateAbilities();
+        }
+
+        boolean forward = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player);
+        boolean back = SyncedKeyMappings.VANILLA_BACKWARD.isKeyDown(player);
+        boolean left = SyncedKeyMappings.VANILLA_LEFT.isKeyDown(player);
+        boolean right = SyncedKeyMappings.VANILLA_RIGHT.isKeyDown(player);
+        boolean up = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
+        boolean down = player.isShiftKeyDown();
+
+        float forwardAxis = (forward ? 1f : 0f) - (back ? 1f : 0f);
+        float strafeAxis = (right ? 1f : 0f) - (left ? 1f : 0f);
+
+        // Same yaw-relative axis-to-world-direction transform vanilla's own Entity.getInputVector
+        // uses, so WASD still feels like normal creative flying rather than always-forward thrust.
+        float yawRad = player.getYRot() * ((float) Math.PI / 180F);
+        float sinYaw = Mth.sin(yawRad);
+        float cosYaw = Mth.cos(yawRad);
+
+        double dirX = strafeAxis * cosYaw - forwardAxis * sinYaw;
+        double dirZ = forwardAxis * cosYaw + strafeAxis * sinYaw;
+        double dirLen = Math.sqrt(dirX * dirX + dirZ * dirZ);
+        if (dirLen > 1.0) {
+            dirX /= dirLen;
+            dirZ /= dirLen;
+        }
+
+        double horizSpeed = cfg.creativeSpeedMin + (speedMult * (cfg.creativeSpeedMax - cfg.creativeSpeedMin));
+        // Vertical speed slider scales relative to this mode's own horizontal speed rather than a
+        // separate baseline - at 5 (1.0x) ascending/descending matches horizontal flying speed.
+        double vertSpeed = horizSpeed * verticalScale;
+        double retention = getDriftRetention(cfg, driftMult);
+
+        Vec3 cur = player.getDeltaMovement();
+        double newX = cur.x * retention + dirX * horizSpeed;
+        double newZ = cur.z * retention + dirZ * horizSpeed;
+
+        double vAxis = (up ? 1.0 : 0.0) - (down ? 1.0 : 0.0);
+        double newY = cur.y * retention + vAxis * vertSpeed;
+
+        player.setDeltaMovement(newX, newY, newZ);
+        player.fallDistance = 0;
+        player.hurtMarked = true;
     }
 
     private void consumeFlightEnergy(IElectricItem item, TeslaTeamEnergyData teslaData, UUID teamID,

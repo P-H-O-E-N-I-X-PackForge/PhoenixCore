@@ -2,7 +2,6 @@ package net.phoenix.core.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -13,8 +12,27 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.UpdateWingSettingsPacket;
-import net.phoenixvine.wiki.theme.PhoenixTheme;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Deliberately a plain Screen rather than a ModularUI panel - ModularUI's own API differs
+ * incompatibly between branches (brachy modularui here vs lowdraglib's older ModularUI on the
+ * gtm 7.5.3 branch, and even GTCEu's own texture-drawable classes don't have a common standalone
+ * draw() that works outside each framework's own widget/render context), so a raw Screen using
+ * only vanilla GuiGraphics primitives is the one implementation that ports cleanly across both
+ * without a rewrite. The panel/button look is hand-drawn (drawPanel: flat fill + a light bevel
+ * edge top-left, dark shadow edge bottom-right) rather than borrowed GT textures, purely so this
+ * file has zero framework dependency at all.
+ * <p>
+ * Every interactive element (mode button, +/-, slider segments) is hit-tested manually in
+ * mouseClicked() against the clickRegions list render() just rebuilt, instead of using vanilla
+ * Button widgets - a vanilla Button still paints its own grey sprite/hover overlay even with an
+ * empty label, which was rendering on top of the segmented bars' color fill every frame
+ * (super.render() draws all added widgets after this class's own render() body) and is what
+ * actually read as "a bunch of vanilla buttons" pasted over the custom bar.
+ */
 @OnlyIn(Dist.CLIENT)
 public class WingFlightScreen extends Screen {
 
@@ -22,20 +40,43 @@ public class WingFlightScreen extends Screen {
     private int flightSpeed;
     private int flightDrift;
     private int flightVertical;
-    private int walkSpeed;
 
-    private static final int W = 200;
-    private static final int H = 270;
+    private static final int W = 210;
+    private static final int H = 260;
     private static final int STEPS = 10;
 
     private static final int SLIDER_SPEED = 0;
     private static final int SLIDER_DRIFT = 1;
     private static final int SLIDER_VERTICAL = 2;
 
-    private int cTitle, cLabel, cBasic, cPowered, cCreative, cWinged, cFilled, cEmpty, cPanelBg, cBorder;
+    private static final int COLOR_TITLE = 0xFFB000FF;
+    private static final int COLOR_LABEL = 0xFFAAAAAA;
+    private static final int COLOR_BASIC = 0xFF00FF88;
+    private static final int COLOR_POWERED = 0xFFFFAA00;
+    private static final int COLOR_CREATIVE = 0xFFFF55FF;
+    private static final int COLOR_WINGED = 0xFF55FFFF;
+    private static final int COLOR_FILLED = 0xFF8800CC;
+    private static final int COLOR_HIGHLIGHT = 0xFFC480E6;
+    private static final int COLOR_EMPTY = 0xFF3A3A3A;
+
+    private static final int PANEL_BG = 0xEE0A0512;
+    private static final int PANEL_BEVEL = 0xFF3A2050;
+    private static final int PANEL_SHADOW = 0xC0000000;
+    private static final int DISPLAY_BG = 0xFF120A1E;
+    private static final int BUTTON_BG = 0xFF241436;
+    private static final int BUTTON_BG_HOVER = 0xFF3A2050;
+    private static final int BUTTON_BORDER = 0xFF7A3FBF;
 
     private float uiScale = 1f;
     private int vw, vh;
+
+    private record ClickRegion(int x, int y, int w, int h, Runnable action) {
+        boolean contains(double px, double py) {
+            return px >= x && px < x + w && py >= y && py < y + h;
+        }
+    }
+
+    private final List<ClickRegion> clickRegions = new ArrayList<>();
 
     public WingFlightScreen() {
         super(Component.literal("Wing Flight Control"));
@@ -56,78 +97,10 @@ public class WingFlightScreen extends Screen {
         uiScale = Math.max(0.1f, uiScale);
         vw = Math.round(width / uiScale);
         vh = Math.round(height / uiScale);
-
-        refreshTheme();
-
-        int left = (vw - W) / 2;
-        int top = (vh - H) / 2;
-        this.clearWidgets();
-
-        addRenderableWidget(Button.builder(Component.literal("Mode: " + getModeDisplayName()), btn -> {
-            cycleMode();
-            sendUpdate();
-            rebuildWidgets();
-        }).bounds(left + 5, top + 72, W - 10, 20).build());
-
-        boolean isCreativeType = flightMode.startsWith("creative");
-        boolean showSpeed = isCreativeType || flightMode.equals("powered");
-        boolean showVertical = showSpeed;
-        boolean showDrift = showSpeed;
-
-        if (showSpeed) {
-            createSliderRow(left, top + 118, SLIDER_SPEED);
-        }
-
-        if (showVertical) {
-            createSliderRow(left, top + 168, SLIDER_VERTICAL);
-        }
-
-        if (showDrift) {
-            createSliderRow(left, top + 218, SLIDER_DRIFT);
-        }
-    }
-
-    private void refreshTheme() {
-        PhoenixTheme t = PhoenixTheme.current();
-        cTitle = t.accent.getColor();
-        cLabel = t.textDim.getColor();
-        cBasic = t.done.getColor();
-        cPowered = t.activeColor.getColor();
-        cCreative = t.ally.getColor();
-        cWinged = t.locked.getColor();
-        cFilled = t.accent.getColor();
-        cEmpty = (t.border.getColor() & 0x00FFFFFF) | 0xFF000000;
-        cPanelBg = (t.panel.getColor() & 0x00FFFFFF) | 0xEE000000;
-        cBorder = (t.accent.getColor() & 0x00FFFFFF) | 0x66000000;
     }
 
     private int getSliderMax(int kind) {
         return kind == SLIDER_VERTICAL ? 20 : STEPS;
-    }
-
-    private void createSliderRow(int left, int y, int kind) {
-        int max = getSliderMax(kind);
-        int barLeft = left + 27;
-        int barWidth = W - 10 - 44;
-        int segW = barWidth / max;
-
-        addRenderableWidget(Button.builder(Component.literal("-"), btn -> {
-            setSliderValue(kind, getSliderValue(kind) - 1);
-            sendUpdate();
-        }).bounds(left + 5, y, 18, 18).build());
-
-        addRenderableWidget(Button.builder(Component.literal("+"), btn -> {
-            setSliderValue(kind, getSliderValue(kind) + 1);
-            sendUpdate();
-        }).bounds(left + W - 23, y, 18, 18).build());
-
-        for (int i = 0; i < max; i++) {
-            final int seg = i + 1;
-            addRenderableWidget(Button.builder(Component.empty(), btn -> {
-                setSliderValue(kind, seg);
-                sendUpdate();
-            }).bounds(barLeft + (i * segW), y, segW - 1, 18).build());
-        }
     }
 
     private int getSliderValue(int kind) {
@@ -145,15 +118,17 @@ public class WingFlightScreen extends Screen {
             case SLIDER_VERTICAL -> flightVertical = value;
             default -> flightDrift = value;
         }
+        sendUpdate();
     }
 
     @Override
     public void render(GuiGraphics gfx, int rmx, int rmy, float partialTick) {
         renderBackground(gfx);
-        refreshTheme();
 
         int mouseX = Math.round(rmx / uiScale);
         int mouseY = Math.round(rmy / uiScale);
+
+        clickRegions.clear();
 
         gfx.pose().pushPose();
         gfx.pose().scale(uiScale, uiScale, 1f);
@@ -165,72 +140,96 @@ public class WingFlightScreen extends Screen {
 
         int currentH = 100;
         if (showSpeed) currentH = 150;
-        if (showVertical) currentH = 200;
-        if (showDrift) currentH = 255;
+        if (showVertical) currentH = 195;
+        if (showDrift) currentH = 240;
 
         int left = (vw - W) / 2;
         int top = (vh - H) / 2;
 
-        gfx.fill(left, top, left + W, top + currentH, cPanelBg);
-        renderBorders(gfx, left, top, W, currentH);
+        drawPanel(gfx, left, top, W, currentH, PANEL_BG);
 
-        gfx.drawString(font, "Wing Flight Control", left + 8, top + 6, cTitle, false);
+        gfx.drawString(font, "Wing Flight Control", left + 8, top + 7, COLOR_TITLE, false);
 
-        gfx.fill(left + 5, top + 18, left + W - 5, top + 66, 0x55000000);
-        gfx.drawString(font, "Current: " + getModeDisplayName(), left + 10, top + 24, getModeColor(), false);
-        gfx.drawString(font, getDrainDescription(), left + 10, top + 36, cLabel, false);
-        gfx.drawString(font, "Press ESC to save", left + 10, top + 48, 0x77AAAAAA, false);
+        int modeBtnY = top + 22;
+        drawButton(gfx, mouseX, mouseY, left + 7, modeBtnY, W - 14, 20, "Mode: " + getModeDisplayName(),
+                getModeColor());
+        addClickRegion(left + 7, modeBtnY, W - 14, 20, () -> {
+            cycleMode();
+            sendUpdate();
+        });
 
+        int headerY = top + 46;
+        gfx.fill(left + 7, headerY, left + W - 7, headerY + 46, DISPLAY_BG);
+        gfx.drawString(font, "Current: " + getModeDisplayName(), left + 12, headerY + 5, getModeColor(), false);
+        gfx.drawString(font, getDrainDescription(), left + 12, headerY + 17, COLOR_LABEL, false);
+        gfx.drawString(font, "Press ESC to save", left + 12, headerY + 29, 0xFF777777, false);
+
+        int rowY = top + 100;
         if (showSpeed) {
-            gfx.drawString(font, "Flight Speed", left + 8, top + 104, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 118, flightSpeed, getSliderMax(SLIDER_SPEED));
+            gfx.drawString(font, "Flight Speed", left + 8, rowY - 10, COLOR_LABEL, false);
+            renderSliderRow(gfx, mouseX, mouseY, left, rowY, SLIDER_SPEED);
+            rowY += 45;
         }
-
         if (showVertical) {
-            gfx.drawString(font, "Flight Vertical Speed", left + 8, top + 154, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 168, flightVertical, getSliderMax(SLIDER_VERTICAL));
+            gfx.drawString(font, "Flight Vertical Speed", left + 8, rowY - 10, COLOR_LABEL, false);
+            renderSliderRow(gfx, mouseX, mouseY, left, rowY, SLIDER_VERTICAL);
+            rowY += 45;
         }
-
         if (showDrift) {
-            gfx.drawString(font, "Flight Drift", left + 8, top + 204, cLabel, false);
-            renderSegmentedBar(gfx, left + 27, top + 218, flightDrift, getSliderMax(SLIDER_DRIFT));
+            gfx.drawString(font, "Flight Drift", left + 8, rowY - 10, COLOR_LABEL, false);
+            renderSliderRow(gfx, mouseX, mouseY, left, rowY, SLIDER_DRIFT);
         }
-
-        super.render(gfx, mouseX, mouseY, partialTick);
 
         gfx.pose().popPose();
     }
 
-    private void renderSegmentedBar(GuiGraphics gfx, int x, int y, int val, int max) {
-        int barWidth = W - 10 - 44;
+    private void renderSliderRow(GuiGraphics gfx, int mouseX, int mouseY, int left, int y, int kind) {
+        int max = getSliderMax(kind);
+        int val = getSliderValue(kind);
+        int barLeft = left + 27;
+        int barWidth = W - 14 - 44;
         int segW = barWidth / max;
+
+        drawButton(gfx, mouseX, mouseY, left + 7, y, 18, 18, "-", COLOR_LABEL);
+        addClickRegion(left + 7, y, 18, 18, () -> setSliderValue(kind, getSliderValue(kind) - 1));
+
+        drawButton(gfx, mouseX, mouseY, left + W - 25, y, 18, 18, "+", COLOR_LABEL);
+        addClickRegion(left + W - 25, y, 18, 18, () -> setSliderValue(kind, getSliderValue(kind) + 1));
 
         for (int i = 0; i < max; i++) {
             int step = i + 1;
-            int xPos = x + (i * segW);
-
-            int color = step == val ? cHighlight : step < val ? cFilled : cEmpty;
+            int xPos = barLeft + (i * segW);
+            int color = step == val ? COLOR_HIGHLIGHT : step < val ? COLOR_FILLED : COLOR_EMPTY;
 
             gfx.fill(xPos, y, xPos + segW - 2, y + 18, color);
+
+            addClickRegion(xPos, y, segW - 2, 18, () -> setSliderValue(kind, step));
         }
     }
 
-    private static int brighten(int argb, float amount) {
-        int a = (argb >> 24) & 0xFF;
-        int r = (argb >> 16) & 0xFF;
-        int g = (argb >> 8) & 0xFF;
-        int b = argb & 0xFF;
-        r += (255 - r) * amount;
-        g += (255 - g) * amount;
-        b += (255 - b) * amount;
-        return (a << 24) | (Math.min(255, r) << 16) | (Math.min(255, g) << 8) | Math.min(255, b);
+    /** Flat fill + a light bevel edge (top/left) and dark shadow edge (bottom/right) - a cheap
+     *  "raised panel" look using only plain fills, no textures at all. */
+    private void drawPanel(GuiGraphics gfx, int x, int y, int w, int h, int bgColor) {
+        gfx.fill(x, y, x + w, y + h, bgColor);
+        gfx.fill(x, y, x + w, y + 1, PANEL_BEVEL);
+        gfx.fill(x, y, x + 1, y + h, PANEL_BEVEL);
+        gfx.fill(x, y + h - 1, x + w, y + h, PANEL_SHADOW);
+        gfx.fill(x + w - 1, y, x + w, y + h, PANEL_SHADOW);
     }
 
-    private void renderBorders(GuiGraphics gfx, int left, int top, int w, int h) {
-        gfx.fill(left, top, left + w, top + 1, cBorder);
-        gfx.fill(left, top + h - 1, left + w, top + h, cBorder);
-        gfx.fill(left, top, left + 1, top + h, cBorder);
-        gfx.fill(left + w - 1, top, left + w, top + h, cBorder);
+    private void drawButton(GuiGraphics gfx, int mouseX, int mouseY, int x, int y, int w, int h,
+                            String label, int labelColor) {
+        boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+        drawPanel(gfx, x, y, w, h, hovered ? BUTTON_BG_HOVER : BUTTON_BG);
+        gfx.fill(x, y, x + w, y + 1, BUTTON_BORDER);
+        gfx.fill(x, y + h - 1, x + w, y + h, BUTTON_BORDER);
+        gfx.fill(x, y, x + 1, y + h, BUTTON_BORDER);
+        gfx.fill(x + w - 1, y, x + w, y + h, BUTTON_BORDER);
+        gfx.drawCenteredString(font, label, x + w / 2, y + (h - 8) / 2, labelColor);
+    }
+
+    private void addClickRegion(int x, int y, int w, int h, Runnable action) {
+        clickRegions.add(new ClickRegion(x, y, w, h, action));
     }
 
     private void cycleMode() {
@@ -297,11 +296,11 @@ public class WingFlightScreen extends Screen {
 
     private int getModeColor() {
         return switch (flightMode) {
-            case "basic" -> cBasic;
-            case "powered" -> cPowered;
-            case "creative" -> cCreative;
-            case "creative+wings" -> cWinged;
-            default -> cLabel;
+            case "basic" -> COLOR_BASIC;
+            case "powered" -> COLOR_POWERED;
+            case "creative" -> COLOR_CREATIVE;
+            case "creative+wings" -> COLOR_WINGED;
+            default -> COLOR_LABEL;
         };
     }
 
@@ -312,17 +311,17 @@ public class WingFlightScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double rmx, double rmy, int button) {
+        if (button == 0) {
+            double mx = rmx / uiScale;
+            double my = rmy / uiScale;
+            for (ClickRegion region : clickRegions) {
+                if (region.contains(mx, my)) {
+                    region.action().run();
+                    return true;
+                }
+            }
+        }
         return super.mouseClicked(rmx / uiScale, rmy / uiScale, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double rmx, double rmy, int button, double dragX, double dragY) {
-        return super.mouseDragged(rmx / uiScale, rmy / uiScale, button, dragX / uiScale, dragY / uiScale);
-    }
-
-    @Override
-    public boolean mouseReleased(double rmx, double rmy, int button) {
-        return super.mouseReleased(rmx / uiScale, rmy / uiScale, button);
     }
 
     @Override
