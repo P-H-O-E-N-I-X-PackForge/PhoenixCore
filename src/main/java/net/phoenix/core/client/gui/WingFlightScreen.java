@@ -100,7 +100,7 @@ public class WingFlightScreen extends Screen {
     }
 
     private int getSliderMax(int kind) {
-        return kind == SLIDER_VERTICAL ? 20 : STEPS;
+        return kind == SLIDER_DRIFT ? STEPS : 20;
     }
 
     private int getSliderValue(int kind) {
@@ -274,19 +274,19 @@ public class WingFlightScreen extends Screen {
 
             case "powered" -> {
                 long base = cfg.poweredFlightEUt;
-                long actualDrain = base + (long) (base * (flightSpeed / 10.0));
+                long actualDrain = base + (long) (base * (flightSpeed / 20.0));
                 yield fmt.apply(actualDrain) + " - High EU Sonic Flight";
             }
 
             case "creative" -> {
                 if (cfg.creativeFlightEUt <= 0) yield "FREE - Precision Hover";
-                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 5.0));
+                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 10.0));
                 yield fmt.apply(actualDrain) + " - Precision Hover";
             }
 
             case "creative+wings" -> {
                 if (cfg.creativeFlightEUt <= 0) yield "FREE - Hover & Glide";
-                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 5.0));
+                long actualDrain = (long) (cfg.creativeFlightEUt * (flightSpeed / 10.0));
                 yield fmt.apply(actualDrain) + " - Hover & Glide";
             }
 

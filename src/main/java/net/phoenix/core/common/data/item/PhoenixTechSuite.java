@@ -332,7 +332,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         int rawDrift = data.contains("FlightDrift") ? data.getInt("FlightDrift") : 5;
         int rawVertical = data.contains("FlightVertical") ? data.getInt("FlightVertical") : 5;
 
-        float speedPercent = Math.max(0, Math.min(10, rawSpeed)) / 10.0f;
+        float speedPercent = Math.max(0, Math.min(20, rawSpeed)) / 20.0f;
         float driftPercent = Math.max(0, Math.min(10, rawDrift)) / 10.0f;
 
         float verticalScale = Math.max(0, Math.min(20, rawVertical)) / 5.0f;
@@ -822,14 +822,17 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         int speed = nbt.getInt("FlightSpeed");
         int drift = nbt.getInt("FlightDrift");
+        int vertical = nbt.getInt("FlightVertical");
 
         this.HUD.newString(Component.literal("✈ " + getModeDisplayName(fMode))
                 .withStyle(getChatColorForMode(fMode), ChatFormatting.BOLD));
 
-        if (fMode.equals("powered") || fMode.startsWith("creative")) {
-            this.HUD.newString(Component.literal("  » SPEED: " + speed + "/10").withStyle(ChatFormatting.GRAY));
-        }
-        if (fMode.startsWith("creative")) {
+        // Drift/vertical apply via wing-thrust in "powered" too, not just creative modes - this
+        // used to only show DRIFT for creative, which was stale next to that behavior.
+        boolean showTuning = fMode.equals("powered") || fMode.startsWith("creative");
+        if (showTuning) {
+            this.HUD.newString(Component.literal("  » SPEED: " + speed + "/20").withStyle(ChatFormatting.GRAY));
+            this.HUD.newString(Component.literal("  » VERTICAL: " + vertical + "/20").withStyle(ChatFormatting.GRAY));
             this.HUD.newString(Component.literal("  » DRIFT: " + drift + "/10").withStyle(ChatFormatting.GRAY));
         }
 
@@ -866,7 +869,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     long netLoad = nbt.getLong("netDrain");
 
                     var cfg = PhoenixConfigs.wingFlight;
-                    float speedPercent = Math.max(0, Math.min(10, speed)) / 10.0f;
+                    float speedPercent = Math.max(0, Math.min(20, speed)) / 20.0f;
 
                     long baseFlightDrain = 0;
                     if (fMode.equals("powered")) {
