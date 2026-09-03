@@ -1,0 +1,15 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "phoenixcore:soul_vision_composite",
+  "fragment": "phoenixcore:soul_vision_composite",
+  "samplers": [
+    { "name": "InSampler" }
+  ],
+  "uniforms": [
+    { "name": "OutSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] }
+  ]
+}
