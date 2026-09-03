@@ -639,18 +639,31 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        double horizSpeed = cfg.creativeSpeedMin + (speedMult * (cfg.creativeSpeedMax - cfg.creativeSpeedMin));
+        // creativeSpeedMin/Max is calibrated for vanilla's Abilities.flyingSpeed, which accumulates
+        // well beyond that raw value tick over tick via built-in friction - free-strafing here sets
+        // velocity directly with no such buildup, so it needs its own, much larger-looking range
+        // (creativeFreeSpeedMin/Max) to reach an equivalent actual speed instead of crawling.
+        double horizSpeed = cfg.creativeFreeSpeedMin
+                + (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
         // Vertical speed slider scales relative to this mode's own horizontal speed rather than a
         // separate baseline - at 5 (1.0x) ascending/descending matches horizontal flying speed.
         double vertSpeed = horizSpeed * verticalScale;
         double retention = getDriftRetention(cfg, driftMult);
 
+        // Drift only governs COASTING - while a direction is actively held, movement is always
+        // 100% direct/responsive to current input regardless of the drift setting. Retention only
+        // kicks in on an axis with no input at all this tick, decaying whatever velocity is left
+        // over on that axis from before. Blending retention in unconditionally (old behavior) made
+        // drift bleed into active movement too - e.g. changing direction while holding a key would
+        // still slide through the old direction, which read as "drift affects moving, not just
+        // stopping" and felt wrong even at low settings.
         Vec3 cur = player.getDeltaMovement();
-        double newX = cur.x * retention + dirX * horizSpeed;
-        double newZ = cur.z * retention + dirZ * horizSpeed;
+        boolean horizInput = dirLen > 1.0E-4;
+        double newX = horizInput ? dirX * horizSpeed : cur.x * retention;
+        double newZ = horizInput ? dirZ * horizSpeed : cur.z * retention;
 
         double vAxis = (up ? 1.0 : 0.0) - (down ? 1.0 : 0.0);
-        double newY = cur.y * retention + vAxis * vertSpeed;
+        double newY = vAxis != 0.0 ? vAxis * vertSpeed : cur.y * retention;
 
         player.setDeltaMovement(newX, newY, newZ);
         player.fallDistance = 0;
