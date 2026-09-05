@@ -385,19 +385,20 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double sigmoid = sigmoidAcceleration(player.tickCount, 5.0, baseThrust, baseThrust * 0.3);
         double thrust = sigmoid * euScale;
 
-        double retention = getDriftRetention(cfg, driftMult);
-        double newX = cur.x * retention + look.x * thrust;
-        double newZ = cur.z * retention + look.z * thrust;
+        double newX = cur.x + look.x * thrust;
+        double newZ = cur.z + look.z * thrust;
 
         double climbMultiplier = cfg.poweredVerticalBase * verticalScale;
 
         double newY;
-        if (look.y > 0) {
-
+        if (look.y > 0.05) {
             newY = Math.max(cur.y, look.y * thrust * climbMultiplier);
+        } else if (look.y < -0.015) {
+
+            newY = Math.max(cur.y + look.y * thrust, -climbMultiplier);
         } else {
 
-            newY = cur.y + look.y * thrust;
+            newY = Math.max(cur.y, -0.05);
         }
 
         double maxSpeed = cfg.poweredDriftMin + (driftMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
@@ -456,14 +457,32 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
             if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
                 player.startFallFlying();
+                data.putInt("WingFlightStartTick", player.tickCount);
             }
         }
 
         if (player.isFallFlying()) {
-            player.fallDistance = 0;
-
             boolean isSneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
             boolean isPowered = "powered".equals(data.getString("FlightMode"));
+            boolean attemptingThrust = isPowered && isSneaking;
+
+            boolean justLaunched = player.tickCount - data.getInt("WingFlightStartTick") < 5;
+
+            int groundStreak = player.onGround() ? data.getInt("WingGroundStreak") + 1 : 0;
+            data.putInt("WingGroundStreak", groundStreak);
+            boolean settledOnGround = groundStreak > 10;
+
+            if (player.onGround() && !justLaunched && (!attemptingThrust || settledOnGround)) {
+
+                Vec3 landingVel = player.getDeltaMovement();
+                player.setDeltaMovement(landingVel.x * 0.25, Math.min(landingVel.y, 0), landingVel.z * 0.25);
+                player.stopFallFlying();
+                data.putInt("WingGroundStreak", 0);
+                if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
+                return;
+            }
+
+            player.fallDistance = 0;
 
             if (isPowered && isSneaking) {
                 long cost = (long) cfg.poweredFlightEUt;
@@ -551,12 +570,30 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
                 if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
                     player.startFallFlying();
+                    data.putInt("WingFlightStartTick", player.tickCount);
                 }
             }
 
             if (player.isFallFlying()) {
+
+                boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player);
+
+                boolean justLaunched = player.tickCount - data.getInt("WingFlightStartTick") < 5;
+
+                int groundStreak = player.onGround() ? data.getInt("WingGroundStreak") + 1 : 0;
+                data.putInt("WingGroundStreak", groundStreak);
+                boolean settledOnGround = groundStreak > 10;
+
+                if (player.onGround() && !justLaunched && (!isSprinting || settledOnGround)) {
+                    Vec3 landingVel = player.getDeltaMovement();
+                    player.setDeltaMovement(landingVel.x * 0.25, Math.min(landingVel.y, 0), landingVel.z * 0.25);
+                    player.stopFallFlying();
+                    data.putInt("WingGroundStreak", 0);
+                    if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
+                    return;
+                }
+
                 player.fallDistance = 0;
-                boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
 
                 if (isSprinting && canAfford) {
                     applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalScale, teslaData, teamID);
@@ -577,10 +614,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         if (player.getAbilities().flying) {
             if (flightMode.equals("creative")) {
-                // Plain "creative" keeps vanilla's free WASD-in-any-direction strafing (unlike the
-                // forward-look thrust style above), but drift and vertical speed need somewhere to
-                // apply - see applyCreativeFreeFlight for why that means replacing vanilla's own
-                // flyingSpeed-driven movement instead of layering on top of it.
+
                 applyCreativeFreeFlight(player, world, cfg, speedMult, driftMult, verticalScale);
                 if (!world.isClientSide) consumeFlightEnergy(item, teslaData, teamID, networkOnline, requiredBI, cost);
             } else if (world.isClientSide) {
@@ -596,18 +630,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
     }
 
-    /**
-     * Vanilla creative-fly moves the player by scaling raw WASD/jump input by Abilities.flyingSpeed
-     * inside its own travel() every tick, entirely independent of anything set here - left alone,
-     * that would either fight or silently double up with our own velocity. Zeroing flyingSpeed
-     * (client-side, since that's where vanilla's own creative-fly input handling lives) hands 100%
-     * of the movement to us instead, the same way "creative+wings" sidesteps the exact same conflict
-     * by switching to elytra-glide physics, which vanilla never drives via flyingSpeed at all.
-     * <p>
-     * Runs on both sides unconditionally (matching applyWingThrust) so client and server compute
-     * the same velocity independently from the same synced inputs, rather than one side setting it
-     * and hoping it syncs cleanly to the other.
-     */
     private void applyCreativeFreeFlight(Player player, Level world, PhoenixConfigs.WingFlightConfigs cfg,
                                          float speedMult, float driftMult, float verticalScale) {
         if (world.isClientSide) {
@@ -623,10 +645,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         boolean down = player.isShiftKeyDown();
 
         float forwardAxis = (forward ? 1f : 0f) - (back ? 1f : 0f);
-        float strafeAxis = (right ? 1f : 0f) - (left ? 1f : 0f);
+        float strafeAxis = (left ? 1f : 0f) - (right ? 1f : 0f);
 
-        // Same yaw-relative axis-to-world-direction transform vanilla's own Entity.getInputVector
-        // uses, so WASD still feels like normal creative flying rather than always-forward thrust.
         float yawRad = player.getYRot() * ((float) Math.PI / 180F);
         float sinYaw = Mth.sin(yawRad);
         float cosYaw = Mth.cos(yawRad);
@@ -639,24 +659,12 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        // creativeSpeedMin/Max is calibrated for vanilla's Abilities.flyingSpeed, which accumulates
-        // well beyond that raw value tick over tick via built-in friction - free-strafing here sets
-        // velocity directly with no such buildup, so it needs its own, much larger-looking range
-        // (creativeFreeSpeedMin/Max) to reach an equivalent actual speed instead of crawling.
-        double horizSpeed = cfg.creativeFreeSpeedMin
-                + (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
-        // Vertical speed slider scales relative to this mode's own horizontal speed rather than a
-        // separate baseline - at 5 (1.0x) ascending/descending matches horizontal flying speed.
+        double speedScale = speedMult * 4.0;
+        double horizSpeed = cfg.creativeFreeSpeedBase * speedScale;
+
         double vertSpeed = horizSpeed * verticalScale;
         double retention = getDriftRetention(cfg, driftMult);
 
-        // Drift only governs COASTING - while a direction is actively held, movement is always
-        // 100% direct/responsive to current input regardless of the drift setting. Retention only
-        // kicks in on an axis with no input at all this tick, decaying whatever velocity is left
-        // over on that axis from before. Blending retention in unconditionally (old behavior) made
-        // drift bleed into active movement too - e.g. changing direction while holding a key would
-        // still slide through the old direction, which read as "drift affects moving, not just
-        // stopping" and felt wrong even at low settings.
         Vec3 cur = player.getDeltaMovement();
         boolean horizInput = dirLen > 1.0E-4;
         double newX = horizInput ? dirX * horizSpeed : cur.x * retention;
@@ -827,8 +835,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         this.HUD.newString(Component.literal("✈ " + getModeDisplayName(fMode))
                 .withStyle(getChatColorForMode(fMode), ChatFormatting.BOLD));
 
-        // Drift/vertical apply via wing-thrust in "powered" too, not just creative modes - this
-        // used to only show DRIFT for creative, which was stale next to that behavior.
         boolean showTuning = fMode.equals("powered") || fMode.startsWith("creative");
         if (showTuning) {
             this.HUD.newString(Component.literal("  » SPEED: " + speed + "/20").withStyle(ChatFormatting.GRAY));

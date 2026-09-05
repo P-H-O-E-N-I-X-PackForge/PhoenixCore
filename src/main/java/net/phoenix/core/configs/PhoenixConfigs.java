@@ -229,22 +229,17 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
-                "Min horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
-                "flight (at speed slider = 0). This is a direct velocity, not creativeSpeedMin/Max's",
-                "vanilla Abilities.flyingSpeed units - vanilla's own flight accumulates well beyond",
-                "that value tick over tick via friction, but free-strafing sets velocity directly with",
-                "no such buildup, so it needed its own, much larger-looking range to feel equivalent.",
-                "Default: 1.0"
+                "Horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing flight",
+                "at speed slider = 5 (the slider's \"normal\" midpoint, range 0-20, matching vanilla",
+                "creative-fly speed) - not creativeSpeedMin/Max's vanilla Abilities.flyingSpeed units,",
+                "since vanilla's own flight accumulates well beyond that raw value tick over tick via",
+                "friction, but free-strafing sets velocity directly with no such buildup, so it needs",
+                "its own, much larger-looking value to reach an equivalent actual speed. Scales",
+                "proportionally with the slider on both sides, same as verticalSpeed: 0 = stopped,",
+                "10 = double this, 20 = quadruple this.",
+                "Default: 0.55 (vanilla creative-fly speed is ~11 blocks/sec = 0.55 blocks/tick)"
         })
-        public double creativeFreeSpeedMin = 1.0;
-
-        @Configurable
-        @Configurable.Comment({
-                "Max horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
-                "flight (at speed slider = 20). See creativeFreeSpeedMin.",
-                "Default: 8.0"
-        })
-        public double creativeFreeSpeedMax = 8.0;
+        public double creativeFreeSpeedBase = 0.55;
 
         @Configurable
         @Configurable.Comment({

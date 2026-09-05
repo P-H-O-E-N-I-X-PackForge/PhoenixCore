@@ -30,6 +30,13 @@ public class CinemaScreenBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
+    private static final double THICKNESS = 2.0 / 16.0;
+
+    private static final VoxelShape SHAPE_NORTH = Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0, THICKNESS);
+    private static final VoxelShape SHAPE_SOUTH = Shapes.box(0.0, 0.0, 1.0 - THICKNESS, 1.0, 1.0, 1.0);
+    private static final VoxelShape SHAPE_WEST = Shapes.box(0.0, 0.0, 0.0, THICKNESS, 1.0, 1.0);
+    private static final VoxelShape SHAPE_EAST = Shapes.box(1.0 - THICKNESS, 0.0, 0.0, 1.0, 1.0, 1.0);
+
     public CinemaScreenBlock(Properties properties) {
         super(properties);
         registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
@@ -57,7 +64,14 @@ public class CinemaScreenBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.block();
+
+        return switch (state.getValue(FACING)) {
+            case NORTH -> SHAPE_NORTH;
+            case SOUTH -> SHAPE_SOUTH;
+            case WEST -> SHAPE_WEST;
+            case EAST -> SHAPE_EAST;
+            default -> Shapes.block();
+        };
     }
 
     @Nullable

@@ -51,7 +51,8 @@ public final class CinemaGroupUtil {
             return Map.of(origin, SOLO);
         }
         Direction facing = originBE.getBlockState().getValue(CinemaScreenBlock.FACING);
-        Direction right = facing.getClockWise();
+
+        Direction right = facing.getCounterClockWise();
 
         Map<BlockPos, int[]> offsets = new HashMap<>();
         offsets.put(origin, new int[] { 0, 0 });
@@ -79,10 +80,14 @@ public final class CinemaGroupUtil {
         int height = maxUp - minUp + 1;
 
         BlockPos anchor = null;
+        int bestRow = Integer.MAX_VALUE, bestCol = Integer.MAX_VALUE;
         for (Map.Entry<BlockPos, int[]> entry : offsets.entrySet()) {
-            if (entry.getValue()[0] == minRight && entry.getValue()[1] == maxUp) {
+            int col = entry.getValue()[0] - minRight;
+            int rowFromTop = maxUp - entry.getValue()[1];
+            if (rowFromTop < bestRow || (rowFromTop == bestRow && col < bestCol)) {
+                bestRow = rowFromTop;
+                bestCol = col;
                 anchor = entry.getKey();
-                break;
             }
         }
 

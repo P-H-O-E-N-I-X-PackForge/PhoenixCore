@@ -42,7 +42,12 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         boolean solo = layout.width() == 1 && layout.height() == 1;
         float halfSize = solo ? SOLO_HALF_SIZE : GROUPED_HALF_SIZE;
 
-        int textureId = CinemaRenderTarget.getOrRenderTexture(layout);
+        CinemaScreenBlockEntity backgroundSource = blockEntity;
+        if (!solo && layout.anchor() != null && level != null
+                && level.getBlockEntity(layout.anchor()) instanceof CinemaScreenBlockEntity anchorBE) {
+            backgroundSource = anchorBE;
+        }
+        int textureId = CinemaRenderTarget.getOrRenderTexture(layout, backgroundSource.getBackground());
         Direction facing = blockEntity.getBlockState().getValue(CinemaScreenBlock.FACING);
 
         poseStack.pushPose();

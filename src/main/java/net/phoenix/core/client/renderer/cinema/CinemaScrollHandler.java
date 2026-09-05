@@ -37,6 +37,16 @@ public class CinemaScrollHandler {
 
         event.setCanceled(true);
         boolean up = event.getScrollDelta() > 0;
+        boolean editBackground = Screen.hasAltDown();
+
+        if (editBackground) {
+            CinemaGroupUtil.GroupLayout layout = CinemaGroupUtil.getLayout(mc.level, pos);
+            BlockPos anchorPos = layout.anchor() != null ? layout.anchor() : pos;
+            if (mc.level.getBlockEntity(anchorPos) instanceof CinemaScreenBlockEntity anchorScreen) {
+                pos = anchorPos;
+                screen = anchorScreen;
+            }
+        }
 
         List<String> lines = new ArrayList<>();
         for (Component line : screen.getLines()) lines.add(line.getString());
@@ -44,14 +54,19 @@ public class CinemaScrollHandler {
         int color = screen.getTextColor();
         float scale = screen.getTextScale();
         int alignOrdinal = screen.getTextAlign().ordinal();
+        int backgroundOrdinal = screen.getBackground().ordinal();
 
-        if (Screen.hasControlDown()) {
+        if (editBackground) {
+            CinemaScreenBlockEntity.Background[] values = CinemaScreenBlockEntity.Background.values();
+            backgroundOrdinal = (backgroundOrdinal + (up ? 1 : -1) + values.length) % values.length;
+        } else if (Screen.hasControlDown()) {
             scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + (up ? SCALE_STEP : -SCALE_STEP)));
         } else {
             CinemaScreenBlockEntity.TextAlign[] values = CinemaScreenBlockEntity.TextAlign.values();
             alignOrdinal = (alignOrdinal + (up ? 1 : -1) + values.length) % values.length;
         }
 
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinemaScreenConfigPacket(pos, lines, color, scale, alignOrdinal));
+        PhoenixNetwork.CHANNEL.sendToServer(
+                new C2SCinemaScreenConfigPacket(pos, lines, color, scale, alignOrdinal, backgroundOrdinal));
     }
 }

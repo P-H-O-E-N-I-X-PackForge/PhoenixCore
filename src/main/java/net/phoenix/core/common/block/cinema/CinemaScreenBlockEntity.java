@@ -20,6 +20,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
 
     public enum TextAlign { LEFT, CENTER, RIGHT }
 
+    public enum Background { VOID_GALAXY, NEBULA, SCULK_ABYSS, SEALED_INDUSTRIAL, SEALED_CHAOS, SUNFLARE }
+
     private static final int DEFAULT_COLOR = 0xFFFFFFFF;
     private static final float DEFAULT_SCALE = 0.015f;
 
@@ -33,6 +35,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     private int textColor = DEFAULT_COLOR;
     private float textScale = DEFAULT_SCALE;
     private TextAlign textAlign = TextAlign.CENTER;
+    private Background background = Background.VOID_GALAXY;
 
     public CinemaScreenBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -42,14 +45,24 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         lines.add(Component.literal("Shift-right-click to edit"));
     }
 
-    public void applyConfig(List<Component> newLines, int color, float scale, int alignOrdinal) {
+    public void applyConfig(List<Component> newLines, int color, float scale, int alignOrdinal,
+                             int backgroundOrdinal) {
         lines.clear();
         lines.addAll(newLines);
         currentLine = 0;
         textColor = color;
         textScale = scale;
-        TextAlign[] values = TextAlign.values();
-        textAlign = values[Math.max(0, Math.min(values.length - 1, alignOrdinal))];
+        TextAlign[] alignValues = TextAlign.values();
+        textAlign = alignValues[Math.max(0, Math.min(alignValues.length - 1, alignOrdinal))];
+        Background[] backgroundValues = Background.values();
+        background = backgroundValues[Math.max(0, Math.min(backgroundValues.length - 1, backgroundOrdinal))];
+        syncToClients();
+    }
+
+    public void cycleBackground(boolean forward) {
+        Background[] values = Background.values();
+        int next = (background.ordinal() + (forward ? 1 : -1) + values.length) % values.length;
+        background = values[next];
         syncToClients();
     }
 
@@ -102,6 +115,10 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         return textAlign;
     }
 
+    public Background getBackground() {
+        return background;
+    }
+
     private void syncToClients() {
         setChanged();
         if (level != null && !level.isClientSide) {
@@ -116,6 +133,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         tag.putInt("TextColor", textColor);
         tag.putFloat("TextScale", textScale);
         tag.putString("TextAlign", textAlign.name());
+        tag.putString("Background", background.name());
         ListTag linesTag = new ListTag();
         for (Component line : lines) {
             linesTag.add(StringTag.valueOf(Component.Serializer.toJson(line)));
@@ -134,6 +152,13 @@ public class CinemaScreenBlockEntity extends BlockEntity {
                 textAlign = TextAlign.valueOf(tag.getString("TextAlign"));
             } catch (IllegalArgumentException e) {
                 textAlign = TextAlign.CENTER;
+            }
+        }
+        if (tag.contains("Background")) {
+            try {
+                background = Background.valueOf(tag.getString("Background"));
+            } catch (IllegalArgumentException e) {
+                background = Background.VOID_GALAXY;
             }
         }
         lines.clear();

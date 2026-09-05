@@ -82,7 +82,8 @@ public class CinemaTypingScreen extends Screen {
             }
 
             PhoenixNetwork.CHANNEL.sendToServer(new C2SCinemaScreenConfigPacket(
-                    pos, lines, screen.getTextColor(), screen.getTextScale(), screen.getTextAlign().ordinal()));
+                    pos, lines, screen.getTextColor(), screen.getTextScale(), screen.getTextAlign().ordinal(),
+                    screen.getBackground().ordinal()));
         }
 
         CinemaEditState.clear();

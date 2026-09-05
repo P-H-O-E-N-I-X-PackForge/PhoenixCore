@@ -23,13 +23,16 @@ public class C2SCinemaScreenConfigPacket {
     private final int color;
     private final float scale;
     private final int alignOrdinal;
+    private final int backgroundOrdinal;
 
-    public C2SCinemaScreenConfigPacket(BlockPos pos, List<String> lines, int color, float scale, int alignOrdinal) {
+    public C2SCinemaScreenConfigPacket(BlockPos pos, List<String> lines, int color, float scale, int alignOrdinal,
+                                       int backgroundOrdinal) {
         this.pos = pos;
         this.lines = lines;
         this.color = color;
         this.scale = scale;
         this.alignOrdinal = alignOrdinal;
+        this.backgroundOrdinal = backgroundOrdinal;
     }
 
     public C2SCinemaScreenConfigPacket(FriendlyByteBuf buf) {
@@ -42,6 +45,7 @@ public class C2SCinemaScreenConfigPacket {
         this.color = buf.readInt();
         this.scale = buf.readFloat();
         this.alignOrdinal = buf.readVarInt();
+        this.backgroundOrdinal = buf.readVarInt();
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -53,6 +57,7 @@ public class C2SCinemaScreenConfigPacket {
         buf.writeInt(color);
         buf.writeFloat(scale);
         buf.writeVarInt(alignOrdinal);
+        buf.writeVarInt(backgroundOrdinal);
     }
 
     public static void handle(C2SCinemaScreenConfigPacket msg, Supplier<NetworkEvent.Context> ctxGetter) {
@@ -72,7 +77,7 @@ public class C2SCinemaScreenConfigPacket {
                     if (!line.isBlank()) components.add(Component.literal(line));
                 }
                 float clampedScale = Math.max(0.005f, Math.min(0.05f, msg.scale));
-                screen.applyConfig(components, msg.color, clampedScale, msg.alignOrdinal);
+                screen.applyConfig(components, msg.color, clampedScale, msg.alignOrdinal, msg.backgroundOrdinal);
             }
         });
         ctx.setPacketHandled(true);

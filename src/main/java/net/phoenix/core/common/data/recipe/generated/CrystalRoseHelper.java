@@ -7,7 +7,7 @@ import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 public class CrystalRoseHelper {
 
     public static void addCrystalRoseFlag(Material material) {
-        if (material == null || material.isNull()) {
+        if (material == null) {
             return;
         }
 

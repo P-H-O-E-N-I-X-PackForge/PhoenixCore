@@ -1,5 +1,9 @@
 package net.phoenix.core.client;
 
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlag;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.gregtechceu.gtceu.data.pack.event.RegisterDynamicResourcesEvent;
 
@@ -10,13 +14,16 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.SuspendedTownParticle;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +31,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.command.TerrainPreviewCommand;
 import net.phoenix.core.client.particle.PhoenixParticles;
+import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
 import net.phoenix.core.client.renderer.machine.*;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
@@ -129,6 +137,29 @@ public class PhoenixClient {
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("spray_can_info", net.phoenix.core.client.renderer.SprayCanHudOverlay.HUD_SPRAY_CAN);
         event.registerAboveAll("shader_profiler", net.phoenix.core.client.renderer.ShaderProfilerOverlay.HUD_SHADER_PROFILER);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void registerBeeMaterialColors(RegisterColorHandlersEvent.Item event) {
+        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_ONE_BEE, PhoenixMaterialFlags.tier_one_bee);
+        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_TWO_BEE, PhoenixMaterialFlags.tier_two_bee);
+        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_THREE_BEE,
+                PhoenixMaterialFlags.tier_three_bee);
+    }
+
+    private static void registerBeeTierColors(RegisterColorHandlersEvent.Item event, MaterialFlag flag,
+                                              TagPrefix prefix) {
+        GTRegistries.MATERIALS.values().stream()
+                .filter(mat -> mat.hasFlag(flag))
+                .forEach(mat -> {
+                    ItemStack stack = ChemicalHelper.get(prefix, mat);
+                    if (stack.isEmpty()) return;
+                    event.register((s, tintIndex) -> switch (tintIndex) {
+                        case 1 -> mat.getMaterialARGB();
+                        case 2 -> mat.getMaterialSecondaryARGB();
+                        default -> -1;
+                    }, stack.getItem());
+                });
     }
 
     @SubscribeEvent
