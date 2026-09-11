@@ -37,7 +37,8 @@
     "minecraft.LevelRendererMixin",
     "minecraft.MixinOggAudioStream",
     "minecraft.RenderTargetMixin",
-    "minecraft.SoundEngineMixin"
+    "minecraft.SoundEngineMixin",
+    "modularui.OverlayStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

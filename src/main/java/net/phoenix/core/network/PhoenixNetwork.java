@@ -158,5 +158,40 @@ public class PhoenixNetwork {
                 C2SCinemaActionPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        CHANNEL.registerMessage(id++,
+                C2SCinderConfigPacket.class,
+                C2SCinderConfigPacket::encode,
+                C2SCinderConfigPacket::new,
+                C2SCinderConfigPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderSetTargetPacket.class,
+                C2SCinderSetTargetPacket::encode,
+                C2SCinderSetTargetPacket::new,
+                C2SCinderSetTargetPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderCommitPacket.class,
+                C2SCinderCommitPacket::encode,
+                C2SCinderCommitPacket::new,
+                C2SCinderCommitPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                S2CCinderCommitRejectedPacket.class,
+                S2CCinderCommitRejectedPacket::encode,
+                S2CCinderCommitRejectedPacket::new,
+                S2CCinderCommitRejectedPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderClearTargetPacket.class,
+                C2SCinderClearTargetPacket::encode,
+                C2SCinderClearTargetPacket::new,
+                C2SCinderClearTargetPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
     }
 }

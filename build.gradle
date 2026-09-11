@@ -236,7 +236,7 @@ dependencies {
     modImplementation "com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${ars_nouveau_version}"
     modImplementation "com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtceu_version}:slim"
     modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") { transitive = false }
-    modImplementation("brachy.modularui:modularui-mc1.20.1:3.3.0-SNAPSHOT") { transitive = false }
+    modImplementation("brachy.modularui:modularui-mc1.20.1:3.3.1-SNAPSHOT") { transitive = false }
     modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
     modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
     modImplementation "curse.maven:configuration-444699:5840405"

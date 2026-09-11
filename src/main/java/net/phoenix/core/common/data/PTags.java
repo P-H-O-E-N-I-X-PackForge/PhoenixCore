@@ -20,4 +20,12 @@ public class PTags {
             ResourceLocation.fromNamespaceAndPath("minecraft", "planks"));
     public static final TagKey<Block> SOUL_FLOWERS = BlockTags.create(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "soul_flowers"));
+
+    /** Which multiblock controller blocks a Tier 1 / Tier 2 Cinder Forge is allowed to target -
+     *  empty by default, meant to be filled in with real multiblock controller block IDs later. Tier
+     *  3 is deliberately unrestricted (no tag gating at all). */
+    public static final TagKey<Block> CINDER_FORGE_TIER1_ALLOWED = BlockTags.create(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "cinder_forge/tier1_allowed"));
+    public static final TagKey<Block> CINDER_FORGE_TIER2_ALLOWED = BlockTags.create(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "cinder_forge/tier2_allowed"));
 }

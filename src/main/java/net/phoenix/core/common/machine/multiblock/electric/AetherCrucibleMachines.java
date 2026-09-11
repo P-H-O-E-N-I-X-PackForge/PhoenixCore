@@ -63,11 +63,11 @@ public final class AetherCrucibleMachines {
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
 
-                    .slice("CCCCC", "CCCCC", "CCCCC")
+                    .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
 
                     .slice("CCCCC", "C   C", "CSCCC", "C   C", "CCCCC")
 
-                    .slice("CCCCC", "CCCCC", "CCCCC")
+                    .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
                     .where('S', Predicates.controller(definition))
                     .where('C', Predicates.blocks(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING.get())
 

@@ -30,6 +30,15 @@ public class PhoenixDataGenerators {
                         blockLoot.dropSelf(entry.get());
                     }
                 }));
+
+        REGISTRATE.addDataGenerator(ProviderType.LANG, prov -> {
+            prov.add("tooltip.phoenixcore.cinder_core.target", "Target: %s");
+            prov.add("tooltip.phoenixcore.cinder_core.unconfigured",
+                    "Not configured - shift-right-click to pick a multiblock");
+            prov.add("tooltip.phoenixcore.cinder_core.materials", "Stocked: %s material types, %s items total");
+            prov.add("tooltip.phoenixcore.cinder_core.hint",
+                    "Shift-right-click: configure  •  Right-click a block: preview / place");
+        });
     }
 
     @SubscribeEvent

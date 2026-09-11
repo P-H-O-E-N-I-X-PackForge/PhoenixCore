@@ -23,6 +23,7 @@ public class PhoenixDynamicRenderHelpers {
         DynamicRenderManager.register(PhoenixCore.id("honey_chamber"), HoneyChamberDynamicRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("tesla_tower"), TeslaTowerRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("engine_gearbox"), EngineGearboxRenderer.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("sanctum_ward"), SanctumWardRender.TYPE);
     }
 
     public static DynamicRender<?, ?> getEyeOfHarmonyRender() {
@@ -55,5 +56,9 @@ public class PhoenixDynamicRenderHelpers {
 
     public static DynamicRender<?, ?> getEngineGearboxRenderer() {
         return EngineGearboxRenderer.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getSanctumWardRenderer() {
+        return SanctumWardRender.INSTANCE;
     }
 }

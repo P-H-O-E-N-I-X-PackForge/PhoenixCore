@@ -58,6 +58,7 @@ public class FullscreenQuadRenderer {
             init();
         }
 
+        if (vertexArrayObject == -1)
         try {
             RenderSystem.assertOnRenderThread();
 

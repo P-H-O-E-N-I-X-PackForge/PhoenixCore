@@ -24,10 +24,13 @@ import net.phoenix.core.integration.drone.group.GroupDefinition;
 import net.phoenix.core.integration.drone.mui.DroneTargetListSyncHandler;
 import net.phoenix.core.integration.drone.network.DroneTargetView;
 
+import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
+import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.IntSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
@@ -47,9 +50,38 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
 
     public static final int RADIUS = 24;
     private static final int SCAN_INTERVAL_TICKS = 20;
-    
+
     private static final int MAX_ROWS = 18;
     private static final int ROW_H = 46;
+
+    // Shared palette - same values/roles as the Cinder Forge controller UI, so both machines read as
+    // one coherent GTM style instead of each having its own ad-hoc colors.
+    private static final int COLOR_TITLE = 0xFFFFE0A8;
+    private static final int COLOR_LABEL = 0xFFA88FD9;
+    private static final int COLOR_TEXT = 0xFFFFFFFF;
+    private static final int COLOR_OK = 0xFF5CFF7A;
+    private static final int COLOR_WARN = 0xFFFFD95C;
+    private static final int COLOR_BAD = 0xFFFF6B5C;
+    private static final int COLOR_PANEL_BG = 0xEE1C1730;
+    private static final int COLOR_PANEL_BORDER = 0xFF4A3F7A;
+    private static final int COLOR_ROW_BG = 0xCC241D3D;
+
+    /** A flat fill, optionally bordered - row/panel backgrounds throughout this UI, so scrollable
+     *  lists and grouped controls read as bordered cards instead of text floating on nothing. */
+    private record FlatPanel(int fillColor, int borderColor) implements IDrawable {
+
+        @Override
+        public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+            var g = context.getGraphics();
+            g.fill(x, y, x + width, y + height, fillColor);
+            if (borderColor != 0) {
+                g.fill(x, y, x + width, y + 1, borderColor);
+                g.fill(x, y + height - 1, x + width, y + height, borderColor);
+                g.fill(x, y, x + 1, y + height, borderColor);
+                g.fill(x + width - 1, y, x + width, y + height, borderColor);
+            }
+        }
+    }
 
     private final DroneControlTrait control;
 
@@ -192,13 +224,15 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                 .asWidget()
                 .pos(8, 6)
                 .size(200, 10)
-                .color(0xFFFFE0A8));
+                .color(COLOR_TITLE));
 
-        mainWidget.child(buildCutoffRow(syncManager));
+        mainWidget.child(buildCutoffRow(syncManager)
+                .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER)));
 
         mainWidget.child(new ScrollWidget<>(new VerticalScrollData())
                 .pos(4, 44)
                 .size(300, ROW_H * 5)
+                .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER))
                 .child(new DynamicWidget<>().clientOnlyHandler(listHandler)));
     }
 
@@ -208,7 +242,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
 
         Flow row = Flow.row().pos(4, 20).size(300, 18);
         row.child(new ButtonWidget<>()
-                .pos(0, 0)
+                .pos(2, 1)
                 .size(16, 16)
                 .background(GTGuiTextures.BUTTON)
                 .overlay(GTGuiTextures.BUTTON_THROTTLE_MINUS)
@@ -220,10 +254,11 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                 }));
         row.child(Text.dynamic(() -> Component.literal("Cutoff: " + cutoffValue.getIntValue()))
                 .asWidget()
-                .pos(20, 3)
-                .size(90, 10));
+                .pos(22, 4)
+                .size(90, 10)
+                .color(COLOR_TEXT));
         row.child(new ButtonWidget<>()
-                .pos(114, 0)
+                .pos(116, 1)
                 .size(16, 16)
                 .background(GTGuiTextures.BUTTON)
                 .overlay(GTGuiTextures.BUTTON_THROTTLE_PLUS)
@@ -241,7 +276,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
             List<BooleanSyncValue> cycleSlots) {
         Flow col = Flow.col().size(300, Math.max(1, Math.min(targets.size(), MAX_ROWS)) * ROW_H);
         if (targets.isEmpty()) {
-            col.child(Text.str("No formed multiblocks in range.").asWidget().pos(2, 2).color(0xFFA88FD9));
+            col.child(Text.str("No formed multiblocks in range.").asWidget().pos(4, 4).color(COLOR_LABEL));
             return col;
         }
         for (int i = 0; i < targets.size() && i < MAX_ROWS; i++) {
@@ -252,26 +287,27 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
 
     private Flow buildTargetRow(DroneTargetView view, int rowIndex, BooleanSyncValue toggle,
             BooleanSyncValue cycle) {
-        Flow row = Flow.row().pos(0, rowIndex * ROW_H).size(300, ROW_H - 2);
+        Flow row = Flow.row().pos(0, rowIndex * ROW_H).size(300, ROW_H - 2)
+                .background(new FlatPanel(COLOR_ROW_BG, 0));
 
-        row.child(new ItemDrawable(view.icon()).asWidget().pos(2, 4).size(18, 18));
+        row.child(new ItemDrawable(view.icon()).asWidget().pos(3, 4).size(18, 18));
 
-        int textX = 24;
-        row.child(Text.str(view.name()).asWidget().pos(textX, 2).size(180, 10).color(0xFFFFFFFF));
+        int textX = 25;
+        row.child(Text.str(view.name()).asWidget().pos(textX, 3).size(180, 10).color(COLOR_TEXT));
         String statusLabel = view.controllable() ? (view.workingEnabled() ? view.status() : "DISABLED") : "N/A";
-        row.child(Text.str(statusLabel).asWidget().pos(textX, 13).size(180, 10).color(statusColor(view)));
+        row.child(Text.str(statusLabel).asWidget().pos(textX, 14).size(180, 10).color(statusColor(view)));
         String groupLabel = view.groupName().isEmpty() ? "Ungrouped" : view.groupName();
         row.child(Text.str(groupLabel + " - Priority " + view.priority())
                 .asWidget()
-                .pos(textX, 24)
+                .pos(textX, 25)
                 .size(180, 10)
-                .color(0xFFA88FD9));
+                .color(COLOR_LABEL));
         if (view.electric()) {
             row.child(Text.str("In " + view.inputVoltage() + " / Out " + view.outputVoltage() + " EU/t")
                     .asWidget()
-                    .pos(textX, 34)
+                    .pos(textX, 35)
                     .size(180, 10)
-                    .color(0xFFA88FD9));
+                    .color(COLOR_LABEL));
         }
 
         if (view.controllable()) {
@@ -303,13 +339,13 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     }
 
     private int statusColor(DroneTargetView view) {
-        if (!view.controllable()) return 0xFFA88FD9;
-        if (!view.workingEnabled()) return 0xFFFF6B5C;
+        if (!view.controllable()) return COLOR_LABEL;
+        if (!view.workingEnabled()) return COLOR_BAD;
         return switch (view.status()) {
-            case "WORKING" -> 0xFF5CFF7A;
-            case "WAITING" -> 0xFFFFD95C;
+            case "WORKING" -> COLOR_OK;
+            case "WAITING" -> COLOR_WARN;
             case "SUSPEND" -> 0xFFFF9C5C;
-            default -> 0xFFA88FD9;
+            default -> COLOR_LABEL;
         };
     }
 

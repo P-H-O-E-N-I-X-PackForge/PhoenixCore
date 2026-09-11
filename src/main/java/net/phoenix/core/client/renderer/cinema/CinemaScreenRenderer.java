@@ -1,5 +1,6 @@
 package net.phoenix.core.client.renderer.cinema;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -68,7 +69,17 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.setShaderTexture(0, textureId);
         RenderSystem.disableCull();
 
+        // Belt and suspenders against this quad picking up transparency from anywhere else in the
+        // frame: disableBlend() alone kept leaving jagged holes straight through to the world
+        // behind the screen, which is consistent with either blend not actually staying off through
+        // this draw, or a stale ColorModulator (left non-opaque by whatever rendered earlier this
+        // frame - a damage flash, an underwater tint, etc.) multiplying into our sampled alpha.
+        // Forcing both explicitly - an opaque-overwrite blend func even if blend ends up enabled,
+        // and a neutral white ColorModulator - removes either possibility regardless of which one
+        // was actually responsible.
         RenderSystem.disableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
@@ -78,12 +89,19 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         buffer.vertex(matrix, -halfSize, halfSize, 0).uv(u0, v0).endVertex();
         Tesselator.getInstance().end();
 
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.enableBlend();
         RenderSystem.enableCull();
 
         if (solo || layout.isCenterCell()) {
             boolean editingThis = CinemaEditState.isEditing(blockEntity.getBlockPos());
             String text = editingThis ? liveTypedText() : blockEntity.getCurrentLine().getString();
+            // Only resolve stat tokens (e.g. "{stat:deaths}") for the committed line, not while
+            // still typing - the token itself should stay visible/editable in the live buffer.
+            if (!editingThis) {
+                text = CinemaStatTokens.resolve(text, Minecraft.getInstance().player);
+            }
             if (!text.isEmpty()) {
                 renderText(text, blockEntity, poseStack, bufferSource, packedLight, halfSize);
             }

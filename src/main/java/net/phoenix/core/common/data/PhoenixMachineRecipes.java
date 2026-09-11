@@ -45,6 +45,13 @@ import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials
 public class PhoenixMachineRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+        // Free (0 EU/t) by omitting .EUt(...) entirely - the ward stays up purely off periodic
+        // Glowstone Dust upkeep, no power hookup needed at all.
+        PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward")
+                .inputItems(Items.GLOWSTONE_DUST, 4)
+                .duration(600)
+                .save(provider);
+
         PhoenixRecipeTypes.PHOENIXWARE_FUSION_MK1.recipeBuilder("carbon_and_helium_3_to_oxygen_plasma")
                 .inputFluids(GTMaterials.Carbon.getFluid(16))
                 .inputItems(GTMachines.MIXER[LV])

@@ -15,6 +15,7 @@ import net.phoenix.core.client.worldfx.WorldFXShaders;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity.Background;
 
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,9 @@ public final class CinemaRenderTarget {
 
     private static void renderShader(RenderTarget target, int width, int height, Background background) {
         ShaderInstance shader = switch (background) {
-            case VOID_GALAXY -> WorldFXShaders.VOID_GALAXY;
+            // Not WorldFXShaders.VOID_GALAXY - see cinema_void_galaxy.fsh's header for why the
+            // real sky's shader can't be reused as-is for a screen with no real camera behind it.
+            case VOID_GALAXY -> WorldFXShaders.CINEMA_VOID_GALAXY;
             case NEBULA -> WorldFXShaders.NEBULA;
             case SCULK_ABYSS -> WorldFXShaders.SCULK_ABYSS;
             case SEALED_INDUSTRIAL -> WorldFXShaders.SEALED_A_INDUSTRIAL;
@@ -63,21 +66,46 @@ public final class CinemaRenderTarget {
 
         target.bindWrite(true);
 
+        // These background shaders are shared with the real sky, where "empty" regions must stay
+        // transparent so the sky shows through them - their alpha output can't be touched. Left as
+        // disabled blend + whatever alpha the shader happened to output, that low alpha baked
+        // straight into this offscreen texture, which then showed as jagged transparent gaps
+        // straight through the cinema screen to whatever's behind it in the world. Clearing to an
+        // opaque backdrop first and blending the shader over it (its own declared blend func,
+        // applied automatically by shader.apply() below) composites "empty" regions onto that
+        // backdrop instead, so the texture this produces is opaque everywhere without needing the
+        // shader itself to know or care that it's being rendered standalone this time.
+        RenderSystem.clearColor(0.01f, 0.01f, 0.03f, 1.0f);
+        RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+
         RenderSystem.disableDepthTest();
-        RenderSystem.disableBlend();
+        RenderSystem.enableBlend();
         RenderSystem.setShader(() -> shader);
 
-        Matrix4f identity = new Matrix4f();
         float outW = SIZE * width;
         float outH = SIZE * height;
         float time = (float) (System.currentTimeMillis() % 10000000L) / 10000.0f;
 
-        shader.safeGetUniform("OutSize").set(outW, outH);
-        shader.safeGetUniform("InvViewMat").set(identity);
-        shader.safeGetUniform("InvProjMat").set(identity);
-        shader.safeGetUniform("Time").set(time);
+        // The shader reconstructs a ray direction as InvProjMat * vec4(ndc, 1, 1) THEN DIVIDES BY
+        // .w - a genuine perspective divide, which only behaves correctly when InvProjMat is the
+        // inverse of an actual perspective projection matrix (whose .w output varies per pixel).
+        // The real sky (DisciplineSkyEffects) feeds it exactly that - the real camera's inverted
+        // projection/view. Feeding it a plain identity (or an ad-hoc scale matrix, tried previously
+        // for the aspect-ratio issue) makes .w constantly 1, so that divide becomes a no-op - not
+        // remotely equivalent, and it's what was actually producing incoherent/torn-looking noise
+        // output instead of a clean radial blob, on a solo screen just as much as a grouped one.
+        // Building a real perspective matrix (aspect baked into its FOV, so this also still fixes
+        // the earlier squished-multi-screen issue) and inverting it makes this a proper camera
+        // again, just a fixed one instead of the player's real view.
+        Matrix4f projection = new Matrix4f().perspective(
+                (float) Math.toRadians(90.0), outW / outH, 0.05f, 10.0f);
+        Matrix4f invProj = new Matrix4f(projection).invert();
+        Matrix4f invView = new Matrix4f();
 
-        shader.safeGetUniform("ForceOpaque").set(1.0f);
+        shader.safeGetUniform("OutSize").set(outW, outH);
+        shader.safeGetUniform("InvViewMat").set(invView);
+        shader.safeGetUniform("InvProjMat").set(invProj);
+        shader.safeGetUniform("Time").set(time);
 
         switch (background) {
             case VOID_GALAXY -> {

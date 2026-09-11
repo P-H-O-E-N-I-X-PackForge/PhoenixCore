@@ -149,6 +149,7 @@ public class PhoenixCore {
 
         VaultRegistry.registerEventBus(modEventBus);
         VaultRecipes.SERIALIZERS.register(modEventBus);
+        net.phoenix.core.common.item.cinder.CinderRecipes.SERIALIZERS.register(modEventBus);
 
         GregPacksItems.init();
         GregPacksBlocks.init();
@@ -190,6 +191,9 @@ public class PhoenixCore {
         PhoenixItems.init();
         ManipulaterItems.init();
         net.phoenix.core.integration.drone.DroneItems.init();
+        net.phoenix.core.common.item.cinder.CinderItems.init();
+        net.phoenix.core.common.block.cinder.CinderBlocks.init();
+        net.phoenix.core.common.item.cinder.CinderRecipes.init();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -303,6 +307,8 @@ public class PhoenixCore {
         AstralMachines.init();
         VaultRegistry.initMachines();
         VaultMachineDefinition.init();
+        net.phoenix.core.common.machine.multiblock.cinder.CinderForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachines.init();
     }
 
     public static ResourceLocation id(String path) {

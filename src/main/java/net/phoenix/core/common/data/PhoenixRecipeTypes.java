@@ -36,6 +36,7 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
     public static GTRecipeType GROWTH_RECIPES;
     public static GTRecipeType ASTRAL_WEAVING_RECIPES;
+    public static GTRecipeType SANCTUM_WARD_RECIPES;
 
     public static void init() {
         GROWTH_RECIPES = register("growth", MULTIBLOCK)
@@ -99,6 +100,13 @@ public class PhoenixRecipeTypes {
                 .setEUIO(IO.IN)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_COMPRESS))
                 .setSound(GTSoundEntries.BATH);
+
+        // No .setEUIO(...) - the Sanctum Ward deliberately never draws power at all, matching "just no
+        // EUt in a recipe": it stays fed (and the ward active) purely off periodic item consumption.
+        SANCTUM_WARD_RECIPES = register("sanctum_ward", MULTIBLOCK)
+                .setMaxIOSize(4, 0, 1, 0)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .setSound(GTSoundEntries.MIXER);
 
         SIMULATED_COLONY_RECIPES = register("simulated_colony", MULTIBLOCK)
                 .setMaxIOSize(4, 1, 2, 1)
