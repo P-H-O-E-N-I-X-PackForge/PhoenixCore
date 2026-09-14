@@ -1,7 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,14 +27,13 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.synth.SimplexNoise;
-import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.worldgen.TerrainProfile;
 import net.phoenix.core.integration.conflux.dimension.worldgen.*;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -43,11 +44,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 public class DisciplineChunkGenerator extends ChunkGenerator {
+
     public static final Codec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
             Codec.STRING.fieldOf("discipline_id").forGetter(gen -> gen.disciplineId),
-            Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed)
-    ).apply(instance, instance.stable(DisciplineChunkGenerator::new)));
+            Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed))
+            .apply(instance, instance.stable(DisciplineChunkGenerator::new)));
 
     private final TerrainProfile terrainProfile;
     private final WorldgenProfile worldgenProfile;
@@ -56,14 +58,14 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private volatile TerrainProfile worldSeededProfile;
 
-    private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer =
-            new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
+    private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer = new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
 
     private static final int PROVINCE_CELL_SIZE = 160;
     private static final float PROVINCE_VEIN_CHANCE = 0.4f;
     private final Map<Long, ProvinceVeinInstance> provinceCellCache = new ConcurrentHashMap<>();
 
-    private record ProvinceVeinInstance(BlockPos origin, int radius, long seed, ProvinceVeinTemplates.Template template) {}
+    private record ProvinceVeinInstance(BlockPos origin, int radius, long seed,
+                                        ProvinceVeinTemplates.Template template) {}
 
     private static final java.util.concurrent.atomic.AtomicLong terrainNanos = new java.util.concurrent.atomic.AtomicLong();
     private static final java.util.concurrent.atomic.AtomicLong decorationNanos = new java.util.concurrent.atomic.AtomicLong();
@@ -127,8 +129,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     private static final double PRIMARY_BIOME_BIAS = 0.65;
 
     private static WorldgenProfile.BiomeDefinition selectBiome(List<WorldgenProfile.BiomeDefinition> biomes,
-                                                                 String primaryBiomeId,
-                                                                 SimplexNoise regionNoise, int x, int z) {
+                                                               String primaryBiomeId,
+                                                               SimplexNoise regionNoise, int x, int z) {
         if (biomes.isEmpty()) return null;
         if (biomes.size() == 1) return biomes.get(0);
 
@@ -152,12 +154,11 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     private static TerrainProfile createTerrainForDiscipline(String disciplineId, long seed) {
-
         return switch (disciplineId) {
             case "phoenix" -> TerrainProfile.builder("phoenix")
                     .seed(seed)
                     .baseY(72).amplitude(100).frequency(0.004).octaves(6)
-                    .style(TerrainProfile.Style.RIDGED) 
+                    .style(TerrainProfile.Style.RIDGED)
                     .ocean(0.0007, 0.18, 25).river(0.0025, 0.07, 5)
                     .caves(true).build();
 
@@ -178,14 +179,14 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
             case "sealed_a" -> TerrainProfile.builder("sealed_a")
                     .seed(seed).baseY(68).amplitude(40)
                     .frequency(0.003).octaves(4)
-                    .style(TerrainProfile.Style.TERRACED).terraceStep(6.0) 
+                    .style(TerrainProfile.Style.TERRACED).terraceStep(6.0)
                     .ocean(0.0007, 0.17, 22).river(0.0024, 0.07, 4)
                     .caves(true).build();
 
             case "sealed_b" -> TerrainProfile.builder("sealed_b")
                     .seed(seed).baseY(65).amplitude(75)
                     .frequency(0.0032).octaves(6)
-                    .style(TerrainProfile.Style.WARPED).warpStrength(20.0) 
+                    .style(TerrainProfile.Style.WARPED).warpStrength(20.0)
                     .ocean(0.0006, 0.07, 15).river(0.002, 0.045, 3)
                     .caves(true).build();
 
@@ -199,7 +200,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types heightmapTypes, LevelHeightAccessor levelHeightAccessor, net.minecraft.world.level.levelgen.RandomState randomState) {
+    public int getBaseHeight(int x, int z, Heightmap.Types heightmapTypes, LevelHeightAccessor levelHeightAccessor,
+                             net.minecraft.world.level.levelgen.RandomState randomState) {
         TerrainProfile profile = resolveTerrainProfile(randomState);
         for (int y = levelHeightAccessor.getMaxBuildHeight() - 1; y >= levelHeightAccessor.getMinBuildHeight(); y--) {
             if (profile.sampler().sample(x, y, z) > 0) {
@@ -226,12 +228,11 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Override
     public void applyCarvers(WorldGenRegion level, long seed, RandomState randomState, BiomeManager biomeManager,
-                              StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving step) {
-        
-    }
+                             StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving step) {}
 
     @Override
-    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
+    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState,
+                             ChunkAccess chunk) {
         long profileStart = System.nanoTime();
         try {
             buildSurface0(level, randomState, chunk);
@@ -246,8 +247,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
         SimplexNoise regionNoise = resolveBiomeRegionNoise(randomState);
 
-        net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask =
-                resolveTerrainProfile(randomState).waterMask();
+        net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask = resolveTerrainProfile(randomState)
+                .waterMask();
 
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX();
@@ -268,7 +269,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 }
                 if (topY < minY) continue;
 
-                WorldgenProfile.BiomeDefinition biome = selectBiome(biomes, worldgenProfile.biomes.primaryBiome, regionNoise, x, z);
+                WorldgenProfile.BiomeDefinition biome = selectBiome(biomes, worldgenProfile.biomes.primaryBiome,
+                        regionNoise, x, z);
 
                 BlockState surface;
                 BlockState subSurface;
@@ -297,13 +299,10 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public void spawnOriginalMobs(WorldGenRegion level) {
-        
-    }
+    public void spawnOriginalMobs(WorldGenRegion level) {}
 
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-
         ChunkPos chunkPos = chunk.getPos();
 
         long t0 = System.nanoTime();
@@ -350,8 +349,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
                 BlockPos origin = vein.origin();
                 int radius = vein.radius();
-                if (origin.getX() + radius < minX || origin.getX() - radius > maxX
-                        || origin.getZ() + radius < minZ || origin.getZ() - radius > maxZ) {
+                if (origin.getX() + radius < minX || origin.getX() - radius > maxX || origin.getZ() + radius < minZ ||
+                        origin.getZ() - radius > maxZ) {
                     continue;
                 }
 
@@ -363,7 +362,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     private static final float PROVINCE_BASE_DENSITY = 0.85f;
 
     private static void placeVeinInChunk(ChunkAccess chunk, ProvinceVeinInstance vein,
-                                          int minX, int minZ, int worldMinY, int worldMaxY) {
+                                         int minX, int minZ, int worldMinY, int worldMaxY) {
         ProvinceVeinTemplates.Template template = vein.template();
         BlockPos origin = vein.origin();
         int radius = vein.radius();
@@ -439,7 +438,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Nullable
     private ProvinceVeinInstance generateCellVein(List<WorldgenProfile.BiomeDefinition> biomes,
-                                                    SimplexNoise regionNoise, int cellX, int cellZ) {
+                                                  SimplexNoise regionNoise, int cellX, int cellZ) {
         RandomSource cellRandom = new XoroshiroRandomSource(
                 seed ^ ((long) cellX * 341873128712L) ^ ((long) cellZ * 132897987541L) ^ 0x50484F454E4958L);
 
@@ -471,9 +470,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         BlockState[] column = new BlockState[height];
         for (int i = 0; i < height; i++) {
             int y = minY + i;
-            column[i] = profile.sampler().sample(x, y, z) > 0
-                ? Blocks.STONE.defaultBlockState()
-                : Blocks.AIR.defaultBlockState();
+            column[i] = profile.sampler().sample(x, y, z) > 0 ? Blocks.STONE.defaultBlockState() :
+                    Blocks.AIR.defaultBlockState();
         }
         return new NoiseColumn(minY, column);
     }
@@ -485,7 +483,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState,
-                                                          StructureManager structureManager, ChunkAccess chunk) {
+                                                        StructureManager structureManager, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(() -> {
             long profileStart = System.nanoTime();
             try {
@@ -500,36 +498,35 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         TerrainProfile profile = resolveTerrainProfile(randomState);
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX();
-            int minZ = chunkPos.getMinBlockZ();
-            int minY = getMinY();
-            int maxY = minY + getGenDepth();
+        int minZ = chunkPos.getMinBlockZ();
+        int minY = getMinY();
+        int maxY = minY + getGenDepth();
 
-            net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask = profile.waterMask();
+        net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask = profile.waterMask();
 
-            for (int x = minX; x < minX + 16; x++) {
-                for (int z = minZ; z < minZ + 16; z++) {
-                    for (int y = minY; y < maxY; y++) {
-                        if (profile.sampler().sample(x, y, z) > 0) {
-                            chunk.setBlockState(new BlockPos(x, y, z), Blocks.STONE.defaultBlockState(), false);
-                        }
+        for (int x = minX; x < minX + 16; x++) {
+            for (int z = minZ; z < minZ + 16; z++) {
+                for (int y = minY; y < maxY; y++) {
+                    if (profile.sampler().sample(x, y, z) > 0) {
+                        chunk.setBlockState(new BlockPos(x, y, z), Blocks.STONE.defaultBlockState(), false);
                     }
+                }
 
-                    if (waterMask != null && waterMask.isWaterColumn(x, z)) {
+                if (waterMask != null && waterMask.isWaterColumn(x, z)) {
 
-                        int surfaceY = (int) Math.floor(waterMask.waterSurfaceY(x, z));
-                        for (int y = surfaceY; y >= minY; y--) {
-                            BlockPos pos = new BlockPos(x, y, z);
-                            if (!chunk.getBlockState(pos).isAir()) break;
-                            chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
-                        }
+                    int surfaceY = (int) Math.floor(waterMask.waterSurfaceY(x, z));
+                    for (int y = surfaceY; y >= minY; y--) {
+                        BlockPos pos = new BlockPos(x, y, z);
+                        if (!chunk.getBlockState(pos).isAir()) break;
+                        chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
                     }
                 }
             }
+        }
         return chunk;
     }
 
     public void applyWorldgenFeatures(WorldGenLevel level, int chunkX, int chunkZ) {
-
         WorldgenApplier.applyWorldgenProfile(level, worldgenProfile, null, chunkX, chunkZ);
 
         applySignatureFeatures(level, chunkX, chunkZ);
@@ -545,25 +542,15 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         }
     }
 
-    private void applyPhoenixSignature(WorldGenLevel level, int chunkX, int chunkZ) {
+    private void applyPhoenixSignature(WorldGenLevel level, int chunkX, int chunkZ) {}
 
-    }
+    private void applySculkSignature(WorldGenLevel level, int chunkX, int chunkZ) {}
 
-    private void applySculkSignature(WorldGenLevel level, int chunkX, int chunkZ) {
+    private void applyVoidSignature(WorldGenLevel level, int chunkX, int chunkZ) {}
 
-    }
+    private void applySealedASignature(WorldGenLevel level, int chunkX, int chunkZ) {}
 
-    private void applyVoidSignature(WorldGenLevel level, int chunkX, int chunkZ) {
-
-    }
-
-    private void applySealedASignature(WorldGenLevel level, int chunkX, int chunkZ) {
-
-    }
-
-    private void applySealedBSignature(WorldGenLevel level, int chunkX, int chunkZ) {
-
-    }
+    private void applySealedBSignature(WorldGenLevel level, int chunkX, int chunkZ) {}
 
     public WorldgenProfile getWorldgenProfile() {
         return worldgenProfile;

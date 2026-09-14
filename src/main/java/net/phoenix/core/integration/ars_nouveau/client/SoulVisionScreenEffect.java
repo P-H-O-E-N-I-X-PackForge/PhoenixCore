@@ -12,9 +12,7 @@ public class SoulVisionScreenEffect extends PhoenixScreenEffect {
     }
 
     @Override
-    public void uploadUniforms(float partialTick) {
-        
-    }
+    public void uploadUniforms(float partialTick) {}
 
     @Override
     public int priority() {

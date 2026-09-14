@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -21,11 +20,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A temporary, indestructible marker block a Rebirth Cinder Core drops while its multiblock is being
- * assembled - see {@link CinderConstructionBlockEntity} for the actual tick-driven placement logic.
- * Players can't break or push it away mid-build; it disappears on its own once the last layer lands.
- */
 public class CinderConstructionBlock extends BaseEntityBlock {
 
     public CinderConstructionBlock(Properties properties) {
@@ -49,7 +43,7 @@ public class CinderConstructionBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                  BlockHitResult hit) {
+                                 BlockHitResult hit) {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
@@ -62,7 +56,7 @@ public class CinderConstructionBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
-                                                                   BlockEntityType<T> type) {
+                                                                  BlockEntityType<T> type) {
         if (level.isClientSide) return null;
         return createTickerHelper(type, CinderBlocks.CINDER_CONSTRUCTION_BE.get(),
                 CinderConstructionBlockEntity::serverTick);

@@ -122,7 +122,8 @@ public class ColorRadialMenuScreen extends Screen {
         boolean hoveringCustom = mouseX >= buttonX && mouseX <= buttonX + BTN_W && mouseY >= buttonY &&
                 mouseY <= buttonY + BTN_H;
 
-        guiGraphics.fill(buttonX, buttonY, buttonX + BTN_W, buttonY + BTN_H, hoveringCustom ? cPanel : (cPanel & 0x00FFFFFF) | 0x77000000);
+        guiGraphics.fill(buttonX, buttonY, buttonX + BTN_W, buttonY + BTN_H,
+                hoveringCustom ? cPanel : (cPanel & 0x00FFFFFF) | 0x77000000);
         guiGraphics.renderOutline(buttonX, buttonY, BTN_W, BTN_H, cBorder);
 
         guiGraphics.drawCenteredString(this.font, "Chromatic Effects", centerX, buttonY + 6, cText);

@@ -2,8 +2,6 @@ package net.phoenix.core.client.renderer.cinder;
 
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,26 +10,13 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.cinder.CinderConstructionBlockEntity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.Map;
 
-/**
- * The client half of the "drop from the sky" construction sequence: while a
- * {@link CinderConstructionBlockEntity} is falling, renders the ENTIRE resolved structure as one
- * rigid ghost batch - not staged layer by layer - dropping from
- * {@link CinderConstructionBlockEntity#FALL_START_HEIGHT} blocks above down to its final position
- * with an accelerating, gravity-like ease, trailing flame particles the whole way down, escorted by a
- * particle-only "phoenix" silhouette (no real creature model exists in this codebase to render, and
- * building/rigging one from scratch is out of scope - see {@link #renderPhoenixSilhouette}) that
- * swoops in from the side, hovers above the structure as it descends, then peels away just before
- * impact. The real blocks all land at once (with their own impact beat) exactly when the fall
- * completes - this is purely the lead-in visual, using the same {@code renderSingleBlock} primitive as
- * {@link net.phoenix.core.client.gui.cinder.CinderStructurePreview}, just driven from world space via
- * a {@link BlockEntityRenderer} instead of GUI space.
- */
 public class CinderConstructionRenderer implements BlockEntityRenderer<CinderConstructionBlockEntity> {
 
     private static final double PHOENIX_SIDE_OFFSET = 12.0;
@@ -40,9 +25,6 @@ public class CinderConstructionRenderer implements BlockEntityRenderer<CinderCon
 
     public CinderConstructionRenderer(BlockEntityRendererProvider.Context context) {}
 
-    // Logs once per distinct pending-set (not every frame) to confirm this renderer is actually being
-    // invoked at all - a BlockEntityRenderer silently never getting resolved for this BE type would
-    // otherwise look identical to "the animation is just too subtle to notice".
     private static int lastLoggedSize = -1;
 
     @Override
@@ -68,10 +50,7 @@ public class CinderConstructionRenderer implements BlockEntityRenderer<CinderCon
 
         float progress = Mth.clamp((level.getGameTime() - be.getFallStartGameTime() + partialTick) /
                 (float) CinderConstructionBlockEntity.FALL_TICKS, 0.0f, 1.0f);
-        // Ease-in: starts slow, accelerates like gravity, crashes down hard at the end - reads as an
-        // actual drop instead of a gentle float, and (unlike the old per-Y-layer rise, which started
-        // only ~2.5 blocks below its own final position and was mostly hidden underground or behind
-        // terrain) this is unmissable no matter where the structure sits.
+
         float eased = progress * progress;
         double yOffset = (1.0 - eased) * CinderConstructionBlockEntity.FALL_START_HEIGHT;
 
@@ -91,8 +70,6 @@ public class CinderConstructionRenderer implements BlockEntityRenderer<CinderCon
                     packedOverlay);
             poseStack.popPose();
 
-            // Sparser per-block than the old per-layer version - the whole structure renders at once
-            // now (potentially hundreds of blocks), not just one Y-layer's worth.
             if (level.getRandom().nextInt(30) == 0) {
                 double px = pos.getX() + level.getRandom().nextDouble();
                 double py = pos.getY() + yOffset + level.getRandom().nextDouble();
@@ -110,18 +87,8 @@ public class CinderConstructionRenderer implements BlockEntityRenderer<CinderCon
         renderPhoenixSilhouette(level, minX, maxX, minZ, maxZ, topY, yOffset, progress);
     }
 
-    /**
-     * No real Phoenix creature model exists anywhere in this codebase to render here (checked - the
-     * only phoenix-shaped assets are wearable GeckoLib wing/chestplate armor, not a standalone
-     * entity), and building/rigging one from scratch is well outside what's practical to add as code.
-     * This fakes the impression of one instead: a moving cluster of fire particles shaped like a body
-     * with drooping wings either side, on a simple three-phase flight path - swoop in from the side
-     * and above during the first 75% of the fall, hover roughly overhead as the structure nears the
-     * ground, then peel further up and away in the last 15% right before impact, so it reads as "flew
-     * it in and left" rather than just hanging there.
-     */
     private static void renderPhoenixSilhouette(ClientLevel level, double minX, double maxX, double minZ,
-                                                 double maxZ, double topY, double yOffset, float progress) {
+                                                double maxZ, double topY, double yOffset, float progress) {
         if (minX > maxX) return;
 
         double centerX = (minX + maxX) / 2.0 + 0.5;

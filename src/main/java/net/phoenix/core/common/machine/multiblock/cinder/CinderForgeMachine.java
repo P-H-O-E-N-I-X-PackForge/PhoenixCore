@@ -3,9 +3,9 @@ package net.phoenix.core.common.machine.multiblock.cinder;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
@@ -15,11 +15,9 @@ import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-
-import net.minecraft.tags.TagKey;
-
 import net.phoenix.core.common.data.PTags;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
@@ -34,7 +32,6 @@ import brachy.modularui.screen.UISettings;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.value.sync.BooleanSyncValue;
-import brachy.modularui.value.sync.IntSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.value.sync.StringSyncValue;
 import brachy.modularui.widget.ParentWidget;
@@ -46,7 +43,6 @@ import brachy.modularui.widgets.dynamic.DynamicHandler;
 import brachy.modularui.widgets.dynamic.DynamicWidget;
 import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -54,24 +50,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * The Cinder Forge multiblock controller's UI - a native GTM-style port of the item Configurator's
- * functionality (target picker, slice/predicate rows, live 3D preview, material summary), scoped to
- * whichever Cinder Core is currently sitting in the structure's
- * {@link CinderForgeHatchPartMachine hatch}, rather than a held item. All the actual work (pulling
- * materials, stocking the Core, handing it back to AE2) still happens autonomously in the hatch - this
- * UI is a live window into that Core's configuration and progress, editable in place rather than via
- * a separate "Confirm" step, since (unlike the item screen) this UI doesn't close when you're done
- * with one Core; the next one the hatch pulls in just needs re-configuring the same way.
- * <p>
- * Interaction follows this codebase's established GTM sync pattern (see
- * {@code net.phoenix.core.integration.drone.DroneControllerMachine}): {@code buildMainUI} runs on
- * both sides, dynamic row lists are rebuilt via {@link DynamicHandler}/{@link DynamicWidget} rather
- * than by re-invoking {@code buildMainUI}, and every mutation is a small, per-row
- * {@link BooleanSyncValue} "fire" trigger whose callback re-derives what it needs (which target, which
- * predicate/candidate, which slice) from the same deterministic list both sides already compute -
- * mirroring exactly how Drone's per-row toggle/cycle triggers work.
- */
 public class CinderForgeMachine extends MultiblockControllerMachine implements IMuiMachine {
 
     private static final int ROW_H = 18;
@@ -95,19 +73,9 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
     private String targetFilter = "";
     private final List<MultiblockMachineDefinition> allTargets = new ArrayList<>();
-    /** Which predicate row's candidate dropdown is currently open, -1 = none. Synced like
-     *  {@link #targetFilter} - plain UI display state, kept in lockstep across both sides the same
-     *  way rather than needing its own dedicated packet. */
+
     private int expandedPredicateRow = -1;
 
-    /**
-     * Tier 1's own Core + material storage, living directly on the controller instead of a hatch -
-     * Tier 1 can't have an ME hatch at all (that's the whole point: no AE2, no automation), so unlike
-     * Tier 2/3 there's nothing else to hold it. Same {@code CORE_SLOT}/{@code MATERIAL_SLOTS} layout
-     * as {@link CinderForgeHatchPartMachine} purely by convention, so the slot-grid UI code can be
-     * shared unmodified. Always attached regardless of which tier is actually formed - harmless dead
-     * weight when Tier 2/3 is formed instead, same as the hatch existing but going unused for Tier 1.
-     */
     private final NotifiableItemStackHandler tier1Inventory;
 
     public CinderForgeMachine(BlockEntityCreationInfo info) {
@@ -116,8 +84,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 IO.BOTH, IO.BOTH));
     }
 
-    /** Same flat-fill/border card background used by the Cinder Forge hatch and Drone controller
-     *  UIs, so the whole Cinder Forge system reads as one coherent style. */
     private record FlatPanel(int fillColor, int borderColor) implements IDrawable {
 
         @Override
@@ -133,8 +99,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         }
     }
 
-    /** A small bordered status badge, Fission-reactor-HUD style - color communicates state at a
-     *  glance without needing to read the status line. */
     private record StatusBadge(int accentColor) implements IDrawable {
 
         @Override
@@ -150,9 +114,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
     private record BadgeState(String label, int color) {}
 
-    /** The whole-panel dark gradient - without this, every card/row background added throughout this
-     *  UI just floats on GTCEu's default light inventory-style chrome instead of reading as one
-     *  cohesive themed window. */
     private record BackgroundGradient() implements IDrawable {
 
         @Override
@@ -180,11 +141,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return null;
     }
 
-    /** Which named substructure (see {@code CinderForgeMachines}) is currently formed - {@code null}
-     *  if this controller isn't formed at all. Tier 3's pattern requires 2+ ME hatches and Tier 2's
-     *  requires exactly 1, so those two are mutually exclusive by construction; Tier 1 has no hatch
-     *  predicate at all (a much smaller, simpler shape), so it can never physically satisfy Tier 2/3
-     *  either. */
     private @Nullable CinderForgeTier currentTier() {
         var tier3 = getPatternState("tier3");
         if (tier3 != null && tier3.isFormed()) return CinderForgeTier.TIER3;
@@ -196,15 +152,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
     }
 
     enum CinderForgeTier {
+
         TIER1(PTags.CINDER_FORGE_TIER1_ALLOWED, false),
         TIER2(PTags.CINDER_FORGE_TIER2_ALLOWED, true),
         TIER3(null, true);
 
-        /** {@code null} means unrestricted - every {@link BlockPattern}-based multiblock is a valid
-         *  target, matching "3. all multiblocks" from the tiered Cinder Forge design. */
         final @Nullable TagKey<Block> allowedTag;
-        /** Whether this tier has an ME hatch and therefore auto-packages Cores on its own; Tier 1
-         *  never does, no matter what - "Package Now" is the only way to fill a Core on Tier 1. */
+
         final boolean automated;
 
         CinderForgeTier(@Nullable TagKey<Block> allowedTag, boolean automated) {
@@ -283,9 +237,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         if (tier == null) {
             mainWidget.child(Text.str("Structure not formed.")
                     .asWidget().pos(8, 24).size(390, 10).color(COLOR_BAD));
-            // There's no "upgrade in place" button, same as every other tiered GT multiblock - each
-            // tier is a genuinely different physical shape, not a casing swap on the same footprint,
-            // so this is the one place that explains what to actually go build instead.
+
             mainWidget.child(Text.str("Tier 1: small box, casing only, no ME hatch - manual only.")
                     .asWidget().pos(8, 38).size(390, 10).color(COLOR_LABEL));
             mainWidget.child(Text.str("Tier 2: larger hive shape with exactly 1 ME hatch - auto-packages.")
@@ -300,18 +252,11 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             return;
         }
 
-        // Tier 1 has nowhere else to manage its Core/materials (no hatch to open separately) - its
-        // slot grid lives directly in this UI, above the target picker/configurator, which everything
-        // below gets pushed down to make room for via contentContainer/contentY.
         ParentWidget<?> contentContainer = mainWidget;
         int contentY = 22;
         if (tier == CinderForgeTier.TIER1) {
             contentY = buildTier1SlotSection(mainWidget, syncManager);
-            // Generously sized rather than tightly measured - this only exists to shift the picker/
-            // configurator's already-coded (0,0)-relative positions down below the slot section
-            // above, not to constrain a scrollable viewport, so oversizing it costs nothing while
-            // undersizing it risks the panel clipping real content (the material summary column in
-            // particular can run past y=350 on its own).
+
             Flow wrapper = Flow.col().pos(0, contentY).size(400, 500);
             mainWidget.child(wrapper);
             contentContainer = wrapper;
@@ -332,14 +277,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         }
     }
 
-    /**
-     * Tier 1's own Core + Materials slots, rendered directly in the controller UI (adapted from
-     * {@code CinderForgeHatchPartMachine}'s hatch UI - see that class for why the default
-     * {@code ItemBusPartMachine} slot-grid UI can't just be reused as-is). No auto-craft attempt ever
-     * runs for Tier 1 (see {@link CinderForgeTier#automated}) - "Package Now" is the only way.
-     *
-     * @return the y-coordinate immediately below this section, where the picker/configurator starts.
-     */
     private int buildTier1SlotSection(ParentWidget<?> mainWidget, PanelSyncManager syncManager) {
         int slotSize = brachy.modularui.widgets.slot.ItemSlot.SIZE;
         var storage = tier1Inventory.storage;
@@ -394,8 +331,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
         return gridY + rows * slotSize + 10;
     }
-
-    // ---- Target picker ----------------------------------------------------------------------
 
     private void buildTargetPicker(ParentWidget<?> mainWidget, PanelSyncManager syncManager,
                                    NotifiableItemStackHandler inventory) {
@@ -467,8 +402,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return col;
     }
 
-    // ---- Configurator (target already set) --------------------------------------------------
-
     private void buildConfigurator(ParentWidget<?> mainWidget, PanelSyncManager syncManager,
                                    NotifiableItemStackHandler inventory, ItemStack core) {
         MultiblockMachineDefinition definition = CinderSchemaData.getTargetDefinition(core);
@@ -478,7 +411,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 .get(com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine.DEFAULT_STRUCTURE);
         if (patternSupplier == null || !(patternSupplier.get() instanceof BlockPattern pattern)) return;
 
-        // "Change Target" - wipes configuration, drops back to the picker.
         BooleanSyncValue changeTarget = syncManager.getOrCreateSyncHandler("cinderChangeTarget",
                 BooleanSyncValue.class, () -> new BooleanSyncValue(() -> false, fired -> {
                     if (!fired) return;
@@ -488,10 +420,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     inventory.onContentsChanged();
                 }).allowC2S(true));
 
-        // Own row below the title/badge - it used to sit at (300, 6), directly under the status
-        // badge (which starts as far left as 400 - badgeW, well left of 396) and overlapping the
-        // title text's own box, a three-way collision that's exactly the kind of thing worth a
-        // dedicated row instead of guessing coordinates don't collide.
         mainWidget.child(new ButtonWidget<>()
                 .pos(8, 22).size(96, 14)
                 .overlay(Text.str("Change Target").asIcon())
@@ -500,14 +428,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     return true;
                 }));
 
-        // 3D preview - real drag-to-rotate/scroll-to-zoom structure render, the same interactive
-        // power as (in this case more native than) the item Configurator's own ported preview.
-        // Client-only: buildMainUI/buildConfigurator run on BOTH sides, and constructing a
-        // SchemaRenderer touches OpenGL for the first time ever if BaseSchemaRenderer hasn't already
-        // been classloaded - its static initializer creates a DynamicTexture, which crashes with
-        // "Rendersystem called from wrong thread" if that first touch happens to land on the server
-        // thread instead of the render thread. None of this registers any sync handlers, so skipping
-        // it server-side doesn't desync anything the way skipping a sync-value registration would.
         if (isRemote()) {
             mainWidget.child(Text.str("PREVIEW").asWidget().pos(240, 22).size(120, 10).color(COLOR_LABEL));
             SchemaRenderer renderer = new SchemaRenderer(schemaInfo.getMapSchema());
@@ -523,7 +443,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             mainWidget.child(schemaWidget);
         }
 
-        // Slice-repeat rows.
         List<Integer> variableSlices = new ArrayList<>();
         for (int i = 0; i < pattern.getSlices().length; i++) {
             PatternSlice slice = pattern.getSlices()[i];
@@ -576,10 +495,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         }
         mainWidget.child(sliceCol);
 
-        // Predicate-choice rows - a real "see every candidate, pick one directly" dropdown, the same
-        // power the item Configurator's own floating dropdown has, rather than a click-to-cycle
-        // button. Clicking a row expands an inline list of every candidate (icon + name, current
-        // choice accent-bordered); picking one applies it and collapses back down.
         List<PredicateRow> predicateRows = new ArrayList<>();
         for (var entry : pattern.getPredicates().char2ObjectEntrySet()) {
             char c = entry.getCharKey();
@@ -636,7 +551,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER))
                 .child(new DynamicWidget<>().clientOnlyHandler(predRowsHandler)));
 
-        // Material-needed summary.
         var required = schemaInfo.getBlockCounts();
         var stocked = CinderSchemaData.tallyStocked(core);
         Flow summaryCol = Flow.col().pos(240, 182).size(152, ROW_H * Math.max(1, required.size()))
@@ -664,10 +578,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         mainWidget.child(summaryCol);
     }
 
-    /** Rebuilt (via {@code predRowsHandler.notifyUpdate()}) every time a row expands/collapses or a
-     *  candidate gets picked - see the trigger wiring in {@link #buildConfigurator}. Collapsed rows
-     *  just show the current choice; the expanded row additionally lists every candidate beneath it,
-     *  the current one accent-bordered, each directly clickable. */
     private Flow buildPredicateListWidget(List<PredicateRow> predicateRows, NotifiableItemStackHandler inventory,
                                           BooleanSyncValue[] expandToggle, BooleanSyncValue[] candidatePick) {
         ItemStack core = inventory.getStackInSlot(CinderForgeHatchPartMachine.CORE_SLOT);

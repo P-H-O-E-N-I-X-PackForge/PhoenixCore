@@ -1,9 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,30 +21,27 @@ public class SculkSkyRenderer extends SkyRenderer {
     }
 
     private void initializeSculkSky() {
+        orbitingBodies.add(new PlanetOrbit(
+                "Sculk Moon 1",
+                PlanetOrbit.PlanetType.MOON,
+                75,
+                0.0008f,
+                6.25f,
+                new Vec3(0, 44, 0),
+                0x00FF88,
+                true,
+                1.5f));
 
         orbitingBodies.add(new PlanetOrbit(
-            "Sculk Moon 1",
-            PlanetOrbit.PlanetType.MOON,
-            75,
-            0.0008f,
-            6.25f,
-            new Vec3(0, 44, 0),
-            0x00FF88,
-            true,
-            1.5f
-        ));
-
-        orbitingBodies.add(new PlanetOrbit(
-            "Sculk Moon 2",
-            PlanetOrbit.PlanetType.MOON,
-            94,
-            0.0006f,
-            5,
-            new Vec3(0, 38, 0),
-            0x00FFFF,
-            true,
-            1.3f
-        ));
+                "Sculk Moon 2",
+                PlanetOrbit.PlanetType.MOON,
+                94,
+                0.0006f,
+                5,
+                new Vec3(0, 38, 0),
+                0x00FFFF,
+                true,
+                1.3f));
     }
 
     @Override

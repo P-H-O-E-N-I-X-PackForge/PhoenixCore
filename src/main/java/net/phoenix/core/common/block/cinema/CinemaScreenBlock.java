@@ -2,8 +2,6 @@ package net.phoenix.core.common.block.cinema;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +21,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,6 @@ public class CinemaScreenBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-
         return switch (state.getValue(FACING)) {
             case NORTH -> SHAPE_NORTH;
             case SOUTH -> SHAPE_SOUTH;
@@ -82,7 +81,7 @@ public class CinemaScreenBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+                                 InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen)) {
             return InteractionResult.PASS;
         }
@@ -91,8 +90,8 @@ public class CinemaScreenBlock extends BaseEntityBlock {
             if (level.isClientSide) {
                 String currentText = screen.getCurrentLine().getString();
                 int currentIndex = screen.getCurrentLineIndex();
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
-                        net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        () -> () -> net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
                                 .openTypingScreen(pos, currentIndex, currentText));
             }
             return InteractionResult.sidedSuccess(level.isClientSide);

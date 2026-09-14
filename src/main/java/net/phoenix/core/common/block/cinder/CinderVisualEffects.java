@@ -6,15 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 
-/**
- * The two beats of a Rebirth Cinder Core's build sequence - shatter on commit, then a single big
- * impact when the whole structure lands at once after its fall (see
- * {@code CinderConstructionBlockEntity}). Used to be three beats with a per-Y-layer "clang" in
- * between, back when the structure was staged in layer by layer instead of dropped as one batch - see
- * the class doc there for why that changed. Server-triggered {@code sendParticles}/{@code playSound}
- * calls only, deliberately not synced client-state fields - matches this codebase's existing
- * convention for this kind of discrete, one-shot effect (see the wing-suit charging sparks).
- */
 public final class CinderVisualEffects {
 
     private CinderVisualEffects() {}
@@ -28,9 +19,6 @@ public final class CinderVisualEffects {
         level.playSound(null, pos, SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS, 0.8f, 0.6f);
     }
 
-    /** The whole structure slamming down at once, scaled to its actual footprint (so a huge Fusion
-     *  Reactor-sized drop reads as a much bigger event than a small one) - combines the old landing
-     *  "thud" with the old materialize flash into one beat, since there's only one landing now. */
     public static void playImpact(ServerLevel level, BlockPos pos, int spanX, int spanZ) {
         double x = pos.getX() + 0.5, y = pos.getY() + 0.5, z = pos.getZ() + 0.5;
         double spreadX = Math.max(1.0, spanX / 2.0);

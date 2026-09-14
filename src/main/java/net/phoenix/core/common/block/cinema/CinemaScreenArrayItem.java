@@ -12,13 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Places a whole size x size grid of {@link CinemaScreenBlock}s in one action instead of placing
- * them one at a time - the grid is centered on the clicked position, extends across the wall face
- * you clicked (matching {@link CinemaGroupUtil}'s own "right"/"up" axes so the placed grid is
- * immediately recognized as one connected group), and only actually places anything if every
- * target position is free, so a placement never gets interrupted half-finished by an obstruction.
- */
 public class CinemaScreenArrayItem extends Item {
 
     private final int size;

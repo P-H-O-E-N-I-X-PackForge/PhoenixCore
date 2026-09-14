@@ -7,8 +7,6 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
-/** Ported from Phantasia's {@code PhantasiaCameraEntity} (verbatim) - a fake, never-spawned Entity
- *  that exists solely because {@code Camera#setup} requires one as its position/rotation source. */
 public final class PhoenixCameraEntity extends Entity {
 
     public PhoenixCameraEntity(Level world) {

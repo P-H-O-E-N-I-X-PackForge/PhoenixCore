@@ -17,10 +17,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.phoenix.core.PhoenixCore;
 
 import org.joml.Vector3f;
-
-import net.phoenix.core.PhoenixCore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,15 +31,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * Ported/adapted from Phantasia's {@code PhantasiaTrackedDummyWorld} - the concrete dummy world that
- * actually stores what gets rendered. Adapted to use GTCEu's own {@link BlockInfo} directly (it
- * already has the same {@code getBlockState()}/{@code getBlockEntity(Level, BlockPos)} shape
- * Phantasia's own tiny wrapper class had, so there's no need to duplicate that class here) and drops
- * the particle-engine routing Phantasia's version had - this codebase has no equivalent custom
- * particle system, so {@code addParticle}/{@code addAlwaysVisibleParticle} just inherit
- * {@link PhoenixDummyWorld}'s no-op defaults.
- */
 @OnlyIn(Dist.CLIENT)
 public class PhoenixTrackedDummyWorld extends PhoenixDummyWorld {
 

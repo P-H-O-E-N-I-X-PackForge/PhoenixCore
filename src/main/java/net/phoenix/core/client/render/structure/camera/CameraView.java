@@ -2,7 +2,6 @@ package net.phoenix.core.client.render.structure.camera;
 
 import org.joml.Vector3f;
 
-/** Ported from Phantasia's {@code net.phoenixvine.phantasia.client.camera.CameraView} (verbatim). */
 public record CameraView(Vector3f eyePos, Vector3f lookAt) {
 
     public float eyeX() {

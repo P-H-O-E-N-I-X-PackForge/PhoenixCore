@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
-import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternSlice;
 import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
@@ -21,19 +20,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinderClearTargetPacket;
 import net.phoenix.core.network.packet.C2SCinderConfigPacket;
 import net.phoenix.core.network.packet.C2SCinderSetTargetPacket;
-
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,25 +36,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Configure a Rebirth Cinder Core's build plan - which optional part goes in each ambiguous slot,
- * how many repeats each variable-height layer gets, plus a live rotatable 3D preview of the resolved
- * structure (see {@link CinderStructurePreview}) and material summary.
- * <p>
- * Colors come from {@code PhoenixTheme} (the shared {@code phoenix_wiki} library this codebase
- * already depends on for {@code OmniPackScreen}) rather than hand-picked hex constants - Phantasia
- * uses the same theme, so this ends up visually consistent with it without taking a hard dependency
- * on Phantasia's own screen classes, which turned out not to be cleanly reusable here (their data
- * layer is either an unconstructable singleton tied to Phantasia's own save file, or depends on a
- * static "shared dummy world" singleton Phantasia's 3D scene renderer owns - see the investigation
- * notes in this repo's history for specifics). The row/dropdown layout itself is still structurally
- * the same pattern Phantasia's "PhantasiaVariantsScreen" uses (grouped scrollable rows, one dropdown
- * per row, floating option list on click) - just backed by this class's own data and rendering.
- * <p>
- * If no target is set yet, shows a filterable list of {@code BlockPattern}-based multiblocks to pick
- * one from (see {@link CinderSchemaData#setTarget}) instead of the configuration rows. Per-exact-
- * position overrides aren't exposed (see {@link CinderSchemaData} for why).
- */
 public class CinderConfiguratorScreen extends Screen {
 
     private static final int PANEL_W = 420;
@@ -101,14 +77,11 @@ public class CinderConfiguratorScreen extends Screen {
 
     private @Nullable PredicateChoiceRow openDropdown = null;
 
-    // Target-multiblock picker (shown instead of the config rows when no target is set yet).
     private final List<MultiblockMachineDefinition> allTargets = new ArrayList<>();
     private final List<MultiblockMachineDefinition> filteredTargets = new ArrayList<>();
     private @Nullable EditBox filterBox;
     private int targetScrollY = 0;
 
-    // Live viewport bounds for the 3D preview, refreshed each render call so mouseDragged knows
-    // whether a drag started over it.
     private int previewX, previewY, previewW, previewH;
 
     public CinderConfiguratorScreen(InteractionHand hand) {
@@ -116,7 +89,6 @@ public class CinderConfiguratorScreen extends Screen {
         this.hand = hand;
     }
 
-    /** Called from {@code CinderCoreItem#use} via {@code DistExecutor}, never referenced from common code. */
     public static void open(InteractionHand hand) {
         Minecraft.getInstance().setScreen(new CinderConfiguratorScreen(hand));
     }
@@ -199,16 +171,13 @@ public class CinderConfiguratorScreen extends Screen {
             MultiPredicate predicate = entry.getValue();
             if (predicate.isAny() || predicate.isAir()) continue;
             for (BasePredicate base : predicate.expand()) {
-                // Only a genuine choice if there's more than one candidate to pick between - a
-                // predicate matching exactly one block type has nothing to configure.
+
                 if (base.getCandidates().size() <= 1) continue;
                 predicateRows.add(new PredicateChoiceRow(c, predicate, base, "[" + c + "] " + base.getTypeName()));
             }
         }
     }
 
-    /** Scans every registered multiblock for {@link BlockPattern}-based ones (see class doc on why
-     *  {@code ExpandablePattern} targets aren't offered) to populate the target picker. */
     private void populateTargetList() {
         allTargets.clear();
         for (MachineDefinition candidate : GTRegistries.MACHINES.values()) {
@@ -243,8 +212,6 @@ public class CinderConfiguratorScreen extends Screen {
         reload();
     }
 
-    /** Wipes this Core's target entirely, dropping back to the target picker - lets a player back out
-     *  of a configuration without re-crafting a fresh Core. */
     private void changeTarget() {
         CinderSchemaData.clearTarget(cinderCoreStack);
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderClearTargetPacket(hand));
@@ -297,7 +264,6 @@ public class CinderConfiguratorScreen extends Screen {
         int buttonY = top + panelH - BUTTON_H - 6;
         int contentH = buttonY - 6 - contentY;
 
-        // Left column: scrollable slice/predicate rows.
         double scale = Minecraft.getInstance().getWindow().getGuiScale();
         RenderSystem.enableScissor((int) (leftX * scale), (int) ((height - contentY - contentH) * scale),
                 (int) (leftW * scale), (int) (contentH * scale));
@@ -314,7 +280,6 @@ public class CinderConfiguratorScreen extends Screen {
 
         RenderSystem.disableScissor();
 
-        // Right column: live 3D structure preview, then material summary beneath it.
         previewX = rightX;
         previewY = contentY;
         previewW = rightW;
@@ -329,7 +294,6 @@ public class CinderConfiguratorScreen extends Screen {
         int summaryH = buttonY - 6 - summaryY;
         renderMaterialSummary(g, rightX, rightW, summaryY, summaryH);
 
-        // Bottom button row.
         drawButton(g, mouseX, mouseY, left + 8, buttonY, 90, BUTTON_H, "Change Target", this::changeTarget);
         drawButton(g, mouseX, mouseY, left + 8 + 96, buttonY, 70, BUTTON_H, "Reset", this::resetToDefaults);
         drawButton(g, mouseX, mouseY, left + PANEL_W - 78, buttonY, 70, BUTTON_H, "Confirm", () -> {
@@ -340,8 +304,6 @@ public class CinderConfiguratorScreen extends Screen {
             onClose();
         });
 
-        // Dropdown overlay renders last so it draws over everything below it, and gets registered
-        // into clickRegions AFTER the rows behind it so it correctly takes priority on click.
         if (openDropdown != null) {
             renderDropdownOverlay(g, mouseX, mouseY, leftX, leftW, contentY, contentH);
         }
@@ -434,8 +396,9 @@ public class CinderConfiguratorScreen extends Screen {
     }
 
     private @Nullable BlockInfo pickSelected(PredicateChoiceRow row) {
-        if (schemaInfo == null || schemaInfo.getStructureHelper() == null) return row.basePredicate().getFirstCandidate()
-                .orElse(null);
+        if (schemaInfo == null || schemaInfo.getStructureHelper() == null)
+            return row.basePredicate().getFirstCandidate()
+                    .orElse(null);
         BlockInfo chosen = schemaInfo.getStructureHelper().getBlockPreferences().get(row.predicate(),
                 row.basePredicate());
         return chosen != null ? chosen : row.basePredicate().getFirstCandidate().orElse(null);
@@ -446,8 +409,6 @@ public class CinderConfiguratorScreen extends Screen {
         PredicateChoiceRow row = openDropdown;
         List<BlockInfo> candidates = row.basePredicate().getCandidates();
 
-        // Re-walk the same layout pass used for rendering rows to find this row's y position -
-        // deliberately not cached, so it can never drift out of sync with what's actually drawn.
         int y = contentY - scrollY;
         int rowTop = -1;
         for (SliceRow s : sliceRows) {

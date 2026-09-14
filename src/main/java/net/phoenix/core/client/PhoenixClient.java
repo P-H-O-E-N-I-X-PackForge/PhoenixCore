@@ -31,13 +31,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.command.TerrainPreviewCommand;
 import net.phoenix.core.client.particle.PhoenixParticles;
-import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
-import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
 import net.phoenix.core.client.renderer.machine.*;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.ConfluxRegistry;
 import net.phoenix.core.integration.conflux.client.ConfluxEditorCommand;
+import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
 import net.phoenix.core.integration.conflux.tools.capture.ExportSpritesCommand;
 import net.phoenix.core.integration.conflux.tools.capture.SpriteCaptureRegistry;
 import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomPhoenixBaker;
@@ -60,6 +60,8 @@ public class PhoenixClient {
         net.phoenix.core.integration.gregvaults.client.GregTechVaultsClient.init(modBus);
         modBus.addListener(PhoenixClient::registerDynamicPipeModels);
         modBus.addListener(WorldFXShaders::onRegisterShaders);
+
+        net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers.registerAll();
     }
 
     @SubscribeEvent
@@ -136,7 +138,8 @@ public class PhoenixClient {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("spray_can_info", net.phoenix.core.client.renderer.SprayCanHudOverlay.HUD_SPRAY_CAN);
-        event.registerAboveAll("shader_profiler", net.phoenix.core.client.renderer.ShaderProfilerOverlay.HUD_SHADER_PROFILER);
+        event.registerAboveAll("shader_profiler",
+                net.phoenix.core.client.renderer.ShaderProfilerOverlay.HUD_SHADER_PROFILER);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -164,8 +167,6 @@ public class PhoenixClient {
 
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent event) {
-        net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers.registerAll();
-
         event.enqueueWork(() -> {
             MenuScreens.register(PhoenixCore.RECIPE_BUILDER_MENU.get(), RecipeBuilderScreen::new);
         });

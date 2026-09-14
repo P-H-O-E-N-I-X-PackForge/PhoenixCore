@@ -6,7 +6,6 @@ import net.minecraft.world.level.block.Block;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlock;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
-
 import net.phoenix.core.integration.jade.provider.*;
 
 import snownee.jade.api.IWailaClientRegistration;
@@ -30,7 +29,6 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(new AstralThreadHatchProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new JadeGregPackProvider(), OmniPackBlockEntity.class);
         registration.registerBlockDataProvider(new VaultProvider(), MetaMachine.class);
-
     }
 
     @Override

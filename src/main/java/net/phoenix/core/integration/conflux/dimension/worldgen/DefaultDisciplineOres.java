@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.worldgen.GTLayerPattern;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 
@@ -16,7 +15,6 @@ public class DefaultDisciplineOres {
     private static final RuleTest[] STONE_RULES = new RuleTest[] { new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES) };
 
     public static void registerAll() {
-
         registerSealedAOres();
         registerSealedBOres();
     }
@@ -40,7 +38,7 @@ public class DefaultDisciplineOres {
                 .dikeVeinGenerator(gen -> gen
                         .withBlock(Tin, 1, -16, 80)
                         .withBlock(Zinc, 1, -16, 80))
-                
+
                 .surfaceIndicatorGenerator(ind -> ind.surfaceRock(Tin)
                         .placement(SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE)));
 

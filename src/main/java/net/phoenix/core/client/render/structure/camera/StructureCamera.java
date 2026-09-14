@@ -6,12 +6,6 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
-/**
- * Ported near-verbatim from Phantasia's {@code net.phoenixvine.phantasia.client.camera.PhantasiaCamera}
- * - an orbit/pan/zoom camera with optional eased lerps between poses. This is the exact control feel
- * (drag to orbit, middle-drag to pan, scroll to zoom, all around a look-at target rather than a free
- * fly camera) requested to be preserved rather than reimplemented.
- */
 public class StructureCamera {
 
     public record LerpJob(

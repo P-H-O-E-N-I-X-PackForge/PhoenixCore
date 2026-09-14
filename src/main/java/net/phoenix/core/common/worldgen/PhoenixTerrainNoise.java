@@ -41,7 +41,9 @@ public final class PhoenixTerrainNoise {
             } else {
                 double amp = amplitude * regionFactor(regionNoise, x, z);
                 height = baseY + amp * fbm(noise, x, 0, z, octaves, frequency);
-                c[0] = x; c[1] = z; c[2] = height;
+                c[0] = x;
+                c[1] = z;
+                c[2] = height;
             }
             return height - y;
         };
@@ -70,7 +72,9 @@ public final class PhoenixTerrainNoise {
             } else {
                 double amp = amplitude * regionFactor(regionNoise, x, z);
                 height = baseY + amp * ridgedFbm(noise, x, z, octaves, frequency);
-                c[0] = x; c[1] = z; c[2] = height;
+                c[0] = x;
+                c[1] = z;
+                c[2] = height;
             }
             return height - y;
         };
@@ -93,7 +97,9 @@ public final class PhoenixTerrainNoise {
                 double wz = z + warpNoise.getValue(x * warpFreq + 500, 0, z * warpFreq + 500) * warpStrength;
                 double amp = amplitude * regionFactor(regionNoise, x, z);
                 height = baseY + amp * fbm(noise, wx, 0, wz, octaves, frequency);
-                c[0] = x; c[1] = z; c[2] = height;
+                c[0] = x;
+                c[1] = z;
+                c[2] = height;
             }
             return height - y;
         };
@@ -113,7 +119,9 @@ public final class PhoenixTerrainNoise {
                 double amp = amplitude * regionFactor(regionNoise, x, z);
                 double rawHeight = baseY + amp * fbm(noise, x, 0, z, octaves, frequency);
                 height = Math.floor(rawHeight / stepSize) * stepSize;
-                c[0] = x; c[1] = z; c[2] = height;
+                c[0] = x;
+                c[1] = z;
+                c[2] = height;
             }
             return height - y;
         };
@@ -122,10 +130,12 @@ public final class PhoenixTerrainNoise {
     private static final int CAVE_Y_STEP = 4;
 
     private interface DensityFn {
+
         double sample(double x, double y, double z);
     }
 
     private static final class CaveInterpCache {
+
         double x = Double.NaN, z = Double.NaN;
         int yLo = Integer.MIN_VALUE;
         double vLo, vHi;
@@ -199,7 +209,7 @@ public final class PhoenixTerrainNoise {
     }
 
     public static TerrainSampler withCaves(TerrainSampler terrain, TerrainSampler caves,
-                                            double protectAboveY, double taperDistance) {
+                                           double protectAboveY, double taperDistance) {
         return (x, y, z) -> {
             double t = terrain.sample(x, y, z);
             if (t <= 0) return t;
@@ -216,6 +226,7 @@ public final class PhoenixTerrainNoise {
     }
 
     public static final class WaterMask {
+
         private final SimplexNoise oceanNoise;
         private final SimplexNoise riverNoise;
         private final double oceanFrequency;
@@ -310,8 +321,8 @@ public final class PhoenixTerrainNoise {
     }
 
     public static WaterMask waterMask(long seed, int seaLevel, double oceanFrequency, double oceanCoverage,
-                                       double oceanDepth, double riverFrequency, double riverWidth, double riverDepth,
-                                       TerrainSampler baseTerrain, double baseY) {
+                                      double oceanDepth, double riverFrequency, double riverWidth, double riverDepth,
+                                      TerrainSampler baseTerrain, double baseY) {
         if (oceanCoverage <= 0 && riverWidth <= 0) return null;
         return new WaterMask(seed, seaLevel, oceanFrequency, oceanCoverage, oceanDepth,
                 riverFrequency, riverWidth, riverDepth, baseTerrain, baseY);
@@ -375,7 +386,7 @@ public final class PhoenixTerrainNoise {
             amplitude *= 0.5;
             freq *= 2.0;
         }
-        
+
         return (value / maxAmp) * 2.0 - 1.0;
     }
 

@@ -1,14 +1,5 @@
 package net.phoenix.core.client.renderer.cinema;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Axis;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
@@ -18,10 +9,17 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-
 import net.phoenix.core.common.block.cinema.CinemaScreenBlock;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 
 public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlockEntity> {
@@ -35,17 +33,17 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
     @Override
     public void render(CinemaScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
-                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+                       MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         Level level = blockEntity.getLevel();
-        CinemaGroupUtil.GroupLayout layout = level != null
-                ? CinemaGroupUtil.getLayout(level, blockEntity.getBlockPos())
-                : new CinemaGroupUtil.GroupLayout(0, 0, 1, 1, blockEntity.getBlockPos());
+        CinemaGroupUtil.GroupLayout layout = level != null ?
+                CinemaGroupUtil.getLayout(level, blockEntity.getBlockPos()) :
+                new CinemaGroupUtil.GroupLayout(0, 0, 1, 1, blockEntity.getBlockPos());
         boolean solo = layout.width() == 1 && layout.height() == 1;
         float halfSize = solo ? SOLO_HALF_SIZE : GROUPED_HALF_SIZE;
 
         CinemaScreenBlockEntity backgroundSource = blockEntity;
-        if (!solo && layout.anchor() != null && level != null
-                && level.getBlockEntity(layout.anchor()) instanceof CinemaScreenBlockEntity anchorBE) {
+        if (!solo && layout.anchor() != null && level != null &&
+                level.getBlockEntity(layout.anchor()) instanceof CinemaScreenBlockEntity anchorBE) {
             backgroundSource = anchorBE;
         }
         int textureId = CinemaRenderTarget.getOrRenderTexture(layout, backgroundSource.getBackground());
@@ -69,14 +67,6 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.setShaderTexture(0, textureId);
         RenderSystem.disableCull();
 
-        // Belt and suspenders against this quad picking up transparency from anywhere else in the
-        // frame: disableBlend() alone kept leaving jagged holes straight through to the world
-        // behind the screen, which is consistent with either blend not actually staying off through
-        // this draw, or a stale ColorModulator (left non-opaque by whatever rendered earlier this
-        // frame - a damage flash, an underwater tint, etc.) multiplying into our sampled alpha.
-        // Forcing both explicitly - an opaque-overwrite blend func even if blend ends up enabled,
-        // and a neutral white ColorModulator - removes either possibility regardless of which one
-        // was actually responsible.
         RenderSystem.disableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -97,8 +87,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         if (solo || layout.isCenterCell()) {
             boolean editingThis = CinemaEditState.isEditing(blockEntity.getBlockPos());
             String text = editingThis ? liveTypedText() : blockEntity.getCurrentLine().getString();
-            // Only resolve stat tokens (e.g. "{stat:deaths}") for the committed line, not while
-            // still typing - the token itself should stay visible/editable in the live buffer.
+
             if (!editingThis) {
                 text = CinemaStatTokens.resolve(text, Minecraft.getInstance().player);
             }
@@ -116,7 +105,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     }
 
     private void renderText(String text, CinemaScreenBlockEntity blockEntity, PoseStack poseStack,
-                             MultiBufferSource bufferSource, int packedLight, float halfSize) {
+                            MultiBufferSource bufferSource, int packedLight, float halfSize) {
         Component line = Component.literal(text);
         float scale = blockEntity.getTextScale();
 

@@ -12,27 +12,11 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
-/**
- * A normal 3x3 crafting recipe (works in a plain crafting table, no multiblock needed) that fills a
- * Cinder Core by hand - an alternative to the Cinder Forge multiblock
- * ({@link net.phoenix.core.integration.ae2.CinderForgeHatchPartMachine}) for small structures. Same
- * "special"/dynamic-matching shape as vanilla's own {@code ArmorDyeRecipe}/{@code RepairItemRecipe}:
- * no fixed ingredient list in JSON, {@link #matches} does the real work by reading whichever Core is
- * in the grid and checking the rest of the grid against its specific schema requirement.
- * <p>
- * Hard ceiling, not a design choice: a vanilla crafting grid is physically 3x3 = 9 slots, one of
- * which holds the Core - so this can never satisfy a schema needing more than <b>8 distinct block
- * types</b>, no matter how the matching logic is written (AE2 Crafting Patterns are tied to that same
- * grid). The Cinder Forge multiblock has no such ceiling (its hatch pulls straight from the ME
- * network, not a 9-slot grid) - this recipe is only ever the option for small multiblocks, or players
- * without an AE2 network at all.
- */
 public class CinderCoreForgeRecipe extends CustomRecipe {
 
     public CinderCoreForgeRecipe(ResourceLocation id, CraftingBookCategory category) {
@@ -51,8 +35,7 @@ public class CinderCoreForgeRecipe extends CustomRecipe {
             if (stack.getItem() instanceof CinderCoreItem) {
                 if (!template.isEmpty()) return false;
                 if (CinderSchemaData.getTargetId(stack) == null) return false;
-                // Same one-shot-fill rule as the Forge - only an empty Core is a valid input, never a
-                // partially- or already-stocked one.
+
                 if (!CinderSchemaData.tallyStocked(stack).isEmpty()) return false;
                 template = stack;
             } else if (stack.getItem() instanceof BlockItem blockItem) {

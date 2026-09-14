@@ -13,7 +13,6 @@ public class PhysicsHook {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
-
         if (event.phase != TickEvent.Phase.END) {
             return;
         }
@@ -54,7 +53,6 @@ public class PhysicsHook {
     }
 
     private static void applyGravityZones(Entity entity, java.util.List<GravityZone> zones) {
-        
         float maxMultiplier = 1.0f;
 
         for (GravityZone zone : zones) {
@@ -70,7 +68,6 @@ public class PhysicsHook {
     }
 
     private static void applyGravityModifier(Entity entity, float gravityMultiplier) {
-        
         if (entity.onGround() && gravityMultiplier > 0.8f) {
             return;
         }
@@ -92,7 +89,6 @@ public class PhysicsHook {
     }
 
     private static String getDimensionId(Level level) {
-
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

@@ -10,15 +10,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
 import java.util.function.Supplier;
 
-/** Sets which multiblock a Cinder Core is configured for - the one part of configuration that stays
- *  a manual, in-person choice rather than something AE2 could ever automate (see Rebirth Cinder Core
- *  design notes on why). */
 public class C2SCinderSetTargetPacket {
 
     private final InteractionHand hand;

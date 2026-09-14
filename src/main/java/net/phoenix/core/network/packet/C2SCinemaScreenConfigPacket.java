@@ -65,8 +65,8 @@ public class C2SCinemaScreenConfigPacket {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null) return;
-            if (player.distanceToSqr(msg.pos.getX() + 0.5, msg.pos.getY() + 0.5, msg.pos.getZ() + 0.5)
-                    > MAX_EDIT_DISTANCE_SQ) {
+            if (player.distanceToSqr(msg.pos.getX() + 0.5, msg.pos.getY() + 0.5, msg.pos.getZ() + 0.5) >
+                    MAX_EDIT_DISTANCE_SQ) {
                 return;
             }
             if (!player.level().isLoaded(msg.pos)) return;

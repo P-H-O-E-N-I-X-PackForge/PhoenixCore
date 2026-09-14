@@ -1,8 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.Level;
+
+import com.mojang.blaze3d.vertex.PoseStack;
 
 public abstract class SkyRenderer {
 
@@ -19,7 +20,7 @@ public abstract class SkyRenderer {
     }
 
     public abstract void render(PoseStack poseStack, MultiBufferSource bufferSource,
-                               float partialTick, float skyBrightness);
+                                float partialTick, float skyBrightness);
 
     public void update() {
         if (level != null) {
@@ -30,14 +31,12 @@ public abstract class SkyRenderer {
 
     public float getCameraYaw(float partialTick) {
         if (level != null) {
-            return level.getGameTime() * 0.005f; 
+            return level.getGameTime() * 0.005f;
         }
         return 0.0f;
     }
 
-    public void cleanup() {
-        
-    }
+    public void cleanup() {}
 
     public String getDimensionId() {
         return dimensionId;

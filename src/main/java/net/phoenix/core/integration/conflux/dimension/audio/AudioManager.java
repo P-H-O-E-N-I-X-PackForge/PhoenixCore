@@ -2,7 +2,6 @@ package net.phoenix.core.integration.conflux.dimension.audio;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -96,7 +95,7 @@ public class AudioManager {
 
             float attentuatedVolume = effect.getVolumeAtDistance(player.position(), position);
             if (attentuatedVolume <= 0.01f) {
-                return; 
+                return;
             }
 
             SoundManager soundManager = mc.getSoundManager();
@@ -108,8 +107,7 @@ public class AudioManager {
                     SoundSource.AMBIENT,
                     attentuatedVolume * globalVolume,
                     effect.getPitch(),
-                    false 
-            );
+                    false);
         });
     }
 

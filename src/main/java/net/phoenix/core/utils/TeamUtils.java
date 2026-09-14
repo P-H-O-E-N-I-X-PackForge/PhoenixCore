@@ -2,7 +2,6 @@ package net.phoenix.core.utils;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraftforge.fml.ModList;
 
 import java.util.UUID;

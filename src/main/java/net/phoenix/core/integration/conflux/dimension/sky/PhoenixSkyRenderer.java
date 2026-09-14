@@ -1,9 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +22,15 @@ public class PhoenixSkyRenderer extends SkyRenderer {
 
     private void initializePhoenixSky() {
         orbitingBodies.add(new PlanetOrbit(
-            "Lava Moon",
-            PlanetOrbit.PlanetType.MOON,
-            100,
-            0.001f,
-            7.5f,
-            new Vec3(0, 50, 0),
-            0xFF6600,
-            true,
-            1.2f
-        ));
+                "Lava Moon",
+                PlanetOrbit.PlanetType.MOON,
+                100,
+                0.001f,
+                7.5f,
+                new Vec3(0, 50, 0),
+                0xFF6600,
+                true,
+                1.2f));
     }
 
     @Override

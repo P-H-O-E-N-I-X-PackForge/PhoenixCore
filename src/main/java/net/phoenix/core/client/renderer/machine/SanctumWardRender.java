@@ -7,13 +7,13 @@ import com.gregtechceu.gtceu.client.util.ModelEventHelper;
 
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
-
 import net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachine;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -23,16 +23,6 @@ import org.joml.Quaternionf;
 
 import java.util.List;
 
-/**
- * Reuses just the sphere half of {@link PlasmaArcFurnaceRender} (the "blue_star" obj model, no rings)
- * as the Sanctum Ward's visual - a translucent dome scaled directly to {@link SanctumWardMachine#WARD_RADIUS_XZ}
- * (25 blocks), so its visible size always matches the actual ward radius rather than being a fixed
- * decorative prop like the furnace's floating star. Registers its own bake-event listener for the same
- * {@link PlasmaArcFurnaceRender#SPHERE_MODEL_RL} asset rather than reaching into that class's private
- * field - the asset itself only needs registering once (already done for the furnace in
- * {@code PhoenixClient}), and Forge's model-bake event happily notifies multiple independent listeners
- * for the same resource location.
- */
 @SuppressWarnings("all")
 public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockMachine, SanctumWardRender> {
 
@@ -70,14 +60,25 @@ public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockM
         float tick = machine.getOffsetTimer() + partialTick;
         float angle = (tick * ROTATION_SPEED) % 360.0F;
 
+        double x = 0.5;
+        double y = 2.5;
+        double z = 0.5;
+        switch (machine.getFrontFacing()) {
+            case NORTH -> z -= 20.0;
+            case SOUTH -> z += 20.0;
+            case WEST -> x -= 20.0;
+            case EAST -> x += 20.0;
+            default -> {}
+        }
+
         poseStack.pushPose();
-        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.translate(x, y, z);
         poseStack.mulPose(new Quaternionf().fromAxisAngleDeg(0.0F, 1.0F, 0.0F, angle));
-        poseStack.scale((float) SanctumWardMachine.WARD_RADIUS_XZ, (float) SanctumWardMachine.WARD_RADIUS_XZ,
-                (float) SanctumWardMachine.WARD_RADIUS_XZ);
+        poseStack.scale(0.1F, 0.1F, 0.1F);
 
         PoseStack.Pose pose = poseStack.last();
-        VertexConsumer consumer = buffer.getBuffer(Sheets.translucentCullBlockSheet());
+
+        VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
         List<BakedQuad> quads = sphereModel.getQuads(null, null, random, ModelData.EMPTY, null);
         for (BakedQuad quad : quads) {
             consumer.putBulkData(pose, quad, 0.55F, 0.85F, 1.0F, DOME_ALPHA, LightTexture.FULL_BRIGHT, packedOverlay,
@@ -99,6 +100,6 @@ public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockM
 
     @Override
     public AABB getRenderBoundingBox(WorkableElectricMultiblockMachine machine) {
-        return new AABB(machine.getBlockPos()).inflate(SanctumWardMachine.WARD_RADIUS_XZ + 4.0);
+        return new AABB(machine.getBlockPos()).inflate(getViewDistance());
     }
 }

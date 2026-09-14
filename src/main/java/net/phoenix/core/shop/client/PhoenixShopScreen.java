@@ -9,12 +9,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import com.mojang.math.Axis;
-
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
@@ -30,6 +26,8 @@ import net.phoenix.core.shop.reward.ItemShopReward;
 import net.phoenix.core.shop.reward.ResearchUnlockShopReward;
 import net.phoenix.core.shop.reward.ThreadShopReward;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
+
+import com.mojang.math.Axis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +92,11 @@ public class PhoenixShopScreen extends Screen {
     private String warningEntryName = null;
     private float warningTimer = 0f;
 
-    private enum MinigameType { SWEEP, MASH, REACTION }
+    private enum MinigameType {
+        SWEEP,
+        MASH,
+        REACTION
+    }
 
     private boolean minigameActive = false;
     private MinigameType minigameType;
@@ -258,8 +260,8 @@ public class PhoenixShopScreen extends Screen {
         for (TabRect tab : layoutTabs(px, py)) {
             boolean selected = tab.name().equals(selectedCategory);
             boolean hover = mx >= tab.x() && mx < tab.x() + tab.w() && my >= tab.y() && my < tab.y() + tab.h();
-            int bg = selected ? ((0xFF << 24) | (cBorder & 0xFFFFFF))
-                    : hover ? (blend(cPanel1, cPanel2, 0.5f) | 0xFF000000) : cPanel1;
+            int bg = selected ? ((0xFF << 24) | (cBorder & 0xFFFFFF)) :
+                    hover ? (blend(cPanel1, cPanel2, 0.5f) | 0xFF000000) : cPanel1;
             g.fill(tab.x(), tab.y(), tab.x() + tab.w(), tab.y() + tab.h(), bg);
             int textCol = selected ? contrastColor(cBorder) : cDim;
             drawCenteredNoShadow(g, tab.name(), tab.x() + tab.w() / 2, tab.y() + 3, textCol);
@@ -290,7 +292,7 @@ public class PhoenixShopScreen extends Screen {
     }
 
     private void renderCards(GuiGraphics g, List<ShopEntryView> visible, int px, int py, int panelW, int panelH,
-            int mx, int my) {
+                             int mx, int my) {
         if (visible.isEmpty()) {
             String msg = entries.isEmpty() ? "The shop is empty." : "No entries match.";
             g.drawString(font, msg, px + 8, gridTop(py) + 4, cDim, false);
@@ -598,8 +600,8 @@ public class PhoenixShopScreen extends Screen {
         switch (minigameType) {
             case SWEEP -> minigameSweetCenter = 0.2f + random.nextFloat() * 0.6f;
             case MASH -> mashCount = 0;
-            case REACTION -> reactionGoAt = minigameStartElapsed + REACTION_MIN_DELAY
-                    + random.nextFloat() * (REACTION_MAX_DELAY - REACTION_MIN_DELAY);
+            case REACTION -> reactionGoAt = minigameStartElapsed + REACTION_MIN_DELAY +
+                    random.nextFloat() * (REACTION_MAX_DELAY - REACTION_MIN_DELAY);
         }
     }
 
@@ -636,8 +638,7 @@ public class PhoenixShopScreen extends Screen {
         float elapsed = clock.getElapsed() - minigameStartElapsed;
         if (minigameType == MinigameType.MASH && elapsed > MASH_TIME_LIMIT) {
             finishMinigame(false, "Out of time!");
-        } else if (minigameType == MinigameType.REACTION
-                && clock.getElapsed() - reactionGoAt > REACTION_WINDOW) {
+        } else if (minigameType == MinigameType.REACTION && clock.getElapsed() - reactionGoAt > REACTION_WINDOW) {
             finishMinigame(false, "Too slow!");
         }
     }
@@ -664,7 +665,6 @@ public class PhoenixShopScreen extends Screen {
             scrollY = 0f;
         });
         addRenderableWidget(searchBox);
-
     }
 
     private void buildEditorWidgets(int px, int py, int panelW) {
@@ -799,11 +799,10 @@ public class PhoenixShopScreen extends Screen {
         } catch (NumberFormatException e) {
             cost = 0;
         }
-        ItemStack icon = pendingIcon.isEmpty() ? new ItemStack(net.minecraft.world.item.Items.NETHER_STAR)
-                : pendingIcon;
-        String category = categoryBox != null && !categoryBox.getValue().isBlank()
-                ? categoryBox.getValue().trim()
-                : ShopEntry.DEFAULT_CATEGORY;
+        ItemStack icon = pendingIcon.isEmpty() ? new ItemStack(net.minecraft.world.item.Items.NETHER_STAR) :
+                pendingIcon;
+        String category = categoryBox != null && !categoryBox.getValue().isBlank() ? categoryBox.getValue().trim() :
+                ShopEntry.DEFAULT_CATEGORY;
 
         PhoenixNetwork.CHANNEL.sendToServer(new C2SAddShopEntryPacket(nameBox.getValue(), icon, cost,
                 new ArrayList<>(pendingRewards), category, editingEntryId));
@@ -900,9 +899,9 @@ public class PhoenixShopScreen extends Screen {
             } else {
                 for (int i = 0; i < pendingRewards.size(); i++) {
                     RewardSpec spec = pendingRewards.get(i);
-                    String line = spec.type().equals(ItemShopReward.TYPE)
-                            ? "- item: " + spec.itemParam().getHoverName().getString()
-                            : "- " + spec.type() + ": " + spec.param();
+                    String line = spec.type().equals(ItemShopReward.TYPE) ?
+                            "- item: " + spec.itemParam().getHoverName().getString() :
+                            "- " + spec.type() + ": " + spec.param();
                     g.drawString(font, line, px + 8, editorRewardListY + i * 10, cDim, false);
                 }
             }
@@ -938,7 +937,6 @@ public class PhoenixShopScreen extends Screen {
     }
 
     private void renderMinigame(GuiGraphics g, int px, int py, int panelW, int panelH) {
-
         g.fill(px, py, px + panelW, py + panelH, 0xFF0A0612);
         int centerX = px + panelW / 2;
         int centerY = py + panelH / 2;
@@ -1018,9 +1016,8 @@ public class PhoenixShopScreen extends Screen {
         g.fillGradient(x, y, x + vignette, y + h, 0x66000000, 0x00000000);
         g.fillGradient(x + w - vignette, y, x + w, y + h, 0x00000000, 0x66000000);
 
-        int borderCol = (0xFF << 24)
-                | (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse)
-                        & 0xFFFFFF);
+        int borderCol = (0xFF << 24) |
+                (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
         g.fill(x, y, x + w, y + 1, borderCol);
         g.fill(x, y + h - 1, x + w, y + h, borderCol);
         g.fill(x, y, x + 1, y + h, borderCol);
@@ -1041,9 +1038,8 @@ public class PhoenixShopScreen extends Screen {
             handleMinigameStrike();
             return true;
         }
-        if (key == 256 && (nameBox == null || !nameBox.isFocused()) && (paramBox == null || !paramBox.isFocused())
-                && (searchBox == null || !searchBox.isFocused())
-                && (categoryBox == null || !categoryBox.isFocused())) {
+        if (key == 256 && (nameBox == null || !nameBox.isFocused()) && (paramBox == null || !paramBox.isFocused()) &&
+                (searchBox == null || !searchBox.isFocused()) && (categoryBox == null || !categoryBox.isFocused())) {
             if (minigameActive) {
                 minigameActive = false;
                 return true;

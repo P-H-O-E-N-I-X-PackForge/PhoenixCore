@@ -127,7 +127,6 @@ legacyForge {
 
     runs {
         configureEach {
-            // Recommended logging data for a userdev environment
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             logLevel = org.slf4j.event.Level.DEBUG
             sourceSet = sourceSets.main
@@ -210,15 +209,12 @@ dependencies {
     modImplementation("curse.maven:guideme-1173950:7127447")
     modImplementation("curse.maven:phoenixs-chromatic-colors-1483210:8494864")
 
-
-
     modRuntimeOnly("curse.maven:fancymenu-367706:8652266")
     modRuntimeOnly("curse.maven:konkrete-410295:5028413")
     modRuntimeOnly("curse.maven:melody-938643:5109692")
     modCompileOnly("curse.maven:konkrete-410295:5028413")
     modCompileOnly("curse.maven:melody-938643:5109692")
     modCompileOnly("curse.maven:fancymenu-367706:8652266")
-
 
     modRuntimeOnly("curse.maven:jade-324717:5390389")
     modCompileOnly("curse.maven:jade-324717:5390389")
@@ -251,7 +247,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
-
 
     jarJar(modImplementation("local:phoenix_wiki:0.1.0"))
 }
@@ -288,13 +283,20 @@ tasks.named('jar', Jar).configure {
     finalizedBy 'reobfJar'
 }
 
-
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact(tasks.named('jar').get().archiveFile) {
-                builtBy tasks.named('reobfJar')
-                classifier = 'slim'
+        create('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "Repsy"
+            url = uri("https://repo.repsy.io/mvn/user75142941/phoenixsuite")
+            credentials {
+                username = project.findProperty("repsyUsername") ?: System.getenv("REPSY_USERNAME")
+                password = project.findProperty("repsyPassword") ?: System.getenv("REPSY_PASSWORD")
             }
         }
     }

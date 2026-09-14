@@ -1,10 +1,10 @@
 package net.phoenix.core.common.block.cinder;
 
-import com.tterrag.registrate.util.entry.BlockEntityEntry;
-import com.tterrag.registrate.util.entry.BlockEntry;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
+
+import com.tterrag.registrate.util.entry.BlockEntityEntry;
+import com.tterrag.registrate.util.entry.BlockEntry;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 

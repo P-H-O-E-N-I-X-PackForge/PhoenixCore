@@ -1,10 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -23,6 +21,9 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.phoenix.core.PhoenixCore;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -33,8 +34,8 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     private static final int[][] PILLAR_OFFSETS = { { -8, -8 }, { 8, -8 }, { -8, 8 }, { 8, 8 } };
 
     public static final Codec<EtherealSpawnGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource)
-    ).apply(instance, instance.stable(EtherealSpawnGenerator::new)));
+            BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource))
+            .apply(instance, instance.stable(EtherealSpawnGenerator::new)));
 
     public static void register() {
         Registry.register(BuiltInRegistries.CHUNK_GENERATOR, PhoenixCore.id("ethereal_spawn"), CODEC);
@@ -50,22 +51,19 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     }
 
     @Override
-    public void applyCarvers(WorldGenRegion level, long seed, RandomState randomState, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving carving) {
-        
-    }
+    public void applyCarvers(WorldGenRegion level, long seed, RandomState randomState, BiomeManager biomeManager,
+                             StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving carving) {}
 
     @Override
-    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
-        
-    }
+    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState,
+                             ChunkAccess chunk) {}
 
     @Override
-    public void spawnOriginalMobs(WorldGenRegion worldGenRegion) {
-        
-    }
+    public void spawnOriginalMobs(WorldGenRegion worldGenRegion) {}
 
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState,
+                                                        StructureManager structureManager, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(() -> {
             ChunkPos chunkPos = chunk.getPos();
             int minX = chunkPos.getMinBlockX();
@@ -131,7 +129,8 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     }
 
     @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types heightmapTypes, LevelHeightAccessor levelHeightAccessor, RandomState randomState) {
+    public int getBaseHeight(int x, int z, Heightmap.Types heightmapTypes, LevelHeightAccessor levelHeightAccessor,
+                             RandomState randomState) {
         if (isInSpawnArea(x, z)) {
             return PLATFORM_Y;
         }
@@ -140,7 +139,8 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
 
     @Override
     public NoiseColumn getBaseColumn(int i, int i1, LevelHeightAccessor levelHeightAccessor, RandomState randomState) {
-        return new NoiseColumn(levelHeightAccessor.getMinBuildHeight(), new net.minecraft.world.level.block.state.BlockState[0]);
+        return new NoiseColumn(levelHeightAccessor.getMinBuildHeight(),
+                new net.minecraft.world.level.block.state.BlockState[0]);
     }
 
     @Override
@@ -159,9 +159,7 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     }
 
     @Override
-    public void addDebugScreenInfo(java.util.List<String> list, RandomState randomState, BlockPos pos) {
-        
-    }
+    public void addDebugScreenInfo(java.util.List<String> list, RandomState randomState, BlockPos pos) {}
 
     private boolean isInSpawnArea(int x, int z) {
         return Math.abs(x) < 64 && Math.abs(z) < 64;

@@ -1,6 +1,7 @@
 package net.phoenix.core.integration.gregvaults.datagen.model;
 
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 

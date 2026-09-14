@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -24,7 +23,10 @@ import java.util.function.Consumer;
 @OnlyIn(Dist.CLIENT)
 public class ItemPickerScreen extends Screen {
 
-    private enum SourceTab { REGISTRY, INVENTORY }
+    private enum SourceTab {
+        REGISTRY,
+        INVENTORY
+    }
 
     private static final int PANEL_W = 280;
     private static final int PANEL_H = 220;
@@ -349,9 +351,8 @@ public class ItemPickerScreen extends Screen {
         g.fillGradient(x, y, x + w, y + vignette, 0x99000000, 0x00000000);
         g.fillGradient(x, y + h - vignette, x + w, y + h, 0x00000000, 0x99000000);
 
-        int borderCol = (0xFF << 24)
-                | (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse)
-                        & 0xFFFFFF);
+        int borderCol = (0xFF << 24) |
+                (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
         g.fill(x, y, x + w, y + 1, borderCol);
         g.fill(x, y + h - 1, x + w, y + h, borderCol);
         g.fill(x, y, x + 1, y + h, borderCol);

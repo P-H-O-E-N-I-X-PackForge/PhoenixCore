@@ -98,7 +98,8 @@ public class PhoenixRadialMenu extends Screen {
         if (hoveredMode != null) {
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.literal(hoveredMode.getName()).withStyle(net.minecraft.ChatFormatting.GOLD));
-            tooltip.add(Component.literal(getModeDescription(hoveredMode)).withStyle(net.minecraft.ChatFormatting.GRAY));
+            tooltip.add(
+                    Component.literal(getModeDescription(hoveredMode)).withStyle(net.minecraft.ChatFormatting.GRAY));
             graphics.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
         }
 

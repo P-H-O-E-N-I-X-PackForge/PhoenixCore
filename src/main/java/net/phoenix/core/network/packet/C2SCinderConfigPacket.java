@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
@@ -21,11 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Carries a Configurator session's choices from client to server for validation and persistence -
- * see {@link CinderSchemaData#applyConfiguration} for why this is a raw-values packet rather than
- * shipping the client's NBT directly (never trust client-authored item NBT as authoritative).
- */
 public class C2SCinderConfigPacket {
 
     private final InteractionHand hand;
@@ -46,7 +40,7 @@ public class C2SCinderConfigPacket {
     }
 
     public static C2SCinderConfigPacket fromSchema(InteractionHand hand, MultiblockMachineDefinition definition,
-                                                    MultiblockSchemaInfo schemaInfo) {
+                                                   MultiblockSchemaInfo schemaInfo) {
         var sliceRepeats = schemaInfo.getUserSliceRepeats();
         int[] sliceKeys = new int[sliceRepeats.size()];
         int[] sliceValues = new int[sliceRepeats.size()];

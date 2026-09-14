@@ -1,25 +1,23 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import org.jetbrains.annotations.Nullable;
 
 public class WorldgenApplier {
 
     public static void applyWorldgen(
-            WorldGenLevel level,
-            DisciplineWorldgenConfig config,
-            @Nullable String currentStage,
-            net.minecraft.util.RandomSource random,
-            int chunkX,
-            int chunkZ) {
-
+                                     WorldGenLevel level,
+                                     DisciplineWorldgenConfig config,
+                                     @Nullable String currentStage,
+                                     net.minecraft.util.RandomSource random,
+                                     int chunkX,
+                                     int chunkZ) {
         if (config.ores.length > 0) {
             OreGenerator.generateOres(level, config.ores, random, chunkX, chunkZ);
         }
@@ -37,37 +35,38 @@ public class WorldgenApplier {
     }
 
     private static void applySurfaceBlocks(
-            WorldGenLevel level,
-            DisciplineWorldgenConfig config,
-            DisciplineWorldgenConfig.BiomeBlockPalette.BlockTypeSet blocks,
-            int chunkX,
-            int chunkZ) {
-
+                                           WorldGenLevel level,
+                                           DisciplineWorldgenConfig config,
+                                           DisciplineWorldgenConfig.BiomeBlockPalette.BlockTypeSet blocks,
+                                           int chunkX,
+                                           int chunkZ) {
         int minX = chunkX * 16;
         int minZ = chunkZ * 16;
 
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
-                
+
                 int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
 
                 BlockPos surfacePos = new BlockPos(x, y, z);
                 BlockPos grassPos = surfacePos.above();
 
                 if (level.ensureCanWrite(grassPos)) {
-                    
+
                     level.setBlock(grassPos,
-                        net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                         new  ResourceLocation(blocks.grass))
-                        .defaultBlockState(), 3);
+                            net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+                                    new ResourceLocation(blocks.grass))
+                                    .defaultBlockState(),
+                            3);
 
                     for (int i = 1; i < 4; i++) {
                         BlockPos dirtPos = grassPos.below(i);
                         if (level.ensureCanWrite(dirtPos)) {
                             level.setBlock(dirtPos,
-                                net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                                    new ResourceLocation(blocks.dirt))
-                                .defaultBlockState(), 3);
+                                    net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+                                            new ResourceLocation(blocks.dirt))
+                                            .defaultBlockState(),
+                                    3);
                         }
                     }
                 }
@@ -76,12 +75,11 @@ public class WorldgenApplier {
     }
 
     public static void applyDecorations(
-            WorldGenLevel level,
-            DisciplineWorldgenConfig.DecorationConfig decorations,
-            net.minecraft.util.RandomSource random,
-            int chunkX,
-            int chunkZ) {
-
+                                        WorldGenLevel level,
+                                        DisciplineWorldgenConfig.DecorationConfig decorations,
+                                        net.minecraft.util.RandomSource random,
+                                        int chunkX,
+                                        int chunkZ) {
         int minX = chunkX * 16;
         int minZ = chunkZ * 16;
 
@@ -107,12 +105,12 @@ public class WorldgenApplier {
                 if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos)) {
                     try {
                         var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                            new ResourceLocation(decoration));
+                                new ResourceLocation(decoration));
                         if (block != Blocks.AIR) {
                             level.setBlock(pos, block.defaultBlockState(), 3);
                         }
                     } catch (Exception e) {
-                        
+
                     }
                 }
             }
@@ -120,19 +118,17 @@ public class WorldgenApplier {
     }
 
     public static void applyCaveModifications(
-            DisciplineWorldgenConfig config) {
-
+                                              DisciplineWorldgenConfig config) {
         if (!config.caves.enabled) {
-            
+
             return;
         }
-
     }
 
     @Nullable
     public static DisciplineWorldgenConfig getConfigForDiscipline(String disciplineId) {
-        net.phoenix.core.integration.conflux.dimension.DisciplineTheme theme =
-            net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry.getTheme(disciplineId);
+        net.phoenix.core.integration.conflux.dimension.DisciplineTheme theme = net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry
+                .getTheme(disciplineId);
 
         if (theme == null) return null;
 
@@ -150,63 +146,61 @@ public class WorldgenApplier {
     }
 
     private static DisciplineWorldgenConfig createPhoenixConfig() {
-        
         DisciplineWorldgenConfig.OreConfig[] ores = {
-            new DisciplineWorldgenConfig.OreConfig(
-                new ResourceLocation("minecraft:iron_ore"),
-                8, 20, 0, 64, "minecraft:stone")
+                new DisciplineWorldgenConfig.OreConfig(
+                        new ResourceLocation("minecraft:iron_ore"),
+                        8, 20, 0, 64, "minecraft:stone")
         };
-        return new DisciplineWorldgenConfig("phoenix", ores, new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.SurfaceRuleSet[0],
-            new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 1.0f),
-            new DisciplineWorldgenConfig.DecorationConfig(0.5f, 0.2f, 0.1f, new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.CaveConfig(1.0f, 1.0f, true));
+        return new DisciplineWorldgenConfig("phoenix", ores,
+                new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.SurfaceRuleSet[0],
+                new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 1.0f),
+                new DisciplineWorldgenConfig.DecorationConfig(0.5f, 0.2f, 0.1f, new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.CaveConfig(1.0f, 1.0f, true));
     }
 
     private static DisciplineWorldgenConfig createSculkConfig() {
-        
         return createDefaultConfig();
     }
 
     private static DisciplineWorldgenConfig createVoidConfig() {
-        
         DisciplineWorldgenConfig.OreConfig[] ores = {};
-        return new DisciplineWorldgenConfig("void", ores, new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.SurfaceRuleSet[0],
-            new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 0.0f),
-            new DisciplineWorldgenConfig.DecorationConfig(0.0f, 0.0f, 0.0f, new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.CaveConfig(0.0f, 0.0f, false));
+        return new DisciplineWorldgenConfig("void", ores,
+                new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.SurfaceRuleSet[0],
+                new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 0.0f),
+                new DisciplineWorldgenConfig.DecorationConfig(0.0f, 0.0f, 0.0f, new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.CaveConfig(0.0f, 0.0f, false));
     }
 
     private static DisciplineWorldgenConfig createSealedConfig() {
-        
         return createDefaultConfig();
     }
 
     private static DisciplineWorldgenConfig createDefaultConfig() {
         DisciplineWorldgenConfig.OreConfig[] ores = {
-            new DisciplineWorldgenConfig.OreConfig(
-                new ResourceLocation("minecraft:iron_ore"),
-                8, 10, 0, 64, "minecraft:stone"),
-            new DisciplineWorldgenConfig.OreConfig(
-                new ResourceLocation("minecraft:coal_ore"),
-                16, 20, 0, 128, "minecraft:stone")
+                new DisciplineWorldgenConfig.OreConfig(
+                        new ResourceLocation("minecraft:iron_ore"),
+                        8, 10, 0, 64, "minecraft:stone"),
+                new DisciplineWorldgenConfig.OreConfig(
+                        new ResourceLocation("minecraft:coal_ore"),
+                        16, 20, 0, 128, "minecraft:stone")
         };
 
-        return new DisciplineWorldgenConfig("default", ores, new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.SurfaceRuleSet[0],
-            new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 1.0f),
-            new DisciplineWorldgenConfig.DecorationConfig(1.0f, 0.5f, 0.3f, new java.util.HashMap<>()),
-            new DisciplineWorldgenConfig.CaveConfig(1.0f, 1.0f, true));
+        return new DisciplineWorldgenConfig("default", ores,
+                new DisciplineWorldgenConfig.BiomeBlockPalette(new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.SurfaceRuleSet[0],
+                new DisciplineWorldgenConfig.StructureSet(new java.util.ArrayList<>(), 1.0f),
+                new DisciplineWorldgenConfig.DecorationConfig(1.0f, 0.5f, 0.3f, new java.util.HashMap<>()),
+                new DisciplineWorldgenConfig.CaveConfig(1.0f, 1.0f, true));
     }
 
     public static void applyWorldgenProfile(
-            WorldGenLevel level,
-            WorldgenProfile profile,
-            @Nullable String currentStage,
-            int chunkX,
-            int chunkZ) {
-
+                                            WorldGenLevel level,
+                                            WorldgenProfile profile,
+                                            @Nullable String currentStage,
+                                            int chunkX,
+                                            int chunkZ) {
         if (profile == null) return;
 
         if (profile.decorations != null) {
@@ -226,8 +220,7 @@ public class WorldgenApplier {
         }
     }
 
-    private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState> DECORATION_PALETTE =
-            new java.util.HashMap<>();
+    private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState> DECORATION_PALETTE = new java.util.HashMap<>();
     static {
         DECORATION_PALETTE.put("fire_flower", Blocks.TORCHFLOWER.defaultBlockState());
         DECORATION_PALETTE.put("lava_rose", Blocks.WITHER_ROSE.defaultBlockState());
@@ -267,12 +260,11 @@ public class WorldgenApplier {
     }
 
     public static void applyDecorationsFromProfile(
-            WorldGenLevel level,
-            WorldgenProfile.DecorationProfile decorations,
-            net.minecraft.util.RandomSource random,
-            int chunkX,
-            int chunkZ) {
-
+                                                   WorldGenLevel level,
+                                                   WorldgenProfile.DecorationProfile decorations,
+                                                   net.minecraft.util.RandomSource random,
+                                                   int chunkX,
+                                                   int chunkZ) {
         int minX = chunkX * 16;
         int minZ = chunkZ * 16;
 
@@ -311,12 +303,13 @@ public class WorldgenApplier {
         }
     }
 
-    private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState[]> TREE_PALETTES =
-            new java.util.HashMap<>();
+    private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState[]> TREE_PALETTES = new java.util.HashMap<>();
     static {
 
-        net.minecraft.world.level.block.Block rubberLog = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("gtceu:rubber_log"));
-        net.minecraft.world.level.block.Block rubberLeaves = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("gtceu:rubber_leaves"));
+        net.minecraft.world.level.block.Block rubberLog = BuiltInRegistries.BLOCK
+                .get(ResourceLocation.parse("gtceu:rubber_log"));
+        net.minecraft.world.level.block.Block rubberLeaves = BuiltInRegistries.BLOCK
+                .get(ResourceLocation.parse("gtceu:rubber_leaves"));
         TREE_PALETTES.put("rubber_tree", new net.minecraft.world.level.block.state.BlockState[] {
                 rubberLog.defaultBlockState(), persistentLeaves(rubberLeaves) });
 
@@ -343,18 +336,17 @@ public class WorldgenApplier {
     }
 
     private static net.minecraft.world.level.block.state.BlockState persistentLeaves(
-            net.minecraft.world.level.block.Block leaves) {
+                                                                                     net.minecraft.world.level.block.Block leaves) {
         return leaves.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
     }
 
     public static void applyTrees(
-            WorldGenLevel level,
-            java.util.List<WorldgenProfile.TreeConfig> trees,
-            float treeFrequency,
-            net.minecraft.util.RandomSource random,
-            int chunkX,
-            int chunkZ) {
-
+                                  WorldGenLevel level,
+                                  java.util.List<WorldgenProfile.TreeConfig> trees,
+                                  float treeFrequency,
+                                  net.minecraft.util.RandomSource random,
+                                  int chunkX,
+                                  int chunkZ) {
         if (trees == null || trees.isEmpty() || treeFrequency <= 0f) return;
 
         int minX = chunkX * 16;
@@ -378,9 +370,10 @@ public class WorldgenApplier {
     }
 
     private static void placeTree(
-            WorldGenLevel level, BlockPos base, WorldgenProfile.TreeConfig tree, net.minecraft.util.RandomSource random) {
-        net.minecraft.world.level.block.state.BlockState[] palette =
-                TREE_PALETTES.getOrDefault(tree.treeType, TREE_PALETTES.get("dead_tree"));
+                                  WorldGenLevel level, BlockPos base, WorldgenProfile.TreeConfig tree,
+                                  net.minecraft.util.RandomSource random) {
+        net.minecraft.world.level.block.state.BlockState[] palette = TREE_PALETTES.getOrDefault(tree.treeType,
+                TREE_PALETTES.get("dead_tree"));
         net.minecraft.world.level.block.state.BlockState trunk = palette[0];
         net.minecraft.world.level.block.state.BlockState canopy = palette[1];
 
@@ -413,11 +406,10 @@ public class WorldgenApplier {
     private static final int LAKE_LEVEL_TOLERANCE = 6;
 
     private static void applyLiquidFeatures(
-            WorldGenLevel level,
-            WorldgenProfile.LiquidProfile liquids,
-            int chunkX,
-            int chunkZ) {
-
+                                            WorldGenLevel level,
+                                            WorldgenProfile.LiquidProfile liquids,
+                                            int chunkX,
+                                            int chunkZ) {
         net.minecraft.util.RandomSource random = level.getRandom();
 
         if (random.nextFloat() < liquids.waterLakeFrequency) {
@@ -432,16 +424,16 @@ public class WorldgenApplier {
     }
 
     private static void placeLake(
-            WorldGenLevel level,
-            net.minecraft.util.RandomSource random,
-            int chunkX, int chunkZ,
-            int targetLevel, int radius,
-            net.minecraft.world.level.block.state.BlockState liquid) {
-
+                                  WorldGenLevel level,
+                                  net.minecraft.util.RandomSource random,
+                                  int chunkX, int chunkZ,
+                                  int targetLevel, int radius,
+                                  net.minecraft.world.level.block.state.BlockState liquid) {
         int x = (chunkX * 16) + random.nextInt(16);
         int z = (chunkZ * 16) + random.nextInt(16);
 
-        int centerSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z) - 1;
+        int centerSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z) -
+                1;
         if (Math.abs(centerSurfaceY - targetLevel) > LAKE_LEVEL_TOLERANCE) return;
 
         for (int dx = -radius; dx <= radius; dx++) {
@@ -451,7 +443,8 @@ public class WorldgenApplier {
                 int px = x + dx;
                 int pz = z + dz;
 
-                int columnSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, px, pz) - 1;
+                int columnSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING,
+                        px, pz) - 1;
                 BlockPos pos = new BlockPos(px, columnSurfaceY, pz);
                 if (level.ensureCanWrite(pos)) {
                     level.setBlock(pos, liquid, 3);
@@ -461,18 +454,16 @@ public class WorldgenApplier {
     }
 
     private static void applyProgressionWorldgen(
-            WorldGenLevel level,
-            WorldgenProfile profile,
-            String currentStage,
-            int chunkX,
-            int chunkZ) {
-
+                                                 WorldGenLevel level,
+                                                 WorldgenProfile profile,
+                                                 String currentStage,
+                                                 int chunkX,
+                                                 int chunkZ) {
         if (profile.progression == null || profile.progression.stages == null) {
             return;
         }
 
-        WorldgenProfile.ProgressionProfile.WorldgenStage stage =
-            profile.progression.stages.get(currentStage);
+        WorldgenProfile.ProgressionProfile.WorldgenStage stage = profile.progression.stages.get(currentStage);
 
         if (stage == null) return;
 
@@ -482,11 +473,10 @@ public class WorldgenApplier {
     }
 
     private static void applyStageDecorations(
-            WorldGenLevel level,
-            java.util.List<String> decorations,
-            int chunkX,
-            int chunkZ) {
-
+                                              WorldGenLevel level,
+                                              java.util.List<String> decorations,
+                                              int chunkX,
+                                              int chunkZ) {
         int minX = chunkX * 16;
         int minZ = chunkZ * 16;
         net.minecraft.util.RandomSource random = level.getRandom();
@@ -506,7 +496,7 @@ public class WorldgenApplier {
                             level.setBlock(pos, block.defaultBlockState(), 3);
                         }
                     } catch (Exception e) {
-                        
+
                     }
                 }
             }

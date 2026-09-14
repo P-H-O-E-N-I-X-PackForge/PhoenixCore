@@ -5,14 +5,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
 import java.util.function.Supplier;
 
-/** The Configurator's "Change Target" action - server-authoritative wipe of a Core's target and
- *  configuration, mirroring the client-side clear the screen does optimistically for its own copy. */
 public class C2SCinderClearTargetPacket {
 
     private final InteractionHand hand;

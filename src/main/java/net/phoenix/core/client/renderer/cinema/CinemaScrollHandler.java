@@ -6,12 +6,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinemaScreenConfigPacket;

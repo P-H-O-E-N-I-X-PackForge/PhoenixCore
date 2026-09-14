@@ -37,7 +37,8 @@ public class TerrainPreviewScreen extends Screen {
     private static final int MIN_PANEL_W = 150;
     private static final int MIN_PANEL_H = 310;
 
-    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath("phoenixcore", "terrain_preview");
+    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath("phoenixcore",
+            "terrain_preview");
     private DynamicTexture dynamicTexture;
     private NativeImage nativeImage;
     private final AtomicBoolean generating = new AtomicBoolean(false);

@@ -9,13 +9,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/**
- * Server -> client: the commit failed validation - show the reason and clear the client's preview.
- * When the rejection was specifically "not enough materials" (as opposed to too-far-away or
- * nothing-configured), this arms a short window on the client's {@code CinderPreviewState} letting a
- * second right-click at the same spot force a partial build instead of hard-failing again - see
- * {@code CinderPreviewState#armForceBuild}.
- */
 public class S2CCinderCommitRejectedPacket {
 
     private final String reason;

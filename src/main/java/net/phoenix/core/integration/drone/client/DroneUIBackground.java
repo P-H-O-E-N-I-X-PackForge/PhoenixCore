@@ -7,13 +7,6 @@ import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 
-/**
- * A calm, low-contrast panel backdrop - a plain dark gradient with a thin border, no grid overlay.
- * The previous version's bright cyan grid clashed with the ad-hoc per-row text colors elsewhere in
- * this UI; toning the background down to near-nothing and moving the actual visual structure into
- * bordered row/panel backgrounds (see {@code DroneControllerMachine}'s own drawables) reads as far
- * more polished than a loud backdrop fighting flat, ungrouped text for attention.
- */
 @OnlyIn(Dist.CLIENT)
 public class DroneUIBackground implements IDrawable {
 

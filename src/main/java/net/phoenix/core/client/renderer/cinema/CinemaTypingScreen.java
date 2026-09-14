@@ -1,11 +1,9 @@
 package net.phoenix.core.client.renderer.cinema;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinemaScreenConfigPacket;
@@ -28,9 +26,7 @@ public class CinemaTypingScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        
-    }
+    protected void init() {}
 
     @Override
     public boolean isPauseScreen() {
@@ -38,9 +34,7 @@ public class CinemaTypingScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-
-    }
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {}
 
     @Override
     public boolean charTyped(char c, int modifiers) {
@@ -68,8 +62,8 @@ public class CinemaTypingScreen extends Screen {
     }
 
     private void commit() {
-        if (minecraft != null && minecraft.level != null
-                && minecraft.level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen) {
+        if (minecraft != null && minecraft.level != null &&
+                minecraft.level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen) {
             List<String> lines = new ArrayList<>();
             for (Component line : screen.getLines()) {
                 lines.add(line.getString());

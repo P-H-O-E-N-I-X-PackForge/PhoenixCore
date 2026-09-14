@@ -6,22 +6,18 @@ import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableItemStackHan
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEBusPartMachine;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.phoenix.core.common.item.cinder.CinderCoreItem;
+import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
-
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-
-import net.phoenix.core.common.item.cinder.CinderCoreItem;
-import net.phoenix.core.common.item.cinder.CinderSchemaData;
-
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;
@@ -37,23 +33,11 @@ import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
 
-/**
- * The Cinder Forge's one required part: pulls an unconfigured (empty) Cinder Core and whatever raw
- * materials its schema needs straight from the ME network, stocks the Core in place once it has
- * everything, and pushes the finished Core back out - entirely autonomous, no Pattern Encoding
- * Terminal step needed at all (see the Rebirth Cinder Core design notes on why a fixed-output GT
- * recipe/pattern doesn't fit "give back the same item, transformed").
- * <p>
- * Built directly against AE2's low-level grid storage API ({@code MEStorage#insert}/{@code extract})
- * the same way {@link METagInputBusPartMachine} already does in this codebase, rather than the
- * higher-level {@code ExportOnlyAEItemList} config-slot system that class also uses - that system is
- * built for player-configured whitelists, not "search the network for anything matching a computed
- * schema," which is what this needs.
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CinderForgeHatchPartMachine extends MEBusPartMachine {
@@ -65,8 +49,6 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
     private static final int SCAN_INTERVAL_TICKS = 20;
     private static final int MATERIAL_GRID_COLS = 9;
 
-    // Same shared palette/card-background pattern as the Cinder Forge controller and Drone
-    // controller UIs, so the whole Cinder Forge system reads as one coherent style.
     private static final int COLOR_TITLE = 0xFFFFE0A8;
     private static final int COLOR_LABEL = 0xFFA88FD9;
     private static final int COLOR_PANEL_BG = 0xEE1C1730;
@@ -95,9 +77,6 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
         }
     }
 
-    /** Same whole-panel dark gradient as the Cinder Forge controller UI - see its class doc for why
-     *  this is needed on top of the card backgrounds below (otherwise they just float on GTCEu's
-     *  default light chrome). */
     private record BackgroundGradient() implements IDrawable {
 
         @Override
@@ -106,17 +85,6 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
         }
     }
 
-    /**
-     * Own minimal slot-grid UI, deliberately NOT the inherited {@code ItemBusPartMachine} default:
-     * that base sizes its slot grid from a tier formula ({@code (1 + min(9, tier))^2}, which for UHV
-     * renders a 10x10 = 100-slot grid with no relation to this hatch's real 55-slot handler - 45 of
-     * those slots aren't backed by any real storage at all, and nothing distinguishes slot 0 (the
-     * Core slot) from any of the 54 material slots around it. A player trying to manually place a
-     * Core into a uniform grid of 100 identical-looking slots has no way to know which one is the
-     * right one - which is exactly why it looked like the hatch "wasn't seeing" a Core that had
-     * actually just been placed into the wrong slot. This lays out the real 55 slots only, with the
-     * Core slot clearly separated, labeled, and accent-bordered.
-     */
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
@@ -135,15 +103,9 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
                 .pos(8, 32).size(slotSize, slotSize)
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_TITLE)));
 
-        // This UI otherwise has zero feedback of its own about whether the slot above actually
-        // contains a real, recognized Core - a player has no way to tell "it's genuinely empty" from
-        // "something's there but the system isn't picking it up" without this line.
         mainWidget.child(Text.dynamic(() -> Component.literal(coreStatusLine())).asWidget()
                 .pos(8 + slotSize + 6, 32).size(180, 20).color(COLOR_LABEL));
 
-        // Manual override - autoIO() already attempts this every tick on its own, but this gives
-        // instant feedback instead of waiting up to 20 ticks, and is the one and only way to trigger
-        // it at all on a Cinder Forge tier that doesn't auto-run (see the tiered Cinder Forge design).
         BooleanSyncValue packageNow = syncManager.getOrCreateSyncHandler("cinderPackageNow",
                 BooleanSyncValue.class, () -> new BooleanSyncValue(() -> false, fired -> {
                     if (!fired) return;
@@ -158,8 +120,6 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
                     return true;
                 }));
 
-        // Below both the Core slot (which ends at 32 + slotSize) and the status text + Package Now
-        // button beside it (which together run to y=68) - whichever is taller wins the gap.
         int materialsY = Math.max(32 + slotSize + 14, 76);
         mainWidget.child(Text.str("MATERIALS").asWidget().pos(8, materialsY).size(120, 10).color(COLOR_LABEL));
 
@@ -180,8 +140,6 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
         mainWidget.child(grid);
     }
 
-    /** Same checks {@code CinderForgeMachine}'s own status line uses, just phrased for "what's in
-     *  this specific slot right now" rather than the whole structure's state. */
     private String coreStatusLine() {
         ItemStack core = getInventory().storage.getStackInSlot(CORE_SLOT);
         if (core.isEmpty()) return "No Core in this slot yet.";
@@ -273,18 +231,16 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
                     remaining -= put;
                 } else if (stack.getItem() == entry.getKey().asItem() &&
                         stack.getCount() < stack.getMaxStackSize()) {
-                    int room = stack.getMaxStackSize() - stack.getCount();
-                    int put = (int) Math.min(remaining, room);
-                    stack.grow(put);
-                    inventory.setStackInSlot(slot, stack);
-                    remaining -= put;
-                }
+                            int room = stack.getMaxStackSize() - stack.getCount();
+                            int put = (int) Math.min(remaining, room);
+                            stack.grow(put);
+                            inventory.setStackInSlot(slot, stack);
+                            remaining -= put;
+                        }
             }
         }
     }
 
-    /** Delegates to the shared logic in {@link CinderSchemaData#tryCraftCore} so this and a manual
-     *  "Package Now" button (see {@link #buildMainUI}) never drift into two different behaviors. */
     private void tryCraft() {
         CinderSchemaData.tryCraftCore(getInventory().storage, CORE_SLOT, CORE_SLOT + 1, MATERIAL_SLOTS);
     }

@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.level.Level;
+
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,6 @@ public class SkyManager {
     }
 
     public void init(Level level) {
-        
         skyRenderers.put("phoenix", new PhoenixSkyRenderer("phoenix", level));
         skyRenderers.put("sculk", new SculkSkyRenderer("sculk", level));
         skyRenderers.put("void", new VoidSkyRenderer("void", level));

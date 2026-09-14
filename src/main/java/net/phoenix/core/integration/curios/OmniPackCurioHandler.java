@@ -1,6 +1,7 @@
 package net.phoenix.core.integration.curios;
 
 import net.minecraft.world.item.ItemStack;
+
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 

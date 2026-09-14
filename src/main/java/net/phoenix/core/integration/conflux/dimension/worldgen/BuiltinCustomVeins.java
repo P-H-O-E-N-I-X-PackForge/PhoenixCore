@@ -12,12 +12,11 @@ class ClusterVeinType extends CustomVeinType {
 
     @Override
     public void generate(
-            WorldGenLevel level,
-            int chunkX,
-            int chunkZ,
-            RandomSource random,
-            VeinGenerationContext context) {
-
+                         WorldGenLevel level,
+                         int chunkX,
+                         int chunkZ,
+                         RandomSource random,
+                         VeinGenerationContext context) {
         int clustersPerChunk = Math.max(1, context.density / 2);
 
         for (int c = 0; c < clustersPerChunk; c++) {
@@ -50,12 +49,11 @@ class PillarVeinType extends CustomVeinType {
 
     @Override
     public void generate(
-            WorldGenLevel level,
-            int chunkX,
-            int chunkZ,
-            RandomSource random,
-            VeinGenerationContext context) {
-
+                         WorldGenLevel level,
+                         int chunkX,
+                         int chunkZ,
+                         RandomSource random,
+                         VeinGenerationContext context) {
         int pillarsPerChunk = Math.max(1, context.density);
 
         for (int p = 0; p < pillarsPerChunk; p++) {
@@ -88,12 +86,11 @@ class ScatteredVeinType extends CustomVeinType {
 
     @Override
     public void generate(
-            WorldGenLevel level,
-            int chunkX,
-            int chunkZ,
-            RandomSource random,
-            VeinGenerationContext context) {
-
+                         WorldGenLevel level,
+                         int chunkX,
+                         int chunkZ,
+                         RandomSource random,
+                         VeinGenerationContext context) {
         int blocksPerChunk = 3 + (context.density * 2);
 
         for (int b = 0; b < blocksPerChunk; b++) {
@@ -117,12 +114,11 @@ class NetworkVeinType extends CustomVeinType {
 
     @Override
     public void generate(
-            WorldGenLevel level,
-            int chunkX,
-            int chunkZ,
-            RandomSource random,
-            VeinGenerationContext context) {
-
+                         WorldGenLevel level,
+                         int chunkX,
+                         int chunkZ,
+                         RandomSource random,
+                         VeinGenerationContext context) {
         int networksPerChunk = Math.max(1, context.density / 3);
 
         for (int n = 0; n < networksPerChunk; n++) {
@@ -136,7 +132,7 @@ class NetworkVeinType extends CustomVeinType {
             int z = startZ;
 
             for (int s = 0; s < segments; s++) {
-                
+
                 BlockPos pos = new BlockPos(x, y, z);
                 if (level.ensureCanWrite(pos)) {
                     level.setBlock(pos, context.blockState, 3);
@@ -164,13 +160,12 @@ class BlobVeinType extends CustomVeinType {
 
     @Override
     public void generate(
-            WorldGenLevel level,
-            int chunkX,
-            int chunkZ,
-            RandomSource random,
-            VeinGenerationContext context) {
-
-        int blobsPerChunk = Math.max(1, (int)(context.density * 0.5f));
+                         WorldGenLevel level,
+                         int chunkX,
+                         int chunkZ,
+                         RandomSource random,
+                         VeinGenerationContext context) {
+        int blobsPerChunk = Math.max(1, (int) (context.density * 0.5f));
 
         for (int b = 0; b < blobsPerChunk; b++) {
             int x = (chunkX * 16) + random.nextInt(16);
@@ -182,14 +177,14 @@ class BlobVeinType extends CustomVeinType {
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dy = -radius; dy <= radius; dy++) {
                     for (int dz = -radius; dz <= radius; dz++) {
-                        
+
                         int distSquared = dx * dx + dy * dy + dz * dz;
                         if (distSquared <= radius * radius) {
                             BlockPos pos = new BlockPos(x + dx, y + dy, z + dz);
                             if (level.ensureCanWrite(pos) &&
-                                pos.getY() >= context.minY &&
-                                pos.getY() <= context.maxY &&
-                                random.nextFloat() < 0.85f) {  
+                                    pos.getY() >= context.minY &&
+                                    pos.getY() <= context.maxY &&
+                                    random.nextFloat() < 0.85f) {
                                 level.setBlock(pos, context.blockState, 3);
                             }
                         }

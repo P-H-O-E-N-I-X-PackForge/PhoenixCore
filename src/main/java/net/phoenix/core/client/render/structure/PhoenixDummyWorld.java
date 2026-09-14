@@ -48,12 +48,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * Ported from Phantasia's {@code net.phoenixvine.phantasia.client.render.PhantasiaDummyWorld}
- * (verbatim - pure vanilla {@code Level} shim, no Phantasia-specific logic). A fake {@code Level}
- * that reports {@code Blocks.AIR} everywhere by default (subclasses override with real data) and
- * proxies everything else (registries, recipe manager, biomes, ticks) to a real backing level.
- */
 @OnlyIn(Dist.CLIENT)
 @ParametersAreNonnullByDefault
 public class PhoenixDummyWorld extends Level {

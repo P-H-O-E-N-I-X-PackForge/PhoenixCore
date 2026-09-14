@@ -21,7 +21,13 @@ public record TerrainProfile(
         return new Builder(name);
     }
 
-    public enum Style { HEIGHTMAP, VOLUMETRIC, RIDGED, WARPED, TERRACED }
+    public enum Style {
+        HEIGHTMAP,
+        VOLUMETRIC,
+        RIDGED,
+        WARPED,
+        TERRACED
+    }
 
     public static class Builder {
 
@@ -134,7 +140,8 @@ public record TerrainProfile(
 
         public TerrainProfile build() {
             TerrainSampler terrain = switch (style) {
-                case VOLUMETRIC -> PhoenixTerrainNoise.volumetric(seed, baseY, amplitude, frequency, frequency * 2, octaves);
+                case VOLUMETRIC -> PhoenixTerrainNoise.volumetric(seed, baseY, amplitude, frequency, frequency * 2,
+                        octaves);
                 case RIDGED -> PhoenixTerrainNoise.ridged(seed, baseY, amplitude, frequency, octaves);
                 case WARPED -> PhoenixTerrainNoise.warped(seed, baseY, amplitude, frequency, octaves, warpStrength);
                 case TERRACED -> PhoenixTerrainNoise.terraced(seed, baseY, amplitude, frequency, octaves, terraceStep);

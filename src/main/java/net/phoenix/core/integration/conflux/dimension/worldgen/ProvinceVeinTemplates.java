@@ -19,6 +19,7 @@ public class ProvinceVeinTemplates {
     public record OreLayer(Material material, int weight) {}
 
     public record Template(int minRadius, int maxRadius, int minY, int maxY, List<OreLayer> layers, int totalWeight) {
+
         static Template of(int minRadius, int maxRadius, int minY, int maxY, OreLayer... layers) {
             int total = 0;
             for (OreLayer l : layers) total += l.weight();
@@ -60,7 +61,8 @@ public class ProvinceVeinTemplates {
                 layer(3, Emerald), layer(2, Lapis), layer(2, Topaz), layer(2, Amethyst), layer(2, Silver));
 
         register("void_island", -48, 100,
-                layer(3, Chalcopyrite), layer(3, Cassiterite), layer(2, Sphalerite), layer(2, Galena), layer(2, Pentlandite));
+                layer(3, Chalcopyrite), layer(3, Cassiterite), layer(2, Sphalerite), layer(2, Galena),
+                layer(2, Pentlandite));
 
         register("void_cosmic", -56, 8,
                 layer(3, Diamond), layer(2, Emerald), layer(2, CertusQuartz), layer(2, Cobaltite), layer(2, Chromium));

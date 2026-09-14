@@ -14,9 +14,8 @@ public class ChunkCapabilityHandler {
     public static void attachChunkCapabilities(AttachCapabilitiesEvent<LevelChunk> event) {
         if (!event.getObject().getCapability(ChunkProgressionProvider.CHUNK_PROGRESSION_CAP).isPresent()) {
             event.addCapability(
-                  ResourceLocation.fromNamespaceAndPath("phoenixcore", "chunk_progression"),
-                    new ChunkProgressionProvider()
-            );
+                    ResourceLocation.fromNamespaceAndPath("phoenixcore", "chunk_progression"),
+                    new ChunkProgressionProvider());
         }
     }
 }

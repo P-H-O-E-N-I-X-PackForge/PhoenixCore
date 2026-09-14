@@ -2,9 +2,6 @@ package net.phoenix.core.client.render.structure;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-/** Ported from Phantasia's {@code TintedVertexConsumer} (verbatim) - a {@link VertexConsumer}
- *  decorator that multiplies emitted vertex color by a settable tint and can offset positions,
- *  used when baking blocks into the structure's VBOs. */
 public final class TintedVertexConsumer implements VertexConsumer {
 
     private final VertexConsumer delegate;
@@ -21,8 +18,6 @@ public final class TintedVertexConsumer implements VertexConsumer {
         this.a = alpha;
     }
 
-    /** Used by {@code CinderStructureGhostRenderer} to tint an otherwise normally-textured ghost
-     *  preview green/red for build-site validity, without touching alpha. */
     public void setTint(float r, float g, float b) {
         this.r = r;
         this.g = g;

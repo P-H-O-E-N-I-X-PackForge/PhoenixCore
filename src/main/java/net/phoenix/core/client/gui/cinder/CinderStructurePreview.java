@@ -4,26 +4,15 @@ import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
-
-import org.joml.Vector3f;
-
 import net.phoenix.core.client.render.structure.PhoenixTrackedDummyWorld;
 import net.phoenix.core.client.render.structure.StructureRenderer;
 import net.phoenix.core.client.render.structure.camera.CameraView;
 import net.phoenix.core.client.render.structure.camera.StructureCamera;
 
+import org.joml.Vector3f;
+
 import java.util.Map;
 
-/**
- * A live, rotatable 3D preview of a resolved multiblock's local-space blocks, driven by the ported
- * Phantasia renderer stack (see {@code net.phoenix.core.client.render.structure}) - real chunk-style
- * VBO baking on a background thread, a real vanilla {@code Camera} swapped in for the draw call, and
- * the same orbit/zoom control feel - rather than the naive per-block
- * {@code BlockRenderDispatcher#renderSingleBlock} loop this class used before.
- * <p>
- * Auto-spins slowly until the player drags on it, matching the "showcase" feel of a rotating item
- * display; once dragged, it stays under manual control for the rest of this screen's lifetime.
- */
 public class CinderStructurePreview {
 
     private static final float AUTO_SPIN_DEG_PER_TICK = 0.35f;
@@ -59,9 +48,6 @@ public class CinderStructurePreview {
         if (!manuallyRotated) camera.orbit(-AUTO_SPIN_DEG_PER_TICK, 0f);
         camera.tick();
 
-        // Flush whatever the screen has already queued into GuiGraphics's buffer (the panel
-        // background/border fills drawn before this call) so it actually lands on-screen before the
-        // renderer's raw RenderSystem calls take over the viewport/depth state for this frame.
         g.flush();
         CameraView view = camera.getView(partialTick);
         renderer.render(view, x, y, w, h);

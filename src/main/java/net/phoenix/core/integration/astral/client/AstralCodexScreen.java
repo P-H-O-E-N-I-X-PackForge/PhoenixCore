@@ -5,10 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
@@ -25,7 +23,13 @@ public class AstralCodexScreen extends Screen {
 
     private static final String[] PAGE_NAMES = { "Overview", "The Machine Chain", "The Ritual Pedestal", "The Wand" };
 
-    private enum LT { HEADING, SUBHEADING, TEXT, SPACER, DIVIDER }
+    private enum LT {
+        HEADING,
+        SUBHEADING,
+        TEXT,
+        SPACER,
+        DIVIDER
+    }
 
     private record WLine(LT type, String a) {
 

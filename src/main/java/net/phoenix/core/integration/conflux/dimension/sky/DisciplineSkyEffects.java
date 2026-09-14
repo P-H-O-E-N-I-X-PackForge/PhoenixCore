@@ -1,12 +1,5 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,6 +9,14 @@ import net.minecraft.world.phys.Vec3;
 import net.phoenix.core.client.worldfx.ShaderProfiler;
 import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -37,7 +38,7 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera,
-                              Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+                             Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
         if (isFoggy) return true;
 
         SkyManager manager = SkyManager.getInstance();
@@ -300,8 +301,7 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
-                                 double camX, double camY, double camZ, Matrix4f projectionMatrix) {
-        
+                                double camX, double camY, double camZ, Matrix4f projectionMatrix) {
         return true;
     }
 }

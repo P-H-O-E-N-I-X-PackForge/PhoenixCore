@@ -2,8 +2,6 @@ package net.phoenix.core.common.block.cinder;
 
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
-import com.mojang.serialization.DataResult;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,27 +15,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.phoenix.core.PhoenixCore;
+
+import com.mojang.serialization.DataResult;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The "drop from the sky" construction site - a temporary block dropped at the multiblock's
- * controller position that, after a brief fall animation, places the ENTIRE resolved structure at
- * once (plus its own controller position last). Originally staged the build one Y-layer at a time,
- * each layer rising a short distance out of the ground - but a ghost rising only ~2.5 blocks starting
- * from below its own final Y position is mostly occluded by whatever's already at ground level or
- * below it, so the animation was effectively invisible for anything built at or near grade. Falling
- * from well above instead is unmissable regardless of the structure's size or the surrounding terrain.
- * See {@link CinderConstructionRenderer}, which reads {@link #getPendingBlocks()}/
- * {@link #getFallStartGameTime()} to render one client-only ghost of the whole structure falling as a
- * single rigid batch, trailing flame the whole way down. The controller's own position is deliberately
- * held back and placed last, alongside everything else, rather than being part of the falling batch:
- * this entity occupies that exact position while it works, so placing over it before the fall
- * completes would destroy this block (and its in-progress queue) mid-drop.
- */
 public class CinderConstructionBlockEntity extends BlockEntity {
 
     public static final int FALL_TICKS = 50;
@@ -52,8 +36,6 @@ public class CinderConstructionBlockEntity extends BlockEntity {
         super(type, pos, state);
     }
 
-    /** Called right after this block is placed - queues everything except this entity's own position,
-     *  which {@link #anchorInfo} finishes the job with once the fall completes. */
     public void beginConstruction(Map<BlockPos, BlockInfo> placements, BlockInfo anchorInfo) {
         pending.clear();
         this.anchorInfo = anchorInfo;
@@ -111,8 +93,6 @@ public class CinderConstructionBlockEntity extends BlockEntity {
         }
     }
 
-    /** Client-only rendering hook: the whole structure, falling as one batch - empty once the fall
-     *  hasn't started yet or has already completed. */
     public Map<BlockPos, BlockInfo> getPendingBlocks() {
         return fallStartGameTime < 0 || finished ? Map.of() : pending;
     }

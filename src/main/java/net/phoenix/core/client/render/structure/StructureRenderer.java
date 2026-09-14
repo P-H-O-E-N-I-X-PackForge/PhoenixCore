@@ -1,7 +1,5 @@
 package net.phoenix.core.client.render.structure;
 
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.lowdragmc.lowdraglib.client.scene.WorldSceneRenderer;
 
 import net.minecraft.client.Camera;
@@ -22,6 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.client.render.structure.camera.CameraView;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -34,9 +34,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
-
-import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.render.structure.camera.CameraView;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,16 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
 
-/**
- * Ported and substantially trimmed from Phantasia's {@code PhantasiaWorldRenderer} - same core
- * architecture (a real chunk-style VBO bake on a background thread, a real vanilla {@link Camera}
- * temporarily swapped into the game renderer so normal block/BE/entity rendering code paths work
- * unmodified, mouse-ray picking against the dummy world), but with the machinery Phantasia built for
- * its much larger "scene" system removed: no streaming/chunked bake (a GT multiblock is nowhere near
- * the block count that would ever need it), no block-texture variant system, no custom particle
- * engine, no block-transition alpha-fades, no always-on deep profiler. Those can be added back later
- * if a real need for them shows up here.
- */
 public final class StructureRenderer {
 
     private static final float FOV = 60f;
@@ -153,8 +140,6 @@ public final class StructureRenderer {
         }
     }
 
-    /** The full set of positions that make up the structure - call once after populating the world,
-     *  then {@link #requestBake()} (or just rely on the initial bake this triggers automatically). */
     public void setPatternBlocks(Set<BlockPos> all) {
         this.patternBlocks = Set.copyOf(all);
         fullBakeNeeded = true;
@@ -473,7 +458,8 @@ public final class StructureRenderer {
 
         for (int attempt = 0; attempt < 32; attempt++) {
             net.minecraft.world.level.ClipContext ctx = new net.minecraft.world.level.ClipContext(rayStart, rayEnd,
-                    net.minecraft.world.level.ClipContext.Block.OUTLINE, net.minecraft.world.level.ClipContext.Fluid.NONE,
+                    net.minecraft.world.level.ClipContext.Block.OUTLINE,
+                    net.minecraft.world.level.ClipContext.Fluid.NONE,
                     cameraEntity);
             BlockHitResult result = world.clip(ctx);
             if (result == null || result.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return null;

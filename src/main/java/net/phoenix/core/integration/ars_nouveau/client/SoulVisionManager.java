@@ -1,15 +1,7 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +14,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.worldfx.IWorldFXEmitter;
 import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
@@ -29,15 +27,14 @@ import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
 import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-
-import net.minecraft.client.gui.GuiGraphics;
-
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -46,13 +43,13 @@ public final class SoulVisionManager {
 
     private static final int GRID_RADIUS = SoulLensItem.VISION_RADIUS;
     private static final int GRID_SIZE = GRID_RADIUS * 2 + 1;
-    
+
     private static final float DENSITY_SCALE = 2.5f;
-    
+
     private static final float DENSITY_CURVE = 0.6f;
-    
+
     private static final float SURFACE_OFFSET = 0.5f;
-    
+
     private static final boolean DEBUG_SOLID_RED = true;
 
     private static final BlockPos EFFECT_KEY = new BlockPos(0, 20_000_000, 0);
@@ -83,6 +80,7 @@ public final class SoulVisionManager {
         debugGeometryChecked = false;
 
         WorldFXManager.register(EFFECT_KEY, new IWorldFXEmitter() {
+
             @Override
             public PhoenixSkyLayer createSkyLayer() {
                 return null;
@@ -95,7 +93,6 @@ public final class SoulVisionManager {
 
             @Override
             public float getEffectRadius() {
-
                 return -1f;
             }
         });
@@ -184,8 +181,8 @@ public final class SoulVisionManager {
         int px = relX + GRID_RADIUS;
         int pz = relZ + GRID_RADIUS;
 
-        String line1 = "[SoulVision] player chunk=(" + playerChunkX + "," + playerChunkZ
-                + ") CenterChunk=(" + centerChunkX + "," + centerChunkZ + ") rel=(" + relX + "," + relZ + ")";
+        String line1 = "[SoulVision] player chunk=(" + playerChunkX + "," + playerChunkZ + ") CenterChunk=(" +
+                centerChunkX + "," + centerChunkZ + ") rel=(" + relX + "," + relZ + ")";
 
         String line2;
         if (px < 0 || px >= GRID_SIZE || pz < 0 || pz >= GRID_SIZE) {
@@ -193,11 +190,10 @@ public final class SoulVisionManager {
         } else {
             float density = densityGrid[px][pz];
             float factor = (float) Math.pow(Math.min(density / DENSITY_SCALE, 1.0f), DENSITY_CURVE);
-            boolean chunkLoaded = Minecraft.getInstance().level != null
-                    && Minecraft.getInstance().level.hasChunk(playerChunkX, playerChunkZ);
-            line2 = "[SoulVision] densityGrid value here=" + density + " -> factor=" + factor
-                    + " (DENSITY_SCALE=" + DENSITY_SCALE + ", DENSITY_CURVE=" + DENSITY_CURVE
-                    + ") level.hasChunk=" + chunkLoaded;
+            boolean chunkLoaded = Minecraft.getInstance().level != null &&
+                    Minecraft.getInstance().level.hasChunk(playerChunkX, playerChunkZ);
+            line2 = "[SoulVision] densityGrid value here=" + density + " -> factor=" + factor + " (DENSITY_SCALE=" +
+                    DENSITY_SCALE + ", DENSITY_CURVE=" + DENSITY_CURVE + ") level.hasChunk=" + chunkLoaded;
         }
 
         player.displayClientMessage(Component.literal(line1), false);
@@ -286,8 +282,9 @@ public final class SoulVisionManager {
             Player debugPlayer = mc.player;
             if (debugPlayer != null) {
                 debugPlayer.displayClientMessage(Component.literal(
-                        "[SoulVision] glGetError after mask draw: " + glError
-                                + (glError == GL11.GL_NO_ERROR ? " (no error)" : " (see GL11 constants)")), false);
+                        "[SoulVision] glGetError after mask draw: " + glError +
+                                (glError == GL11.GL_NO_ERROR ? " (no error)" : " (see GL11 constants)")),
+                        false);
                 debugPlayer.displayClientMessage(Component.literal(
                         "[SoulVision] quads drawn this frame: " + quadsDrawn), false);
             }
@@ -309,9 +306,9 @@ public final class SoulVisionManager {
         int y11 = level.getHeight(Heightmap.Types.WORLD_SURFACE, x1, z1);
 
         player.displayClientMessage(Component.literal(
-                "[SoulVision] quad corner heights (WORLD_SURFACE) for your chunk: "
-                        + y00 + "," + y10 + "," + y01 + "," + y11
-                        + " | your actual Y=" + player.getY() + " | camera Y=" + camPos.y), false);
+                "[SoulVision] quad corner heights (WORLD_SURFACE) for your chunk: " + y00 + "," + y10 + "," + y01 +
+                        "," + y11 + " | your actual Y=" + player.getY() + " | camera Y=" + camPos.y),
+                false);
     }
 
     @SubscribeEvent

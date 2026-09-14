@@ -4,14 +4,17 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.AABB;
 
 import org.jetbrains.annotations.NotNull;
-
+import org.jetbrains.annotations.Nullable;
 
 public class SanctumWardMachine extends WorkableElectricMultiblockMachine {
 
@@ -21,12 +24,32 @@ public class SanctumWardMachine extends WorkableElectricMultiblockMachine {
     private static final int REPEL_INTERVAL_TICKS = 10;
     private static final double REPEL_STRENGTH = 0.35;
 
+    public static final String WARD_MODE_KEY = "ward_mode";
+
+    @SaveField
+    @SyncToClient
+    private WardMode wardMode = WardMode.NONE;
+
     private final ConditionalSubscriptionHandler wardHandler;
     private int repelTickCounter = 0;
 
     public SanctumWardMachine(BlockEntityCreationInfo holder) {
         super(holder, new RecipeLogic());
         this.wardHandler = new ConditionalSubscriptionHandler(this, this::wardTick, this::isFormed);
+    }
+
+    @Override
+    public boolean beforeWorking(@Nullable GTRecipe recipe) {
+        if (recipe != null && recipe.data.contains(WARD_MODE_KEY)) {
+            try {
+                wardMode = WardMode.valueOf(recipe.data.getString(WARD_MODE_KEY));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return super.beforeWorking(recipe);
+    }
+
+    public WardMode getWardMode() {
+        return wardMode;
     }
 
     @Override
@@ -61,7 +84,7 @@ public class SanctumWardMachine extends WorkableElectricMultiblockMachine {
     }
 
     private void wardTick() {
-        if (!isWardActive()) return;
+        if (!isWardActive() || wardMode == WardMode.NONE) return;
         if (!(getLevel() instanceof ServerLevel serverLevel)) return;
 
         repelTickCounter++;
@@ -71,9 +94,11 @@ public class SanctumWardMachine extends WorkableElectricMultiblockMachine {
         BlockPos center = getBlockPos();
         AABB area = new AABB(center).inflate(WARD_RADIUS_XZ, WARD_RADIUS_Y, WARD_RADIUS_XZ);
 
-        for (Monster monster : serverLevel.getEntitiesOfClass(Monster.class, area)) {
-            double dx = monster.getX() - (center.getX() + 0.5);
-            double dz = monster.getZ() - (center.getZ() + 0.5);
+        for (Mob mob : serverLevel.getEntitiesOfClass(Mob.class, area)) {
+            if (!wardMode.matches(mob)) continue;
+
+            double dx = mob.getX() - (center.getX() + 0.5);
+            double dz = mob.getZ() - (center.getZ() + 0.5);
             double dist = Math.sqrt(dx * dx + dz * dz);
             if (dist < 0.01) {
                 dx = serverLevel.random.nextDouble() - 0.5;
@@ -81,9 +106,10 @@ public class SanctumWardMachine extends WorkableElectricMultiblockMachine {
                 dist = Math.max(0.01, Math.sqrt(dx * dx + dz * dz));
             }
 
-            monster.setDeltaMovement(monster.getDeltaMovement().add(
+            mob.setDeltaMovement(mob.getDeltaMovement().add(
                     (dx / dist) * REPEL_STRENGTH, 0.05, (dz / dist) * REPEL_STRENGTH));
-            monster.hurtMarked = true;
+
+            mob.hurtMarked = true;
         }
     }
 }

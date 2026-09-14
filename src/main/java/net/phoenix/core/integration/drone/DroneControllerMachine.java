@@ -17,7 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-
 import net.phoenix.core.integration.drone.group.DroneConfig;
 import net.phoenix.core.integration.drone.group.DroneControlTrait;
 import net.phoenix.core.integration.drone.group.GroupDefinition;
@@ -54,8 +53,6 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     private static final int MAX_ROWS = 18;
     private static final int ROW_H = 46;
 
-    // Shared palette - same values/roles as the Cinder Forge controller UI, so both machines read as
-    // one coherent GTM style instead of each having its own ad-hoc colors.
     private static final int COLOR_TITLE = 0xFFFFE0A8;
     private static final int COLOR_LABEL = 0xFFA88FD9;
     private static final int COLOR_TEXT = 0xFFFFFFFF;
@@ -66,8 +63,6 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     private static final int COLOR_PANEL_BORDER = 0xFF4A3F7A;
     private static final int COLOR_ROW_BG = 0xCC241D3D;
 
-    /** A flat fill, optionally bordered - row/panel backgrounds throughout this UI, so scrollable
-     *  lists and grouped controls read as bordered cards instead of text floating on nothing. */
     private record FlatPanel(int fillColor, int borderColor) implements IDrawable {
 
         @Override
@@ -147,8 +142,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager,
-            UISettings settings) {
-
+                                                 UISettings settings) {
         BooleanSyncValue cutTrigger = syncManager.getOrCreateSyncHandler("droneCutTrigger", BooleanSyncValue.class,
                 () -> new BooleanSyncValue(() -> false, fired -> {
                     if (fired) cutoffBelowPriority(cutoffPriority);
@@ -177,7 +171,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
 
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
-            UISettings settings) {
+                            UISettings settings) {
         if (!isRemote()) rescan();
         else mainWidget.background(new net.phoenix.core.integration.drone.client.DroneUIBackground());
 
@@ -199,7 +193,8 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                             enabled -> {
                                 if (idx >= currentTargets.size()) return;
                                 DroneTargetView v = currentTargets.get(idx);
-                                if (MetaMachine.getMachine(getLevel(), v.pos()) instanceof WorkableMultiblockMachine target) {
+                                if (MetaMachine.getMachine(getLevel(),
+                                        v.pos()) instanceof WorkableMultiblockMachine target) {
                                     target.getRecipeLogic().setWorkingEnabled(enabled);
                                     rescan();
                                 }
@@ -208,8 +203,8 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                     () -> new BooleanSyncValue(() -> false, fired -> {
                         if (!fired || idx >= currentTargets.size()) return;
                         DroneTargetView v = currentTargets.get(idx);
-                        if (MetaMachine.getMachine(getLevel(), v.pos()) instanceof WorkableMultiblockMachine target
-                                && target.getRecipeTypes().length > 1) {
+                        if (MetaMachine.getMachine(getLevel(), v.pos()) instanceof WorkableMultiblockMachine target &&
+                                target.getRecipeTypes().length > 1) {
                             target.cycleActiveRecipeType();
                             rescan();
                         }
@@ -273,7 +268,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     }
 
     private Flow buildTargetListWidget(List<DroneTargetView> targets, List<BooleanSyncValue> toggleSlots,
-            List<BooleanSyncValue> cycleSlots) {
+                                       List<BooleanSyncValue> cycleSlots) {
         Flow col = Flow.col().size(300, Math.max(1, Math.min(targets.size(), MAX_ROWS)) * ROW_H);
         if (targets.isEmpty()) {
             col.child(Text.str("No formed multiblocks in range.").asWidget().pos(4, 4).color(COLOR_LABEL));
@@ -286,7 +281,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     }
 
     private Flow buildTargetRow(DroneTargetView view, int rowIndex, BooleanSyncValue toggle,
-            BooleanSyncValue cycle) {
+                                BooleanSyncValue cycle) {
         Flow row = Flow.row().pos(0, rowIndex * ROW_H).size(300, ROW_H - 2)
                 .background(new FlatPanel(COLOR_ROW_BG, 0));
 
@@ -318,8 +313,8 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                     .background(GTGuiTextures.BUTTON_POWER[0])
                     .background(true, GTGuiTextures.BUTTON_POWER[1])
                     .tooltip(t -> t.addLine(Component
-                            .literal(view.workingEnabled() ? "Enabled - click to disable"
-                                    : "Disabled - click to enable")
+                            .literal(
+                                    view.workingEnabled() ? "Enabled - click to disable" : "Disabled - click to enable")
                             .withStyle(ChatFormatting.GRAY))));
         }
 

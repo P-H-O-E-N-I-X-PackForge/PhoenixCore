@@ -192,6 +192,5 @@ public class PhoenixNetwork {
                 C2SCinderClearTargetPacket::new,
                 C2SCinderClearTargetPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
-
     }
 }

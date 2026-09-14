@@ -44,8 +44,8 @@ public final class PlayerResearchCapability {
     public static void onPlayerClone(PlayerEvent.Clone event) {
         if (!(event.getOriginal().isDeadOrDying() || event.isWasDeath())) return;
 
-        event.getOriginal().getCapability(RESEARCH).ifPresent(original ->
-                event.getEntity().getCapability(RESEARCH).ifPresent(clone -> clone.copyFrom(original)));
+        event.getOriginal().getCapability(RESEARCH).ifPresent(
+                original -> event.getEntity().getCapability(RESEARCH).ifPresent(clone -> clone.copyFrom(original)));
     }
 
     private static class Provider implements ICapabilitySerializable<CompoundTag> {

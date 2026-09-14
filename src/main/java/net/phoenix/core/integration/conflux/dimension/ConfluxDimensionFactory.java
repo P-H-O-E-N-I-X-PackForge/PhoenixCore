@@ -23,7 +23,7 @@ public class ConfluxDimensionFactory {
     public static void enterDisciplineDimension(ServerPlayer player, UUID teamId, String discipline) {
         MinecraftServer server = player.getServer();
         ServerLevel dimensionLevel = server.getLevel(getDimensionKey(discipline));
-        if (dimensionLevel == null) return; 
+        if (dimensionLevel == null) return;
 
         ServerLevel overworld = server.overworld();
         DisciplineProgressionData.get(overworld).getProgression(teamId);

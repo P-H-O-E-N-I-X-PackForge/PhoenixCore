@@ -2,6 +2,7 @@ package net.phoenix.core.integration.gregvaults.common.items;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;

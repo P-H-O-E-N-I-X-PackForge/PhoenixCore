@@ -329,8 +329,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
                     node -> node.self().getBlockPos(),
                     gtPipePredicate,
                     limit,
-                    limit * 6
-            );
+                    limit * 6);
 
             int successfullyPainted = 0;
             long targetNativeColor = color == null ? IPaintable.UNPAINTED_COLOR : color.getMapColor().col;

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ChunkProgressionState {
+
     private static final String PROGRESSION_TAG = "disciplineProgress";
     private static final String APPLIED_MILESTONES = "appliedMilestones";
 

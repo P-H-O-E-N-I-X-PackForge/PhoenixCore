@@ -1,17 +1,12 @@
 package net.phoenix.core.client.renderer.cinema;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinemaActionPacket;
@@ -32,7 +27,6 @@ public class CinemaInputHandler {
             consume(event);
             CinemaScreenClientHelper.openTypingScreen(event.getPos(), screen.getLines().size(), "");
         }
-
     }
 
     @SubscribeEvent

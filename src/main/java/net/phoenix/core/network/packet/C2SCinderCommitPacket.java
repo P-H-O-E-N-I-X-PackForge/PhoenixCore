@@ -12,9 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
-
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-
 import net.phoenix.core.common.block.cinder.CinderBlocks;
 import net.phoenix.core.common.block.cinder.CinderConstructionBlockEntity;
 import net.phoenix.core.common.block.cinder.CinderVisualEffects;
@@ -22,21 +19,11 @@ import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.network.PhoenixNetwork;
 
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * The client's "build it here" commit - re-resolves everything server-side rather than trusting the
- * client's cached preview (see {@link net.phoenix.core.client.cinder.CinderPreviewState} for why that
- * cache exists and why it's display-only). On success, consumes only the materials actually used from
- * the Core's stocked inventory and hands the resulting placements off to a
- * {@link CinderConstructionBlockEntity} to build. The Core itself is never destroyed - it returns to
- * an empty-but-still-configured state (target/config NBT untouched, materials drained) so it can be
- * restocked and built again without recrafting. If materials are insufficient, a normal attempt is
- * rejected outright; a follow-up commit sent with {@code force=true} (see
- * {@link net.phoenix.core.client.cinder.CinderPreviewState#armForceBuild}) instead builds only the
- * positions currently-stocked materials actually cover, leaving gaps for whatever's missing.
- */
 public class C2SCinderCommitPacket {
 
     private final InteractionHand hand;
@@ -119,15 +106,10 @@ public class C2SCinderCommitPacket {
             }
 
             CinderSchemaData.consumeMaterials(stack, consumed);
-            // The Core is never destroyed - its target/config NBT is untouched, so it returns to an
-            // empty-but-still-configured state and can be restocked and built again without recrafting.
 
             BlockInfo anchorInfo = placements.get(msg.anchor);
             if (anchorInfo == null) {
-                // Either the controller's own resolved position should always be part of the structure
-                // (falling back here keeps this from silently no-oping if that assumption is ever
-                // wrong for some pattern shape), or - for a partial force-build - the controller's own
-                // block type simply wasn't stocked; either way an empty temp entry is the safe fallback.
+
                 anchorInfo = BlockInfo.EMPTY;
             }
 

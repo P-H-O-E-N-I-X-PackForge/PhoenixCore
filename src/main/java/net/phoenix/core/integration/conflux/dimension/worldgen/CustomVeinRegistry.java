@@ -28,7 +28,6 @@ public class CustomVeinRegistry {
     }
 
     public static void initializeDefaults() {
-        
         register(new ClusterVeinType());
         register(new PillarVeinType());
         register(new ScatteredVeinType());

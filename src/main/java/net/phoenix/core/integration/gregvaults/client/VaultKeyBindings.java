@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.gregvaults.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +12,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.network.CPacketOpenTerminal;
 import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
+
+import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
@@ -57,7 +58,7 @@ public class VaultKeyBindings {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().getItem(i);
                 if (stack.getItem() instanceof WirelessTerminalItem) {
-                    boolean isOffhand = (i == 40); 
+                    boolean isOffhand = (i == 40);
                     int slot = isOffhand ? -1 : i;
                     VaultNetwork.CHANNEL.sendToServer(new CPacketOpenTerminal(slot, isOffhand));
                     return;

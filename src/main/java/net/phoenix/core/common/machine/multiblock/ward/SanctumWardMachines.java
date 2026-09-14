@@ -11,14 +11,12 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
-
 
 public final class SanctumWardMachines {
 
@@ -30,8 +28,10 @@ public final class SanctumWardMachines {
             .appearanceBlock(CASING_STAINLESS_CLEAN)
             .tooltips(
                     Component.literal("§6Radiates a 50x50 ward while active,"),
-                    Component.literal("§7pushing out hostile mobs and blocking their spawns."),
-                    Component.literal("§7No power needed - just keep it fed."))
+                    Component.literal("§7pushing out and blocking the spawns of whichever mobs"),
+                    Component.literal("§7its current upkeep item targets. No power needed."),
+                    Component.literal("§7§oGlowstone Dust: hostile  §7§oWheat: passive"),
+                    Component.literal("§7§oGunpowder: neutral  §7§oEnder Pearl: all"))
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
 
@@ -76,6 +76,7 @@ public final class SanctumWardMachines {
                             GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
                             GTCEu.id("block/multiblock/large_miner"))
                             .andThen(b -> b.addDynamicRenderer(PhoenixDynamicRenderHelpers::getSanctumWardRenderer)))
+            .hasBER(true)
             .register();
 
     public static void init() {}

@@ -1,5 +1,11 @@
 package net.phoenix.core.client.renderer.cinema;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.core.BlockPos;
+import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity.Background;
+
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,13 +13,6 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.core.BlockPos;
-import net.phoenix.core.client.worldfx.WorldFXShaders;
-import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity.Background;
-
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -28,6 +27,7 @@ public final class CinemaRenderTarget {
     private static final long REFRESH_INTERVAL_MS = 50;
 
     private record GroupKey(BlockPos anchor, int width, int height, Background background) {}
+
     private record CacheEntry(RenderTarget target, long[] lastRenderTime) {}
 
     private static final Map<GroupKey, CacheEntry> cache = new HashMap<>();
@@ -50,8 +50,7 @@ public final class CinemaRenderTarget {
 
     private static void renderShader(RenderTarget target, int width, int height, Background background) {
         ShaderInstance shader = switch (background) {
-            // Not WorldFXShaders.VOID_GALAXY - see cinema_void_galaxy.fsh's header for why the
-            // real sky's shader can't be reused as-is for a screen with no real camera behind it.
+
             case VOID_GALAXY -> WorldFXShaders.CINEMA_VOID_GALAXY;
             case NEBULA -> WorldFXShaders.NEBULA;
             case SCULK_ABYSS -> WorldFXShaders.SCULK_ABYSS;
@@ -66,15 +65,6 @@ public final class CinemaRenderTarget {
 
         target.bindWrite(true);
 
-        // These background shaders are shared with the real sky, where "empty" regions must stay
-        // transparent so the sky shows through them - their alpha output can't be touched. Left as
-        // disabled blend + whatever alpha the shader happened to output, that low alpha baked
-        // straight into this offscreen texture, which then showed as jagged transparent gaps
-        // straight through the cinema screen to whatever's behind it in the world. Clearing to an
-        // opaque backdrop first and blending the shader over it (its own declared blend func,
-        // applied automatically by shader.apply() below) composites "empty" regions onto that
-        // backdrop instead, so the texture this produces is opaque everywhere without needing the
-        // shader itself to know or care that it's being rendered standalone this time.
         RenderSystem.clearColor(0.01f, 0.01f, 0.03f, 1.0f);
         RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
 
@@ -86,17 +76,6 @@ public final class CinemaRenderTarget {
         float outH = SIZE * height;
         float time = (float) (System.currentTimeMillis() % 10000000L) / 10000.0f;
 
-        // The shader reconstructs a ray direction as InvProjMat * vec4(ndc, 1, 1) THEN DIVIDES BY
-        // .w - a genuine perspective divide, which only behaves correctly when InvProjMat is the
-        // inverse of an actual perspective projection matrix (whose .w output varies per pixel).
-        // The real sky (DisciplineSkyEffects) feeds it exactly that - the real camera's inverted
-        // projection/view. Feeding it a plain identity (or an ad-hoc scale matrix, tried previously
-        // for the aspect-ratio issue) makes .w constantly 1, so that divide becomes a no-op - not
-        // remotely equivalent, and it's what was actually producing incoherent/torn-looking noise
-        // output instead of a clean radial blob, on a solo screen just as much as a grouped one.
-        // Building a real perspective matrix (aspect baked into its FOV, so this also still fixes
-        // the earlier squished-multi-screen issue) and inverting it makes this a proper camera
-        // again, just a fixed one instead of the player's real view.
         Matrix4f projection = new Matrix4f().perspective(
                 (float) Math.toRadians(90.0), outW / outH, 0.05f, 10.0f);
         Matrix4f invProj = new Matrix4f(projection).invert();

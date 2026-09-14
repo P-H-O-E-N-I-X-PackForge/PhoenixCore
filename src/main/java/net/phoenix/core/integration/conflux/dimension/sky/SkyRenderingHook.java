@@ -1,11 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.Level;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class SkyRenderingHook {
@@ -43,7 +43,6 @@ public class SkyRenderingHook {
     }
 
     private static String getDimensionId(Level level) {
-
         String path = level.dimension().location().getPath();
         String discipline = path.startsWith("conflux/") ? path.substring("conflux/".length()) : path;
 

@@ -51,7 +51,7 @@ public final class SmallStructures {
     }
 
     private static void buildRuin(WorldGenLevel level, BlockPos base, Theme theme, RandomSource random) {
-        int size = 2 + random.nextInt(2); 
+        int size = 2 + random.nextInt(2);
 
         for (int dx = -size; dx <= size; dx++) {
             for (int dz = -size; dz <= size; dz++) {

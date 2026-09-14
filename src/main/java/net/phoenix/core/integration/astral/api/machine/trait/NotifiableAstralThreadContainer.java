@@ -2,7 +2,6 @@ package net.phoenix.core.integration.astral.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -43,7 +42,7 @@ public class NotifiableAstralThreadContainer extends NotifiableRecipeHandlerTrai
 
     @Override
     public List<AstralThreadIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<AstralThreadIngredient> left,
-                                                           boolean simulate) {
+                                                          boolean simulate) {
         if (io != this.handlerIO) return left;
 
         for (int i = 0; i < left.size(); i++) {

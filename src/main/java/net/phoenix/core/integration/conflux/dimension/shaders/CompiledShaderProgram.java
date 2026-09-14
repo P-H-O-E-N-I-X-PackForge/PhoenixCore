@@ -1,6 +1,7 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
 import org.lwjgl.opengl.GL20;
+
 import java.util.HashMap;
 import java.util.Map;
 

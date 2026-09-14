@@ -10,12 +10,6 @@ import java.util.function.IntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Lets a cinema screen line embed a live vanilla stat for whoever's looking at it (e.g.
- * "Deaths: {stat:deaths}") instead of only ever showing static text. Resolved per-viewer at
- * render time, client-side only - the stored line text is just the raw token, so each viewer sees
- * their OWN value, the same way a scoreboard sidebar would.
- */
 public final class CinemaStatTokens {
 
     private CinemaStatTokens() {}
@@ -35,19 +29,17 @@ public final class CinemaStatTokens {
         return hours > 0 ? hours + "h " + minutes + "m" : minutes + "m";
     }
 
-    // Vanilla tracks distance-walked/swum/flown stats in centimeters (1 block = 100).
     private static String formatCmAsBlocks(int cm) {
         return String.format(Locale.ROOT, "%.0f blocks", cm / 100.0);
     }
 
-    // Damage stats are tracked in tenths of a point (matching the float damage amounts used
-    // elsewhere, e.g. a zombie's 2.5-damage hit is stored as 25).
     private static String formatTenthsAsDecimal(int tenths) {
         return String.format(Locale.ROOT, "%.1f", tenths / 10.0);
     }
 
     private static final Map<String, StatEntry> STATS = Map.ofEntries(
-            Map.entry("playtime", new StatEntry(Stats.CUSTOM.get(Stats.PLAY_TIME), CinemaStatTokens::formatTicksAsTime)),
+            Map.entry("playtime",
+                    new StatEntry(Stats.CUSTOM.get(Stats.PLAY_TIME), CinemaStatTokens::formatTicksAsTime)),
             Map.entry("deaths", new StatEntry(Stats.CUSTOM.get(Stats.DEATHS), CinemaStatTokens::formatCount)),
             Map.entry("mobkills", new StatEntry(Stats.CUSTOM.get(Stats.MOB_KILLS), CinemaStatTokens::formatCount)),
             Map.entry("playerkills",
@@ -60,7 +52,8 @@ public final class CinemaStatTokens {
                     new StatEntry(Stats.CUSTOM.get(Stats.DAMAGE_DEALT), CinemaStatTokens::formatTenthsAsDecimal)),
             Map.entry("damagetaken",
                     new StatEntry(Stats.CUSTOM.get(Stats.DAMAGE_TAKEN), CinemaStatTokens::formatTenthsAsDecimal)),
-            Map.entry("animalsbred", new StatEntry(Stats.CUSTOM.get(Stats.ANIMALS_BRED), CinemaStatTokens::formatCount)),
+            Map.entry("animalsbred",
+                    new StatEntry(Stats.CUSTOM.get(Stats.ANIMALS_BRED), CinemaStatTokens::formatCount)),
             Map.entry("fishcaught", new StatEntry(Stats.CUSTOM.get(Stats.FISH_CAUGHT), CinemaStatTokens::formatCount)),
             Map.entry("trades",
                     new StatEntry(Stats.CUSTOM.get(Stats.TRADED_WITH_VILLAGER), CinemaStatTokens::formatCount)));

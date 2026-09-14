@@ -9,8 +9,6 @@ import net.minecraft.world.level.lighting.LevelLightEngine;
 
 import javax.annotation.Nullable;
 
-/** Ported from Phantasia's {@code PhantasiaDummyChunkSource} (verbatim) - satisfies {@code Level}'s
- *  requirement for a {@code ChunkSource} without any real chunk storage. */
 public class PhoenixDummyChunkSource extends ChunkSource {
 
     private final PhoenixDummyWorld world;

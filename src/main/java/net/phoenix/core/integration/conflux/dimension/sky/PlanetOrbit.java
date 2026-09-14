@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.phys.Vec3;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -8,10 +12,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.phys.Vec3;
-import org.lwjgl.opengl.GL11;
 
 public class PlanetOrbit {
 
@@ -52,7 +52,7 @@ public class PlanetOrbit {
 
         float x = (float) Math.cos(radians) * orbitRadius;
         float z = (float) Math.sin(radians) * orbitRadius;
-        float y = (float) Math.sin(radians * 0.5f) * (orbitRadius * 0.3f); 
+        float y = (float) Math.sin(radians * 0.5f) * (orbitRadius * 0.3f);
 
         return orbitCenter.add(x, y, z);
     }
@@ -223,21 +223,35 @@ public class PlanetOrbit {
     }
 
     private void addVertex(VertexConsumer consumer, PoseStack poseStack,
-                          float x, float y, float z, int r, int g, int b, int a) {
+                           float x, float y, float z, int r, int g, int b, int a) {
         consumer.vertex(poseStack.last().pose(), x, y, z)
                 .color(r, g, b, a)
                 .endVertex();
     }
 
-    public String getName() { return name; }
-    public PlanetType getType() { return type; }
-    public float getOrbitRadius() { return orbitRadius; }
-    public float getBodyRadius() { return bodyRadius; }
-    public Vec3 getOrbitCenter() { return orbitCenter; }
+    public String getName() {
+        return name;
+    }
+
+    public PlanetType getType() {
+        return type;
+    }
+
+    public float getOrbitRadius() {
+        return orbitRadius;
+    }
+
+    public float getBodyRadius() {
+        return bodyRadius;
+    }
+
+    public Vec3 getOrbitCenter() {
+        return orbitCenter;
+    }
 
     @Override
     public String toString() {
         return String.format("PlanetOrbit[%s type=%s orbit=%.1f body=%.1f glow=%b]",
-            name, type, orbitRadius, bodyRadius, hasGlow);
+                name, type, orbitRadius, bodyRadius, hasGlow);
     }
 }

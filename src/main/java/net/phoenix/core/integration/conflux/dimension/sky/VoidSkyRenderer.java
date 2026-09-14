@@ -1,9 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,30 +23,27 @@ public class VoidSkyRenderer extends SkyRenderer {
     }
 
     private void initializeVoidSky() {
+        stars.add(new PlanetOrbit(
+                "Void Star 1",
+                PlanetOrbit.PlanetType.STAR,
+                187,
+                0.0002f,
+                2.5f,
+                new Vec3(0, 75, 0),
+                0xFFFFFF,
+                true,
+                1.5f));
 
         stars.add(new PlanetOrbit(
-            "Void Star 1",
-            PlanetOrbit.PlanetType.STAR,
-            187,
-            0.0002f,
-            2.5f,
-            new Vec3(0, 75, 0),
-            0xFFFFFF,
-            true,
-            1.5f
-        ));
-
-        stars.add(new PlanetOrbit(
-            "Void Star 2",
-            PlanetOrbit.PlanetType.STAR,
-            200,
-            0.0001f,
-            1.9f,
-            new Vec3(0, 69, 0),
-            0xFFFFCC,
-            true,
-            1.2f
-        ));
+                "Void Star 2",
+                PlanetOrbit.PlanetType.STAR,
+                200,
+                0.0001f,
+                1.9f,
+                new Vec3(0, 69, 0),
+                0xFFFFCC,
+                true,
+                1.2f));
     }
 
     @Override

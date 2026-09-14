@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public class PlayerSpawnHandler {
@@ -20,7 +19,7 @@ public class PlayerSpawnHandler {
 
         CompoundTag persistentData = serverPlayer.getPersistentData();
         if (!persistentData.getBoolean("phoenixcore_visited_ethereal")) {
-            
+
             EtherealSpawnManager.teleportToEtherealSpawn(serverPlayer);
             persistentData.putBoolean("phoenixcore_visited_ethereal", true);
         }

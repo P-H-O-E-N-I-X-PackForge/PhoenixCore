@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.model.GTModelProperties;
 import com.gregtechceu.gtceu.client.model.machine.MachineModel;
 import com.gregtechceu.gtceu.client.model.quad.StaticFaceBakery;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultInterfacePart;
+
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -120,14 +122,19 @@ public class MixinMachineModel {
 
         var atlas = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
 
-        pipeOverlaySprite = atlas.apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_pipe"));
+        pipeOverlaySprite = atlas
+                .apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_pipe"));
         itemInputOverlaySprite = atlas
-                .apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_item_hatch_input"));
+                .apply(ResourceLocation.fromNamespaceAndPath("gtceu",
+                        "block/overlay/machine/overlay_item_hatch_input"));
         itemOutputOverlaySprite = atlas
-                .apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_item_hatch_output"));
+                .apply(ResourceLocation.fromNamespaceAndPath("gtceu",
+                        "block/overlay/machine/overlay_item_hatch_output"));
         pipeInEmissiveSprite = atlas
-                .apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_pipe_in_emissive"));
+                .apply(ResourceLocation.fromNamespaceAndPath("gtceu",
+                        "block/overlay/machine/overlay_pipe_in_emissive"));
         pipeOutEmissiveSprite = atlas
-                .apply(ResourceLocation.fromNamespaceAndPath("gtceu", "block/overlay/machine/overlay_pipe_out_emissive"));
+                .apply(ResourceLocation.fromNamespaceAndPath("gtceu",
+                        "block/overlay/machine/overlay_pipe_out_emissive"));
     }
 }

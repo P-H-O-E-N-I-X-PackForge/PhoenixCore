@@ -23,8 +23,6 @@ public final class WorldFXShaders {
 
     public static ShaderInstance VOID_GALAXY;
 
-    // Cinema-only fork of VOID_GALAXY - see cinema_void_galaxy.fsh for why it needs its own file
-    // instead of reusing the sky one.
     public static ShaderInstance CINEMA_VOID_GALAXY;
 
     public static ShaderInstance PHOENIX_SUNFLARE;

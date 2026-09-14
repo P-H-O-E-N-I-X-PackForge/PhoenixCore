@@ -1,12 +1,12 @@
 package net.phoenix.core.common.machine.multiblock.ward;
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 public final class MobWardRegistry {
 
@@ -27,11 +27,11 @@ public final class MobWardRegistry {
         if (set != null) set.remove(ward);
     }
 
-    public static boolean isWarded(Level level, double x, double y, double z) {
+    public static boolean isWarded(Entity entity, Level level, double x, double y, double z) {
         Set<SanctumWardMachine> set = ACTIVE.get(level.dimension());
         if (set == null || set.isEmpty()) return false;
         for (SanctumWardMachine ward : set) {
-            if (ward.isWardActive() && ward.contains(x, y, z)) return true;
+            if (ward.isWardActive() && ward.contains(x, y, z) && ward.getWardMode().matches(entity)) return true;
         }
         return false;
     }

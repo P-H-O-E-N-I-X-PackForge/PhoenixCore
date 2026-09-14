@@ -18,9 +18,20 @@ import java.util.List;
 
 public class CinemaScreenBlockEntity extends BlockEntity {
 
-    public enum TextAlign { LEFT, CENTER, RIGHT }
+    public enum TextAlign {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
 
-    public enum Background { VOID_GALAXY, NEBULA, SCULK_ABYSS, SEALED_INDUSTRIAL, SEALED_CHAOS, SUNFLARE }
+    public enum Background {
+        VOID_GALAXY,
+        NEBULA,
+        SCULK_ABYSS,
+        SEALED_INDUSTRIAL,
+        SEALED_CHAOS,
+        SUNFLARE
+    }
 
     private static final int DEFAULT_COLOR = 0xFFFFFFFF;
     private static final float DEFAULT_SCALE = 0.015f;
@@ -46,7 +57,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     }
 
     public void applyConfig(List<Component> newLines, int color, float scale, int alignOrdinal,
-                             int backgroundOrdinal) {
+                            int backgroundOrdinal) {
         lines.clear();
         lines.addAll(newLines);
         currentLine = 0;

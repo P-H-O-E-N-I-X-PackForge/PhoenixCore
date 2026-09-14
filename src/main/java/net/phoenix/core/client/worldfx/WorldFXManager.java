@@ -26,9 +26,9 @@ public final class WorldFXManager {
     private WorldFXManager() {}
 
     private record ActiveEffect(
-            IWorldFXEmitter emitter,
-            PhoenixSkyLayer skyLayer,
-            PhoenixScreenEffect screenEffect) {}
+                                IWorldFXEmitter emitter,
+                                PhoenixSkyLayer skyLayer,
+                                PhoenixScreenEffect screenEffect) {}
 
     private static final Map<BlockPos, ActiveEffect> effects = new LinkedHashMap<>();
 

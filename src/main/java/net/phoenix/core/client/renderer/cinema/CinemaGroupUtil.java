@@ -3,7 +3,6 @@ package net.phoenix.core.client.renderer.cinema;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-
 import net.phoenix.core.common.block.cinema.CinemaScreenBlock;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 
@@ -101,8 +100,8 @@ public final class CinemaGroupUtil {
     }
 
     private static void tryLink(Level level, Direction facing, BlockPos from, Direction dir,
-                                 int newRightSteps, int newUpSteps,
-                                 Map<BlockPos, int[]> offsets, Deque<BlockPos> queue) {
+                                int newRightSteps, int newUpSteps,
+                                Map<BlockPos, int[]> offsets, Deque<BlockPos> queue) {
         BlockPos next = from.relative(dir);
         if (offsets.containsKey(next)) return;
         if (!(level.getBlockEntity(next) instanceof CinemaScreenBlockEntity nextBE)) return;

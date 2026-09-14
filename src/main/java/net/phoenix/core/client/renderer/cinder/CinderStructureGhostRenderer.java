@@ -6,11 +6,11 @@ import net.minecraft.CrashReport;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.ChunkBufferBuilderPack;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
@@ -19,29 +19,24 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.model.data.ModelData;
+import net.phoenix.core.client.render.structure.TintedVertexConsumer;
 
 import brachy.modularui.drawable.schema.ISchema;
 import brachy.modularui.drawable.schema.RenderFilter;
 import brachy.modularui.drawable.schema.RenderLevel;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexSorting;
-
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-
-import net.phoenix.core.client.render.structure.TintedVertexConsumer;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -56,27 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-/**
- * A fork of GTCEu's own {@code PatternPreviewRenderer} - the exact renderer an unformed multiblock
- * controller uses for its own shift-right-click ghost preview - not a hand-rolled replacement: same
- * chunk-buffer VBO baking/async compile pipeline, same real block models and textures, driven by the
- * same {@code RenderLevelStageEvent}/tick pattern. The one real addition is a settable green/red tint
- * (see {@link #showPreview}) so the Cinder Core preview can still show build-site validity at a
- * glance, which GT's own version has no concept of at all - everything else here is GT's own approach,
- * kept as close to verbatim as this project's dependency versions allow.
- * <p>
- * One thing deliberately NOT ported: fluid rendering. GT's version routes liquid blocks through a
- * {@code LiquidVertexConsumer} class that isn't resolvable against this project's actual compiled
- * GTCEu/Forge jars (a version/mapping mismatch between the current GitHub source this was ported from
- * and the {@code 8.0.0-SNAPSHOT} build this project is pinned to). No Cinder Forge target's structure
- * predicates require an actual fluid-state block as part of the structure itself (fluid *tanks* are
- * just regular casing blocks structurally), so this wasn't worth chasing further rather than guessing
- * at an unverifiable API.
- * <p>
- * Driven by {@code CinderPreviewTickHandler} ({@link #clientTick()} every client tick,
- * {@link #draw} every {@code RenderLevelStageEvent}) - GT's own copy is driven identically by its own
- * internal client event listener, which only drives GT's own singleton, not this fork.
- */
 @OnlyIn(Dist.CLIENT)
 public class CinderStructureGhostRenderer {
 
@@ -103,8 +77,6 @@ public class CinderStructureGhostRenderer {
 
     private CinderStructureGhostRenderer() {}
 
-    /** @param valid green tint if true, red if false - the one thing GT's own PatternPreviewRenderer
-     *              can't do, since it has no concept of "is this build site currently valid" at all. */
     public void showPreview(BlockPos anchorPos, MutableSchema schema, boolean valid, int duration) {
         this.anchorPos = anchorPos;
         this.schema = schema;
@@ -332,9 +304,6 @@ public class CinderStructureGhostRenderer {
             PoseStack poseStack = new PoseStack();
             Set<RenderType> startedBuffers = new ReferenceArraySet<>(RenderType.chunkBufferLayers().size());
 
-            // Same tint for every emitted vertex this pass - the one real addition over GT's own
-            // version, which has no concept of build-site validity to show at all. Kept fairly
-            // subtle (not a pure flat color) so the real block textures still read clearly through it.
             float tintR = tintValid ? 0.6f : 1.0f;
             float tintG = tintValid ? 1.0f : 0.55f;
             float tintB = tintValid ? 0.6f : 0.55f;
@@ -442,8 +411,7 @@ public class CinderStructureGhostRenderer {
 
         protected CompileStatus status = CompileStatus.COMPILING;
         protected final List<BlockEntity> blockEntities = new ArrayList<>();
-        protected final Map<RenderType, BufferBuilder.RenderedBuffer> renderedLayers =
-                new Reference2ObjectArrayMap<>();
+        protected final Map<RenderType, BufferBuilder.RenderedBuffer> renderedLayers = new Reference2ObjectArrayMap<>();
         protected final Set<RenderType> hasBlocks = new ObjectArraySet<>(RenderType.chunkBufferLayers().size());
         private @Nullable Map<RenderType, VertexBuffer> chunkBuffers;
 

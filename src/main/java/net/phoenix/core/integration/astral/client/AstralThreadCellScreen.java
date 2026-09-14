@@ -7,10 +7,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.core.integration.astral.item.AstralThreadCellItem;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
@@ -181,7 +179,8 @@ public class AstralThreadCellScreen extends Screen {
             int glowCol = MotionClock.lerpColor(0xFF000000 | cAccent1, 0xFF000000 | cAccent2, 0.3f + 0.3f * pulse);
             g.fillGradient(x, y, x + fillW, y + h, 0xFF000000 | cAccent1, glowCol);
         }
-        int borderCol = (0xFF << 24) | (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
+        int borderCol = (0xFF << 24) |
+                (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
         g.fill(x, y, x + w, y + 1, borderCol);
         g.fill(x, y + h - 1, x + w, y + h, borderCol);
         g.fill(x, y, x + 1, y + h, borderCol);
@@ -208,7 +207,8 @@ public class AstralThreadCellScreen extends Screen {
         g.fillGradient(x, y, x + vignette, y + h, 0x66000000, 0x00000000);
         g.fillGradient(x + w - vignette, y, x + w, y + h, 0x00000000, 0x66000000);
 
-        int borderCol = (0xFF << 24) | (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
+        int borderCol = (0xFF << 24) |
+                (MotionClock.lerpColor(0xFF000000 | cBorderDim, 0xFF000000 | cBorder, pulse) & 0xFFFFFF);
         g.fill(x, y, x + w, y + 1, borderCol);
         g.fill(x, y + h - 1, x + w, y + h, borderCol);
         g.fill(x, y, x + 1, y + h, borderCol);

@@ -6,7 +6,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -22,7 +21,8 @@ public class AstralWandItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> net.phoenix.core.integration.astral.client.AstralCodexScreen::open);
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                    () -> net.phoenix.core.integration.astral.client.AstralCodexScreen::open);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
