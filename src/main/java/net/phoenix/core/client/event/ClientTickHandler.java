@@ -52,6 +52,17 @@ public class ClientTickHandler {
             }
         }
 
+        while (PhoenixKeybinds.CINDER_ATLAS_RADIAL.consumeClick()) {
+            if (mc.screen != null) continue;
+            InteractionHand hand = mc.player.getMainHandItem().getItem() instanceof
+                    net.phoenix.core.common.item.cinder.CinderAtlasItem ? InteractionHand.MAIN_HAND :
+                    mc.player.getOffhandItem().getItem() instanceof
+                            net.phoenix.core.common.item.cinder.CinderAtlasItem ? InteractionHand.OFF_HAND : null;
+            if (hand != null) {
+                mc.setScreen(new net.phoenix.core.client.gui.cinder.CinderAtlasRadialScreen(hand));
+            }
+        }
+
         while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
             net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager = net.phoenix.core.integration.conflux.dimension.sky.SkyManager
                     .getInstance();

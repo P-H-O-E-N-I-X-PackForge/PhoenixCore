@@ -216,7 +216,7 @@ public class CinderForgeHatchPartMachine extends MEBusPartMachine {
             int still = entry.getIntValue() - haveLocally.getOrDefault(entry.getKey(), 0);
             if (still <= 0) continue;
 
-            AEItemKey key = AEItemKey.of(new ItemStack(entry.getKey().asItem()));
+            AEItemKey key = AEItemKey.of(entry.getKey());
             if (key == null) continue;
             long extracted = storage.extract(key, still, Actionable.MODULATE, getActionSource());
             if (extracted <= 0) continue;

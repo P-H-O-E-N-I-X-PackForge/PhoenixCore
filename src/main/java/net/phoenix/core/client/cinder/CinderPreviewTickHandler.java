@@ -19,8 +19,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.renderer.cinder.CinderStructureGhostRenderer;
-import net.phoenix.core.common.item.cinder.CinderCoreItem;
-import net.phoenix.core.common.item.cinder.CinderSchemaData;
+import net.phoenix.core.common.item.cinder.CinderDeploySource;
 
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
@@ -61,7 +60,7 @@ public class CinderPreviewTickHandler {
         CinderPreviewState.INSTANCE.updateFromHover(hand, anchor, facing);
 
         CinderPreviewState.INSTANCE.tick();
-        showGhostPreview(CinderPreviewState.INSTANCE.getPlacements(), CinderPreviewState.INSTANCE.isValid());
+        showGhostPreview(anchor, CinderPreviewState.INSTANCE.getPlacements(), CinderPreviewState.INSTANCE.isValid());
     }
 
     @SubscribeEvent
@@ -71,28 +70,40 @@ public class CinderPreviewTickHandler {
                 mc.gameRenderer.getMainCamera(), event.getStage(), mc.getFrameTime());
     }
 
-    private static void showGhostPreview(@Nullable Map<BlockPos, BlockInfo> placements, boolean valid) {
+    /**
+     * Fix for the long-standing "preview does not show" issue: {@link MutableSchema}'s blocks must be
+     * keyed in structure-local space (relative to wherever the renderer will translate the whole preview
+     * to), not world-absolute - confirmed by decompiling GTCEu's own {@code PatternPreviewRenderer} (the
+     * class this renderer is forked from): its compile step translates each block purely by its own
+     * schema-local {@code pos}, with the real world position applied exactly once, separately, as the
+     * {@code controllerPos}/{@code anchorPos} argument passed into {@code showPreview}. This method used
+     * to key the schema with {@code CinderSchemaData#resolvePlacement}'s world-absolute positions
+     * unchanged and then ask the schema to auto-detect its own controller position - meaning every block
+     * rendered at (real anchor + real world position), doubled and displaced far from the actual build
+     * site, and the auto-detected controller position depended on the fake preview level correctly
+     * instantiating a real multiblock controller block entity, which isn't guaranteed. Both are avoided
+     * here: positions are explicitly localized to {@code anchor} before building the schema, and the
+     * already-known real anchor is passed directly instead of trusting {@code schema.getControllerPos()}.
+     */
+    private static void showGhostPreview(BlockPos anchor, @Nullable Map<BlockPos, BlockInfo> placements,
+                                         boolean valid) {
         if (placements == null || placements.isEmpty()) return;
 
         Long2ReferenceMap<BlockState> blocks = new Long2ReferenceOpenHashMap<>(placements.size());
         for (var entry : placements.entrySet()) {
-            blocks.put(entry.getKey().asLong(), entry.getValue().getBlockState());
+            BlockPos local = entry.getKey().subtract(anchor);
+            blocks.put(local.asLong(), entry.getValue().getBlockState());
         }
 
         MutableSchema schema = new MutableSchema(blocks);
-        CinderStructureGhostRenderer.INSTANCE.showPreview(schema.getControllerPos(), schema, valid,
-                PREVIEW_DISPLAY_TICKS);
+        CinderStructureGhostRenderer.INSTANCE.showPreview(anchor, schema, valid, PREVIEW_DISPLAY_TICKS);
     }
 
     private static @Nullable InteractionHand findConfiguredHand(Player player) {
         ItemStack main = player.getMainHandItem();
-        if (main.getItem() instanceof CinderCoreItem && CinderSchemaData.getTargetId(main) != null) {
-            return InteractionHand.MAIN_HAND;
-        }
+        if (CinderDeploySource.hasConfiguredTarget(main)) return InteractionHand.MAIN_HAND;
         ItemStack off = player.getOffhandItem();
-        if (off.getItem() instanceof CinderCoreItem && CinderSchemaData.getTargetId(off) != null) {
-            return InteractionHand.OFF_HAND;
-        }
+        if (CinderDeploySource.hasConfiguredTarget(off)) return InteractionHand.OFF_HAND;
         return null;
     }
 }

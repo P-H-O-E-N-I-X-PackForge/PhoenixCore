@@ -19,6 +19,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.phoenix.core.common.data.PTags;
+import net.phoenix.core.common.item.cinder.CinderAtlasData;
+import net.phoenix.core.common.item.cinder.CinderAtlasItem;
+import net.phoenix.core.common.item.cinder.CinderAtlasUpgradeItem;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.integration.ae2.CinderForgeHatchPartMachine;
@@ -71,6 +74,9 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
     private static final int COLOR_BG_TOP = 0xFF17101F;
     private static final int COLOR_BG_BOTTOM = 0xFF0B0712;
 
+    private static final int ATLAS_SLOT = 0;
+    private static final int UPGRADE_ITEM_SLOT = 1;
+
     private String targetFilter = "";
     private final List<MultiblockMachineDefinition> allTargets = new ArrayList<>();
 
@@ -78,10 +84,21 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
     private final NotifiableItemStackHandler tier1Inventory;
 
+    /**
+     * Design doc feature #7 - upgrades are installed by interacting with the Cinder Forge (see
+     * {@link #buildUpgradeSection}), not through a UI on the Atlas item itself, matching this
+     * codebase's existing convention that the Forge is the "assemble/configure a Cinder item" station
+     * (it already fills and configures Cinder Cores the same way). A separate 2-slot inventory rather
+     * than reusing {@link #tier1Inventory}/the hatch's - this doesn't need AE2 automation or tier
+     * gating, it's a simple "drop items in, press button" interaction available on any formed tier.
+     */
+    private final NotifiableItemStackHandler upgradeInventory;
+
     public CinderForgeMachine(BlockEntityCreationInfo info) {
         super(info);
         this.tier1Inventory = attachTrait(new NotifiableItemStackHandler(CinderForgeHatchPartMachine.TOTAL_SLOTS,
                 IO.BOTH, IO.BOTH));
+        this.upgradeInventory = attachTrait(new NotifiableItemStackHandler(2, IO.NONE, IO.NONE));
     }
 
     private record FlatPanel(int fillColor, int borderColor) implements IDrawable {
@@ -234,31 +251,39 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         mainWidget.child(Text.str(badge.label()).asWidget()
                 .pos(400 - badgeW + 5, 6).size(badgeW - 6, 10).color(badge.color()));
 
+        int upgradeBottom = buildUpgradeSection(mainWidget, syncManager);
+        // coverChildren(), not a fixed size - this wrapper only exists to shift the origin down past the
+        // upgrade section, it must not force the panel taller than whatever branch below actually needs
+        // (a fixed size here previously inflated the window to a mostly-empty ~500px regardless of the
+        // handful of short lines the "not formed"/"hatch missing" branches actually render).
+        Flow body = Flow.col().pos(0, upgradeBottom).coverChildren();
+        mainWidget.child(body);
+
         if (tier == null) {
-            mainWidget.child(Text.str("Structure not formed.")
+            body.child(Text.str("Structure not formed.")
                     .asWidget().pos(8, 24).size(390, 10).color(COLOR_BAD));
 
-            mainWidget.child(Text.str("Tier 1: small box, casing only, no ME hatch - manual only.")
+            body.child(Text.str("Tier 1: small box, casing only, no ME hatch - manual only.")
                     .asWidget().pos(8, 38).size(390, 10).color(COLOR_LABEL));
-            mainWidget.child(Text.str("Tier 2: larger hive shape with exactly 1 ME hatch - auto-packages.")
+            body.child(Text.str("Tier 2: larger hive shape with exactly 1 ME hatch - auto-packages.")
                     .asWidget().pos(8, 50).size(390, 10).color(COLOR_LABEL));
-            mainWidget.child(Text.str("Tier 3: same hive shape with 2-4 ME hatches - parallel Cores.")
+            body.child(Text.str("Tier 3: same hive shape with 2-4 ME hatches - parallel Cores.")
                     .asWidget().pos(8, 62).size(390, 10).color(COLOR_LABEL));
             return;
         }
         if (tier != CinderForgeTier.TIER1 && hatch == null) {
-            mainWidget.child(Text.str("Structure formed but the Cinder Forge hatch is missing - " +
+            body.child(Text.str("Structure formed but the Cinder Forge hatch is missing - " +
                     "this shouldn't be reachable, report it.").asWidget().pos(8, 24).size(390, 20).color(COLOR_BAD));
             return;
         }
 
-        ParentWidget<?> contentContainer = mainWidget;
+        ParentWidget<?> contentContainer = body;
         int contentY = 22;
         if (tier == CinderForgeTier.TIER1) {
-            contentY = buildTier1SlotSection(mainWidget, syncManager);
+            contentY = buildTier1SlotSection(body, syncManager);
 
             Flow wrapper = Flow.col().pos(0, contentY).size(400, 500);
-            mainWidget.child(wrapper);
+            body.child(wrapper);
             contentContainer = wrapper;
             contentY = 0;
         }
@@ -274,6 +299,90 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             buildTargetPicker(contentContainer, syncManager, inventory);
         } else {
             buildConfigurator(contentContainer, syncManager, inventory, core);
+        }
+    }
+
+    /**
+     * Design doc feature #7 - drop a Cinder Atlas and an upgrade item in, press the button, the upgrade
+     * moves into the Atlas's first open upgrade slot and is consumed. Always shown at the top of the GUI
+     * regardless of tier/formation state, since it needs no automation or power - just the two slots and
+     * a button, the same "drop items in, press a button" shape as Tier 1's own "Package Now" above.
+     * Returns the Y just below this section, so the rest of the GUI can be pushed down by exactly that
+     * much without needing to touch any of its own (otherwise unchanged) relative coordinates.
+     */
+    private int buildUpgradeSection(ParentWidget<?> mainWidget, PanelSyncManager syncManager) {
+        int slotSize = brachy.modularui.widgets.slot.ItemSlot.SIZE;
+        int labelY = 20;
+        int slotY = labelY + 12;
+        var storage = upgradeInventory.storage;
+
+        mainWidget.child(Text.str("UPGRADE A CINDER ATLAS").asWidget()
+                .pos(8, labelY).size(220, 10).color(COLOR_LABEL));
+
+        var atlasGroup = new brachy.modularui.widgets.slot.SlotGroup("cinderForgeAtlasSlot", 1,
+                brachy.modularui.widgets.slot.SlotGroup.STORAGE_SLOT_PRIO, true);
+        var atlasSlot = brachy.modularui.value.sync.SyncHandlers.itemSlot(storage, ATLAS_SLOT).slotGroup(atlasGroup)
+                .filter(stack -> stack.getItem() instanceof CinderAtlasItem);
+        mainWidget.child(new brachy.modularui.widgets.slot.ItemSlot().slot(atlasSlot)
+                .pos(8, slotY).size(slotSize, slotSize)
+                .background(new FlatPanel(COLOR_PANEL_BG, COLOR_TITLE)));
+
+        var upgradeGroup = new brachy.modularui.widgets.slot.SlotGroup("cinderForgeUpgradeItemSlot", 1,
+                brachy.modularui.widgets.slot.SlotGroup.STORAGE_SLOT_PRIO, true);
+        var upgradeItemSlot = brachy.modularui.value.sync.SyncHandlers.itemSlot(storage, UPGRADE_ITEM_SLOT)
+                .slotGroup(upgradeGroup)
+                .filter(stack -> stack.getItem() instanceof CinderAtlasUpgradeItem);
+        int upgradeSlotX = 8 + slotSize + 8;
+        mainWidget.child(new brachy.modularui.widgets.slot.ItemSlot().slot(upgradeItemSlot)
+                .pos(upgradeSlotX, slotY).size(slotSize, slotSize)
+                .background(new FlatPanel(COLOR_PANEL_BG, COLOR_TITLE)));
+
+        BooleanSyncValue installUpgrade = syncManager.getOrCreateSyncHandler("cinderInstallUpgrade",
+                BooleanSyncValue.class, () -> new BooleanSyncValue(() -> false, fired -> {
+                    if (!fired) return;
+                    installUpgradeIntoAtlas();
+                }).allowC2S(true));
+        int buttonX = upgradeSlotX + slotSize + 8;
+        mainWidget.child(new ButtonWidget<>()
+                .pos(buttonX, slotY + (slotSize - 14) / 2).size(96, 14)
+                .overlay(Text.str("Install Upgrade").asIcon())
+                .onMousePressed((ctx, btn) -> {
+                    installUpgrade.setBoolValue(true, true, true);
+                    return true;
+                }));
+
+        mainWidget.child(Text.dynamic(() -> Component.literal(upgradeStatusLine())).asWidget()
+                .pos(buttonX + 100, slotY + (slotSize - 10) / 2).size(180, 12).color(COLOR_DIM));
+
+        return slotY + slotSize + 10;
+    }
+
+    private String upgradeStatusLine() {
+        var storage = upgradeInventory.storage;
+        ItemStack atlas = storage.getStackInSlot(ATLAS_SLOT);
+        ItemStack upgrade = storage.getStackInSlot(UPGRADE_ITEM_SLOT);
+        if (atlas.isEmpty()) return "Insert a Cinder Atlas.";
+        if (upgrade.isEmpty()) return "Insert an upgrade item.";
+        for (int i = 0; i < CinderAtlasData.UPGRADE_SLOT_COUNT; i++) {
+            if (CinderAtlasData.getUpgradeSlot(atlas, i).isEmpty()) return "Ready - click Install Upgrade.";
+        }
+        return "This Atlas's upgrade slots are full.";
+    }
+
+    private void installUpgradeIntoAtlas() {
+        var storage = upgradeInventory.storage;
+        ItemStack atlas = storage.getStackInSlot(ATLAS_SLOT);
+        ItemStack upgrade = storage.getStackInSlot(UPGRADE_ITEM_SLOT);
+        if (atlas.isEmpty() || !(atlas.getItem() instanceof CinderAtlasItem)) return;
+        if (upgrade.isEmpty() || !(upgrade.getItem() instanceof CinderAtlasUpgradeItem)) return;
+
+        for (int i = 0; i < CinderAtlasData.UPGRADE_SLOT_COUNT; i++) {
+            if (CinderAtlasData.getUpgradeSlot(atlas, i).isEmpty()) {
+                CinderAtlasData.setUpgradeSlot(atlas, i, upgrade.copyWithCount(1));
+                upgrade.shrink(1);
+                upgradeInventory.onContentsChanged();
+                return;
+            }
         }
     }
 

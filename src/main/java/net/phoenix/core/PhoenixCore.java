@@ -250,6 +250,7 @@ public class PhoenixCore {
             VaultNetwork.init();
             VaultRegistry.registerLinkables();
             GregPacksNetwork.init();
+            net.phoenix.core.integration.ae2.CinderAtlasWirelessLink.register();
 
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(

@@ -5,10 +5,11 @@ import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.common.item.cinder.CinderCoreItem;
+import net.phoenix.core.common.item.cinder.CinderDeploySource;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinderCommitPacket;
@@ -33,6 +34,7 @@ public final class CinderPreviewState {
 
     private @Nullable CinderSchemaData.ResolvedPlacement resolved;
     private boolean materialsSufficient;
+    private boolean siteClear;
     private int refreshCooldown;
 
     private @Nullable BlockPos forceArmedAnchor;
@@ -99,7 +101,8 @@ public final class CinderPreviewState {
             return;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof CinderCoreItem) || CinderSchemaData.getTargetId(stack) == null) {
+        CompoundTag tag = CinderDeploySource.resolveDeployTag(stack);
+        if (tag == null || CinderSchemaData.getTargetId(tag) == null) {
             cancel();
             return;
         }
@@ -107,15 +110,17 @@ public final class CinderPreviewState {
         if (resolved == null || refreshCooldown <= 0) {
 
             try {
-                resolved = CinderSchemaData.resolvePlacement(stack, anchor, facing, UP_FACING, false);
+                resolved = CinderSchemaData.resolvePlacement(tag, anchor, facing, UP_FACING, false);
                 materialsSufficient = resolved != null && CinderSchemaData.hasSufficientMaterials(stack,
                         resolved.blockCounts());
+                siteClear = resolved != null && CinderSchemaData.isSiteClear(player.level(), resolved.placements());
             } catch (Exception e) {
                 net.phoenix.core.PhoenixCore.LOGGER.error(
                         "[CinderPreview] Failed to resolve build preview at {} (target {})", anchor,
-                        CinderSchemaData.getTargetId(stack), e);
+                        CinderSchemaData.getTargetId(tag), e);
                 resolved = null;
                 materialsSufficient = false;
+                siteClear = false;
             }
             refreshCooldown = REFRESH_INTERVAL_TICKS;
         } else {
@@ -128,6 +133,6 @@ public final class CinderPreviewState {
     }
 
     public boolean isValid() {
-        return resolved != null && materialsSufficient;
+        return resolved != null && materialsSufficient && siteClear;
     }
 }

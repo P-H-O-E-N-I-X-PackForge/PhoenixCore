@@ -121,12 +121,33 @@ public class CinderCoreItem extends Item {
         return tryStockMaterial(cinderCore, slot.getItem(), player);
     }
 
+    /**
+     * Only takes exactly what the configured target still needs of this specific block, not the whole
+     * held stack - previously this inserted {@code heldItem.copy()} unchanged (its full count) with no
+     * cap at all, so left-clicking with a stack of 64 would eat all 64 even if the schema only needed
+     * 12, regardless of whether the block was even part of the target. Caps insertion at
+     * {@code required - alreadyStocked} for this block, using the same
+     * {@link CinderSchemaData#getCachedRequiredBlocks}/{@link CinderSchemaData#tallyStocked} this item's
+     * own tooltip already computes, and refuses to accept a block that isn't part of the schema at all.
+     */
     private static boolean tryStockMaterial(ItemStack cinderCore, ItemStack heldItem, Player player) {
-        if (heldItem.isEmpty() || !(heldItem.getItem() instanceof BlockItem)) return false;
+        if (heldItem.isEmpty() || !(heldItem.getItem() instanceof BlockItem blockItem)) return false;
+
+        Block block = blockItem.getBlock();
+        int need = CinderSchemaData.getCachedRequiredBlocks(cinderCore).getInt(block);
+        if (need <= 0) return false;
+
+        int have = CinderSchemaData.tallyStocked(cinderCore).getOrDefault(block, 0);
+        int stillNeeded = need - have;
+        if (stillNeeded <= 0) return false;
+
+        int toInsert = Math.min(stillNeeded, heldItem.getCount());
 
         return cinderCore.getCapability(ForgeCapabilities.ITEM_HANDLER).map(handler -> {
-            ItemStack remainder = ItemHandlerHelper.insertItem(handler, heldItem.copy(), false);
-            int inserted = heldItem.getCount() - remainder.getCount();
+            ItemStack candidate = heldItem.copy();
+            candidate.setCount(toInsert);
+            ItemStack remainder = ItemHandlerHelper.insertItem(handler, candidate, false);
+            int inserted = toInsert - remainder.getCount();
             if (inserted <= 0) return false;
 
             heldItem.shrink(inserted);

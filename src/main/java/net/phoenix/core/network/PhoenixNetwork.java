@@ -192,5 +192,54 @@ public class PhoenixNetwork {
                 C2SCinderClearTargetPacket::new,
                 C2SCinderClearTargetPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasSetSlotTargetPacket.class,
+                C2SCinderAtlasSetSlotTargetPacket::encode,
+                C2SCinderAtlasSetSlotTargetPacket::new,
+                C2SCinderAtlasSetSlotTargetPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasClearSlotPacket.class,
+                C2SCinderAtlasClearSlotPacket::encode,
+                C2SCinderAtlasClearSlotPacket::new,
+                C2SCinderAtlasClearSlotPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasRenameLoadoutPacket.class,
+                C2SCinderAtlasRenameLoadoutPacket::encode,
+                C2SCinderAtlasRenameLoadoutPacket::new,
+                C2SCinderAtlasRenameLoadoutPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasSetActiveLoadoutPacket.class,
+                C2SCinderAtlasSetActiveLoadoutPacket::encode,
+                C2SCinderAtlasSetActiveLoadoutPacket::new,
+                C2SCinderAtlasSetActiveLoadoutPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasSetActiveSlotPacket.class,
+                C2SCinderAtlasSetActiveSlotPacket::encode,
+                C2SCinderAtlasSetActiveSlotPacket::new,
+                C2SCinderAtlasSetActiveSlotPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasOpenCraftingTerminalPacket.class,
+                C2SCinderAtlasOpenCraftingTerminalPacket::encode,
+                C2SCinderAtlasOpenCraftingTerminalPacket::new,
+                C2SCinderAtlasOpenCraftingTerminalPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCinderAtlasRequestMaterialsPacket.class,
+                C2SCinderAtlasRequestMaterialsPacket::encode,
+                C2SCinderAtlasRequestMaterialsPacket::new,
+                C2SCinderAtlasRequestMaterialsPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 }

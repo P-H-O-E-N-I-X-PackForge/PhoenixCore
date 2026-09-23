@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.integration.ae2.CinderForgeHatchPartMachine;
+import net.phoenix.core.integration.ae2.CinderRequesterPartMachine;
 
 import static com.gregtechceu.gtceu.api.GTValues.UHV;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
@@ -23,6 +24,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 public final class CinderForgeMachines {
 
     public static MachineDefinition CINDER_FORGE_HATCH = null;
+    public static MachineDefinition CINDER_REQUESTER = null;
     public static MachineDefinition CINDER_FORGE = null;
 
     static {
@@ -41,6 +43,20 @@ public final class CinderForgeMachines {
                             Component.literal("§7Pulls a configured Core + its needed materials from the ME network,"),
                             Component.literal("§7stocks it, and hands it back once ready."),
                             Component.translatable("gtceu.part_sharing.enabled"))
+                    .register();
+
+            CINDER_REQUESTER = REGISTRATE
+                    .machine("cinder_requester", CinderRequesterPartMachine::new)
+                    .tier(UHV)
+                    .rotationState(RotationState.ALL)
+
+                    .colorOverlayTieredHullModel(net.phoenix.core.PhoenixCore.id("block/machine/ae2/me_tag_input_bus"))
+                    .langValue("Cinder Requester")
+                    .tooltips(
+                            Component.literal("§6Auto-restocks ready-to-build material kits"),
+                            Component.literal("§7Socket a configured Cinder Core as a template, then set how many"),
+                            Component.literal("§7kits' worth of its materials to keep on hand in the ME network."),
+                            Component.literal("§7Requests a fresh batch whenever ready stock dips below that."))
                     .register();
 
             CINDER_FORGE = REGISTRATE

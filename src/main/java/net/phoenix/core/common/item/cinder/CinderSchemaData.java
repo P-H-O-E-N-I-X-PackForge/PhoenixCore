@@ -42,10 +42,26 @@ public final class CinderSchemaData {
     private static final String SLICE_VALUES = "SliceRepeatValues";
     private static final String BLOCK_PREFERENCES = "BlockPreferences";
 
+    /**
+     * Every method below that reads/writes a Cinder Core's configuration has two forms: an
+     * {@link ItemStack} overload (unchanged behavior - existing call sites in {@code CinderCoreItem},
+     * {@code CinderForgeMachine}, the Configurator screen, etc. keep working exactly as before, reading
+     * against the stack's own root tag via {@code getOrCreateTag()}/{@code getTag()}) and a
+     * {@link CompoundTag} overload operating on whatever tag is handed to it. The Cinder Atlas
+     * deployment tool (multiple loadouts, each holding several saved targets) is the reason the tag
+     * overloads exist: a "slot" there is just a sub-{@code CompoundTag} nested under the tool's own
+     * NBT rather than a whole stack's root tag, and every one of these methods works identically
+     * either way since none of them actually need anything else from the stack itself.
+     */
     public static void setTarget(ItemStack cinderCore, MultiblockMachineDefinition definition) {
-        CompoundTag tag = cinderCore.getOrCreateTag();
-        if (!definition.getId().equals(getTargetId(cinderCore))) {
+        setTarget(cinderCore.getOrCreateTag(), definition);
+    }
 
+    public static void setTarget(CompoundTag tag, MultiblockMachineDefinition definition) {
+        if (!definition.getId().equals(getTargetId(tag))) {
+            // Switching targets invalidates any prior configuration - stale slice/preference data
+            // from a different multiblock's pattern would be meaningless (or worse, silently
+            // misapplied to the wrong predicate) against this one.
             tag.remove(SLICE_KEYS);
             tag.remove(SLICE_VALUES);
             tag.remove(BLOCK_PREFERENCES);
@@ -55,13 +71,21 @@ public final class CinderSchemaData {
 
     public static @Nullable ResourceLocation getTargetId(ItemStack cinderCore) {
         CompoundTag tag = cinderCore.getTag();
-        if (tag == null || !tag.contains(TARGET_KEY)) return null;
+        return tag == null ? null : getTargetId(tag);
+    }
+
+    public static @Nullable ResourceLocation getTargetId(CompoundTag tag) {
+        if (!tag.contains(TARGET_KEY)) return null;
         return ResourceLocation.tryParse(tag.getString(TARGET_KEY));
     }
 
     public static void clearTarget(ItemStack cinderCore) {
         CompoundTag tag = cinderCore.getTag();
         if (tag == null) return;
+        clearTarget(tag);
+    }
+
+    public static void clearTarget(CompoundTag tag) {
         tag.remove(TARGET_KEY);
         tag.remove(SLICE_KEYS);
         tag.remove(SLICE_VALUES);
@@ -69,7 +93,14 @@ public final class CinderSchemaData {
     }
 
     public static @Nullable MultiblockMachineDefinition getTargetDefinition(ItemStack cinderCore) {
-        ResourceLocation id = getTargetId(cinderCore);
+        return getTargetDefinition(getTargetId(cinderCore));
+    }
+
+    public static @Nullable MultiblockMachineDefinition getTargetDefinition(CompoundTag tag) {
+        return getTargetDefinition(getTargetId(tag));
+    }
+
+    private static @Nullable MultiblockMachineDefinition getTargetDefinition(@Nullable ResourceLocation id) {
         if (id == null) return null;
         MachineDefinition definition = GTRegistries.MACHINES.get(id);
         return definition instanceof MultiblockMachineDefinition multi ? multi : null;
@@ -83,13 +114,16 @@ public final class CinderSchemaData {
     }
 
     public static @Nullable MultiblockSchemaInfo resolveSchema(ItemStack cinderCore) {
-        MultiblockMachineDefinition definition = getTargetDefinition(cinderCore);
+        return resolveSchema(cinderCore.getOrCreateTag());
+    }
+
+    public static @Nullable MultiblockSchemaInfo resolveSchema(CompoundTag tag) {
+        MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return null;
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return null;
 
         MultiblockSchemaInfo info = new MultiblockSchemaInfo();
-        CompoundTag tag = cinderCore.getOrCreateTag();
 
         if (tag.contains(SLICE_KEYS) && tag.contains(SLICE_VALUES)) {
             int[] keys = tag.getIntArray(SLICE_KEYS);
@@ -132,6 +166,10 @@ public final class CinderSchemaData {
     }
 
     public static boolean scanFromWorld(ItemStack cinderCore, Level level, BlockPos controllerPos) {
+        return scanFromWorld(cinderCore.getOrCreateTag(), level, controllerPos);
+    }
+
+    public static boolean scanFromWorld(CompoundTag tag, Level level, BlockPos controllerPos) {
         if (!(MetaMachine.getMachine(level, controllerPos) instanceof MultiblockControllerMachine controller) ||
                 !controller.isFormed()) {
             return false;
@@ -145,7 +183,7 @@ public final class CinderSchemaData {
         Direction upFacing = controller.getUpwardsFacing();
         boolean flipped = controller.isFlipped();
 
-        setTarget(cinderCore, definition);
+        setTarget(tag, definition);
 
         MultiblockSchemaInfo info = new MultiblockSchemaInfo();
         for (int i = 0; i < pattern.getSlices().length; i++) {
@@ -179,13 +217,19 @@ public final class CinderSchemaData {
         }
 
         info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
-        writeUserPreferences(cinderCore, definition, info);
+        writeUserPreferences(tag, definition, info);
         return true;
     }
 
     public static boolean applyConfiguration(ItemStack cinderCore, int[] sliceKeys, int[] sliceValues,
                                              char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices) {
-        MultiblockMachineDefinition definition = getTargetDefinition(cinderCore);
+        return applyConfiguration(cinderCore.getOrCreateTag(), sliceKeys, sliceValues, prefChars, prefBaseIndices,
+                prefCandidateIndices);
+    }
+
+    public static boolean applyConfiguration(CompoundTag tag, int[] sliceKeys, int[] sliceValues,
+                                             char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices) {
+        MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return false;
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return false;
@@ -213,15 +257,19 @@ public final class CinderSchemaData {
             info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
         }
 
-        writeUserPreferences(cinderCore, definition, info);
+        writeUserPreferences(tag, definition, info);
         return true;
     }
 
     public static void writeUserPreferences(ItemStack cinderCore, MultiblockMachineDefinition definition,
                                             MultiblockSchemaInfo info) {
+        writeUserPreferences(cinderCore.getOrCreateTag(), definition, info);
+    }
+
+    public static void writeUserPreferences(CompoundTag tag, MultiblockMachineDefinition definition,
+                                            MultiblockSchemaInfo info) {
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return;
-        CompoundTag tag = cinderCore.getOrCreateTag();
 
         Int2IntMap sliceRepeats = info.getUserSliceRepeats();
         if (sliceRepeats.isEmpty()) {
@@ -268,12 +316,16 @@ public final class CinderSchemaData {
     }
 
     public static void adjustSliceRepeat(ItemStack cinderCore, int sliceIndex, int delta) {
-        MultiblockMachineDefinition definition = getTargetDefinition(cinderCore);
+        adjustSliceRepeat(cinderCore.getOrCreateTag(), sliceIndex, delta);
+    }
+
+    public static void adjustSliceRepeat(CompoundTag tag, int sliceIndex, int delta) {
+        MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return;
         BlockPattern pattern = getPattern(definition);
         if (pattern == null || sliceIndex < 0 || sliceIndex >= pattern.getSlices().length) return;
 
-        MultiblockSchemaInfo info = resolveSchema(cinderCore);
+        MultiblockSchemaInfo info = resolveSchema(tag);
         if (info == null) return;
 
         var slice = pattern.getSlices()[sliceIndex];
@@ -283,12 +335,17 @@ public final class CinderSchemaData {
 
         info.getUserSliceRepeats().put(sliceIndex, next);
         info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
-        writeUserPreferences(cinderCore, definition, info);
+        writeUserPreferences(tag, definition, info);
     }
 
     public static void setPredicateCandidate(ItemStack cinderCore, char predicateChar, int baseIndex,
                                              int candidateIndex) {
-        MultiblockMachineDefinition definition = getTargetDefinition(cinderCore);
+        setPredicateCandidate(cinderCore.getOrCreateTag(), predicateChar, baseIndex, candidateIndex);
+    }
+
+    public static void setPredicateCandidate(CompoundTag tag, char predicateChar, int baseIndex,
+                                             int candidateIndex) {
+        MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return;
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return;
@@ -299,16 +356,20 @@ public final class CinderSchemaData {
         var candidates = base.getCandidates();
         if (candidateIndex < 0 || candidateIndex >= candidates.size()) return;
 
-        MultiblockSchemaInfo info = resolveSchema(cinderCore);
+        MultiblockSchemaInfo info = resolveSchema(tag);
         if (info == null) return;
 
         info.putPredicatePreference(predicate, base, candidates.get(candidateIndex));
         info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
-        writeUserPreferences(cinderCore, definition, info);
+        writeUserPreferences(tag, definition, info);
     }
 
     public static int getPredicateCandidateIndex(ItemStack cinderCore, MultiPredicate predicate, BasePredicate base) {
-        MultiblockSchemaInfo info = resolveSchema(cinderCore);
+        return getPredicateCandidateIndex(cinderCore.getOrCreateTag(), predicate, base);
+    }
+
+    public static int getPredicateCandidateIndex(CompoundTag tag, MultiPredicate predicate, BasePredicate base) {
+        MultiblockSchemaInfo info = resolveSchema(tag);
         if (info == null || info.getStructureHelper() == null) return 0;
         BlockInfo current = info.getStructureHelper().getBlockPreferences().get(predicate, base);
         int index = current != null ? base.getCandidates().indexOf(current) : -1;
@@ -344,12 +405,18 @@ public final class CinderSchemaData {
     public static @Nullable ResolvedPlacement resolvePlacement(ItemStack cinderCore, BlockPos anchor,
                                                                Direction frontFacing, Direction upFacing,
                                                                boolean isFlipped) {
-        MultiblockMachineDefinition definition = getTargetDefinition(cinderCore);
+        return resolvePlacement(cinderCore.getOrCreateTag(), anchor, frontFacing, upFacing, isFlipped);
+    }
+
+    public static @Nullable ResolvedPlacement resolvePlacement(CompoundTag tag, BlockPos anchor,
+                                                               Direction frontFacing, Direction upFacing,
+                                                               boolean isFlipped) {
+        MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return null;
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return null;
 
-        MultiblockSchemaInfo info = resolveSchema(cinderCore);
+        MultiblockSchemaInfo info = resolveSchema(tag);
         if (info == null) return null;
         info.refreshSchema(definition, frontFacing, upFacing, isFlipped, null);
 
@@ -361,8 +428,46 @@ public final class CinderSchemaData {
         for (var entry : info.getStructureBlocks().entrySet()) {
             placements.put(originImmutable.offset(entry.getKey()), entry.getValue());
         }
+
+        // pattern.getOffset() anchors the structure on where its *controller* sits within the
+        // pattern (verified by decompiling GTCEu's OriginOffset/BlockPattern#legacyStartOffset) -
+        // correct for GTCEu's own use case of validating an already-placed controller block, but
+        // wrong for us: we hand it the ghost-preview aim point as if it were that controller. A
+        // controller that isn't at the structure's own floor (e.g. Cinder Forge's is vertically
+        // centered, 2 rows above its bottom casing layer) makes the whole footprint sink that many
+        // rows below the clicked surface, silently overlapping terrain instead of resting on it -
+        // isSiteClear() would then correctly refuse to build there, but the fix belongs here: the
+        // footprint should never be computed to require ground below where the player aimed in the
+        // first place. Shifting the whole footprint (and the anchor) up by however far its lowest
+        // row dips below the click point preserves the pattern's horizontal facing/centering while
+        // guaranteeing the structure always rests on or above the surface instead of into it.
+        int minY = placements.keySet().stream().mapToInt(BlockPos::getY).min().orElse(anchor.getY());
+        if (minY < anchor.getY()) {
+            BlockPos shift = new BlockPos(0, anchor.getY() - minY, 0);
+            Map<BlockPos, BlockInfo> shifted = new HashMap<>();
+            for (var entry : placements.entrySet()) {
+                shifted.put(entry.getKey().offset(shift), entry.getValue());
+            }
+            placements = shifted;
+            originImmutable = originImmutable.offset(shift);
+        }
+
         return new ResolvedPlacement(placements, new Reference2IntOpenHashMap<>(info.getBlockCounts()),
                 originImmutable);
+    }
+
+    /**
+     * Whether every target position is currently empty enough to build into - {@link BlockState#canBeReplaced()}
+     * (true for air, tall grass, snow layers, liquids, etc.), false for real terrain/existing builds.
+     * {@link #resolvePlacement} itself is purely geometric and has no idea what's actually at those world
+     * positions, so without this check a placement whose footprint dips into a hillside or floor would
+     * silently overwrite that terrain instead of being refused - "clipping into the ground."
+     */
+    public static boolean isSiteClear(Level level, Map<BlockPos, BlockInfo> placements) {
+        for (BlockPos pos : placements.keySet()) {
+            if (!level.getBlockState(pos).canBeReplaced()) return false;
+        }
+        return true;
     }
 
     private static @Nullable CompoundTag cachedRequiredTag = null;
@@ -377,6 +482,16 @@ public final class CinderSchemaData {
                 new Reference2IntOpenHashMap<>();
         cachedRequiredTag = tag != null ? tag.copy() : null;
         return cachedRequiredBlocks;
+    }
+
+    /** Deliberately uncached, unlike {@link #getCachedRequiredBlocks} - that single-slot cache is the
+     *  right shape for "one held stack's tooltip re-rendering every frame," but wrong for a UI showing
+     *  many loadout slots' rows at once (every row would evict the last, thrashing on every repaint).
+     *  Callers displaying several slots simultaneously (the Cinder Atlas loadout list) should keep
+     *  their own cache keyed per slot instead. */
+    public static Reference2IntMap<Block> getRequiredBlocks(CompoundTag tag) {
+        MultiblockSchemaInfo info = resolveSchema(tag);
+        return info != null ? new Reference2IntOpenHashMap<>(info.getBlockCounts()) : new Reference2IntOpenHashMap<>();
     }
 
     public static Reference2IntMap<Block> tallyStocked(ItemStack cinderCore) {

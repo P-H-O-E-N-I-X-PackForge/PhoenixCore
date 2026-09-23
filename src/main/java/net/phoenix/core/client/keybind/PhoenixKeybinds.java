@@ -69,6 +69,12 @@ public class PhoenixKeybinds {
             GLFW.GLFW_KEY_KP_4,
             "key.categories.phoenixcore");
 
+    public static final KeyMapping CINDER_ATLAS_RADIAL = new KeyMapping(
+            "key.phoenixcore.cinder_atlas_radial",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_1,
+            "key.categories.phoenixcore");
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_WING_GUI);
@@ -81,5 +87,6 @@ public class PhoenixKeybinds {
         event.register(OPEN_ASTRAL_CODEX);
         event.register(TOGGLE_DISCIPLINE_SKY);
         event.register(SHOW_SHADER_PROFILER);
+        event.register(CINDER_ATLAS_RADIAL);
     }
 }
