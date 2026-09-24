@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "A recording, still looping in a dead terminal. The voice is thin. Familiar.",
+    [
+      {
+        "text": "\"If you're hearing this, the split held. We didn't. Nobody on the lower levels made it out before the seal.\"",
+        "color": "#9FD8FF",
+        "italic": true
+      }
+    ],
+    [
+      {
+        "text": "\"You told us the Disciplines would keep us. That we'd persist, individual and intact, inside something larger.\"",
+        "color": "#9FD8FF",
+        "italic": true
+      }
+    ],
+    [
+      {
+        "text": "\"It doesn't feel like persisting. It feels like being read. Constantly. Forever.\"",
+        "color": "#9FD8FF",
+        "italic": true
+      }
+    ],
+    [
+      {
+        "text": "\"I hope it worked. I hope you forgot. ",
+        "color": "#9FD8FF",
+        "italic": true
+      },
+      {
+        "text": "I hope it hurts when you remember.\"",
+        "color": "#FF5252",
+        "italic": true
+      }
+    ],
+    "The recording ends. Then it starts again."
+  ],
+  "black_duration": 2.5,
+  "chars_per_second": 19,
+  "punctuation_pause": 0.5,
+  "background": "phoenixcore:void",
+  "sound": {
+    "id": "minecraft:block.note_block.hat",
+    "volume": 0.07,
+    "pitch": 0.9,
+    "pitch_variance": 0.15,
+    "every_n_letters": 2
+  },
+  "music": {
+    "sound": "minecraft:music_disc.11",
+    "volume": 0.9,
+    "fade_in": 4.0,
+    "loop": false
+  }
+}

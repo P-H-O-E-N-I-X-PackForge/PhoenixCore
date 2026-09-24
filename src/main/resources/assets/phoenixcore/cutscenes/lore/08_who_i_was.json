@@ -1,0 +1,62 @@
+{
+  "pages": [
+    "I remember now.",
+    "The Conflux was not a disaster. It was an experiment, and it was mine. Every Discipline was a vessel. Every vessel needed someone to fill it.",
+    "Fire for those who could endure being unmade. Root for those who could bear to be remembered. Dark for those who could wait forever.",
+    [
+      "And for the ones who would not agree, ",
+      {
+        "text": "a sealed door",
+        "color": "#8B0000"
+      },
+      "."
+    ],
+    "When it was done, I did what the Phoenix does. I burned completely. I unwrote myself, so no one could ever do this again.",
+    [
+      "It did not work. ",
+      {
+        "text": "I came back.",
+        "color": "#FF7043"
+      }
+    ],
+    "I did not lose my way through the Conflux. I built it, and then I made myself forget the map.",
+    [
+      "The terminal on the platform has a log I never opened. Its first line reads: ",
+      {
+        "text": "\"Welcome back.\"",
+        "color": "#FF7043",
+        "italic": true
+      }
+    ],
+    [
+      {
+        "text": "I wonder how many times I have woken up there.",
+        "italic": true
+      }
+    ]
+  ],
+  "black_duration": 4.0,
+  "fade_in": 7.0,
+  "fade_out": 4.0,
+  "chars_per_second": 16,
+  "punctuation_pause": 0.55,
+  "text": {
+    "scale": 1.6,
+    "max_width": 0.55,
+    "wave_amplitude": 1.5
+  },
+  "background": "phoenixcore:conflux",
+  "sound": {
+    "id": "minecraft:block.campfire.crackle",
+    "volume": 0.2,
+    "pitch": 0.8,
+    "pitch_variance": 0.3,
+    "every_n_letters": 3
+  },
+  "music": {
+    "sound": "minecraft:music_disc.5",
+    "volume": 1.0,
+    "fade_in": 8.0,
+    "loop": false
+  }
+}

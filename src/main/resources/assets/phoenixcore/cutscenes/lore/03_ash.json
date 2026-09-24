@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "The ash here is warm. It has been warm for a very long time.",
+    "Ash remembers what it was. When I touch it, I see shapes. Desks. Glass. A long hall full of instruments, all humming the same note.",
+    [
+      "Under the cinders, a notebook. The pages burned, but the cover did not. On it, in my handwriting: ",
+      {
+        "text": "\"Ignition confirmed. Proceed.\"",
+        "color": "#FF7043",
+        "italic": true
+      }
+    ],
+    "I do not remember writing it. My hand does. It is shaking."
+  ],
+  "chars_per_second": 20,
+  "background": "phoenixcore:pyre",
+  "sound": {
+    "id": "minecraft:block.campfire.crackle",
+    "volume": 0.25,
+    "pitch": 1.0,
+    "pitch_variance": 0.3,
+    "every_n_letters": 3
+  },
+  "music": {
+    "sound": "phoenixcore:cutscene/pyre",
+    "volume": 0.9,
+    "fade_in": 5.0
+  }
+}

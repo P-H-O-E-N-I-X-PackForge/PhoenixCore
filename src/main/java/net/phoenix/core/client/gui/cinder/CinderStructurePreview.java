@@ -9,8 +9,10 @@ import net.phoenix.core.client.render.structure.StructureRenderer;
 import net.phoenix.core.client.render.structure.camera.CameraView;
 import net.phoenix.core.client.render.structure.camera.StructureCamera;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class CinderStructurePreview {
@@ -38,11 +40,18 @@ public class CinderStructurePreview {
     }
 
     public void render(GuiGraphics g, int x, int y, int w, int h, Map<BlockPos, BlockInfo> localBlocks,
-                       float partialTick) {
+                       float partialTick, int mouseX, int mouseY) {
         if (localBlocks == null || localBlocks.isEmpty()) return;
-        if (localBlocks != lastBlocks) {
+        // Content comparison, not reference (`!=`) - MultiblockSchemaInfo#refreshSchema clears and
+        // repopulates its own structureBlocks map *in place* on every call, so getStructureBlocks()
+        // always hands back the exact same Map instance even after a real change (e.g. picking a
+        // different block variant). A reference check against that live, mutating map is trivially
+        // always "unchanged" after the first render, so the preview never re-baked after the very first
+        // schema edit. Snapshotting into a plain HashMap (whose equals() is content-based) instead of
+        // holding onto the live reference is what makes the comparison actually detect a real change.
+        if (!localBlocks.equals(lastBlocks)) {
             rebuild(localBlocks);
-            lastBlocks = localBlocks;
+            lastBlocks = new HashMap<>(localBlocks);
         }
 
         if (!manuallyRotated) camera.orbit(-AUTO_SPIN_DEG_PER_TICK, 0f);
@@ -50,7 +59,17 @@ public class CinderStructurePreview {
 
         g.flush();
         CameraView view = camera.getView(partialTick);
+        renderer.setMousePos(mouseX, mouseY);
         renderer.render(view, x, y, w, h);
+    }
+
+    /** The schema-local {@link BlockPos} currently under the cursor, resolved from
+     *  {@link StructureRenderer}'s own real GPU depth-buffer pick (a genuine ray-cast against the
+     *  actual rendered blocks, not an approximation) - {@code null} off the model or before the first
+     *  {@link #render} call this frame has updated it. */
+    public @Nullable BlockPos getHoveredLocalPos() {
+        var hit = renderer.getLastHitResult();
+        return hit != null ? hit.getBlockPos() : null;
     }
 
     private void rebuild(Map<BlockPos, BlockInfo> localBlocks) {

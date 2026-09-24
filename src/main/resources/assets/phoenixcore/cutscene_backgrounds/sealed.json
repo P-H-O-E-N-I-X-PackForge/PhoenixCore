@@ -1,0 +1,31 @@
+{
+  "type": "layered",
+  "layers": [
+    {
+      "type": "solid",
+      "color": "#050505"
+    },
+    {
+      "type": "glitch_shear",
+      "color_a": "#1A0000",
+      "color_b": "#0A0A0A",
+      "speed": 0.6,
+      "intensity": 0.25
+    },
+    {
+      "type": "noise",
+      "color": "#8B0000",
+      "scale": 3.0,
+      "speed": 0.2,
+      "contrast": 2.0,
+      "opacity": 0.25,
+      "blend": "add"
+    },
+    {
+      "type": "radial_gradient",
+      "inner": "#00000000",
+      "outer": "#E0000000",
+      "radius": 1.4
+    }
+  ]
+}

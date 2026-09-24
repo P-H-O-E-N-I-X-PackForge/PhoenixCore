@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +16,9 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fml.ModList;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
+import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackScreen;
+import net.phoenix.core.integration.gregvaults.client.screen.VaultScreen;
+import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalScreen;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 
 import dev.emi.emi.api.EmiDragDropHandler;
@@ -27,6 +31,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.FluidEmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.widget.Bounds;
+import dev.emi.emi.screen.EmiScreenBase;
 
 @EmiEntrypoint
 public class PhoenixEmiPlugin implements EmiPlugin {
@@ -62,6 +67,50 @@ public class PhoenixEmiPlugin implements EmiPlugin {
                 screen.getGuiLeft(), screen.getGuiTop(),
                 screen.getXSize(), screen.getYSize())));
         registry.addDragDropHandler(RecipeBuilderScreen.class, new RecipeBuilderDragDrop());
+
+        // These three screens scale their whole layout to fit small windows (see each's own
+        // getFullBoundsPx() doc) instead of just clipping/scrolling like RecipeBuilderScreen above, so
+        // their real on-screen footprint isn't just vanilla's getGuiLeft()/getXSize() - those return
+        // this screen's pre-scale coordinates, which only match real pixels at 1:1 scale. Without a
+        // correct exclusion area EMI has no idea where these screens actually are once scaled down
+        // (e.g. by a small window, or by EMI's own sidebar shrinking the space left for everything
+        // else), so its sidebar/tooltips can render straight over them.
+        registry.addExclusionArea(OmniPackScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+        registry.addExclusionArea(VaultScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+        registry.addExclusionArea(VaultTerminalScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+
+        // The deeper half of the same bug, on a completely different EMI hook: EmiScreenBase.of(screen)
+        // decides where EMI's own left/right/top/bottom sidebar regions get split *before* exclusion
+        // areas are ever consulted. For any AbstractContainerScreen (all three of these are), that
+        // decision falls back to the same raw leftPos/topPos/imageWidth/imageHeight (pre-scale, virtual
+        // coordinates) unless a bounds provider is registered - reported directly via a Mixin accessor,
+        // bypassing addExclusionArea entirely. At uiScale<1 (a window too small for 1:1, exactly the
+        // "not fullscreen" case) the virtual canvas is *larger* than the real window, so that fallback's
+        // right edge can exceed the real screen width outright - EMI then clamps its right-sidebar
+        // region down to a sliver near the window's edge even though the real panel is smaller and
+        // positioned differently, which is what collapses its layout into a cramped single row rather
+        // than using the genuinely free space beside the (real, correctly-scaled) panel.
+        EmiScreenBase.addScreenBoundsProvider(OmniPackScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
+        EmiScreenBase.addScreenBoundsProvider(VaultScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
+        EmiScreenBase.addScreenBoundsProvider(VaultTerminalScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
 
         registerMaterialFluidSearchAliases(registry);
     }

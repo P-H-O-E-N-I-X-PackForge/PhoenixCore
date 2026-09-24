@@ -30,7 +30,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class CinderSchemaData {
@@ -41,6 +43,7 @@ public final class CinderSchemaData {
     private static final String SLICE_KEYS = "SliceRepeatKeys";
     private static final String SLICE_VALUES = "SliceRepeatValues";
     private static final String BLOCK_PREFERENCES = "BlockPreferences";
+    private static final String POSITION_PREFERENCES = "PositionPreferences";
 
     /**
      * Every method below that reads/writes a Cinder Core's configuration has two forms: an
@@ -158,11 +161,77 @@ public final class CinderSchemaData {
 
                 info.putPredicatePreference(predicate, base, blockInfo);
             }
+        }
 
+        boolean hasPositionPreferences = tag.contains(POSITION_PREFERENCES, Tag.TAG_LIST);
+        if (hasPositionPreferences) {
+            ListTag preferences = tag.getList(POSITION_PREFERENCES, CompoundTag.TAG_COMPOUND);
+            for (int i = 0; i < preferences.size(); i++) {
+                CompoundTag entry = preferences.getCompound(i);
+                applyPositionPreference(info, pattern, entry.getLong("Pos"), (char) entry.getInt("Char"),
+                        entry.getInt("Base"), entry.getInt("Candidate"));
+            }
+        }
+
+        if (hasBlockPreferences || hasPositionPreferences) {
             info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
         }
 
         return info;
+    }
+
+    /**
+     * Applies one wire-safe position-preference triple (same char/base-index/candidate-index scheme
+     * {@link #writeUserPreferences} already uses for the per-predicate table) to {@code info}'s own
+     * position-keyed override map. Shared by {@link #resolveSchema} (loading from NBT) and
+     * {@code C2SCinderConfigPacket} (applying what the client sent).
+     */
+    public static void applyPositionPreference(MultiblockSchemaInfo info, BlockPattern pattern, long pos, char c,
+                                                int baseIndex, int candidateIndex) {
+        MultiPredicate predicate = pattern.getPredicates().get(c);
+        if (predicate == null || baseIndex < 0 || baseIndex >= predicate.predicates().size()) return;
+        BasePredicate base = predicate.predicates().get(baseIndex);
+        if (candidateIndex < 0 || candidateIndex >= base.getCandidates().size()) return;
+        info.getUserGlobalBlockPreferences().put(pos, base.getCandidates().get(candidateIndex));
+    }
+
+    /** One resolved, wire-safe position override - see {@link #encodePositionPreferences}. */
+    public record PositionPreferenceEntry(long pos, char predicateChar, int baseIndex, int candidateIndex) {}
+
+    /**
+     * Resolves every entry in {@code info}'s position-keyed override map (schema-local {@link BlockPos}
+     * to the chosen {@link BlockInfo}, written by right-clicking a block in {@code
+     * CinderConfiguratorScreen}'s 3D preview) down to the same char/base-index/candidate-index scheme
+     * {@link #writeUserPreferences} already uses for the per-predicate table, so it can travel over the
+     * network without shipping raw {@link BlockInfo}/NBT. Requires {@code info}'s structure helper to
+     * already exist (i.e. {@link MultiblockSchemaInfo#refreshSchema} to have run at least once).
+     */
+    public static List<PositionPreferenceEntry> encodePositionPreferences(BlockPattern pattern,
+                                                                           MultiblockSchemaInfo info) {
+        List<PositionPreferenceEntry> result = new ArrayList<>();
+        var structureHelper = info.getStructureHelper();
+        if (structureHelper == null) return result;
+
+        for (var entry : info.getUserGlobalBlockPreferences().long2ObjectEntrySet()) {
+            BlockPos pos = BlockPos.of(entry.getLongKey());
+            BlockInfo chosen = entry.getValue();
+            MultiPredicate predicate = structureHelper.getPredicateFromPos(pattern, pos, Direction.NORTH,
+                    Direction.UP, false);
+            if (predicate == null) continue;
+
+            var charEntry = pattern.getPredicates().char2ObjectEntrySet().stream()
+                    .filter(e -> e.getValue().equals(predicate)).findFirst().orElse(null);
+            if (charEntry == null) continue;
+
+            for (BasePredicate base : predicate.expand()) {
+                int candidateIndex = base.getCandidates().indexOf(chosen);
+                if (candidateIndex < 0) continue;
+                result.add(new PositionPreferenceEntry(entry.getLongKey(), charEntry.getCharKey(),
+                        predicate.predicates().indexOf(base), candidateIndex));
+                break;
+            }
+        }
+        return result;
     }
 
     public static boolean scanFromWorld(ItemStack cinderCore, Level level, BlockPos controllerPos) {
@@ -205,11 +274,16 @@ public final class CinderSchemaData {
 
             Block realBlock = level.getBlockState(originImmutable.offset(localPos)).getBlock();
 
+            // Per-position, not per-predicate (putPredicatePreference) - a real scanned structure can
+            // legitimately have different variants at different positions sharing the same predicate
+            // (e.g. mixed hatch tiers), and collapsing that to one global default would silently lose
+            // whichever position was scanned last. See CinderConfiguratorScreen's right-click picker,
+            // which writes the exact same per-position map for a manual edit.
             for (BasePredicate base : predicate.expand()) {
                 if (base.getCandidates().size() <= 1) continue;
                 for (BlockInfo candidate : base.getCandidates()) {
                     if (candidate.getBlockState().getBlock() == realBlock) {
-                        info.putPredicatePreference(predicate, base, candidate);
+                        info.getUserGlobalBlockPreferences().put(localPos.asLong(), candidate);
                         break;
                     }
                 }
@@ -222,13 +296,16 @@ public final class CinderSchemaData {
     }
 
     public static boolean applyConfiguration(ItemStack cinderCore, int[] sliceKeys, int[] sliceValues,
-                                             char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices) {
+                                             char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices,
+                                             long[] posKeys, char[] posChars, int[] posBaseIndices,
+                                             int[] posCandidateIndices) {
         return applyConfiguration(cinderCore.getOrCreateTag(), sliceKeys, sliceValues, prefChars, prefBaseIndices,
-                prefCandidateIndices);
+                prefCandidateIndices, posKeys, posChars, posBaseIndices, posCandidateIndices);
     }
 
-    public static boolean applyConfiguration(CompoundTag tag, int[] sliceKeys, int[] sliceValues,
-                                             char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices) {
+    public static boolean applyConfiguration(CompoundTag tag, int[] sliceKeys, int[] sliceValues, char[] prefChars,
+                                             int[] prefBaseIndices, int[] prefCandidateIndices, long[] posKeys,
+                                             char[] posChars, int[] posBaseIndices, int[] posCandidateIndices) {
         MultiblockMachineDefinition definition = getTargetDefinition(tag);
         if (definition == null) return false;
         BlockPattern pattern = getPattern(definition);
@@ -253,7 +330,15 @@ public final class CinderSchemaData {
             if (candidateIndex < 0 || candidateIndex >= base.getCandidates().size()) continue;
             info.putPredicatePreference(predicate, base, base.getCandidates().get(candidateIndex));
         }
-        if (prefLength > 0) {
+
+        int posLength = Math.min(posKeys.length,
+                Math.min(posChars.length, Math.min(posBaseIndices.length, posCandidateIndices.length)));
+        for (int i = 0; i < posLength; i++) {
+            applyPositionPreference(info, pattern, posKeys[i], posChars[i], posBaseIndices[i],
+                    posCandidateIndices[i]);
+        }
+
+        if (prefLength > 0 || posLength > 0) {
             info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
         }
 
@@ -312,6 +397,22 @@ public final class CinderSchemaData {
                 preferences.add(entry);
             }
             tag.put(BLOCK_PREFERENCES, preferences);
+        }
+
+        List<PositionPreferenceEntry> positionPreferences = encodePositionPreferences(pattern, info);
+        if (positionPreferences.isEmpty()) {
+            tag.remove(POSITION_PREFERENCES);
+        } else {
+            ListTag preferences = new ListTag();
+            for (PositionPreferenceEntry pref : positionPreferences) {
+                CompoundTag entry = new CompoundTag();
+                entry.putLong("Pos", pref.pos());
+                entry.putInt("Char", pref.predicateChar());
+                entry.putInt("Base", pref.baseIndex());
+                entry.putInt("Candidate", pref.candidateIndex());
+                preferences.add(entry);
+            }
+            tag.put(POSITION_PREFERENCES, preferences);
         }
     }
 

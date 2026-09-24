@@ -2,10 +2,12 @@ package net.phoenix.core.integration.gregpacks.common.inventory;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.network.CPacketFluidInteract;
 import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
@@ -49,10 +51,16 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
         imageHeight = PAD + 10 + packRows * SS + PAD + 4 + 3 * SS + PAD + 4 + SS + PAD;
     }
 
-    @Override
-    protected void init() {
-        super.init();
-
+    /**
+     * Computes {@link #uiScale}/{@link #vw}/{@link #vh}/{@link #leftPos}/{@link #topPos} from the
+     * screen's *current* {@link #width}/{@link #height} - called both from {@link #init()} and every
+     * frame from {@link #render} rather than once, since caching this only in {@code init()} goes stale
+     * the moment the window is resized (or GUI Scale changed) while this screen is already open without
+     * a fresh {@code init()} call - a real, reproduced bug (see {@code AbstractVaultScreen}'s identical
+     * fix): {@link #getFullBoundsPx()} would keep reporting bounds sized for the *old* window, which
+     * EMI then has to clamp to fit the real one, crushing its own layout onto one side.
+     */
+    private void recomputeScale() {
         int neededW = imageWidth + BAR_GAP + BAR_W + BAR_SEP + BAR_W + 40;
         int neededH = imageHeight + TAB_H + 40;
         uiScale = (width < neededW || height < neededH) ?
@@ -62,11 +70,75 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
         vh = Math.round(height / uiScale);
         leftPos = (vw - imageWidth) / 2;
         topPos = (vh - imageHeight) / 2;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        recomputeScale();
 
         refreshTheme();
         applyMainLayout();
         hideUpSlots();
     }
+
+    /**
+     * This screen's real footprint in actual screen pixels, covering the main panel, the always-visible
+     * "Upgrades" tab above it, the two fluid/EU bars to its right, and the upgrade popup to its left
+     * when open - used by {@code PhoenixEmiPlugin}'s EMI exclusion-area registration.
+     * <p>
+     * {@link #leftPos}/{@link #topPos}/{@link #imageWidth}/{@link #imageHeight} (and the bar/tab/popup
+     * offsets derived from them) are all in this screen's pre-scale "virtual" coordinate space
+     * ({@link #vw}/{@link #vh}), not real screen pixels - {@link #render} only maps that space onto the
+     * real screen via {@code g.pose().scale(uiScale, ...)}. Vanilla's own {@code getGuiLeft()}/
+     * {@code getXSize()} (what EMI's exclusion-area API normally reads) return those *virtual* values
+     * unchanged, which only happen to equal real pixels while {@link #uiScale} is 1 - exactly the case
+     * that's fine without this. Once the window (or the space EMI's own sidebar leaves available) forces
+     * {@code uiScale < 1}, those vanilla accessors under-report this screen's real footprint, so EMI
+     * would compute exclusion bounds that don't match where this screen actually renders.
+     */
+    public Rect2i getFullBoundsPx() {
+        // Self-contained, not dependent on render() having already run this frame - see
+        // AbstractVaultScreen#getFullBoundsPx's identical fix for why: EMI can query this both to render
+        // its sidebar and to hit-test clicks, at points in the frame that don't consistently come after
+        // our own render(), so relying solely on render()'s recomputeScale() call left this stale
+        // relative to whichever of EMI's passes happened to run first.
+        recomputeScale();
+
+        int left = leftPos, top = topPos - TAB_H;
+        int right = leftPos + imageWidth + BAR_GAP + BAR_W + BAR_SEP + BAR_W;
+        int bottom = topPos + imageHeight;
+
+        if (upOpen) {
+            left = Math.min(left, popX);
+            right = Math.max(right, popX + popW);
+            top = Math.min(top, popY);
+            bottom = Math.max(bottom, popY + popH);
+        }
+
+        Rect2i result = new Rect2i(Math.round(left * uiScale), Math.round(top * uiScale),
+                Math.round((right - left) * uiScale), Math.round((bottom - top) * uiScale));
+
+        // Temporary diagnostic (2026-09-24) - logged from inside the method EMI actually calls, so it's
+        // exactly what EMI sees at the moment it asks. See AbstractVaultScreen#getFullBoundsPx for why
+        // this is done here rather than from a ScreenEvent.Init.Post hook (FANCYMENU's own screen-layout
+        // passes made an earlier version of that logging unreliable).
+        if (lastLoggedBoundsPx == null || lastLoggedBoundsPx.getX() != result.getX() ||
+                lastLoggedBoundsPx.getY() != result.getY() || lastLoggedBoundsPx.getWidth() != result.getWidth() ||
+                lastLoggedBoundsPx.getHeight() != result.getHeight()) {
+            lastLoggedBoundsPx = result;
+            PhoenixCore.LOGGER.info(
+                    "[OmniPackBoundsDebug] window={}x{} uiScale={} vw={} vh={} leftPos={} topPos={} " +
+                            "imageWidth={} imageHeight={} upOpen={} -> fullBoundsPx=[{},{} {}x{}]",
+                    width, height, uiScale, vw, vh, leftPos, topPos, imageWidth, imageHeight, upOpen, result.getX(),
+                    result.getY(), result.getWidth(), result.getHeight());
+        }
+
+        return result;
+    }
+
+    private Rect2i lastLoggedBoundsPx = null;
 
     private void refreshTheme() {
         PhoenixTheme t = PhoenixTheme.current();
@@ -80,6 +152,7 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
 
     @Override
     public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
+        recomputeScale();
         renderBackground(g);
         refreshTheme();
 

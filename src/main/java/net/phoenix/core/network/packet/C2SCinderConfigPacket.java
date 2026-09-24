@@ -28,15 +28,24 @@ public class C2SCinderConfigPacket {
     private final char[] prefChars;
     private final int[] prefBaseIndices;
     private final int[] prefCandidateIndices;
+    private final long[] posKeys;
+    private final char[] posChars;
+    private final int[] posBaseIndices;
+    private final int[] posCandidateIndices;
 
     private C2SCinderConfigPacket(InteractionHand hand, int[] sliceKeys, int[] sliceValues, char[] prefChars,
-                                  int[] prefBaseIndices, int[] prefCandidateIndices) {
+                                  int[] prefBaseIndices, int[] prefCandidateIndices, long[] posKeys, char[] posChars,
+                                  int[] posBaseIndices, int[] posCandidateIndices) {
         this.hand = hand;
         this.sliceKeys = sliceKeys;
         this.sliceValues = sliceValues;
         this.prefChars = prefChars;
         this.prefBaseIndices = prefBaseIndices;
         this.prefCandidateIndices = prefCandidateIndices;
+        this.posKeys = posKeys;
+        this.posChars = posChars;
+        this.posBaseIndices = posBaseIndices;
+        this.posCandidateIndices = posCandidateIndices;
     }
 
     public static C2SCinderConfigPacket fromSchema(InteractionHand hand, MultiblockMachineDefinition definition,
@@ -87,8 +96,22 @@ public class C2SCinderConfigPacket {
             prefCandidateIndices[j] = candidateIndices.get(j);
         }
 
+        List<CinderSchemaData.PositionPreferenceEntry> positionPrefs = rawPattern instanceof BlockPattern pattern ?
+                CinderSchemaData.encodePositionPreferences(pattern, schemaInfo) : List.of();
+        long[] posKeys = new long[positionPrefs.size()];
+        char[] posChars = new char[positionPrefs.size()];
+        int[] posBaseIndices = new int[positionPrefs.size()];
+        int[] posCandidateIndices = new int[positionPrefs.size()];
+        for (int j = 0; j < positionPrefs.size(); j++) {
+            var pref = positionPrefs.get(j);
+            posKeys[j] = pref.pos();
+            posChars[j] = pref.predicateChar();
+            posBaseIndices[j] = pref.baseIndex();
+            posCandidateIndices[j] = pref.candidateIndex();
+        }
+
         return new C2SCinderConfigPacket(hand, sliceKeys, sliceValues, prefChars, prefBaseIndices,
-                prefCandidateIndices);
+                prefCandidateIndices, posKeys, posChars, posBaseIndices, posCandidateIndices);
     }
 
     public C2SCinderConfigPacket(FriendlyByteBuf buf) {
@@ -111,6 +134,18 @@ public class C2SCinderConfigPacket {
             prefBaseIndices[i] = buf.readVarInt();
             prefCandidateIndices[i] = buf.readVarInt();
         }
+
+        int posCount = buf.readVarInt();
+        this.posKeys = new long[posCount];
+        this.posChars = new char[posCount];
+        this.posBaseIndices = new int[posCount];
+        this.posCandidateIndices = new int[posCount];
+        for (int i = 0; i < posCount; i++) {
+            posKeys[i] = buf.readVarLong();
+            posChars[i] = buf.readChar();
+            posBaseIndices[i] = buf.readVarInt();
+            posCandidateIndices[i] = buf.readVarInt();
+        }
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -128,6 +163,14 @@ public class C2SCinderConfigPacket {
             buf.writeVarInt(prefBaseIndices[i]);
             buf.writeVarInt(prefCandidateIndices[i]);
         }
+
+        buf.writeVarInt(posKeys.length);
+        for (int i = 0; i < posKeys.length; i++) {
+            buf.writeVarLong(posKeys[i]);
+            buf.writeChar(posChars[i]);
+            buf.writeVarInt(posBaseIndices[i]);
+            buf.writeVarInt(posCandidateIndices[i]);
+        }
     }
 
     public static void handle(C2SCinderConfigPacket msg, Supplier<NetworkEvent.Context> ctxGetter) {
@@ -139,7 +182,8 @@ public class C2SCinderConfigPacket {
             if (!(stack.getItem() instanceof CinderCoreItem)) return;
 
             CinderSchemaData.applyConfiguration(stack, msg.sliceKeys, msg.sliceValues, msg.prefChars,
-                    msg.prefBaseIndices, msg.prefCandidateIndices);
+                    msg.prefBaseIndices, msg.prefCandidateIndices, msg.posKeys, msg.posChars, msg.posBaseIndices,
+                    msg.posCandidateIndices);
         });
         ctx.setPacketHandled(true);
     }

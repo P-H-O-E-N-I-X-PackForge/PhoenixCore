@@ -3,10 +3,12 @@ package net.phoenix.core.integration.gregvaults.client.screen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.network.CPacketVaultAction;
 import net.phoenix.core.integration.gregvaults.network.CPacketVaultDisplayMode;
 import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
@@ -90,10 +92,17 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         this.imageHeight = menu.hotbarY + AbstractVaultMenu.SLOT_SIZE + 4;
     }
 
-    @Override
-    protected void init() {
-        super.init();
-
+    /**
+     * Computes {@link #uiScale}/{@link #vw}/{@link #vh}/{@link #leftPos}/{@link #topPos} (and the
+     * screen-space anchors derived from them) from the screen's *current* {@link #width}/{@link
+     * #height} - called both from {@link #init()} and every frame from {@link #render} rather than
+     * once, since caching this only in {@code init()} goes stale the moment the window is resized (or
+     * GUI Scale changed) while this screen is already open without a fresh {@code init()} call - a real,
+     * reproduced bug: {@link #getFullBoundsPx()} was observed reporting a right edge 76px past the
+     * screen's actual current width after such a resize, which forced EMI's right sidebar down to its
+     * bare minimum and made its whole layout collapse onto the left instead.
+     */
+    private void recomputeScale() {
         float neededW = imageWidth + 20f;
         float neededH = imageHeight + 20f;
         uiScale = (width < neededW || height < neededH) ?
@@ -109,6 +118,18 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         sbScreenBotY = sbScreenTopY + sbH - SB_BTN;
         btnScreenX = leftPos;
         btnScreenY = topPos;
+
+        if (searchBox != null) {
+            searchBox.setX(leftPos + AbstractVaultMenu.SLOTS_X);
+            searchBox.setY(topPos + 4);
+        }
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        recomputeScale();
 
         searchBox = new EditBox(font,
                 leftPos + AbstractVaultMenu.SLOTS_X, topPos + 4,
@@ -187,6 +208,58 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         onInit();
     }
 
+    /**
+     * This screen's real footprint in actual screen pixels, covering the main panel plus the sort/filter
+     * icon buttons column that sits {@code -BTN_X_OFFSET} px to its left - used by
+     * {@code PhoenixEmiPlugin}'s EMI exclusion-area registration.
+     * <p>
+     * {@link #leftPos}/{@link #topPos}/{@link #imageWidth}/{@link #imageHeight} are all in this screen's
+     * pre-scale "virtual" coordinate space ({@link #vw}/{@link #vh}), not real screen pixels - {@link
+     * #render} only maps that space onto the real screen via {@code g.pose().scale(uiScale, ...)}.
+     * Vanilla's own {@code getGuiLeft()}/{@code getXSize()} (what EMI's exclusion-area API normally
+     * reads) return those *virtual* values unchanged, which only happen to equal real pixels while
+     * {@link #uiScale} is 1 - exactly the case that's fine without this. Once the window (or the space
+     * EMI's own sidebar leaves available) forces {@code uiScale < 1}, those vanilla accessors
+     * under-report this screen's real footprint, so EMI would compute exclusion bounds that don't match
+     * where this screen actually renders.
+     */
+    public Rect2i getFullBoundsPx() {
+        // Self-contained, not dependent on render() having already run this frame - EMI can query this
+        // (both to render its sidebar and to hit-test clicks) at points in the frame that don't
+        // consistently come after our own render(), so relying solely on render()'s recomputeScale()
+        // call left this stale relative to whichever of EMI's passes happened to run first: one path
+        // would see this frame's fresh uiScale/leftPos, the other would still see last frame's, which is
+        // exactly why the rendered position and the clickable position could disagree.
+        recomputeScale();
+
+        int left = leftPos + BTN_X_OFFSET;
+        int boxWidth = imageWidth - BTN_X_OFFSET;
+        Rect2i result = new Rect2i(Math.round(left * uiScale), Math.round(topPos * uiScale),
+                Math.round(boxWidth * uiScale), Math.round(imageHeight * uiScale));
+
+        // Temporary diagnostic (2026-09-24) - logged from inside the method EMI actually calls, so this
+        // is exactly what EMI sees at the moment it asks, not a possibly-stale snapshot from a
+        // differently-timed hook (FANCYMENU is doing its own screen-layout passes per the log, which
+        // made an earlier ScreenEvent.Init.Post-based version of this log unreliable - values were
+        // observed where imageHeight*uiScale exceeded the real window height, impossible if uiScale was
+        // computed against the same width/height being logged).
+        if (lastLoggedBoundsPx == null || lastLoggedBoundsPx.getX() != result.getX() ||
+                lastLoggedBoundsPx.getY() != result.getY() || lastLoggedBoundsPx.getWidth() != result.getWidth() ||
+                lastLoggedBoundsPx.getHeight() != result.getHeight()) {
+            lastLoggedBoundsPx = result;
+            PhoenixCore.LOGGER.info(
+                    "[VaultBoundsDebug] {} window={}x{} uiScale={} vw={} vh={} leftPos={} topPos={} " +
+                            "imageWidth={} imageHeight={} neededW={} neededH={} -> fullBoundsPx=[{},{} {}x{}]",
+                    getClass().getSimpleName(), width, height, uiScale, vw, vh, leftPos, topPos, imageWidth,
+                    imageHeight, imageWidth + 20f, imageHeight + 20f, result.getX(), result.getY(),
+                    result.getWidth(), result.getHeight());
+        }
+
+        return result;
+    }
+
+    private Rect2i lastLoggedBoundsPx = null;
+
     protected void onInit() {}
 
     protected void onSearch(String query) {}
@@ -205,6 +278,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
 
     @Override
     public void render(GuiGraphics g, int rmx, int rmy, float pt) {
+        recomputeScale();
         renderBackground(g);
 
         PhoenixTheme t = PhoenixTheme.current();

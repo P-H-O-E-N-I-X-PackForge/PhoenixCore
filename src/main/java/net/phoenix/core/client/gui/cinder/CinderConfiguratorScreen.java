@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -76,6 +77,10 @@ public class CinderConfiguratorScreen extends Screen {
     private int contentHeight = 0;
 
     private @Nullable PredicateChoiceRow openDropdown = null;
+
+    private record PositionPicker(BlockPos localPos, MultiPredicate predicate, int screenX, int screenY) {}
+
+    private @Nullable PositionPicker openPositionPicker = null;
 
     private final List<MultiblockMachineDefinition> allTargets = new ArrayList<>();
     private final List<MultiblockMachineDefinition> filteredTargets = new ArrayList<>();
@@ -221,6 +226,7 @@ public class CinderConfiguratorScreen extends Screen {
     private void resetToDefaults() {
         if (definition == null || schemaInfo == null) return;
         schemaInfo.getUserSliceRepeats().clear();
+        schemaInfo.getUserGlobalBlockPreferences().clear();
         if (schemaInfo.getStructureHelper() != null) {
             schemaInfo.getStructureHelper().getBlockPreferences().clear();
         }
@@ -287,8 +293,9 @@ public class CinderConfiguratorScreen extends Screen {
         drawBorder(g, previewX - 1, previewY - 1, previewW + 2, previewH + 2, cBorder);
         g.fill(previewX, previewY, previewX + previewW, previewY + previewH, cRowBg);
         structurePreview.render(g, previewX, previewY, previewW, previewH, schemaInfo.getStructureBlocks(),
-                partialTick);
-        g.drawString(font, "(drag to rotate)", previewX + 4, previewY + previewH - 10, cTextDim, false);
+                partialTick, mouseX, mouseY);
+        g.drawString(font, "(right-drag to rotate, left-click a block to swap its variant)", previewX + 4,
+                previewY + previewH - 10, cTextDim, false);
 
         int summaryY = previewY + previewH + 8;
         int summaryH = buttonY - 6 - summaryY;
@@ -306,6 +313,9 @@ public class CinderConfiguratorScreen extends Screen {
 
         if (openDropdown != null) {
             renderDropdownOverlay(g, mouseX, mouseY, leftX, leftW, contentY, contentH);
+        }
+        if (openPositionPicker != null) {
+            renderPositionPickerOverlay(g, mouseX, mouseY);
         }
 
         super.render(g, mouseX, mouseY, partialTick);
@@ -455,6 +465,76 @@ public class CinderConfiguratorScreen extends Screen {
         g.pose().popPose();
     }
 
+    /**
+     * Per-position picker opened by right-clicking a specific block in the 3D preview - unlike
+     * {@link #renderDropdownOverlay}'s per-predicate rows (one choice shared by *every* position that
+     * predicate governs), this writes to {@link MultiblockSchemaInfo#getUserGlobalBlockPreferences()},
+     * GTCEu's own position-keyed override map (despite the "global" in its name - see that method's own
+     * doc), so e.g. one hatch position can be forced to Tier 1 while another of the same predicate stays
+     * Tier 3. Candidates are the union of every {@link BasePredicate} the position's {@link
+     * MultiPredicate} accepts ({@link MultiPredicate#expand()}), since a right-click targets one exact
+     * position rather than one already-known base predicate.
+     */
+    private void renderPositionPickerOverlay(GuiGraphics g, int mouseX, int mouseY) {
+        PositionPicker picker = openPositionPicker;
+        if (schemaInfo == null) return;
+
+        List<BlockInfo> candidates = new ArrayList<>();
+        for (BasePredicate base : picker.predicate().expand()) {
+            for (BlockInfo candidate : base.getCandidates()) {
+                if (!candidates.contains(candidate)) candidates.add(candidate);
+            }
+        }
+        if (candidates.isEmpty()) {
+            openPositionPicker = null;
+            return;
+        }
+
+        BlockInfo current = schemaInfo.getStructureBlocks().get(picker.localPos());
+        boolean hasOverride = schemaInfo.getUserGlobalBlockPreferences().containsKey(picker.localPos().asLong());
+
+        int rowCount = 1 + candidates.size();
+        int itemsH = Math.min(rowCount * DROPDOWN_ITEM_H, 9 * DROPDOWN_ITEM_H);
+        int ddX = Math.min(picker.screenX(), width - DROPDOWN_ROW_W - 4);
+        int ddY = Math.min(picker.screenY(), height - itemsH - 4);
+
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300.0);
+        g.fill(ddX, ddY, ddX + DROPDOWN_ROW_W, ddY + itemsH, cDropdownBg);
+        drawBorder(g, ddX, ddY, DROPDOWN_ROW_W, itemsH, cBorder);
+
+        int itemY = ddY;
+        boolean hoveredDefault = mouseX >= ddX && mouseX < ddX + DROPDOWN_ROW_W && mouseY >= itemY &&
+                mouseY < itemY + DROPDOWN_ITEM_H;
+        if (hoveredDefault) g.fill(ddX, itemY, ddX + DROPDOWN_ROW_W, itemY + DROPDOWN_ITEM_H, cRowHover);
+        g.drawString(font, truncate("Default (auto)", DROPDOWN_ROW_W - 8), ddX + 4, itemY + 4,
+                !hasOverride ? cAccent : (hoveredDefault ? cText : cTextDim), false);
+        clickRegions.add(new ClickRegion(ddX, itemY, DROPDOWN_ROW_W, DROPDOWN_ITEM_H, () -> {
+            schemaInfo.getUserGlobalBlockPreferences().remove(picker.localPos().asLong());
+            refreshResolution();
+            openPositionPicker = null;
+        }));
+        itemY += DROPDOWN_ITEM_H;
+
+        for (int i = 0; i < candidates.size() && itemY + DROPDOWN_ITEM_H <= ddY + itemsH; i++) {
+            BlockInfo candidate = candidates.get(i);
+            boolean isCurrent = hasOverride && candidate.equals(current);
+            boolean hovered = mouseX >= ddX && mouseX < ddX + DROPDOWN_ROW_W && mouseY >= itemY &&
+                    mouseY < itemY + DROPDOWN_ITEM_H;
+            if (hovered) g.fill(ddX, itemY, ddX + DROPDOWN_ROW_W, itemY + DROPDOWN_ITEM_H, cRowHover);
+            String name = truncate(candidate.getItemStackForm().getHoverName().getString(), DROPDOWN_ROW_W - 8);
+            g.drawString(font, name, ddX + 4, itemY + 4, isCurrent ? cAccent : (hovered ? cText : cTextDim), false);
+
+            clickRegions.add(new ClickRegion(ddX, itemY, DROPDOWN_ROW_W, DROPDOWN_ITEM_H, () -> {
+                schemaInfo.getUserGlobalBlockPreferences().put(picker.localPos().asLong(), candidate);
+                refreshResolution();
+                openPositionPicker = null;
+            }));
+            itemY += DROPDOWN_ITEM_H;
+        }
+        g.pose().popPose();
+    }
+
     private void renderMaterialSummary(GuiGraphics g, int x, int w, int y, int h) {
         g.fill(x, y, x + w, y + h, cRowBg);
         drawBorder(g, x, y, w, h, cBorder);
@@ -514,6 +594,9 @@ public class CinderConfiguratorScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
+            // Checked first, before the preview-picker logic below, so a click on the picker overlay's
+            // own rows (registered here when open, and frequently rendered right on top of the preview
+            // since it's anchored at the click point) always wins over re-targeting the picker.
             for (int i = clickRegions.size() - 1; i >= 0; i--) {
                 ClickRegion region = clickRegions.get(i);
                 if (region.contains(mouseX, mouseY)) {
@@ -521,8 +604,32 @@ public class CinderConfiguratorScreen extends Screen {
                     return true;
                 }
             }
-            if (openDropdown != null) {
+
+            // Fine-grained per-block picker (left-click a block in the 3D preview) - see
+            // renderPositionPickerOverlay's doc for why this is a separate mechanism from the
+            // per-predicate dropdown rows above. getHoveredLocalPos() is a real GPU depth-buffer pick
+            // against the actual rendered blocks (StructureRenderer#getLastHitResult), not an
+            // approximation, so this only fires when a block is genuinely under the cursor. Left-click
+            // (rather than right) so it matches this screen's normal "click to act on this" convention;
+            // rotating the preview is right-drag instead (see mouseDragged) to avoid the two colliding.
+            if (schemaInfo != null && pattern != null && mouseX >= previewX && mouseX < previewX + previewW &&
+                    mouseY >= previewY && mouseY < previewY + previewH) {
+                BlockPos hovered = structurePreview.getHoveredLocalPos();
+                var structureHelper = schemaInfo.getStructureHelper();
+                if (hovered != null && structureHelper != null) {
+                    MultiPredicate predicate = structureHelper.getPredicateFromPos(pattern, hovered,
+                            Direction.NORTH, Direction.UP, false);
+                    if (predicate != null && !predicate.isAny() && !predicate.isAir()) {
+                        openDropdown = null;
+                        openPositionPicker = new PositionPicker(hovered, predicate, (int) mouseX, (int) mouseY);
+                        return true;
+                    }
+                }
+            }
+
+            if (openDropdown != null || openPositionPicker != null) {
                 openDropdown = null;
+                openPositionPicker = null;
                 return true;
             }
         }
@@ -531,7 +638,9 @@ public class CinderConfiguratorScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button == 0 && mouseX >= previewX && mouseX < previewX + previewW && mouseY >= previewY &&
+        // Right-drag rotates - left is the per-block variant picker (see mouseClicked), so it can't
+        // also mean "rotate" without the two gestures colliding on the same button.
+        if (button == 1 && mouseX >= previewX && mouseX < previewX + previewW && mouseY >= previewY &&
                 mouseY < previewY + previewH) {
             structurePreview.mouseDragged(dragX, dragY);
             return true;

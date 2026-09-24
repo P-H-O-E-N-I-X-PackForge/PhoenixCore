@@ -1,0 +1,31 @@
+[
+  "phoenixcore:void_galaxy",
+  {
+    "type": "layered",
+    "layers": [
+      {
+        "type": "noise",
+        "color": "#FF5A1F",
+        "scale": 1.4,
+        "speed": 0.04,
+        "contrast": 1.6,
+        "opacity": 0.22,
+        "blend": "add"
+      },
+      {
+        "type": "sparkle",
+        "color": "#FFB347",
+        "density": 0.2,
+        "speed": 2.0,
+        "opacity": 0.35,
+        "blend": "add"
+      },
+      {
+        "type": "radial_gradient",
+        "inner": "#00000000",
+        "outer": "#C0000000",
+        "radius": 1.6
+      }
+    ]
+  }
+]

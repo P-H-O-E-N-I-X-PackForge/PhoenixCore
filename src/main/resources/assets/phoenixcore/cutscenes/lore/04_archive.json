@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "The network knew my shape the moment I touched it. It has been waiting for something like me.",
+    [
+      "No. Not something like me. ",
+      {
+        "text": "Me.",
+        "color": "#4DD0E1"
+      }
+    ],
+    "It remembers every death that fed it. It plays them back in pulses of blue light, and every pulse has a face.",
+    [
+      "I know these faces. I signed their ",
+      {
+        "text": "assignment orders",
+        "color": "#4DD0E1"
+      },
+      ". I sent them down to the deepest nodes to take readings."
+    ],
+    "They are still down there. They are the readings now.",
+    [
+      "The Sculk is not a parasite. It is a library. ",
+      {
+        "text": "And I am the one who filled the shelves.",
+        "italic": true
+      }
+    ]
+  ],
+  "chars_per_second": 18,
+  "punctuation_pause": 0.45,
+  "text": {
+    "color": "#D8F6FF"
+  },
+  "background": "phoenixcore:sculk",
+  "sound": {
+    "id": "minecraft:block.sculk_sensor.clicking",
+    "volume": 0.06,
+    "pitch": 1.3,
+    "pitch_variance": 0.2,
+    "every_n_letters": 3
+  },
+  "music": {
+    "sound": "minecraft:music.overworld.deep_dark",
+    "volume": 1.0,
+    "fade_in": 6.0
+  }
+}

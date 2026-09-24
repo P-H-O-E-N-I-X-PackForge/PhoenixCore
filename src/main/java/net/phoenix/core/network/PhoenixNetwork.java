@@ -241,5 +241,12 @@ public class PhoenixNetwork {
                 C2SCinderAtlasRequestMaterialsPacket::new,
                 C2SCinderAtlasRequestMaterialsPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                S2CPlayCutscenePacket.class,
+                S2CPlayCutscenePacket::encode,
+                S2CPlayCutscenePacket::new,
+                S2CPlayCutscenePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }
