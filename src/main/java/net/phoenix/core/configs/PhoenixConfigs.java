@@ -208,9 +208,9 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "Max boost scale for powered elytra flight at maximum speed setting.",
                 "Scales further with poweredFlightEUt so higher drain = faster top speed.",
-                "Default: 0.09"
+                "Default: 0.16"
         })
-        public double poweredBoostMax = 0.09;
+        public double poweredBoostMax = 0.16;
 
         @Configurable
         @Configurable.Comment({
@@ -223,9 +223,9 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "Max creative fly speed (at speed slider = 10).",
                 "Scales further with creativeFlightEUt so higher drain = faster top speed.",
-                "Default: 0.2"
+                "Default: 0.35"
         })
-        public double creativeSpeedMax = 0.20;
+        public double creativeSpeedMax = 0.35;
 
         @Configurable
         @Configurable.Comment({
@@ -235,45 +235,50 @@ public class PhoenixConfigs {
                 "since vanilla's own flight accumulates well beyond that raw value tick over tick via",
                 "friction, but free-strafing sets velocity directly with no such buildup, so it needs",
                 "its own, much larger-looking value to reach an equivalent actual speed. Scales",
-                "proportionally with the slider on both sides, same as verticalSpeed: 0 = stopped,",
-                "10 = double this, 20 = quadruple this.",
-                "Default: 0.55 (vanilla creative-fly speed is ~11 blocks/sec = 0.55 blocks/tick)"
+                "proportionally with the slider: 0 = stopped, 10 = 3.5x this, 20 = 7x this (raised from a",
+                "4x ceiling - it capped out well below what \"creative flight\" should feel like at max).",
+                "Default: 0.55 (matches vanilla creative-fly speed at slider = 5, the old flat default)"
         })
         public double creativeFreeSpeedBase = 0.55;
 
         @Configurable
         @Configurable.Comment({
-                "Min speed clamp for powered flight (at drift slider = 0, tightest handling).",
+                "Min speed clamp for powered flight, at speed slider = 0 (the SPEED slider now drives",
+                "this cap - previously only the Drift slider affected it at all, so cranking Speed to max",
+                "got you to the same ceiling faster without ever actually raising it).",
                 "Default: 0.6"
         })
         public double poweredDriftMin = 0.6;
 
         @Configurable
         @Configurable.Comment({
-                "Max speed clamp for powered flight (at drift slider = 10, loosest/floatiest).",
-                "Default: 1.8"
+                "Max speed clamp for powered flight, at speed slider = 20. Drift then applies on top of",
+                "this as a loosening multiplier (up to +50% at drift slider = 10) - see poweredDriftMin.",
+                "Default: 4.0"
         })
-        public double poweredDriftMax = 1.8;
+        public double poweredDriftMax = 4.0;
 
         @Configurable
         @Configurable.Comment({
-                "How much horizontal momentum survives each tick you're airborne in a wing flight",
-                "mode but NOT actively thrusting (not sprinting/sneaking-boosting), as a fraction",
-                "kept per tick - at drift slider = 0 this is 0.0 (velocity snaps to zero the instant",
-                "you stop thrusting, i.e. full inertia canceling); at drift slider = 10 it's 1.0",
-                "(no damping at all, momentum carries over exactly like normal elytra gliding).",
-                "The actual retention = driftSlider/10, this constant only exists so the mapping is",
-                "documented in one place rather than a bare 0.0/1.0 buried in code.",
+                "Coasting half-life, in seconds, at drift slider = 0: velocity snaps to zero the instant",
+                "you stop thrusting (full inertia canceling) as long as this is left at 0 - kept",
+                "configurable only for consistency with coastHalfLifeMax, not meant to be changed.",
                 "Default: 0.0"
         })
-        public double coastRetentionMin = 0.0;
+        public double coastHalfLifeMin = 0.0;
 
         @Configurable
         @Configurable.Comment({
-                "See coastRetentionMin - the retention fraction at drift slider = 10.",
-                "Default: 1.0"
+                "Coasting half-life, in seconds, at drift slider = 9 (how long it takes to bleed off",
+                "half your speed while airborne and not thrusting). Drift slider = 10 is still a hard",
+                "special case with ZERO decay (matches real elytra exactly); slider 0-9 now scales this",
+                "half-life linearly instead of a raw per-tick retention fraction, because a linear",
+                "retention scale feels like instant death almost everywhere: even 0.7 retention/tick",
+                "(70% \"kept\", which sounds generous) compounds down to under 0.1% of your speed within",
+                "a single second, so nearly the entire slider used to feel identical to drift = 0.",
+                "Default: 8.0"
         })
-        public double coastRetentionMax = 1.0;
+        public double coastHalfLifeMax = 8.0;
 
         @Configurable
         @Configurable.Comment({
@@ -284,6 +289,36 @@ public class PhoenixConfigs {
                 "Default: 8.0"
         })
         public double poweredVerticalBase = 8.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min forward-accel boost for the leggings' sprint boost (at sprint-speed slider = 0).",
+                "The actual boost = sprintAccelMin + ((sprintSpeed/20) * (sprintAccelMax - sprintAccelMin))",
+                "Default: 0.03"
+        })
+        public double sprintAccelMin = 0.03;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max forward-accel boost for the leggings' sprint boost (at sprint-speed slider = 20).",
+                "Default: 0.25 (slider = 5, this system's default, works out to the old hardcoded 0.085)"
+        })
+        public double sprintAccelMax = 0.25;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min upward-impulse strength for the boots' boosted jump (at jump-height slider = 0).",
+                "The actual impulse = jumpHeightMin + ((jumpHeight/20) * (jumpHeightMax - jumpHeightMin))",
+                "Default: 0.21"
+        })
+        public double jumpHeightMin = 0.21;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max upward-impulse strength for the boots' boosted jump (at jump-height slider = 20).",
+                "Default: 0.65 (slider = 5, this system's default, works out to the old hardcoded 0.32)"
+        })
+        public double jumpHeightMax = 0.65;
     }
 
     public static class CleanroomConfig {
@@ -445,6 +480,11 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "What Strongest Coolant the Active Phoenix Cooler uses when in the PHPCA (Gt or GT Kubejs Material)" })
         public double CoolantBoost2 = 1.2;
+
+        @Configurable
+        @Configurable.Comment({ "Whether the Tech Suite's on-screen HUD (flight mode, tuning sliders, network",
+                "status, rebirth cooldown, energy bar) is drawn at all. Set to false to hide it entirely." })
+        public boolean techSuiteHUDEnabled = true;
 
         @Configurable
         @Configurable.Comment({

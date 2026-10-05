@@ -67,7 +67,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     private float charge = 0.0F;
     private static final byte RUNNING_TIMER = 10;
     private static final byte JUMPING_TIMER = 10;
-    private static final double LEGGING_ACCEL = 0.085D;
 
     @OnlyIn(Dist.CLIENT)
     protected ArmorUtils.ModularHUD HUD;
@@ -160,7 +159,19 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
         if (item.canUse(energyPerUse / 100) && sprinting && player.onGround()) {
 
-            float speedModifier = player.isInWater() ? 0.02F : (float) LEGGING_ACCEL;
+            float speedModifier;
+            if (player.isInWater()) {
+                speedModifier = 0.02F;
+            } else {
+                // Sprint speed is tuned separately from the flight speed slider - stored on the
+                // chestplate (the suit's settings hub, same place FlightSpeed/wingFlapTick live)
+                // so it's adjustable from the same Wing Flight Control screen.
+                CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                int sprintSpeed = chestData.contains("SprintSpeed") ? chestData.getInt("SprintSpeed") : 5;
+                float percent = Math.max(0, Math.min(20, sprintSpeed)) / 20.0f;
+                PhoenixConfigs.WingFlightConfigs cfg = PhoenixConfigs.wingFlight;
+                speedModifier = (float) (cfg.sprintAccelMin + (percent * (cfg.sprintAccelMax - cfg.sprintAccelMin)));
+            }
 
             player.moveRelative(speedModifier, new Vec3(0, 0, 1));
 
@@ -291,7 +302,17 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 if (delta.y >= 0.0D && this.charge > 0.0F && !player.isInWater()) {
                     if (player.getDeltaMovement().y > 0.05) {
                         if (this.charge == 1.0F) player.setDeltaMovement(delta.x * 3.6D, delta.y, delta.z * 3.6D);
-                        player.addDeltaMovement(new Vec3(0.0, this.charge * 0.32, 0.0));
+
+                        // Jump height is tuned separately from flight - stored on the chestplate (the
+                        // suit's settings hub, same place SprintSpeed/FlightSpeed live) same as sprint.
+                        CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                        int jumpHeight = chestData.contains("JumpHeight") ? chestData.getInt("JumpHeight") : 5;
+                        float jumpPercent = Math.max(0, Math.min(20, jumpHeight)) / 20.0f;
+                        PhoenixConfigs.WingFlightConfigs jumpCfg = PhoenixConfigs.wingFlight;
+                        double jumpImpulse = jumpCfg.jumpHeightMin +
+                                (jumpPercent * (jumpCfg.jumpHeightMax - jumpCfg.jumpHeightMin));
+
+                        player.addDeltaMovement(new Vec3(0.0, this.charge * jumpImpulse, 0.0));
                         this.charge *= 0.7F;
                     } else if (this.charge < 1.0F) {
                         this.charge = 0.0F;
@@ -417,7 +438,12 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         newY = realigned.y;
         newZ = realigned.z;
 
-        double maxSpeed = cfg.poweredDriftMin + (driftMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
+        // Speed slider now drives the actual velocity cap, not just how fast you accelerate toward it -
+        // previously this was keyed on driftMult alone, so maxing out Speed never raised your ceiling,
+        // it just got you to the same (drift-controlled) cap faster. Drift now loosens that cap further
+        // on top, up to +50% at drift slider = 10, matching its existing "floatier handling" role.
+        double speedCap = cfg.poweredDriftMin + (speedMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
+        double maxSpeed = speedCap * (1.0 + (driftMult * 0.5));
         double horizLen = Math.sqrt(newX * newX + newZ * newZ);
         if (horizLen > maxSpeed) {
             double scale = maxSpeed / horizLen;
@@ -427,9 +453,15 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         Vec3 newVel = new Vec3(newX, newY, newZ);
 
+        // No hurtMarked here - this same physics runs identically on both the owning client's own
+        // prediction and the server's authoritative tick every single tick, so forcing a velocity
+        // resync back to that same client (which hurtMarked triggers via ServerEntity#sendChanges)
+        // just overwrites its fresh local prediction with a network-round-trip-old value each tick -
+        // a constant, self-inflicted rubber-band that read as "stutter" during Tesla-powered flight.
+        // hurtMarked is still needed for the horizontalCollision bump-back above, since that's a
+        // genuine extrinsic correction the client can't already know about from its own input.
         player.setDeltaMovement(newVel);
         player.fallDistance = 0;
-        player.hurtMarked = true;
 
         if (!world.isClientSide) {
             data.putBoolean("IsSonicFlight", true);
@@ -452,7 +484,14 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     }
 
     private static double getDriftRetention(PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
-        return cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
+        // A linear 0..1 retention-per-tick scale feels like instant death almost everywhere: retention
+        // compounds every tick, so even 0.7/tick (drift slider = 7) decays to under 0.1% of your speed
+        // within one second - perceptually indistinguishable from drift = 0. Scaling a HALF-LIFE
+        // linearly instead, then deriving the per-tick retention from it, spreads the felt difference
+        // evenly across the whole slider rather than cramming it into the last notch before 10.
+        double halfLifeSeconds = cfg.coastHalfLifeMin + (driftMult * (cfg.coastHalfLifeMax - cfg.coastHalfLifeMin));
+        if (halfLifeSeconds <= 0.0) return 0.0;
+        return Math.pow(0.5, 1.0 / (halfLifeSeconds * 20.0));
     }
 
     private void applyCoastDamping(Player player, PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
@@ -464,9 +503,11 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             return;
         }
 
-        double retention = getDriftRetention(cfg, driftMult);
+        // Drift slider = 10 stays a hard special case: real elytra momentum, zero decay, forever -
+        // not just "a very long half-life", which would still bleed off given enough time in the air.
+        if (driftMult >= 1.0f) return;
 
-        retention = Math.max(retention, 0.97);
+        double retention = getDriftRetention(cfg, driftMult);
         if (retention >= 1.0) return;
 
         Vec3 cur = player.getDeltaMovement();
@@ -490,8 +531,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         newY = realigned.y;
         newZ = realigned.z;
 
+        // See applyWingThrust - same reasoning, no per-tick hurtMarked self-resync.
         player.setDeltaMovement(newX, newY, newZ);
-        player.hurtMarked = true;
     }
 
     private static double sigmoidAcceleration(double t, double peakTime,
@@ -524,7 +565,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             player.setDeltaMovement(cur.x * 0.4, clampedY, cur.z * 0.4);
             data.putInt("WingLandingSlideTicks", slideTicks);
         }
-        player.hurtMarked = true;
     }
 
     private void handleElytraFlight(Player player, CompoundTag data, Level world,
@@ -538,20 +578,26 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             player.onUpdateAbilities();
         }
 
-        if (!player.onGround() && !player.isFallFlying() && world.isClientSide &&
-                data.getInt("WingLandingCooldown") <= 0) {
-            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-
-            if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
-                player.startFallFlying();
+        // Glide deploy is left entirely to vanilla's own double-tap-jump gesture (PhoenixArmorItem
+        // already returns true from canElytraFly whenever teslaMode is on, which is Forge's hook for
+        // letting non-elytra armor use that exact gesture). We used to also trigger it ourselves here
+        // client-side only, on nothing more than a single extra jump-press while airborne-and-falling -
+        // no double-tap needed. That's not just redundant: since it only ran on the client and never
+        // told the server, the server's own Player never actually entered fall-flying, so its physics
+        // (and everything below that's gated on isFallFlying()) silently diverged from what the client
+        // was predicting - exactly why "vanilla elytra" didn't feel like vanilla elytra. And because it
+        // fired on any single jump press while falling rather than a real double-tap, it also hijacked
+        // ordinary jumping - e.g. chaining the boots' jump boost - into an unwanted glide every time.
+        if (!player.isFallFlying()) {
+            data.putBoolean("WasFallFlying", false);
+        } else {
+            if (!data.getBoolean("WasFallFlying")) {
                 data.putInt("WingFlightStartTick", player.tickCount);
             }
-        }
+            data.putBoolean("WasFallFlying", true);
 
-        if (player.isFallFlying()) {
             boolean isSneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
             boolean isPowered = "powered".equals(data.getString("FlightMode"));
-            boolean attemptingThrust = isPowered && isSneaking;
 
             boolean justLaunched = player.tickCount - data.getInt("WingFlightStartTick") < 5;
 
@@ -560,7 +606,11 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             data.putInt("WingGroundStreak", groundStreak);
             boolean settledOnGround = groundStreak > 10;
 
-            if (player.onGround() && !justLaunched && (!attemptingThrust || settledOnGround)) {
+            // Used to bypass settledOnGround (i.e. stop on the very first grounded tick) unless the
+            // player was actively thrusting - so "basic" mode, which is never "attemptingThrust", ended
+            // the glide on the slightest ground graze while a real elytra tolerates skimming low over
+            // terrain just fine. Every mode now gets the same sustained-contact leniency uniformly.
+            if (player.onGround() && !justLaunched && settledOnGround) {
 
                 player.stopFallFlying();
 
@@ -569,10 +619,18 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     player.onUpdateAbilities();
                 }
                 data.putInt("WingGroundStreak", 0);
-                data.putInt("WingLandingSlideTicks", 6);
-                data.putInt("WingLandingCooldown", 10);
+                data.putBoolean("WasFallFlying", false);
 
-                player.setPos(player.getX(), player.getY() + 0.35, player.getZ());
+                // Only the powered/sonic path gets the artificial slide-to-a-stop - it can be landing
+                // at real speed, so an instant momentum-keep would send you skidding across the map.
+                // "basic" mode is meant to BE vanilla elytra, so it lands like vanilla elytra: momentum
+                // carries over and bleeds off through normal ground friction, no forced pos bump/slide.
+                if (isPowered) {
+                    data.putInt("WingLandingSlideTicks", 6);
+                    data.putInt("WingLandingCooldown", 10);
+                    player.setPos(player.getX(), player.getY() + 0.35, player.getZ());
+                }
+
                 if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
                 return;
             }
@@ -606,8 +664,10 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                         double tx = player.getX() - look.x * 0.8;
                         double ty = player.getY() + 0.5;
                         double tz = player.getZ() - look.z * 0.8;
+                        // No ELECTRIC_SPARK here anymore - it fired every single tick you were
+                        // thrusting, right behind/around the camera, and just filled the screen with
+                        // white sparks while flying, making it harder to see where you're going.
                         sl.sendParticles(ParticleTypes.FLAME, tx, ty, tz, 3, 0.15, 0.15, 0.15, 0.02);
-                        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, tx, ty, tz, 2, 0.1, 0.1, 0.1, 0.05);
                     }
                 } else {
                     applyCoastDamping(player, cfg, driftMult);
@@ -658,24 +718,36 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             return;
         }
 
+        // Applies to both "creative" and "creative+wings" - without this, the ONLY way flying ever
+        // turns back on is vanilla's own double-tap-jump gesture, since nothing in this class ever sets
+        // it true itself. When the setting is on, proactively re-assert it the instant it's found off
+        // (landing, a stray disableFlight blip, etc.) instead of waiting on the player to double-jump.
+        // Skipped while actually gliding (isFallFlying) - that's a separate elytra pose, not this ability.
+        boolean keepFlyingOnLand = data.getBoolean("KeepFlyingOnLand");
+        if (keepFlyingOnLand && !player.isFallFlying() && !player.getAbilities().flying) {
+            player.getAbilities().flying = true;
+            player.onUpdateAbilities();
+        }
+
         if (flightMode.equals("creative+wings")) {
 
-            if (player.getAbilities().flying && !player.isFallFlying() && isReallyGrounded(player)) {
+            if (!keepFlyingOnLand && player.getAbilities().flying && !player.isFallFlying() &&
+                    isReallyGrounded(player)) {
                 player.getAbilities().flying = false;
                 player.onUpdateAbilities();
             }
 
-            if (!player.getAbilities().flying && !player.isFallFlying() && !player.onGround() && world.isClientSide &&
-                    data.getInt("WingLandingCooldown") <= 0) {
-                net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            // Same reasoning as handleElytraFlight - glide deploy is left entirely to vanilla's own
+            // double-tap-jump gesture (via canElytraFly) instead of a client-only, single-press trigger
+            // that never told the server and hijacked ordinary jumping.
+            if (!player.isFallFlying()) {
+                data.putBoolean("WasFallFlying", false);
+            } else {
 
-                if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
-                    player.startFallFlying();
+                if (!data.getBoolean("WasFallFlying")) {
                     data.putInt("WingFlightStartTick", player.tickCount);
                 }
-            }
-
-            if (player.isFallFlying()) {
+                data.putBoolean("WasFallFlying", true);
 
                 boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player);
 
@@ -686,15 +758,18 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 data.putInt("WingGroundStreak", groundStreak);
                 boolean settledOnGround = groundStreak > 10;
 
-                if (player.onGround() && !justLaunched && (!isSprinting || settledOnGround)) {
+                // Same fix as handleElytraFlight - require sustained ground contact uniformly rather
+                // than bypassing it (instant stop) whenever not actively sprinting/thrusting.
+                if (player.onGround() && !justLaunched && settledOnGround) {
 
                     player.stopFallFlying();
 
-                    if (player.getAbilities().flying) {
+                    if (!keepFlyingOnLand && player.getAbilities().flying) {
                         player.getAbilities().flying = false;
                         player.onUpdateAbilities();
                     }
                     data.putInt("WingGroundStreak", 0);
+                    data.putBoolean("WasFallFlying", false);
                     data.putInt("WingLandingSlideTicks", 6);
                     data.putInt("WingLandingCooldown", 10);
 
@@ -770,7 +845,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        double speedScale = speedMult * 4.0;
+        double speedScale = speedMult * 7.0;
         double horizSpeed = cfg.creativeFreeSpeedBase * speedScale;
 
         double vertSpeed = horizSpeed * verticalScale;
@@ -786,7 +861,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         player.setDeltaMovement(newX, newY, newZ);
         player.fallDistance = 0;
-        player.hurtMarked = true;
     }
 
     private void consumeFlightEnergy(IElectricItem item, TeslaTeamEnergyData teslaData, UUID teamID,
@@ -918,6 +992,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     @OnlyIn(Dist.CLIENT)
     @Override
     public void drawHUD(ItemStack item, GuiGraphics guiGraphics) {
+        if (!PhoenixConfigs.INSTANCE.features.techSuiteHUDEnabled) return;
+
         addCapacityHUD(item, this.HUD);
 
         Minecraft mc = Minecraft.getInstance();

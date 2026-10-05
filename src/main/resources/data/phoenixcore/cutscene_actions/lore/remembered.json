@@ -1,0 +1,6 @@
+{
+  "cutscene": "phoenixcore:lore/08_who_i_was",
+  "commands": [
+    "tag @s add phoenixcore.remembered"
+  ]
+}

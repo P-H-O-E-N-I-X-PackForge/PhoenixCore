@@ -180,6 +180,8 @@ public class PhoenixCore {
                 PlayerResearchCapability::onAttachCapabilities);
         MinecraftForge.EVENT_BUS.addListener(PlayerResearchCapability::onPlayerClone);
         MinecraftForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
+        MinecraftForge.EVENT_BUS.addListener(
+                net.phoenix.core.integration.conflux.research.GatedRecipeRegistry::onAddReloadListeners);
 
         GregPacksBlockEntities.init();
     }

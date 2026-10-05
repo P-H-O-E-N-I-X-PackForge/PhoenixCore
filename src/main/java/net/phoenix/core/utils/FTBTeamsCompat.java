@@ -24,11 +24,11 @@ final class FTBTeamsCompat {
     }
 
     static String getTeamName(UUID teamId) {
-        if (!FTBTeamsAPI.api().isManagerLoaded()) return "Player: " + teamId.toString().substring(0, 8);
+        if (!FTBTeamsAPI.api().isManagerLoaded()) return TeamUtils.resolvePlayerName(teamId);
 
         return FTBTeamsAPI.api().getManager().getTeamByID(teamId)
                 .map(team -> team.getShortName())
-                .orElse("Player: " + teamId.toString().substring(0, 8));
+                .orElse(TeamUtils.resolvePlayerName(teamId));
     }
 
     static boolean isPlayerOnTeam(Player player, UUID teamUUID) {

@@ -3,8 +3,6 @@ package net.phoenix.core.client.renderer.cinema.cutscene;
 import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
 import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackgrounds;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -23,7 +21,9 @@ import java.util.Optional;
  *
  * <pre>
  * {
- *   "pages": ["First thought...", {"translate": "cutscene.phoenixcore.intro.2"}],
+ *   "pages": ["First thought...", {"translate": "cutscene.phoenixcore.intro.2"},
+ *             {"content": "A page with extras", "images": [...], "choices": [...]}],  // see CutscenePage
+ *   "on_finish": ["phoenixcore:lore/finished"],   // server actions run when the cutscene ends or is skipped
  *   "black_duration": 2.0,       // screen stays fully black
  *   "fade_in": 3.0,              // then the background slowly fades in
  *   "text_delay": 3.5,           // when the first page starts typing (default: black_duration + fade_in / 2)
@@ -49,7 +49,7 @@ import java.util.Optional;
  * </pre>
  */
 public record CutsceneDefinition(
-                                 List<Component> pages,
+                                 List<CutscenePage> pages,
                                  float blackDuration,
                                  float fadeIn,
                                  Optional<Float> textDelay,
@@ -62,10 +62,11 @@ public record CutsceneDefinition(
                                  TextSettings text,
                                  CutsceneBackground.Data background,
                                  Optional<SoundSettings> sound,
-                                 Optional<MusicSettings> music) {
+                                 Optional<MusicSettings> music,
+                                 List<ResourceLocation> onFinish) {
 
     public static final Codec<CutsceneDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
-            ExtraCodecs.COMPONENT.listOf().fieldOf("pages").forGetter(CutsceneDefinition::pages),
+            CutscenePage.CODEC.listOf().fieldOf("pages").forGetter(CutsceneDefinition::pages),
             Codec.FLOAT.optionalFieldOf("black_duration", 2f).forGetter(CutsceneDefinition::blackDuration),
             Codec.FLOAT.optionalFieldOf("fade_in", 3f).forGetter(CutsceneDefinition::fadeIn),
             Codec.FLOAT.optionalFieldOf("text_delay").forGetter(CutsceneDefinition::textDelay),
@@ -79,7 +80,8 @@ public record CutsceneDefinition(
             CutsceneBackgrounds.CODEC.optionalFieldOf("background", CutsceneBackgrounds.preset(CutsceneBackgrounds.PRISMATIC))
                     .forGetter(CutsceneDefinition::background),
             SoundSettings.CODEC.optionalFieldOf("sound").forGetter(CutsceneDefinition::sound),
-            MusicSettings.CODEC.optionalFieldOf("music").forGetter(CutsceneDefinition::music))
+            MusicSettings.CODEC.optionalFieldOf("music").forGetter(CutsceneDefinition::music),
+            ResourceLocation.CODEC.listOf().optionalFieldOf("on_finish", List.of()).forGetter(CutsceneDefinition::onFinish))
             .apply(i, CutsceneDefinition::new));
 
     /** Seconds from the start of the cutscene until the first page begins typing. */

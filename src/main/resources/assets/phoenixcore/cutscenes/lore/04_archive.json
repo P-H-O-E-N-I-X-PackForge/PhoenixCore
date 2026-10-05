@@ -8,7 +8,25 @@
         "color": "#4DD0E1"
       }
     ],
-    "It remembers every death that fed it. It plays them back in pulses of blue light, and every pulse has a face.",
+    {
+      "content": "It remembers every death that fed it. It plays them back in pulses of blue light, and every pulse has a face.",
+      "text_y": 0.22,
+      "images": [
+        {
+          "entity": "minecraft:warden",
+          "x": 0.5,
+          "y": 0.95,
+          "scale": 26,
+          "yaw": 20,
+          "rotation": 4,
+          "animation": {
+            "delay": 1.0,
+            "fade_in": 4.0,
+            "slide_y": 6
+          }
+        }
+      ]
+    },
     [
       "I know these faces. I signed their ",
       {

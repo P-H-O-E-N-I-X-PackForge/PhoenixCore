@@ -248,5 +248,19 @@ public class PhoenixNetwork {
                 S2CPlayCutscenePacket::new,
                 S2CPlayCutscenePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
+        CHANNEL.registerMessage(id++,
+                C2SCutsceneActionPacket.class,
+                C2SCutsceneActionPacket::encode,
+                C2SCutsceneActionPacket::new,
+                C2SCutsceneActionPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++,
+                C2SCutsceneRequestPacket.class,
+                C2SCutsceneRequestPacket::encode,
+                C2SCutsceneRequestPacket::new,
+                C2SCutsceneRequestPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 }

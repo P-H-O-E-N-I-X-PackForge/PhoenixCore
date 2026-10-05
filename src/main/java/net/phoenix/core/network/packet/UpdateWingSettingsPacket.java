@@ -23,12 +23,19 @@ public class UpdateWingSettingsPacket {
     private final int flightSpeed;
     private final int flightDrift;
     private final int flightVertical;
+    private final int sprintSpeed;
+    private final int jumpHeight;
+    private final boolean keepFlyingOnLand;
 
-    public UpdateWingSettingsPacket(String flightMode, int flightSpeed, int flightDrift, int flightVertical) {
+    public UpdateWingSettingsPacket(String flightMode, int flightSpeed, int flightDrift, int flightVertical,
+                                    int sprintSpeed, int jumpHeight, boolean keepFlyingOnLand) {
         this.flightMode = flightMode;
         this.flightSpeed = flightSpeed;
         this.flightDrift = flightDrift;
         this.flightVertical = flightVertical;
+        this.sprintSpeed = sprintSpeed;
+        this.jumpHeight = jumpHeight;
+        this.keepFlyingOnLand = keepFlyingOnLand;
     }
 
     public UpdateWingSettingsPacket(FriendlyByteBuf buf) {
@@ -36,6 +43,9 @@ public class UpdateWingSettingsPacket {
         this.flightSpeed = buf.readInt();
         this.flightDrift = buf.readInt();
         this.flightVertical = buf.readInt();
+        this.sprintSpeed = buf.readInt();
+        this.jumpHeight = buf.readInt();
+        this.keepFlyingOnLand = buf.readBoolean();
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -43,6 +53,9 @@ public class UpdateWingSettingsPacket {
         buf.writeInt(flightSpeed);
         buf.writeInt(flightDrift);
         buf.writeInt(flightVertical);
+        buf.writeInt(sprintSpeed);
+        buf.writeInt(jumpHeight);
+        buf.writeBoolean(keepFlyingOnLand);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -57,12 +70,17 @@ public class UpdateWingSettingsPacket {
             int speed = Math.max(0, Math.min(20, flightSpeed));
             int drift = Math.max(0, Math.min(10, flightDrift));
             int vertical = Math.max(0, Math.min(20, flightVertical));
+            int sprint = Math.max(0, Math.min(20, sprintSpeed));
+            int jump = Math.max(0, Math.min(20, jumpHeight));
 
             CompoundTag tag = chest.getOrCreateTag();
             tag.putString("FlightMode", mode);
             tag.putInt("FlightSpeed", speed);
             tag.putInt("FlightDrift", drift);
             tag.putInt("FlightVertical", vertical);
+            tag.putInt("SprintSpeed", sprint);
+            tag.putInt("JumpHeight", jump);
+            tag.putBoolean("KeepFlyingOnLand", keepFlyingOnLand);
 
             player.inventoryMenu.sendAllDataToRemote();
         });

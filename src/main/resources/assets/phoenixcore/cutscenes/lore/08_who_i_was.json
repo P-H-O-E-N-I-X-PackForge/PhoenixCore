@@ -1,6 +1,22 @@
 {
   "pages": [
-    "I remember now.",
+    {
+      "content": "I remember now.",
+      "text_y": 0.18,
+      "images": [
+        {
+          "entity": "minecraft:player",
+          "x": 0.5,
+          "y": 0.88,
+          "scale": 55,
+          "animation": {
+            "delay": 0.5,
+            "fade_in": 3.5,
+            "slide_y": 0
+          }
+        }
+      ]
+    },
     "The Conflux was not a disaster. It was an experiment, and it was mine. Every Discipline was a vessel. Every vessel needed someone to fill it.",
     "Fire for those who could endure being unmade. Root for those who could bear to be remembered. Dark for those who could wait forever.",
     [
@@ -28,12 +44,30 @@
         "italic": true
       }
     ],
-    [
-      {
-        "text": "I wonder how many times I have woken up there.",
-        "italic": true
-      }
-    ]
+    {
+      "content": [
+        {
+          "text": "I wonder how many times I have woken up there.",
+          "italic": true
+        }
+      ],
+      "choices": [
+        {
+          "text": "Wake up again.",
+          "actions": [
+            "phoenixcore:lore/finale_wake_again"
+          ],
+          "cutscene": "phoenixcore:lore/01_waking"
+        },
+        {
+          "text": "Stay awake.",
+          "actions": [
+            "phoenixcore:lore/finale_stay_awake"
+          ],
+          "end": true
+        }
+      ]
+    }
   ],
   "black_duration": 4.0,
   "fade_in": 7.0,
@@ -58,5 +92,9 @@
     "volume": 1.0,
     "fade_in": 8.0,
     "loop": false
-  }
+  },
+  "skippable": false,
+  "on_finish": [
+    "phoenixcore:lore/remembered"
+  ]
 }

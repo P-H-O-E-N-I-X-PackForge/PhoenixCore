@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -18,9 +19,13 @@ import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CPlayCutscenePacket;
 
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -30,6 +35,7 @@ import java.util.function.Supplier;
  * <p>
  * Trigger from code with {@link #play(ServerPlayer, ResourceLocation)}, or in-game with
  * {@code /cutscene open <id>} (anyone, self only) or {@code /cutscene play <targets> <id>} (ops).
+ * {@code /cutscene reset <targets>} (ops) forgets which once-only choices a player has made.
  */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class Cutscenes {
@@ -44,8 +50,21 @@ public final class Cutscenes {
             PhoenixCore.id("cutscenes"),
             (context, builder) -> SharedSuggestionProvider.suggestResource(knownCutscenes.get(), builder));
 
+    // The cutscene each player was last sent. Cutscene actions are only accepted for this one.
+    private static final Map<UUID, ResourceLocation> SESSIONS = new ConcurrentHashMap<>();
+
     public static void play(ServerPlayer player, ResourceLocation id) {
+        SESSIONS.put(player.getUUID(), id);
         PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayCutscenePacket(id));
+    }
+
+    public static @Nullable ResourceLocation activeCutscene(ServerPlayer player) {
+        return SESSIONS.get(player.getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        SESSIONS.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
@@ -60,6 +79,18 @@ public final class Cutscenes {
                                     play(context.getSource().getPlayerOrException(),
                                             ResourceLocationArgument.getId(context, "id"));
                                     return 1;
+                                })))
+                .then(Commands.literal("reset")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.argument("targets", EntityArgument.players())
+                                .executes(context -> {
+                                    Collection<ServerPlayer> targets = EntityArgument.getPlayers(context, "targets");
+                                    int cleared = targets.stream().mapToInt(CutsceneActions::reset).sum();
+                                    context.getSource().sendSuccess(() -> Component.literal(
+                                            "Cleared " + cleared + " used cutscene action(s) for " + targets.size() +
+                                                    " player(s)"),
+                                            true);
+                                    return targets.size();
                                 })))
                 .then(Commands.literal("play")
                         .requires(source -> source.hasPermission(2))

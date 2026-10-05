@@ -61,6 +61,12 @@ public class C2SResearchUnlockPacket {
                     net.phoenix.core.integration.conflux.dimension.ConfluxDimensionFactory
                             .enterDisciplineDimension(player, teamId, disciplineAfter);
                 }
+
+                // This was never called from anywhere - "world_stage" unlocks (biome color transitions,
+                // structure retheming, skybox transitions) were fully implemented but unreachable, since
+                // nothing invoked the one method that checks a node's unlocks for that type.
+                net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents
+                        .onResearchUnlock(player, node, teamId);
             }
         });
         ctx.get().setPacketHandled(true);

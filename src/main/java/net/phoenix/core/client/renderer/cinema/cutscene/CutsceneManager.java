@@ -57,7 +57,7 @@ public final class CutsceneManager extends SimpleJsonResourceReloadListener {
             PhoenixCore.LOGGER.warn("Tried to play unknown or empty cutscene {}", id);
             return false;
         }
-        Minecraft.getInstance().setScreen(new CutsceneScreen(definition.get()));
+        Minecraft.getInstance().setScreen(new CutsceneScreen(id, definition.get()));
         return true;
     }
 }
