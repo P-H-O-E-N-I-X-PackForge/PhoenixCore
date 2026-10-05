@@ -31,9 +31,7 @@ public final class PlayerResearchCapability {
     }
 
     public static PlayerResearchData get(Player player) {
-        return player.getCapability(RESEARCH).orElseThrow(
-                () -> new IllegalStateException(
-                        "Player missing AxiomResearch capability: " + player.getName().getString()));
+        return player.getCapability(RESEARCH).resolve().orElse(null);
     }
 
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
@@ -42,10 +40,19 @@ public final class PlayerResearchCapability {
     }
 
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (event.getOriginal().isDeadOrDying() || event.isWasDeath()) {
-            PlayerResearchData original = get(event.getOriginal());
-            PlayerResearchData clone = get(event.getEntity());
-            clone.copyFrom(original);
+        Player original = event.getOriginal();
+        Player clone = event.getEntity();
+
+        original.reviveCaps();
+        try {
+            PlayerResearchData originalData = get(original);
+            PlayerResearchData cloneData = get(clone);
+
+            if (originalData != null && cloneData != null) {
+                cloneData.copyFrom(originalData);
+            }
+        } finally {
+            original.invalidateCaps();
         }
     }
 
