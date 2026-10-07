@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
 import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderAtlasUpgrades;
@@ -279,16 +278,20 @@ public class CinderAtlasScreen extends Screen {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasClearSlotPacket(hand, activeLoadout, selectedSlot));
     }
 
-    /** Design doc feature #4 - "prepare ahead" - real, headless auto-request of whatever the active
-     *  slot is still missing from the linked network, independent of any deploy attempt. Result is
-     *  reported back via chat as each item's crafting calculation resolves (see
-     *  {@code CinderAtlasWirelessLink#requestMissingMaterials}), not shown in this screen directly. */
+    /**
+     * Design doc feature #4 - "prepare ahead" - real, headless auto-request of whatever the active
+     * slot is still missing from the linked network, independent of any deploy attempt. Result is
+     * reported back via chat as each item's crafting calculation resolves (see
+     * {@code CinderAtlasWirelessLink#requestMissingMaterials}), not shown in this screen directly.
+     */
     private void requestMaterials() {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasRequestMaterialsPacket(hand));
     }
 
-    /** Manual escape hatch alongside {@link #requestMaterials()} - opens AE2's real crafting terminal so
-     *  the player can browse network stock or request specific items themselves. */
+    /**
+     * Manual escape hatch alongside {@link #requestMaterials()} - opens AE2's real crafting terminal so
+     * the player can browse network stock or request specific items themselves.
+     */
     private void openCraftingTerminal() {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasOpenCraftingTerminalPacket(hand));
         onClose();
@@ -359,9 +362,11 @@ public class CinderAtlasScreen extends Screen {
         }
     }
 
-    /** Returns the hovered slot's icon (for the caller to draw its tooltip last, same convention as
-     *  {@link #renderUpgrades} below) - a slot's target is a real block, shown as its own item icon
-     *  instead of just the block's name, with the name itself still available as a hover tooltip. */
+    /**
+     * Returns the hovered slot's icon (for the caller to draw its tooltip last, same convention as
+     * {@link #renderUpgrades} below) - a slot's target is a real block, shown as its own item icon
+     * instead of just the block's name, with the name itself still available as a hover tooltip.
+     */
     private @Nullable ItemStack renderSlots(GuiGraphics g, int mouseX, int mouseY, int left, int y) {
         ItemStack hoveredIcon = null;
         for (int i = 0; i < CinderAtlasData.SLOT_COUNT; i++) {
@@ -487,9 +492,11 @@ public class CinderAtlasScreen extends Screen {
         drawBorder(g, x, y, w, h, cBorder);
     }
 
-    /** Title-row flourish ported from {@code PhoenixThemeEditorScreen}'s header underline: a pulsing
-     *  accent line under the title, with a brighter "spark" traveling along it - the same technique that
-     *  library uses for its own animated connector line, reused verbatim rather than approximated. */
+    /**
+     * Title-row flourish ported from {@code PhoenixThemeEditorScreen}'s header underline: a pulsing
+     * accent line under the title, with a brighter "spark" traveling along it - the same technique that
+     * library uses for its own animated connector line, reused verbatim rather than approximated.
+     */
     private void renderTitleUnderline(GuiGraphics g, int left, int top) {
         int lineX0 = left + PAD;
         int lineX1 = lineX0 + font.width("Cinder Atlas");
@@ -508,9 +515,11 @@ public class CinderAtlasScreen extends Screen {
         }
     }
 
-    /** Soft halo around an "active"/"selected" element, same technique as
-     *  {@code PhoenixThemeEditorScreen}'s glowing active-node border - an inset-by-2 pulsing-alpha border
-     *  drawn behind the element's own solid border. */
+    /**
+     * Soft halo around an "active"/"selected" element, same technique as
+     * {@code PhoenixThemeEditorScreen}'s glowing active-node border - an inset-by-2 pulsing-alpha border
+     * drawn behind the element's own solid border.
+     */
     private void drawGlowBorder(GuiGraphics g, int x, int y, int w, int h, int rgb) {
         float pulse = animPulse(0.6f, 0.4f, 500.0);
         int glowA = Math.min(255, (int) (0x55 * pulse));

@@ -105,24 +105,27 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
                                 float scale, float yaw, float rotation, int tint, Optional<Region> region,
                                 Animation animation) {
 
-        public static final Codec<CutsceneImage> CODEC = ExtraCodecs.validate(RecordCodecBuilder.<CutsceneImage>create(i -> i.group(
-                ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(CutsceneImage::texture),
-                ResourceLocation.CODEC.optionalFieldOf("item").forGetter(CutsceneImage::item),
-                ResourceLocation.CODEC.optionalFieldOf("entity").forGetter(CutsceneImage::entity),
-                Codec.FLOAT.optionalFieldOf("x", 0.5f).forGetter(CutsceneImage::x),
-                Codec.FLOAT.optionalFieldOf("y", 0.3f).forGetter(CutsceneImage::y),
-                Codec.INT.optionalFieldOf("width", 64).forGetter(CutsceneImage::width),
-                Codec.INT.optionalFieldOf("height", 64).forGetter(CutsceneImage::height),
-                Codec.FLOAT.optionalFieldOf("scale", 0f).forGetter(CutsceneImage::scale),
-                Codec.FLOAT.optionalFieldOf("yaw", 0f).forGetter(CutsceneImage::yaw),
-                Codec.FLOAT.optionalFieldOf("rotation", 0f).forGetter(CutsceneImage::rotation),
-                BackgroundEffects.COLOR.optionalFieldOf("tint", 0xFFFFFFFF).forGetter(CutsceneImage::tint),
-                Region.CODEC.optionalFieldOf("region").forGetter(CutsceneImage::region),
-                Animation.CODEC.optionalFieldOf("animation", Animation.DEFAULT).forGetter(CutsceneImage::animation))
-                .apply(i, CutsceneImage::new)),
+        public static final Codec<CutsceneImage> CODEC = ExtraCodecs.validate(
+                RecordCodecBuilder.<CutsceneImage>create(i -> i.group(
+                        ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(CutsceneImage::texture),
+                        ResourceLocation.CODEC.optionalFieldOf("item").forGetter(CutsceneImage::item),
+                        ResourceLocation.CODEC.optionalFieldOf("entity").forGetter(CutsceneImage::entity),
+                        Codec.FLOAT.optionalFieldOf("x", 0.5f).forGetter(CutsceneImage::x),
+                        Codec.FLOAT.optionalFieldOf("y", 0.3f).forGetter(CutsceneImage::y),
+                        Codec.INT.optionalFieldOf("width", 64).forGetter(CutsceneImage::width),
+                        Codec.INT.optionalFieldOf("height", 64).forGetter(CutsceneImage::height),
+                        Codec.FLOAT.optionalFieldOf("scale", 0f).forGetter(CutsceneImage::scale),
+                        Codec.FLOAT.optionalFieldOf("yaw", 0f).forGetter(CutsceneImage::yaw),
+                        Codec.FLOAT.optionalFieldOf("rotation", 0f).forGetter(CutsceneImage::rotation),
+                        BackgroundEffects.COLOR.optionalFieldOf("tint", 0xFFFFFFFF).forGetter(CutsceneImage::tint),
+                        Region.CODEC.optionalFieldOf("region").forGetter(CutsceneImage::region),
+                        Animation.CODEC.optionalFieldOf("animation", Animation.DEFAULT)
+                                .forGetter(CutsceneImage::animation))
+                        .apply(i, CutsceneImage::new)),
                 image -> (image.texture.isPresent() ? 1 : 0) + (image.item.isPresent() ? 1 : 0) +
                         (image.entity.isPresent() ? 1 : 0) == 1 ? DataResult.success(image) :
-                                DataResult.error(() -> "A cutscene image needs exactly one of texture, item or entity"));
+                                DataResult
+                                        .error(() -> "A cutscene image needs exactly one of texture, item or entity"));
 
         /** Item scale, or entity scale in pixels per block, with the type's default when unset. */
         public float scaleOr(float fallback) {

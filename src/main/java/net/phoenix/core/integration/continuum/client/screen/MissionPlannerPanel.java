@@ -21,7 +21,8 @@ import java.util.Locale;
 
 /**
  * The mission planner: a modal over the map that lets the player choose what kind of trip to fly (survey, extraction
- * run, outpost deployment or outpost haul), how many probes to risk, and see what it would cost with the rocket they are
+ * run, outpost deployment or outpost haul), how many probes to risk, and see what it would cost with the rocket they
+ * are
  * carrying. It only builds a request; the server validates and decides everything.
  */
 final class MissionPlannerPanel {
@@ -165,7 +166,8 @@ final class MissionPlannerPanel {
             float cost = RocketStats.wearCost(body, rocket);
             float risk = RocketStats.failureChance(rocket, stage);
 
-            ty = row(g, font, "Trip time", MapUi.duration(RocketStats.tripMillis(body, rocket)), x + 10, ty, MapUi.TEXT);
+            ty = row(g, font, "Trip time", MapUi.duration(RocketStats.tripMillis(body, rocket)), x + 10, ty,
+                    MapUi.TEXT);
             ty = row(g, font, "Rocket wear",
                     Math.round(wear * 100) + "% -> " + Math.round(Math.min(1.0f, wear + cost) * 100) + "%", x + 10, ty,
                     MapUi.wearColor(wear + cost));

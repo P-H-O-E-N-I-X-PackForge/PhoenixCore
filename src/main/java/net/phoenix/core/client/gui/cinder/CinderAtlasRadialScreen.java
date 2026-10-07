@@ -12,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
 import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderAtlasUpgrades;
@@ -215,8 +214,10 @@ public class CinderAtlasRadialScreen extends Screen {
         return definition != null ? definition.getBlock().getName().getString() : "Slot " + (slot + 1);
     }
 
-    /** The controller block's own item form, shown in place of a text label for a configured slot -
-     *  a slot's target is a real, renderable block, unlike a loadout (a bucket of several slots). */
+    /**
+     * The controller block's own item form, shown in place of a text label for a configured slot -
+     * a slot's target is a real, renderable block, unlike a loadout (a bucket of several slots).
+     */
     private ItemStack slotIcon(int loadout, int slot) {
         CompoundTag tag = CinderAtlasData.peekSlotTag(atlasStack, loadout, slot);
         var definition = tag != null ? CinderSchemaData.getTargetDefinition(tag) : null;
@@ -261,8 +262,10 @@ public class CinderAtlasRadialScreen extends Screen {
         tesselator.end();
     }
 
-    /** Soft pulsing halo behind the active segment, same {@code animPulse} technique
-     *  {@link CinderAtlasScreen#drawGlowBorder} uses for its active tab/slot, adapted to an arc. */
+    /**
+     * Soft pulsing halo behind the active segment, same {@code animPulse} technique
+     * {@link CinderAtlasScreen#drawGlowBorder} uses for its active tab/slot, adapted to an arc.
+     */
     private void drawGlowArc(GuiGraphics graphics, int cx, int cy, int inner, int outer, float startAngle,
                              float step, int rgb) {
         float pulse = animPulse(0.6f, 0.4f, 500.0);
@@ -270,9 +273,11 @@ public class CinderAtlasRadialScreen extends Screen {
         drawArc(graphics, cx, cy, inner - 3, outer + 3, startAngle, step, (glowA << 24) | (rgb & 0xFFFFFF));
     }
 
-    /** Ambient "energy flowing" touch - a small spark continuously orbiting the ring, ported from the
-     *  same traveling-spark technique {@link CinderAtlasScreen#renderTitleUnderline} uses along its
-     *  title's underline, adapted to a circular path instead of a straight one. */
+    /**
+     * Ambient "energy flowing" touch - a small spark continuously orbiting the ring, ported from the
+     * same traveling-spark technique {@link CinderAtlasScreen#renderTitleUnderline} uses along its
+     * title's underline, adapted to a circular path instead of a straight one.
+     */
     private void drawOrbitingSpark(GuiGraphics graphics, int cx, int cy, int inner, int outer) {
         if (PhoenixTheme.isReduceMotion()) return;
         double sparkAngle = (System.currentTimeMillis() / 1800.0) % (Math.PI * 2);
@@ -333,9 +338,11 @@ public class CinderAtlasRadialScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    /** Only reached from the slot-level ring - committing a slot pick from the loadout ring (with no
-     *  slot chosen yet) would leave the deploy target ambiguous, so the loadout ring only ever drills
-     *  into the slot ring instead of setting anything itself. */
+    /**
+     * Only reached from the slot-level ring - committing a slot pick from the loadout ring (with no
+     * slot chosen yet) would leave the deploy target ambiguous, so the loadout ring only ever drills
+     * into the slot ring instead of setting anything itself.
+     */
     private void confirmSlot(int slotIndex) {
         if (viewingLoadout == null) return;
         int loadout = viewingLoadout;

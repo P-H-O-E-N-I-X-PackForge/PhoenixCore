@@ -12,9 +12,11 @@ public final class CinderAtlasUpgrades {
 
     private CinderAtlasUpgrades() {}
 
-    /** Un-upgraded wireless range, in blocks - deliberately generous rather than punitive, since this
-     *  closes a previously wide-open "unlimited range" gap rather than clawing back something players
-     *  were promised. */
+    /**
+     * Un-upgraded wireless range, in blocks - deliberately generous rather than punitive, since this
+     * closes a previously wide-open "unlimited range" gap rather than clawing back something players
+     * were promised.
+     */
     public static final double BASE_RANGE = 64.0;
     public static final double RANGE_TIER_1 = 128.0;
     public static final double RANGE_TIER_2 = 256.0;
@@ -29,8 +31,10 @@ public final class CinderAtlasUpgrades {
         return Math.min(capacity, CinderAtlasData.MAX_LOADOUT_COUNT);
     }
 
-    /** {@link Double#POSITIVE_INFINITY} for the top range tier - deliberately not special-cased by
-     *  callers, since any finite distance compares {@code true} against it naturally. */
+    /**
+     * {@link Double#POSITIVE_INFINITY} for the top range tier - deliberately not special-cased by
+     * callers, since any finite distance compares {@code true} against it naturally.
+     */
     public static double getWirelessRange(ItemStack atlas) {
         double range = BASE_RANGE;
         for (int i = 0; i < CinderAtlasData.UPGRADE_SLOT_COUNT; i++) {

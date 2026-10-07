@@ -1,7 +1,5 @@
 package net.phoenix.core.client.renderer.cinema.cutscene.background;
 
-import net.phoenix.core.PhoenixCore;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -10,6 +8,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.phoenix.core.PhoenixCore;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -226,7 +225,8 @@ public final class CutsceneShaders {
     private static String programJson(String name, List<Uniform> extra) {
         String extraUniforms = extra.stream()
                 .map(u -> ",\n    { \"name\": \"%s\", \"type\": \"float\", \"count\": %d, \"values\": [%s] }"
-                        .formatted(u.name(), u.count(), String.join(", ", java.util.Collections.nCopies(u.count(), "0.0"))))
+                        .formatted(u.name(), u.count(),
+                                String.join(", ", java.util.Collections.nCopies(u.count(), "0.0"))))
                 .collect(Collectors.joining());
         return """
                 {
@@ -245,7 +245,8 @@ public final class CutsceneShaders {
                     { "name": "iOpaque", "type": "float", "count": 1, "values": [1.0] }%3$s
                   ]
                 }
-                """.formatted(PhoenixCore.MOD_ID, name, extraUniforms);
+                """
+                .formatted(PhoenixCore.MOD_ID, name, extraUniforms);
     }
 
     private static String signature(List<Uniform> uniforms) {

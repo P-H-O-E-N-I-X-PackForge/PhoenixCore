@@ -35,9 +35,11 @@ public final class TeamUtils {
         return resolvePlayerName(teamId);
     }
 
-    /** Resolves a solo player's actual username from their UUID (online player list, falling back to the
-     *  server's profile cache for offline players) instead of the truncated-UUID placeholder that used to
-     *  show up anywhere a "team" name was requested for a player not on any team. */
+    /**
+     * Resolves a solo player's actual username from their UUID (online player list, falling back to the
+     * server's profile cache for offline players) instead of the truncated-UUID placeholder that used to
+     * show up anywhere a "team" name was requested for a player not on any team.
+     */
     public static String resolvePlayerName(UUID playerUUID) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {

@@ -7,8 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.common.ContinuumMissions;
-import net.phoenix.core.integration.continuum.common.Mission;
 import net.phoenix.core.integration.continuum.common.ContinuumServerEvents;
+import net.phoenix.core.integration.continuum.common.Mission;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.utils.TeamUtils;
 

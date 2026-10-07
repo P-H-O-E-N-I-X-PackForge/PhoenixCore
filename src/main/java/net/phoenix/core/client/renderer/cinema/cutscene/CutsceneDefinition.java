@@ -1,11 +1,10 @@
 package net.phoenix.core.client.renderer.cinema.cutscene;
 
-import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
-import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackgrounds;
-
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
+import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackgrounds;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -77,11 +76,13 @@ public record CutsceneDefinition(
             Codec.BOOL.optionalFieldOf("skippable", true).forGetter(CutsceneDefinition::skippable),
             Codec.BOOL.optionalFieldOf("pause_game", true).forGetter(CutsceneDefinition::pauseGame),
             TextSettings.CODEC.optionalFieldOf("text", TextSettings.DEFAULT).forGetter(CutsceneDefinition::text),
-            CutsceneBackgrounds.CODEC.optionalFieldOf("background", CutsceneBackgrounds.preset(CutsceneBackgrounds.PRISMATIC))
+            CutsceneBackgrounds.CODEC
+                    .optionalFieldOf("background", CutsceneBackgrounds.preset(CutsceneBackgrounds.PRISMATIC))
                     .forGetter(CutsceneDefinition::background),
             SoundSettings.CODEC.optionalFieldOf("sound").forGetter(CutsceneDefinition::sound),
             MusicSettings.CODEC.optionalFieldOf("music").forGetter(CutsceneDefinition::music),
-            ResourceLocation.CODEC.listOf().optionalFieldOf("on_finish", List.of()).forGetter(CutsceneDefinition::onFinish))
+            ResourceLocation.CODEC.listOf().optionalFieldOf("on_finish", List.of())
+                    .forGetter(CutsceneDefinition::onFinish))
             .apply(i, CutsceneDefinition::new));
 
     /** Seconds from the start of the cutscene until the first page begins typing. */
@@ -132,7 +133,8 @@ public record CutsceneDefinition(
     }
 
     /** Sound played as letters appear. */
-    public record SoundSettings(ResourceLocation id, float volume, float pitch, float pitchVariance, int everyNLetters) {
+    public record SoundSettings(ResourceLocation id, float volume, float pitch, float pitchVariance,
+                                int everyNLetters) {
 
         public static final Codec<SoundSettings> CODEC = RecordCodecBuilder.create(i -> i.group(
                 ResourceLocation.CODEC.fieldOf("id").forGetter(SoundSettings::id),

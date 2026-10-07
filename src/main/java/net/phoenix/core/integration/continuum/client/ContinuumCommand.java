@@ -28,7 +28,10 @@ public final class ContinuumCommand {
                         .then(literal("map").executes(ctx -> open(ContinuumMapScreen::new))));
     }
 
-    /** The command runs mid-chat; open the screen on the next client tick so the chat screen closing does not replace it. */
+    /**
+     * The command runs mid-chat; open the screen on the next client tick so the chat screen closing does not replace
+     * it.
+     */
     private static int open(Supplier<Screen> screen) {
         Minecraft mc = Minecraft.getInstance();
         mc.tell(() -> mc.setScreen(screen.get()));

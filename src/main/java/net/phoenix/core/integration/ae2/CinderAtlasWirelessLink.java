@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderAtlasUpgrades;
@@ -35,7 +34,6 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.KeyCounter;
 import appeng.api.storage.MEStorage;
 import appeng.util.Platform;
-
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,10 +109,12 @@ public final class CinderAtlasWirelessLink implements IGridLinkableHandler {
                 .orElse(null);
     }
 
-    /** The access point itself, not just its grid - needed anywhere the caller must act as a real
-     *  {@code IActionHost} (e.g. {@link CinderAtlasMenuHost#getActionableNode()}), the same way AE2's
-     *  own {@code WirelessTerminalMenuHost} borrows its bound access point's grid node rather than being
-     *  a grid node itself. */
+    /**
+     * The access point itself, not just its grid - needed anywhere the caller must act as a real
+     * {@code IActionHost} (e.g. {@link CinderAtlasMenuHost#getActionableNode()}), the same way AE2's
+     * own {@code WirelessTerminalMenuHost} borrows its bound access point's grid node rather than being
+     * a grid node itself.
+     */
     public static @Nullable IWirelessAccessPoint getLinkedAccessPoint(ItemStack stack, ServerLevel level) {
         GlobalPos pos = getLinkedPosition(stack);
         if (pos == null) return null;
@@ -178,9 +178,11 @@ public final class CinderAtlasWirelessLink implements IGridLinkableHandler {
         return true;
     }
 
-    /** Caller must already have confirmed {@link #hasSufficientMaterials} - this doesn't re-check, same
-     *  contract {@code CinderSchemaData#consumeMaterials} uses for a Cinder Core's own stocked
-     *  inventory. */
+    /**
+     * Caller must already have confirmed {@link #hasSufficientMaterials} - this doesn't re-check, same
+     * contract {@code CinderSchemaData#consumeMaterials} uses for a Cinder Core's own stocked
+     * inventory.
+     */
     public static void extractMaterials(ItemStack stack, ServerLevel level, Reference2IntMap<Block> required,
                                         Player player) {
         IGrid grid = getLinkedGrid(stack, level);

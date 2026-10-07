@@ -44,8 +44,10 @@ public record GatedRecipeRule(String flag, List<ResourceLocation> recipeIds, Lis
                     .forGetter(GatedRecipeRule::outputTags))
             .apply(i, GatedRecipeRule::new));
 
-    /** Gates every recipe of {@code recipeType} (a GTRecipeType's registry name, e.g. "gtceu:macerator")
-     *  at or above {@code minTier} (a GT voltage tier name: "ulv", "lv", "mv", "hv", ...). */
+    /**
+     * Gates every recipe of {@code recipeType} (a GTRecipeType's registry name, e.g. "gtceu:macerator")
+     * at or above {@code minTier} (a GT voltage tier name: "ulv", "lv", "mv", "hv", ...).
+     */
     public record TypeTierGate(ResourceLocation recipeType, String minTier) {
 
         public static final Codec<TypeTierGate> CODEC = RecordCodecBuilder.create(i -> i.group(

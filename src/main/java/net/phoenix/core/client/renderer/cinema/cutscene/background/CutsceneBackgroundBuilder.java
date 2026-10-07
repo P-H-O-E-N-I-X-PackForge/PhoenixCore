@@ -1,10 +1,9 @@
 package net.phoenix.core.client.renderer.cinema.cutscene.background;
 
-import net.phoenix.core.client.renderer.cinema.cutscene.background.BackgroundEffect.Point;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
+import net.phoenix.core.client.renderer.cinema.cutscene.background.BackgroundEffect.Point;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;

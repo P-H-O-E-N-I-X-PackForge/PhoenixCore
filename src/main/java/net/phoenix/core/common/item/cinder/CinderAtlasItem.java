@@ -15,10 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-
 import net.phoenix.core.integration.ae2.CinderAtlasMenuHost;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 
@@ -27,7 +25,6 @@ import appeng.api.implementations.menuobjects.ItemMenuHost;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuLocators;
 import appeng.menu.me.items.CraftingTermMenu;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,16 +1,5 @@
 package net.phoenix.core.client.renderer.cinema.cutscene;
 
-import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.MusicSettings;
-import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.SoundSettings;
-import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.TextSettings;
-import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.Choice;
-import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.CutsceneImage;
-import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
-import net.phoenix.core.network.PhoenixNetwork;
-import net.phoenix.core.network.packet.C2SCutsceneActionPacket;
-import net.phoenix.core.network.packet.C2SCutsceneRequestPacket;
-
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,6 +17,16 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.MusicSettings;
+import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.SoundSettings;
+import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.TextSettings;
+import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.Choice;
+import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.CutsceneImage;
+import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
+import net.phoenix.core.network.PhoenixNetwork;
+import net.phoenix.core.network.packet.C2SCutsceneActionPacket;
+import net.phoenix.core.network.packet.C2SCutsceneRequestPacket;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -221,7 +220,8 @@ public class CutsceneScreen extends Screen {
         if (!choicesVisible(time) || index < 0 || index >= currentPage().choices().size()) return;
         Choice choice = currentPage().choices().get(index);
         if (minecraft != null) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 0.8f, 0.25f));
+            minecraft.getSoundManager()
+                    .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 0.8f, 0.25f));
         }
         sendActions(choice.actions());
         if (choice.cutscene().isPresent()) {

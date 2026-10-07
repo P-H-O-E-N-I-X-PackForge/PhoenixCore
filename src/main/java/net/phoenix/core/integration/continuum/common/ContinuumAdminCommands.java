@@ -130,7 +130,7 @@ final class ContinuumAdminCommands {
     }
 
     private static int discover(CommandSourceStack source, ResourceLocation target, String stageName)
-            throws CommandSyntaxException {
+                                                                                                      throws CommandSyntaxException {
         if (ContinuumData.body(target) == null && ContinuumData.system(target) == null) {
             source.sendFailure(Component.literal("No such system or body: " + target));
             return 0;
@@ -150,7 +150,7 @@ final class ContinuumAdminCommands {
     }
 
     private static int grantOutpost(CommandSourceStack source, ResourceLocation body, int probes)
-            throws CommandSyntaxException {
+                                                                                                  throws CommandSyntaxException {
         if (ContinuumData.body(body) == null) {
             source.sendFailure(Component.literal("No such body: " + body));
             return 0;

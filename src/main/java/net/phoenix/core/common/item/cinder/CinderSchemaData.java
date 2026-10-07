@@ -187,7 +187,7 @@ public final class CinderSchemaData {
      * {@code C2SCinderConfigPacket} (applying what the client sent).
      */
     public static void applyPositionPreference(MultiblockSchemaInfo info, BlockPattern pattern, long pos, char c,
-                                                int baseIndex, int candidateIndex) {
+                                               int baseIndex, int candidateIndex) {
         MultiPredicate predicate = pattern.getPredicates().get(c);
         if (predicate == null || baseIndex < 0 || baseIndex >= predicate.predicates().size()) return;
         BasePredicate base = predicate.predicates().get(baseIndex);
@@ -207,7 +207,7 @@ public final class CinderSchemaData {
      * already exist (i.e. {@link MultiblockSchemaInfo#refreshSchema} to have run at least once).
      */
     public static List<PositionPreferenceEntry> encodePositionPreferences(BlockPattern pattern,
-                                                                           MultiblockSchemaInfo info) {
+                                                                          MultiblockSchemaInfo info) {
         List<PositionPreferenceEntry> result = new ArrayList<>();
         var structureHelper = info.getStructureHelper();
         if (structureHelper == null) return result;
@@ -585,11 +585,13 @@ public final class CinderSchemaData {
         return cachedRequiredBlocks;
     }
 
-    /** Deliberately uncached, unlike {@link #getCachedRequiredBlocks} - that single-slot cache is the
-     *  right shape for "one held stack's tooltip re-rendering every frame," but wrong for a UI showing
-     *  many loadout slots' rows at once (every row would evict the last, thrashing on every repaint).
-     *  Callers displaying several slots simultaneously (the Cinder Atlas loadout list) should keep
-     *  their own cache keyed per slot instead. */
+    /**
+     * Deliberately uncached, unlike {@link #getCachedRequiredBlocks} - that single-slot cache is the
+     * right shape for "one held stack's tooltip re-rendering every frame," but wrong for a UI showing
+     * many loadout slots' rows at once (every row would evict the last, thrashing on every repaint).
+     * Callers displaying several slots simultaneously (the Cinder Atlas loadout list) should keep
+     * their own cache keyed per slot instead.
+     */
     public static Reference2IntMap<Block> getRequiredBlocks(CompoundTag tag) {
         MultiblockSchemaInfo info = resolveSchema(tag);
         return info != null ? new Reference2IntOpenHashMap<>(info.getBlockCounts()) : new Reference2IntOpenHashMap<>();

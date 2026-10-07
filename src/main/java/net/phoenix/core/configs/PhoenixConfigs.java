@@ -79,7 +79,8 @@ public class PhoenixConfigs {
         public double wearMultiplier = 1.0;
 
         @Configurable
-        @Configurable.Comment({ "Missions a team can have in flight (or waiting to be collected) at once.", "Default: 8" })
+        @Configurable.Comment({ "Missions a team can have in flight (or waiting to be collected) at once.",
+                "Default: 8" })
         @Configurable.Range(min = 1, max = 64)
         public int maxMissionsPerTeam = 8;
 
@@ -171,7 +172,8 @@ public class PhoenixConfigs {
         public double repairKitWear = 0.3;
 
         @Configurable
-        @Configurable.Comment({ "How close to a Launch Pad a player has to be to launch from it, in blocks.", "Default: 12" })
+        @Configurable.Comment({ "How close to a Launch Pad a player has to be to launch from it, in blocks.",
+                "Default: 12" })
         @Configurable.Range(min = 2, max = 64)
         public int launchRangeBlocks = 12;
     }

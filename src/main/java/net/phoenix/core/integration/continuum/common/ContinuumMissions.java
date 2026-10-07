@@ -59,7 +59,8 @@ public final class ContinuumMissions {
         if (body == null) return "That destination does not exist.";
 
         // the pad is either a Launch Complex (tier and power matter) or, if allowed, the plain testing block
-        LaunchPadMachine complex = MetaMachine.getMachine(level, pad) instanceof LaunchPadMachine machine ? machine : null;
+        LaunchPadMachine complex = MetaMachine.getMachine(level, pad) instanceof LaunchPadMachine machine ? machine :
+                null;
         long launchEnergy = 0;
         if (complex != null) {
             if (!complex.isFormed()) return "The launch complex is not fully built.";

@@ -19,7 +19,6 @@ import net.phoenix.core.integration.continuum.client.render.SceneRenderer;
 import net.phoenix.core.integration.continuum.common.ContinuumMissions;
 import net.phoenix.core.integration.continuum.common.ContinuumStateSnapshot;
 import net.phoenix.core.integration.continuum.common.Mission;
-import net.phoenix.core.integration.continuum.common.RocketStats;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.data.ContinuumSystem;
@@ -637,7 +636,8 @@ public class ContinuumMapScreen extends Screen {
     private void tooltipSystem(GuiGraphics graphics, ContinuumSystem sys, int mouseX, int mouseY) {
         DiscoveryStage stage = ContinuumClientState.stage(sys.id());
         int w = 170;
-        int h = stage == DiscoveryStage.UNKNOWN ? 28 : 28 + font.split(Component.literal(sys.description()), w - 12).size() * 10 + 6;
+        int h = stage == DiscoveryStage.UNKNOWN ? 28 :
+                28 + font.split(Component.literal(sys.description()), w - 12).size() * 10 + 6;
         int x = Math.min(mouseX + 14, width - w - 6);
         int y = Math.min(mouseY + 10, height - h - 6);
 
@@ -658,7 +658,8 @@ public class ContinuumMapScreen extends Screen {
 
         panel(graphics, x, y, w, h);
         graphics.drawString(font, stage == DiscoveryStage.UNKNOWN ? "???" : b.name(), x + 6, y + 6, TITLE);
-        String sub = stage == DiscoveryStage.UNKNOWN ? stageLabel(stage) : b.type().label() + "  -  " + stageLabel(stage);
+        String sub = stage == DiscoveryStage.UNKNOWN ? stageLabel(stage) :
+                b.type().label() + "  -  " + stageLabel(stage);
         graphics.drawString(font, sub, x + 6, y + 17, stageColor(stage));
         if (descLines > 0) wrapped(graphics, b.description(), x + 6, y + 30, w - 12, TEXT);
     }
@@ -737,7 +738,8 @@ public class ContinuumMapScreen extends Screen {
         int bw = w - 14;
         graphics.fill(bx, y, bx + bw, y + 18, enabled ? 0xFF2c2760 : 0xFF1a1830);
         graphics.renderOutline(bx, y, bw, 18, enabled ? FRAME : 0xFF2a2548);
-        graphics.drawCenteredString(font, pad == null ? "Plan mission  (view only)" : "Plan mission", bx + bw / 2, y + 5,
+        graphics.drawCenteredString(font, pad == null ? "Plan mission  (view only)" : "Plan mission", bx + bw / 2,
+                y + 5,
                 enabled ? TITLE : 0xFF565070);
         if (enabled) planRect = new int[] { bx, y, bw, 18 };
     }

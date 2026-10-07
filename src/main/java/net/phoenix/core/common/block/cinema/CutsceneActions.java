@@ -106,7 +106,8 @@ public final class CutsceneActions extends SimpleJsonResourceReloadListener {
         ListTag groups = data.getList(GROUPS_TAG, Tag.TAG_STRING);
         if (action.once() && used.contains(StringTag.valueOf(actionId.toString()))) return;
         if (action.exclusiveGroup().isPresent() &&
-                groups.contains(StringTag.valueOf(action.exclusiveGroup().get()))) return;
+                groups.contains(StringTag.valueOf(action.exclusiveGroup().get())))
+            return;
 
         used.add(StringTag.valueOf(actionId.toString()));
         data.put(USED_TAG, used);

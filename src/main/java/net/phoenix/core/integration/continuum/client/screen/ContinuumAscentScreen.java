@@ -134,7 +134,8 @@ public class ContinuumAscentScreen extends Screen {
         graphics.drawString(font, STAGES[stage], 14, 40, MapUi.WARN);
 
         double altitudeKm = (distance - 1.0) * 1200.0;
-        graphics.drawString(font, String.format(Locale.ROOT, "ALT  %,d km", Math.round(altitudeKm)), 14, 56, MapUi.TEXT);
+        graphics.drawString(font, String.format(Locale.ROOT, "ALT  %,d km", Math.round(altitudeKm)), 14, 56,
+                MapUi.TEXT);
         graphics.drawString(font, "T+ " + MapUi.duration((long) (t * SECONDS * 1000.0f)), 14, 67, MapUi.TEXT);
 
         MapUi.bar(graphics, width / 2 - 100, height - 22, 200, 6, t, MapUi.FRAME);

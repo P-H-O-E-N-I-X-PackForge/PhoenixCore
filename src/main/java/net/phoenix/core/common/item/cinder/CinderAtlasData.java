@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * not reachable through {@link #setActiveLoadout} or shown in the UI until unlocked.
  * <p>
  * Tag shape:
+ * 
  * <pre>
  * {
  *   ActiveLoadout: int,
@@ -54,11 +55,13 @@ public final class CinderAtlasData {
     private static final String SLOTS = "Slots";
     private static final String UPGRADES = "Upgrades";
 
-    /** Which loadout the radial menu currently points at. Clamped defensively on read since nothing
-     *  should ever write an out-of-range index, but NBT can be hand-edited or come from an
-     *  older/different tool version. This clamp is only the NBT's physical ceiling - callers that care
-     *  whether the loadout is actually *unlocked* (the editor screen, the radial menu, the active-loadout
-     *  packet handler) must check {@code CinderAtlasUpgrades#getLoadoutCapacity} themselves. */
+    /**
+     * Which loadout the radial menu currently points at. Clamped defensively on read since nothing
+     * should ever write an out-of-range index, but NBT can be hand-edited or come from an
+     * older/different tool version. This clamp is only the NBT's physical ceiling - callers that care
+     * whether the loadout is actually *unlocked* (the editor screen, the radial menu, the active-loadout
+     * packet handler) must check {@code CinderAtlasUpgrades#getLoadoutCapacity} themselves.
+     */
     public static int getActiveLoadout(ItemStack atlas) {
         CompoundTag tag = atlas.getTag();
         int index = tag != null ? tag.getInt(ACTIVE_LOADOUT) : 0;
@@ -69,12 +72,14 @@ public final class CinderAtlasData {
         atlas.getOrCreateTag().putInt(ACTIVE_LOADOUT, clamp(loadoutIndex, MAX_LOADOUT_COUNT));
     }
 
-    /** Which slot *within* the active loadout actually deploys when you right-click in the world - see
-     *  {@code CinderDeploySource}. Separate from "which slot the editor screen currently has selected"
-     *  in spirit, but the screen sets this to match its own selection since there's only one sensible
-     *  reason to select a slot right now; a dedicated "deploy vs. edit" distinction can be added later
-     *  if a real use for it shows up (e.g. the radial menu jumping to a slot without opening the full
-     *  screen). */
+    /**
+     * Which slot *within* the active loadout actually deploys when you right-click in the world - see
+     * {@code CinderDeploySource}. Separate from "which slot the editor screen currently has selected"
+     * in spirit, but the screen sets this to match its own selection since there's only one sensible
+     * reason to select a slot right now; a dedicated "deploy vs. edit" distinction can be added later
+     * if a real use for it shows up (e.g. the radial menu jumping to a slot without opening the full
+     * screen).
+     */
     public static int getActiveSlot(ItemStack atlas) {
         CompoundTag tag = atlas.getTag();
         int index = tag != null ? tag.getInt(ACTIVE_SLOT) : 0;
@@ -97,10 +102,12 @@ public final class CinderAtlasData {
         getOrCreateLoadoutTag(atlas, loadoutIndex).putString(LOADOUT_NAME, name);
     }
 
-    /** The sub-tag for one pattern slot - hand this directly to {@link CinderSchemaData}'s
-     *  {@code CompoundTag} overloads ({@code setTarget}, {@code resolveSchema}, {@code resolvePlacement},
-     *  etc.) exactly as if it were a Cinder Core's own root tag. Creates the loadout/slot structure on
-     *  first touch rather than requiring it to be pre-populated. */
+    /**
+     * The sub-tag for one pattern slot - hand this directly to {@link CinderSchemaData}'s
+     * {@code CompoundTag} overloads ({@code setTarget}, {@code resolveSchema}, {@code resolvePlacement},
+     * etc.) exactly as if it were a Cinder Core's own root tag. Creates the loadout/slot structure on
+     * first touch rather than requiring it to be pre-populated.
+     */
     public static CompoundTag getOrCreateSlotTag(ItemStack atlas, int loadoutIndex, int slotIndex) {
         CompoundTag loadout = getOrCreateLoadoutTag(atlas, loadoutIndex);
         ListTag slots = loadout.getList(SLOTS, Tag.TAG_COMPOUND);
@@ -114,9 +121,11 @@ public final class CinderAtlasData {
         return slot;
     }
 
-    /** Read-only counterpart of {@link #getOrCreateSlotTag} - returns {@code null} instead of creating
-     *  structure, for UI code that just wants to know "is this slot configured" without mutating an
-     *  item sitting in someone's inventory on every render frame. */
+    /**
+     * Read-only counterpart of {@link #getOrCreateSlotTag} - returns {@code null} instead of creating
+     * structure, for UI code that just wants to know "is this slot configured" without mutating an
+     * item sitting in someone's inventory on every render frame.
+     */
     public static @Nullable CompoundTag peekSlotTag(ItemStack atlas, int loadoutIndex, int slotIndex) {
         CompoundTag loadout = peekLoadoutTag(atlas, loadoutIndex);
         if (loadout == null) return null;
@@ -125,8 +134,10 @@ public final class CinderAtlasData {
         return slotIndex < slots.size() ? slots.getCompound(slotIndex) : null;
     }
 
-    /** Whether a slot has an actual target configured - a freshly-created empty slot tag has no
-     *  {@code TargetMultiblock} key yet, same "unconfigured" meaning a fresh Cinder Core has. */
+    /**
+     * Whether a slot has an actual target configured - a freshly-created empty slot tag has no
+     * {@code TargetMultiblock} key yet, same "unconfigured" meaning a fresh Cinder Core has.
+     */
     public static boolean isSlotConfigured(ItemStack atlas, int loadoutIndex, int slotIndex) {
         CompoundTag slot = peekSlotTag(atlas, loadoutIndex, slotIndex);
         return slot != null && CinderSchemaData.getTargetId(slot) != null;

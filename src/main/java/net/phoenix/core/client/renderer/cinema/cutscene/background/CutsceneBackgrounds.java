@@ -1,7 +1,5 @@
 package net.phoenix.core.client.renderer.cinema.cutscene.background;
 
-import net.phoenix.core.PhoenixCore;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
@@ -9,6 +7,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.phoenix.core.PhoenixCore;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -139,7 +138,8 @@ public final class CutsceneBackgrounds {
 
     public record Stack(List<CutsceneBackground.Data> backgrounds) implements CutsceneBackground.Data {
 
-        public static final MapCodec<Stack> CODEC = ExtraCodecs.lazyInitializedCodec(() -> CutsceneBackgrounds.CODEC.listOf())
+        public static final MapCodec<Stack> CODEC = ExtraCodecs
+                .lazyInitializedCodec(() -> CutsceneBackgrounds.CODEC.listOf())
                 .fieldOf("backgrounds").xmap(Stack::new, Stack::backgrounds);
 
         @Override

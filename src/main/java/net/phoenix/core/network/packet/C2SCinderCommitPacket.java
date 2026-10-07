@@ -17,9 +17,9 @@ import net.phoenix.core.common.block.cinder.CinderBlocks;
 import net.phoenix.core.common.block.cinder.CinderConstructionBlockEntity;
 import net.phoenix.core.common.block.cinder.CinderVisualEffects;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
-import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 import net.phoenix.core.common.item.cinder.CinderDeploySource;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
+import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 import net.phoenix.core.network.PhoenixNetwork;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;

@@ -46,7 +46,8 @@ public final class MapCamera {
     }
 
     public void zoom(float amount) {
-        targetDistance = Math.max(minDistance, Math.min(maxDistance, targetDistance * (float) Math.exp(-amount * 0.12)));
+        targetDistance = Math.max(minDistance,
+                Math.min(maxDistance, targetDistance * (float) Math.exp(-amount * 0.12)));
     }
 
     /** Jumps both the current and target distance, for transitions that start a level mid-zoom. */
@@ -63,7 +64,9 @@ public final class MapCamera {
                 .translate(-focus.x, -focus.y, -focus.z);
     }
 
-    /** Where a world point lands on a view of {@code width} x {@code height} GUI pixels, or null if behind the camera. */
+    /**
+     * Where a world point lands on a view of {@code width} x {@code height} GUI pixels, or null if behind the camera.
+     */
     public static @Nullable float[] project(Matrix4f viewProjection, Vector3f world, float width, float height) {
         Vector4f clip = viewProjection.transform(new Vector4f(world.x, world.y, world.z, 1.0f));
         if (clip.w <= 0.05f) return null;

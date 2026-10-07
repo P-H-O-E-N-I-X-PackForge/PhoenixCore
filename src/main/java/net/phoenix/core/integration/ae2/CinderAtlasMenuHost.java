@@ -12,7 +12,6 @@ import appeng.api.storage.MEStorage;
 import appeng.api.util.IConfigManager;
 import appeng.menu.ISubMenu;
 import appeng.util.NullConfigManager;
-
 import org.jetbrains.annotations.Nullable;
 
 /**

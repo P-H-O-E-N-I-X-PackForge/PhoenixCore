@@ -33,8 +33,10 @@ public class ContinuumRepairKitItem extends Item {
 
         if (!(rocket.getItem() instanceof ContinuumRocketItem)) {
             if (!level.isClientSide) {
-                player.displayClientMessage(Component.literal("Hold a Continuum Rocket in your other hand to repair it.")
-                        .withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(
+                        Component.literal("Hold a Continuum Rocket in your other hand to repair it.")
+                                .withStyle(ChatFormatting.RED),
+                        true);
             }
             return InteractionResultHolder.fail(kit);
         }

@@ -103,10 +103,12 @@ public class WorldProgressionApplier {
         syncProgressionToClients(level, teamId, disciplineId, newStage);
     }
 
-    /** Sends every player currently in this level the team's current discipline/stage/unlocked-stages,
-     *  which is what actually drives BiomeColorProvider and DisciplineSkyRenderer client-side (via
-     *  ClientDisciplineProgressionCache.updateProgression). This used to never happen at all -
-     *  S2CDisciplineProgressionSyncPacket.send(CompoundTag) was an empty no-op with no caller anywhere. */
+    /**
+     * Sends every player currently in this level the team's current discipline/stage/unlocked-stages,
+     * which is what actually drives BiomeColorProvider and DisciplineSkyRenderer client-side (via
+     * ClientDisciplineProgressionCache.updateProgression). This used to never happen at all -
+     * S2CDisciplineProgressionSyncPacket.send(CompoundTag) was an empty no-op with no caller anywhere.
+     */
     private static void syncProgressionToClients(ServerLevel level, UUID teamId, String disciplineId, String stage) {
         Set<String> unlockedStages = Set.of();
         DisciplineProgressionData.ProgressionState progression = DisciplineProgressionData.get(level)

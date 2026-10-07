@@ -5,7 +5,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
@@ -49,9 +48,11 @@ public final class CinderDeploySource {
         return tag != null && CinderSchemaData.getTargetId(tag) != null;
     }
 
-    /** Server-only real materials check - a Cinder Core against its own stocked inventory, an Atlas
-     *  against its linked AE2 network's live stock (also gated by real wireless range - see
-     *  {@code CinderAtlasWirelessLink#isInRange}). */
+    /**
+     * Server-only real materials check - a Cinder Core against its own stocked inventory, an Atlas
+     * against its linked AE2 network's live stock (also gated by real wireless range - see
+     * {@code CinderAtlasWirelessLink#isInRange}).
+     */
     public static boolean hasSufficientMaterials(ItemStack stack, ServerLevel level, Player player,
                                                  Reference2IntMap<Block> required) {
         if (stack.getItem() instanceof CinderCoreItem) {

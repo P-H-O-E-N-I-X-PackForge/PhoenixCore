@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
@@ -45,12 +44,12 @@ import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Design doc feature #5 - the requester/auto-restock companion block. Per the user's own answer when

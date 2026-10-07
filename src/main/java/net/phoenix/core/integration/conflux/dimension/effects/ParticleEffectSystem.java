@@ -17,10 +17,12 @@ public abstract class ParticleEffectSystem {
 
     public abstract void update(Level level, @Nullable Player player);
 
-    /** Dispatches a single particle add to the client thread - every spawn* method below used to be an
-     *  empty body, so none of these ambient effects ever actually rendered anything. */
+    /**
+     * Dispatches a single particle add to the client thread - every spawn* method below used to be an
+     * empty body, so none of these ambient effects ever actually rendered anything.
+     */
     private static void spawnClientParticle(Level level, SimpleParticleType type, double x, double y, double z,
-                                             double vx, double vy, double vz) {
+                                            double vx, double vy, double vz) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;

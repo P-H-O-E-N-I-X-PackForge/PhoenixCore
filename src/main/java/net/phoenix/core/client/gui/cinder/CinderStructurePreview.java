@@ -63,10 +63,12 @@ public class CinderStructurePreview {
         renderer.render(view, x, y, w, h);
     }
 
-    /** The schema-local {@link BlockPos} currently under the cursor, resolved from
-     *  {@link StructureRenderer}'s own real GPU depth-buffer pick (a genuine ray-cast against the
-     *  actual rendered blocks, not an approximation) - {@code null} off the model or before the first
-     *  {@link #render} call this frame has updated it. */
+    /**
+     * The schema-local {@link BlockPos} currently under the cursor, resolved from
+     * {@link StructureRenderer}'s own real GPU depth-buffer pick (a genuine ray-cast against the
+     * actual rendered blocks, not an approximation) - {@code null} off the model or before the first
+     * {@link #render} call this frame has updated it.
+     */
     public @Nullable BlockPos getHoveredLocalPos() {
         var hit = renderer.getLastHitResult();
         return hit != null ? hit.getBlockPos() : null;
