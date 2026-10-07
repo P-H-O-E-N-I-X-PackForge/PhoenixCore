@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:phoenix",
+  "type": "planet",
+  "name": "Glasswind",
+  "description": "Dunes of fused glass that throw the star back at you.",
+  "orbit": {
+    "radius_au": 1.0,
+    "period_days": 200,
+    "phase": 0.6
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 14,
+  "spin_deg_per_sec": 4,
+  "cloud_spin_deg_per_sec": 7,
+  "surface": {
+    "seed": 13,
+    "scale": 3.4,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.12,
+    "bump": 0.6,
+    "low": "#7a5a2a",
+    "mid": "#c99a50",
+    "high": "#f3dca0",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ffc070",
+    "density": 0.6
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_phoenix_signals",
+    "surveyed_research": "phoenixcore:space_survey_glasswind"
+  },
+  "trip_minutes": 55,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:glass",
+      "min": 8,
+      "max": 16,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 4,
+      "max": 10,
+      "chance": 0.6
+    }
+  ]
+}

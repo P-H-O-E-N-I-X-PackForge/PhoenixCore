@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "Rime",
+  "description": "An ice world, white and blue under a thin sky.",
+  "orbit": {
+    "radius_au": 3.4,
+    "period_days": 1200,
+    "phase": 0.8
+  },
+  "radius": 0.8,
+  "gas_giant": false,
+  "axial_tilt": 24,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 4,
+  "surface": {
+    "seed": 11,
+    "scale": 3.2,
+    "ocean_level": 0.0,
+    "polar_ice": 0.75,
+    "cloud_cover": 0.25,
+    "bump": 0.5,
+    "low": "#9fb8d6",
+    "mid": "#d7e6f5",
+    "high": "#ffffff",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#a8d4ff",
+    "density": 0.55
+  },
+  "gate": {
+    "min_tier": "early",
+    "detected_research": "phoenixcore:space_cold_signals",
+    "surveyed_research": "phoenixcore:space_survey_rime"
+  },
+  "trip_minutes": 30,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:packed_ice",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:diamond",
+      "min": 1,
+      "max": 1,
+      "chance": 0.1
+    }
+  ]
+}

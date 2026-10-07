@@ -1,0 +1,13 @@
+{
+  "name": "Phoenix",
+  "description": "An ember-coloured star ringed by scorched and glassy worlds.",
+  "galaxy": [
+    4.5,
+    0.6,
+    -2.0
+  ],
+  "star_color": "#ff7a3a",
+  "star_radius": 1.3,
+  "star_kind": "star",
+  "initial_stage": "detected"
+}

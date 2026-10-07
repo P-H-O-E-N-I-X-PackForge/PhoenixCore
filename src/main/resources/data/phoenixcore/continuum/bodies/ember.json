@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:phoenix",
+  "type": "planet",
+  "name": "Ember",
+  "description": "A volcanic crust split by rivers of light.",
+  "orbit": {
+    "radius_au": 0.5,
+    "period_days": 70,
+    "phase": 0.2
+  },
+  "radius": 1.1,
+  "gas_giant": false,
+  "axial_tilt": 4,
+  "spin_deg_per_sec": 2.5,
+  "cloud_spin_deg_per_sec": 5,
+  "surface": {
+    "seed": 7,
+    "scale": 3.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.1,
+    "bump": 1.2,
+    "low": "#1a1210",
+    "mid": "#3a2a22",
+    "high": "#6a5040",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 1.6
+  },
+  "atmosphere": {
+    "color": "#ff7a3a",
+    "density": 0.5
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_phoenix_signals",
+    "surveyed_research": "phoenixcore:space_survey_ember"
+  },
+  "trip_minutes": 45,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:blaze_rod",
+      "min": 2,
+      "max": 4,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:netherite_scrap",
+      "min": 1,
+      "max": 2,
+      "chance": 0.25
+    }
+  ]
+}

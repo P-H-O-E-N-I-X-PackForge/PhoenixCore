@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:sculk",
+  "type": "planet",
+  "name": "Marrow",
+  "description": "A dark ocean world pulsing with slow light.",
+  "orbit": {
+    "radius_au": 2.0,
+    "period_days": 420,
+    "phase": 0.65
+  },
+  "radius": 1.3,
+  "gas_giant": false,
+  "axial_tilt": 20,
+  "spin_deg_per_sec": 4.5,
+  "cloud_spin_deg_per_sec": 8,
+  "surface": {
+    "seed": 37,
+    "scale": 2.4,
+    "ocean_level": 0.6,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.55,
+    "bump": 0.4,
+    "low": "#12302c",
+    "mid": "#1f5a52",
+    "high": "#4a8c80",
+    "ocean_deep": "#010d12",
+    "ocean_shallow": "#0b4a52",
+    "emissive": "#2cf0c8",
+    "emissive_amount": 0.25
+  },
+  "atmosphere": {
+    "color": "#2cd0b0",
+    "density": 0.85
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_sculk_bloom",
+    "surveyed_research": "phoenixcore:space_survey_marrow"
+  },
+  "trip_minutes": 120,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:prismarine_shard",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:sea_lantern",
+      "min": 1,
+      "max": 2,
+      "chance": 0.35
+    }
+  ]
+}

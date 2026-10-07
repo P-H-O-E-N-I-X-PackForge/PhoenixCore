@@ -60,6 +60,7 @@ public class PhoenixClient {
         net.phoenix.core.integration.gregvaults.client.GregTechVaultsClient.init(modBus);
         modBus.addListener(PhoenixClient::registerDynamicPipeModels);
         modBus.addListener(WorldFXShaders::onRegisterShaders);
+        modBus.addListener(net.phoenix.core.integration.continuum.client.render.ContinuumShaders::onRegisterShaders);
 
         net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers.registerAll();
     }
@@ -185,6 +186,7 @@ public class PhoenixClient {
             ConfluxEditorCommand.register(event);
             ExportSpritesCommand.register(event);
             TerrainPreviewCommand.register(event);
+            net.phoenix.core.integration.continuum.client.ContinuumCommand.register(event);
         }
     }
 }

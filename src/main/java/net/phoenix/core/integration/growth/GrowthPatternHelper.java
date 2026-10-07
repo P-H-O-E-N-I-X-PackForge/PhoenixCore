@@ -24,6 +24,10 @@ public final class GrowthPatternHelper {
     private static final RelativeDirection[] AXES = { RelativeDirection.BACK, RelativeDirection.UP,
             RelativeDirection.RIGHT };
 
+    private static final char CONTROLLER_KEY = 'C';
+    private static final char SHELL_KEY = 'S';
+    private static final char ANY_KEY = ' ';
+
     private GrowthPatternHelper() {}
 
     public static IBlockPattern getPattern(MultiblockMachineDefinition definition, MultiPredicate shellPredicate,
@@ -37,9 +41,12 @@ public final class GrowthPatternHelper {
                         IntIntPair.of(0, maxBounds.getInt(3)),
                         IntIntPair.of(0, maxBounds.getInt(4)),
                         IntIntPair.of(0, maxBounds.getInt(5))))
-                .predicateProvider((pos, bounds) -> pos.equals(BlockPos.ZERO) ?
-                        Predicates.controller(Predicates.blocks(definition.get())) :
-                        intersections(pos, bounds) >= 1 ? shellPredicate : Predicates.any())
+                // GTCEu 8.0 snapshots: the provider returns a symbol and the symbols are bound with where()
+                .where(CONTROLLER_KEY, Predicates.controller(Predicates.blocks(definition.get())))
+                .where(SHELL_KEY, shellPredicate)
+                .where(ANY_KEY, Predicates.any())
+                .predicateProvider((pos, bounds) -> pos.equals(BlockPos.ZERO) ? CONTROLLER_KEY :
+                        intersections(pos, bounds) >= 1 ? SHELL_KEY : ANY_KEY)
                 .build();
     }
 

@@ -1,0 +1,27 @@
+{
+  "vertex": "phoenixcore:continuum_planet",
+  "fragment": "phoenixcore:continuum_planet",
+  "attributes": ["Position"],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat",      "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "SunDir",         "type": "float", "count": 3, "values": [0.0, 0.0, 1.0] },
+    { "name": "Time",           "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Seed",           "type": "float", "count": 1, "values": [1.0] },
+    { "name": "Scale",          "type": "float", "count": 1, "values": [2.5] },
+    { "name": "OceanLevel",     "type": "float", "count": 1, "values": [0.0] },
+    { "name": "PolarIce",       "type": "float", "count": 1, "values": [0.0] },
+    { "name": "CloudCover",     "type": "float", "count": 1, "values": [0.0] },
+    { "name": "CloudOffset",    "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Bump",           "type": "float", "count": 1, "values": [0.6] },
+    { "name": "Kind",           "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Octaves",        "type": "float", "count": 1, "values": [6.0] },
+    { "name": "PalLow",         "type": "float", "count": 3, "values": [0.3, 0.3, 0.3] },
+    { "name": "PalMid",         "type": "float", "count": 3, "values": [0.5, 0.5, 0.5] },
+    { "name": "PalHigh",        "type": "float", "count": 3, "values": [0.8, 0.8, 0.8] },
+    { "name": "OceanDeep",      "type": "float", "count": 3, "values": [0.02, 0.07, 0.2] },
+    { "name": "OceanShallow",   "type": "float", "count": 3, "values": [0.05, 0.25, 0.4] },
+    { "name": "EmissiveColor",  "type": "float", "count": 3, "values": [1.0, 0.35, 0.05] },
+    { "name": "EmissiveAmount", "type": "float", "count": 1, "values": [0.0] }
+  ]
+}

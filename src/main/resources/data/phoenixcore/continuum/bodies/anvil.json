@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "Anvil",
+  "description": "Rocky and industrial, wrapped in an orange haze.",
+  "orbit": {
+    "radius_au": 0.6,
+    "period_days": 90,
+    "phase": 0.1
+  },
+  "radius": 0.9,
+  "gas_giant": false,
+  "axial_tilt": 8,
+  "spin_deg_per_sec": 4,
+  "cloud_spin_deg_per_sec": 6,
+  "surface": {
+    "seed": 3,
+    "scale": 2.6,
+    "ocean_level": 0.0,
+    "polar_ice": 0.12,
+    "cloud_cover": 0.15,
+    "bump": 0.9,
+    "low": "#3b332c",
+    "mid": "#7a6450",
+    "high": "#b89b78",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ffa45c",
+    "density": 0.7
+  },
+  "gate": {
+    "min_tier": "start",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 5,
+  "initial_stage": "surveyed",
+  "yields": [
+    {
+      "item": "minecraft:raw_iron",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:coal",
+      "min": 4,
+      "max": 8,
+      "chance": 0.8
+    }
+  ]
+}

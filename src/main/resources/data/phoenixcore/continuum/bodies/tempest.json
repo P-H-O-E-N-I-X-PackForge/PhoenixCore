@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "Tempest",
+  "description": "A banded gas giant with a ring of storms.",
+  "orbit": {
+    "radius_au": 2.2,
+    "period_days": 600,
+    "phase": 0.35
+  },
+  "radius": 9.0,
+  "gas_giant": true,
+  "axial_tilt": 3,
+  "spin_deg_per_sec": 9,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 5,
+    "scale": 5.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#b0743a",
+    "mid": "#e3c496",
+    "high": "#f6ead2",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ffd9a0",
+    "density": 0.35
+  },
+  "gate": {
+    "min_tier": "early",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 20,
+  "initial_stage": "detected",
+  "yields": [
+    {
+      "item": "minecraft:blaze_powder",
+      "min": 3,
+      "max": 6,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 4,
+      "max": 8,
+      "chance": 0.8
+    }
+  ]
+}

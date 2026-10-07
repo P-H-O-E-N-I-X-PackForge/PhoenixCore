@@ -1,0 +1,57 @@
+{
+  "system": "phoenixcore:home",
+  "type": "moon",
+  "name": "Halo",
+  "description": "A pitted grey moon with no air and a hard terminator.",
+  "orbit": {
+    "radius_au": 0.004,
+    "period_days": 12,
+    "phase": 0.55
+  },
+  "radius": 0.27,
+  "gas_giant": false,
+  "axial_tilt": 2,
+  "spin_deg_per_sec": 2,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 9,
+    "scale": 4.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.3,
+    "low": "#2e2e32",
+    "mid": "#5c5c62",
+    "high": "#9a9aa2",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "start",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 8,
+  "initial_stage": "surveyed",
+  "yields": [
+    {
+      "item": "minecraft:quartz",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 2,
+      "max": 4,
+      "chance": 0.5
+    }
+  ],
+  "parent": "phoenixcore:anvil"
+}

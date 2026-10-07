@@ -48,6 +48,7 @@ public class PhoenixGTAddon implements IGTAddon {
     @Override
     public void addRecipes(Consumer<FinishedRecipe> provider) {
         PhoenixMachineRecipes.init(provider);
+        net.phoenix.core.integration.continuum.ContinuumRecipes.init(provider);
         PhoenixFissionMachineRecipes.init(provider);
         PhoenixToolRecipes.init(provider);
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);

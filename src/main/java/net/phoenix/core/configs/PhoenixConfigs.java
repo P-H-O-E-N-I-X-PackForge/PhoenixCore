@@ -41,6 +41,141 @@ public class PhoenixConfigs {
     @Configurable.Comment("Whether buying a shop entry requires winning a quick timing minigame first.")
     public boolean shopMinigameEnabled = true;
 
+    @Configurable
+    public ContinuumConfigs continuum = new ContinuumConfigs();
+
+    /** Continuum space missions: pacing, rocket wear and the launch pad. */
+    public static class ContinuumConfigs {
+
+        @Configurable
+        @Configurable.Comment({
+                "Scales every mission's real-time length. 1.0 = the trip times in the body definitions",
+                "(5 minutes for the nearest body up to 2 hours for the farthest). Lower it to test.",
+                "Default: 1.0"
+        })
+        @Configurable.DecimalRange(min = 0.001, max = 100.0)
+        public double tripTimeMultiplier = 1.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "The most trip time rocket upgrades can remove in total (0.5 = up to half).",
+                "Default: 0.5"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 0.9)
+        public double maxTripReduction = 0.5;
+
+        @Configurable
+        @Configurable.Comment({
+                "Rocket wear (0 = new, 1 = ruined) at or above which a rocket with a Hull Interlock upgrade",
+                "refuses to launch. Without the interlock a worn rocket launches anyway and may fail.",
+                "Default: 0.7"
+        })
+        @Configurable.DecimalRange(min = 0.1, max = 1.0)
+        public double interlockWearThreshold = 0.7;
+
+        @Configurable
+        @Configurable.Comment({ "Scales how much wear each mission puts on the rocket.", "Default: 1.0" })
+        @Configurable.DecimalRange(min = 0.0, max = 10.0)
+        public double wearMultiplier = 1.0;
+
+        @Configurable
+        @Configurable.Comment({ "Missions a team can have in flight (or waiting to be collected) at once.", "Default: 8" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxMissionsPerTeam = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "Real minutes one outpost production cycle takes. Each probe at an outpost rolls the body's",
+                "yield table once per cycle.", "Default: 10"
+        })
+        @Configurable.DecimalRange(min = 0.05, max = 1440.0)
+        public double outpostCycleMinutes = 10.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "How many finished cycles an outpost stockpiles before it stops producing (144 cycles of",
+                "10 minutes is a day). A Haul mission empties it.", "Default: 144"
+        })
+        @Configurable.Range(min = 1, max = 100000)
+        public int outpostMaxStoredCycles = 144;
+
+        @Configurable
+        @Configurable.Comment({
+                "Whether outposts need power. If true, every production cycle costs upkeep drawn from the owning",
+                "team's Tesla Network; a cycle that cannot be paid for is lost, so an unpowered outpost idles.",
+                "Default: true"
+        })
+        public boolean outpostRequiresPower = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "EU one probe costs per production cycle. With the default 10 minute cycle, 500,000 EU is about",
+                "42 EU/t per probe (8 probes ~ 330 EU/t). 0 turns upkeep off. Default: 500000"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0E12)
+        public double outpostUpkeepEUPerProbe = 500_000.0;
+
+        @Configurable
+        @Configurable.Comment({ "The most probes one outpost can hold.", "Default: 8" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxProbesPerOutpost = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "If true, missions can only be launched from a fully built Continuum Launch Complex. If false the plain",
+                "Continuum Launch Pad block also works (it ignores tier and power) - meant for testing and creative.",
+                "Default: true"
+        })
+        public boolean requireMultiblockPad = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Energy a launch draws from the Launch Complex's input hatches, in amp-ticks of the pad's own voltage",
+                "(1200 = 1 amp for a minute). A MV pad pays 128 * this in EU. Default: 1200"
+        })
+        @Configurable.Range(min = 0, max = 10000000)
+        public int launchEnergyAmpTicks = 1200;
+
+        @Configurable
+        @Configurable.Comment({
+                "The pad tier (GT voltage tier: 1 = LV, 2 = MV, 3 = HV, 4 = EV, 5 = IV, 6 = LuV, 7 = ZPM, 8 = UV)",
+                "a body needs, by its gate.min_tier. Defaults: start MV, early HV, mid EV, late IV, endgame LuV."
+        })
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierStart = 2;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierEarly = 3;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierMid = 4;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierLate = 5;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierEndgame = 6;
+
+        @Configurable
+        @Configurable.Comment({ "The most extraction probes one mission can carry.", "Default: 16" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxProbesPerMission = 16;
+
+        @Configurable
+        @Configurable.Comment({ "How much wear one Repair Kit removes from a rocket (0.3 = 30%).", "Default: 0.3" })
+        @Configurable.DecimalRange(min = 0.01, max = 1.0)
+        public double repairKitWear = 0.3;
+
+        @Configurable
+        @Configurable.Comment({ "How close to a Launch Pad a player has to be to launch from it, in blocks.", "Default: 12" })
+        @Configurable.Range(min = 2, max = 64)
+        public int launchRangeBlocks = 12;
+    }
+
     public static class CoreValues {
 
         @Configurable

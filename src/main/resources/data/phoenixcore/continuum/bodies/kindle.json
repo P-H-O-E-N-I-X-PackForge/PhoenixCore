@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:phoenix",
+  "type": "planet",
+  "name": "Kindle",
+  "description": "Too close to its star; the surface is always on fire.",
+  "orbit": {
+    "radius_au": 0.25,
+    "period_days": 30,
+    "phase": 0.4
+  },
+  "radius": 0.7,
+  "gas_giant": false,
+  "axial_tilt": 1,
+  "spin_deg_per_sec": 1.5,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 17,
+    "scale": 3.6,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.8,
+    "low": "#4a2410",
+    "mid": "#a85a22",
+    "high": "#ffb060",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ffb347",
+    "emissive_amount": 0.9
+  },
+  "atmosphere": {
+    "color": "#ff9a40",
+    "density": 0.8
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_phoenix_signals",
+    "surveyed_research": "phoenixcore:space_survey_kindle"
+  },
+  "trip_minutes": 65,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:magma_cream",
+      "min": 2,
+      "max": 5,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:raw_copper",
+      "min": 4,
+      "max": 9,
+      "chance": 0.7
+    }
+  ]
+}

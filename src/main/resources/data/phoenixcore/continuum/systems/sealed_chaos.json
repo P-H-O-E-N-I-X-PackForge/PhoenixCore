@@ -1,0 +1,17 @@
+{
+  "name": "Sealed B",
+  "description": "A signal that does not hold still.",
+  "galaxy": [
+    7.5,
+    -1.0,
+    4.0
+  ],
+  "star_color": "#e6e620",
+  "star_radius": 1.0,
+  "star_kind": "star",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_sealed_b_signal",
+    "surveyed_research": "phoenixcore:space_sealed_b_decode"
+  }
+}

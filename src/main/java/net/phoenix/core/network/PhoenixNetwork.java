@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.phoenix.core.integration.continuum.network.*;
 import net.phoenix.core.network.packet.*;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
 import net.phoenix.core.shop.network.C2SBuyShopEntryPacket;
@@ -261,6 +262,30 @@ public class PhoenixNetwork {
                 C2SCutsceneRequestPacket::encode,
                 C2SCutsceneRequestPacket::new,
                 C2SCutsceneRequestPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registerContinuum();
+    }
+
+    private static void registerContinuum() {
+        CHANNEL.registerMessage(id++, S2CContinuumDataPacket.class, S2CContinuumDataPacket::encode,
+                S2CContinuumDataPacket::new, S2CContinuumDataPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CContinuumStatePacket.class, S2CContinuumStatePacket::encode,
+                S2CContinuumStatePacket::new, S2CContinuumStatePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2COpenMapPacket.class, S2COpenMapPacket::encode, S2COpenMapPacket::new,
+                S2COpenMapPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CMissionLaunchedPacket.class, S2CMissionLaunchedPacket::encode,
+                S2CMissionLaunchedPacket::new, S2CMissionLaunchedPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, C2SRequestStatePacket.class, C2SRequestStatePacket::encode,
+                C2SRequestStatePacket::new, C2SRequestStatePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SLaunchMissionPacket.class, C2SLaunchMissionPacket::encode,
+                C2SLaunchMissionPacket::new, C2SLaunchMissionPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SCollectMissionPacket.class, C2SCollectMissionPacket::encode,
+                C2SCollectMissionPacket::new, C2SCollectMissionPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 }

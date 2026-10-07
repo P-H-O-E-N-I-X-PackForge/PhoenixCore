@@ -1,0 +1,56 @@
+{
+  "system": "phoenixcore:void",
+  "type": "planet",
+  "name": "Umbra",
+  "description": "A rogue rock near the black hole, light bending around it.",
+  "orbit": {
+    "radius_au": 1.6,
+    "period_days": 400,
+    "phase": 0.15
+  },
+  "radius": 0.9,
+  "gas_giant": false,
+  "axial_tilt": 6,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 23,
+    "scale": 3.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.0,
+    "low": "#15121f",
+    "mid": "#2c2640",
+    "high": "#4b4266",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#7a5cff",
+    "density": 0.3
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_void_lensing",
+    "surveyed_research": "phoenixcore:space_survey_umbra"
+  },
+  "trip_minutes": 80,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:obsidian",
+      "min": 3,
+      "max": 6,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:echo_shard",
+      "min": 1,
+      "max": 1,
+      "chance": 0.15
+    }
+  ]
+}

@@ -189,6 +189,7 @@ public class PhoenixCore {
     private void onRegisterBlocksAndItems(net.minecraftforge.registries.RegisterEvent event) {
         PhoenixBlocks.init();
         net.phoenix.core.common.block.cinema.CinemaBlocks.init();
+        net.phoenix.core.integration.continuum.ContinuumRegistry.init();
         GrowthBlocks.init();
         AstralBlocks.init();
         AstralItems.init();
@@ -313,6 +314,7 @@ public class PhoenixCore {
         VaultMachineDefinition.init();
         net.phoenix.core.common.machine.multiblock.cinder.CinderForgeMachines.init();
         net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachines.init();
+        net.phoenix.core.integration.continuum.machine.ContinuumMachines.init();
     }
 
     public static ResourceLocation id(String path) {

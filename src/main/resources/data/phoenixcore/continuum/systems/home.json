@@ -1,0 +1,13 @@
+{
+  "name": "Home",
+  "description": "The starting system. A quiet yellow star and the worlds closest to home.",
+  "galaxy": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "star_color": "#ffd9a0",
+  "star_radius": 1.0,
+  "star_kind": "star",
+  "initial_stage": "surveyed"
+}

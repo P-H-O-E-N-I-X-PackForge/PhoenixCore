@@ -1,0 +1,17 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "one"
+  },
+  "vertex": "phoenixcore:continuum_planet",
+  "fragment": "phoenixcore:continuum_atmosphere",
+  "attributes": ["Position"],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat",      "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "SunDir",       "type": "float", "count": 3, "values": [0.0, 0.0, 1.0] },
+    { "name": "AtmoColor",    "type": "float", "count": 3, "values": [0.4, 0.6, 1.0] },
+    { "name": "AtmoDensity",  "type": "float", "count": 1, "values": [0.8] }
+  ]
+}
