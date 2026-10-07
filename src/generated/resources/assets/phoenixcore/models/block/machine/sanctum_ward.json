@@ -1,5 +1,10 @@
 {
   "parent": "minecraft:block/block",
+  "dynamic_renders": [
+    {
+      "type": "phoenixcore:sanctum_ward"
+    }
+  ],
   "loader": "gtceu:machine",
   "machine": "phoenixcore:sanctum_ward",
   "texture_overrides": {

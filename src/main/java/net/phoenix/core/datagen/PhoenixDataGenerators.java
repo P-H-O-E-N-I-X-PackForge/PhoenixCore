@@ -38,6 +38,10 @@ public class PhoenixDataGenerators {
             prov.add("tooltip.phoenixcore.cinder_core.materials", "Stocked: %s material types, %s items total");
             prov.add("tooltip.phoenixcore.cinder_core.hint",
                     "Shift-right-click: configure  •  Right-click a block: preview / place");
+            prov.add("tooltip.phoenixcore.cinder_core.ready", "All materials stocked - ready to build");
+            prov.add("tooltip.phoenixcore.cinder_core.missing_entry", "  %s: %s/%s");
+            prov.add("tooltip.phoenixcore.cinder_core.missing_more", "  ...and %s more");
+            prov.add("key.phoenixcore.cinder_atlas_radial", "Cinder Atlas Loadout Wheel");
         });
     }
 

@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** Loads {@link GatedRecipeRule}s from {@code data/<namespace>/conflux/gated_recipes/*.json}. Applied
- *  to already-loaded recipes by {@link RecipeGateApplier}, called from the same mixin hook
- *  ({@code RecipeManagerMixin}) that already filters recipes via {@code RecipeBlacklist}. */
+/**
+ * Loads {@link GatedRecipeRule}s from {@code data/<namespace>/conflux/gated_recipes/*.json}. Applied
+ * to already-loaded recipes by {@link RecipeGateApplier}, called from the same mixin hook
+ * ({@code RecipeManagerMixin}) that already filters recipes via {@code RecipeBlacklist}.
+ */
 public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
 
     public static final GatedRecipeRegistry INSTANCE = new GatedRecipeRegistry();
@@ -38,6 +40,10 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
                 .ifPresent(loaded::add));
         rules = List.copyOf(loaded);
         PhoenixCore.LOGGER.info("Loaded {} gated recipe rule(s)", rules.size());
+
+        // The recipe manager can finish applying before these rules load, which would leave every recipe ungated.
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server != null) RecipeGateApplier.applyGates(server.getRecipeManager().getRecipes());
     }
 
     public List<GatedRecipeRule> getRules() {

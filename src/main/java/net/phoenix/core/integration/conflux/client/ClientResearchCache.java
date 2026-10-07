@@ -23,12 +23,14 @@ public final class ClientResearchCache {
     private static @Nullable String disciplineTitle = null;
     private static boolean disciplineCommitted = false;
     private static Map<ConfluxDataType, Long> switchCost = Map.of();
+    private static Map<ConfluxDataType, Long> data = Map.of();
 
     private ClientResearchCache() {}
 
     public static void update(Set<ResourceLocation> u, Set<ResourceLocation> lo, Set<String> f,
                               @Nullable String discId, @Nullable String discTitle,
-                              boolean committed, Map<ConfluxDataType, Long> cost) {
+                              boolean committed, Map<ConfluxDataType, Long> cost, Map<ConfluxDataType, Long> stored) {
+        data = Map.copyOf(stored);
         unlocked = Set.copyOf(u);
         lockedOut = Set.copyOf(lo);
         flags = Set.copyOf(f);
@@ -46,6 +48,12 @@ public final class ClientResearchCache {
         disciplineTitle = null;
         disciplineCommitted = false;
         switchCost = Map.of();
+        data = Map.of();
+    }
+
+    /** The team Conflux data pool, as of the last sync. */
+    public static long dataStored(ConfluxDataType type) {
+        return data.getOrDefault(type, 0L);
     }
 
     public static boolean isUnlocked(ResourceLocation id) {

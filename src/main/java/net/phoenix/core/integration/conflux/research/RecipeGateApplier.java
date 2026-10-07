@@ -35,8 +35,8 @@ public final class RecipeGateApplier {
             if (!(r instanceof GTRecipe recipe)) continue;
 
             for (GatedRecipeRule rule : rules) {
-                if (matches(recipe, rule)) {
-                    recipe.conditions.add(AxiomResearchCondition.of(rule.flag()));
+                if (matches(recipe, rule) && !alreadyGated(recipe, rule.flag())) {
+                    addCondition(recipe, AxiomResearchCondition.of(rule.flag()));
                     gated++;
                 }
             }
@@ -44,6 +44,34 @@ public final class RecipeGateApplier {
         if (gated > 0) {
             PhoenixCore.LOGGER.info("[Conflux] Attached {} research gate(s) to loaded recipes", gated);
         }
+    }
+
+    private static java.lang.reflect.Field conditionsField;
+
+    /**
+     * GTRecipe's {@code conditions} is a final, usually immutable list, so adding to it throws. Swap in a mutable copy
+     * holding the extra condition instead.
+     */
+    private static void addCondition(GTRecipe recipe, AxiomResearchCondition condition) {
+        try {
+            if (conditionsField == null) {
+                conditionsField = GTRecipe.class.getField("conditions");
+                conditionsField.setAccessible(true);
+            }
+            var copy = new java.util.ArrayList<>(recipe.conditions);
+            copy.add(condition);
+            conditionsField.set(recipe, copy);
+        } catch (ReflectiveOperationException e) {
+            PhoenixCore.LOGGER.error("[Conflux] Could not gate recipe {}", recipe.id, e);
+        }
+    }
+
+    /** Applying is repeatable (rules can load after the recipes), so never attach the same flag twice. */
+    private static boolean alreadyGated(GTRecipe recipe, String flag) {
+        for (var condition : recipe.conditions) {
+            if (condition instanceof AxiomResearchCondition axiom && flag.equals(axiom.getFlag())) return true;
+        }
+        return false;
     }
 
     private static boolean matches(GTRecipe recipe, GatedRecipeRule rule) {

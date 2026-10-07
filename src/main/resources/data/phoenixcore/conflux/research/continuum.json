@@ -1,0 +1,532 @@
+{
+  "title": "Deep Space",
+  "description": "Rocketry, survey and the signals beyond the home system. Gates the Continuum map and its recipes.",
+  "nodes": [
+    {
+      "id": "phoenixcore:space_root",
+      "title": "Orbital Mechanics",
+      "lore": "Before anything can leave the ground, you must know how it falls.",
+      "icon": "minecraft:firework_rocket",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "computational": 300,
+        "material": 150
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_orbital"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_rocketry",
+      "title": "Rocketry",
+      "lore": "Controlled burns, staged and survivable.",
+      "icon": "minecraft:firework_star",
+      "position": [
+        -3,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:space_root"
+      ],
+      "cost": {
+        "material": 400,
+        "energetic": 300
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_rocketry"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_hull_engineering",
+      "title": "Hull Engineering",
+      "lore": "A hull that remembers every launch and refuses the one that would break it.",
+      "icon": "minecraft:iron_block",
+      "position": [
+        -5,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_rocketry"
+      ],
+      "cost": {
+        "material": 800,
+        "computational": 300
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_hull"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_propulsion",
+      "title": "Advanced Propulsion",
+      "lore": "More thrust, shorter trips.",
+      "icon": "minecraft:blaze_powder",
+      "position": [
+        -3,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_rocketry"
+      ],
+      "cost": {
+        "energetic": 900,
+        "material": 400
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_propulsion"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_launch_complex",
+      "title": "Launch Complex Design",
+      "lore": "A pad worthy of the name, fed by the grid.",
+      "icon": "minecraft:lightning_rod",
+      "position": [
+        -1,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_rocketry"
+      ],
+      "cost": {
+        "energetic": 1200,
+        "computational": 500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_launch"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey",
+      "title": "Deep Survey",
+      "lore": "Point the instruments outward and learn the shape of the dark.",
+      "icon": "minecraft:spyglass",
+      "position": [
+        3,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:space_root"
+      ],
+      "cost": {
+        "computational": 600,
+        "arcane": 200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_cold_signals",
+      "title": "Cold Signals",
+      "lore": "A pale return from beyond the gas giant.",
+      "icon": "minecraft:packed_ice",
+      "position": [
+        1,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_detect_rime"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_phoenix_signals",
+      "title": "Phoenix Signals",
+      "lore": "Heat where no star was charted.",
+      "icon": "minecraft:blaze_rod",
+      "position": [
+        3,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 900,
+        "energetic": 400
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_detect_phoenix"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_void_lensing",
+      "title": "Void Lensing",
+      "lore": "Light bends around something that does not shine.",
+      "icon": "minecraft:obsidian",
+      "position": [
+        5,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 1400,
+        "arcane": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_detect_void"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_sculk_bloom",
+      "title": "Bloom Spectra",
+      "lore": "A slow green pulse, too regular to be nothing.",
+      "icon": "minecraft:sculk_catalyst",
+      "position": [
+        7,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "biological": 1200,
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_detect_sculk"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_rime",
+      "title": "Survey: Rime",
+      "lore": "Resolve Rime into something a rocket can land on.",
+      "icon": "minecraft:diamond",
+      "position": [
+        -1,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_cold_signals"
+      ],
+      "cost": {
+        "computational": 400
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_rime"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_ember",
+      "title": "Survey: Ember",
+      "lore": "Resolve Ember into something a rocket can land on.",
+      "icon": "minecraft:magma_cream",
+      "position": [
+        0,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_phoenix_signals"
+      ],
+      "cost": {
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_ember"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_glasswind",
+      "title": "Survey: Glasswind",
+      "lore": "Resolve Glasswind into something a rocket can land on.",
+      "icon": "minecraft:glass",
+      "position": [
+        1,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_phoenix_signals"
+      ],
+      "cost": {
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_glasswind"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_kindle",
+      "title": "Survey: Kindle",
+      "lore": "Resolve Kindle into something a rocket can land on.",
+      "icon": "minecraft:fire_charge",
+      "position": [
+        2,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_phoenix_signals"
+      ],
+      "cost": {
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_kindle"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_umbra",
+      "title": "Survey: Umbra",
+      "lore": "Resolve Umbra into something a rocket can land on.",
+      "icon": "minecraft:ender_pearl",
+      "position": [
+        3,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_void_lensing"
+      ],
+      "cost": {
+        "computational": 1500,
+        "arcane": 500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_umbra"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_hollow",
+      "title": "Survey: Hollow",
+      "lore": "Resolve Hollow into something a rocket can land on.",
+      "icon": "minecraft:amethyst_shard",
+      "position": [
+        4,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_void_lensing"
+      ],
+      "cost": {
+        "computational": 1500,
+        "arcane": 500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_hollow"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_event",
+      "title": "Survey: Event",
+      "lore": "Resolve Event into something a rocket can land on.",
+      "icon": "minecraft:ender_eye",
+      "position": [
+        5,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_void_lensing"
+      ],
+      "cost": {
+        "computational": 2500,
+        "arcane": 1200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_event"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_spore",
+      "title": "Survey: Spore",
+      "lore": "Resolve Spore into something a rocket can land on.",
+      "icon": "minecraft:glow_lichen",
+      "position": [
+        6,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_sculk_bloom"
+      ],
+      "cost": {
+        "biological": 1500,
+        "computational": 1000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_spore"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_marrow",
+      "title": "Survey: Marrow",
+      "lore": "Resolve Marrow into something a rocket can land on.",
+      "icon": "minecraft:prismarine_shard",
+      "position": [
+        7,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_sculk_bloom"
+      ],
+      "cost": {
+        "biological": 1800,
+        "computational": 1200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_marrow"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_sealed_a_signal",
+      "title": "Sealed Signal A",
+      "lore": "Something answers behind a door with no handle.",
+      "icon": "minecraft:echo_shard",
+      "position": [
+        -6,
+        7
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 3000,
+        "material": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_sealed_a"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_sealed_a_decode",
+      "title": "Decode Sealed A",
+      "lore": "The door opens from the other side.",
+      "icon": "minecraft:recovery_compass",
+      "position": [
+        -6,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_sealed_a_signal"
+      ],
+      "cost": {
+        "computational": 6000,
+        "material": 4000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_sealed_a_decoded"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_sealed_b_signal",
+      "title": "Sealed Signal B",
+      "lore": "It moves every time you look away.",
+      "icon": "minecraft:chorus_fruit",
+      "position": [
+        9,
+        7
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 3000,
+        "arcane": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_sealed_b"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_sealed_b_decode",
+      "title": "Decode Sealed B",
+      "lore": "Hold still long enough and it holds still too.",
+      "icon": "minecraft:end_crystal",
+      "position": [
+        9,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_sealed_b_signal"
+      ],
+      "cost": {
+        "computational": 6000,
+        "arcane": 4000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_sealed_b_decoded"
+        }
+      ],
+      "hidden": true
+    }
+  ]
+}

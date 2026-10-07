@@ -1,0 +1,13 @@
+{
+  "flag": "space_rocketry",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_rocket",
+    "gtceu:assembler/continuum_probe",
+    "gtceu:assembler/continuum_repair_kit"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_rocket",
+    "phoenixcore:continuum_probe",
+    "phoenixcore:continuum_repair_kit"
+  ]
+}

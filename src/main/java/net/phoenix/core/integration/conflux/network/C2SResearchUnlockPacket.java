@@ -55,6 +55,9 @@ public class C2SResearchUnlockPacket {
             boolean success = researchData.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
+                // research can reveal Continuum bodies and systems
+                net.phoenix.core.integration.continuum.common.ContinuumServerEvents
+                        .sendStateToTeam(player.server, teamId);
 
                 String disciplineAfter = researchData.getDiscipline(teamId);
                 if (disciplineAfter != null && !disciplineAfter.equals(disciplineBefore)) {

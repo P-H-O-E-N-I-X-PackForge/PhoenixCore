@@ -116,8 +116,20 @@ public class WorldResearchData extends SavedData {
                              ResearchTerminalBlockEntity terminal,
                              ResearchTreeRegistry registry) {
         if (!node.canUnlock(getUnlocked(team), getLockedOut(team))) return false;
-        if (!terminal.trySpend(node.cost)) return false;
+        if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
+                !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
+                        .trySpend(team, node.cost)) {
+            return false;
+        }
 
+        applyUnlock(team, node, registry, terminal.getLevel() instanceof ServerLevel sl ? sl : null);
+        setDirty();
+        return true;
+    }
+
+    /** Marks a node unlocked and applies everything it grants, without charging for it. */
+    private void applyUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry,
+                             @Nullable ServerLevel level) {
         teamSet(unlocked, team).add(node.id);
 
         registry.getAllTrees().stream()
@@ -137,9 +149,9 @@ public class WorldResearchData extends SavedData {
                     if (machineId != null) teamSet(multiblocks, team).add(machineId);
                 }
                 case "world_stage" -> {
-                    if (terminal.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                    if (level != null) {
                         net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData progData = net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData
-                                .get(serverLevel);
+                                .get(level);
                         progData.unlockWorldStage(team, unlock.value());
                     }
                 }
@@ -152,9 +164,24 @@ public class WorldResearchData extends SavedData {
                     .filter(n -> !n.id.equals(node.id))
                     .forEach(n -> teamSet(lockedOut, team).add(n.id));
         }
+    }
 
+    /** DEV: unlocks a node and applies its effects without cost or prerequisites. */
+    public void devUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry, ServerLevel level) {
+        if (teamSet(unlocked, team).contains(node.id)) return;
+        applyUnlock(team, node, registry, level);
         setDirty();
-        return true;
+    }
+
+    /** DEV: forgets everything a team has researched. */
+    public void devReset(UUID team) {
+        unlocked.remove(team);
+        lockedOut.remove(team);
+        flags.remove(team);
+        multiblocks.remove(team);
+        discipline.remove(team);
+        committed.remove(team);
+        setDirty();
     }
 
     public boolean abandonDiscipline(UUID team, ResearchTerminalBlockEntity terminal,
@@ -170,7 +197,11 @@ public class WorldResearchData extends SavedData {
                 .orElse(null);
 
         if (tree != null && !tree.switchCost.isEmpty()) {
-            if (!terminal.trySpend(tree.switchCost)) return false;
+            if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
+                    !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
+                            .trySpend(team, tree.switchCost)) {
+                return false;
+            }
         }
 
         if (tree != null) {

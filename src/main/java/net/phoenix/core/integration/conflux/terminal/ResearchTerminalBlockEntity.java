@@ -3,6 +3,7 @@ package net.phoenix.core.integration.conflux.terminal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,18 +18,46 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ResearchTerminalBlockEntity extends BlockEntity {
 
-    public static final long CAPACITY_PER_TYPE = 1_000_000L;
+    public static final long CAPACITY_PER_TYPE = ConfluxDataStore.CAPACITY_PER_TYPE;
 
-    private final Map<ConfluxDataType, Long> stored = new EnumMap<>(ConfluxDataType.class);
+    /** The team whose data pool this terminal feeds. Set when placed or first used. */
+    private @Nullable UUID ownerTeam;
+    /** Data held by terminals from before data moved into {@link ConfluxDataStore}; moved over once owned. */
+    private final Map<ConfluxDataType, Long> legacy = new EnumMap<>(ConfluxDataType.class);
     private final LazyOptional<IConfluxMultiHandler> handlerOpt;
 
     public ResearchTerminalBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        for (ConfluxDataType dt : ConfluxDataType.values()) stored.put(dt, 0L);
         handlerOpt = LazyOptional.of(this::buildHandler);
+    }
+
+    public @Nullable UUID getOwnerTeam() {
+        return ownerTeam;
+    }
+
+    /** Takes ownership if nobody has it yet, and moves any legacy contents into the team's pool. */
+    public void adopt(UUID team) {
+        if (ownerTeam == null) {
+            ownerTeam = team;
+            setChanged();
+        }
+        migrateLegacy();
+    }
+
+    private void migrateLegacy() {
+        if (ownerTeam == null || legacy.isEmpty() || !(level instanceof ServerLevel server)) return;
+        ConfluxDataStore store = ConfluxDataStore.get(server);
+        legacy.forEach((type, amt) -> store.insert(ownerTeam, type, amt));
+        legacy.clear();
+        setChanged();
+    }
+
+    private @Nullable ConfluxDataStore store() {
+        return level instanceof ServerLevel server ? ConfluxDataStore.get(server) : null;
     }
 
     private IConfluxMultiHandler buildHandler() {
@@ -36,26 +65,22 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
 
             @Override
             public long insert(ConfluxDataType type, long amount) {
-                long have = stored.getOrDefault(type, 0L);
-                long accepted = Math.min(amount, CAPACITY_PER_TYPE - have);
-                if (accepted <= 0) return 0;
-                stored.put(type, have + accepted);
-                setChanged();
-                return accepted;
+                ConfluxDataStore store = store();
+                if (store == null || ownerTeam == null) return 0;
+                migrateLegacy();
+                return store.insert(ownerTeam, type, amount);
             }
 
             @Override
             public long extract(ConfluxDataType type, long amount) {
-                long have = stored.getOrDefault(type, 0L);
-                long given = Math.min(amount, have);
-                stored.put(type, have - given);
-                setChanged();
-                return given;
+                ConfluxDataStore store = store();
+                if (store == null || ownerTeam == null) return 0;
+                return store.extract(ownerTeam, type, amount);
             }
 
             @Override
             public long getStored(ConfluxDataType type) {
-                return stored.getOrDefault(type, 0L);
+                return ResearchTerminalBlockEntity.this.getStored(type);
             }
 
             @Override
@@ -65,23 +90,20 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
         };
     }
 
+    /** Server side only; the client reads its team's pool from the research sync instead. */
     public long getStored(ConfluxDataType type) {
-        return stored.getOrDefault(type, 0L);
+        ConfluxDataStore store = store();
+        return store == null || ownerTeam == null ? 0L : store.stored(ownerTeam, type);
     }
 
     public long getCapacity(ConfluxDataType type) {
         return CAPACITY_PER_TYPE;
     }
 
+    /** Spends from the owning team's pool. */
     public boolean trySpend(Map<ConfluxDataType, Long> costs) {
-        for (Map.Entry<ConfluxDataType, Long> e : costs.entrySet()) {
-            if (stored.getOrDefault(e.getKey(), 0L) < e.getValue()) return false;
-        }
-        for (Map.Entry<ConfluxDataType, Long> e : costs.entrySet()) {
-            stored.merge(e.getKey(), -e.getValue(), Long::sum);
-        }
-        setChanged();
-        return true;
+        ConfluxDataStore store = store();
+        return store != null && ownerTeam != null && store.trySpend(ownerTeam, costs);
     }
 
     @Override
@@ -99,18 +121,24 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        CompoundTag data = new CompoundTag();
-        stored.forEach((type, amt) -> data.putLong(type.id(), amt));
-        tag.put("data", data);
+        if (ownerTeam != null) tag.putUUID("owner", ownerTeam);
+        if (!legacy.isEmpty()) {
+            CompoundTag data = new CompoundTag();
+            legacy.forEach((type, amt) -> data.putLong(type.id(), amt));
+            tag.put("data", data);
+        }
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        if (tag.hasUUID("owner")) ownerTeam = tag.getUUID("owner");
+        legacy.clear();
         if (tag.contains("data")) {
             CompoundTag data = tag.getCompound("data");
             for (ConfluxDataType type : ConfluxDataType.values()) {
-                stored.put(type, data.getLong(type.id()));
+                long amt = data.getLong(type.id());
+                if (amt > 0) legacy.put(type, amt);
             }
         }
     }

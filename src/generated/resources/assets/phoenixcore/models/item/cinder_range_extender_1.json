@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/redstone"
+    "layer0": "phoenixcore:item/cinder_range_extender_1"
   }
 }

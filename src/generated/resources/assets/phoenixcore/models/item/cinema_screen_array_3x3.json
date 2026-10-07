@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "phoenixcore:item/cinder_loadout_expansion"
+    "layer0": "phoenixcore:item/cinema_screen_array_3x3"
   }
 }

@@ -27,11 +27,14 @@ public class S2CResearchSyncPacket {
     private final String disciplineTitle;
     private final boolean committed;
     private final Map<ConfluxDataType, Long> switchCost;
+    private final Map<ConfluxDataType, Long> data;
 
     public S2CResearchSyncPacket(Set<ResourceLocation> unlocked, Set<ResourceLocation> lockedOut,
                                  Set<String> flags, @Nullable String disciplineId,
                                  @Nullable String disciplineTitle, boolean committed,
-                                 Map<ConfluxDataType, Long> switchCost) {
+                                 Map<ConfluxDataType, Long> switchCost,
+                                 Map<ConfluxDataType, Long> data) {
+        this.data = data;
         this.unlocked = unlocked;
         this.lockedOut = lockedOut;
         this.flags = flags;
@@ -56,6 +59,12 @@ public class S2CResearchSyncPacket {
 
         buf.writeVarInt(pkt.switchCost.size());
         pkt.switchCost.forEach((type, amt) -> {
+            buf.writeUtf(type.id());
+            buf.writeVarLong(amt);
+        });
+
+        buf.writeVarInt(pkt.data.size());
+        pkt.data.forEach((type, amt) -> {
             buf.writeUtf(type.id());
             buf.writeVarLong(amt);
         });
@@ -87,7 +96,20 @@ public class S2CResearchSyncPacket {
             }
         }
 
-        return new S2CResearchSyncPacket(unlocked, lockedOut, flags, discId, discTitle, committed, switchCost);
+        int dataSize = buf.readVarInt();
+        Map<ConfluxDataType, Long> data = new EnumMap<>(ConfluxDataType.class);
+        for (int i = 0; i < dataSize; i++) {
+            String typeId = buf.readUtf();
+            long amt = buf.readVarLong();
+            for (ConfluxDataType t : ConfluxDataType.values()) {
+                if (t.id().equals(typeId)) {
+                    data.put(t, amt);
+                    break;
+                }
+            }
+        }
+
+        return new S2CResearchSyncPacket(unlocked, lockedOut, flags, discId, discTitle, committed, switchCost, data);
     }
 
     public static void handle(S2CResearchSyncPacket pkt, Supplier<NetworkEvent.Context> ctx) {
@@ -98,7 +120,7 @@ public class S2CResearchSyncPacket {
     @OnlyIn(Dist.CLIENT)
     private static void applyOnClient(S2CResearchSyncPacket pkt) {
         ClientResearchCache.update(pkt.unlocked, pkt.lockedOut, pkt.flags,
-                pkt.disciplineId, pkt.disciplineTitle, pkt.committed, pkt.switchCost);
+                pkt.disciplineId, pkt.disciplineTitle, pkt.committed, pkt.switchCost, pkt.data);
     }
 
     private static void writeRLSet(FriendlyByteBuf buf, Set<ResourceLocation> set) {

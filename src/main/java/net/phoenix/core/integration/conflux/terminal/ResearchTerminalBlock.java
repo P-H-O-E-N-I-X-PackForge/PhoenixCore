@@ -39,7 +39,22 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp &&
+                level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
+            terminal.adopt(net.phoenix.core.integration.conflux.research.ResearchTeamHelper.getTeamId(sp));
+        }
         return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            @Nullable net.minecraft.world.entity.LivingEntity placer,
+                            net.minecraft.world.item.ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (placer instanceof net.minecraft.server.level.ServerPlayer sp &&
+                level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
+            terminal.adopt(net.phoenix.core.integration.conflux.research.ResearchTeamHelper.getTeamId(sp));
+        }
     }
 
     @Override

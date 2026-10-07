@@ -377,7 +377,7 @@ public class ResearchTerminalScreen extends Screen {
             for (var entry : selected.cost.entrySet()) {
                 ConfluxDataType type = entry.getKey();
                 long cost = entry.getValue();
-                long have = terminal != null ? terminal.getStored(type) : 0L;
+                long have = terminal != null ? ClientResearchCache.dataStored(type) : 0L;
                 boolean met = have >= cost;
 
                 g.drawString(font, type.displayComponent(), x + 4, y, C_TEXT, false);
@@ -459,7 +459,7 @@ public class ResearchTerminalScreen extends Screen {
         int barY = textY + 11;
 
         for (ConfluxDataType type : available) {
-            long stored = terminal != null ? terminal.getStored(type) : 0L;
+            long stored = terminal != null ? ClientResearchCache.dataStored(type) : 0L;
             long capacity = terminal != null ? terminal.getCapacity(type) : 1_000_000L;
             int col = typeBarColor(type);
 
@@ -624,7 +624,7 @@ public class ResearchTerminalScreen extends Screen {
     private boolean costsAffordable(ResearchNode node) {
         if (terminal == null) return false;
         return node.cost.entrySet().stream()
-                .allMatch(e -> terminal.getStored(e.getKey()) >= e.getValue());
+                .allMatch(e -> ClientResearchCache.dataStored(e.getKey()) >= e.getValue());
     }
 
     public boolean hasTerminal() {

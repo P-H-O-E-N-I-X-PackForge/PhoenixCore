@@ -71,7 +71,8 @@ public final class ConfluxNetwork {
         CHANNEL.sendTo(
                 new S2CResearchSyncPacket(
                         data.getUnlocked(teamId), data.getLockedOut(teamId), data.getFlags(teamId),
-                        disc.disciplineId(), disc.disciplineTitle(), disc.committed(), disc.switchCost()),
+                        disc.disciplineId(), disc.disciplineTitle(), disc.committed(), disc.switchCost(),
+                        net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(level).snapshot(teamId)),
                 player.connection.connection,
                 NetworkDirection.PLAY_TO_CLIENT);
     }
