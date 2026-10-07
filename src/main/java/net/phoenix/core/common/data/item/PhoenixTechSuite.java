@@ -622,8 +622,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        double horizSpeed = cfg.creativeFreeSpeedMin
-                + (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
+        double horizSpeed = cfg.creativeFreeSpeedMin +
+                (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
 
         double vertSpeed = horizSpeed * verticalScale;
         double retention = getDriftRetention(cfg, driftMult);

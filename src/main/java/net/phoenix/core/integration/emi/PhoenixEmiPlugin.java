@@ -48,7 +48,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
 
     @Override
     public void register(EmiRegistry registry) {
-
         boolean fissionLoaded = ModList.get().isLoaded("phoenix_fission");
 
         registry.addCategory(FISSION_FUEL);

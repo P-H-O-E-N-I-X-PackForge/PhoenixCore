@@ -54,6 +54,7 @@ public class WingFlightScreen extends Screen {
     private int vw, vh;
 
     private record ClickRegion(int x, int y, int w, int h, Runnable action) {
+
         boolean contains(double px, double py) {
             return px >= x && px < x + w && py >= y && py < y + h;
         }

@@ -1,10 +1,14 @@
 package net.phoenix.core.utils;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
+import com.mojang.authlib.GameProfile;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public final class TeamUtils {
@@ -18,6 +22,20 @@ public final class TeamUtils {
         if (!FTB_TEAMS_LOADED) return playerUUID;
 
         return FTBTeamsCompat.getTeamIdOrPlayerFallback(playerUUID);
+    }
+
+    public static String resolvePlayerName(UUID playerUUID) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            ServerPlayer online = server.getPlayerList().getPlayer(playerUUID);
+            if (online != null) return online.getGameProfile().getName();
+
+            if (server.getProfileCache() != null) {
+                Optional<GameProfile> cached = server.getProfileCache().get(playerUUID);
+                if (cached.isPresent()) return cached.get().getName();
+            }
+        }
+        return "Player: " + playerUUID.toString().substring(0, 8);
     }
 
     public static String getTeamName(UUID teamId) {
