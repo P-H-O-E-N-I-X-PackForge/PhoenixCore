@@ -243,8 +243,10 @@ public class ContinuumMapScreen extends Screen {
         }
 
         drawTrails(graphics);
-        drawMissions(graphics, mouseX, mouseY);
-        drawLore(graphics);
+        if (!planner.isOpen()) {
+            drawMissions(graphics, mouseX, mouseY);
+            drawLore(graphics);
+        }
         drawChrome(graphics);
 
         if (planner.isOpen() && body != null) {
@@ -296,7 +298,8 @@ public class ContinuumMapScreen extends Screen {
     private void drawSystemScene(ContinuumSystem sys, Matrix4f view, Matrix4f projection) {
         Vector3f sun = new Vector3f();
         ContinuumBody central = centralBody(sys);
-        if (central == null && !sys.hasHole()) {
+        boolean centralIsStar = central != null && central.type() == ContinuumBody.Type.STAR;
+        if ((central == null && !sys.hasHole()) || centralIsStar) {
             SceneRenderer.drawStar(sys.starColor(), false, view, projection, sun, sys.starRadius(), quality());
         } else {
             SceneRenderer.drawStar(0, true, view, projection, sun, sys.starRadius(), quality());
@@ -321,10 +324,8 @@ public class ContinuumMapScreen extends Screen {
         Vector3f sun = new Vector3f(-60.0f, 25.0f, 40.0f);
         DiscoveryStage stage = ContinuumClientState.stage(b.id());
 
-        if (b.type() == ContinuumBody.Type.BLACK_HOLE) {
-            SceneRenderer.drawStar(0, true, view, projection, new Vector3f(), 1.2f, quality());
-            ContinuumSystem owner = ContinuumData.system(b.system());
-            SceneRenderer.drawBlackHole(view, projection, new Vector3f(), 1.2f, owner != null && owner.isQuasar());
+        if (SceneRenderer.drawCentralBody(b, view, projection, new Vector3f(), 1.2f, quality())) {
+            // a star or black hole: drawn above
         } else {
             PlanetParams params = stage == DiscoveryStage.SURVEYED ? b.params() : b.params().ghost();
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, sun,
@@ -551,7 +552,14 @@ public class ContinuumMapScreen extends Screen {
             if (system.isBlackHole()) glows.glow(star[0], star[1], starPx * 1.55f, 0xffb060, 0.25f);
 
             ContinuumBody central = centralBody(system);
-            if (central != null) picks.add(new Pick(system, central, star[0], star[1], Math.max(14.0f, starPx * 1.2f)));
+            if (central != null) {
+                picks.add(new Pick(system, central, star[0], star[1], Math.max(14.0f, starPx * 1.2f)));
+                DiscoveryStage centralStage = ContinuumClientState.stage(central.id());
+                if (centralStage != DiscoveryStage.UNKNOWN) {
+                    graphics.drawCenteredString(font, central.name(), (int) star[0], (int) (star[1] + starPx * 1.4f + 8),
+                            centralStage == DiscoveryStage.SURVEYED ? TITLE : DIM);
+                }
+            }
         }
 
         List<Object[]> labelled = new ArrayList<>();
@@ -607,7 +615,13 @@ public class ContinuumMapScreen extends Screen {
         float focal = focalPixels();
 
         float[] center = MapCamera.project(vp, new Vector3f(), width, height);
-        if (center != null && body.type() == ContinuumBody.Type.BLACK_HOLE) {
+        if (center != null && body.type() == ContinuumBody.Type.STAR) {
+            float px = 1.2f * focal / center[2];
+            ContinuumSystem owner = ContinuumData.system(body.system());
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            glows.glow(center[0], center[1], px * 3.2f, owner != null ? owner.starColor() : 0xffd9a0, 0.45f);
+            glows.draw();
+        } else if (center != null && body.type() == ContinuumBody.Type.BLACK_HOLE) {
             float px = 1.2f * focal / center[2];
             GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
             glows.glow(center[0], center[1], px * 2.8f, 0xff8a30, 0.2f);
@@ -642,7 +656,8 @@ public class ContinuumMapScreen extends Screen {
                     entry[2] == DiscoveryStage.SURVEYED ? TITLE : DIM);
         }
 
-        drawBodyPanel(graphics, body);
+        // while the planner is open it is the only panel: nothing else may draw over or show through it
+        if (!planner.isOpen()) drawBodyPanel(graphics, body);
     }
 
     // ------------------------------------------------------------------ panels
@@ -750,7 +765,8 @@ public class ContinuumMapScreen extends Screen {
             ty = wrapped(graphics, b.description(), x + 7, ty, inner, TEXT) + 4;
             ty = stat(graphics, "Orbit", b.isCentral() ? "-" : String.format("%.2f AU", b.orbitAu()), x + 7, ty);
             ty = stat(graphics, "Period", b.isCentral() ? "-" : String.format("%.0f days", b.periodDays()), x + 7, ty);
-            ty = stat(graphics, "Radius", String.format("%.2f (Earth = 1)", b.radius()), x + 7, ty);
+            ty = stat(graphics, "Radius", b.type() == ContinuumBody.Type.STAR ? "-" :
+                    String.format("%.2f (Earth = 1)", b.radius()), x + 7, ty);
             ty = stat(graphics, "Atmosphere", b.params().atmoDensity() > 0 ? "yes" : "none", x + 7, ty);
             ty = stat(graphics, "Axial tilt", String.format("%.0f deg", b.params().axialTiltDeg()), x + 7, ty);
         } else {
@@ -1103,15 +1119,17 @@ public class ContinuumMapScreen extends Screen {
         graphics.drawString(font, "CONTINUUM", 10, 8, TITLE);
         graphics.drawString(font, crumb, 10, 19, DIM);
 
-        if (level != Level.GALAXY) {
-            graphics.fill(width - 62, 8, width - 10, 22, 0xAA1a1830);
-            graphics.renderOutline(width - 62, 8, 52, 14, PANEL_LINE);
-            graphics.drawCenteredString(font, "< Back", width - 36, 11, TEXT);
+        if (!planner.isOpen()) {
+            if (level != Level.GALAXY) {
+                graphics.fill(width - 62, 8, width - 10, 22, 0xAA1a1830);
+                graphics.renderOutline(width - 62, 8, 52, 14, PANEL_LINE);
+                graphics.drawCenteredString(font, "< Back", width - 36, 11, TEXT);
+            }
+            int archiveX = level != Level.GALAXY ? width - 126 : width - 62;
+            graphics.fill(archiveX, 8, archiveX + 52, 22, 0xAA1a1830);
+            graphics.renderOutline(archiveX, 8, 52, 14, PANEL_LINE);
+            graphics.drawCenteredString(font, "Archive", archiveX + 26, 11, TEXT);
         }
-        int archiveX = level != Level.GALAXY ? width - 126 : width - 62;
-        graphics.fill(archiveX, 8, archiveX + 52, 22, 0xAA1a1830);
-        graphics.renderOutline(archiveX, 8, 52, 14, PANEL_LINE);
-        graphics.drawCenteredString(font, "Archive", archiveX + 26, 11, TEXT);
 
         String hint = "drag: rotate   scroll: zoom   click: open   right-click / Esc: back   [Q] quality: " +
                 quality().name().toLowerCase(Locale.ROOT) + "   [C] style: " +

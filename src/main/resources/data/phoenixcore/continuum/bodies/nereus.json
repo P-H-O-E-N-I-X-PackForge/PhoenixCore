@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:thalassa",
+  "type": "star",
+  "name": "Nereus",
+  "description": "A small teal star over bioluminescent worlds.",
+  "orbit": {
+    "radius_au": 0.0,
+    "period_days": 1,
+    "phase": 0.0
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 0,
+  "spin_deg_per_sec": 0,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 1.0,
+    "scale": 1.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.0,
+    "low": "#000000",
+    "mid": "#000000",
+    "high": "#000000",
+    "ocean_deep": "#000000",
+    "ocean_shallow": "#000000",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#000000",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_thalassa_bloom",
+    "surveyed_research": "phoenixcore:space_survey_spore"
+  },
+  "trip_minutes": 108,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:prismarine_crystals",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:sea_lantern",
+      "min": 1,
+      "max": 3,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:glow_ink_sac",
+      "min": 2,
+      "max": 5,
+      "chance": 0.6
+    }
+  ],
+  "lore": {
+    "detected": "A teal star, cool and steady, with a green edge to its spectrum.",
+    "surveyed": "Nereus is a small star that behaves like a lamp left on for someone. Its light is tuned to the colours the sea worlds around it glow in, and they glow brightest when it is lowest."
+  }
+}

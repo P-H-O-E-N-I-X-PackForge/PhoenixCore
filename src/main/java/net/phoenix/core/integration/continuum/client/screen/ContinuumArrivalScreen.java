@@ -97,7 +97,8 @@ public class ContinuumArrivalScreen extends Screen {
         }
         ContinuumBody destination = ContinuumData.body(mission.destination());
         boolean crash = failed(mission);
-        boolean hole = destination != null && destination.type() == ContinuumBody.Type.BLACK_HOLE;
+        boolean hole = destination != null && (destination.type() == ContinuumBody.Type.BLACK_HOLE ||
+                destination.type() == ContinuumBody.Type.STAR);
         float atmosphere = destination != null ? destination.params().atmoDensity() : 0.0f;
 
         // heat: builds as the air thickens, peaks mid-descent, bleeds off as the rocket slows
@@ -144,9 +145,8 @@ public class ContinuumArrivalScreen extends Screen {
 
         SceneRenderer.begin(target, spin);
         if (hole) {
-            SceneRenderer.drawStar(0, true, view, projection, new Vector3f(), 1.2f, net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality());
-            var owner = ContinuumData.system(destination.system());
-            SceneRenderer.drawBlackHole(view, projection, new Vector3f(), 1.2f, owner != null && owner.isQuasar());
+            SceneRenderer.drawCentralBody(destination, view, projection, new Vector3f(), 1.2f,
+                    net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality());
         } else {
             PlanetParams params = destination.params();
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, new Vector3f(-60.0f, 24.0f, 40.0f),

@@ -52,13 +52,15 @@ public record ContinuumBody(
 
         PLANET,
         MOON,
-        BLACK_HOLE;
+        BLACK_HOLE,
+        STAR;
 
         public String label() {
             return switch (this) {
                 case PLANET -> "Planet";
                 case MOON -> "Moon";
                 case BLACK_HOLE -> "Black hole";
+                case STAR -> "Star";
             };
         }
     }

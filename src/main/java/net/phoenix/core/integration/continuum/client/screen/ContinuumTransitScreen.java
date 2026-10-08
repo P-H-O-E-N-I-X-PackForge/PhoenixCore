@@ -140,10 +140,9 @@ public class ContinuumTransitScreen extends Screen {
         Matrix4f view = new Matrix4f().translate(0.0f, 0.0f, -distance).rotateX((float) Math.toRadians(9.0));
 
         SceneRenderer.begin(target, clock * 3.0f);
-        if (destination.type() == ContinuumBody.Type.BLACK_HOLE) {
-            SceneRenderer.drawStar(0, true, view, projection, new Vector3f(), 1.2f, net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality());
-            var owner = net.phoenix.core.integration.continuum.data.ContinuumData.system(destination.system());
-            SceneRenderer.drawBlackHole(view, projection, new Vector3f(), 1.2f, owner != null && owner.isQuasar());
+        if (SceneRenderer.drawCentralBody(destination, view, projection, new Vector3f(), 1.2f,
+                net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality())) {
+            // a star or black hole: drawn above
         } else {
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, new Vector3f(-60.0f, 24.0f, 40.0f),
                     clock * params.spinDegPerSec(), clock * params.cloudSpinDegPerSec(),

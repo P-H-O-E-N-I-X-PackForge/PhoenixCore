@@ -116,7 +116,7 @@ final class MissionPlannerPanel {
         g.fill(0, 0, screenW, screenH, 0xCC000000);
 
         // shrink to fit small windows and high GUI scales: lay everything out in a virtual space the panel fits
-        scale = Math.max(0.4f, Math.min(1.0f, Math.min((screenW - 12.0f) / W, (screenH - 12.0f) / H)));
+        scale = Math.max(0.35f, Math.min(1.0f, Math.min((screenW - 48.0f) / W, (screenH - 48.0f) / H)));
         int realMx = mx;
         int realMy = my;
         mx = Math.round(mx / scale);
@@ -145,8 +145,7 @@ final class MissionPlannerPanel {
         boolean deepSurvey = stage == DiscoveryStage.SURVEYED;
         boolean canSurvey = stage == DiscoveryStage.DETECTED || (deepSurvey && mapped < deposits);
         boolean canExtract = stage == DiscoveryStage.SURVEYED && producible;
-        boolean canDeploy = stage == DiscoveryStage.SURVEYED && producible && !body.isCentral() &&
-                body.type() != ContinuumBody.Type.BLACK_HOLE && existingProbes < cfg.maxProbesPerOutpost;
+        boolean canDeploy = stage == DiscoveryStage.SURVEYED && producible && existingProbes < cfg.maxProbesPerOutpost;
         boolean canHaul = outpost != null && ready > 0;
         boolean damaged = outpost != null && outpost.damaged();
         boolean canRepair = damaged;
@@ -214,6 +213,11 @@ final class MissionPlannerPanel {
         boolean hasRocket = !rocket.isEmpty();
         boolean refused = hasRocket && RocketStats.interlockRefuses(rocket);
 
+        // stars and black holes can only be worked with the matching shielding module fitted
+        String shield = RocketStats.requiredShield(body);
+        boolean needsShield = hasRocket && shield != null && mode != Mission.Type.SURVEY &&
+                RocketStats.level(rocket, shield) <= 0;
+
         if (!hasRocket) {
             ty = wrapped(g, font, "No rocket " + loaded + ".", x + 10, ty, 0xFFff9a9a) + 2;
         } else {
@@ -233,6 +237,12 @@ final class MissionPlannerPanel {
                         mode == Mission.Type.REPAIR ? "A failed run loses the repair kits." :
                                 "A failed run loses the probes.";
                 ty = wrapped(g, font, loss, x + 10, ty, 0xFFff9a9a) + 1;
+            }
+            if (needsShield) {
+                ty = wrapped(g, font, "Needs a " + RocketStats.shieldName(shield) +
+                        " fitted to the rocket to work this close.", x + 10, ty, 0xFFff9a9a) + 1;
+            } else if (shield != null && mode != Mission.Type.SURVEY) {
+                ty = wrapped(g, font, RocketStats.shieldName(shield) + " fitted.", x + 10, ty, MapUi.GOOD) + 1;
             }
             if (refused) {
                 ty = wrapped(g, font, "Hull interlock engaged: repair the rocket first.", x + 10, ty, 0xFFff9a9a) + 1;
@@ -278,7 +288,7 @@ final class MissionPlannerPanel {
 
         boolean enoughProbes = !carriesProbes || probesOwned >= 1;
         boolean enoughKits = mode != Mission.Type.REPAIR || kitsOwned >= kitsNeeded;
-        boolean launchable = hasRocket && !refused && enoughProbes && enoughKits &&
+        boolean launchable = hasRocket && !refused && !needsShield && enoughProbes && enoughKits &&
                 available(mode, canSurvey, canExtract, canDeploy, canHaul, canRepair);
         launchRect = button(g, font, x + 10, y + H - 26, 150, 18, "Launch", launchable, false, mx, my);
         cancelRect = button(g, font, x + 170, y + H - 26, 152, 18, "Cancel", true, false, mx, my);
@@ -291,7 +301,7 @@ final class MissionPlannerPanel {
                 new Mode(Mission.Type.EXTRACT, x + 170, y + 24, 152, canExtract, stage != DiscoveryStage.SURVEYED ?
                         "Survey this body first." : "There is nothing to extract here."),
                 new Mode(Mission.Type.DEPLOY, x + 10, y + 44, 150, canDeploy, stage != DiscoveryStage.SURVEYED ?
-                        "Survey this body first." : !producible || body.isCentral() ? "Nothing can be built here." :
+                        "Survey this body first." : !producible ? "Nothing can be built here." :
                                 "This outpost is already full."),
                 new Mode(Mission.Type.HAUL, x + 170, y + 44, 152, canHaul, outpost == null ?
                         "No outpost here yet. Deploy one first." : "Nothing is ready to haul yet."),

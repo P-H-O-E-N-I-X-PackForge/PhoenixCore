@@ -65,7 +65,16 @@ public class ContinuumRocketItem extends Item {
                 tooltip.add(Component.literal("Interlock engaged - repair needed").withStyle(ChatFormatting.RED));
             }
         }
-        if (overdrive == 0 && hull == 0 && !interlock) {
+        boolean stellar = RocketStats.level(stack, RocketStats.STELLAR_SHIELD) > 0;
+        boolean singularity = RocketStats.level(stack, RocketStats.SINGULARITY_SHIELD) > 0;
+        if (stellar) {
+            tooltip.add(Component.literal("Stellar Shielding: can work at stars").withStyle(ChatFormatting.AQUA));
+        }
+        if (singularity) {
+            tooltip.add(Component.literal("Singularity Shielding: can work at black holes")
+                    .withStyle(ChatFormatting.AQUA));
+        }
+        if (overdrive == 0 && hull == 0 && !interlock && !stellar && !singularity) {
             tooltip.add(Component.literal("No upgrades").withStyle(ChatFormatting.DARK_GRAY));
         }
     }

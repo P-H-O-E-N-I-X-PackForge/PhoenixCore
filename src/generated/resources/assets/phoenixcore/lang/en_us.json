@@ -599,6 +599,8 @@
   "item.phoenixcore.continuum_module_hull": "Reinforced Hull Plating",
   "item.phoenixcore.continuum_module_interlock": "Hull Interlock Module",
   "item.phoenixcore.continuum_module_overdrive": "Overdrive Module",
+  "item.phoenixcore.continuum_module_singularity_shield": "Singularity Shielding Module",
+  "item.phoenixcore.continuum_module_stellar_shield": "Stellar Shielding Module",
   "item.phoenixcore.continuum_probe": "Extraction Probe",
   "item.phoenixcore.continuum_repair_kit": "Rocket Repair Kit",
   "item.phoenixcore.continuum_rocket": "Continuum Rocket",

@@ -49,6 +49,20 @@ public final class ContinuumRegistry {
             .lang("Hull Interlock Module")
             .register();
 
+    public static final ItemEntry<ContinuumUpgradeItem> MODULE_STELLAR_SHIELD = REGISTRATE
+            .item("continuum_module_stellar_shield",
+                    p -> new ContinuumUpgradeItem(p, RocketStats.STELLAR_SHIELD, 1,
+                            "Lets the rocket extract from, and build outposts on, a star"))
+            .lang("Stellar Shielding Module")
+            .register();
+
+    public static final ItemEntry<ContinuumUpgradeItem> MODULE_SINGULARITY_SHIELD = REGISTRATE
+            .item("continuum_module_singularity_shield",
+                    p -> new ContinuumUpgradeItem(p, RocketStats.SINGULARITY_SHIELD, 1,
+                            "Lets the rocket extract from, and build outposts on, a black hole or quasar"))
+            .lang("Singularity Shielding Module")
+            .register();
+
     public static final ItemEntry<ContinuumRepairKitItem> REPAIR_KIT = REGISTRATE
             .item("continuum_repair_kit", ContinuumRepairKitItem::new)
             .lang("Rocket Repair Kit")

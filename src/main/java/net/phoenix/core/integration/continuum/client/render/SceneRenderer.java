@@ -157,6 +157,32 @@ public final class SceneRenderer {
                 (rgb & 0xFF) / 255.0f);
     }
 
+    /**
+     * Draws a system's central body (its star, or the black hole or quasar at its heart) at the origin of {@code view}.
+     *
+     * @return false if {@code body} is not a central body type, so the caller should draw it as a planet
+     */
+    public static boolean drawCentralBody(net.phoenix.core.integration.continuum.data.ContinuumBody body, Matrix4f view,
+                                          Matrix4f projection, Vector3f worldPos, float radius,
+                                          PlanetRenderer.Quality quality) {
+        var owner = net.phoenix.core.integration.continuum.data.ContinuumData.system(body.system());
+        switch (body.type()) {
+            case BLACK_HOLE -> {
+                drawStar(0, true, view, projection, worldPos, radius, quality);
+                drawBlackHole(view, projection, worldPos, radius, owner != null && owner.isQuasar());
+                return true;
+            }
+            case STAR -> {
+                drawStar(owner != null ? owner.starColor() : 0xffd9a0, false, view, projection, worldPos, radius,
+                        quality);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
     private static @Nullable VertexBuffer holeQuad;
 
     private static VertexBuffer holeQuad() {

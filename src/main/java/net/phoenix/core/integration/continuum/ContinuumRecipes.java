@@ -85,6 +85,28 @@ public final class ContinuumRecipes {
                 .duration(400).EUt(VA[EV])
                 .save(provider);
 
+        ASSEMBLER_RECIPES.recipeBuilder("continuum_module_stellar_shield")
+                .inputItems(plate, TungstenSteel, 6)
+                .inputItems(plate, Titanium, 4)
+                .inputItems(SENSOR_IV, 2)
+                .inputItems(EMITTER_IV, 2)
+                .inputItems(CustomTags.IV_CIRCUITS, 4)
+                .inputFluids(SolderingAlloy, 288)
+                .outputItems(ContinuumRegistry.MODULE_STELLAR_SHIELD)
+                .duration(600).EUt(VA[IV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("continuum_module_singularity_shield")
+                .inputItems(plate, Iridium, 6)
+                .inputItems(plate, TungstenSteel, 4)
+                .inputItems(SENSOR_LuV, 2)
+                .inputItems(EMITTER_LuV, 2)
+                .inputItems(CustomTags.LuV_CIRCUITS, 4)
+                .inputFluids(SolderingAlloy, 576)
+                .outputItems(ContinuumRegistry.MODULE_SINGULARITY_SHIELD)
+                .duration(800).EUt(VA[LuV])
+                .save(provider);
+
         ASSEMBLER_RECIPES.recipeBuilder("continuum_launch_complex")
                 .inputItems(GTMachines.HULL[EV].asStack())
                 .inputItems(CASING_STEEL_SOLID, 8)

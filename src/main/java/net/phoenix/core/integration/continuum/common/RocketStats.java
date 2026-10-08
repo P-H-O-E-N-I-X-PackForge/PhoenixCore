@@ -26,6 +26,10 @@ public final class RocketStats {
     public static final String HULL_INTERLOCK = "hull_interlock";
     public static final String OVERDRIVE = "overdrive";
     public static final String REINFORCED_HULL = "reinforced_hull";
+    /** Lets the rocket fly close enough to a star to extract from it and build outposts on it. */
+    public static final String STELLAR_SHIELD = "stellar_shield";
+    /** The same for a black hole or quasar core. */
+    public static final String SINGULARITY_SHIELD = "singularity_shield";
 
     private static final String TAG_WEAR = "Wear";
     private static final String TAG_UPGRADES = "Upgrades";
@@ -77,7 +81,27 @@ public final class RocketStats {
     }
 
     public static boolean isKnownUpgrade(String id) {
-        return HULL_INTERLOCK.equals(id) || OVERDRIVE.equals(id) || REINFORCED_HULL.equals(id);
+        return HULL_INTERLOCK.equals(id) || OVERDRIVE.equals(id) || REINFORCED_HULL.equals(id) ||
+                STELLAR_SHIELD.equals(id) || SINGULARITY_SHIELD.equals(id);
+    }
+
+    /** The shielding upgrade a rocket needs to work at this body (anything but observing), or null for none. */
+    public static @org.jetbrains.annotations.Nullable String requiredShield(ContinuumBody body) {
+        return switch (body.type()) {
+            case STAR -> STELLAR_SHIELD;
+            case BLACK_HOLE -> SINGULARITY_SHIELD;
+            default -> null;
+        };
+    }
+
+    public static String shieldName(String upgrade) {
+        return SINGULARITY_SHIELD.equals(upgrade) ? "Singularity Shielding Module" : "Stellar Shielding Module";
+    }
+
+    /** True if the rocket is fitted for working at this body (or no shield is needed). */
+    public static boolean shieldedFor(ItemStack rocket, ContinuumBody body) {
+        String shield = requiredShield(body);
+        return shield == null || level(rocket, shield) > 0;
     }
 
     /** True if this rocket will not launch: it carries the interlock and is worn past the threshold. */

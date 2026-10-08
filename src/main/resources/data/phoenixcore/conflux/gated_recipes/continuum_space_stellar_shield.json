@@ -1,0 +1,9 @@
+{
+  "flag": "space_stellar_shield",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_module_stellar_shield"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_module_stellar_shield"
+  ]
+}

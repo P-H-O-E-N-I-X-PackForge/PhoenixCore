@@ -41,6 +41,12 @@
   "initial_stage": "unknown",
   "yields": [
     {
+      "item": "minecraft:crying_obsidian",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
       "item": "minecraft:ender_eye",
       "min": 1,
       "max": 1,

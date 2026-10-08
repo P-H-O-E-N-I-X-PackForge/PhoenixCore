@@ -575,6 +575,56 @@
           "value": "space_pharos_surveyed"
         }
       ]
+    },
+    {
+      "id": "phoenixcore:space_stellar_shielding",
+      "title": "Stellar Shielding",
+      "lore": "Fly close enough to a star to take something from it.",
+      "icon": "minecraft:magma_block",
+      "position": [
+        -5,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_hull_engineering"
+      ],
+      "cost": {
+        "material": 2000,
+        "energetic": 1500,
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_stellar_shield"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_singularity_shielding",
+      "title": "Singularity Shielding",
+      "lore": "Nothing survives the horizon. The hull only has to survive the approach.",
+      "icon": "minecraft:crying_obsidian",
+      "position": [
+        -5,
+        8
+      ],
+      "prerequisites": [
+        "phoenixcore:space_stellar_shielding",
+        "phoenixcore:space_tenebrae_lensing"
+      ],
+      "cost": {
+        "material": 4000,
+        "energetic": 3000,
+        "arcane": 1500,
+        "computational": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_singularity_shield"
+        }
+      ]
     }
   ]
 }

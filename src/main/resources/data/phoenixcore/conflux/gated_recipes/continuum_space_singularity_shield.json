@@ -1,0 +1,9 @@
+{
+  "flag": "space_singularity_shield",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_module_singularity_shield"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_module_singularity_shield"
+  ]
+}

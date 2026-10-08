@@ -226,9 +226,7 @@ public final class ContinuumMissions {
             }
             case DEPLOY -> {
                 if (stage != DiscoveryStage.SURVEYED) return "Outposts can only be built on a surveyed body.";
-                if (body.yields().isEmpty() || body.isCentral() || body.type() == ContinuumBody.Type.BLACK_HOLE) {
-                    return "Nothing can be built there.";
-                }
+                if (body.yields().isEmpty()) return "Nothing can be built there.";
                 Outpost existing = data.outpost(team, destinationId);
                 int room = cfg.maxProbesPerOutpost - (existing == null ? 0 : existing.probes());
                 if (room <= 0) return "That outpost is already full.";
@@ -265,6 +263,12 @@ public final class ContinuumMissions {
 
         ItemStack rocket = stock.peekRocket();
         if (rocket.isEmpty()) return "You need a rocket " + stock.place() + ".";
+        // working close to a star or a black hole takes shielding (merely observing it does not)
+        String shield = RocketStats.requiredShield(body);
+        if (shield != null && type != Mission.Type.SURVEY && RocketStats.level(rocket, shield) <= 0) {
+            return "The rocket cannot work that close to " + body.name() + ". Fit a " + RocketStats.shieldName(shield) +
+                    " (use it with the rocket in your other hand).";
+        }
         if (RocketStats.interlockRefuses(rocket)) {
             return "Hull interlock engaged: the rocket is too worn to launch. Repair it first.";
         }
