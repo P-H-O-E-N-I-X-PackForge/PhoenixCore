@@ -52,5 +52,9 @@
       "max": 8,
       "chance": 0.8
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A gas giant, banded, with a storm system wide enough to eclipse the sun for a day at a time.",
+    "surveyed": "The storm bands do not drift. They hold their positions like lines on a page, and the pressure readings under them repeat every nineteen minutes."
+  }
 }

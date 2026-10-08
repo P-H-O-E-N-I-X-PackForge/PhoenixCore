@@ -43,6 +43,7 @@ public final class ContinuumMachines {
                     Component.literal("§7Use the controller to open the map and launch."),
                     Component.literal("§7Its tier is the best energy input hatch it has; farther bodies need a higher"),
                     Component.literal("§7tier, and every launch draws power from the hatches."),
+                    Component.literal("§7Rockets, probes and repair kits are taken from its item input buses."),
                     Component.literal("§7Keep the 1x1 shaft in the middle of the gantry clear for the rocket."))
             .pattern(definition -> buildPattern(definition))
             .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_solid_steel"),
@@ -63,7 +64,8 @@ public final class ContinuumMachines {
                 .where('B', casing)
                 .where('H', Predicates.blocks(GTBlocks.CASING_STEEL_SOLID.get())
                         .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1)
-                                .setMaxGlobalLimited(2)))
+                                .setMaxGlobalLimited(2))
+                        .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(4)))
                 .where('F', frame)
                 .where('A', Predicates.air())
                 .build();

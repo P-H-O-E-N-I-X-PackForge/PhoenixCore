@@ -21,11 +21,15 @@ public final class ContinuumShaders {
     public static ShaderInstance PLANET;
     public static ShaderInstance ATMOSPHERE;
     public static ShaderInstance GLOW;
+    public static ShaderInstance BACKDROP;
+    public static ShaderInstance BLACKHOLE;
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         register(event, "phoenixcore:continuum_planet", DefaultVertexFormat.POSITION, s -> PLANET = s);
         register(event, "phoenixcore:continuum_atmosphere", DefaultVertexFormat.POSITION, s -> ATMOSPHERE = s);
         register(event, "phoenixcore:continuum_glow", DefaultVertexFormat.POSITION_TEX_COLOR, s -> GLOW = s);
+        register(event, "phoenixcore:continuum_backdrop", DefaultVertexFormat.POSITION, s -> BACKDROP = s);
+        register(event, "phoenixcore:continuum_blackhole", DefaultVertexFormat.POSITION, s -> BLACKHOLE = s);
     }
 
     private static void register(RegisterShadersEvent event, String name, VertexFormat format,

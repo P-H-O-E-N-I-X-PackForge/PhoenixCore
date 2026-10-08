@@ -52,5 +52,9 @@
       "max": 1,
       "chance": 0.1
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A pale return from beyond the gas giant: cold, quiet, and reflecting more light than it should.",
+    "surveyed": "Rime is ice over rock over something warm. The surface sings faintly in the wind, one long note, and the note has not changed since the first survey."
+  }
 }

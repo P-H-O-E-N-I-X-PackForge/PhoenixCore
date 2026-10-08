@@ -15,6 +15,12 @@ public enum DiscoveryStage {
     /** Fully revealed. */
     SURVEYED;
 
+    /** "Unknown", "Detected" or "Surveyed". */
+    public String label() {
+        String name = name();
+        return name.charAt(0) + name.substring(1).toLowerCase(Locale.ROOT);
+    }
+
     public DiscoveryStage next() {
         return values()[(ordinal() + 1) % values().length];
     }

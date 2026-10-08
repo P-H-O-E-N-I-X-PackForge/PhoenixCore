@@ -28,6 +28,8 @@ public class ContinuumTeamData extends SavedData {
     private final Map<UUID, Map<ResourceLocation, DiscoveryStage>> stages = new HashMap<>();
     private final Map<UUID, List<Mission>> missions = new HashMap<>();
     private final Map<UUID, Map<ResourceLocation, Outpost>> outposts = new HashMap<>();
+    /** How many of a body's deposits each team has mapped, by body. */
+    private final Map<UUID, Map<ResourceLocation, Integer>> depths = new HashMap<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(ContinuumTeamData::load, ContinuumTeamData::new, ID);
@@ -111,6 +113,29 @@ public class ContinuumTeamData extends SavedData {
 
     public void resetDiscovery(UUID team) {
         stages.remove(team);
+        depths.remove(team);
+        setDirty();
+    }
+
+    // ---------------- survey depth ----------------
+
+    /** How many deposits of this body the team has mapped. */
+    public int depth(UUID team, ResourceLocation body) {
+        return depths.getOrDefault(team, Map.of()).getOrDefault(body, 0);
+    }
+
+    /** Maps the next unmapped deposit. Returns false if they are all mapped already. */
+    public boolean revealDeposit(UUID team, ResourceLocation body, int total) {
+        int current = depth(team, body);
+        if (current >= total) return false;
+        depths.computeIfAbsent(team, t -> new HashMap<>()).put(body, current + 1);
+        setDirty();
+        return true;
+    }
+
+    /** Admin: sets how many deposits of a body are mapped. */
+    public void setDepth(UUID team, ResourceLocation body, int depth) {
+        depths.computeIfAbsent(team, t -> new HashMap<>()).put(body, Math.max(0, depth));
         setDirty();
     }
 
@@ -171,15 +196,27 @@ public class ContinuumTeamData extends SavedData {
      * Banks the cycles every outpost has finished, charging each team's upkeep to its Tesla Network pool. Cheap enough
      * to call on every snapshot, and run once a minute so the power drains steadily rather than in lumps.
      */
-    public void settleOutposts(MinecraftServer server, long now) {
+    public java.util.Set<UUID> settleOutposts(MinecraftServer server, long now) {
         long cycleMillis = RocketStats.outpostCycleMillis();
         int maxReady = RocketStats.outpostMaxReady();
+        java.util.Set<UUID> newlyDamaged = new java.util.HashSet<>();
 
         for (var team : outposts.entrySet()) {
             Outpost.CyclePayer payer = OutpostPower.payerFor(server, team.getKey());
-            for (Outpost outpost : team.getValue().values()) outpost.settle(now, cycleMillis, maxReady, payer);
+            for (var entry : team.getValue().entrySet()) {
+                if (!entry.getValue().settle(now, cycleMillis, maxReady, payer)) continue;
+
+                newlyDamaged.add(team.getKey());
+                ContinuumBody body = ContinuumData.body(entry.getKey());
+                String name = body != null ? body.name() : entry.getKey().getPath();
+                ContinuumMissions.notifyTeam(server, team.getKey(), net.minecraft.network.chat.Component
+                        .literal("The outpost on " + name + " has been damaged and stopped producing. " +
+                                "Fly a repair run to fix it.")
+                        .withStyle(net.minecraft.ChatFormatting.RED));
+            }
         }
         setDirty();
+        return newlyDamaged;
     }
 
     // ---------------- persistence ----------------
@@ -222,6 +259,22 @@ public class ContinuumTeamData extends SavedData {
             outpostTeams.add(teamTag);
         }
         tag.put("OutpostTeams", outpostTeams);
+
+        ListTag depthTeams = new ListTag();
+        for (var team : depths.entrySet()) {
+            CompoundTag teamTag = new CompoundTag();
+            teamTag.putUUID("Team", team.getKey());
+            ListTag list = new ListTag();
+            for (var entry : team.getValue().entrySet()) {
+                CompoundTag e = new CompoundTag();
+                e.putString("Body", entry.getKey().toString());
+                e.putInt("Depth", entry.getValue());
+                list.add(e);
+            }
+            teamTag.put("Depths", list);
+            depthTeams.add(teamTag);
+        }
+        tag.put("DepthTeams", depthTeams);
         return tag;
     }
 
@@ -252,6 +305,16 @@ public class ContinuumTeamData extends SavedData {
                 map.put(new ResourceLocation(e.getString("Body")), Outpost.load(e));
             }
             data.outposts.put(teamTag.getUUID("Team"), map);
+        }
+
+        for (Tag t : tag.getList("DepthTeams", Tag.TAG_COMPOUND)) {
+            CompoundTag teamTag = (CompoundTag) t;
+            Map<ResourceLocation, Integer> map = new HashMap<>();
+            for (Tag d : teamTag.getList("Depths", Tag.TAG_COMPOUND)) {
+                CompoundTag e = (CompoundTag) d;
+                map.put(new ResourceLocation(e.getString("Body")), e.getInt("Depth"));
+            }
+            data.depths.put(teamTag.getUUID("Team"), map);
         }
         return data;
     }

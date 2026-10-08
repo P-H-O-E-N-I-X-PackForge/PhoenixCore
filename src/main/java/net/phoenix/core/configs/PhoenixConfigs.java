@@ -47,6 +47,36 @@ public class PhoenixConfigs {
     /** Continuum space missions: pacing, rocket wear and the launch pad. */
     public static class ContinuumConfigs {
 
+        public enum RenderQuality {
+            LOW,
+            MEDIUM,
+            HIGH
+        }
+
+        public enum PlanetStyle {
+            SPHERE,
+            CUBE
+        }
+
+        @Configurable
+        @Configurable.Comment({
+                "Visual quality of the Continuum space views (this client only). LOW uses far fewer mesh",
+                "triangles, fewer noise layers and a simpler backdrop, for weaker GPUs. Pressing Q on the map",
+                "changes it for that session without touching this setting.",
+                "Default: MEDIUM"
+        })
+        public RenderQuality renderQuality = RenderQuality.MEDIUM;
+
+        @Configurable
+        @Configurable.Comment({
+                "How planets and moons are drawn. SPHERE is the smooth shaded globe. CUBE draws every world as a",
+                "blocky cube whose surface is built from chunky square cells (8 / 12 / 16 per face at",
+                "LOW / MEDIUM / HIGH), for a more Minecraft look. Stars and black holes stay round.",
+                "Pressing C on the map flips it for that session.",
+                "Default: SPHERE"
+        })
+        public PlanetStyle planetStyle = PlanetStyle.SPHERE;
+
         @Configurable
         @Configurable.Comment({
                 "Scales every mission's real-time length. 1.0 = the trip times in the body definitions",
@@ -99,6 +129,41 @@ public class PhoenixConfigs {
         })
         @Configurable.Range(min = 1, max = 100000)
         public int outpostMaxStoredCycles = 144;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a successful survey turns up an anomaly: a surface cache of resources, a vein",
+                "signature that maps another deposit, or (rarely) ancient ruins with a large cache.",
+                "Default: 0.25"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double surveyAnomalyChance = 0.25;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a mission has a random event on the way (solar flare, micrometeoroids, a tailwind,",
+                "a derelict cache, a signal echo). At most one per mission, revealed when it lands. 0 turns events",
+                "off. Default: 0.3"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double missionEventChance = 0.3;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance, per finished production cycle, that something breaks an outpost. A broken outpost",
+                "stops producing (and stops costing upkeep) until a repair run fixes it; what it had already",
+                "stockpiled is kept. 0 turns incidents off. Default: 0.05 (about once per 3 hours of 10 min cycles)"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double outpostIncidentChance = 0.05;
+
+        @Configurable
+        @Configurable.Comment({
+                "Repair kits a repair run uses up (they are taken from the launching player's inventory).",
+                "Default: 1"
+        })
+        @Configurable.Range(min = 1, max = 16)
+        public int outpostRepairKits = 1;
 
         @Configurable
         @Configurable.Comment({

@@ -1,5 +1,5 @@
 {
-  "system": "phoenixcore:void",
+  "system": "phoenixcore:tenebrae",
   "type": "planet",
   "name": "Umbra",
   "description": "A rogue rock near the black hole, light bending around it.",
@@ -34,7 +34,7 @@
   },
   "gate": {
     "min_tier": "late",
-    "detected_research": "phoenixcore:space_void_lensing",
+    "detected_research": "phoenixcore:space_tenebrae_lensing",
     "surveyed_research": "phoenixcore:space_survey_umbra"
   },
   "trip_minutes": 80,
@@ -52,5 +52,9 @@
       "max": 1,
       "chance": 0.15
     }
-  ]
+  ],
+  "lore": {
+    "detected": "Light bends around it. Something is there, and it does not shine, and it is in orbit around nothing we can see.",
+    "surveyed": "Umbra is a rogue rock caught by the dark. The black hole pulls on it every orbit and it has never once moved off course, as if it has been steering."
+  }
 }

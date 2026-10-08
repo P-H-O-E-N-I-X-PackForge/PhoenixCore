@@ -1,0 +1,60 @@
+{
+  "system": "phoenixcore:pharos",
+  "type": "planet",
+  "name": "Halogen",
+  "description": "A gas giant lit white-blue from the side, its bands streaked by the jet.",
+  "orbit": {
+    "radius_au": 3.4,
+    "period_days": 1400,
+    "phase": 0.45
+  },
+  "radius": 7.0,
+  "gas_giant": true,
+  "axial_tilt": 3,
+  "spin_deg_per_sec": 9,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 67,
+    "scale": 5.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#6a8ac0",
+    "mid": "#c9dcf5",
+    "high": "#ffffff",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#9fd0ff",
+    "density": 0.5
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_pharos_signal",
+    "surveyed_research": "phoenixcore:space_pharos_survey"
+  },
+  "trip_minutes": 114,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:prismarine_crystals",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 6,
+      "max": 12,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "A bright band in the quasar glare, a gas giant painted blue-white from the side.",
+    "surveyed": "Halogen is lit by the jet. Its upper bands streak where the beam crosses them, and the lower bands are dark and cold and absolutely still."
+  }
+}

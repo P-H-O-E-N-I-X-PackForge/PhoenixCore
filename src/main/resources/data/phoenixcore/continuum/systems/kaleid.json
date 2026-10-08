@@ -1,5 +1,5 @@
 {
-  "name": "Sealed B",
+  "name": "Kaleid",
   "description": "A signal that does not hold still.",
   "galaxy": [
     7.5,
@@ -11,7 +11,7 @@
   "star_kind": "star",
   "initial_stage": "unknown",
   "gate": {
-    "detected_research": "phoenixcore:space_sealed_b_signal",
-    "surveyed_research": "phoenixcore:space_sealed_b_decode"
+    "detected_research": "phoenixcore:space_kaleid_signal",
+    "surveyed_research": "phoenixcore:space_kaleid_decode"
   }
 }

@@ -48,6 +48,9 @@ public final class SceneTarget implements AutoCloseable {
     public void blit(GuiGraphics graphics, int guiWidth, int guiHeight) {
         if (target == null) return;
 
+        // an opaque base so nothing behind the screen can ever show through a gap
+        graphics.fill(0, 0, guiWidth, guiHeight, 0xFF05060f);
+
         RenderSystem.disableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, target.getColorTextureId());
@@ -56,10 +59,11 @@ public final class SceneTarget implements AutoCloseable {
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         // a framebuffer texture is upside down relative to the GUI
-        bb.vertex(pose, 0, guiHeight, 0).uv(0, 0).endVertex();
-        bb.vertex(pose, guiWidth, guiHeight, 0).uv(1, 0).endVertex();
-        bb.vertex(pose, guiWidth, 0, 0).uv(1, 1).endVertex();
-        bb.vertex(pose, 0, 0, 0).uv(0, 1).endVertex();
+        // one pixel of overscan on every side so rounding never leaves a seam
+        bb.vertex(pose, -1, guiHeight + 1, 0).uv(0, 0).endVertex();
+        bb.vertex(pose, guiWidth + 1, guiHeight + 1, 0).uv(1, 0).endVertex();
+        bb.vertex(pose, guiWidth + 1, -1, 0).uv(1, 1).endVertex();
+        bb.vertex(pose, -1, -1, 0).uv(0, 1).endVertex();
         BufferUploader.drawWithShader(bb.end());
         RenderSystem.enableBlend();
     }

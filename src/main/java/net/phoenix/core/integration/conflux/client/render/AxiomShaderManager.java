@@ -4,18 +4,66 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.resources.ResourceLocation;
+import net.phoenix.core.mixin.accessor.GameRendererAccessor;
 import net.phoenix.core.mixin.accessor.PostChainAccessor;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class AxiomShaderManager {
 
     private static @Nullable ResourceLocation activeLocation = null;
     private static float elapsed = 0f;
 
+    /**
+     * Post chains kept loaded while the terminal is open. Building one parses its JSON and compiles its programs, which
+     * used to happen on every switch between tree tabs and froze the game for a moment; now each is built once (and
+     * {@link #preload} spreads those builds over frames) and switching just swaps which one is current.
+     */
+    private static final Map<ResourceLocation, PostChain> CHAINS = new HashMap<>();
+    private static @Nullable Object chainsOwner;
+
     private AxiomShaderManager() {}
+
+    private static void checkOwner() {
+        Object owner = Minecraft.getInstance().getResourceManager();
+        if (chainsOwner != owner) {
+            // resources were reloaded: the old chains are stale
+            release();
+            chainsOwner = owner;
+        }
+    }
+
+    /** Builds a chain ahead of time, without making it current. Returns whether it is (now) ready. */
+    public static boolean preload(ResourceLocation location) {
+        checkOwner();
+        if (CHAINS.containsKey(location)) return true;
+        Minecraft mc = Minecraft.getInstance();
+        try {
+            CHAINS.put(location, new PostChain(mc.getTextureManager(), mc.getResourceManager(),
+                    mc.getMainRenderTarget(), location));
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            // creating render targets unbinds the main one; mid-frame that sends the rest of the GUI nowhere
+            mc.getMainRenderTarget().bindWrite(true);
+        }
+    }
+
+    /** Closes every kept chain; call when the terminal closes. */
+    public static void release() {
+        deactivate();
+        CHAINS.values().forEach(chain -> {
+            try {
+                chain.close();
+            } catch (Exception ignored) {}
+        });
+        CHAINS.clear();
+    }
 
     public static void activate(@Nullable ResourceLocation location) {
         if (location == null) {
@@ -25,13 +73,19 @@ public final class AxiomShaderManager {
         if (location.equals(activeLocation)) return;
 
         Minecraft mc = Minecraft.getInstance();
-        try {
-            mc.gameRenderer.loadEffect(location);
-            activeLocation = location;
-            elapsed = 0f;
-        } catch (Exception e) {
+        if (!preload(location)) {
             activeLocation = null;
+            return;
         }
+        PostChain chain = CHAINS.get(location);
+        chain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
+        mc.getMainRenderTarget().bindWrite(true);
+
+        GameRendererAccessor renderer = (GameRendererAccessor) mc.gameRenderer;
+        renderer.phoenix$setPostEffect(chain);
+        renderer.phoenix$setEffectActive(true);
+        activeLocation = location;
+        elapsed = 0f;
     }
 
     public static void tick(float dt) {
@@ -129,9 +183,10 @@ public final class AxiomShaderManager {
 
     public static void deactivate() {
         if (activeLocation == null) return;
-        try {
-            Minecraft.getInstance().gameRenderer.shutdownEffect();
-        } catch (Exception ignored) {}
+        // detach without closing: the chain stays in the cache for the next tab
+        GameRendererAccessor renderer = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
+        renderer.phoenix$setEffectActive(false);
+        renderer.phoenix$setPostEffect(null);
         activeLocation = null;
     }
 

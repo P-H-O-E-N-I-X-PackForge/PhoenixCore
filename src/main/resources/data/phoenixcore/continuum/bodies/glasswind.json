@@ -1,5 +1,5 @@
 {
-  "system": "phoenixcore:phoenix",
+  "system": "phoenixcore:aurelian",
   "type": "planet",
   "name": "Glasswind",
   "description": "Dunes of fused glass that throw the star back at you.",
@@ -34,7 +34,7 @@
   },
   "gate": {
     "min_tier": "mid",
-    "detected_research": "phoenixcore:space_phoenix_signals",
+    "detected_research": "phoenixcore:space_aurelian_signals",
     "surveyed_research": "phoenixcore:space_survey_glasswind"
   },
   "trip_minutes": 55,
@@ -52,5 +52,9 @@
       "max": 10,
       "chance": 0.6
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A bright smear in the infrared, flat and wide. Whatever it is, it is throwing starlight back at us.",
+    "surveyed": "Glasswind is dunes of fused glass. Every ridge was a wave once, frozen mid-curl. The wind that shaped them is still here and still carrying sand."
+  }
 }

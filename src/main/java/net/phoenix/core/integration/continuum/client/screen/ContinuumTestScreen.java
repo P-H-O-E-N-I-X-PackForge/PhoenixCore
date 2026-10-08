@@ -36,7 +36,7 @@ public class ContinuumTestScreen extends Screen {
     private int targetHeight = -1;
 
     private int presetIndex = 0;
-    private PlanetRenderer.Quality quality = PlanetRenderer.Quality.MEDIUM;
+    private PlanetRenderer.Quality quality = net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality();
 
     private float yaw = 0.0f;
     private float pitch = 12.0f;

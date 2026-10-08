@@ -15,6 +15,7 @@ uniform float CloudOffset;    // radians, spins the cloud shell independently of
 uniform float Bump;           // relief strength
 uniform float Kind;           // 0 = terrestrial, 1 = gas giant, 2 = star (self-lit)
 uniform float Octaves;
+uniform float Voxel;          // 0 = smooth sphere; otherwise square cells per cube face
 uniform vec3  PalLow;
 uniform vec3  PalMid;
 uniform vec3  PalHigh;
@@ -69,8 +70,32 @@ vec3 ramp(float t) {
 }
 
 void main() {
-    vec3 dir = normalize(vDir);
-    vec3 geoNormal = normalize(vNormalView);
+    bool cube = Voxel > 0.5;
+    vec3 cubeNormal = vec3(0.0);
+    float cellEdge = 1.0;
+    float cellJitter = 1.0;
+    vec3 dir;
+    vec3 geoNormal;
+    if (cube) {
+        // the mesh is a cube: snap the position to the centre of its square cell and sample the terrain there,
+        // and light the face flat, so the planet reads as blocks
+        vec3 a = abs(vDir);
+        cubeNormal = (a.x >= a.y && a.x >= a.z) ? vec3(sign(vDir.x), 0.0, 0.0) :
+                (a.y >= a.z ? vec3(0.0, sign(vDir.y), 0.0) : vec3(0.0, 0.0, sign(vDir.z)));
+        float halfCells = Voxel * 0.5;
+        vec3 scaled = vDir * 0.9999 * halfCells;
+        vec3 cell = (floor(scaled) + 0.5) / halfCells;
+        dir = normalize(cell);
+        geoNormal = normalize(vRot * cubeNormal);
+
+        vec3 f = fract(scaled);
+        vec3 edgeDist = min(f, 1.0 - f) + step(0.5, abs(cubeNormal)) * 10.0;
+        cellEdge = 1.0 - 0.22 * (1.0 - smoothstep(0.0, 0.09, min(edgeDist.x, min(edgeDist.y, edgeDist.z))));
+        cellJitter = 0.93 + 0.14 * hash(cell * 7.31 + vec3(Seed));
+    } else {
+        dir = normalize(vDir);
+        geoNormal = normalize(vNormalView);
+    }
     vec3 viewDir = normalize(-vPosView);
     vec3 sun = normalize(SunDir);
 
@@ -79,6 +104,7 @@ void main() {
         float granule = fbm(dir * 6.0 + vec3(Time * 0.05, Seed, 0.0), 5);
         float facing = pow(max(dot(geoNormal, viewDir), 0.0), 0.45);
         vec3 body = PalMid * (0.75 + 0.6 * granule);
+        if (cube) body *= cellJitter * cellEdge;
         fragColor = vec4(mix(PalLow, body, facing), 1.0);
         return;
     }
@@ -120,6 +146,10 @@ void main() {
         water *= 1.0 - ice;
     }
 
+    if (cube) {
+        normalObj = cubeNormal;
+        albedo *= cellJitter * cellEdge;
+    }
     vec3 normalView = normalize(vRot * normalObj);
     // a soft terminator on the geometric normal, so bumps never create a hard day/night seam
     float terminator = smoothstep(-0.08, 0.22, dot(geoNormal, sun));

@@ -1,8 +1,8 @@
 {
-  "system": "phoenixcore:tenebrae",
+  "system": "phoenixcore:pharos",
   "type": "black_hole",
-  "name": "Event",
-  "description": "The black hole itself. Observation only; nothing lands here.",
+  "name": "Beacon",
+  "description": "The quasar itself. Observation only; nothing survives near it.",
   "orbit": {
     "radius_au": 0.0,
     "period_days": 1,
@@ -33,11 +33,11 @@
     "density": 0.0
   },
   "gate": {
-    "min_tier": "late",
-    "detected_research": "phoenixcore:space_tenebrae_lensing",
-    "surveyed_research": "phoenixcore:space_survey_event"
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_pharos_signal",
+    "surveyed_research": "phoenixcore:space_pharos_survey"
   },
-  "trip_minutes": 105,
+  "trip_minutes": 118,
   "initial_stage": "unknown",
   "yields": [
     {
@@ -50,11 +50,11 @@
       "item": "minecraft:nether_star",
       "min": 1,
       "max": 1,
-      "chance": 0.02
+      "chance": 0.04
     }
   ],
   "lore": {
-    "detected": "The thing the light bends around. We have named it, which is the most we can say.",
-    "surveyed": "Event is a black hole with a disk of hot gas and a ring of light that is the back of the disk bent around the front. It is beautiful, and it does not care."
+    "detected": "A lighthouse on the edge of the galaxy, and it is pointed at us.",
+    "surveyed": "Beacon is a quasar: a black hole eating so hard it outshines everything around it, with twin jets of light a hundred thousand years long. Whatever the sealed signals are, they were always meant to be seen from here."
   }
 }

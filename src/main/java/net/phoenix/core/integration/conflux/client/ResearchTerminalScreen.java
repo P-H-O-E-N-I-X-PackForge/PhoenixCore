@@ -58,6 +58,8 @@ public class ResearchTerminalScreen extends Screen {
     private final IntensityController intensity = new IntensityController();
     private DisciplineRenderer activeRenderer = DisciplineRendererRegistry.getDefault();
     private String lastDisciplineId = null;
+    private String shownDiscipline = null;
+    private final Set<ResourceLocation> preloaded = new java.util.HashSet<>();
     private long lastFrameNanos = -1;
 
     private static final int MIN_CANVAS_W = 320;
@@ -84,16 +86,41 @@ public class ResearchTerminalScreen extends Screen {
         vw = Math.round(width / uiScale);
         vh = Math.round(height / uiScale);
 
-        trees = new ArrayList<>(ResearchTreeRegistry.INSTANCE.getAllTrees());
+        rebuildTrees();
         resetPan();
         lastFrameNanos = -1;
 
         syncRenderer();
     }
 
+    /**
+     * Lists the trees to show: once a discipline is chosen, the other disciplines' trees are hidden, while the
+     * shared (non-discipline) trees such as Deep Space always stay.
+     */
+    private void rebuildTrees() {
+        String chosen = ClientResearchCache.getDisciplineInfo().disciplineId();
+        ResourceLocation activeId = trees.isEmpty() || activeTreeIdx >= trees.size() ? null :
+                trees.get(activeTreeIdx).id;
+
+        List<ResearchTree> visible = new ArrayList<>();
+        for (ResearchTree tree : ResearchTreeRegistry.INSTANCE.getAllTrees()) {
+            if (chosen != null && tree.isDisciplineTree() && !chosen.equals(tree.discipline)) continue;
+            visible.add(tree);
+        }
+        trees = visible;
+        shownDiscipline = chosen;
+
+        activeTreeIdx = 0;
+        if (activeId != null) {
+            for (int i = 0; i < trees.size(); i++) {
+                if (trees.get(i).id.equals(activeId)) activeTreeIdx = i;
+            }
+        }
+    }
+
     @Override
     public void onClose() {
-        AxiomShaderManager.deactivate();
+        AxiomShaderManager.release();
         super.onClose();
     }
 
@@ -124,6 +151,11 @@ public class ResearchTerminalScreen extends Screen {
         float dt = lastFrameNanos < 0 ? 0.016f : (float) ((now - lastFrameNanos) / 1_000_000_000.0);
         lastFrameNanos = now;
         dt = Math.min(dt, 0.1f);
+
+        if (!java.util.Objects.equals(shownDiscipline, ClientResearchCache.getDisciplineInfo().disciplineId())) {
+            rebuildTrees();
+        }
+        preloadNextShader();
 
         syncRenderer();
 
@@ -165,6 +197,18 @@ public class ResearchTerminalScreen extends Screen {
         super.render(g, mx, my, pt);
 
         g.pose().popPose();
+    }
+
+    /** Builds one not-yet-loaded tab shader per frame so switching tabs never has to compile one on the spot. */
+    private void preloadNextShader() {
+        for (ResearchTree tree : trees) {
+            String disc = tree.isDisciplineTree() ? tree.discipline : null;
+            ResourceLocation location = DisciplineRendererRegistry.get(disc).shaderLocation();
+            if (location == null || preloaded.contains(location)) continue;
+            preloaded.add(location);
+            AxiomShaderManager.preload(location);
+            return;
+        }
     }
 
     private void syncRenderer() {

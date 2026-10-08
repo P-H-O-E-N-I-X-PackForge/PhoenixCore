@@ -161,8 +161,8 @@
       ]
     },
     {
-      "id": "phoenixcore:space_phoenix_signals",
-      "title": "Phoenix Signals",
+      "id": "phoenixcore:space_aurelian_signals",
+      "title": "Aurelian Signals",
       "lore": "Heat where no star was charted.",
       "icon": "minecraft:blaze_rod",
       "position": [
@@ -179,13 +179,13 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_detect_phoenix"
+          "value": "space_detect_aurelian"
         }
       ]
     },
     {
-      "id": "phoenixcore:space_void_lensing",
-      "title": "Void Lensing",
+      "id": "phoenixcore:space_tenebrae_lensing",
+      "title": "Tenebrae Lensing",
       "lore": "Light bends around something that does not shine.",
       "icon": "minecraft:obsidian",
       "position": [
@@ -202,13 +202,13 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_detect_void"
+          "value": "space_detect_tenebrae"
         }
       ]
     },
     {
-      "id": "phoenixcore:space_sculk_bloom",
-      "title": "Bloom Spectra",
+      "id": "phoenixcore:space_thalassa_bloom",
+      "title": "Thalassa Bloom Spectra",
       "lore": "A slow green pulse, too regular to be nothing.",
       "icon": "minecraft:sculk_catalyst",
       "position": [
@@ -225,7 +225,7 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_detect_sculk"
+          "value": "space_detect_thalassa"
         }
       ]
     },
@@ -261,7 +261,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_phoenix_signals"
+        "phoenixcore:space_aurelian_signals"
       ],
       "cost": {
         "computational": 800
@@ -283,7 +283,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_phoenix_signals"
+        "phoenixcore:space_aurelian_signals"
       ],
       "cost": {
         "computational": 800
@@ -305,7 +305,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_phoenix_signals"
+        "phoenixcore:space_aurelian_signals"
       ],
       "cost": {
         "computational": 800
@@ -327,7 +327,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_void_lensing"
+        "phoenixcore:space_tenebrae_lensing"
       ],
       "cost": {
         "computational": 1500,
@@ -350,7 +350,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_void_lensing"
+        "phoenixcore:space_tenebrae_lensing"
       ],
       "cost": {
         "computational": 1500,
@@ -373,7 +373,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_void_lensing"
+        "phoenixcore:space_tenebrae_lensing"
       ],
       "cost": {
         "computational": 2500,
@@ -396,7 +396,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_sculk_bloom"
+        "phoenixcore:space_thalassa_bloom"
       ],
       "cost": {
         "biological": 1500,
@@ -419,7 +419,7 @@
         6
       ],
       "prerequisites": [
-        "phoenixcore:space_sculk_bloom"
+        "phoenixcore:space_thalassa_bloom"
       ],
       "cost": {
         "biological": 1800,
@@ -433,8 +433,8 @@
       ]
     },
     {
-      "id": "phoenixcore:space_sealed_a_signal",
-      "title": "Sealed Signal A",
+      "id": "phoenixcore:space_orrery_signal",
+      "title": "Orrery Signal",
       "lore": "Something answers behind a door with no handle.",
       "icon": "minecraft:echo_shard",
       "position": [
@@ -451,14 +451,14 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_sealed_a"
+          "value": "space_orrery"
         }
       ],
       "hidden": true
     },
     {
-      "id": "phoenixcore:space_sealed_a_decode",
-      "title": "Decode Sealed A",
+      "id": "phoenixcore:space_orrery_decode",
+      "title": "Decode Orrery",
       "lore": "The door opens from the other side.",
       "icon": "minecraft:recovery_compass",
       "position": [
@@ -466,7 +466,7 @@
         9
       ],
       "prerequisites": [
-        "phoenixcore:space_sealed_a_signal"
+        "phoenixcore:space_orrery_signal"
       ],
       "cost": {
         "computational": 6000,
@@ -475,14 +475,14 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_sealed_a_decoded"
+          "value": "space_orrery_decoded"
         }
       ],
       "hidden": true
     },
     {
-      "id": "phoenixcore:space_sealed_b_signal",
-      "title": "Sealed Signal B",
+      "id": "phoenixcore:space_kaleid_signal",
+      "title": "Kaleid Signal",
       "lore": "It moves every time you look away.",
       "icon": "minecraft:chorus_fruit",
       "position": [
@@ -499,14 +499,14 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_sealed_b"
+          "value": "space_kaleid"
         }
       ],
       "hidden": true
     },
     {
-      "id": "phoenixcore:space_sealed_b_decode",
-      "title": "Decode Sealed B",
+      "id": "phoenixcore:space_kaleid_decode",
+      "title": "Decode Kaleid",
       "lore": "Hold still long enough and it holds still too.",
       "icon": "minecraft:end_crystal",
       "position": [
@@ -514,7 +514,7 @@
         9
       ],
       "prerequisites": [
-        "phoenixcore:space_sealed_b_signal"
+        "phoenixcore:space_kaleid_signal"
       ],
       "cost": {
         "computational": 6000,
@@ -523,10 +523,58 @@
       "unlocks": [
         {
           "type": "flag",
-          "value": "space_sealed_b_decoded"
+          "value": "space_kaleid_decoded"
         }
       ],
       "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_pharos_signal",
+      "title": "Pharos Signal",
+      "lore": "A lighthouse on the edge of the galaxy, and it is pointed at us.",
+      "icon": "minecraft:beacon",
+      "position": [
+        4,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_tenebrae_lensing"
+      ],
+      "cost": {
+        "computational": 3500,
+        "arcane": 1800,
+        "energetic": 1000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_pharos"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_pharos_survey",
+      "title": "Survey: Pharos",
+      "lore": "Resolve the worlds that orbit a quasar and live.",
+      "icon": "minecraft:nether_star",
+      "position": [
+        4,
+        11
+      ],
+      "prerequisites": [
+        "phoenixcore:space_pharos_signal"
+      ],
+      "cost": {
+        "computational": 6000,
+        "arcane": 3000,
+        "energetic": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_pharos_surveyed"
+        }
+      ]
     }
   ]
 }

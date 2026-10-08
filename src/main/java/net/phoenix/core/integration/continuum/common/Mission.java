@@ -41,7 +41,9 @@ public final class Mission {
         /** Leave probes behind as a lasting outpost that produces resources over time. */
         DEPLOY,
         /** Fly out to an outpost and bring back what it has stockpiled. */
-        HAUL;
+        HAUL,
+        /** Carry repair kits out to a damaged outpost and get it producing again. */
+        REPAIR;
 
         public String label() {
             return switch (this) {
@@ -49,6 +51,7 @@ public final class Mission {
                 case EXTRACT -> "Extraction run";
                 case DEPLOY -> "Outpost deployment";
                 case HAUL -> "Outpost haul";
+                case REPAIR -> "Outpost repair run";
             };
         }
     }
@@ -69,12 +72,15 @@ public final class Mission {
     /** Wear the rocket picks up on this trip (a failure adds extra on top, see {@link ContinuumMissions}). */
     public final float wearCost;
     public final ItemStack rocket;
+    /** Ids of the {@link MissionEvent}s rolled for this trip; trimmed to the ones that applied when it lands. */
+    public List<String> events;
 
     public State state;
 
     public Mission(UUID id, UUID team, UUID launcher, String launcherName, ResourceLocation destination, Type type,
                    int probes, List<ItemStack> rewards, long startMillis, long durationMillis, boolean willSucceed,
-                   float wearCost, ItemStack rocket, State state) {
+                   float wearCost, ItemStack rocket, State state, List<String> events) {
+        this.events = events;
         this.id = id;
         this.team = team;
         this.launcher = launcher;
@@ -123,6 +129,9 @@ public final class Mission {
         ListTag rewardList = new ListTag();
         for (ItemStack reward : rewards) rewardList.add(reward.save(new CompoundTag()));
         tag.put("Rewards", rewardList);
+        ListTag eventList = new ListTag();
+        for (String event : events) eventList.add(net.minecraft.nbt.StringTag.valueOf(event));
+        tag.put("Events", eventList);
         return tag;
     }
 
@@ -131,10 +140,12 @@ public final class Mission {
         int typeOrdinal = Math.max(0, Math.min(tag.getByte("Type"), Type.values().length - 1));
         List<ItemStack> rewards = new ArrayList<>();
         for (Tag t : tag.getList("Rewards", Tag.TAG_COMPOUND)) rewards.add(ItemStack.of((CompoundTag) t));
+        List<String> events = new ArrayList<>();
+        for (Tag t : tag.getList("Events", Tag.TAG_STRING)) events.add(t.getAsString());
         return new Mission(
                 tag.getUUID("Id"), tag.getUUID("Team"), tag.getUUID("Launcher"), tag.getString("LauncherName"),
                 new ResourceLocation(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
                 rewards, tag.getLong("Start"), tag.getLong("Duration"), tag.getBoolean("WillSucceed"),
-                tag.getFloat("WearCost"), ItemStack.of(tag.getCompound("Rocket")), State.values()[ordinal]);
+                tag.getFloat("WearCost"), ItemStack.of(tag.getCompound("Rocket")), State.values()[ordinal], events);
     }
 }

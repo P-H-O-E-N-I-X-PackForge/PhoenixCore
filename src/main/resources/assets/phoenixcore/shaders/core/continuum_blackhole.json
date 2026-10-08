@@ -1,0 +1,23 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "1",
+    "dstrgb": "1-srcalpha",
+    "srcalpha": "1",
+    "dstalpha": "1-srcalpha"
+  },
+  "vertex": "phoenixcore:continuum_blackhole",
+  "fragment": "phoenixcore:continuum_blackhole",
+  "attributes": ["Position"],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat",      "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "Time",        "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Extent",      "type": "float", "count": 1, "values": [6.0] },
+    { "name": "DiskNormal",  "type": "float", "count": 3, "values": [0.0, 1.0, 0.0] },
+    { "name": "Jets",        "type": "float", "count": 1, "values": [0.0] },
+    { "name": "DiskOuter",   "type": "float", "count": 1, "values": [5.0] },
+    { "name": "HotColor",    "type": "float", "count": 3, "values": [1.0, 0.85, 0.6] },
+    { "name": "CoolColor",   "type": "float", "count": 3, "values": [0.9, 0.3, 0.1] }
+  ]
+}

@@ -53,5 +53,9 @@
       "chance": 0.5
     }
   ],
-  "parent": "phoenixcore:anvil"
+  "parent": "phoenixcore:anvil",
+  "lore": {
+    "detected": "A grey moon with no air, pacing Anvil exactly once every twelve days.",
+    "surveyed": "Halo keeps one face turned to Anvil and the other to the dark. The pits are old and the quartz seams are new, which is the wrong way round."
+  }
 }

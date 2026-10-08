@@ -162,6 +162,7 @@ public final class ContinuumData {
                 GsonHelper.getAsFloat(json, "spin_deg_per_sec", 4.0f),
                 GsonHelper.getAsFloat(json, "cloud_spin_deg_per_sec", 6.0f));
 
+        JsonObject lore = GsonHelper.getAsJsonObject(json, "lore", new JsonObject());
         return new ContinuumBody(
                 id,
                 new ResourceLocation(GsonHelper.getAsString(json, "system")),
@@ -178,7 +179,9 @@ public final class ContinuumData {
                 params,
                 parseYields(json),
                 DiscoveryStage.parse(GsonHelper.getAsString(json, "initial_stage", "unknown"),
-                        DiscoveryStage.UNKNOWN));
+                        DiscoveryStage.UNKNOWN),
+                GsonHelper.getAsString(lore, "detected", ""),
+                GsonHelper.getAsString(lore, "surveyed", ""));
     }
 
     private static List<ContinuumBody.Yield> parseYields(JsonObject json) {

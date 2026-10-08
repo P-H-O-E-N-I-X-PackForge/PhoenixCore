@@ -25,6 +25,7 @@
   "client": [
     "MixinAbstractContainerScreen",
     "MixinMachineModel",
+    "accessor.GameRendererAccessor",
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "emi.EmiFavoritesMixin",

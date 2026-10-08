@@ -1,0 +1,17 @@
+{
+  "name": "Pharos",
+  "description": "A quasar: a black hole feeding so hard it outshines its galaxy, with jets that sweep the dark.",
+  "galaxy": [
+    -9.5,
+    1.8,
+    -7.5
+  ],
+  "star_color": "#9fd0ff",
+  "star_radius": 1.6,
+  "star_kind": "quasar",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_pharos_signal",
+    "surveyed_research": "phoenixcore:space_pharos_survey"
+  }
+}

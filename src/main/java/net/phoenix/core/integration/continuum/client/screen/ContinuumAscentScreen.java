@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
+import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.client.render.ContinuumShaders;
 import net.phoenix.core.integration.continuum.client.render.GlowRenderer;
 import net.phoenix.core.integration.continuum.client.render.PlanetParams;
@@ -52,6 +53,17 @@ public class ContinuumAscentScreen extends Screen {
         this.pad = pad;
     }
 
+    private ContinuumSounds.Loop rumble;
+
+    @Override
+    protected void init() {
+        super.init();
+        if (rumble == null) {
+            rumble = ContinuumSounds.engineLoop();
+            ContinuumSounds.liftoff();
+        }
+    }
+
     @Override
     public boolean isPauseScreen() {
         return false;
@@ -94,25 +106,15 @@ public class ContinuumAscentScreen extends Screen {
 
             SceneRenderer.begin(target, spin);
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, new Vector3f(-40.0f, 18.0f, 30.0f),
-                    spin, spin * 1.4f, PlanetRenderer.Quality.HIGH, true);
+                    spin, spin * 1.4f, net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality(), true);
             SceneRenderer.end();
             scene.blit(graphics, width, height);
         } else {
             graphics.fill(0, 0, width, height, 0xFF05060f);
         }
 
-        // engine plume: strongest at lift-off, gone by the time the atmosphere is below
-        float plume = Math.max(0.0f, 1.0f - t * 2.4f);
-        if (plume > 0.0f) {
-            float flicker = 0.85f + 0.15f * (float) Math.sin(now * 0.04);
-            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
-            for (int i = 0; i < 6; i++) {
-                float y = height * 0.9f + i * 26.0f * (1.0f - t);
-                glows.glow(width / 2.0f, y, 46.0f + i * 10.0f, i == 0 ? 0xfff0c0 : 0xff9a40,
-                        plume * flicker * (0.9f - i * 0.12f));
-            }
-            glows.draw();
-        }
+        drawRocket(graphics, now);
+        if (rumble != null) rumble.setTarget(0.2f + 0.8f * Math.max(0.0f, 1.0f - t * 1.5f));
 
         drawReadout(graphics, distance);
 
@@ -121,6 +123,93 @@ public class ContinuumAscentScreen extends Screen {
         if (fade > 0.001f) graphics.fill(0, 0, width, height, (int) (Math.min(fade, 1.0f) * 255.0f) << 24);
 
         super.render(graphics, mouseX, mouseY, partialTick);
+    }
+
+    /**
+     * The rocket: sits low on the pad, lifts and shakes hard, then climbs, shrinks and fades as the world falls away.
+     * It is drawn from rows of fills so it needs no texture, with its plume as additive glows under the tail.
+     */
+    private void drawRocket(GuiGraphics graphics, long now) {
+        float lift = smooth(t / 0.45f);
+        float after = Math.max(0.0f, (t - 0.45f) / 0.5f);
+        float scale = 1.0f - 0.65f * after;
+        float alpha = 1.0f - smooth((t - 0.68f) / 0.24f);
+        if (alpha <= 0.01f) return;
+
+        float rocketHeight = height * 0.30f * scale;
+        float tailY = height * (0.90f - 0.34f * lift - 0.18f * after);
+        float shake = (1.0f - lift * 0.8f) * Math.max(0.0f, 1.0f - t * 2.0f) * 2.2f;
+        float cx = width / 2.0f + (float) Math.sin(now * 0.09) * shake;
+        tailY += (float) Math.sin(now * 0.13) * shake * 0.6f;
+
+        // plume under the tail: strong while the engines burn, thinning as the air gets thin
+        float burn = Math.max(0.0f, 1.0f - t * 1.5f) * alpha;
+        if (burn > 0.0f) {
+            float flicker = 0.85f + 0.15f * (float) Math.sin(now * 0.045);
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            for (int i = 0; i < 6; i++) {
+                float y = tailY + (6.0f + i * 22.0f * (1.0f - t * 0.6f)) * scale;
+                glows.glow(cx, y, (34.0f + i * 9.0f) * scale, i == 0 ? 0xfff0c0 : 0xff9a40,
+                        burn * flicker * (0.95f - i * 0.12f));
+            }
+            glows.draw();
+        }
+
+        int top = Math.round(tailY - rocketHeight);
+        int rows = Math.max(2, Math.round(rocketHeight));
+        float bodyHalf = rocketHeight * 0.085f;
+        int a = (int) (alpha * 255.0f) << 24;
+
+        for (int i = 0; i < rows; i++) {
+            float u = i / (float) rows;
+            // ogive nose, straight body, fins flaring out of the last fifth
+            float half = u < 0.26f ? bodyHalf * (float) Math.sin(Math.PI / 2.0 * (u / 0.26f)) : bodyHalf;
+            boolean fin = u > 0.80f;
+            float outer = fin ? half + bodyHalf * 0.95f * ((u - 0.80f) / 0.20f) : half;
+
+            int y = top + i;
+            int body = Math.max(1, Math.round(half));
+            int finW = Math.max(body, Math.round(outer));
+
+            int hull = u < 0.20f ? 0xd8362f : (u > 0.58f && u < 0.64f ? 0x3a3f55 : 0xe8ecf4);
+            int shade = darken(hull, 0.62f);
+            int light = lighten(hull, 1.18f);
+
+            if (fin && finW > body) {
+                graphics.fill((int) cx - finW, y, (int) cx - body, y + 1, a | 0xb02a2a);
+                graphics.fill((int) cx + body, y, (int) cx + finW, y + 1, a | 0x7a1c1c);
+            }
+            graphics.fill((int) cx - body, y, (int) cx, y + 1, a | hull);
+            graphics.fill((int) cx, y, (int) cx + body, y + 1, a | shade);
+            graphics.fill((int) cx - body + Math.max(1, body / 4), y, (int) cx - body + Math.max(2, body / 2), y + 1,
+                    a | light);
+        }
+
+        // porthole
+        int wy = top + Math.round(rocketHeight * 0.38f);
+        int wr = Math.max(2, Math.round(bodyHalf * 0.42f));
+        graphics.fill((int) cx - wr - 1, wy - wr - 1, (int) cx + wr + 1, wy + wr + 1, a | 0x2a3150);
+        graphics.fill((int) cx - wr, wy - wr, (int) cx + wr, wy + wr, a | 0x6cc4ff);
+
+        // nozzle
+        int nozzle = Math.max(2, Math.round(bodyHalf * 0.55f));
+        graphics.fill((int) cx - nozzle, top + rows, (int) cx + nozzle, top + rows + Math.max(2, nozzle / 2),
+                a | 0x2a2d3a);
+    }
+
+    private static int darken(int rgb, float f) {
+        return scale(rgb, f);
+    }
+
+    private static int lighten(int rgb, float f) {
+        return scale(rgb, f);
+    }
+
+    private static int scale(int rgb, float f) {
+        int r = Math.min(255, Math.round(((rgb >> 16) & 0xFF) * f));
+        int g = Math.min(255, Math.round(((rgb >> 8) & 0xFF) * f));
+        int b = Math.min(255, Math.round((rgb & 0xFF) * f));
+        return (r << 16) | (g << 8) | b;
     }
 
     private void drawReadout(GuiGraphics graphics, float distance) {
@@ -169,6 +258,7 @@ public class ContinuumAscentScreen extends Screen {
 
     @Override
     public void removed() {
+        if (rumble != null) rumble.fadeOut();
         scene.close();
         super.removed();
     }

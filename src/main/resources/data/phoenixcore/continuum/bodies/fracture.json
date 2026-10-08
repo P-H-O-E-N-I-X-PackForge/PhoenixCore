@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:kaleid",
+  "type": "planet",
+  "name": "Fracture",
+  "description": "Its continents rearrange between observations.",
+  "orbit": {
+    "radius_au": 1.3,
+    "period_days": 300,
+    "phase": 0.55
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 17,
+  "spin_deg_per_sec": 5,
+  "cloud_spin_deg_per_sec": 9,
+  "surface": {
+    "seed": 53,
+    "scale": 2.2,
+    "ocean_level": 0.25,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.4,
+    "bump": 0.9,
+    "low": "#2e2a06",
+    "mid": "#a89c18",
+    "high": "#f4ee6a",
+    "ocean_deep": "#241f02",
+    "ocean_shallow": "#8a7e10",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#f2e84a",
+    "density": 0.6
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_kaleid_signal",
+    "surveyed_research": "phoenixcore:space_kaleid_decode"
+  },
+  "trip_minutes": 118,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 6,
+      "max": 14,
+      "chance": 0.8
+    },
+    {
+      "item": "minecraft:chorus_fruit",
+      "min": 2,
+      "max": 4,
+      "chance": 0.5
+    }
+  ],
+  "lore": {
+    "detected": "It does not hold still. Each observation disagrees with the last, and the disagreements are tidy.",
+    "surveyed": "Fracture rearranges between looks. The continents slide, the oceans fill and drain, and every version of it is a complete world. We do not know which one we are visiting."
+  }
+}

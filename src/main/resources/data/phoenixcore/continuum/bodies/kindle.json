@@ -1,5 +1,5 @@
 {
-  "system": "phoenixcore:phoenix",
+  "system": "phoenixcore:aurelian",
   "type": "planet",
   "name": "Kindle",
   "description": "Too close to its star; the surface is always on fire.",
@@ -34,7 +34,7 @@
   },
   "gate": {
     "min_tier": "mid",
-    "detected_research": "phoenixcore:space_phoenix_signals",
+    "detected_research": "phoenixcore:space_aurelian_signals",
     "surveyed_research": "phoenixcore:space_survey_kindle"
   },
   "trip_minutes": 65,
@@ -52,5 +52,9 @@
       "max": 9,
       "chance": 0.7
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A world too close to its star to be a world. The survey logged it three times and each time it was still there.",
+    "surveyed": "Kindle is always on fire. The surface is molten on the star side and merely scorched on the other, and the line between them is exactly one kilometre wide."
+  }
 }

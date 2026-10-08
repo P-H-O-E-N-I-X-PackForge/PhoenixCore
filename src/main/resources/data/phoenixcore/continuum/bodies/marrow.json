@@ -1,5 +1,5 @@
 {
-  "system": "phoenixcore:sculk",
+  "system": "phoenixcore:thalassa",
   "type": "planet",
   "name": "Marrow",
   "description": "A dark ocean world pulsing with slow light.",
@@ -34,7 +34,7 @@
   },
   "gate": {
     "min_tier": "endgame",
-    "detected_research": "phoenixcore:space_sculk_bloom",
+    "detected_research": "phoenixcore:space_thalassa_bloom",
     "surveyed_research": "phoenixcore:space_survey_marrow"
   },
   "trip_minutes": 120,
@@ -52,5 +52,9 @@
       "max": 2,
       "chance": 0.35
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A dark ocean, heavy cloud, and a rhythm in the light that matches nothing in the catalogue.",
+    "surveyed": "Marrow is the deep end of a sea that has no shore. Biolight blooms and fades in slow waves, and the waves cross the planet in exactly ten days."
+  }
 }

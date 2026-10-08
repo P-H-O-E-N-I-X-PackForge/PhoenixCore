@@ -38,7 +38,9 @@ public record ContinuumBody(
                             @Nullable ResourceLocation surveyedResearch,
                             PlanetParams params,
                             List<Yield> yields,
-                            DiscoveryStage initialStage) {
+                            DiscoveryStage initialStage,
+                            String loreDetected,
+                            String loreSurveyed) {
 
     /**
      * One thing a probe may return: between {@code min} and {@code max} of {@code item}, with probability
@@ -64,6 +66,15 @@ public record ContinuumBody(
     /** True for the object at the centre of its system (the black hole in a black-hole system). */
     public boolean isCentral() {
         return orbitAu <= 0.0f && parent == null;
+    }
+
+    /** The Archive entry earned at {@code stage}; empty if that stage writes none. */
+    public String lore(DiscoveryStage stage) {
+        return switch (stage) {
+            case DETECTED -> loreDetected;
+            case SURVEYED -> loreSurveyed;
+            default -> "";
+        };
     }
 
     public boolean isMoon() {

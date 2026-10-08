@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
+import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.client.render.ContinuumShaders;
 import net.phoenix.core.integration.continuum.client.render.GlowRenderer;
 import net.phoenix.core.integration.continuum.client.render.PlanetParams;
@@ -50,6 +51,18 @@ public class ContinuumTransitScreen extends Screen {
 
     private float clock;
     private long lastFrame = Util.getMillis();
+    private ContinuumSounds.Loop hum;
+    private int waypointsPassed = -1;
+    private boolean wasRunning;
+
+    @Override
+    protected void init() {
+        super.init();
+        if (hum == null) {
+            hum = ContinuumSounds.humLoop();
+            hum.setTarget(0.4f);
+        }
+    }
 
     public ContinuumTransitScreen(UUID missionId, @Nullable BlockPos pad) {
         super(Component.literal("Transit"));
@@ -84,6 +97,23 @@ public class ContinuumTransitScreen extends Screen {
         float progress = mission.progress(serverNow);
         ContinuumBody destination = ContinuumData.body(mission.destination());
 
+        // a mission that lands while it is being watched rolls straight into the landing scene
+        if (!mission.state().finished()) {
+            wasRunning = true;
+        } else if (wasRunning) {
+            Minecraft.getInstance().setScreen(new ContinuumArrivalScreen(missionId, pad));
+            return;
+        }
+
+        int passed = 0;
+        for (float waypoint : WAYPOINT_AT) {
+            if (progress >= waypoint) passed++;
+        }
+        if (waypointsPassed >= 0 && passed > waypointsPassed && !mission.state().finished()) {
+            ContinuumSounds.waypoint();
+        }
+        waypointsPassed = passed;
+
         drawScene(graphics, mission, destination, progress);
         drawOverlay(graphics, mouseX, mouseY, mission, destination, progress, serverNow);
 
@@ -111,11 +141,13 @@ public class ContinuumTransitScreen extends Screen {
 
         SceneRenderer.begin(target, clock * 3.0f);
         if (destination.type() == ContinuumBody.Type.BLACK_HOLE) {
-            SceneRenderer.drawStar(0, true, view, projection, new Vector3f(), 1.2f, PlanetRenderer.Quality.HIGH);
+            SceneRenderer.drawStar(0, true, view, projection, new Vector3f(), 1.2f, net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality());
+            var owner = net.phoenix.core.integration.continuum.data.ContinuumData.system(destination.system());
+            SceneRenderer.drawBlackHole(view, projection, new Vector3f(), 1.2f, owner != null && owner.isQuasar());
         } else {
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, new Vector3f(-60.0f, 24.0f, 40.0f),
                     clock * params.spinDegPerSec(), clock * params.cloudSpinDegPerSec(),
-                    PlanetRenderer.Quality.HIGH, true);
+                    net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality(), true);
         }
         SceneRenderer.end();
         scene.blit(graphics, width, height);
@@ -132,6 +164,10 @@ public class ContinuumTransitScreen extends Screen {
 
     private int backX() {
         return width - 62;
+    }
+
+    private int replayX() {
+        return width - 140;
     }
 
     private int collectX() {
@@ -163,6 +199,12 @@ public class ContinuumTransitScreen extends Screen {
             y += 11;
         }
 
+        if (mission.state().finished()) {
+            graphics.fill(replayX(), 8, replayX() + 70, 22, 0xAA1a1830);
+            graphics.renderOutline(replayX(), 8, 70, 14, MapUi.PANEL_LINE);
+            graphics.drawCenteredString(font, "Replay landing", replayX() + 35, 11, MapUi.TEXT);
+        }
+
         graphics.fill(backX(), 8, backX() + 52, 22, 0xAA1a1830);
         graphics.renderOutline(backX(), 8, 52, 14, MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "< Map", backX() + 26, 11, MapUi.TEXT);
@@ -188,6 +230,7 @@ public class ContinuumTransitScreen extends Screen {
                 case EXTRACT -> "ARRIVED  -  resources are ready to collect";
                 case DEPLOY -> "ARRIVED  -  the outpost is up and producing";
                 case HAUL -> "ARRIVED  -  the stockpile is ready to collect";
+                case REPAIR -> "ARRIVED  -  the outpost is repaired and producing again";
             };
             statusColor = MapUi.GOOD;
         } else if (mission.state() == Mission.State.FAILED) {
@@ -195,6 +238,7 @@ public class ContinuumTransitScreen extends Screen {
                 case SURVEY -> "MISSION FAILED  -  the rocket came back damaged";
                 case EXTRACT, DEPLOY -> "MISSION FAILED  -  the probes were lost and the rocket is damaged";
                 case HAUL -> "MISSION FAILED  -  the haul was lost and the rocket is damaged";
+                case REPAIR -> "MISSION FAILED  -  the repair kits were lost and the outpost is still broken";
             };
             statusColor = MapUi.BAD;
         } else {
@@ -222,12 +266,19 @@ public class ContinuumTransitScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             if (MapUi.inside(mouseX, mouseY, backX(), 8, 52, 14)) {
+                ContinuumSounds.click();
                 leave();
                 return true;
             }
             ContinuumStateSnapshot.MissionView mission = ContinuumClientState.mission(missionId);
+            if (mission != null && mission.state().finished() && MapUi.inside(mouseX, mouseY, replayX(), 8, 70, 14)) {
+                ContinuumSounds.click();
+                Minecraft.getInstance().setScreen(new ContinuumArrivalScreen(missionId, pad));
+                return true;
+            }
             if (mission != null && mission.state().finished() &&
                     MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18)) {
+                ContinuumSounds.click();
                 PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(missionId));
                 leave();
                 return true;
@@ -254,6 +305,7 @@ public class ContinuumTransitScreen extends Screen {
 
     @Override
     public void removed() {
+        if (hum != null) hum.fadeOut();
         scene.close();
         super.removed();
     }

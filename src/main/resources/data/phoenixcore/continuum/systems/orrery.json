@@ -1,5 +1,5 @@
 {
-  "name": "Sealed A",
+  "name": "Orrery",
   "description": "A signal behind a sealed door. Not yet understood.",
   "galaxy": [
     -3.0,
@@ -11,7 +11,7 @@
   "star_kind": "star",
   "initial_stage": "unknown",
   "gate": {
-    "detected_research": "phoenixcore:space_sealed_a_signal",
-    "surveyed_research": "phoenixcore:space_sealed_a_decode"
+    "detected_research": "phoenixcore:space_orrery_signal",
+    "surveyed_research": "phoenixcore:space_orrery_decode"
   }
 }

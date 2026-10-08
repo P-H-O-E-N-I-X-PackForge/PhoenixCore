@@ -1,5 +1,5 @@
 {
-  "system": "phoenixcore:void",
+  "system": "phoenixcore:tenebrae",
   "type": "moon",
   "name": "Hollow",
   "description": "A shattered moon in a deep violet shadow.",
@@ -34,7 +34,7 @@
   },
   "gate": {
     "min_tier": "late",
-    "detected_research": "phoenixcore:space_void_lensing",
+    "detected_research": "phoenixcore:space_tenebrae_lensing",
     "surveyed_research": "phoenixcore:space_survey_hollow"
   },
   "trip_minutes": 95,
@@ -53,5 +53,9 @@
       "chance": 0.4
     }
   ],
-  "parent": "phoenixcore:umbra"
+  "parent": "phoenixcore:umbra",
+  "lore": {
+    "detected": "A shattered moon, or the pieces of one, still keeping the shape of a sphere out of habit.",
+    "surveyed": "Hollow is broken geometry in deep violet shadow. The fragments drift in a slow ring and none of them have ever collided."
+  }
 }

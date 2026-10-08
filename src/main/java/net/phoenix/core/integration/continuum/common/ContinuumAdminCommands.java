@@ -80,6 +80,8 @@ final class ContinuumAdminCommands {
                                                         ResourceLocationArgument.getId(ctx, "body"),
                                                         IntegerArgumentType.getInteger(ctx, "probes"))))))
                         .then(literal("fill").executes(ctx -> fillOutposts(ctx.getSource())))
+                        .then(literal("damage").executes(ctx -> damageOutposts(ctx.getSource(), true)))
+                        .then(literal("repair").executes(ctx -> damageOutposts(ctx.getSource(), false)))
                         .then(literal("clear").executes(ctx -> clearOutposts(ctx.getSource()))))
                 .then(literal("reset").executes(ctx -> reset(ctx.getSource())))
                 .then(literal("missions")
@@ -180,6 +182,23 @@ final class ContinuumAdminCommands {
         ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
         int filled = count;
         source.sendSuccess(() -> Component.literal("Filled " + filled + " outpost(s)."), false);
+        return count;
+    }
+
+    /** Test helper: break (or fix) every outpost of the team. */
+    private static int damageOutposts(CommandSourceStack source, boolean damage) throws CommandSyntaxException {
+        UUID team = team(source);
+        ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
+        int count = 0;
+        for (Outpost outpost : data.outposts(team).values()) {
+            if (damage) outpost.damage();
+            else outpost.repair(System.currentTimeMillis());
+            count++;
+        }
+        data.setDirty();
+        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        int changed = count;
+        source.sendSuccess(() -> Component.literal((damage ? "Damaged " : "Repaired ") + changed + " outpost(s)."), false);
         return count;
     }
 

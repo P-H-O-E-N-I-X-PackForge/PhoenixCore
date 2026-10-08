@@ -52,5 +52,9 @@
       "max": 8,
       "chance": 0.8
     }
-  ]
+  ],
+  "lore": {
+    "detected": "A rocky world, close and warm, throwing back an orange haze. It was never hidden. We simply stopped looking up.",
+    "surveyed": "Anvil is terraced like a forge floor, and the haze is old smoke that never settled. Whoever shaped it was in no hurry and left nothing unfinished."
+  }
 }

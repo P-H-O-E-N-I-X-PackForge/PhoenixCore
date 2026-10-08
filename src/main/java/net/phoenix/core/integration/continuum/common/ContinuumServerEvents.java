@@ -57,7 +57,10 @@ public final class ContinuumServerEvents {
         // once a minute, finish outpost cycles so their upkeep drains from the Tesla Network steadily
         if (++upkeepCounter >= 60) {
             upkeepCounter = 0;
-            ContinuumTeamData.get(event.getServer()).settleOutposts(event.getServer(), System.currentTimeMillis());
+            for (UUID team : ContinuumTeamData.get(event.getServer()).settleOutposts(event.getServer(),
+                    System.currentTimeMillis())) {
+                sendStateToTeam(event.getServer(), team);
+            }
         }
     }
 

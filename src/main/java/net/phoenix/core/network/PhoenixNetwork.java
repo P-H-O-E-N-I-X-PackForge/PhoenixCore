@@ -278,6 +278,16 @@ public class PhoenixNetwork {
         CHANNEL.registerMessage(id++, S2CMissionLaunchedPacket.class, S2CMissionLaunchedPacket::encode,
                 S2CMissionLaunchedPacket::new, S2CMissionLaunchedPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CPadStockPacket.class,
+                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::encode,
+                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::new,
+                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRequestStatePacket.class, C2SRequestStatePacket::encode,
                 C2SRequestStatePacket::new, C2SRequestStatePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));

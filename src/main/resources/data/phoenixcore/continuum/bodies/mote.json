@@ -1,0 +1,60 @@
+{
+  "system": "phoenixcore:pharos",
+  "type": "planet",
+  "name": "Mote",
+  "description": "A scorched rock bathed in hard radiation.",
+  "orbit": {
+    "radius_au": 1.9,
+    "period_days": 500,
+    "phase": 0.1
+  },
+  "radius": 0.8,
+  "gas_giant": false,
+  "axial_tilt": 5,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 61,
+    "scale": 3.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.2,
+    "low": "#1c1a24",
+    "mid": "#4a4660",
+    "high": "#8f8ab0",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#9fd0ff",
+    "density": 0.15
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_pharos_signal",
+    "surveyed_research": "phoenixcore:space_pharos_survey"
+  },
+  "trip_minutes": 108,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:quartz",
+      "min": 6,
+      "max": 12,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "A fleck of rock in the quasar light, scorched on one side and faintly violet on the other.",
+    "surveyed": "Mote is bathed in hard radiation and slowly sandblasted by its own sunlight. The crystals on its surface grow toward Beacon like plants toward a window."
+  }
+}
