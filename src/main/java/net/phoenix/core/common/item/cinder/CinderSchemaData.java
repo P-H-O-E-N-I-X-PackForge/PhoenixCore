@@ -45,26 +45,13 @@ public final class CinderSchemaData {
     private static final String BLOCK_PREFERENCES = "BlockPreferences";
     private static final String POSITION_PREFERENCES = "PositionPreferences";
 
-    /**
-     * Every method below that reads/writes a Cinder Core's configuration has two forms: an
-     * {@link ItemStack} overload (unchanged behavior - existing call sites in {@code CinderCoreItem},
-     * {@code CinderForgeMachine}, the Configurator screen, etc. keep working exactly as before, reading
-     * against the stack's own root tag via {@code getOrCreateTag()}/{@code getTag()}) and a
-     * {@link CompoundTag} overload operating on whatever tag is handed to it. The Cinder Atlas
-     * deployment tool (multiple loadouts, each holding several saved targets) is the reason the tag
-     * overloads exist: a "slot" there is just a sub-{@code CompoundTag} nested under the tool's own
-     * NBT rather than a whole stack's root tag, and every one of these methods works identically
-     * either way since none of them actually need anything else from the stack itself.
-     */
     public static void setTarget(ItemStack cinderCore, MultiblockMachineDefinition definition) {
         setTarget(cinderCore.getOrCreateTag(), definition);
     }
 
     public static void setTarget(CompoundTag tag, MultiblockMachineDefinition definition) {
         if (!definition.getId().equals(getTargetId(tag))) {
-            // Switching targets invalidates any prior configuration - stale slice/preference data
-            // from a different multiblock's pattern would be meaningless (or worse, silently
-            // misapplied to the wrong predicate) against this one.
+
             tag.remove(SLICE_KEYS);
             tag.remove(SLICE_VALUES);
             tag.remove(BLOCK_PREFERENCES);
@@ -180,12 +167,6 @@ public final class CinderSchemaData {
         return info;
     }
 
-    /**
-     * Applies one wire-safe position-preference triple (same char/base-index/candidate-index scheme
-     * {@link #writeUserPreferences} already uses for the per-predicate table) to {@code info}'s own
-     * position-keyed override map. Shared by {@link #resolveSchema} (loading from NBT) and
-     * {@code C2SCinderConfigPacket} (applying what the client sent).
-     */
     public static void applyPositionPreference(MultiblockSchemaInfo info, BlockPattern pattern, long pos, char c,
                                                int baseIndex, int candidateIndex) {
         MultiPredicate predicate = pattern.getPredicates().get(c);
@@ -195,17 +176,8 @@ public final class CinderSchemaData {
         info.getUserGlobalBlockPreferences().put(pos, base.getCandidates().get(candidateIndex));
     }
 
-    /** One resolved, wire-safe position override - see {@link #encodePositionPreferences}. */
     public record PositionPreferenceEntry(long pos, char predicateChar, int baseIndex, int candidateIndex) {}
 
-    /**
-     * Resolves every entry in {@code info}'s position-keyed override map (schema-local {@link BlockPos}
-     * to the chosen {@link BlockInfo}, written by right-clicking a block in {@code
-     * CinderConfiguratorScreen}'s 3D preview) down to the same char/base-index/candidate-index scheme
-     * {@link #writeUserPreferences} already uses for the per-predicate table, so it can travel over the
-     * network without shipping raw {@link BlockInfo}/NBT. Requires {@code info}'s structure helper to
-     * already exist (i.e. {@link MultiblockSchemaInfo#refreshSchema} to have run at least once).
-     */
     public static List<PositionPreferenceEntry> encodePositionPreferences(BlockPattern pattern,
                                                                           MultiblockSchemaInfo info) {
         List<PositionPreferenceEntry> result = new ArrayList<>();
@@ -274,11 +246,6 @@ public final class CinderSchemaData {
 
             Block realBlock = level.getBlockState(originImmutable.offset(localPos)).getBlock();
 
-            // Per-position, not per-predicate (putPredicatePreference) - a real scanned structure can
-            // legitimately have different variants at different positions sharing the same predicate
-            // (e.g. mixed hatch tiers), and collapsing that to one global default would silently lose
-            // whichever position was scanned last. See CinderConfiguratorScreen's right-click picker,
-            // which writes the exact same per-position map for a manual edit.
             for (BasePredicate base : predicate.expand()) {
                 if (base.getCandidates().size() <= 1) continue;
                 for (BlockInfo candidate : base.getCandidates()) {
@@ -530,18 +497,6 @@ public final class CinderSchemaData {
             placements.put(originImmutable.offset(entry.getKey()), entry.getValue());
         }
 
-        // pattern.getOffset() anchors the structure on where its *controller* sits within the
-        // pattern (verified by decompiling GTCEu's OriginOffset/BlockPattern#legacyStartOffset) -
-        // correct for GTCEu's own use case of validating an already-placed controller block, but
-        // wrong for us: we hand it the ghost-preview aim point as if it were that controller. A
-        // controller that isn't at the structure's own floor (e.g. Cinder Forge's is vertically
-        // centered, 2 rows above its bottom casing layer) makes the whole footprint sink that many
-        // rows below the clicked surface, silently overlapping terrain instead of resting on it -
-        // isSiteClear() would then correctly refuse to build there, but the fix belongs here: the
-        // footprint should never be computed to require ground below where the player aimed in the
-        // first place. Shifting the whole footprint (and the anchor) up by however far its lowest
-        // row dips below the click point preserves the pattern's horizontal facing/centering while
-        // guaranteeing the structure always rests on or above the surface instead of into it.
         int minY = placements.keySet().stream().mapToInt(BlockPos::getY).min().orElse(anchor.getY());
         if (minY < anchor.getY()) {
             BlockPos shift = new BlockPos(0, anchor.getY() - minY, 0);
@@ -557,13 +512,6 @@ public final class CinderSchemaData {
                 originImmutable);
     }
 
-    /**
-     * Whether every target position is currently empty enough to build into - {@link BlockState#canBeReplaced()}
-     * (true for air, tall grass, snow layers, liquids, etc.), false for real terrain/existing builds.
-     * {@link #resolvePlacement} itself is purely geometric and has no idea what's actually at those world
-     * positions, so without this check a placement whose footprint dips into a hillside or floor would
-     * silently overwrite that terrain instead of being refused - "clipping into the ground."
-     */
     public static boolean isSiteClear(Level level, Map<BlockPos, BlockInfo> placements) {
         for (BlockPos pos : placements.keySet()) {
             if (!level.getBlockState(pos).canBeReplaced()) return false;
@@ -585,13 +533,6 @@ public final class CinderSchemaData {
         return cachedRequiredBlocks;
     }
 
-    /**
-     * Deliberately uncached, unlike {@link #getCachedRequiredBlocks} - that single-slot cache is the
-     * right shape for "one held stack's tooltip re-rendering every frame," but wrong for a UI showing
-     * many loadout slots' rows at once (every row would evict the last, thrashing on every repaint).
-     * Callers displaying several slots simultaneously (the Cinder Atlas loadout list) should keep
-     * their own cache keyed per slot instead.
-     */
     public static Reference2IntMap<Block> getRequiredBlocks(CompoundTag tag) {
         MultiblockSchemaInfo info = resolveSchema(tag);
         return info != null ? new Reference2IntOpenHashMap<>(info.getBlockCounts()) : new Reference2IntOpenHashMap<>();

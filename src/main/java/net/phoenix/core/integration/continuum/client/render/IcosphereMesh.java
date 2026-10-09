@@ -12,11 +12,6 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A unit icosphere uploaded once to a {@link VertexBuffer}. Every planet, moon and atmosphere shell is this same
- * mesh, scaled and parameterised by shader uniforms. Vertices carry only a position, which doubles as the surface
- * direction the planet shader samples its procedural terrain with.
- */
 public final class IcosphereMesh implements AutoCloseable {
 
     private static final float T = (1.0f + (float) Math.sqrt(5.0)) / 2.0f;
@@ -44,7 +39,6 @@ public final class IcosphereMesh implements AutoCloseable {
         return triangleCount;
     }
 
-    /** Must be called on the render thread. {@code subdivisions} 0 is the 20-face icosahedron; each step x4. */
     public static IcosphereMesh create(int subdivisions) {
         List<Vector3f[]> triangles = new ArrayList<>();
         for (int[] face : BASE_FACES) {
@@ -52,7 +46,6 @@ public final class IcosphereMesh implements AutoCloseable {
             Vector3f b = unit(BASE_VERTICES[face[1]]);
             Vector3f c = unit(BASE_VERTICES[face[2]]);
 
-            // make sure every face winds counter-clockwise seen from outside, whatever the table says
             Vector3f normal = new Vector3f(b).sub(a).cross(new Vector3f(c).sub(a));
             Vector3f centroid = new Vector3f(a).add(b).add(c);
             if (normal.dot(centroid) < 0) {

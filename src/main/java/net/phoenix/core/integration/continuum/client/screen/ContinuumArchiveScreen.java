@@ -19,10 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Archive: every lore entry the team has uncovered, grouped by system. A body gains its first entry when it is
- * Detected and its second when it is Surveyed. Read-only; closing it returns to the map it was opened from.
- */
 public class ContinuumArchiveScreen extends Screen {
 
     private final Screen parent;

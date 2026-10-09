@@ -15,7 +15,6 @@ import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.data.DiscoveryStage;
 
-/** Entry points the network packets call on the client. Kept separate so the packets never name client screens. */
 public final class ContinuumClientHooks {
 
     private ContinuumClientHooks() {}
@@ -33,10 +32,6 @@ public final class ContinuumClientHooks {
         ContinuumClientState.accept(snapshot);
     }
 
-    /**
-     * A mission just landed. If the player is watching it the screen handles the scene; otherwise play the tone and
-     * tell them in the action bar.
-     */
     public static void missionLanded(ContinuumStateSnapshot.MissionView mission) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof ContinuumTransitScreen || mc.screen instanceof ContinuumArrivalScreen) return;
@@ -55,7 +50,6 @@ public final class ContinuumClientHooks {
         }
     }
 
-    /** An outpost just broke down. */
     public static void outpostDamaged(ResourceLocation body) {
         ContinuumBody target = ContinuumData.body(body);
         String name = target != null ? target.name() : body.getPath();
@@ -70,13 +64,13 @@ public final class ContinuumClientHooks {
         }
     }
 
-    /** A body just reached {@code stage}, which writes a new Archive entry. */
     public static void loreUnlocked(ResourceLocation id, DiscoveryStage stage) {
         ContinuumBody body = ContinuumData.body(id);
         if (body == null || body.lore(stage).isEmpty()) return;
 
         Minecraft mc = Minecraft.getInstance();
-        String message = "Archive updated: " + body.name() + " (" + stage.label().toLowerCase(java.util.Locale.ROOT) + ")";
+        String message = "Archive updated: " + body.name() + " (" + stage.label().toLowerCase(java.util.Locale.ROOT) +
+                ")";
         ContinuumSounds.entry();
         if (mc.screen instanceof ContinuumMapScreen map) {
             map.flashMessage(message);
@@ -85,7 +79,6 @@ public final class ContinuumClientHooks {
         }
     }
 
-    /** The server's answer to a launch request. */
     public static void missionResult(boolean accepted, ResourceLocation destination, BlockPos pad, String message) {
         Minecraft mc = Minecraft.getInstance();
         if (accepted) {

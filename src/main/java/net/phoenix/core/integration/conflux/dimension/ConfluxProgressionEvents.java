@@ -23,10 +23,6 @@ public class ConfluxProgressionEvents {
             WorldResearchData researchData = WorldResearchData.get(level);
             ResearchTreeRegistry registry = ResearchTreeRegistry.INSTANCE;
 
-            // Used to resolve through a local getTeamIdForPlayer()/getTeamFromFTB() pair that always
-            // returned null (the FTB branch's body was never filled in), so `discipline` was always
-            // null here and this whole handler quietly did nothing for every player, every login.
-            // ResearchTeamHelper is the same resolver every other part of Conflux already uses.
             UUID teamId = ResearchTeamHelper.getTeamId(player);
             String discipline = researchData.getDiscipline(teamId);
             if (discipline != null) {

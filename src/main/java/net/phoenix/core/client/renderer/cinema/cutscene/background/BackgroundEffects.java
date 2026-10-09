@@ -15,14 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Built-in {@link BackgroundEffect}s, usable both from Java (the static factories) and from JSON
- * (the {@code "type"} of a layer). Speeds are in cycles per second, colours are ARGB
- * ({@code "#RRGGBB"}, {@code "#AARRGGBB"} or an int in JSON).
- *
- * <p>
- * Register extra JSON effect types with {@link #register(String, MapCodec)}.
- */
 public final class BackgroundEffects {
 
     private BackgroundEffects() {}
@@ -35,7 +27,6 @@ public final class BackgroundEffects {
             either -> either.map(DataResult::success, BackgroundEffects::parseColor),
             color -> Either.right(String.format("#%08X", color)));
 
-    /** Inline form: the effect's fields sit next to {@code "type"} (and the layer's opacity/blend). */
     public static final MapCodec<BackgroundEffect.Data> MAP_CODEC = ExtraCodecs.validate(Codec.STRING,
             type -> TYPES.containsKey(type) ? DataResult.success(type) :
                     DataResult.error(() -> "Unknown background effect '" + type + "', known: " + TYPES.keySet()))
@@ -63,8 +54,6 @@ public final class BackgroundEffects {
         register("glitch_shear", GlitchShear.CODEC);
     }
 
-    // ---------------------------------------------------------------- factories
-
     public static Solid solid(int argb) {
         return new Solid(argb, 0);
     }
@@ -73,7 +62,6 @@ public final class BackgroundEffects {
         return new Solid(argb, pulseSpeed);
     }
 
-    /** Rotates through every hue. {@code spread} is how much of the colour wheel is visible across the screen. */
     public static HueCycle hueCycle(float speed, float saturation, float brightness, float spread) {
         return new HueCycle(speed, saturation, brightness, spread, 90);
     }
@@ -90,7 +78,6 @@ public final class BackgroundEffects {
         return new RadialGradient(inner, outer, radius, pulseSpeed);
     }
 
-    /** Dark edges fading to transparent in the middle. */
     public static RadialGradient vignette(float strength) {
         return new RadialGradient(0x00000000, (Math.round(clamp01(strength) * 255) << 24), 1.6f, 0);
     }
@@ -122,8 +109,6 @@ public final class BackgroundEffects {
     public static GlitchShear glitchShear(int colorA, int colorB, float speed, float intensity) {
         return new GlitchShear(colorA, colorB, speed, intensity);
     }
-
-    // ---------------------------------------------------------------- effects
 
     public record Solid(int color, float pulseSpeed) implements BackgroundEffect.Data {
 
@@ -167,7 +152,6 @@ public final class BackgroundEffects {
         }
     }
 
-    /** {@code angle} in degrees: 0 = left to right, 90 = top to bottom. */
     public record LinearGradient(int from, int to, float angle) implements BackgroundEffect.Data {
 
         public static final MapCodec<LinearGradient> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -327,7 +311,6 @@ public final class BackgroundEffects {
         }
     }
 
-    /** Drifting fog: the colour's alpha is scaled by animated value noise. */
     public record Noise(int color, float scale, float speed, float contrast) implements BackgroundEffect.Data {
 
         public static final MapCodec<Noise> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -383,9 +366,6 @@ public final class BackgroundEffects {
         }
     }
 
-    // ---------------------------------------------------------------- math
-
-    /** Position of the point along a gradient direction, 0..1 from one screen edge to the opposite one. */
     public static float along(Point p, float angleDegrees) {
         float rad = angleDegrees * Mth.DEG_TO_RAD;
         float c = Mth.cos(rad), s = Mth.sin(rad);
@@ -401,7 +381,6 @@ public final class BackgroundEffects {
         return v - (float) Math.floor(v);
     }
 
-    /** 0..1 sine wave with the given number of cycles elapsed. */
     public static float wave(float cycles) {
         return 0.5f + 0.5f * Mth.sin(cycles * TWO_PI);
     }

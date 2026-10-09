@@ -23,10 +23,6 @@ import org.joml.Matrix4f;
 
 import java.util.List;
 
-/**
- * Milestone 1 test bench: one planet in a framed view, to judge the renderer before any game logic exists.
- * Drag to rotate, scroll to zoom, 1-5 to switch body, Q to change quality, Space to pause the spin.
- */
 public class ContinuumTestScreen extends Screen {
 
     private static final int FRAME = 0xFF7a5cff;
@@ -74,7 +70,6 @@ public class ContinuumTestScreen extends Screen {
             cloudSpin += params.cloudSpinDegPerSec() * dt;
         }
 
-        // the scene fills the whole window: the planet sits in the middle and the backdrop reaches every edge
         Minecraft mc = Minecraft.getInstance();
         ensureTarget(mc.getWindow().getWidth(), mc.getWindow().getHeight());
 
@@ -104,7 +99,6 @@ public class ContinuumTestScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
-    /** The offscreen target matches the window in real pixels, so the planet stays sharp at any GUI scale. */
     private void ensureTarget(int pixelsWide, int pixelsHigh) {
         pixelsWide = Math.max(64, pixelsWide);
         pixelsHigh = Math.max(64, pixelsHigh);
@@ -124,7 +118,7 @@ public class ContinuumTestScreen extends Screen {
         Matrix4f pose = graphics.pose().last().pose();
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        // a framebuffer texture is upside down relative to the GUI
+
         bb.vertex(pose, 0, height, 0).uv(0, 0).endVertex();
         bb.vertex(pose, width, height, 0).uv(1, 0).endVertex();
         bb.vertex(pose, width, 0, 0).uv(1, 1).endVertex();

@@ -14,20 +14,6 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Stacks {@link BackgroundEffect} layers into a full-screen background. Effects are sampled on a grid and drawn
- * as a vertex-coloured mesh, so colours blend smoothly between samples.
- *
- * <pre>{@code
- * CutsceneBackgroundBuilder.create()
- *         .layer(BackgroundEffects.hueCycle(0.03f, 0.6f, 0.3f, 0.12f))
- *         .layer(BackgroundEffects.sparkle(0xFFFFFFFF, 0.4f, 1.5f), 0.5f, BlendMode.ADD)
- *         .layer(BackgroundEffects.vignette(0.7f))
- *         .build();
- * }</pre>
- *
- * The same thing in JSON is a {@code "layered"} background, see {@link Layered}.
- */
 public final class CutsceneBackgroundBuilder {
 
     private final List<Layer> layers = new ArrayList<>();
@@ -53,7 +39,6 @@ public final class CutsceneBackgroundBuilder {
         return this;
     }
 
-    /** Number of samples across the screen. Higher is sharper and slower. */
     public CutsceneBackgroundBuilder resolution(int samplesAcross) {
         this.resolution = samplesAcross;
         return this;
@@ -70,7 +55,6 @@ public final class CutsceneBackgroundBuilder {
 
     public record Layer(BackgroundEffect effect, float opacity, BlendMode blend) {
 
-        /** Only layers made of {@link BackgroundEffect.Data} effects can be written back out. */
         public static final Codec<Layer> CODEC = RecordCodecBuilder.create(i -> i.group(
                 BackgroundEffects.MAP_CODEC.forGetter(layer -> (BackgroundEffect.Data) layer.effect()),
                 Codec.FLOAT.optionalFieldOf("opacity", 1f).forGetter(Layer::opacity),
@@ -78,16 +62,6 @@ public final class CutsceneBackgroundBuilder {
                 .apply(i, Layer::new));
     }
 
-    /**
-     * JSON:
-     *
-     * <pre>
-     * {"type": "layered", "resolution": 64, "speed": 1.0, "layers": [
-     *   {"type": "hue_cycle", "speed": 0.03},
-     *   {"type": "sparkle", "density": 0.4, "opacity": 0.5, "blend": "add"}
-     * ]}
-     * </pre>
-     */
     public record Layered(List<Layer> layers, int resolution, float speed) implements CutsceneBackground.Data {
 
         public static final int DEFAULT_RESOLUTION = 64;

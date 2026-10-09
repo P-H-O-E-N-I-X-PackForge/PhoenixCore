@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-/** Core shaders used by Continuum's planet views. Hooked up from {@code PhoenixClient.init}. */
 public final class ContinuumShaders {
 
     private ContinuumShaders() {}
@@ -23,6 +22,9 @@ public final class ContinuumShaders {
     public static ShaderInstance GLOW;
     public static ShaderInstance BACKDROP;
     public static ShaderInstance BLACKHOLE;
+    public static ShaderInstance SKY;
+    public static ShaderInstance RING;
+    public static ShaderInstance NEBULA;
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         register(event, "phoenixcore:continuum_planet", DefaultVertexFormat.POSITION, s -> PLANET = s);
@@ -30,6 +32,9 @@ public final class ContinuumShaders {
         register(event, "phoenixcore:continuum_glow", DefaultVertexFormat.POSITION_TEX_COLOR, s -> GLOW = s);
         register(event, "phoenixcore:continuum_backdrop", DefaultVertexFormat.POSITION, s -> BACKDROP = s);
         register(event, "phoenixcore:continuum_blackhole", DefaultVertexFormat.POSITION, s -> BLACKHOLE = s);
+        register(event, "phoenixcore:continuum_sky", DefaultVertexFormat.POSITION, s -> SKY = s);
+        register(event, "phoenixcore:continuum_ring", DefaultVertexFormat.POSITION, s -> RING = s);
+        register(event, "phoenixcore:continuum_nebula", DefaultVertexFormat.POSITION, s -> NEBULA = s);
     }
 
     private static void register(RegisterShadersEvent event, String name, VertexFormat format,

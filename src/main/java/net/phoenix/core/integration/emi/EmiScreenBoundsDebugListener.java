@@ -11,16 +11,6 @@ import net.phoenix.core.PhoenixCore;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.screen.EmiScreenBase;
 
-/**
- * Temporary diagnostic (2026-09-24) - user reports EMI's sidebar shifts to the left specifically when
- * a gregpacks/gregvaults screen is open, but not with other screens, despite the exclusion-area and
- * {@code EmiScreenBase} bounds-provider fixes already verified correct for those screens in isolation
- * (logged and checked against real numbers at GUI Scale 3). Logs, for every screen that opens,
- * exactly what {@link EmiScreenBase#of} resolves as that screen's bounds - the same value {@code
- * EmiScreenManager#recalculate} uses to split left/right sidebar space - so a repro comparing "another
- * UI" against "OmniPack/Vault" shows the actual numbers EMI sees for each, instead of guessing. Remove
- * once this is root-caused.
- */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class EmiScreenBoundsDebugListener {
 

@@ -35,19 +35,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/** Launching, landing and collecting missions. All of it runs on the server; clients only see snapshots. */
 public final class ContinuumMissions {
 
     private ContinuumMissions() {}
 
-    private static final java.util.function.Predicate<ItemStack> IS_ROCKET = s -> s.getItem() instanceof ContinuumRocketItem;
-    private static final java.util.function.Predicate<ItemStack> IS_PROBE = s -> s.getItem() instanceof ContinuumProbeItem;
-    private static final java.util.function.Predicate<ItemStack> IS_KIT = s -> s.getItem() instanceof ContinuumRepairKitItem;
+    private static final java.util.function.Predicate<ItemStack> IS_ROCKET = s -> s
+            .getItem() instanceof ContinuumRocketItem;
+    private static final java.util.function.Predicate<ItemStack> IS_PROBE = s -> s
+            .getItem() instanceof ContinuumProbeItem;
+    private static final java.util.function.Predicate<ItemStack> IS_KIT = s -> s
+            .getItem() instanceof ContinuumRepairKitItem;
 
-    /** Where a launch takes its rocket, probes and repair kits from: the complex's item input buses, or the player. */
     private interface Stock {
 
         ItemStack peekRocket();
+
+        int rockets();
 
         int probes();
 
@@ -67,6 +70,11 @@ public final class ContinuumMissions {
         @Override
         public ItemStack peekRocket() {
             return complex.peek(IS_ROCKET);
+        }
+
+        @Override
+        public int rockets() {
+            return complex.count(IS_ROCKET);
         }
 
         @Override
@@ -109,6 +117,11 @@ public final class ContinuumMissions {
         }
 
         @Override
+        public int rockets() {
+            return countRockets(player);
+        }
+
+        @Override
         public int probes() {
             return countProbes(player);
         }
@@ -140,24 +153,43 @@ public final class ContinuumMissions {
         }
     }
 
-    /** What a pad can launch with right now, for the planner. {@code buses} says where it was counted. */
-    public record PadStockView(boolean buses, ItemStack rocket, int probes, int kits) {}
+    public record PadStockView(boolean buses, ItemStack rocket, int probes, int kits, int rockets) {}
 
     public static PadStockView padStock(ServerPlayer player, BlockPos pad) {
         var level = player.level();
         if (level.isLoaded(pad) && MetaMachine.getMachine(level, pad) instanceof LaunchPadMachine complex &&
                 complex.isFormed()) {
             BusStock stock = new BusStock(complex);
-            return new PadStockView(true, stock.peekRocket(), stock.probes(), stock.kits());
+            return new PadStockView(true, stock.peekRocket(), stock.probes(), stock.kits(), stock.rockets());
         }
         PlayerStock stock = new PlayerStock(player);
-        return new PadStockView(false, stock.peekRocket(), stock.probes(), stock.kits());
+        return new PadStockView(false, stock.peekRocket(), stock.probes(), stock.kits(), stock.rockets());
     }
 
-    /**
-     * @param probes how many extraction probes to carry; ignored for a survey
-     * @return null if the mission launched, otherwise the reason it did not (shown to the player)
-     */
+    public static @Nullable String launchMany(ServerPlayer player, ResourceLocation destinationId, BlockPos pad,
+                                              Mission.Type type, int probes, int count) {
+        boolean convoy = type == Mission.Type.EXTRACT || type == Mission.Type.DEPLOY || type == Mission.Type.RESCUE;
+        int wanted = convoy ? Math.max(1, Math.min(count, PhoenixConfigs.INSTANCE.continuum.maxRocketsPerLaunch)) : 1;
+
+        int launched = 0;
+        String error = null;
+        for (int i = 0; i < wanted; i++) {
+            error = launch(player, destinationId, pad, type, probes);
+            if (error != null) break;
+            launched++;
+        }
+        if (launched == 0) return error;
+        if (wanted > 1) {
+            ContinuumBody body = ContinuumData.body(destinationId);
+            String where = body != null ? body.name() : destinationId.getPath();
+            player.sendSystemMessage(
+                    Component.literal("Launched " + launched + " of " + wanted + " rockets to " + where +
+                            (error != null ? " (stopped: " + error + ")" : ".")).withStyle(
+                                    error != null ? ChatFormatting.GOLD : ChatFormatting.GREEN));
+        }
+        return null;
+    }
+
     public static @Nullable String launch(ServerPlayer player, ResourceLocation destinationId, BlockPos pad,
                                           Mission.Type type, int probes) {
         var cfg = PhoenixConfigs.INSTANCE.continuum;
@@ -173,7 +205,6 @@ public final class ContinuumMissions {
         ContinuumBody body = ContinuumData.body(destinationId);
         if (body == null) return "That destination does not exist.";
 
-        // the pad is either a Launch Complex (tier and power matter) or, if allowed, the plain testing block
         LaunchPadMachine complex = MetaMachine.getMachine(level, pad) instanceof LaunchPadMachine machine ? machine :
                 null;
         long launchEnergy = 0;
@@ -204,18 +235,42 @@ public final class ContinuumMissions {
         DiscoveryStage stage = data.effectiveStage(server, team, destinationId);
         if (stage == DiscoveryStage.UNKNOWN) return "That signal has not been resolved yet.";
 
-        if (data.missions(team).size() >= cfg.maxMissionsPerTeam) {
-            return "Your team has too many missions out. Collect some first.";
+        if (data.missions(team).size() >= cfg.maxMissionsPerTeam + data.stationCount(team)) {
+            return "Your team has too many missions out. Collect some first (each orbital station adds a slot).";
         }
+        int stationLevel = data.stationLevel(team, destinationId);
+        Affinities.Factors affinity = Affinities.of(server, team, body);
 
         Stock stock = complex != null ? new BusStock(complex) : new PlayerStock(player);
 
-        // everything that can refuse a launch is checked before anything is taken
         long now = System.currentTimeMillis();
         int carried = 0;
         int kitsCarried = 0;
         Outpost outpost = null;
+        Mission stranded = null;
         switch (type) {
+            case STATION -> {
+                if (stage != DiscoveryStage.SURVEYED) return "Stations can only be built at a surveyed body.";
+                if (stationLevel >= Stations.MAX_LEVEL) return "The station at " + body.name() + " is fully built.";
+                for (Mission other : data.missions(team)) {
+                    if (other.type == Mission.Type.STATION && other.destination.equals(destinationId) &&
+                            !other.state.finished()) {
+                        return "A station crew is already on its way to " + body.name() + ".";
+                    }
+                }
+                carried = Math.max(1, cfg.stationProbesPerLevel);
+                if (stock.probes() < carried) return notEnoughProbes(carried, stock);
+            }
+            case RESCUE -> {
+                stranded = strandedAt(data, team, destinationId);
+                if (stranded == null) return "There is no distress signal at " + body.name() + ".";
+                if (stranded.rescuing) return "A rescue is already on its way to " + body.name() + ".";
+                kitsCarried = Math.max(1, cfg.rescueKits);
+                if (stock.kits() < kitsCarried) {
+                    return "A rescue run needs " + kitsCarried + " repair kit" + (kitsCarried == 1 ? "" : "s") + " " +
+                            stock.place() + ".";
+                }
+            }
             case EXTRACT -> {
                 if (stage != DiscoveryStage.SURVEYED) {
                     return "Extraction needs a surveyed body. Fly a survey there first.";
@@ -229,6 +284,13 @@ public final class ContinuumMissions {
                 if (body.yields().isEmpty()) return "Nothing can be built there.";
                 Outpost existing = data.outpost(team, destinationId);
                 int room = cfg.maxProbesPerOutpost - (existing == null ? 0 : existing.probes());
+
+                for (Mission other : data.missions(team)) {
+                    if (other.type == Mission.Type.DEPLOY && other.destination.equals(destinationId) &&
+                            !other.state.finished()) {
+                        room -= other.probes;
+                    }
+                }
                 if (room <= 0) return "That outpost is already full.";
                 carried = Math.max(1, Math.min(Math.min(probes, room), cfg.maxProbesPerMission));
                 if (stock.probes() < carried) return notEnoughProbes(carried, stock);
@@ -253,7 +315,7 @@ public final class ContinuumMissions {
                 }
             }
             case SURVEY -> {
-                // a surveyed body can still be surveyed deeper, until every deposit on it is mapped
+
                 if (stage == DiscoveryStage.SURVEYED &&
                         (body.yields().isEmpty() || data.depth(team, destinationId) >= body.yields().size())) {
                     return body.name() + " is fully surveyed: every deposit is mapped.";
@@ -263,7 +325,7 @@ public final class ContinuumMissions {
 
         ItemStack rocket = stock.peekRocket();
         if (rocket.isEmpty()) return "You need a rocket " + stock.place() + ".";
-        // working close to a star or a black hole takes shielding (merely observing it does not)
+
         String shield = RocketStats.requiredShield(body);
         if (shield != null && type != Mission.Type.SURVEY && RocketStats.level(rocket, shield) <= 0) {
             return "The rocket cannot work that close to " + body.name() + ". Fit a " + RocketStats.shieldName(shield) +
@@ -272,8 +334,15 @@ public final class ContinuumMissions {
         if (RocketStats.interlockRefuses(rocket)) {
             return "Hull interlock engaged: the rocket is too worn to launch. Repair it first.";
         }
+        if (stranded != null) {
+            long fades = stranded.distressUntil - now;
+            if (Math.round(RocketStats.tripMillis(body, rocket) * Stations.tripFactor(stationLevel) * affinity.trip()) >
+                    fades) {
+                return "The distress signal will fade before a rescue could arrive (it has " +
+                        net.phoenix.core.integration.continuum.common.ContinuumMissions.durationText(fades) + " left).";
+            }
+        }
 
-        // the last thing that can refuse: the power. Taken now, along with everything else the launch consumes.
         if (complex != null && !complex.drainEnergy(launchEnergy)) {
             return "The pad lost power before it could launch.";
         }
@@ -283,7 +352,6 @@ public final class ContinuumMissions {
         if (carried > 0) stock.takeProbes(carried);
         if (kitsCarried > 0) stock.takeKits(kitsCarried);
 
-        // a haul empties the outpost now: if the trip fails, what it carried is gone
         int haulProbes = 0;
         int haulCycles = 0;
         if (type == Mission.Type.HAUL && outpost != null) {
@@ -295,8 +363,8 @@ public final class ContinuumMissions {
         float failureChance = RocketStats.failureChance(flown, stage);
         boolean succeeds = player.getRandom().nextFloat() >= failureChance;
 
-        // a random event, rolled now and revealed when the mission lands
-        int payload = type == Mission.Type.HAUL ? haulProbes : type == Mission.Type.REPAIR ? kitsCarried : carried;
+        boolean kitRun = type == Mission.Type.REPAIR || type == Mission.Type.RESCUE;
+        int payload = type == Mission.Type.HAUL ? haulProbes : kitRun ? kitsCarried : carried;
         MissionEvent event = MissionEvent.roll(type, payload, player.getRandom(), cfg.missionEventChance);
         List<String> events = new ArrayList<>();
         if (event != null) events.add(event.id);
@@ -305,24 +373,37 @@ public final class ContinuumMissions {
         if (succeeds && type == Mission.Type.EXTRACT) {
             int rolls = carried - (event == MissionEvent.MICROMETEOROIDS ? 1 : 0) +
                     (event == MissionEvent.DERELICT ? 1 : 0);
-            rewards = rollRewards(team, body, rolls, player.getRandom());
+            rewards = rollRewards(team, body,
+                    Affinities.scaled(Math.max(0, rolls), affinity.yield(), player.getRandom()),
+                    player.getRandom());
         }
         if (succeeds && type == Mission.Type.HAUL) {
-            int rolls = haulProbes * haulCycles + (event == MissionEvent.DERELICT ? haulProbes : 0);
+            int rolls = Affinities.scaled(haulProbes * haulCycles + (event == MissionEvent.DERELICT ? haulProbes : 0),
+                    Stations.yieldFactor(stationLevel) * affinity.yield(), player.getRandom());
             rewards = rollRewards(team, body, rolls, player.getRandom());
         }
 
-        long trip = RocketStats.tripMillis(body, flown);
+        long trip = Math.round(RocketStats.tripMillis(body, flown) * Stations.tripFactor(stationLevel) *
+                affinity.trip());
         if (event == MissionEvent.TAILWIND) trip = Math.max(1000L, Math.round(trip * MissionEvent.TAILWIND_FACTOR));
 
-        int shownProbes = type == Mission.Type.HAUL ? haulProbes : type == Mission.Type.REPAIR ? kitsCarried : carried;
-        data.addMission(new Mission(UUID.randomUUID(), team, player.getUUID(), player.getGameProfile().getName(),
+        int shownProbes = type == Mission.Type.HAUL ? haulProbes : kitRun ? kitsCarried : carried;
+        Mission mission = new Mission(UUID.randomUUID(), team, player.getUUID(), player.getGameProfile().getName(),
                 destinationId, type, shownProbes, rewards, now, trip, succeeds,
-                RocketStats.wearCost(body, flown), flown, Mission.State.ACTIVE, events));
+                RocketStats.wearCost(body, flown) * Stations.wearFactor(stationLevel) * affinity.wear(), flown,
+                Mission.State.ACTIVE, events);
+        if (complex != null) {
+            mission.padDimension = level.dimension().location().toString();
+            mission.padPos = pad.asLong();
+        }
+        data.addMission(mission);
+        if (stranded != null) {
+            stranded.rescuing = true;
+            data.setDirty();
+        }
         return null;
     }
 
-    /** The pad tier a body's {@code gate.min_tier} asks for, from the config. */
     public static int requiredPadTier(ContinuumBody body) {
         var cfg = PhoenixConfigs.INSTANCE.continuum;
         return switch (body.minTier().toLowerCase(java.util.Locale.ROOT)) {
@@ -350,6 +431,17 @@ public final class ContinuumMissions {
             if (stack.getItem() instanceof ContinuumRocketItem) return stack;
         }
         return ItemStack.EMPTY;
+    }
+
+    private static int countRockets(ServerPlayer player) {
+        int total = 0;
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.getItem() instanceof ContinuumRocketItem) total += stack.getCount();
+        }
+        for (ItemStack stack : player.getInventory().offhand) {
+            if (stack.getItem() instanceof ContinuumRocketItem) total += stack.getCount();
+        }
+        return total;
     }
 
     private static int countProbes(ServerPlayer player) {
@@ -400,7 +492,6 @@ public final class ContinuumMissions {
         }
     }
 
-    /** Rolls each probe against the body's yield table and merges the results into stacks. */
     static List<ItemStack> rollRewards(UUID team, ContinuumBody body, int probes, RandomSource random) {
         Map<Item, Integer> totals = new LinkedHashMap<>();
         for (int i = 0; i < probes; i++) {
@@ -409,7 +500,7 @@ public final class ContinuumMissions {
                 Item item = BuiltInRegistries.ITEM.get(yield.item());
                 if (item == Items.AIR) continue;
                 int base = yield.min() + random.nextInt(yield.max() - yield.min() + 1);
-                // the deposit's richness (unknown to the team until it is mapped) scales what comes back
+
                 int count = Math.max(1, Math.round(base * Deposits.richness(team, body.id(), yield.item())));
                 totals.merge(item, count, Integer::sum);
             }
@@ -427,7 +518,6 @@ public final class ContinuumMissions {
         return stacks;
     }
 
-    /** Lands every mission whose time is up. Called about once a second. */
     public static void resolveDue(MinecraftServer server) {
         long now = System.currentTimeMillis();
         ContinuumTeamData data = ContinuumTeamData.get(server);
@@ -439,6 +529,16 @@ public final class ContinuumMissions {
                 land(server, data, mission);
                 changed = true;
             }
+
+            for (Mission mission : List.copyOf(data.missions(team))) {
+                if (!mission.stranded() || mission.rescuing || now < mission.distressUntil) continue;
+                ContinuumBody where = ContinuumData.body(mission.destination);
+                data.removeMission(team, mission.id);
+                notifyTeam(server, team, Component.literal("The distress signal from " +
+                        (where != null ? where.name() : mission.destination.getPath()) +
+                        " faded. The stranded rocket is lost.").withStyle(ChatFormatting.DARK_RED));
+                changed = true;
+            }
             if (changed) {
                 data.setDirty();
                 ContinuumServerEvents.sendStateToTeam(server, team);
@@ -446,12 +546,49 @@ public final class ContinuumMissions {
         }
     }
 
+    public static int collectAll(ServerPlayer player) {
+        UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
+        ContinuumTeamData data = ContinuumTeamData.get(player.server);
+        int collected = 0;
+        for (Mission mission : List.copyOf(data.missions(team))) {
+            if (!mission.state.finished() || mission.stranded()) continue;
+            if (collect(player, mission.id) == null) collected++;
+        }
+        if (collected == 0) {
+            player.sendSystemMessage(Component.literal("Nothing is ready to collect.").withStyle(ChatFormatting.GRAY));
+        }
+        return collected;
+    }
+
+    private static @Nullable Mission strandedAt(ContinuumTeamData data, UUID team, ResourceLocation body) {
+        return strandedAt(data, team, body, false);
+    }
+
+    private static @Nullable Mission strandedAt(ContinuumTeamData data, UUID team, ResourceLocation body,
+                                                boolean beingRescued) {
+        Mission best = null;
+        for (Mission mission : data.missions(team)) {
+            if (!mission.stranded() || !mission.destination.equals(body)) continue;
+            if (!beingRescued && mission.rescuing) continue;
+            if (beingRescued && !mission.rescuing) continue;
+            if (best == null || mission.distressUntil < best.distressUntil) best = mission;
+        }
+        return best;
+    }
+
+    public static String durationText(long millis) {
+        long seconds = Math.max(0, millis / 1000);
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        if (hours > 0) return hours + "h " + String.format("%02dm", minutes);
+        return minutes + "m " + String.format("%02ds", seconds % 60);
+    }
+
     private static void land(MinecraftServer server, ContinuumTeamData data, Mission mission) {
         ContinuumBody destination = ContinuumData.body(mission.destination);
         String name = destination != null ? destination.name() : mission.destination.getPath();
         String probesText = mission.probes + " probe" + (mission.probes == 1 ? "" : "s");
 
-        // only events that still matter count: a failure keeps just the solar flare
         mission.events.removeIf(id -> {
             MissionEvent e = MissionEvent.byId(id);
             return e == null || (!mission.willSucceed && e != MissionEvent.SOLAR_FLARE);
@@ -459,9 +596,9 @@ public final class ContinuumMissions {
         boolean flare = mission.events.contains(MissionEvent.SOLAR_FLARE.id);
         boolean micro = mission.events.contains(MissionEvent.MICROMETEOROIDS.id);
         boolean echo = mission.events.contains(MissionEvent.SIGNAL_ECHO.id);
-        // (rebuilt after the survey below, which can add anomalies)
 
-        float wear = RocketStats.wear(mission.rocket) + mission.wearCost + (flare ? MissionEvent.SOLAR_FLARE_WEAR : 0.0f);
+        float wear = RocketStats.wear(mission.rocket) + mission.wearCost +
+                (flare ? MissionEvent.SOLAR_FLARE_WEAR : 0.0f);
         if (mission.willSucceed) {
             mission.state = Mission.State.SUCCESS;
             RocketStats.setWear(mission.rocket, wear);
@@ -490,6 +627,21 @@ public final class ContinuumMissions {
                     if (repaired != null) repaired.repair(System.currentTimeMillis());
                     yield "Repair run to " + name + " landed: the outpost is producing again.";
                 }
+                case STATION -> {
+                    int built = data.stationLevel(mission.team, mission.destination) + 1;
+                    data.setStationLevel(mission.team, mission.destination, built);
+                    yield "Orbital station at " + name + " is now level " + Math.min(built, Stations.MAX_LEVEL) +
+                            ". " + Stations.describe(built);
+                }
+                case RESCUE -> {
+                    Mission saved = strandedAt(data, mission.team, mission.destination, true);
+                    if (saved != null) {
+                        saved.distressUntil = 0;
+                        saved.rescuing = false;
+                    }
+                    yield "Rescue run to " + name + " landed: the stranded rocket is recovered and waiting for " +
+                            "collection.";
+                }
             };
             notifyTeam(server, mission.team,
                     Component.literal(message + eventText(mission)).withStyle(ChatFormatting.GREEN));
@@ -499,17 +651,36 @@ public final class ContinuumMissions {
 
             String lost = switch (mission.type) {
                 case SURVEY -> "";
-                case EXTRACT, DEPLOY -> " The " + probesText + " were lost.";
+                case EXTRACT, DEPLOY, STATION -> " The " + probesText + " were lost.";
                 case HAUL -> " The haul was lost.";
                 case REPAIR -> " The repair kits were lost and the outpost is still broken.";
+                case RESCUE -> " The repair kits were lost and the stranded rocket is still waiting.";
             };
-            notifyTeam(server, mission.team,
-                    Component.literal(mission.type.label() + " to " + name + " failed. The rocket came back damaged." +
-                            lost + eventText(mission)).withStyle(ChatFormatting.RED));
+
+            if (mission.type == Mission.Type.RESCUE) {
+                Mission waiting = strandedAt(data, mission.team, mission.destination, true);
+                if (waiting != null) waiting.rescuing = false;
+            }
+
+            var cfg = PhoenixConfigs.INSTANCE.continuum;
+            boolean canStrand = mission.type == Mission.Type.EXTRACT || mission.type == Mission.Type.DEPLOY ||
+                    mission.type == Mission.Type.HAUL;
+            if (canStrand && !Stations.preventsStranding(data.stationLevel(mission.team, mission.destination)) &&
+                    RandomSource.create().nextDouble() < cfg.distressChance) {
+                mission.distressUntil = System.currentTimeMillis() + cfg.distressWindowMinutes * 60_000L;
+                notifyTeam(server, mission.team, Component.literal("DISTRESS SIGNAL from " + name + ": the " +
+                        mission.type.label().toLowerCase() + " failed and the rocket is stranded." + lost +
+                        " Send a rescue run with " + Math.max(1, cfg.rescueKits) + " repair kits within " +
+                        durationText(cfg.distressWindowMinutes * 60_000L) + " or it is lost." + eventText(mission))
+                        .withStyle(ChatFormatting.GOLD));
+            } else {
+                notifyTeam(server, mission.team,
+                        Component.literal(mission.type.label() + " to " + name + " failed. The rocket came back " +
+                                "damaged." + lost + eventText(mission)).withStyle(ChatFormatting.RED));
+            }
         }
     }
 
-    /** A landed survey resolves its target and moons, and picks up one more signal in the same system. */
     private static void reveal(ContinuumTeamData data, UUID team, ContinuumBody destination) {
         data.raise(team, destination.id(), DiscoveryStage.SURVEYED);
 
@@ -517,7 +688,6 @@ public final class ContinuumMissions {
             data.raise(team, moon.id(), DiscoveryStage.DETECTED);
         }
 
-        // the nearest still-unknown body in the system shows up as a signal
         ContinuumBody nearest = null;
         for (ContinuumBody other : ContinuumData.bodiesOf(destination.system())) {
             if (other.isMoon() || other.id().equals(destination.id())) continue;
@@ -537,10 +707,6 @@ public final class ContinuumMissions {
         return text.toString();
     }
 
-    /**
-     * What a landed survey adds: it maps the next unmapped deposit, and may turn up an anomaly (a cache, an extra
-     * mapped deposit, or ruins), which is added to the mission as an event so the landing card can show it.
-     */
     private static void surveyFindings(ContinuumTeamData data, Mission mission, ContinuumBody destination) {
         int total = destination.yields().size();
         data.revealDeposit(mission.team, destination.id(), total);
@@ -558,7 +724,6 @@ public final class ContinuumMissions {
         }
     }
 
-    /** A signal echo reveals one more unknown body in the system as a signal. */
     private static void revealExtra(ContinuumTeamData data, UUID team, ContinuumBody destination) {
         ContinuumBody nearest = null;
         for (ContinuumBody other : ContinuumData.bodiesOf(destination.system())) {
@@ -569,7 +734,6 @@ public final class ContinuumMissions {
         if (nearest != null) data.raise(team, nearest.id(), DiscoveryStage.DETECTED);
     }
 
-    /** @return null on success, otherwise the reason */
     public static @Nullable String collect(ServerPlayer player, UUID missionId) {
         MinecraftServer server = player.server;
         UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
@@ -578,21 +742,49 @@ public final class ContinuumMissions {
         Mission mission = data.mission(team, missionId).orElse(null);
         if (mission == null) return "That mission is gone.";
         if (!mission.state.finished()) return "That mission is still under way.";
+        if (mission.stranded()) {
+            return "That rocket is stranded. Send a rescue run (repair kits) before the signal fades in " +
+                    durationText(mission.distressUntil - System.currentTimeMillis()) + ".";
+        }
 
-        ItemHandlerHelper.giveItemToPlayer(player, mission.rocket.copy());
+        LaunchPadMachine pad = launchComplexOf(server, mission);
+        ItemStack rocket = mission.rocket.copy();
         int items = 0;
+        int delivered = 0;
+        if (pad != null) {
+            rocket = pad.insertInput(rocket);
+            if (!rocket.isEmpty()) rocket = pad.insertOutput(rocket);
+        }
+        if (!rocket.isEmpty()) ItemHandlerHelper.giveItemToPlayer(player, rocket);
         for (ItemStack reward : mission.rewards) {
             items += reward.getCount();
-            ItemHandlerHelper.giveItemToPlayer(player, reward.copy());
+            ItemStack rest = pad != null ? pad.insertOutput(reward.copy()) : reward.copy();
+            delivered += reward.getCount() - rest.getCount();
+            if (!rest.isEmpty()) ItemHandlerHelper.giveItemToPlayer(player, rest);
         }
         data.removeMission(team, missionId);
         ContinuumServerEvents.sendStateToTeam(server, team);
 
         if (items > 0) {
-            player.sendSystemMessage(Component.literal("Collected the rocket and " + items + " resources.")
-                    .withStyle(ChatFormatting.GREEN));
+            String where = delivered >= items ? "all of it in the launch complex's output buses" :
+                    delivered > 0 ? delivered + " in the output buses, the rest in your inventory" :
+                            "in your inventory";
+            player.sendSystemMessage(
+                    Component.literal("Collected the rocket and " + items + " resources (" + where + ").")
+                            .withStyle(ChatFormatting.GREEN));
         }
         return null;
+    }
+
+    private static @Nullable LaunchPadMachine launchComplexOf(MinecraftServer server, Mission mission) {
+        if (mission.padDimension == null) return null;
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION,
+                new ResourceLocation(mission.padDimension));
+        var level = server.getLevel(key);
+        BlockPos pos = BlockPos.of(mission.padPos);
+        if (level == null || !level.isLoaded(pos)) return null;
+        return MetaMachine.getMachine(level, pos) instanceof LaunchPadMachine machine && machine.isFormed() ? machine :
+                null;
     }
 
     static void notifyTeam(MinecraftServer server, UUID team, Component message) {

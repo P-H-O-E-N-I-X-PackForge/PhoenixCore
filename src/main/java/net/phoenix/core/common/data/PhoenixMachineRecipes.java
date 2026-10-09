@@ -1,10 +1,12 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -45,6 +47,20 @@ import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials
 public class PhoenixMachineRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+        VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("steam"),
+                PhoenixMachines.STEAM_CENTRIFUGE.asStack(1),
+                "PGP", "PTP", "PGP",
+                'P', GTBlocks.CASING_BRONZE_BRICKS,
+                'G', new MaterialEntry(gear, Steel),
+                'T', new MaterialEntry(rotor, GTMaterials.Tin));
+
+        VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("steam2"),
+                PhoenixMachines.STEAM_ALLOY_SMELTER.asStack(1),
+                "PGP", "PTP", "PGP",
+                'P', GTBlocks.CASING_BRONZE_BRICKS,
+                'G', new MaterialEntry(gear, Bronze),
+                'T', GTMachines.STEAM_ALLOY_SMELTER.left().asStack());
+
         PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward_hostile")
                 .inputItems(Items.GLOWSTONE_DUST, 4)
                 .duration(600)

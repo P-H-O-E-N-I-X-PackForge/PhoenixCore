@@ -2,44 +2,28 @@ package net.phoenix.core.integration.continuum.common;
 
 import net.minecraft.nbt.CompoundTag;
 
-/**
- * A team's installation of extraction probes on one body. It produces in real time: every cycle each probe makes one
- * roll against the body's yield table, and finished cycles pile up (to a cap) until a Haul mission claims them.
- *
- * <p>
- * Running costs power. Each finished cycle has to be paid for with energy from the team's Tesla Network (see
- * {@link OutpostPower}); a cycle that cannot be paid for is simply lost, so an outpost whose network is empty stalls
- * instead of building up a free backlog.
- *
- * <p>
- * Nothing ticks. {@link #settle} works out how many cycles have finished since it last ran, so an outpost keeps
- * producing while the server is off or nobody is online.
- */
 public final class Outpost {
 
-    /** Pays for finished cycles. */
     @FunctionalInterface
     public interface CyclePayer {
 
-        /** Pays upkeep for up to {@code cycles} cycles of an outpost with {@code probes} probes; returns how many. */
         int pay(int cycles, int probes);
     }
 
-    /** A payer that never charges anything: for outposts with upkeep switched off, and for test tools. */
     public static final CyclePayer FREE = (cycles, probes) -> cycles;
 
     private int probes;
-    /** Cycles finished and waiting to be hauled. */
+
     private int readyCycles;
-    /** The wall-clock time the next unfinished cycle started. */
+
     private long cycleStartMillis;
-    /** Cycles that finished but could not be paid for, since the last haul. */
+
     private int lostCycles;
-    /** Whether the most recent finished cycles were paid for. */
+
     private boolean powered = true;
-    /** Broken by an incident: produces nothing, and costs nothing, until a repair run fixes it. */
+
     private boolean damaged;
-    /** Cycles that passed while it was broken. */
+
     private int brokenCycles;
 
     private static final net.minecraft.util.RandomSource RANDOM = net.minecraft.util.RandomSource.create();
@@ -78,36 +62,26 @@ public final class Outpost {
         return brokenCycles;
     }
 
-    /** Breaks the outpost (an incident, or the admin command). */
     public void damage() {
         damaged = true;
         brokenCycles = 0;
     }
 
-    /** Fixes the outpost; its clock restarts from {@code now}, and what it had stockpiled is kept. */
     public void repair(long now) {
         damaged = false;
         brokenCycles = 0;
         cycleStartMillis = now;
     }
 
-    /** Adds probes. Cycles already banked are kept; the running cycle carries on. */
     public void addProbes(int count) {
         probes += count;
     }
 
-    /**
-     * Banks every cycle that finished since the last call, charging the upkeep for each.
-     *
-     * @param maxReady cycles beyond this are not produced: a full outpost stops until it is hauled
-     * @param payer    pays for the finished cycles; cycles it cannot pay for are lost
-     * @return true if an incident broke the outpost during this call
-     */
     public boolean settle(long now, long cycleMillis, int maxReady, CyclePayer payer) {
         if (cycleMillis <= 0) return false;
 
         if (damaged) {
-            // a broken outpost makes nothing and costs nothing; the time that passes is simply lost
+
             long passed = Math.max(0L, (now - cycleStartMillis) / cycleMillis);
             if (passed > 0) {
                 brokenCycles = (int) Math.min(Integer.MAX_VALUE, brokenCycles + passed);
@@ -117,7 +91,7 @@ public final class Outpost {
         }
 
         if (readyCycles >= maxReady) {
-            // full: the clock does not run up a backlog, production resumes from the moment space frees up
+
             cycleStartMillis = now;
             return false;
         }
@@ -127,7 +101,6 @@ public final class Outpost {
 
         int banked = (int) Math.min(finished, maxReady - readyCycles);
 
-        // each finished cycle may bring an incident; cycles after the break are not produced
         int survived = banked;
         boolean broke = false;
         double chance = net.phoenix.core.configs.PhoenixConfigs.INSTANCE.continuum.outpostIncidentChance;
@@ -156,7 +129,6 @@ public final class Outpost {
         return broke;
     }
 
-    /** Takes everything banked, for a Haul mission to carry. */
     public int claim(long now) {
         int claimed = readyCycles;
         readyCycles = 0;

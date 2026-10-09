@@ -37,6 +37,17 @@ public class ConfluxDimensionFactory {
         player.setRespawnPosition(getDimensionKey(discipline), DisciplineStartingArea.ANCHOR, 0f, true, false);
     }
 
+    public static boolean visitDisciplineDimension(ServerPlayer player, String discipline) {
+        ServerLevel dimensionLevel = player.getServer().getLevel(getDimensionKey(discipline));
+        if (dimensionLevel == null) return false;
+        if (!dimensionLevel.getBlockState(DisciplineStartingArea.ANCHOR.offset(-3, 1, 0)).is(Blocks.CHEST)) {
+            initializeStartingArea(dimensionLevel, discipline);
+        }
+        player.fallDistance = 0.0f;
+        player.teleportTo(dimensionLevel, 0.5, 65, 0.5, player.getYRot(), player.getXRot());
+        return true;
+    }
+
     public static void initializeStartingArea(ServerLevel dimensionLevel, String disciplineId) {
         DisciplineStartingArea startingArea = new DisciplineStartingArea(disciplineId);
         startingArea.generateStartingArea(dimensionLevel);

@@ -8,6 +8,8 @@ public class PhoenixMachineLangHandler {
         provider.add("phoenixcore.soul_lens.tooltip.flavor", "The Veil is thinner than you realize.");
         provider.add("phoenixcore.soul_lens.tooltip.1", "Your way of checking on the Soul of the World.");
         provider.add("gtceu.bio_engine", "Bio Aetheric Engine");
+        provider.add("block.steamadditions.steam_foundry.tooltip", "Also not to be confused with the Multi-Smelter");
+        provider.add("block.steamadditions.steam_separator.tooltip", "Perfect for getting the most out of your dusts.");
 
         provider.add("block.phoenixcore.fission_blanket.info_header", "Breeder Blanket Specifications:");
         provider.add("phoenixcore.blanket.input", "Breeding Target Input");

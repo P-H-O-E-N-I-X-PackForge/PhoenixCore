@@ -12,6 +12,7 @@ uniform float Extent;       // billboard half-size, in horizon radii
 uniform vec3 DiskNormal;    // disk plane normal, in view space
 uniform float Jets;         // 1.0 for a quasar
 uniform float DiskOuter;    // outer edge of the disk, in horizon radii
+uniform float Detail;      // noise layers in the disk (2 - 4)
 uniform vec3 HotColor;
 uniform vec3 CoolColor;
 
@@ -32,13 +33,16 @@ float noise(vec2 p) {
 }
 
 float fbm(vec2 p) {
-    float v = 0.0, a = 0.5;
+    float v = 0.0, a = 0.5, total = 0.0;
     for (int i = 0; i < 4; i++) {
+        if (float(i) >= Detail) break;
         v += a * noise(p);
+        total += a;
         p = p * 2.03 + 11.7;
         a *= 0.5;
     }
-    return v;
+    // fewer layers must not make the disk dimmer: scale to the brightness of the full four
+    return v / total * 0.9375;
 }
 
 const float INNER = 1.7;
@@ -48,7 +52,7 @@ vec3 diskColor(float r, float ang) {
     float t = clamp((r - INNER) / (DiskOuter - INNER), 0.0, 1.0);
     float spin = Time * 1.7 * pow(r, -1.5);
     float streaks = fbm(vec2((ang - spin) * 2.4, r * 2.2));
-    float fine = noise(vec2((ang - spin * 1.3) * 9.0, r * 7.0));
+    float fine = Detail > 3.5 ? noise(vec2((ang - spin * 1.3) * 9.0, r * 7.0)) : 0.5;
     float b = pow(1.0 - t, 1.5) * (0.45 + 0.9 * streaks) * (0.8 + 0.4 * fine);
     vec3 c = mix(HotColor, CoolColor, pow(t, 0.55));
     return c * b * 2.2;

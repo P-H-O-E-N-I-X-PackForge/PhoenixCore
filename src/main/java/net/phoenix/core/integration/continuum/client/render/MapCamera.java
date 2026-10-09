@@ -5,10 +5,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-/**
- * An orbit camera around a focus point, with every parameter easing toward its target so zooms and focus changes
- * glide. {@link #project} maps a world point to GUI pixels, which the map screens use for labels, glows and picking.
- */
 public final class MapCamera {
 
     public float yaw;
@@ -50,7 +46,6 @@ public final class MapCamera {
                 Math.min(maxDistance, targetDistance * (float) Math.exp(-amount * 0.12)));
     }
 
-    /** Jumps both the current and target distance, for transitions that start a level mid-zoom. */
     public void snapDistance(float value) {
         distance = value;
         targetDistance = Math.max(minDistance, Math.min(maxDistance, value));
@@ -64,9 +59,6 @@ public final class MapCamera {
                 .translate(-focus.x, -focus.y, -focus.z);
     }
 
-    /**
-     * Where a world point lands on a view of {@code width} x {@code height} GUI pixels, or null if behind the camera.
-     */
     public static @Nullable float[] project(Matrix4f viewProjection, Vector3f world, float width, float height) {
         Vector4f clip = viewProjection.transform(new Vector4f(world.x, world.y, world.z, 1.0f));
         if (clip.w <= 0.05f) return null;

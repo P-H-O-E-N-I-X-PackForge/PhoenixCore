@@ -13,11 +13,6 @@ import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.network.S2COpenMapPacket;
 import net.phoenix.core.network.PhoenixNetwork;
 
-/**
- * Where missions are launched from. Right-clicking opens the Continuum map with launching enabled; the map can also be
- * opened for viewing only with {@code /continuum map}. This is a plain block for milestone 3 - the GT-style, tier-gated
- * multiblock pad described in the design doc replaces it later.
- */
 public class LaunchPadBlock extends Block {
 
     public LaunchPadBlock(Properties properties) {

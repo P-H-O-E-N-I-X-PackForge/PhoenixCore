@@ -1,0 +1,14 @@
+{
+  "name": "The Verdant Drift",
+  "center": [
+    0.5,
+    0.4,
+    8.5
+  ],
+  "radius": 6.0,
+  "color1": "#30e0b0",
+  "color2": "#2060c0",
+  "density": 0.75,
+  "seed": 19,
+  "puffs": 5
+}

@@ -1,0 +1,67 @@
+{
+  "system": "phoenixcore:reliquary",
+  "type": "planet",
+  "name": "Cinder",
+  "description": "A scorched world that still smoulders.",
+  "orbit": {
+    "radius_au": 1.5,
+    "period_days": 700,
+    "phase": 0.75
+  },
+  "radius": 0.95,
+  "gas_giant": false,
+  "axial_tilt": 12,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 4,
+  "surface": {
+    "seed": 547,
+    "scale": 2.5,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.2,
+    "bump": 1.0,
+    "low": "#0a0606",
+    "mid": "#241410",
+    "high": "#4a2a20",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff3010",
+    "emissive_amount": 0.3
+  },
+  "atmosphere": {
+    "color": "#c05030",
+    "density": 0.2
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_reliquary_signal",
+    "surveyed_research": "phoenixcore:space_reliquary_decode"
+  },
+  "trip_minutes": 142,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:coal",
+      "min": 5,
+      "max": 10,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:netherite_scrap",
+      "min": 1,
+      "max": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "minecraft:blaze_powder",
+      "min": 2,
+      "max": 4,
+      "chance": 0.5
+    }
+  ],
+  "lore": {
+    "detected": "Black from pole to pole, with red cracks that have not cooled since the star died.",
+    "surveyed": "Cinder was burned when its star swelled and never recovered. The cracks are slow rivers of ember, and the survey found nothing that was ever alive."
+  },
+  "style": "veins"
+}

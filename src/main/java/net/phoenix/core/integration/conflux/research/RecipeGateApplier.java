@@ -12,16 +12,6 @@ import net.phoenix.core.PhoenixCore;
 
 import java.util.Collection;
 
-/**
- * Attaches an {@link AxiomResearchCondition} to every already-loaded {@code GTRecipe} matching a
- * {@link GatedRecipeRule} from {@link GatedRecipeRegistry} - called once per recipe reload from
- * {@code RecipeManagerMixin}, right after {@code RecipeManager.apply()} finishes parsing recipes.
- *
- * {@code GTRecipe.conditions} is a plain mutable {@code List<RecipeCondition<?>>} that GTCEu's own
- * {@code RecipeLogic.matchRecipe} already checks for every recipe attempt, so mutating it here is
- * enough to gate a recipe - no mixin into the matching/execution path itself is needed. This is what
- * lets a rule gate GTCEu's own built-in recipes, or another mod's, not just recipes we author.
- */
 public final class RecipeGateApplier {
 
     private RecipeGateApplier() {}
@@ -48,10 +38,6 @@ public final class RecipeGateApplier {
 
     private static java.lang.reflect.Field conditionsField;
 
-    /**
-     * GTRecipe's {@code conditions} is a final, usually immutable list, so adding to it throws. Swap in a mutable copy
-     * holding the extra condition instead.
-     */
     private static void addCondition(GTRecipe recipe, AxiomResearchCondition condition) {
         try {
             if (conditionsField == null) {
@@ -66,7 +52,6 @@ public final class RecipeGateApplier {
         }
     }
 
-    /** Applying is repeatable (rules can load after the recipes), so never attach the same flag twice. */
     private static boolean alreadyGated(GTRecipe recipe, String flag) {
         for (var condition : recipe.conditions) {
             if (condition instanceof AxiomResearchCondition axiom && flag.equals(axiom.getFlag())) return true;

@@ -1,0 +1,14 @@
+{
+  "name": "The Pale Mist",
+  "center": [
+    -2.0,
+    -0.8,
+    -8.5
+  ],
+  "radius": 5.5,
+  "color1": "#c0d0ff",
+  "color2": "#6080a0",
+  "density": 0.7,
+  "seed": 35,
+  "puffs": 4
+}

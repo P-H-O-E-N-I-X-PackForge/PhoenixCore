@@ -11,15 +11,10 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
 
-/**
- * GUI-space drawing for the map overlays: additive glows (stars, unknown signals, coronas) and thin lines (orbit
- * rings, selection brackets). All coordinates are GUI pixels; colours are 0..1 floats.
- */
 public final class GlowRenderer {
 
     private GlowRenderer() {}
 
-    /** Batches glows into one draw call. */
     public static final class Batch {
 
         private final Matrix4f pose;
@@ -61,7 +56,6 @@ public final class GlowRenderer {
         return new Batch(graphics.pose().last().pose());
     }
 
-    /** Batches line segments into one draw call. */
     public static final class Lines {
 
         private final Matrix4f pose;
@@ -85,7 +79,6 @@ public final class GlowRenderer {
                     (rgb & 0xFF) / 255.0f, a);
         }
 
-        /** Four corner ticks around a point, for hover and selection. */
         public Lines brackets(float cx, float cy, float half, float tick, int rgb, float a) {
             float l = cx - half, r = cx + half, t = cy - half, b = cy + half;
             line(l, t, l + tick, t, rgb, a).line(l, t, l, t + tick, rgb, a);

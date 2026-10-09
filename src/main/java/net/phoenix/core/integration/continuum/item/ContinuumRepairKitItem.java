@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** Takes wear off a rocket. Use it with a rocket in the other hand. */
 public class ContinuumRepairKitItem extends Item {
 
     public ContinuumRepairKitItem(Properties properties) {

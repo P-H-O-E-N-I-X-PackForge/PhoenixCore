@@ -44,11 +44,6 @@ public class WorldProgressionApplier {
 
                     ChunkProgressionState state = ChunkProgressionState.getOrCreate(levelChunk);
 
-                    // hasMilestoneApplied used to be write-only - applyMilestone() was called
-                    // unconditionally here, so every stage advance re-marked and force-re-rendered
-                    // every loaded chunk in every player's view distance even if that exact chunk had
-                    // already been updated for this exact stage (e.g. a second team unlocking the same
-                    // stage later, or the same team re-triggering it).
                     if (state.hasMilestoneApplied(newStage)) continue;
 
                     state.applyMilestone(newStage);
@@ -73,20 +68,9 @@ public class WorldProgressionApplier {
         DisciplineTheme.ColorProgression toColor = findColorProgression(theme, toStage);
         if (fromColor == null || toColor == null) return;
 
-        // The client-side payoff (BiomeColorProvider.setDisciplineProgression) reads the theme's own
-        // color_progression table by stage name, so the real "transition" work is just making sure
-        // every affected client knows the new stage - see syncProgressionToClients.
         syncProgressionToClients(level, teamId, disciplineId, toStage);
     }
 
-    /**
-     * Structure retheming (per-discipline texture overrides for placed structures, via
-     * {@link DisciplineTheme.StructureThemeSet#structureTextures}) has no rendering consumer anywhere
-     * in the codebase to hook into - nothing reads that map to actually swap a texture or model. Making
-     * this do something real means deciding what it retextures (specific structure pieces? any block
-     * matching a tag?) and building that lookup, which is a real feature design, not a wiring fix like
-     * the other two methods here. Left as a documented no-op until that's designed.
-     */
     public static void applyStructureRetheming(ServerLevel level, UUID teamId, String disciplineId, String newStage) {
         DisciplineTheme theme = DisciplineThemeRegistry.getTheme(disciplineId);
         if (theme == null) return;
@@ -96,19 +80,9 @@ public class WorldProgressionApplier {
         DisciplineTheme theme = DisciplineThemeRegistry.getTheme(disciplineId);
         if (theme == null) return;
 
-        // DisciplineSkyRenderer.setSkyboxProfile is keyed by discipline only (not stage - Conflux only
-        // has one skybox per discipline right now), but it's driven by the exact same client-side sync
-        // as the biome colors above, so this independently ensures clients are synced too rather than
-        // silently relying on applyBiomeColorTransition having already been called first.
         syncProgressionToClients(level, teamId, disciplineId, newStage);
     }
 
-    /**
-     * Sends every player currently in this level the team's current discipline/stage/unlocked-stages,
-     * which is what actually drives BiomeColorProvider and DisciplineSkyRenderer client-side (via
-     * ClientDisciplineProgressionCache.updateProgression). This used to never happen at all -
-     * S2CDisciplineProgressionSyncPacket.send(CompoundTag) was an empty no-op with no caller anywhere.
-     */
     private static void syncProgressionToClients(ServerLevel level, UUID teamId, String disciplineId, String stage) {
         Set<String> unlockedStages = Set.of();
         DisciplineProgressionData.ProgressionState progression = DisciplineProgressionData.get(level)

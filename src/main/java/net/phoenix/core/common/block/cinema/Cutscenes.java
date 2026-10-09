@@ -28,29 +28,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-/**
- * Server-side entry point for cutscenes. Cutscene definitions live client-side in
- * {@code assets/<namespace>/cutscenes/}; the server only sends the id to play.
- *
- * <p>
- * Trigger from code with {@link #play(ServerPlayer, ResourceLocation)}, or in-game with
- * {@code /cutscene open <id>} (anyone, self only) or {@code /cutscene play <targets> <id>} (ops).
- * {@code /cutscene reset <targets>} (ops) forgets which once-only choices a player has made.
- */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class Cutscenes {
 
     private Cutscenes() {}
 
-    /** Cutscene ids for autocomplete. The client points this at its loaded cutscenes; empty on a dedicated server. */
     public static Supplier<Collection<ResourceLocation>> knownCutscenes = List::of;
 
-    // Like vanilla's sound suggestions, this is resolved on the player's own client, where the cutscene files live.
     private static final SuggestionProvider<CommandSourceStack> SUGGEST_CUTSCENES = SuggestionProviders.register(
             PhoenixCore.id("cutscenes"),
             (context, builder) -> SharedSuggestionProvider.suggestResource(knownCutscenes.get(), builder));
 
-    // The cutscene each player was last sent. Cutscene actions are only accepted for this one.
     private static final Map<UUID, ResourceLocation> SESSIONS = new ConcurrentHashMap<>();
 
     public static void play(ServerPlayer player, ResourceLocation id) {
@@ -70,8 +58,7 @@ public final class Cutscenes {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("cutscene")
-                // No permission needed: only ever opens on the player running it, so quest command rewards
-                // and non-op players can use it.
+
                 .then(Commands.literal("open")
                         .then(Commands.argument("id", ResourceLocationArgument.id())
                                 .suggests(SUGGEST_CUTSCENES)

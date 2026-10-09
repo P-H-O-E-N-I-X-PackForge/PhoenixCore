@@ -52,7 +52,18 @@ public class PhysicsHook {
         applyMovingPlatforms(entity, platforms);
     }
 
+    private static final net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> IGNORES_PHYSICS = net.minecraft.tags.TagKey
+            .create(net.minecraft.core.registries.Registries.ENTITY_TYPE,
+                    new net.minecraft.resources.ResourceLocation("phoenixcore", "ignores_conflux_physics"));
+
+    private static boolean exempt(Entity entity) {
+        if (entity.getType().is(IGNORES_PHYSICS)) return true;
+        Entity vehicle = entity.getVehicle();
+        return vehicle != null && vehicle.getType().is(IGNORES_PHYSICS);
+    }
+
     private static void applyGravityZones(Entity entity, java.util.List<GravityZone> zones) {
+        if (exempt(entity)) return;
         float maxMultiplier = 1.0f;
 
         for (GravityZone zone : zones) {
@@ -81,6 +92,7 @@ public class PhysicsHook {
     }
 
     private static void applyMovingPlatforms(Entity entity, java.util.List<MovingPlatform> platforms) {
+        if (exempt(entity)) return;
         for (MovingPlatform platform : platforms) {
             if (platform.isEntityOnPlatform(entity)) {
                 platform.applyVelocity(entity);

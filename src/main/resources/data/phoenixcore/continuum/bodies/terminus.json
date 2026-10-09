@@ -1,0 +1,67 @@
+{
+  "system": "phoenixcore:vesper",
+  "type": "planet",
+  "name": "Terminus",
+  "description": "A world with one face to its star: fire on one side, ice on the other.",
+  "orbit": {
+    "radius_au": 0.35,
+    "period_days": 90,
+    "phase": 0.2
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 2,
+  "spin_deg_per_sec": 0.3,
+  "cloud_spin_deg_per_sec": 4,
+  "surface": {
+    "seed": 131,
+    "scale": 2.6,
+    "ocean_level": 0.4,
+    "polar_ice": 0.55,
+    "cloud_cover": 0.5,
+    "bump": 0.8,
+    "low": "#3a1a14",
+    "mid": "#8a4a30",
+    "high": "#e8d8c8",
+    "ocean_deep": "#2a0a10",
+    "ocean_shallow": "#c04030",
+    "emissive": "#ff5030",
+    "emissive_amount": 0.28
+  },
+  "atmosphere": {
+    "color": "#ff8a60",
+    "density": 0.55
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_vesper_signal",
+    "surveyed_research": "phoenixcore:space_vesper_decode"
+  },
+  "trip_minutes": 60,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:magma_cream",
+      "min": 2,
+      "max": 5,
+      "chance": 0.9
+    },
+    {
+      "item": "minecraft:blue_ice",
+      "min": 2,
+      "max": 6,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:packed_ice",
+      "min": 4,
+      "max": 9,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "It never turns. One half glows, the other is white, and the line between them is the only place anyone could stand.",
+    "surveyed": "Terminus is tidally locked: a sea of fire on the star side, a glacier on the dark side, and a ring of storm along the edge where they meet."
+  },
+  "style": "veins"
+}

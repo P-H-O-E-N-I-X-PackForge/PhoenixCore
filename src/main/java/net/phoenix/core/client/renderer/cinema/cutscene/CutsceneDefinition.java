@@ -14,39 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * A text cutscene loaded from {@code assets/<namespace>/cutscenes/<path>.json}.
- * All durations are in seconds. Every field except {@code pages} is optional.
- *
- * <pre>
- * {
- *   "pages": ["First thought...", {"translate": "cutscene.phoenixcore.intro.2"},
- *             {"content": "A page with extras", "images": [...], "choices": [...]}],  // see CutscenePage
- *   "on_finish": ["phoenixcore:lore/finished"],   // server actions run when the cutscene ends or is skipped
- *   "black_duration": 2.0,       // screen stays fully black
- *   "fade_in": 3.0,              // then the background slowly fades in
- *   "text_delay": 3.5,           // when the first page starts typing (default: black_duration + fade_in / 2)
- *   "fade_out": 2.0,             // fade back to the game when finished or skipped
- *   "chars_per_second": 22,
- *   "punctuation_pause": 0.35,   // extra pause after . ! ? (half of it after , ; :)
- *   "auto_advance": -1,          // seconds to wait after a page finishes before moving on, -1 = wait for click
- *   "skippable": true,           // ESC skips the whole cutscene
- *   "pause_game": true,          // pauses singleplayer while playing
- *   "text": {"color": "#FFFFFF", "scale": 1.5, "max_width": 0.6, "line_spacing": 4, "shadow": true,
- *            "wave_amplitude": 1.2, "wave_speed": 3.0, "wave_frequency": 0.45},
- *   "background": "phoenixcore:prismatic",   // preset id, list, or typed object, see CutsceneBackgrounds
- *   "sound": {"id": "minecraft:block.note_block.hat", "volume": 0.25, "pitch": 1.2, "pitch_variance": 0.15,
- *             "every_n_letters": 2},
- *   "music": {"sound": "minecraft:ambient.soul_sand_valley.loop",  // looping track for the whole cutscene
- *             "volume": 1.0, "pitch": 1.0,
- *             "start": 0.0,            // seconds in (0 = already playing during the black screen)
- *             "fade_in": 4.0,          // fades out with the cutscene's fade_out
- *             "loop": true,
- *             "source": "music",       // volume slider it follows: master, music, ambient, ...
- *             "stop_game_music": true} // silence the game's own music while it plays
- * }
- * </pre>
- */
 public record CutsceneDefinition(
                                  List<CutscenePage> pages,
                                  float blackDuration,
@@ -85,7 +52,6 @@ public record CutsceneDefinition(
                     .forGetter(CutsceneDefinition::onFinish))
             .apply(i, CutsceneDefinition::new));
 
-    /** Seconds from the start of the cutscene until the first page begins typing. */
     public float textStart() {
         return textDelay.orElse(blackDuration + fadeIn * 0.5f);
     }
@@ -110,7 +76,6 @@ public record CutsceneDefinition(
                 .apply(i, TextSettings::new));
     }
 
-    /** Background track playing for the whole cutscene. */
     public record MusicSettings(ResourceLocation sound, float volume, float pitch, float start, float fadeIn,
                                 boolean loop, SoundSource source, boolean stopGameMusic) {
 
@@ -132,7 +97,6 @@ public record CutsceneDefinition(
                 .apply(i, MusicSettings::new));
     }
 
-    /** Sound played as letters appear. */
     public record SoundSettings(ResourceLocation id, float volume, float pitch, float pitchVariance,
                                 int everyNLetters) {
 

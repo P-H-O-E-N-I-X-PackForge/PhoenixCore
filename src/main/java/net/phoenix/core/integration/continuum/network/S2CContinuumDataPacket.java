@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/** The system and body definitions, as raw JSON, so the client parses exactly what the server loaded. */
 public class S2CContinuumDataPacket {
 
     private static final int MAX_JSON = 32767;

@@ -51,7 +51,6 @@ public final class ClientResearchCache {
         data = Map.of();
     }
 
-    /** The team Conflux data pool, as of the last sync. */
     public static long dataStored(ConfluxDataType type) {
         return data.getOrDefault(type, 0L);
     }

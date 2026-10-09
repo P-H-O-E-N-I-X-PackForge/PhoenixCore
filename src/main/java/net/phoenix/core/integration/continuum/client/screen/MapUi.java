@@ -4,7 +4,6 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.Locale;
 
-/** Colours and small drawing helpers shared by the Continuum screens, so they read as one UI. */
 final class MapUi {
 
     private MapUi() {}
@@ -24,7 +23,6 @@ final class MapUi {
         graphics.renderOutline(x, y, w, h, PANEL_LINE);
     }
 
-    /** A flat progress bar; {@code fraction} is 0..1. */
     static void bar(GuiGraphics graphics, int x, int y, int w, int h, float fraction, int color) {
         graphics.fill(x, y, x + w, y + h, 0xFF14122a);
         int filled = Math.round(w * Math.max(0.0f, Math.min(1.0f, fraction)));
@@ -36,7 +34,6 @@ final class MapUi {
         return mx >= x && mx <= x + w && my >= y && my <= y + h;
     }
 
-    /** {@code 1:02:03} for an hour or more, {@code 12:34} otherwise. */
     static String duration(long millis) {
         long total = Math.max(0L, millis) / 1000L;
         long hours = total / 3600L;

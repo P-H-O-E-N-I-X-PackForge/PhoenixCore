@@ -27,27 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Registry and JSON format for cutscene backgrounds. Anywhere a background is expected, JSON accepts:
- * <ul>
- * <li>a string: a preset id, e.g. {@code "phoenixcore:prismatic"}. Presets come from
- * {@code assets/<namespace>/cutscene_backgrounds/<path>.json} or {@link #registerPreset} in code</li>
- * <li>a list: backgrounds drawn on top of each other (same as {@code "stack"})</li>
- * <li>an object with a {@code "type"}:
- * <ul>
- * <li>{@code layered}: builder-style effect layers, see {@link CutsceneBackgroundBuilder.Layered}</li>
- * <li>{@code shader}: {@code {"shader": "phoenixcore:dream_nebula"}} (resource pack) or {@code {"file": "name"}}
- * (config/phoenixcore/shaders), plus optional {@code time_scale}, {@code opaque}, {@code uniforms} and a
- * {@code fallback} background used if it fails to compile. See {@link CutsceneShaders}</li>
- * <li>{@code texture}: {@code {"texture": "ns:textures/...png", "tile_size": 32, "scroll_x": 4, "scroll_y": 0,
- * "tint": "#FFFFFFFF"}}. {@code tile_size} 0 stretches the image over the screen</li>
- * <li>{@code stack}: {@code {"backgrounds": [...]}}</li>
- * <li>{@code preset}: {@code {"id": "ns:path"}}</li>
- * </ul>
- * </li>
- * </ul>
- * Mods can add types with {@link #register(String, MapCodec)}.
- */
 public final class CutsceneBackgrounds {
 
     private CutsceneBackgrounds() {}
@@ -74,7 +53,6 @@ public final class CutsceneBackgrounds {
         register("stack", Stack.CODEC);
         register("preset", Preset.CODEC);
 
-        // Every hue, slowly drifting, with darker edges so text stays readable.
         registerPreset(PRISMATIC, CutsceneBackgroundBuilder.create()
                 .layer(BackgroundEffects.hueCycle(0.03f, 0.6f, 0.3f, 0.12f))
                 .layer(BackgroundEffects.vignette(0.6f))
@@ -102,7 +80,6 @@ public final class CutsceneBackgrounds {
         return TYPES.keySet();
     }
 
-    /** Registers a background that JSON can refer to by id. JSON presets with the same id take priority. */
     public static void registerPreset(ResourceLocation id, CutsceneBackground background) {
         CODE_PRESETS.put(id, background);
     }
@@ -111,8 +88,6 @@ public final class CutsceneBackgrounds {
         CutsceneBackground fromJson = PresetLoader.INSTANCE.presets.get(id);
         return Optional.ofNullable(fromJson != null ? fromJson : CODE_PRESETS.get(id));
     }
-
-    // ---------------------------------------------------------------- factories
 
     public static Preset preset(ResourceLocation id) {
         return new Preset(id);
@@ -133,8 +108,6 @@ public final class CutsceneBackgrounds {
     public static Texture texture(ResourceLocation texture, int tileSize, float scrollX, float scrollY) {
         return new Texture(texture, tileSize, scrollX, scrollY, 0xFFFFFFFF);
     }
-
-    // ---------------------------------------------------------------- types
 
     public record Stack(List<CutsceneBackground.Data> backgrounds) implements CutsceneBackground.Data {
 
@@ -265,8 +238,6 @@ public final class CutsceneBackgrounds {
         }
     }
 
-    // ---------------------------------------------------------------- codec helpers
-
     private static CutsceneBackground.Data fromEither(
                                                       Either<ResourceLocation, Either<List<CutsceneBackground.Data>, CutsceneBackground.Data>> either) {
         return either.map(Preset::new, inner -> inner.map(Stack::new, typed -> typed));
@@ -277,9 +248,6 @@ public final class CutsceneBackgrounds {
         return background instanceof Preset preset ? Either.left(preset.id()) : Either.right(Either.right(background));
     }
 
-    // ---------------------------------------------------------------- JSON presets
-
-    /** Loads {@code assets/<namespace>/cutscene_backgrounds/*.json} and clears compiled shaders on reload. */
     public static final class PresetLoader extends SimpleJsonResourceReloadListener {
 
         public static final PresetLoader INSTANCE = new PresetLoader();

@@ -21,21 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * The Continuum Launch Complex controller. A formed complex opens the Continuum map with launching enabled when it is
- * used; a sneaking use falls through to GT's normal behaviour (structure info, tools).
- *
- * <p>
- * Its tier is the highest tier of its energy input hatches, and launching draws energy from those hatches' buffers, so
- * a bigger power supply lets it send rockets to farther bodies (see {@code ContinuumMissions}).
- */
 public class LaunchPadMachine extends MultiblockControllerMachine {
 
     public LaunchPadMachine(BlockEntityCreationInfo info) {
         super(info);
     }
-
-    // ---------------- item input buses ----------------
 
     private List<NotifiableItemStackHandler> inputInventories() {
         List<NotifiableItemStackHandler> inventories = new ArrayList<>();
@@ -47,7 +37,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return inventories;
     }
 
-    /** How many matching items sit in the item input buses. */
     public int count(Predicate<ItemStack> matches) {
         int total = 0;
         for (var inventory : inputInventories()) {
@@ -59,7 +48,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return total;
     }
 
-    /** A copy of the first matching item in the buses (a single one), or empty. */
     public ItemStack peek(Predicate<ItemStack> matches) {
         for (var inventory : inputInventories()) {
             for (int slot = 0; slot < inventory.getSlots(); slot++) {
@@ -70,11 +58,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return ItemStack.EMPTY;
     }
 
-    /**
-     * Takes up to {@code amount} matching items out of the buses.
-     *
-     * @return one stack per slot taken from (so a rocket keeps its own wear and upgrades)
-     */
     public List<ItemStack> take(Predicate<ItemStack> matches, int amount) {
         List<ItemStack> taken = new ArrayList<>();
         int remaining = amount;
@@ -92,7 +75,36 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return taken;
     }
 
-    /** The highest voltage tier among the energy input hatches, or 0 with none. */
+    private List<NotifiableItemStackHandler> inventories(boolean output) {
+        List<NotifiableItemStackHandler> inventories = new ArrayList<>();
+        for (var part : getParts()) {
+            if (!(part instanceof ItemBusPartMachine bus)) continue;
+            NotifiableItemStackHandler inventory = bus.getInventory();
+            IO io = inventory.handlerIO;
+            if (io == IO.BOTH || io == (output ? IO.OUT : IO.IN)) inventories.add(inventory);
+        }
+        return inventories;
+    }
+
+    private static ItemStack insertInto(ItemStack stack, List<NotifiableItemStackHandler> inventories) {
+        ItemStack rest = stack.copy();
+        for (var inventory : inventories) {
+            for (int slot = 0; slot < inventory.getSlots() && !rest.isEmpty(); slot++) {
+                rest = inventory.insertItemInternal(slot, rest, false);
+            }
+            if (rest.isEmpty()) break;
+        }
+        return rest;
+    }
+
+    public ItemStack insertOutput(ItemStack stack) {
+        return insertInto(stack, inventories(true));
+    }
+
+    public ItemStack insertInput(ItemStack stack) {
+        return insertInto(stack, inventories(false));
+    }
+
     public int padTier() {
         int tier = 0;
         for (var part : getParts()) {
@@ -101,7 +113,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return tier;
     }
 
-    /** EU currently buffered across all energy input hatches. */
     public long storedEnergy() {
         long total = 0;
         for (var part : getParts()) {
@@ -110,11 +121,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return total;
     }
 
-    /**
-     * Takes {@code amount} EU from the hatches' buffers.
-     *
-     * @return false (and takes nothing) if there is not that much stored
-     */
     public boolean drainEnergy(long amount) {
         if (amount <= 0) return true;
         if (storedEnergy() < amount) return false;

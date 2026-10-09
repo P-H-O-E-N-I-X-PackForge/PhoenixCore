@@ -84,14 +84,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
     private final NotifiableItemStackHandler tier1Inventory;
 
-    /**
-     * Design doc feature #7 - upgrades are installed by interacting with the Cinder Forge (see
-     * {@link #buildUpgradeSection}), not through a UI on the Atlas item itself, matching this
-     * codebase's existing convention that the Forge is the "assemble/configure a Cinder item" station
-     * (it already fills and configures Cinder Cores the same way). A separate 2-slot inventory rather
-     * than reusing {@link #tier1Inventory}/the hatch's - this doesn't need AE2 automation or tier
-     * gating, it's a simple "drop items in, press button" interaction available on any formed tier.
-     */
     private final NotifiableItemStackHandler upgradeInventory;
 
     public CinderForgeMachine(BlockEntityCreationInfo info) {
@@ -252,10 +244,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 .pos(400 - badgeW + 5, 6).size(badgeW - 6, 10).color(badge.color()));
 
         int upgradeBottom = buildUpgradeSection(mainWidget, syncManager);
-        // coverChildren(), not a fixed size - this wrapper only exists to shift the origin down past the
-        // upgrade section, it must not force the panel taller than whatever branch below actually needs
-        // (a fixed size here previously inflated the window to a mostly-empty ~500px regardless of the
-        // handful of short lines the "not formed"/"hatch missing" branches actually render).
+
         Flow body = Flow.col().pos(0, upgradeBottom).coverChildren();
         mainWidget.child(body);
 
@@ -302,14 +291,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         }
     }
 
-    /**
-     * Design doc feature #7 - drop a Cinder Atlas and an upgrade item in, press the button, the upgrade
-     * moves into the Atlas's first open upgrade slot and is consumed. Always shown at the top of the GUI
-     * regardless of tier/formation state, since it needs no automation or power - just the two slots and
-     * a button, the same "drop items in, press a button" shape as Tier 1's own "Package Now" above.
-     * Returns the Y just below this section, so the rest of the GUI can be pushed down by exactly that
-     * much without needing to touch any of its own (otherwise unchanged) relative coordinates.
-     */
     private int buildUpgradeSection(ParentWidget<?> mainWidget, PanelSyncManager syncManager) {
         int slotSize = brachy.modularui.widgets.slot.ItemSlot.SIZE;
         int labelY = 20;

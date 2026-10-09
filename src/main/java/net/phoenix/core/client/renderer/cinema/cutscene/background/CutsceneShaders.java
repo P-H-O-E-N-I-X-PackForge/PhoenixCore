@@ -31,17 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Compiles fragment shaders for cutscene backgrounds at runtime (ported from Phoenix Chronicles'
- * DynamicShaderManager). Shaders come from either:
- * <ul>
- * <li>a resource pack: {@code assets/<namespace>/cutscene_shaders/<path>.frag}, reloaded with F3+T</li>
- * <li>the config folder: {@code config/phoenixcore/shaders/<name>.frag}, hot-reloaded when the file changes</li>
- * </ul>
- * Shadertoy-style sources (defining {@code mainImage(out vec4, in vec2)}) are wrapped automatically and get
- * {@code iTime}, {@code iResolution}, {@code iMouse}; the cutscene fade is applied for you. Any other source is used
- * as-is and receives {@code in vec2 texCoord} plus the same uniforms, and {@code iAlpha} for the fade.
- */
 public final class CutsceneShaders {
 
     private CutsceneShaders() {}
@@ -62,14 +51,12 @@ public final class CutsceneShaders {
             }
             """;
 
-    /** An extra float uniform (1-4 components) declared by a background's {@code "uniforms"}. */
     public record Uniform(String name, int count) {}
 
     private record Entry(long sourceMtime, long lastChecked, @Nullable ShaderInstance instance) {}
 
     private static final Map<String, Entry> CACHE = new HashMap<>();
 
-    /** Closes every compiled shader. Called on resource reload. */
     public static void clear() {
         CACHE.values().forEach(entry -> {
             if (entry.instance() != null) entry.instance().close();
@@ -129,7 +116,7 @@ public final class CutsceneShaders {
             PhoenixCore.LOGGER.error("Failed to read cutscene shader {}", file, e);
         }
         if (instance == null && cached != null && cached.instance() != null) {
-            // Keep showing the last good version while the file is being edited.
+
             CACHE.put(key, new Entry(mtime, now, cached.instance()));
             return cached.instance();
         }
@@ -138,7 +125,6 @@ public final class CutsceneShaders {
         return instance;
     }
 
-    /** Draws a full-screen quad with the shader, filling in the standard uniforms. */
     public static void draw(GuiGraphics graphics, ShaderInstance shader, CutsceneBackground.BackgroundContext context,
                             float timeScale, boolean opaque, Map<String, List<Float>> uniforms) {
         graphics.flush();
@@ -176,8 +162,6 @@ public final class CutsceneShaders {
         BufferUploader.drawWithShader(buffer.end());
         RenderSystem.disableBlend();
     }
-
-    // ---------------------------------------------------------------- compilation
 
     private static @Nullable ShaderInstance compile(String id, String userSource, PackResources pack,
                                                     List<Uniform> uniforms) {

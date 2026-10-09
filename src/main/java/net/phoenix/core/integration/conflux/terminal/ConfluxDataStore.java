@@ -19,10 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * The Conflux data each team has banked. Research Terminals are only a way in (pipes insert into the owner's team
- * here) and a way to look at it, so breaking one loses nothing.
- */
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public class ConfluxDataStore extends SavedData {
 
@@ -52,7 +48,6 @@ public class ConfluxDataStore extends SavedData {
         return copy;
     }
 
-    /** Adds up to the capacity and returns how much was accepted. */
     public long insert(UUID team, ConfluxDataType type, long amount) {
         long have = stored(team, type);
         long accepted = Math.max(0L, Math.min(amount, CAPACITY_PER_TYPE - have));
@@ -86,7 +81,6 @@ public class ConfluxDataStore extends SavedData {
         setDirty();
     }
 
-    /** Pushes changed balances to the team's online players, at most once a second. */
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;

@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "wings_of_fire:fire_phoenix",
+      "required": false
+    },
+    {
+      "id": "wings_of_fire:wind_phoenix",
+      "required": false
+    },
+    {
+      "id": "wings_of_fire:red_phoenix",
+      "required": false
+    },
+    {
+      "id": "wings_of_fire:dark_phoenix",
+      "required": false
+    },
+    {
+      "id": "wings_of_fire:gilded_phoenix",
+      "required": false
+    },
+    {
+      "id": "wings_of_fire:nature_phoenix",
+      "required": false
+    }
+  ]
+}

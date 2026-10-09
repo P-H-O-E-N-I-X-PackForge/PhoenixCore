@@ -1,0 +1,17 @@
+{
+  "name": "Vesper",
+  "description": "A dim red dwarf, and worlds that learned to live in its long evening.",
+  "galaxy": [
+    9.5,
+    0.8,
+    -3.5
+  ],
+  "star_color": "#ff5a3c",
+  "star_radius": 0.8,
+  "star_kind": "star",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_vesper_signal",
+    "surveyed_research": "phoenixcore:space_vesper_decode"
+  }
+}

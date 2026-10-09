@@ -14,11 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-/**
- * The 3D half of every Continuum view: bind an offscreen {@link RenderTarget}, lay the nebula down as a backdrop,
- * draw any number of planets and stars into it with explicit view/projection matrices, then hand the target back to
- * the caller to blit. Nothing here touches the world or the main projection.
- */
 public final class SceneRenderer {
 
     private SceneRenderer() {}
@@ -27,9 +22,12 @@ public final class SceneRenderer {
 
     private static @Nullable RenderTarget previous;
 
-    /** Clears and binds {@code target}, then draws the backdrop. Pair with {@link #end()}. */
+    private static @Nullable RenderTarget current;
+    private static @Nullable com.mojang.blaze3d.pipeline.TextureTarget holeTarget;
+
     public static void begin(RenderTarget target, float backdropYawDeg) {
         previous = Minecraft.getInstance().getMainRenderTarget();
+        current = target;
 
         target.setClearColor(0.004f, 0.005f, 0.014f, 1.0f);
         target.clear(Minecraft.ON_OSX);
@@ -46,6 +44,7 @@ public final class SceneRenderer {
     public static void end() {
         if (previous != null) previous.bindWrite(true);
         previous = null;
+        current = null;
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
     }
@@ -58,11 +57,6 @@ public final class SceneRenderer {
         return (float) (System.currentTimeMillis() % 10000000L) / 1000.0f;
     }
 
-    /**
-     * Draws a planet or moon: the surface pass, then (optionally) the atmosphere shell.
-     *
-     * @param sunWorld where the light comes from, in the same space as {@code worldPos}
-     */
     public static void drawPlanet(PlanetParams params, Matrix4f view, Matrix4f projection, Vector3f worldPos,
                                   float radius, Vector3f sunWorld, float spinDeg, float cloudSpinDeg,
                                   PlanetRenderer.Quality quality, boolean atmosphere) {
@@ -73,10 +67,9 @@ public final class SceneRenderer {
                 .translate(worldPos)
                 .rotateZ((float) Math.toRadians(params.axialTiltDeg()))
                 .rotateY((float) Math.toRadians(spinDeg))
-                // a cube of half-extent 0.82 holds about the volume of the unit sphere
+
                 .scale(cube ? radius * 0.82f : radius);
 
-        // the sun direction shaders want is in view space, from this body toward the light
         Vector3f bodyView = view.transformPosition(new Vector3f(worldPos));
         Vector3f sunView = view.transformPosition(new Vector3f(sunWorld)).sub(bodyView).normalize();
 
@@ -101,12 +94,12 @@ public final class SceneRenderer {
         setColor(planet, "OceanShallow", params.oceanShallow());
         setColor(planet, "EmissiveColor", params.emissive());
         planet.safeGetUniform("EmissiveAmount").set(params.emissiveAmount());
+        planet.safeGetUniform("Style").set((float) params.style());
         planet.safeGetUniform("Voxel").set(cube ?
                 net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) : 0.0f);
         if (cube) CubeMesh.draw(planet, modelView, projection);
         else mesh.draw(planet, modelView, projection);
 
-        // the smooth atmosphere shell would wrap a cube badly, so cube worlds go without
         if (!cube && atmosphere && params.atmoDensity() > 0.0f) {
             ShaderInstance shell = ContinuumShaders.ATMOSPHERE;
             shell.safeGetUniform("SunDir").set(sunView.x, sunView.y, sunView.z);
@@ -119,14 +112,43 @@ public final class SceneRenderer {
             RenderSystem.depthMask(true);
             RenderSystem.disableBlend();
         }
+
+        if (!cube && params.ring() != null && ContinuumShaders.RING != null) {
+            PlanetParams.Ring ring = params.ring();
+            ShaderInstance rs = ContinuumShaders.RING;
+            rs.safeGetUniform("Time").set(time());
+            rs.safeGetUniform("SunDir").set(sunView.x, sunView.y, sunView.z);
+            rs.safeGetUniform("PlanetCenter").set(bodyView.x, bodyView.y, bodyView.z);
+            rs.safeGetUniform("PlanetRadius").set(radius);
+            rs.safeGetUniform("Inner").set(ring.inner() / ring.outer());
+            rs.safeGetUniform("Opacity").set(ring.opacity());
+            rs.safeGetUniform("Seed").set(params.seed());
+            setColor(rs, "Color1", ring.color());
+            setColor(rs, "Color2", ring.color2());
+
+            Matrix4f ringModel = new Matrix4f(view)
+                    .translate(worldPos)
+                    .rotateZ((float) Math.toRadians(params.axialTiltDeg()))
+                    .rotateX((float) Math.toRadians(ring.tiltDeg()))
+                    .scale(radius * ring.outer());
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.depthMask(false);
+            RenderSystem.disableCull();
+            VertexBuffer quad = ringQuad();
+            quad.bind();
+            quad.drawWithShader(ringModel, projection, rs);
+            VertexBuffer.unbind();
+            RenderSystem.enableCull();
+            RenderSystem.depthMask(true);
+            RenderSystem.disableBlend();
+        }
     }
 
-    /** A self-lit star (or, with {@code blackHole}, an almost black disc for the glow to sit around). */
     public static void drawStar(int rgb, boolean blackHole, Matrix4f view, Matrix4f projection, Vector3f worldPos,
                                 float radius, PlanetRenderer.Quality quality) {
         if (!ContinuumShaders.ready()) return;
 
-        // stars follow the planet style (a blocky sun in cube mode); a black hole's horizon stays round
         boolean cube = !blackHole && net.phoenix.core.integration.continuum.client.ContinuumVisuals.cube();
         Matrix4f modelView = new Matrix4f(view).translate(worldPos).scale(cube ? radius * 0.82f : radius);
 
@@ -135,7 +157,7 @@ public final class SceneRenderer {
                 net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) : 0.0f);
         star.safeGetUniform("Time").set(time());
         star.safeGetUniform("Seed").set(1.0f);
-        star.safeGetUniform("Kind").set(2.0f);
+        star.safeGetUniform("Kind").set(blackHole ? 3.0f : 2.0f);
         star.safeGetUniform("Octaves").set((float) quality.octaves);
         star.safeGetUniform("SunDir").set(0.0f, 0.0f, 1.0f);
         if (blackHole) {
@@ -157,11 +179,6 @@ public final class SceneRenderer {
                 (rgb & 0xFF) / 255.0f);
     }
 
-    /**
-     * Draws a system's central body (its star, or the black hole or quasar at its heart) at the origin of {@code view}.
-     *
-     * @return false if {@code body} is not a central body type, so the caller should draw it as a planet
-     */
     public static boolean drawCentralBody(net.phoenix.core.integration.continuum.data.ContinuumBody body, Matrix4f view,
                                           Matrix4f projection, Vector3f worldPos, float radius,
                                           PlanetRenderer.Quality quality) {
@@ -183,6 +200,132 @@ public final class SceneRenderer {
         }
     }
 
+    private static @Nullable com.mojang.blaze3d.pipeline.TextureTarget nebulaTarget;
+
+    public static void drawNebulas(java.util.List<Nebula> nebulas, Matrix4f view, Matrix4f projection, float scale) {
+        ShaderInstance shader = ContinuumShaders.NEBULA;
+        if (shader == null || nebulas.isEmpty()) return;
+
+        RenderTarget destination = current != null ? current : Minecraft.getInstance().getMainRenderTarget();
+        ensureNebulaTarget(destination);
+
+        nebulaTarget.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        nebulaTarget.clear(Minecraft.ON_OSX);
+        nebulaTarget.bindWrite(true);
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+
+        shader.safeGetUniform("Time").set(time());
+        shader.safeGetUniform("Octaves").set((float) Math.min(5,
+                net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality().octaves));
+        VertexBuffer quad = holeQuad();
+        quad.bind();
+        for (Nebula nebula : nebulas) {
+            setColor(shader, "Color1", nebula.color1());
+            setColor(shader, "Color2", nebula.color2());
+            shader.safeGetUniform("Density").set(nebula.density());
+
+            java.util.Random random = new java.util.Random((long) (nebula.seed() * 7919.0f));
+            for (int i = 0; i < nebula.puffs(); i++) {
+
+                Vector3f offset = new Vector3f(random.nextFloat() - 0.5f, (random.nextFloat() - 0.5f) * 0.5f,
+                        random.nextFloat() - 0.5f).mul(nebula.radius() * 1.3f);
+                Vector3f centre = view.transformPosition(new Vector3f(nebula.center()).add(offset).mul(scale));
+                if (centre.z > -0.5f) continue;
+
+                float size = nebula.radius() * scale * (0.65f + random.nextFloat() * 0.6f);
+                shader.safeGetUniform("Seed").set(nebula.seed() + i * 3.7f);
+                quad.drawWithShader(new Matrix4f().translate(centre).rotateZ(random.nextFloat() * 6.2831853f)
+                        .scale(size), projection, shader);
+            }
+        }
+        VertexBuffer.unbind();
+        destination.bindWrite(true);
+
+        compositeHole(nebulaTarget);
+
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    private static void ensureNebulaTarget(RenderTarget destination) {
+        int w = Math.max(32, destination.width / 2);
+        int h = Math.max(32, destination.height / 2);
+        if (nebulaTarget == null || nebulaTarget.width != w || nebulaTarget.height != h) {
+            if (nebulaTarget != null) nebulaTarget.destroyBuffers();
+            nebulaTarget = new com.mojang.blaze3d.pipeline.TextureTarget(w, h, false, Minecraft.ON_OSX);
+            nebulaTarget.setFilterMode(9729);
+        }
+    }
+
+    public static void drawNebulaWash(Nebula nebula, float strength, Matrix4f projection, float yawDeg,
+                                      float pitchDeg) {
+        ShaderInstance shader = ContinuumShaders.NEBULA;
+        if (shader == null) return;
+
+        RenderTarget destination = current != null ? current : Minecraft.getInstance().getMainRenderTarget();
+        ensureNebulaTarget(destination);
+        nebulaTarget.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        nebulaTarget.clear(Minecraft.ON_OSX);
+        nebulaTarget.bindWrite(true);
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+
+        float depth = 80.0f;
+        float aspect = destination.width / (float) Math.max(1, destination.height);
+        float cover = depth * 0.364f * aspect * 1.2f;
+
+        shader.safeGetUniform("Time").set(time());
+        shader.safeGetUniform("Octaves").set((float) Math.min(4,
+                net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality().octaves));
+        shader.safeGetUniform("Density").set(nebula.density() * (0.35f + 0.45f * strength));
+        setColor(shader, "Color1", nebula.color1());
+        setColor(shader, "Color2", nebula.color2());
+        VertexBuffer quad = holeQuad();
+        quad.bind();
+        for (int i = 0; i < 3; i++) {
+            float parallax = 0.35f + 0.2f * i;
+            Vector3f centre = new Vector3f((i - 1) * cover * 0.55f - yawDeg * parallax,
+                    (1 - i) * cover * 0.18f + pitchDeg * parallax * 0.6f, -depth - i * 6.0f);
+            shader.safeGetUniform("Seed").set(nebula.seed() + i * 5.3f);
+            quad.drawWithShader(new Matrix4f().translate(centre).rotateZ(i * 1.7f).scale(cover * (1.0f - 0.12f * i)),
+                    projection, shader);
+        }
+        VertexBuffer.unbind();
+        destination.bindWrite(true);
+
+        compositeHole(nebulaTarget);
+
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    private static @Nullable VertexBuffer ringQuad;
+
+    private static VertexBuffer ringQuad() {
+        if (ringQuad == null) {
+            BufferBuilder builder = new BufferBuilder(128);
+            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+            builder.vertex(-1, 0, -1).endVertex();
+            builder.vertex(-1, 0, 1).endVertex();
+            builder.vertex(1, 0, 1).endVertex();
+            builder.vertex(1, 0, -1).endVertex();
+            ringQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            ringQuad.bind();
+            ringQuad.upload(builder.end());
+            VertexBuffer.unbind();
+        }
+        return ringQuad;
+    }
+
     private static @Nullable VertexBuffer holeQuad;
 
     private static VertexBuffer holeQuad() {
@@ -201,18 +344,13 @@ public final class SceneRenderer {
         return holeQuad;
     }
 
-    /**
-     * The accretion disk, photon ring, lensed far side of the disk and (for a quasar) jets around a black hole whose
-     * horizon sphere of {@code radius} was just drawn with {@link #drawStar}. A camera-facing billboard; the shader
-     * does the rest.
-     */
     public static void drawBlackHole(Matrix4f view, Matrix4f projection, Vector3f worldPos, float radius,
                                      boolean quasar) {
         ShaderInstance shader = ContinuumShaders.BLACKHOLE;
         if (shader == null) return;
 
         float extent = quasar ? 18.0f : 6.0f;
-        // the disk lies near the world's horizontal plane, tipped slightly so it never reads as flat
+
         Vector3f normal = view.transformDirection(new Vector3f(0.10f, 1.0f, 0.06f).normalize());
 
         shader.safeGetUniform("Time").set(time());
@@ -231,23 +369,89 @@ public final class SceneRenderer {
         Vector3f centre = view.transformPosition(new Vector3f(worldPos));
         Matrix4f modelView = new Matrix4f().translate(centre).scale(radius * extent);
 
+        var quality = net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality();
+        shader.safeGetUniform("Detail").set(switch (quality) {
+            case LOW -> 2.0f;
+            case MEDIUM -> 4.0f;
+            case HIGH -> 4.0f;
+        });
+
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
+
+        float scale = switch (quality) {
+            case LOW -> 0.6f;
+            case MEDIUM -> 1.0f;
+            case HIGH -> 1.0f;
+        };
+        RenderTarget destination = current != null ? current : Minecraft.getInstance().getMainRenderTarget();
+        com.mojang.blaze3d.pipeline.TextureTarget low = holeTarget(destination.width, destination.height, scale);
+
+        low.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        low.clear(Minecraft.ON_OSX);
+        low.bindWrite(true);
         VertexBuffer quad = holeQuad();
         quad.bind();
         quad.drawWithShader(modelView, projection, shader);
         VertexBuffer.unbind();
+        destination.bindWrite(true);
+
+        compositeHole(low);
+
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
     }
 
-    /**
-     * Continuum's own backdrop shader: opaque and fully covering (the shared nebula shader fades to nothing between
-     * its filaments, which left most of the screen as bare clear colour). It drifts a little with the camera yaw.
-     */
+    private static com.mojang.blaze3d.pipeline.TextureTarget holeTarget(int destWidth, int destHeight, float scale) {
+        int w = Math.max(32, Math.round(destWidth * scale));
+        int h = Math.max(32, Math.round(destHeight * scale));
+        if (holeTarget == null || holeTarget.width != w || holeTarget.height != h) {
+            if (holeTarget != null) holeTarget.destroyBuffers();
+            holeTarget = new com.mojang.blaze3d.pipeline.TextureTarget(w, h, false, Minecraft.ON_OSX);
+            holeTarget.setFilterMode(9729);
+        }
+        return holeTarget;
+    }
+
+    private static void compositeHole(com.mojang.blaze3d.pipeline.TextureTarget low) {
+        Matrix4f savedProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        var savedSorting = RenderSystem.getVertexSorting();
+        Matrix4f ortho = new Matrix4f().setOrtho(0.0f, 1.0f, 1.0f, 0.0f, 1000.0f, 3000.0f);
+        RenderSystem.setProjectionMatrix(ortho, com.mojang.blaze3d.vertex.VertexSorting.ORTHOGRAPHIC_Z);
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+        ShaderInstance blit = Minecraft.getInstance().gameRenderer.blitShader;
+        blit.setSampler("DiffuseSampler", low.getColorTextureId());
+        if (blit.MODEL_VIEW_MATRIX != null)
+            blit.MODEL_VIEW_MATRIX.set(new Matrix4f().translation(0.0f, 0.0f, -2000.0f));
+        if (blit.PROJECTION_MATRIX != null) blit.PROJECTION_MATRIX.set(ortho);
+        blit.apply();
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+        BufferBuilder bb = Tesselator.getInstance().getBuilder();
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bb.vertex(0, 1, 0).uv(0, 0).color(255, 255, 255, 255).endVertex();
+        bb.vertex(1, 1, 0).uv(1, 0).color(255, 255, 255, 255).endVertex();
+        bb.vertex(1, 0, 0).uv(1, 1).color(255, 255, 255, 255).endVertex();
+        bb.vertex(0, 0, 0).uv(0, 1).color(255, 255, 255, 255).endVertex();
+        com.mojang.blaze3d.vertex.BufferUploader.draw(bb.end());
+        blit.clear();
+
+        RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
+    }
+
     private static void drawBackdrop(float width, float height, float yawDeg) {
         ShaderInstance backdrop = ContinuumShaders.BACKDROP;
         if (backdrop == null) return;

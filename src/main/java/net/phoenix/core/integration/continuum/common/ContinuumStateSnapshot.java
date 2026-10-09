@@ -10,25 +10,19 @@ import net.phoenix.core.integration.continuum.data.DiscoveryStage;
 
 import java.util.*;
 
-/**
- * What a player's client needs to know about their team: the stage of every system and body, and the team's missions.
- * {@code serverNow} lets the client turn the server's wall-clock timestamps into countdowns on its own clock.
- */
 public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, DiscoveryStage> stages,
                                      List<MissionView> missions, List<OutpostView> outposts,
-                                     Map<ResourceLocation, float[]> deposits) {
+                                     Map<ResourceLocation, float[]> deposits,
+                                     java.util.Set<ResourceLocation> hidden,
+                                     Map<ResourceLocation, Integer> stations, int missionSlots,
+                                     Map<ResourceLocation, AffinityView> affinities) {
 
-    /**
-     * An outpost as the client sees it. {@code nextCycleAt} and {@code cycleMillis} let the client keep counting
-     * finished cycles between snapshots; {@code maxReady} is the stockpile cap. {@code upkeepPerCycle} is the EU one
-     * cycle costs, {@code powered} whether the latest cycles were paid for and {@code lostCycles} how many have been
-     * lost to a power shortage since the last haul.
-     */
+    public record AffinityView(float trip, float wear, float yield, String label) {}
+
     public record OutpostView(ResourceLocation body, int probes, int readyCycles, long nextCycleAt, long cycleMillis,
                               int maxReady, long upkeepPerCycle, boolean powered, int lostCycles, boolean damaged,
                               int brokenCycles) {
 
-        /** Cycles ready at {@code now}, including ones finished since the snapshot was taken. */
         public int readyAt(long now) {
             int ready = readyCycles;
             if (ready < maxReady && cycleMillis > 0 && now >= nextCycleAt) {
@@ -38,10 +32,13 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
         }
     }
 
-    /** The part of a {@link Mission} the client needs. */
     public record MissionView(UUID id, ResourceLocation destination, Mission.Type type, int probes,
                               long startMillis, long durationMillis, Mission.State state, float wearAfter,
-                              String launcherName, List<String> events) {
+                              String launcherName, List<String> events, long distressUntil, boolean rescuing) {
+
+        public boolean stranded() {
+            return distressUntil > 0;
+        }
 
         public float progress(long now) {
             if (state.finished() || durationMillis <= 0) return 1.0f;
@@ -71,12 +68,13 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
 
         List<MissionView> views = new ArrayList<>();
         for (Mission mission : data.missions(team)) {
-            // a landed rocket already carries its new wear; one still flying will pick up this trip's cost
+
             float wearAfter = mission.state.finished() ? RocketStats.wear(mission.rocket) :
                     Math.min(1.0f, RocketStats.wear(mission.rocket) + mission.wearCost);
             views.add(new MissionView(mission.id, mission.destination, mission.type, mission.probes,
                     mission.startMillis, mission.durationMillis, mission.state, wearAfter, mission.launcherName,
-                    mission.state.finished() ? List.copyOf(mission.events) : List.of()));
+                    mission.state.finished() ? List.copyOf(mission.events) : List.of(), mission.distressUntil,
+                    mission.rescuing));
         }
         List<OutpostView> outposts = new ArrayList<>();
         data.outposts(team).forEach((body, outpost) -> outposts.add(new OutpostView(body, outpost.probes(),
@@ -84,7 +82,6 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
                 OutpostPower.upkeepPerCycle(outpost.probes()), outpost.powered(), outpost.lostCycles(),
                 outpost.damaged(), outpost.brokenCycles())));
 
-        // the richness of each mapped deposit, in the body's yield order; 0 where it is not mapped yet
         Map<ResourceLocation, float[]> deposits = new LinkedHashMap<>();
         for (ContinuumBody body : ContinuumData.allBodies()) {
             int depth = data.depth(team, body.id());
@@ -95,7 +92,23 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
             }
             deposits.put(body.id(), values);
         }
-        return new ContinuumStateSnapshot(now, stages, views, outposts, deposits);
+        java.util.Set<ResourceLocation> hidden = new java.util.HashSet<>();
+        for (ContinuumBody body : ContinuumData.allBodies()) {
+            if (data.isHidden(server, team, body)) hidden.add(body.id());
+        }
+        Map<ResourceLocation, AffinityView> affinities = new LinkedHashMap<>();
+        for (ContinuumBody body : ContinuumData.allBodies()) {
+            Affinities.Factors factors = Affinities.of(server, team, body);
+            if (!factors.none()) {
+                affinities.put(body.id(), new AffinityView(factors.trip(), factors.wear(), factors.yield(),
+                        factors.label()));
+            }
+        }
+        return new ContinuumStateSnapshot(now, stages, views, outposts, deposits, hidden,
+                new LinkedHashMap<>(data.stations(team)),
+                net.phoenix.core.configs.PhoenixConfigs.INSTANCE.continuum.maxMissionsPerTeam +
+                        data.stationCount(team),
+                affinities);
     }
 
     public void write(FriendlyByteBuf buf) {
@@ -118,6 +131,8 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
             buf.writeUtf(mission.launcherName(), 64);
             buf.writeVarInt(mission.events().size());
             for (String event : mission.events()) buf.writeUtf(event, 32);
+            buf.writeLong(mission.distressUntil());
+            buf.writeBoolean(mission.rescuing());
         }
         buf.writeVarInt(outposts.size());
         for (OutpostView outpost : outposts) {
@@ -139,6 +154,22 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
             buf.writeVarInt(values.length);
             for (float value : values) buf.writeFloat(value);
         });
+        buf.writeVarInt(stations.size());
+        stations.forEach((body, level) -> {
+            buf.writeResourceLocation(body);
+            buf.writeVarInt(level);
+        });
+        buf.writeVarInt(missionSlots);
+        buf.writeVarInt(affinities.size());
+        affinities.forEach((body, view) -> {
+            buf.writeResourceLocation(body);
+            buf.writeFloat(view.trip());
+            buf.writeFloat(view.wear());
+            buf.writeFloat(view.yield());
+            buf.writeUtf(view.label(), 256);
+        });
+        buf.writeVarInt(hidden.size());
+        for (ResourceLocation id : hidden) buf.writeResourceLocation(id);
     }
 
     public static ContinuumStateSnapshot read(FriendlyByteBuf buf) {
@@ -165,8 +196,10 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
             List<String> events = new ArrayList<>();
             int eventCount = buf.readVarInt();
             for (int e = 0; e < eventCount; e++) events.add(buf.readUtf(32));
+            long distressUntil = buf.readLong();
+            boolean rescuing = buf.readBoolean();
             missions.add(new MissionView(id, destination, Mission.Type.values()[typeOrdinal], probes, start, duration,
-                    Mission.State.values()[ordinal], wearAfter, launcher, events));
+                    Mission.State.values()[ordinal], wearAfter, launcher, events, distressUntil, rescuing));
         }
         List<OutpostView> outposts = new ArrayList<>();
         int outpostCount = buf.readVarInt();
@@ -183,6 +216,20 @@ public record ContinuumStateSnapshot(long serverNow, Map<ResourceLocation, Disco
             for (int v = 0; v < values.length; v++) values[v] = buf.readFloat();
             deposits.put(body, values);
         }
-        return new ContinuumStateSnapshot(serverNow, stages, missions, outposts, deposits);
+        Map<ResourceLocation, Integer> stations = new LinkedHashMap<>();
+        int stationCount = buf.readVarInt();
+        for (int i = 0; i < stationCount; i++) stations.put(buf.readResourceLocation(), buf.readVarInt());
+        int missionSlots = buf.readVarInt();
+        Map<ResourceLocation, AffinityView> affinities = new LinkedHashMap<>();
+        int affinityCount = buf.readVarInt();
+        for (int i = 0; i < affinityCount; i++) {
+            affinities.put(buf.readResourceLocation(),
+                    new AffinityView(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readUtf(256)));
+        }
+        java.util.Set<ResourceLocation> hidden = new java.util.HashSet<>();
+        int hiddenCount = buf.readVarInt();
+        for (int i = 0; i < hiddenCount; i++) hidden.add(buf.readResourceLocation());
+        return new ContinuumStateSnapshot(serverNow, stages, missions, outposts, deposits, hidden, stations,
+                missionSlots, affinities);
     }
 }

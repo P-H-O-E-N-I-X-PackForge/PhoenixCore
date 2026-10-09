@@ -10,25 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
 
-/**
- * A rule loaded from {@code data/<namespace>/conflux/gated_recipes/*.json} that attaches an
- * {@link AxiomResearchCondition} for {@code flag} onto every already-loaded {@code GTRecipe} it
- * matches - including recipes we don't author (vanilla GTCEu machines, other mods' GT integrations),
- * not just custom recipes that have the condition hand-attached in their own datagen.
- *
- * <pre>
- * {
- *   "flag": "thermal_recursion",
- *   "recipe_ids": ["gtceu:macerator/gregtech_gold_ore"],
- *   "recipe_types": [{"type": "gtceu:macerator", "min_tier": "mv"}],
- *   "output_items": ["gtceu:mv_circuit"],
- *   "output_tags": ["c:circuits/mv"]
- * }
- * </pre>
- *
- * A recipe matches if it matches ANY of the four criteria groups (each group is optional and defaults
- * to empty/no match). A recipe matched by more than one rule gets a condition for each rule's flag.
- */
 public record GatedRecipeRule(String flag, List<ResourceLocation> recipeIds, List<TypeTierGate> recipeTypes,
                               List<ResourceLocation> outputItems, List<TagKey<Item>> outputTags) {
 
@@ -44,10 +25,6 @@ public record GatedRecipeRule(String flag, List<ResourceLocation> recipeIds, Lis
                     .forGetter(GatedRecipeRule::outputTags))
             .apply(i, GatedRecipeRule::new));
 
-    /**
-     * Gates every recipe of {@code recipeType} (a GTRecipeType's registry name, e.g. "gtceu:macerator")
-     * at or above {@code minTier} (a GT voltage tier name: "ulv", "lv", "mv", "hv", ...).
-     */
     public record TypeTierGate(ResourceLocation recipeType, String minTier) {
 
         public static final Codec<TypeTierGate> CODEC = RecordCodecBuilder.create(i -> i.group(

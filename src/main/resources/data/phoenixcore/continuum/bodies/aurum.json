@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:trove",
+  "type": "star",
+  "name": "Aurum",
+  "description": "A gold star, heavy in metals.",
+  "orbit": {
+    "radius_au": 0.0,
+    "period_days": 1,
+    "phase": 0.0
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 0,
+  "spin_deg_per_sec": 0,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 1.0,
+    "scale": 1.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.0,
+    "low": "#000000",
+    "mid": "#000000",
+    "high": "#000000",
+    "ocean_deep": "#000000",
+    "ocean_shallow": "#000000",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#000000",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_trove_signal",
+    "surveyed_research": "phoenixcore:space_trove_decode"
+  },
+  "trip_minutes": 98,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 4,
+      "max": 8,
+      "chance": 0.8
+    },
+    {
+      "item": "minecraft:raw_gold",
+      "min": 1,
+      "max": 3,
+      "chance": 0.4
+    }
+  ],
+  "lore": {
+    "detected": "A star with an odd colour and a lot of metal in its light.",
+    "surveyed": "Aurum formed from the debris of a bigger star, and it kept every heavy element that star ever made."
+  }
+}

@@ -8,7 +8,6 @@ import net.phoenix.core.integration.continuum.common.ContinuumStateSnapshot;
 
 import java.util.function.Supplier;
 
-/** The receiving player's team state: discovery stages and missions. */
 public class S2CContinuumStatePacket {
 
     private final ContinuumStateSnapshot snapshot;

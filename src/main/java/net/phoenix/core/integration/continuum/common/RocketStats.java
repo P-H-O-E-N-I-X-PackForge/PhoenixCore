@@ -6,19 +6,6 @@ import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.DiscoveryStage;
 
-/**
- * Everything a rocket's NBT means: wear, upgrades and the numbers derived from them. Pure functions of the stack and
- * the config, shared by the server (which decides) and the planner screen (which previews).
- *
- * <p>
- * Wear runs from 0 (new) to 1 (ruined). The upgrades are:
- * <ul>
- * <li>{@link #OVERDRIVE}: each level cuts 10% off trip time, up to the configured cap</li>
- * <li>{@link #REINFORCED_HULL}: each level cuts 25% off the wear a trip causes, up to 75%</li>
- * <li>{@link #HULL_INTERLOCK}: a rocket at or past the interlock threshold refuses to launch instead of risking
- * the mission</li>
- * </ul>
- */
 public final class RocketStats {
 
     private RocketStats() {}
@@ -26,19 +13,18 @@ public final class RocketStats {
     public static final String HULL_INTERLOCK = "hull_interlock";
     public static final String OVERDRIVE = "overdrive";
     public static final String REINFORCED_HULL = "reinforced_hull";
-    /** Lets the rocket fly close enough to a star to extract from it and build outposts on it. */
+
     public static final String STELLAR_SHIELD = "stellar_shield";
-    /** The same for a black hole or quasar core. */
+
     public static final String SINGULARITY_SHIELD = "singularity_shield";
 
     private static final String TAG_WEAR = "Wear";
     private static final String TAG_UPGRADES = "Upgrades";
 
-    /** Wear below this never causes a failure on its own. */
     private static final float SAFE_WEAR = 0.35f;
-    /** Extra failure chance for flying to a body that is only detected, not surveyed. */
+
     private static final float UNSURVEYED_RISK = 0.12f;
-    /** What a failed trip adds to the rocket's wear on top of the usual cost. */
+
     public static final float FAILURE_WEAR = 0.30f;
 
     private static ContinuumConfig config() {
@@ -85,7 +71,6 @@ public final class RocketStats {
                 STELLAR_SHIELD.equals(id) || SINGULARITY_SHIELD.equals(id);
     }
 
-    /** The shielding upgrade a rocket needs to work at this body (anything but observing), or null for none. */
     public static @org.jetbrains.annotations.Nullable String requiredShield(ContinuumBody body) {
         return switch (body.type()) {
             case STAR -> STELLAR_SHIELD;
@@ -98,13 +83,11 @@ public final class RocketStats {
         return SINGULARITY_SHIELD.equals(upgrade) ? "Singularity Shielding Module" : "Stellar Shielding Module";
     }
 
-    /** True if the rocket is fitted for working at this body (or no shield is needed). */
     public static boolean shieldedFor(ItemStack rocket, ContinuumBody body) {
         String shield = requiredShield(body);
         return shield == null || level(rocket, shield) > 0;
     }
 
-    /** True if this rocket will not launch: it carries the interlock and is worn past the threshold. */
     public static boolean interlockRefuses(ItemStack rocket) {
         return level(rocket, HULL_INTERLOCK) > 0 && wear(rocket) >= config().interlockThreshold();
     }
@@ -118,14 +101,12 @@ public final class RocketStats {
         return Math.max(1000L, Math.round(minutes * 60_000.0));
     }
 
-    /** Wear a successful trip adds: longer trips and rougher hulls cost more. */
     public static float wearCost(ContinuumBody destination, ItemStack rocket) {
         double base = 0.05 + 0.04 * (destination.tripMinutes() / 60.0);
         double hull = 1.0 - Math.min(0.75, 0.25 * level(rocket, REINFORCED_HULL));
         return (float) Math.max(0.0, base * hull * config().wearMultiplier());
     }
 
-    /** Chance that a launch now ends in failure (and the payload being lost). */
     public static float failureChance(ItemStack rocket, DiscoveryStage destinationStage) {
         float chance = Math.max(0.0f, wear(rocket) - SAFE_WEAR) * 1.1f;
         if (destinationStage != DiscoveryStage.SURVEYED) chance += UNSURVEYED_RISK;

@@ -9,7 +9,6 @@ import net.phoenix.core.integration.continuum.client.ContinuumClientHooks;
 
 import java.util.function.Supplier;
 
-/** Sent to the player who launched: the server accepted it, so play the ascent. Also carries refusals as a message. */
 public class S2CMissionLaunchedPacket {
 
     private final boolean accepted;

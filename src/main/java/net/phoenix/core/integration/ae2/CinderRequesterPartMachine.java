@@ -51,25 +51,6 @@ import java.util.function.IntSupplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * Design doc feature #5 - the requester/auto-restock companion block. Per the user's own answer when
- * this was designed, keeps <i>ready-to-build material kits</i> in stock (raw materials already sitting
- * in the network, sufficient to deploy N multiblocks right now), not placed structures - deployment
- * stays a deliberate player action via a Cinder Core/Atlas.
- * <p>
- * A "kit" is defined by whatever {@link CinderCoreItem} is socketed into the template slot (read-only
- * reference, never consumed or moved - same slot-as-recipe-source idea {@code CinderForgeHatchPartMachine}
- * uses for its own CORE_SLOT, just not packaged/removed here). "Ready kits" = the floor, over every
- * required block, of (current network stock / per-kit count) - i.e. complete sets already on hand, not
- * a projection of what AE2 <i>could</i> craft - matching "ready-to-build" literally.
- * <p>
- * Extends {@link MEBusPartMachine} for the exact same reason {@code CinderForgeHatchPartMachine} does:
- * it's the established, verified-working base class in this codebase for "a GTCEu block that's also a
- * real AE2 grid node with a per-tick {@code autoIO()} hook" - the precedent the original design doc
- * called out for this exact feature. Unlike a Cinder Atlas (a portable item with no grid node of its
- * own, borrowing a wireless access point's), this machine has a genuine {@code IManagedGridNode} via
- * {@link #getMainNode()}, so its crafting requests need no such workaround.
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CinderRequesterPartMachine extends MEBusPartMachine {
@@ -280,18 +261,13 @@ public class CinderRequesterPartMachine extends MEBusPartMachine {
                         statusLine = "Calculation failed for " + key + " - see log.";
                         return;
                     }
-                    // Diagnostic logging (2026-09-16) - same reasoning as
-                    // CinderAtlasWirelessLink#requestMissingMaterials, added after a report of a batch
-                    // reporting success with no actual network activity despite spare CPU capacity and
-                    // real patterns existing.
+
                     PhoenixCore.LOGGER.info(
                             "[CinderRequester] Plan for {}x{}: simulation={} bytes={} missingItems={} " +
                                     "patternSteps={}",
                             amount, key, finalPlan.simulation(), finalPlan.bytes(), finalPlan.missingItems(),
                             finalPlan.patternTimes().size());
 
-                    // Matches AE2's own CraftConfirmMenu#cpuMatches (verified via bytecode) - also
-                    // requires the CPU's available storage cover the plan's byte size, not just idle.
                     ICraftingCPU cpu = craftingService.getCpus().stream()
                             .filter(c -> !c.isBusy() && c.getAvailableStorage() >= finalPlan.bytes())
                             .findFirst().orElse(null);

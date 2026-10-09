@@ -14,18 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * What this client currently knows about its team: the stage of every system and body, and the team's missions. It is
- * only ever replaced wholesale by a snapshot from the server; nothing on the client changes it.
- */
 public final class ContinuumClientState {
 
     private ContinuumClientState() {}
 
     private static Map<ResourceLocation, DiscoveryStage> stages = Map.of();
     private static List<ContinuumStateSnapshot.MissionView> missions = List.of();
+    private static Map<ResourceLocation, Integer> stations = Map.of();
+    private static int missionSlots;
+    private static Map<ResourceLocation, ContinuumStateSnapshot.AffinityView> affinities = Map.of();
+    private static int stockRockets;
     private static Map<ResourceLocation, ContinuumStateSnapshot.OutpostView> outposts = Map.of();
     private static Map<ResourceLocation, float[]> deposits = Map.of();
+    private static java.util.Set<ResourceLocation> hidden = java.util.Set.of();
     private static long clockOffset;
 
     private static Map<UUID, Mission.State> lastStates = Map.of();
@@ -38,7 +39,6 @@ public final class ContinuumClientState {
         stages = new HashMap<>(snapshot.stages());
         haveStages = true;
 
-        // a body that has just risen a stage has just written a new Archive entry (not on the first snapshot)
         if (hadStages) {
             for (Map.Entry<ResourceLocation, DiscoveryStage> entry : stages.entrySet()) {
                 DiscoveryStage old = before.getOrDefault(entry.getKey(), DiscoveryStage.UNKNOWN);
@@ -49,7 +49,6 @@ public final class ContinuumClientState {
         }
         missions = List.copyOf(snapshot.missions());
 
-        // a mission we saw running that has now finished has just landed
         Map<UUID, Mission.State> states = new HashMap<>();
         for (ContinuumStateSnapshot.MissionView mission : missions) {
             states.put(mission.id(), mission.state());
@@ -62,7 +61,6 @@ public final class ContinuumClientState {
         Map<ResourceLocation, ContinuumStateSnapshot.OutpostView> byBody = new HashMap<>();
         for (ContinuumStateSnapshot.OutpostView outpost : snapshot.outposts()) byBody.put(outpost.body(), outpost);
 
-        // an outpost we saw working that is now broken has just had an incident
         for (ContinuumStateSnapshot.OutpostView outpost : byBody.values()) {
             ContinuumStateSnapshot.OutpostView old = outposts.get(outpost.body());
             if (old != null && !old.damaged() && outpost.damaged()) {
@@ -71,7 +69,11 @@ public final class ContinuumClientState {
         }
         outposts = byBody;
         deposits = new HashMap<>(snapshot.deposits());
-        // the server's wall clock minus ours, so countdowns agree even when the two machines' clocks differ
+        hidden = java.util.Set.copyOf(snapshot.hidden());
+        stations = new HashMap<>(snapshot.stations());
+        missionSlots = snapshot.missionSlots();
+        affinities = new HashMap<>(snapshot.affinities());
+
         clockOffset = snapshot.serverNow() - System.currentTimeMillis();
     }
 
@@ -81,7 +83,9 @@ public final class ContinuumClientState {
     private static int stockProbes;
     private static int stockKits;
 
-    public static void acceptPadStock(BlockPos pad, boolean buses, ItemStack rocket, int probes, int kits) {
+    public static void acceptPadStock(BlockPos pad, boolean buses, ItemStack rocket, int probes, int kits,
+                                      int rockets) {
+        stockRockets = rockets;
         stockPad = pad;
         stockFromBuses = buses;
         stockRocket = rocket;
@@ -89,7 +93,6 @@ public final class ContinuumClientState {
         stockKits = kits;
     }
 
-    /** Whether the pad's stock was counted in its item input buses (otherwise the player's inventory is used). */
     public static boolean padUsesBuses(@Nullable BlockPos pad) {
         return pad != null && pad.equals(stockPad) && stockFromBuses;
     }
@@ -106,13 +109,35 @@ public final class ContinuumClientState {
         return stockKits;
     }
 
-    /** The mapped richness of deposit {@code index} on a body (in its yield order), or 0 if it is not mapped yet. */
+    public static int padRockets() {
+        return stockRockets;
+    }
+
+    public static @Nullable ContinuumStateSnapshot.AffinityView affinity(ResourceLocation body) {
+        return affinities.get(body);
+    }
+
+    public static int stationLevel(ResourceLocation body) {
+        return stations.getOrDefault(body, 0);
+    }
+
+    public static Map<ResourceLocation, Integer> stations() {
+        return stations;
+    }
+
+    public static int missionSlots() {
+        return missionSlots;
+    }
+
+    public static boolean isHidden(ResourceLocation body) {
+        return hidden.contains(body);
+    }
+
     public static float richness(ResourceLocation body, int index) {
         float[] values = deposits.get(body);
         return values != null && index >= 0 && index < values.length ? values[index] : 0.0f;
     }
 
-    /** How many of a body's deposits this team has mapped. */
     public static int mappedDeposits(ResourceLocation body) {
         float[] values = deposits.get(body);
         if (values == null) return 0;
@@ -131,7 +156,6 @@ public final class ContinuumClientState {
         return missions;
     }
 
-    /** The team's outpost on a body, or null. */
     public static @Nullable ContinuumStateSnapshot.OutpostView outpost(ResourceLocation body) {
         return outposts.get(body);
     }
@@ -143,7 +167,6 @@ public final class ContinuumClientState {
         return null;
     }
 
-    /** The current time on the server's clock. */
     public static long now() {
         return System.currentTimeMillis() + clockOffset;
     }

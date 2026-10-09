@@ -30,38 +30,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * The Cinder Atlas - see {@code docs/content/Development/Systems/cinder_atlas_deployment_tool.md} for
- * the full design. So far: {@link CinderAtlasData} for the multi-loadout NBT layout,
- * {@link CinderSchemaData}'s {@code CompoundTag} overloads for reading/writing each slot exactly like
- * a Cinder Core's own tag, {@code CinderAtlasScreen} (shift-right-click air to open) for picking a
- * loadout/slot and assigning it a target, shift-right-click a formed multiblock to scan it straight
- * into the active slot instead (see {@link #scanIntoActiveSlot}), and - same interaction shape as
- * {@link CinderCoreItem} - a plain right-click commits whatever the active loadout's active slot currently
- * previews, via
- * {@link CinderDeploySource} generalizing the whole existing ghost-preview/commit pipeline rather than
- * duplicating it. Materials come from a bound AE2 network (see {@code CinderAtlasWirelessLink}), gated
- * by real distance-from-access-point range checking; loadout capacity and wireless range both scale with
- * installed upgrades (see {@link CinderAtlasUpgrades}, {@link CinderAtlasUpgradeItem}).
- */
 public class CinderAtlasItem extends Item implements IMenuItem {
 
     public CinderAtlasItem(Properties properties) {
         super(properties);
     }
 
-    /**
-     * Opens AE2's real, multi-item {@code CraftingTermMenu} - the same menu AE2's own Wireless
-     * Crafting Terminal opens - against this Atlas's linked network, so a player short on materials
-     * can search for and queue crafts for whatever's missing themselves. Deliberately does NOT
-     * pre-populate or auto-submit a craft plan for the schema's required blocks - that would need
-     * {@code ICraftingService.submitJob}, which requires being a real grid node ({@code
-     * ICraftingRequester}/{@code IActionHost}) that a portable item like the Atlas isn't; opening the
-     * real terminal for the player to drive is the honest scope for now.
-     * <p>
-     * Returns {@code false} (without messaging the player) if the held item isn't an Atlas or it isn't
-     * linked to a network - callers decide what, if anything, to tell the player about that.
-     */
     public static boolean openCraftingTerminal(ServerPlayer player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!(stack.getItem() instanceof CinderAtlasItem)) return false;
@@ -89,7 +63,7 @@ public class CinderAtlasItem extends Item implements IMenuItem {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                     () -> () -> net.phoenix.core.client.gui.cinder.CinderAtlasScreen.open(hand));
         } else if (!player.isShiftKeyDown() && level.isClientSide) {
-            // Right-clicking air (nothing to preview against) cancels an in-progress preview instead.
+
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                     () -> () -> net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel());
         }
@@ -137,16 +111,6 @@ public class CinderAtlasItem extends Item implements IMenuItem {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    /**
-     * "Blueprint scanning" - shift-right-click an already-formed multiblock to capture it straight into
-     * the active loadout slot, reusing {@link CinderSchemaData#scanFromWorld(CompoundTag, Level, BlockPos)}
-     * verbatim - the exact same scan {@link CinderCoreItem#useOn} already uses for a Cinder Core, just
-     * pointed at the active slot's own sub-tag instead of the item's root tag. Runs identically on both
-     * sides, same as Core's version: it only reads real block states already visible to the client and
-     * writes the same deterministic result there and on the server, so no packet is needed to keep them
-     * in sync - unlike every other Atlas edit, which is client-optimistic-then-packet-replicated because
-     * it originates from a UI click rather than from the world itself.
-     */
     private InteractionResult scanIntoActiveSlot(UseOnContext context, Level level, Player player,
                                                  InteractionHand hand, ItemStack stack) {
         CompoundTag slotTag = CinderAtlasData.getOrCreateSlotTag(stack, CinderAtlasData.getActiveLoadout(stack),

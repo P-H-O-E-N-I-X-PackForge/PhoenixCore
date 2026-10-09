@@ -127,7 +127,6 @@ public class WorldResearchData extends SavedData {
         return true;
     }
 
-    /** Marks a node unlocked and applies everything it grants, without charging for it. */
     private void applyUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry,
                              @Nullable ServerLevel level) {
         teamSet(unlocked, team).add(node.id);
@@ -166,14 +165,12 @@ public class WorldResearchData extends SavedData {
         }
     }
 
-    /** DEV: unlocks a node and applies its effects without cost or prerequisites. */
     public void devUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry, ServerLevel level) {
         if (teamSet(unlocked, team).contains(node.id)) return;
         applyUnlock(team, node, registry, level);
         setDirty();
     }
 
-    /** DEV: forgets everything a team has researched. */
     public void devReset(UUID team) {
         unlocked.remove(team);
         lockedOut.remove(team);

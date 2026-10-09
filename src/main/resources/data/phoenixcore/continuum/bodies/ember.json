@@ -56,5 +56,6 @@
   "lore": {
     "detected": "Heat where no star was charted. The signal is a slow pulse, like something breathing under a lid.",
     "surveyed": "Ember is a crust of black glass split by rivers of light. At night the lava veins glow bright enough to read by, and the pattern they make is not random."
-  }
+  },
+  "style": "veins"
 }

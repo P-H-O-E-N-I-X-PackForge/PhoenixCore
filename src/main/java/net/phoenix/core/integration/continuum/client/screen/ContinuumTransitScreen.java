@@ -11,7 +11,6 @@ import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.client.render.ContinuumShaders;
 import net.phoenix.core.integration.continuum.client.render.GlowRenderer;
 import net.phoenix.core.integration.continuum.client.render.PlanetParams;
-import net.phoenix.core.integration.continuum.client.render.PlanetRenderer;
 import net.phoenix.core.integration.continuum.client.render.SceneRenderer;
 import net.phoenix.core.integration.continuum.client.render.SceneTarget;
 import net.phoenix.core.integration.continuum.common.ContinuumStateSnapshot;
@@ -31,11 +30,6 @@ import org.joml.Vector3f;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- * Watching one mission fly: the destination grows in view as the real-time countdown runs down, with a few waypoints
- * along the way. When the mission lands it offers to collect the rocket. The mission state comes from the server's
- * snapshots, so this keeps working across reconnects and while other missions come and go.
- */
 public class ContinuumTransitScreen extends Screen {
 
     private static final float START_DISTANCE = 70.0f;
@@ -97,7 +91,6 @@ public class ContinuumTransitScreen extends Screen {
         float progress = mission.progress(serverNow);
         ContinuumBody destination = ContinuumData.body(mission.destination());
 
-        // a mission that lands while it is being watched rolls straight into the landing scene
         if (!mission.state().finished()) {
             wasRunning = true;
         } else if (wasRunning) {
@@ -132,7 +125,6 @@ public class ContinuumTransitScreen extends Screen {
         PlanetParams params = stage == DiscoveryStage.SURVEYED || mission.state() == Mission.State.SUCCESS ?
                 destination.params() : destination.params().ghost();
 
-        // quick at first, settling into orbit as it arrives
         float approach = 1.0f - (1.0f - progress) * (1.0f - progress);
         float distance = START_DISTANCE + (END_DISTANCE - START_DISTANCE) * approach;
 
@@ -142,7 +134,7 @@ public class ContinuumTransitScreen extends Screen {
         SceneRenderer.begin(target, clock * 3.0f);
         if (SceneRenderer.drawCentralBody(destination, view, projection, new Vector3f(), 1.2f,
                 net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality())) {
-            // a star or black hole: drawn above
+
         } else {
             SceneRenderer.drawPlanet(params, view, projection, new Vector3f(), 1.0f, new Vector3f(-60.0f, 24.0f, 40.0f),
                     clock * params.spinDegPerSec(), clock * params.cloudSpinDegPerSec(),
@@ -151,7 +143,6 @@ public class ContinuumTransitScreen extends Screen {
         SceneRenderer.end();
         scene.blit(graphics, width, height);
 
-        // the rocket's engine, a small flame low in the view while under way
         if (!mission.state().finished()) {
             float flicker = 0.8f + 0.2f * (float) Math.sin(clock * 38.0);
             GlowRenderer.batch(graphics)
@@ -189,7 +180,6 @@ public class ContinuumTransitScreen extends Screen {
                 (mission.probes() == 1 ? "" : "s") : ""), 14, 24, MapUi.TEXT);
         graphics.drawString(font, "Launched by " + mission.launcherName(), 14, 35, MapUi.DIM);
 
-        // waypoints
         int y = 56;
         for (int i = 0; i < WAYPOINT_AT.length; i++) {
             boolean passed = progress >= WAYPOINT_AT[i];
@@ -208,7 +198,6 @@ public class ContinuumTransitScreen extends Screen {
         graphics.renderOutline(backX(), 8, 52, 14, MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "< Map", backX() + 26, 11, MapUi.TEXT);
 
-        // progress and countdown
         int barW = Math.min(420, width - 80);
         int barX = (width - barW) / 2;
         int barY = height - 28;
@@ -230,14 +219,25 @@ public class ContinuumTransitScreen extends Screen {
                 case DEPLOY -> "ARRIVED  -  the outpost is up and producing";
                 case HAUL -> "ARRIVED  -  the stockpile is ready to collect";
                 case REPAIR -> "ARRIVED  -  the outpost is repaired and producing again";
+                case RESCUE -> "ARRIVED  -  the stranded rocket is recovered";
+                case STATION -> "ARRIVED  -  the orbital station is built";
             };
             statusColor = MapUi.GOOD;
+        } else if (mission.stranded()) {
+            status = mission.rescuing() ? "DISTRESS SIGNAL  -  a rescue run is on its way" :
+                    "DISTRESS SIGNAL  -  rocket stranded, the signal fades in " +
+                            net.phoenix.core.integration.continuum.common.ContinuumMissions
+                                    .durationText(mission.distressUntil() - serverNow) +
+                            ". Send a rescue run with repair kits";
+            statusColor = MapUi.WARN;
         } else if (mission.state() == Mission.State.FAILED) {
             status = switch (mission.type()) {
                 case SURVEY -> "MISSION FAILED  -  the rocket came back damaged";
                 case EXTRACT, DEPLOY -> "MISSION FAILED  -  the probes were lost and the rocket is damaged";
                 case HAUL -> "MISSION FAILED  -  the haul was lost and the rocket is damaged";
                 case REPAIR -> "MISSION FAILED  -  the repair kits were lost and the outpost is still broken";
+                case RESCUE -> "MISSION FAILED  -  the repair kits were lost; the stranded rocket still waits";
+                case STATION -> "MISSION FAILED  -  the station crew's probes were lost";
             };
             statusColor = MapUi.BAD;
         } else {
@@ -250,7 +250,7 @@ public class ContinuumTransitScreen extends Screen {
                 Math.round(mission.wearAfter() * 100.0f));
         graphics.drawCenteredString(font, wear, width / 2, barY + 12, MapUi.wearColor(mission.wearAfter()));
 
-        if (finished) {
+        if (finished && !mission.stranded()) {
             boolean hover = MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18);
             graphics.fill(collectX(), collectY(), collectX() + 124, collectY() + 18, hover ? 0xFF2c2760 : 0xFF1d1a40);
             graphics.renderOutline(collectX(), collectY(), 124, 18, MapUi.FRAME);

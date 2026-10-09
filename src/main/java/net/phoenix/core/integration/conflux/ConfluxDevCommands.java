@@ -23,14 +23,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 
 import java.util.UUID;
 
-/**
- * Developer commands for testing Conflux parts on their own:
- * <ul>
- * <li>{@code /conflux dev data <type|all> <amount>} - adds Conflux data to your team's pool</li>
- * <li>{@code /conflux dev unlock <node|all>} - unlocks research without cost or prerequisites, applying its flags</li>
- * <li>{@code /conflux dev reset} - forgets all your team's research</li>
- * </ul>
- */
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public final class ConfluxDevCommands {
 

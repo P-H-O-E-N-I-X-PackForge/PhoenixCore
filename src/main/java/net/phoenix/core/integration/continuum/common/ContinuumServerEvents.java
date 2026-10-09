@@ -19,7 +19,6 @@ import net.phoenix.core.utils.TeamUtils;
 
 import java.util.UUID;
 
-/** Server-side wiring for Continuum: definitions loading, syncing to players, mission ticking and commands. */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class ContinuumServerEvents {
 
@@ -54,7 +53,6 @@ public final class ContinuumServerEvents {
 
         ContinuumMissions.resolveDue(event.getServer());
 
-        // once a minute, finish outpost cycles so their upkeep drains from the Tesla Network steadily
         if (++upkeepCounter >= 60) {
             upkeepCounter = 0;
             for (UUID team : ContinuumTeamData.get(event.getServer()).settleOutposts(event.getServer(),
@@ -64,7 +62,6 @@ public final class ContinuumServerEvents {
         }
     }
 
-    /** The definitions were (re)loaded: everyone online needs the new ones. */
     public static void onDataReloaded() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) return;

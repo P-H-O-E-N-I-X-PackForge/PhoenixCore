@@ -1,0 +1,16 @@
+{
+  "discipline": "sealed_a",
+  "affinities": [
+    {
+      "system": "phoenixcore:orrery",
+      "trip": 0.8,
+      "wear": 0.85,
+      "label": "Sealed A keeps time with the Orrery."
+    },
+    {
+      "system": "phoenixcore:carousel",
+      "wear": 0.85,
+      "label": "Sealed A matches the Carousel step for step."
+    }
+  ]
+}

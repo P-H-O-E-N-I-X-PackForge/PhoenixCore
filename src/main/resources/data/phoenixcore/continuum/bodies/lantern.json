@@ -1,0 +1,67 @@
+{
+  "system": "phoenixcore:vesper",
+  "type": "planet",
+  "name": "Lantern",
+  "description": "A jungle world that glows in the dusk.",
+  "orbit": {
+    "radius_au": 0.7,
+    "period_days": 150,
+    "phase": 0.55
+  },
+  "radius": 1.1,
+  "gas_giant": false,
+  "axial_tilt": 14,
+  "spin_deg_per_sec": 5,
+  "cloud_spin_deg_per_sec": 8,
+  "surface": {
+    "seed": 247,
+    "scale": 2.9,
+    "ocean_level": 0.3,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.6,
+    "bump": 0.5,
+    "low": "#0a2a18",
+    "mid": "#1f7a3a",
+    "high": "#7aff9a",
+    "ocean_deep": "#041a14",
+    "ocean_shallow": "#14705a",
+    "emissive": "#60ffa0",
+    "emissive_amount": 0.45
+  },
+  "atmosphere": {
+    "color": "#60ffb0",
+    "density": 0.8
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_vesper_signal",
+    "surveyed_research": "phoenixcore:space_vesper_decode"
+  },
+  "trip_minutes": 72,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:glow_berries",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:shroomlight",
+      "min": 1,
+      "max": 3,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:slime_ball",
+      "min": 2,
+      "max": 5,
+      "chance": 0.6
+    }
+  ],
+  "lore": {
+    "detected": "Green light in a red system, from a planet that should be too dim to grow anything.",
+    "surveyed": "Lantern is one continuous canopy that gives off its own light. In the long red evening the whole planet looks lit from the inside."
+  },
+  "style": "veins"
+}

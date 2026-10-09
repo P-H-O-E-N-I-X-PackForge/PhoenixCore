@@ -8,7 +8,6 @@ import net.phoenix.core.integration.continuum.client.ContinuumClientHooks;
 
 import java.util.function.Supplier;
 
-/** Opens the map on the client with launching enabled from the given launch pad. */
 public class S2COpenMapPacket {
 
     private final BlockPos pad;

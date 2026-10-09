@@ -28,9 +28,6 @@ public abstract class RecipeManagerMixin {
         map.entrySet().removeIf(entry -> RecipeBlacklist.shouldRemoveRaw(entry.getKey(), entry.getValue()));
     }
 
-    // Runs after every recipe reload, once all recipes (ours, GTCEu's own, other mods') are fully
-    // parsed and stored - see RecipeGateApplier for why mutating them here, rather than a mixin into
-    // the recipe-matching path itself, is enough to gate them.
     @Inject(
             method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
             at = @At("TAIL"))

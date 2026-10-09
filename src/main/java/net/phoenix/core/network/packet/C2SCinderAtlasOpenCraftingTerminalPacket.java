@@ -12,11 +12,6 @@ import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 
 import java.util.function.Supplier;
 
-/**
- * Manual "prepare ahead" trigger (design doc feature #4) - opens AE2's real crafting terminal against
- * the held Atlas's linked network on demand, independent of any deploy attempt, so a player can queue
- * crafts for a loadout's materials before they're actually needed.
- */
 public class C2SCinderAtlasOpenCraftingTerminalPacket {
 
     private final InteractionHand hand;

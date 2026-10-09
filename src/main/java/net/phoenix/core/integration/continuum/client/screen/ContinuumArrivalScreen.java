@@ -8,10 +8,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
+import net.phoenix.core.integration.continuum.client.FlightProfiles;
 import net.phoenix.core.integration.continuum.client.render.ContinuumShaders;
 import net.phoenix.core.integration.continuum.client.render.GlowRenderer;
 import net.phoenix.core.integration.continuum.client.render.PlanetParams;
-import net.phoenix.core.integration.continuum.client.render.PlanetRenderer;
 import net.phoenix.core.integration.continuum.client.render.SceneRenderer;
 import net.phoenix.core.integration.continuum.client.render.SceneTarget;
 import net.phoenix.core.integration.continuum.common.ContinuumStateSnapshot;
@@ -30,11 +30,6 @@ import org.joml.Vector3f;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- * The landing: the destination swells in the view, the rocket burns into its atmosphere behind a re-entry glow, and a
- * results card closes the scene. It is cinematic only - the server already settled the mission - and it opens from the
- * transit view when a mission that was being watched lands. A failed mission lands hard: red glow, shake, warning tone.
- */
 public class ContinuumArrivalScreen extends Screen {
 
     private static final float SECONDS = 9.0f;
@@ -50,6 +45,8 @@ public class ContinuumArrivalScreen extends Screen {
     private long lastFrame = Util.getMillis();
     private boolean resolvedSound;
     private ContinuumSounds.Loop rumble;
+    private FlightProfiles.Landing profile = FlightProfiles.Landing.ENTRY;
+    private boolean touchedDown;
 
     public ContinuumArrivalScreen(UUID missionId, @Nullable BlockPos pad) {
         super(Component.literal("Arrival"));
@@ -96,18 +93,20 @@ public class ContinuumArrivalScreen extends Screen {
             return;
         }
         ContinuumBody destination = ContinuumData.body(mission.destination());
+        profile = FlightProfiles.Landing.of(destination);
         boolean crash = failed(mission);
         boolean hole = destination != null && (destination.type() == ContinuumBody.Type.BLACK_HOLE ||
                 destination.type() == ContinuumBody.Type.STAR);
         float atmosphere = destination != null ? destination.params().atmoDensity() : 0.0f;
 
-        // heat: builds as the air thickens, peaks mid-descent, bleeds off as the rocket slows
         float heat = smooth((t - 0.18f) / 0.22f) * (1.0f - smooth((t - 0.66f) / 0.16f));
-        heat *= hole ? 0.0f : (0.35f + 0.65f * Math.min(1.0f, atmosphere * 1.4f));
+        heat *= hole ? 0.0f : profile.heat * (0.35f + 0.65f * Math.min(1.0f, atmosphere * 1.4f));
         float shake = (crash ? 1.0f : 0.35f) * heat;
 
         drawScene(graphics, destination, hole, crash, shake, now);
         drawHeat(graphics, heat, crash, hole, now);
+        drawRetroAndDust(graphics, crash, hole, now);
+        drawTint(graphics, now);
         drawReadout(graphics, mission, destination, hole);
 
         if (crash && t > 0.7f && t < 0.78f) {
@@ -157,7 +156,6 @@ public class ContinuumArrivalScreen extends Screen {
         scene.blit(graphics, width, height);
     }
 
-    /** The re-entry glow wrapping the bottom of the view, with the engine's retro flame in the middle of it. */
     private void drawHeat(GuiGraphics graphics, float heat, boolean crash, boolean hole, long now) {
         if (heat <= 0.01f) return;
         float flicker = 0.85f + 0.15f * (float) Math.sin(now * 0.05) + 0.05f * (float) Math.sin(now * 0.17);
@@ -171,7 +169,7 @@ public class ContinuumArrivalScreen extends Screen {
         glows.glow(cx, base, width * 0.55f * heat, outer, 0.55f * heat * flicker);
         glows.glow(cx, base - height * 0.08f, width * 0.36f * heat, mid, 0.6f * heat * flicker);
         glows.glow(cx, base - height * 0.14f, width * 0.2f * heat, core, 0.7f * heat * flicker);
-        // plasma streaking off the leading edge
+
         for (int i = 0; i < 7; i++) {
             float wobble = (float) Math.sin(now * 0.004 + i * 1.7);
             float x = cx + (i - 3) * width * 0.055f + wobble * 10.0f;
@@ -181,10 +179,55 @@ public class ContinuumArrivalScreen extends Screen {
         glows.draw();
     }
 
+    private float retroCurve() {
+        return smooth((t - 0.35f) / 0.25f) * (1.0f - smooth((t - 0.74f) / 0.06f));
+    }
+
+    private void drawRetroAndDust(GuiGraphics graphics, boolean crash, boolean hole, long now) {
+        if (hole) return;
+        float cx = width / 2.0f;
+        float retro = profile.retro * retroCurve();
+        if (retro > 0.01f) {
+            float flicker = 0.85f + 0.15f * (float) Math.sin(now * 0.05);
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            glows.glow(cx, height * 1.0f, width * 0.22f * retro, crash ? 0xff6030 : 0x80c0ff, 0.5f * retro * flicker);
+            glows.glow(cx, height * 0.93f, width * 0.12f * retro, crash ? 0xffc080 : 0xd8f0ff, 0.7f * retro * flicker);
+            glows.draw();
+        }
+
+        float p = (t - 0.68f) / (CARD_AT + 0.04f - 0.68f);
+        if (profile.dust != 0 && p > 0.0f && p < 1.0f) {
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            for (int i = 0; i < 10; i++) {
+                float a = i / 10.0f * (float) Math.PI * 2.0f;
+                float lift = profile.spray ?
+                        p * (1.0f - p) * height * 0.35f * (0.5f + 0.5f * (float) Math.abs(Math.sin(a * 2.0f))) : 0.0f;
+                float x = cx + (float) Math.cos(a) * p * width * 0.32f;
+                float y = height * 0.9f + (float) Math.sin(a) * p * height * 0.04f - lift;
+                glows.glow(x, y, 18.0f + 44.0f * p, profile.dust, (1.0f - p) * 0.45f);
+            }
+            glows.draw();
+        }
+    }
+
+    private void drawTint(GuiGraphics graphics, long now) {
+        if (profile.tintAlpha > 0.0f) {
+            float pulse = profile == FlightProfiles.Landing.SOLAR ? 0.75f + 0.25f * (float) Math.sin(now * 0.004) :
+                    1.0f;
+            int alpha = (int) (Math.min(1.0f, profile.tintAlpha * pulse * smooth(t / 0.5f)) * 255.0f);
+            graphics.fill(0, 0, width, height, (alpha << 24) | profile.tint);
+        }
+        if (profile.vignette) {
+            int edge = ((int) (0xB0 * smooth(t / 0.6f))) << 24;
+            graphics.fillGradient(0, 0, width, height / 3, edge, 0);
+            graphics.fillGradient(0, height * 2 / 3, width, height, 0, edge);
+        }
+    }
+
     private void drawReadout(GuiGraphics graphics, ContinuumStateSnapshot.MissionView mission,
                              @Nullable ContinuumBody destination, boolean hole) {
         String name = destination != null ? destination.name() : mission.destination().getPath();
-        graphics.drawString(font, hole ? "APPROACH" : "DESCENT", 14, 12, MapUi.TITLE);
+        graphics.drawString(font, profile.title, 14, 12, MapUi.TITLE);
         graphics.drawString(font, name, 14, 24, MapUi.DIM);
 
         if (!hole) {
@@ -223,7 +266,7 @@ public class ContinuumArrivalScreen extends Screen {
         graphics.renderOutline(x, y, w, 154, a | (crash ? 0xff6b6b : 0x7a5cff));
 
         String name = destination != null ? destination.name() : mission.destination().getPath();
-        String title = crash ? "LANDING FAILED" : hole ? "ORBIT ACHIEVED" : "TOUCHDOWN";
+        String title = crash ? "LANDING FAILED" : profile.success;
         graphics.drawCenteredString(font, title, x + w / 2, y + 10, a | (crash ? 0xff6b6b : 0xE8D8FF));
         graphics.drawCenteredString(font, name + "  -  " + mission.type().label(), x + w / 2, y + 24, a | 0xB8B0D8);
 
@@ -238,7 +281,12 @@ public class ContinuumArrivalScreen extends Screen {
                     "The stockpile is loaded. Ready to collect.";
             case REPAIR -> crash ? "The repair kits were lost and the outpost is still broken." :
                     "The outpost is repaired and producing again.";
+            case RESCUE -> crash ? "The repair kits were lost and the stranded rocket still waits." :
+                    "The stranded rocket is recovered.";
+            case STATION -> crash ? "The station crew's probes were lost and the rocket is damaged." :
+                    "The orbital station is built.";
         };
+        if (mission.stranded()) result = "The rocket is stranded. A distress signal is going out.";
         graphics.drawCenteredString(font, result, x + w / 2, y + 48, a | (crash ? 0xffb0b0 : 0xB8B0D8));
 
         float wear = mission.wearAfter();
@@ -246,11 +294,10 @@ public class ContinuumArrivalScreen extends Screen {
                 Math.round(wear * 100.0f)), x + w / 2, y + 66, a | (MapUi.wearColor(wear) & 0xFFFFFF));
         MapUi.bar(graphics, x + 30, y + 80, w - 60, 6, wear, MapUi.wearColor(wear));
 
-        // what happened on the way
         int ey = y + 94;
         for (String id : mission.events()) {
-            net.phoenix.core.integration.continuum.common.MissionEvent event =
-                    net.phoenix.core.integration.continuum.common.MissionEvent.byId(id);
+            net.phoenix.core.integration.continuum.common.MissionEvent event = net.phoenix.core.integration.continuum.common.MissionEvent
+                    .byId(id);
             if (event == null) continue;
             int color = event.bad ? 0xFFffb070 : 0xFF7affd0;
             for (net.minecraft.util.FormattedCharSequence line : font.split(
@@ -278,11 +325,15 @@ public class ContinuumArrivalScreen extends Screen {
     private void updateSound(ContinuumStateSnapshot.MissionView mission, boolean hole) {
         if (rumble != null) {
             float heat = Math.max(0.0f, 1.0f - Math.abs(t - 0.45f) * 2.6f);
-            rumble.setTarget(hole ? 0.0f : 0.15f + 0.85f * heat);
+            rumble.setTarget(hole ? 0.0f : Math.max(0.15f + 0.85f * heat, profile.retro * retroCurve()));
             if (t > 0.78f) {
                 rumble.fadeOut();
                 rumble = null;
             }
+        }
+        if (!touchedDown && t >= 0.7f && !hole) {
+            touchedDown = true;
+            ContinuumSounds.touchdown(profile.touch, failed(mission));
         }
         if (!resolvedSound && t >= CARD_AT) {
             resolvedSound = true;

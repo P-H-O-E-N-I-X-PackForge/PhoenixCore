@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:trove",
+  "type": "planet",
+  "name": "Hoard",
+  "description": "A dark, dense world that holds on to everything.",
+  "orbit": {
+    "radius_au": 1.8,
+    "period_days": 640,
+    "phase": 0.7
+  },
+  "radius": 1.2,
+  "gas_giant": false,
+  "axial_tilt": 14,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 5,
+  "surface": {
+    "seed": 627,
+    "scale": 2.5,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.15,
+    "bump": 1.2,
+    "low": "#1a1008",
+    "mid": "#4a3018",
+    "high": "#8a6030",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ffb040",
+    "emissive_amount": 0.15
+  },
+  "atmosphere": {
+    "color": "#a07840",
+    "density": 0.4
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_trove_signal",
+    "surveyed_research": "phoenixcore:space_trove_decode"
+  },
+  "trip_minutes": 104,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:ancient_debris",
+      "min": 1,
+      "max": 2,
+      "chance": 0.35
+    },
+    {
+      "item": "minecraft:netherite_scrap",
+      "min": 1,
+      "max": 2,
+      "chance": 0.2
+    },
+    {
+      "item": "minecraft:raw_copper",
+      "min": 4,
+      "max": 9,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "Heavier than it has any right to be, and every instrument says the same thing about the core.",
+    "surveyed": "Hoard is dense through and through. The survey measured a gravity that does not match its size, and the difference is all metal."
+  }
+}

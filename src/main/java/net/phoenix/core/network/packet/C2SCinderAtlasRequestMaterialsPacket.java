@@ -17,13 +17,6 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 
 import java.util.function.Supplier;
 
-/**
- * Manual "prepare ahead" trigger (design doc feature #4) - real, headless auto-request of whatever the
- * active loadout's active slot is still missing from its linked AE2 network, independent of any deploy
- * attempt. Position-independent (uses {@link CinderSchemaData#getRequiredBlocks}, not a resolved
- * in-world placement), since the player isn't necessarily aiming at a valid build site when preparing
- * ahead.
- */
 public class C2SCinderAtlasRequestMaterialsPacket {
 
     private final InteractionHand hand;

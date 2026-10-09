@@ -7,7 +7,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Tells a client to play a cutscene from its {@code assets/<namespace>/cutscenes/} folder. */
 public class S2CPlayCutscenePacket {
 
     private final ResourceLocation id;

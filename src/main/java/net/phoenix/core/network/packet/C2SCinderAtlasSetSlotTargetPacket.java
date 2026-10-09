@@ -16,10 +16,6 @@ import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
 import java.util.function.Supplier;
 
-/**
- * Server-authoritative counterpart of the client's optimistic local edit (see
- * {@code CinderAtlasScreen#pickTarget}) - assigns a target multiblock to one loadout's slot.
- */
 public class C2SCinderAtlasSetSlotTargetPacket {
 
     private final InteractionHand hand;

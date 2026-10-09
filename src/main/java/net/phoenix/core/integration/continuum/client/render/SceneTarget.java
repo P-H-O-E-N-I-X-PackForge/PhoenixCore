@@ -15,14 +15,12 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-/** A window-sized offscreen target for a screen's 3D pass, plus the blit that puts it behind the GUI. */
 public final class SceneTarget implements AutoCloseable {
 
     private @Nullable RenderTarget target;
     private int width = -1;
     private int height = -1;
 
-    /** (Re)creates the target to match the window. Returns null if it could not be made. */
     public @Nullable RenderTarget ensure() {
         Minecraft mc = Minecraft.getInstance();
         int w = Math.max(64, mc.getWindow().getWidth());
@@ -44,11 +42,9 @@ public final class SceneTarget implements AutoCloseable {
         return height;
     }
 
-    /** Draws the target over the whole GUI area of {@code guiWidth} x {@code guiHeight}. */
     public void blit(GuiGraphics graphics, int guiWidth, int guiHeight) {
         if (target == null) return;
 
-        // an opaque base so nothing behind the screen can ever show through a gap
         graphics.fill(0, 0, guiWidth, guiHeight, 0xFF05060f);
 
         RenderSystem.disableBlend();
@@ -58,8 +54,7 @@ public final class SceneTarget implements AutoCloseable {
         Matrix4f pose = graphics.pose().last().pose();
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        // a framebuffer texture is upside down relative to the GUI
-        // one pixel of overscan on every side so rounding never leaves a seam
+
         bb.vertex(pose, -1, guiHeight + 1, 0).uv(0, 0).endVertex();
         bb.vertex(pose, guiWidth + 1, guiHeight + 1, 0).uv(1, 0).endVertex();
         bb.vertex(pose, guiWidth + 1, -1, 0).uv(1, 1).endVertex();

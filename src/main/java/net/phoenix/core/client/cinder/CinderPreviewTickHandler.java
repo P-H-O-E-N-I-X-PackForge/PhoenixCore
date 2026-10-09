@@ -70,21 +70,6 @@ public class CinderPreviewTickHandler {
                 mc.gameRenderer.getMainCamera(), event.getStage(), mc.getFrameTime());
     }
 
-    /**
-     * Fix for the long-standing "preview does not show" issue: {@link MutableSchema}'s blocks must be
-     * keyed in structure-local space (relative to wherever the renderer will translate the whole preview
-     * to), not world-absolute - confirmed by decompiling GTCEu's own {@code PatternPreviewRenderer} (the
-     * class this renderer is forked from): its compile step translates each block purely by its own
-     * schema-local {@code pos}, with the real world position applied exactly once, separately, as the
-     * {@code controllerPos}/{@code anchorPos} argument passed into {@code showPreview}. This method used
-     * to key the schema with {@code CinderSchemaData#resolvePlacement}'s world-absolute positions
-     * unchanged and then ask the schema to auto-detect its own controller position - meaning every block
-     * rendered at (real anchor + real world position), doubled and displaced far from the actual build
-     * site, and the auto-detected controller position depended on the fake preview level correctly
-     * instantiating a real multiblock controller block entity, which isn't guaranteed. Both are avoided
-     * here: positions are explicitly localized to {@code anchor} before building the schema, and the
-     * already-known real anchor is passed directly instead of trusting {@code schema.getControllerPos()}.
-     */
     private static void showGhostPreview(BlockPos anchor, @Nullable Map<BlockPos, BlockInfo> placements,
                                          boolean valid) {
         if (placements == null || placements.isEmpty()) return;

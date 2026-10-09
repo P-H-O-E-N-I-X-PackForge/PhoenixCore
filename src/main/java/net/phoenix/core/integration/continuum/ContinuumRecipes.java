@@ -15,11 +15,6 @@ import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
-/**
- * Assembler recipes for Continuum's items and the Launch Complex. The ladder follows the bodies' pad tiers: probes and
- * kits are MV, the rocket and hull parts HV, the modules and the complex EV, so the first launches are within reach of
- * a mid-game base and the better upgrades are an investment.
- */
 public final class ContinuumRecipes {
 
     private ContinuumRecipes() {}

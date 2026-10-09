@@ -15,11 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Loads {@link GatedRecipeRule}s from {@code data/<namespace>/conflux/gated_recipes/*.json}. Applied
- * to already-loaded recipes by {@link RecipeGateApplier}, called from the same mixin hook
- * ({@code RecipeManagerMixin}) that already filters recipes via {@code RecipeBlacklist}.
- */
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
 
@@ -42,7 +37,6 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
         rules = List.copyOf(loaded);
         PhoenixCore.LOGGER.info("Loaded {} gated recipe rule(s)", rules.size());
 
-        // The recipe manager can finish applying before these rules load, which would leave every recipe ungated.
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null) RecipeGateApplier.applyGates(server.getRecipeManager().getRecipes());
     }
@@ -55,11 +49,6 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
         event.addListener(INSTANCE);
     }
 
-    /**
-     * The recipe manager applies its recipes before these rules have loaded on a fresh world start, which would leave
-     * every recipe ungated, so the rules are applied again once the server is up and after every datapack reload.
-     * Applying is safe to repeat: a recipe never gets the same flag twice.
-     */
     @net.minecraftforge.eventbus.api.SubscribeEvent
     public static void onServerStarted(net.minecraftforge.event.server.ServerStartedEvent event) {
         RecipeGateApplier.applyGates(event.getServer().getRecipeManager().getRecipes());

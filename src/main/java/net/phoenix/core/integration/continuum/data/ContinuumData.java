@@ -20,12 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Reader;
 import java.util.*;
 
-/**
- * The loaded systems and bodies. They are datapack JSON under {@code data/<ns>/continuum/systems|bodies/*.json},
- * loaded on the server and synced to clients as raw JSON ({@link #snapshot} / {@link #acceptSync}); both sides run the
- * same {@link #parseSystem} / {@link #parseBody}. In single-player the client and server share these maps, which is
- * harmless because they always hold identical content.
- */
 public final class ContinuumData {
 
     private ContinuumData() {}
@@ -39,7 +33,6 @@ public final class ContinuumData {
     private static Map<ResourceLocation, String> rawSystems = Map.of();
     private static Map<ResourceLocation, String> rawBodies = Map.of();
 
-    /** Raw definitions as loaded, for sending to clients. */
     public record Snapshot(Map<ResourceLocation, String> systems, Map<ResourceLocation, String> bodies) {}
 
     public static void registerServerListener(AddReloadListenerEvent event) {
@@ -50,7 +43,6 @@ public final class ContinuumData {
         return new Snapshot(rawSystems, rawBodies);
     }
 
-    /** Client side: replace the definitions with what the server sent. */
     public static void acceptSync(Snapshot snapshot) {
         Map<ResourceLocation, ContinuumSystem> newSystems = new LinkedHashMap<>();
         Map<ResourceLocation, ContinuumBody> newBodies = new LinkedHashMap<>();
@@ -88,7 +80,6 @@ public final class ContinuumData {
         return bodies.values();
     }
 
-    /** Every body in a system, planets first then moons, in a stable order. */
     public static List<ContinuumBody> bodiesOf(ResourceLocation system) {
         List<ContinuumBody> result = new ArrayList<>();
         for (ContinuumBody body : bodies.values()) {
@@ -107,8 +98,6 @@ public final class ContinuumData {
         result.sort(Comparator.comparing(ContinuumBody::orbitAu));
         return result;
     }
-
-    // ---------------- parsing (shared) ----------------
 
     public static ContinuumSystem parseSystem(ResourceLocation id, JsonObject json) {
         float[] pos = new float[] { 0, 0, 0 };
@@ -145,6 +134,14 @@ public final class ContinuumData {
             type = ContinuumBody.Type.valueOf(GsonHelper.getAsString(json, "type", "planet").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {}
 
+        PlanetParams.Ring ring = null;
+        if (json.has("rings")) {
+            JsonObject r = GsonHelper.getAsJsonObject(json, "rings");
+            ring = new PlanetParams.Ring(GsonHelper.getAsFloat(r, "inner", 1.4f),
+                    GsonHelper.getAsFloat(r, "outer", 2.4f),
+                    color(r, "color", 0xd8c8a0), color(r, "color2", 0x8a7a60), GsonHelper.getAsFloat(r, "tilt", 0.0f),
+                    GsonHelper.getAsFloat(r, "opacity", 0.85f));
+        }
         PlanetParams params = new PlanetParams(
                 name, description,
                 GsonHelper.getAsBoolean(json, "gas_giant", false),
@@ -160,7 +157,8 @@ public final class ContinuumData {
                 color(atmosphere, "color", 0x6aa8ff), GsonHelper.getAsFloat(atmosphere, "density", 0.0f),
                 GsonHelper.getAsFloat(json, "axial_tilt", 0.0f),
                 GsonHelper.getAsFloat(json, "spin_deg_per_sec", 4.0f),
-                GsonHelper.getAsFloat(json, "cloud_spin_deg_per_sec", 6.0f));
+                GsonHelper.getAsFloat(json, "cloud_spin_deg_per_sec", 6.0f),
+                PlanetParams.styleOf(GsonHelper.getAsString(json, "style", "")), ring);
 
         JsonObject lore = GsonHelper.getAsJsonObject(json, "lore", new JsonObject());
         return new ContinuumBody(
@@ -181,7 +179,18 @@ public final class ContinuumData {
                 DiscoveryStage.parse(GsonHelper.getAsString(json, "initial_stage", "unknown"),
                         DiscoveryStage.UNKNOWN),
                 GsonHelper.getAsString(lore, "detected", ""),
-                GsonHelper.getAsString(lore, "surveyed", ""));
+                GsonHelper.getAsString(lore, "surveyed", ""),
+                json.has("discipline") && !json.get("discipline").isJsonNull() ?
+                        GsonHelper.getAsString(json, "discipline") : null,
+                parsePdimCost(json));
+    }
+
+    private static @Nullable ContinuumBody.PdimCost parsePdimCost(JsonObject json) {
+        if (!json.has("pdim_cost") || !json.get("pdim_cost").isJsonObject()) return null;
+        JsonObject cost = GsonHelper.getAsJsonObject(json, "pdim_cost");
+        ResourceLocation item = optionalId(cost, "item");
+        return new ContinuumBody.PdimCost(item != null ? item : new ResourceLocation("minecraft", "air"),
+                Math.max(0, GsonHelper.getAsInt(cost, "count", 0)));
     }
 
     private static List<ContinuumBody.Yield> parseYields(JsonObject json) {
@@ -213,8 +222,6 @@ public final class ContinuumData {
             return fallback;
         }
     }
-
-    // ---------------- server reload listener ----------------
 
     private record Parsed(Map<ResourceLocation, ContinuumSystem> systems, Map<ResourceLocation, ContinuumBody> bodies,
                           Map<ResourceLocation, String> rawSystems, Map<ResourceLocation, String> rawBodies) {}

@@ -18,11 +18,6 @@ public final class AxiomShaderManager {
     private static @Nullable ResourceLocation activeLocation = null;
     private static float elapsed = 0f;
 
-    /**
-     * Post chains kept loaded while the terminal is open. Building one parses its JSON and compiles its programs, which
-     * used to happen on every switch between tree tabs and froze the game for a moment; now each is built once (and
-     * {@link #preload} spreads those builds over frames) and switching just swaps which one is current.
-     */
     private static final Map<ResourceLocation, PostChain> CHAINS = new HashMap<>();
     private static @Nullable Object chainsOwner;
 
@@ -31,13 +26,12 @@ public final class AxiomShaderManager {
     private static void checkOwner() {
         Object owner = Minecraft.getInstance().getResourceManager();
         if (chainsOwner != owner) {
-            // resources were reloaded: the old chains are stale
+
             release();
             chainsOwner = owner;
         }
     }
 
-    /** Builds a chain ahead of time, without making it current. Returns whether it is (now) ready. */
     public static boolean preload(ResourceLocation location) {
         checkOwner();
         if (CHAINS.containsKey(location)) return true;
@@ -49,12 +43,11 @@ public final class AxiomShaderManager {
         } catch (Exception e) {
             return false;
         } finally {
-            // creating render targets unbinds the main one; mid-frame that sends the rest of the GUI nowhere
+
             mc.getMainRenderTarget().bindWrite(true);
         }
     }
 
-    /** Closes every kept chain; call when the terminal closes. */
     public static void release() {
         deactivate();
         CHAINS.values().forEach(chain -> {
@@ -183,7 +176,7 @@ public final class AxiomShaderManager {
 
     public static void deactivate() {
         if (activeLocation == null) return;
-        // detach without closing: the chain stays in the cache for the next tab
+
         GameRendererAccessor renderer = (GameRendererAccessor) Minecraft.getInstance().gameRenderer;
         renderer.phoenix$setEffectActive(false);
         renderer.phoenix$setPostEffect(null);

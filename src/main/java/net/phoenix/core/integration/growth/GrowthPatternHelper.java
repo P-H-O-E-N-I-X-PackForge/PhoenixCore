@@ -41,7 +41,7 @@ public final class GrowthPatternHelper {
                         IntIntPair.of(0, maxBounds.getInt(3)),
                         IntIntPair.of(0, maxBounds.getInt(4)),
                         IntIntPair.of(0, maxBounds.getInt(5))))
-                // GTCEu 8.0 snapshots: the provider returns a symbol and the symbols are bound with where()
+
                 .where(CONTROLLER_KEY, Predicates.controller(Predicates.blocks(definition.get())))
                 .where(SHELL_KEY, shellPredicate)
                 .where(ANY_KEY, Predicates.any())

@@ -87,10 +87,6 @@ public class C2SCinderCommitPacket {
                 return;
             }
 
-            // Authoritative "not into the ground" check - resolvePlacement is purely geometric and never
-            // looks at the actual world, so without this a footprint that dips into a hillside or floor
-            // would silently overwrite that terrain instead of being refused. Checked before
-            // materials/force so an obstructed site is never buildable even with a stocked force-build.
             if (!CinderSchemaData.isSiteClear(level, resolved.placements())) {
                 reject(player, "That location is obstructed - clear the space first.", false);
                 return;
@@ -105,10 +101,7 @@ public class C2SCinderCommitPacket {
                 placements = resolved.placements();
                 consumed = resolved.blockCounts();
             } else if (msg.force && stack.getItem() instanceof CinderCoreItem) {
-                // Force-partial-build only exists for a Cinder Core's own physically-stocked
-                // materials budget (see CinderSchemaData#resolvePartialPlacements) - an Atlas has no
-                // such budget to partially draw from yet, so it always falls through to the plain
-                // rejection below instead, even if msg.force was set.
+
                 CinderSchemaData.PartialPlacement partial = CinderSchemaData.resolvePartialPlacements(stack,
                         resolved);
                 if (partial.placements().isEmpty()) {

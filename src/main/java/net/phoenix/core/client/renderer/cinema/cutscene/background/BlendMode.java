@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 
 import java.util.Locale;
 
-/** How a {@link CutsceneBackgroundBuilder} layer is composited onto the layers below it. */
 public enum BlendMode implements StringRepresentable {
 
     NORMAL,

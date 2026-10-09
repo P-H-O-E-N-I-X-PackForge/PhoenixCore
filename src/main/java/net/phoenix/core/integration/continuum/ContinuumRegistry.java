@@ -14,7 +14,6 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/** Continuum's items and blocks. Called from {@code PhoenixCore} so they register with everything else. */
 public final class ContinuumRegistry {
 
     private ContinuumRegistry() {}
@@ -24,7 +23,6 @@ public final class ContinuumRegistry {
             .lang("Continuum Rocket")
             .register();
 
-    /** Payload for extraction missions. */
     public static final ItemEntry<ContinuumProbeItem> PROBE = REGISTRATE
             .item("continuum_probe", ContinuumProbeItem::new)
             .lang("Extraction Probe")

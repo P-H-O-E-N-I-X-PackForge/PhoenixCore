@@ -11,9 +11,6 @@ import java.util.UUID;
 
 public final class TeamUtils {
 
-    // Phoenix Guilds takes priority over FTB Teams when both are present - it's the social/ownership
-    // system PFT 2.0 is actually built around (it already has its own GTCEu ownership integration),
-    // FTB Teams support exists mainly for packs that don't run Guilds.
     private static final boolean PHOENIX_GUILDS_LOADED = ModList.get().isLoaded("phoenix_guilds");
     private static final boolean FTB_TEAMS_LOADED = ModList.get().isLoaded("ftbteams");
 
@@ -35,11 +32,6 @@ public final class TeamUtils {
         return resolvePlayerName(teamId);
     }
 
-    /**
-     * Resolves a solo player's actual username from their UUID (online player list, falling back to the
-     * server's profile cache for offline players) instead of the truncated-UUID placeholder that used to
-     * show up anywhere a "team" name was requested for a player not on any team.
-     */
     public static String resolvePlayerName(UUID playerUUID) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {

@@ -1,12 +1,9 @@
 package net.phoenix.core.integration.continuum.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
-/**
- * Everything the planet shader needs to draw one body. Colours are packed {@code 0xRRGGBB}. In the real data
- * model (see the design doc) these come from the body's datapack JSON; milestone 1 uses the hard-coded
- * {@link #PRESETS}.
- */
 public record PlanetParams(
                            String name,
                            String description,
@@ -23,12 +20,41 @@ public record PlanetParams(
                            int atmoColor, float atmoDensity,
                            float axialTiltDeg,
                            float spinDegPerSec,
-                           float cloudSpinDegPerSec) {
+                           float cloudSpinDegPerSec,
+                           int style,
+                           @Nullable Ring ring) {
 
-    /**
-     * What a merely *detected* body looks like: the right silhouette and spin, but flat grey-blue, no air, no
-     * clouds, no ocean - a scan return, not a place.
-     */
+    public static final int STYLE_NONE = 0;
+    public static final int STYLE_CRYSTAL = 1;
+    public static final int STYLE_VEINS = 2;
+    public static final int STYLE_STORM = 3;
+    public static final int STYLE_CHROME = 4;
+    public static final int STYLE_SHATTER = 5;
+    public static final int STYLE_AURORA = 6;
+
+    public record Ring(float inner, float outer, int color, int color2, float tiltDeg, float opacity) {}
+
+    public PlanetParams(String name, String description, boolean gasGiant, float seed, float scale, float oceanLevel,
+                        float polarIce, float cloudCover, float bump, int low, int mid, int high, int oceanDeep,
+                        int oceanShallow, int emissive, float emissiveAmount, int atmoColor, float atmoDensity,
+                        float axialTiltDeg, float spinDegPerSec, float cloudSpinDegPerSec) {
+        this(name, description, gasGiant, seed, scale, oceanLevel, polarIce, cloudCover, bump, low, mid, high,
+                oceanDeep, oceanShallow, emissive, emissiveAmount, atmoColor, atmoDensity, axialTiltDeg, spinDegPerSec,
+                cloudSpinDegPerSec, STYLE_NONE, null);
+    }
+
+    public static int styleOf(String name) {
+        return switch (name.toLowerCase(java.util.Locale.ROOT)) {
+            case "crystal" -> STYLE_CRYSTAL;
+            case "veins" -> STYLE_VEINS;
+            case "storm" -> STYLE_STORM;
+            case "chrome" -> STYLE_CHROME;
+            case "shatter" -> STYLE_SHATTER;
+            case "aurora" -> STYLE_AURORA;
+            default -> STYLE_NONE;
+        };
+    }
+
     public PlanetParams ghost() {
         return new PlanetParams(name, description, false, seed, 3.0f, 0.0f, 0.0f, 0.0f, 0.25f,
                 0x2a3140, 0x46546a, 0x6b7b92,

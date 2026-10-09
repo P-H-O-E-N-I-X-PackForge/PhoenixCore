@@ -44,7 +44,58 @@ public class PhoenixConfigs {
     @Configurable
     public ContinuumConfigs continuum = new ContinuumConfigs();
 
-    /** Continuum space missions: pacing, rocket wear and the launch pad. */
+    @Configurable
+    @Configurable.Comment({ "Compatibility with the Wings of Fire mod (phoenixes). Does nothing without it." })
+    public WingsOfFireConfigs wingsOfFire = new WingsOfFireConfigs();
+
+    public static class WingsOfFireConfigs {
+
+        @Configurable
+        @Configurable.Comment({
+                "Stops phoenixes vanishing when their rider gets off. They stay where they are.",
+                "Default: true"
+        })
+        public boolean persistentMounts = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Sneak + right-click your own phoenix with an empty hand to tell it to stay where it is (in the air",
+                "too), and again to let it follow you. It un-stays when you ride it. Default: true"
+        })
+        public boolean stayCommand = true;
+    }
+
+    @Configurable
+    @Configurable.Comment({
+            "Mobs in the Conflux dimensions. What spawns where is data: data/<namespace>/conflux/spawns/*.json."
+    })
+    public ConfluxSpawnConfigs confluxSpawns = new ConfluxSpawnConfigs();
+
+    public static class ConfluxSpawnConfigs {
+
+        @Configurable
+        @Configurable.Comment({ "Whether the Conflux spawn lists are used at all. Default: true" })
+        public boolean enabled = true;
+
+        @Configurable
+        @Configurable.Comment({ "Ticks between spawn attempts near each player. Default: 400 (20 seconds)" })
+        @Configurable.Range(min = 20, max = 24000)
+        public int intervalTicks = 400;
+
+        @Configurable
+        @Configurable.Comment({ "Chance each attempt actually spawns something. Default: 0.5" })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double chance = 0.5;
+
+        @Configurable
+        @Configurable.Comment({
+                "Distance around a player, in blocks, within which a kind of mob counts toward its cap.",
+                "Default: 96"
+        })
+        @Configurable.Range(min = 16, max = 256)
+        public int countRadius = 96;
+    }
+
     public static class ContinuumConfigs {
 
         public enum RenderQuality {
@@ -57,6 +108,32 @@ public class PhoenixConfigs {
             SPHERE,
             CUBE
         }
+
+        public enum PdimChargeMode {
+            EVERY_VISIT,
+            FIRST_VISIT
+        }
+
+        @Configurable
+        @Configurable.Comment({
+                "What going to a personal dimension costs, taken from the player's inventory. The item here and",
+                "the count below are the default for every body; a body's definition can override them with a",
+                "\"pdim_cost\" entry. Creative players are never charged. Default: minecraft:ender_pearl"
+        })
+        public String pdimCostItem = "minecraft:ender_pearl";
+
+        @Configurable
+        @Configurable.Comment({
+                "How many of the cost item one trip costs. 0 makes personal dimensions free. Default: 2" })
+        @Configurable.Range(min = 0, max = 64)
+        public int pdimCostCount = 2;
+
+        @Configurable
+        @Configurable.Comment({
+                "EVERY_VISIT charges on every trip there (going back and forth costs each time). FIRST_VISIT charges",
+                "only when a dimension is first made. Leaving is always free. Default: EVERY_VISIT"
+        })
+        public PdimChargeMode pdimChargeMode = PdimChargeMode.EVERY_VISIT;
 
         @Configurable
         @Configurable.Comment({
@@ -164,6 +241,52 @@ public class PhoenixConfigs {
         })
         @Configurable.Range(min = 1, max = 16)
         public int outpostRepairKits = 1;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a failed extraction, outpost deployment or haul leaves the rocket stranded and sends a",
+                "distress signal instead of bringing it home: it can only be recovered by a rescue run. 0 turns",
+                "stranding off. Default: 0.4"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double distressChance = 0.4;
+
+        @Configurable
+        @Configurable.Comment({
+                "How long, in real minutes, a distress signal lasts. If no rescue arrives in time the rocket is lost.",
+                "Default: 180"
+        })
+        @Configurable.Range(min = 5, max = 10080)
+        public int distressWindowMinutes = 180;
+
+        @Configurable
+        @Configurable.Comment({ "Repair kits a rescue run carries (and uses up). Default: 2" })
+        @Configurable.Range(min = 1, max = 16)
+        public int rescueKits = 2;
+
+        @Configurable
+        @Configurable.Comment({
+                "Extraction probes a station construction run carries and uses up. Each of a body's three station",
+                "levels costs this many. Default: 4"
+        })
+        @Configurable.Range(min = 1, max = 64)
+        public int stationProbesPerLevel = 4;
+
+        @Configurable
+        @Configurable.Comment({
+                "Most rockets that can be sent in one launch (extraction, deployment and rescue runs). Each rocket",
+                "is its own mission with its own rocket, probes and launch energy. Default: 8"
+        })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxRocketsPerLaunch = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "Volume of the Continuum map's layered ambience (space bed, wind, stellar roar, black hole hum), 0 to 1.",
+                "0 turns it off. Default: 0.6"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double ambienceVolume = 0.6;
 
         @Configurable
         @Configurable.Comment({

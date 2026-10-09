@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:thalassa",
+  "type": "planet",
+  "name": "Pelagia",
+  "description": "A shallow tidal sea that washes over the whole planet twice a day.",
+  "orbit": {
+    "radius_au": 1.55,
+    "period_days": 360,
+    "phase": 0.15
+  },
+  "radius": 1.2,
+  "gas_giant": false,
+  "axial_tilt": 8,
+  "spin_deg_per_sec": 5.0,
+  "cloud_spin_deg_per_sec": 12,
+  "surface": {
+    "seed": 207,
+    "scale": 2.2,
+    "ocean_level": 0.9,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.35,
+    "bump": 0.2,
+    "low": "#2a6a6a",
+    "mid": "#58b8b0",
+    "high": "#d8f0e0",
+    "ocean_deep": "#0a5a70",
+    "ocean_shallow": "#44d0c8",
+    "emissive": "#2cf0c8",
+    "emissive_amount": 0.1
+  },
+  "atmosphere": {
+    "color": "#80f0e0",
+    "density": 0.6
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_thalassa_bloom",
+    "surveyed_research": "phoenixcore:space_survey_pelagia"
+  },
+  "trip_minutes": 110,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:sea_lantern",
+      "min": 1,
+      "max": 3,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:heart_of_the_sea",
+      "min": 1,
+      "max": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "minecraft:prismarine_shard",
+      "min": 3,
+      "max": 8,
+      "chance": 1.0
+    }
+  ],
+  "lore": {
+    "detected": "Almost no land, and the little there is keeps going under and coming back.",
+    "surveyed": "Pelagia is a planet-wide tide flat. Everything on it has learned to be underwater half the day and not mind."
+  }
+}

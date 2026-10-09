@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -23,11 +24,14 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
 import com.gregtechceu.gtceu.api.registry.registrate.MultiblockMachineBuilder;
+import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderHelper;
+import com.gregtechceu.gtceu.common.block.BoilerFireboxType;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.CleaningMaintenanceHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.steam.SteamParallelMultiblockMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
 import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
@@ -572,6 +576,59 @@ public class PhoenixMachines {
             .workableCasingModel(PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
                     PhoenixCore.id("block/multiblock/alchemical_imbuer"))
             .tooltipBuilder(ALCHEMICAL_IMBUER_TOOLTIPS)
+            .register();
+
+    public static final MultiblockMachineDefinition STEAM_CENTRIFUGE = REGISTRATE
+            .multiblock("steam_separator", SteamParallelMultiblockMachine::new)
+            .rotationState(RotationState.NON_Y_AXIS)
+            .appearanceBlock(CASING_BRONZE_BRICKS)
+            .recipeTypes(GTRecipeTypes.CENTRIFUGE_RECIPES)
+            .recipeModifiers(true, SteamParallelMultiblockMachine::recipeModifier)
+
+            .pattern(definition -> MultiblockPatternBuilder.start()
+                    .slice("XXX", "XXX", " X ")
+                    .slice("XXX", "X#X", "XXX")
+                    .slice("XXX", "XSX", " X ")
+                    .where('S', Predicates.controller(definition))
+                    .where('#', Predicates.air())
+                    .where(' ', Predicates.any())
+                    .where('X', Predicates.blocks(CASING_BRONZE_BRICKS.get()).setMinGlobalLimited(6)
+                            .or(Predicates.abilities(PartAbility.STEAM_IMPORT_ITEMS).setPreviewCount(1))
+                            .or(Predicates.abilities(PartAbility.STEAM).setExactLimit(1))
+                            .or(Predicates.abilities(PartAbility.STEAM_EXPORT_ITEMS).setPreviewCount(1)))
+                    .build())
+            .workableCasingModel(
+                    GTCEu.id("block/casings/solid/machine_casing_bronze_plated_bricks"),
+                    GTCEu.id("block/machines/centrifuge"))
+            .tooltips(Component.translatable("block.steamadditions.steam_separator.tooltip"))
+            .register();
+
+    public static final MultiblockMachineDefinition STEAM_ALLOY_SMELTER = REGISTRATE
+            .multiblock("steam_foundry", SteamParallelMultiblockMachine::new)
+            .rotationState(RotationState.NON_Y_AXIS)
+            .appearanceBlock(CASING_BRONZE_BRICKS)
+            .recipeTypes(GTRecipeTypes.ALLOY_SMELTER_RECIPES)
+            .recipeModifiers(true, SteamParallelMultiblockMachine::recipeModifier)
+            .addOutputLimit(ItemRecipeCapability.CAP, 1)
+            .pattern(definition -> MultiblockPatternBuilder.start()
+                    .slice("FFF", "XXX", "XXX")
+                    .slice("FFF", "X#X", "XXX")
+                    .slice("FFF", "XSX", "XXX")
+                    .where('S', Predicates.controller(definition))
+                    .where('F', Predicates.blocks(FIREBOX_BRONZE.get())
+                            .or(Predicates.abilities(PartAbility.STEAM).setExactLimit(1)))
+                    .where('#', Predicates.air())
+                    .where(' ', Predicates.any())
+                    .where('X', Predicates.blocks(CASING_BRONZE_BRICKS.get()).setMinGlobalLimited(6)
+                            .or(Predicates.abilities(PartAbility.STEAM_IMPORT_ITEMS).setPreviewCount(1))
+                            .or(Predicates.abilities(PartAbility.STEAM_EXPORT_ITEMS).setPreviewCount(1)))
+                    .build())
+            .model(GTMachineModels.createWorkableCasingMachineModel(
+                    GTCEu.id("block/casings/solid/machine_casing_bronze_plated_bricks"),
+                    GTCEu.id("block/machines/alloy_smelter"))
+                    .andThen(b -> b.addDynamicRenderer(() -> DynamicRenderHelper.makeBoilerPartRender(
+                            BoilerFireboxType.BRONZE_FIREBOX, CASING_BRONZE_BRICKS))))
+            .tooltips(Component.translatable("block.steamadditions.steam_foundry.tooltip"))
             .register();
 
     public static final MultiblockMachineDefinition SOURCE_REACTOR = REGISTRATE

@@ -39,11 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Plays a {@link CutsceneDefinition}: black screen, then a slowly fading-in {@link CutsceneBackground}, with each
- * {@link CutscenePage} typed out letter by letter in gently waving text, plus its images and choices.
- * Click / Space / Enter finishes the current page or moves on, 1-9 or clicking picks a choice, ESC skips.
- */
 public class CutsceneScreen extends Screen {
 
     private static final float PAGE_FADE_OUT = 0.4f;
@@ -64,7 +59,7 @@ public class CutsceneScreen extends Screen {
 
     private int page = 0;
     private float pageStart;
-    /** Page-relative time at which the player clicked to reveal the rest of the page. */
+
     private float completedAt = NOT_COMPLETED;
     private float pageEndingAt = -1;
     private int targetPage;
@@ -120,8 +115,6 @@ public class CutsceneScreen extends Screen {
         return definition.pages().get(page);
     }
 
-    // ---------------------------------------------------------------- layout
-
     private void layoutPage() {
         TextSettings text = definition.text();
         int wrapWidth = Math.max(40, (int) (width * text.maxWidth() / text.scale()));
@@ -167,8 +160,6 @@ public class CutsceneScreen extends Screen {
         return textTop() + lineCount * lineHeight() * definition.text().scale();
     }
 
-    // ---------------------------------------------------------------- flow
-
     private float pageRevealEnd() {
         float end = glyphs.isEmpty() ? 0 : glyphs.get(glyphs.size() - 1).revealAt();
         return Math.min(end, completedAt);
@@ -202,7 +193,6 @@ public class CutsceneScreen extends Screen {
         }
     }
 
-    /** Click behaviour: finish typing the current page, otherwise move on (unless a choice has to be made). */
     private void advance(float time) {
         if (outroAt >= 0 || pageEndingAt >= 0 || time < pageStart) return;
         if (!pageFullyShown(time)) {
@@ -225,7 +215,7 @@ public class CutsceneScreen extends Screen {
         }
         sendActions(choice.actions());
         if (choice.cutscene().isPresent()) {
-            // The server answers with the new cutscene, which replaces this screen.
+
             PhoenixNetwork.CHANNEL.sendToServer(new C2SCutsceneRequestPacket(choice.cutscene().get()));
             startOutro(time);
         } else if (choice.end()) {
@@ -282,8 +272,6 @@ public class CutsceneScreen extends Screen {
         onClose();
     }
 
-    // ---------------------------------------------------------------- input
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         float time = now();
@@ -331,8 +319,6 @@ public class CutsceneScreen extends Screen {
         return definition.pauseGame();
     }
 
-    // ---------------------------------------------------------------- rendering
-
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         float time = now();
@@ -348,7 +334,6 @@ public class CutsceneScreen extends Screen {
         if (black > 0) graphics.fill(0, 0, width, height, argb(black * global, 0x000000));
         renderImages(graphics, time, pageAlpha * global);
 
-        // Items and entities draw with depth, so keep text in front of them.
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, TEXT_Z);
         renderText(graphics, time, pageAlpha, global);
@@ -424,7 +409,6 @@ public class CutsceneScreen extends Screen {
         });
     }
 
-    /** Draws an entity standing at (x, y), turned to a fixed angle, faded up from darkness. */
     private void renderEntity(GuiGraphics graphics, CutsceneImage image, LivingEntity entity, float x, float y,
                               float time, float alpha) {
         float angle = 180f + image.yaw() + time * image.rotation();
@@ -440,7 +424,6 @@ public class CutsceneScreen extends Screen {
                 Math.round(image.scaleOr(50f)), new Quaternionf().rotateZ((float) Math.PI), null, entity);
         graphics.setColor(1f, 1f, 1f, 1f);
 
-        // The player's own entity is shared with the world, so put everything back.
         entity.yBodyRot = bodyRot;
         entity.yBodyRotO = bodyRotO;
         entity.setYRot(yRot);
@@ -529,7 +512,6 @@ public class CutsceneScreen extends Screen {
     }
 
     private void renderHints(GuiGraphics graphics, float time, float global) {
-        // The font renderer treats near-zero alpha as fully opaque, so hide hints entirely at the end of the fade.
         if (global < 0.05f) return;
         if (definition.skippable()) {
             Component skip = Component.translatableWithFallback("cutscene.phoenixcore.skip", "Press ESC to skip");
@@ -537,7 +519,6 @@ public class CutsceneScreen extends Screen {
                     argb(0.45f * global, 0xFFFFFF), false);
         }
 
-        // Bobbing "continue" arrow once the page is fully typed and waiting for a click.
         boolean waiting = definition.autoAdvance() < 0 && currentPage().choices().isEmpty() && outroAt < 0 &&
                 pageEndingAt < 0 && time >= pageStart && time - pageStart - pageRevealEnd() > 0.3f;
         if (waiting) {
@@ -557,8 +538,7 @@ public class CutsceneScreen extends Screen {
         if (settings.stopGameMusic()) minecraft.getMusicManager().stopPlaying();
 
         if (music == null) {
-            // Singleplayer pauses every playing sound on the frame after a pause screen opens, so wait for that
-            // before starting (with a timeout in case the pause never comes).
+
             boolean willPause = isPauseScreen() && minecraft.hasSingleplayerServer() &&
                     !minecraft.getSingleplayerServer().isPublished();
             if (time < settings.start() || (willPause && !minecraft.isPaused() && time < 0.5f)) return;
@@ -571,8 +551,7 @@ public class CutsceneScreen extends Screen {
         float fade = smooth(clamp01((time - settings.start()) / Math.max(0.01f, settings.fadeIn())));
         float volume = settings.volume() * fade * global;
         music.setVolume(volume);
-        // Tickable sounds are not updated while the game is paused, so push the new volume to the engine directly.
-        // Any non-master category makes the engine recalculate every playing sound, including ours.
+
         if (minecraft.isPaused() && Math.abs(volume - pushedMusicVolume) > 0.005f) {
             minecraft.getSoundManager().updateSourceVolume(SoundSource.MUSIC,
                     minecraft.options.getSoundSourceVolume(SoundSource.MUSIC));
@@ -585,8 +564,6 @@ public class CutsceneScreen extends Screen {
         if (music != null && minecraft != null) minecraft.getSoundManager().stop(music);
         music = null;
     }
-
-    // ---------------------------------------------------------------- utils
 
     private static float clamp01(float value) {
         return Mth.clamp(value, 0f, 1f);

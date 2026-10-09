@@ -93,10 +93,6 @@ public class ResearchTerminalScreen extends Screen {
         syncRenderer();
     }
 
-    /**
-     * Lists the trees to show: once a discipline is chosen, the other disciplines' trees are hidden, while the
-     * shared (non-discipline) trees such as Deep Space always stay.
-     */
     private void rebuildTrees() {
         String chosen = ClientResearchCache.getDisciplineInfo().disciplineId();
         ResourceLocation activeId = trees.isEmpty() || activeTreeIdx >= trees.size() ? null :
@@ -199,7 +195,6 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().popPose();
     }
 
-    /** Builds one not-yet-loaded tab shader per frame so switching tabs never has to compile one on the spot. */
     private void preloadNextShader() {
         for (ResearchTree tree : trees) {
             String disc = tree.isDisciplineTree() ? tree.discipline : null;

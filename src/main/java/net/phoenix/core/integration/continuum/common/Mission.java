@@ -10,20 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * One expedition. Timing is wall-clock milliseconds so a mission keeps running while the server is off or the player is
- * away; the outcome is rolled once at launch and hidden until the mission lands, so reloading cannot re-roll it.
- * The rocket rides along inside the mission and comes back (with wear) when the team collects it.
- */
 public final class Mission {
 
     public enum State {
 
-        /** Still travelling. */
         ACTIVE,
-        /** Landed successfully; waiting to be collected. */
+
         SUCCESS,
-        /** Failed; waiting to be collected. */
+
         FAILED;
 
         public boolean finished() {
@@ -31,19 +25,21 @@ public final class Mission {
         }
     }
 
-    /** What the expedition is for. */
     public enum Type {
 
-        /** Resolve the target: Detected becomes Surveyed. */
         SURVEY,
-        /** Drop extraction probes on a surveyed body and bring resources home. */
+
         EXTRACT,
-        /** Leave probes behind as a lasting outpost that produces resources over time. */
+
         DEPLOY,
-        /** Fly out to an outpost and bring back what it has stockpiled. */
+
         HAUL,
-        /** Carry repair kits out to a damaged outpost and get it producing again. */
-        REPAIR;
+
+        REPAIR,
+
+        RESCUE,
+
+        STATION;
 
         public String label() {
             return switch (this) {
@@ -52,6 +48,8 @@ public final class Mission {
                 case DEPLOY -> "Outpost deployment";
                 case HAUL -> "Outpost haul";
                 case REPAIR -> "Outpost repair run";
+                case RESCUE -> "Rescue run";
+                case STATION -> "Station construction";
             };
         }
     }
@@ -62,20 +60,31 @@ public final class Mission {
     public final String launcherName;
     public final ResourceLocation destination;
     public final Type type;
-    /** Extraction probes the mission carries (and loses if it fails). */
+
     public final int probes;
-    /** Resources rolled at launch for a successful extraction; handed over on collection. */
+
     public final List<ItemStack> rewards;
     public long startMillis;
     public long durationMillis;
     public final boolean willSucceed;
-    /** Wear the rocket picks up on this trip (a failure adds extra on top, see {@link ContinuumMissions}). */
+
     public final float wearCost;
     public final ItemStack rocket;
-    /** Ids of the {@link MissionEvent}s rolled for this trip; trimmed to the ones that applied when it lands. */
+
     public List<String> events;
 
     public State state;
+
+    public @org.jetbrains.annotations.Nullable String padDimension;
+    public long padPos;
+
+    public long distressUntil;
+
+    public boolean rescuing;
+
+    public boolean stranded() {
+        return distressUntil > 0;
+    }
 
     public Mission(UUID id, UUID team, UUID launcher, String launcherName, ResourceLocation destination, Type type,
                    int probes, List<ItemStack> rewards, long startMillis, long durationMillis, boolean willSucceed,
@@ -132,6 +141,14 @@ public final class Mission {
         ListTag eventList = new ListTag();
         for (String event : events) eventList.add(net.minecraft.nbt.StringTag.valueOf(event));
         tag.put("Events", eventList);
+        if (padDimension != null) {
+            tag.putString("PadDimension", padDimension);
+            tag.putLong("PadPos", padPos);
+        }
+        if (distressUntil > 0) {
+            tag.putLong("DistressUntil", distressUntil);
+            tag.putBoolean("Rescuing", rescuing);
+        }
         return tag;
     }
 
@@ -142,10 +159,17 @@ public final class Mission {
         for (Tag t : tag.getList("Rewards", Tag.TAG_COMPOUND)) rewards.add(ItemStack.of((CompoundTag) t));
         List<String> events = new ArrayList<>();
         for (Tag t : tag.getList("Events", Tag.TAG_STRING)) events.add(t.getAsString());
-        return new Mission(
+        Mission mission = new Mission(
                 tag.getUUID("Id"), tag.getUUID("Team"), tag.getUUID("Launcher"), tag.getString("LauncherName"),
                 new ResourceLocation(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
                 rewards, tag.getLong("Start"), tag.getLong("Duration"), tag.getBoolean("WillSucceed"),
                 tag.getFloat("WearCost"), ItemStack.of(tag.getCompound("Rocket")), State.values()[ordinal], events);
+        if (tag.contains("PadDimension")) {
+            mission.padDimension = tag.getString("PadDimension");
+            mission.padPos = tag.getLong("PadPos");
+        }
+        mission.distressUntil = tag.getLong("DistressUntil");
+        mission.rescuing = tag.getBoolean("Rescuing");
+        return mission;
     }
 }

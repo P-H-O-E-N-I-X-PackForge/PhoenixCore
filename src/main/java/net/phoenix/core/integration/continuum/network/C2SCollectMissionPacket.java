@@ -10,7 +10,6 @@ import net.phoenix.core.integration.continuum.common.ContinuumMissions;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/** Takes the rocket back from a finished mission. */
 public class C2SCollectMissionPacket {
 
     private final UUID mission;

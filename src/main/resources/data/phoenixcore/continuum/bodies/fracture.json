@@ -62,5 +62,6 @@
   "lore": {
     "detected": "It does not hold still. Each observation disagrees with the last, and the disagreements are tidy.",
     "surveyed": "Fracture rearranges between looks. The continents slide, the oceans fill and drain, and every version of it is a complete world. We do not know which one we are visiting."
-  }
+  },
+  "style": "shatter"
 }

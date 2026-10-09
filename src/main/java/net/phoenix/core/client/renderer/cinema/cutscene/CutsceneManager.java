@@ -16,10 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Loads every {@code assets/<namespace>/cutscenes/*.json} into a {@link CutsceneDefinition}.
- * Reloads with resource packs (F3+T), so cutscenes can be edited without restarting.
- */
 public final class CutsceneManager extends SimpleJsonResourceReloadListener {
 
     public static final CutsceneManager INSTANCE = new CutsceneManager();
@@ -49,7 +45,6 @@ public final class CutsceneManager extends SimpleJsonResourceReloadListener {
         return Optional.ofNullable(cutscenes.get(id));
     }
 
-    /** Opens the cutscene screen for the given id. Returns false if no such cutscene is loaded. */
     public static boolean play(ResourceLocation id) {
         Optional<CutsceneDefinition> definition = INSTANCE.get(id);
         if (definition.isEmpty() || definition.get().pages().isEmpty()) {

@@ -40,10 +40,6 @@ public class S2CDisciplineProgressionSyncPacket {
         return true;
     }
 
-    // Used to be `static void send(CompoundTag data) {}` - an empty no-op with no target and no
-    // caller anywhere in the codebase, so nothing ever actually reached the client even though this
-    // packet type was fully registered and its handle() correctly wired to
-    // ClientDisciplineProgressionCache.
     public static void send(ServerPlayer player, CompoundTag data) {
         ConfluxNetwork.CHANNEL.sendTo(new S2CDisciplineProgressionSyncPacket(data), player.connection.connection,
                 NetworkDirection.PLAY_TO_CLIENT);

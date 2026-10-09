@@ -15,9 +15,6 @@ import org.jetbrains.annotations.Nullable;
 @Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ConfluxClientEvents {
 
-    // How often (in client ticks) the ambient particle/lighting/physics systems update - these are
-    // background atmosphere, not something that needs full 20/tick precision, and running them every
-    // tick was never the intent (see ParticleEffectSystem's rescaled densities).
     private static final int EFFECTS_UPDATE_INTERVAL = 4;
 
     @Nullable
@@ -41,9 +38,6 @@ public class ConfluxClientEvents {
         }
     }
 
-    // Used to be an empty body - DimensionEffectsManager (ambient particles/lighting/physics per
-    // discipline) was fully implemented but never actually ticked or told which discipline to
-    // initialize for, so none of it ever ran despite this handler being correctly registered.
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onClientTick(TickEvent.ClientTickEvent event) {

@@ -7,10 +7,6 @@ import net.phoenix.core.common.block.cinema.Cutscenes;
 
 import java.util.function.Supplier;
 
-/**
- * A cutscene choice asks to continue into another cutscene. Same as the player running {@code /cutscene open},
- * but it goes through the server so the new cutscene gets a session for its actions.
- */
 public class C2SCutsceneRequestPacket {
 
     private final ResourceLocation cutscene;

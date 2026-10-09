@@ -12,10 +12,6 @@ import java.util.function.Supplier;
 
 import static net.minecraft.commands.Commands.literal;
 
-/**
- * {@code /continuum test} opens the milestone 1 renderer test bench; {@code /continuum map} opens the milestone 2
- * galaxy / system / body map.
- */
 @OnlyIn(Dist.CLIENT)
 public final class ContinuumCommand {
 
@@ -28,10 +24,6 @@ public final class ContinuumCommand {
                         .then(literal("map").executes(ctx -> open(ContinuumMapScreen::new))));
     }
 
-    /**
-     * The command runs mid-chat; open the screen on the next client tick so the chat screen closing does not replace
-     * it.
-     */
     private static int open(Supplier<Screen> screen) {
         Minecraft mc = Minecraft.getInstance();
         mc.tell(() -> mc.setScreen(screen.get()));

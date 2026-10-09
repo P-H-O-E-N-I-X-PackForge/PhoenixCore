@@ -288,6 +288,26 @@ public class PhoenixNetwork {
                 net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::new,
                 net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.class,
+                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::encode,
+                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::new,
+                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SPdimPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SPdimPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SPdimPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SPdimPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRequestStatePacket.class, C2SRequestStatePacket::encode,
                 C2SRequestStatePacket::new, C2SRequestStatePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));

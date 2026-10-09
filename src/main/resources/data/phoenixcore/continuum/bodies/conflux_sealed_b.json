@@ -1,0 +1,61 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "Shiftward",
+  "description": "Your home Conflux world: a yellow, restless place that never agrees with itself.",
+  "discipline": "sealed_b",
+  "orbit": {
+    "radius_au": 1.35,
+    "period_days": 220,
+    "phase": 0.35
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 12,
+  "spin_deg_per_sec": 3.5,
+  "cloud_spin_deg_per_sec": 5,
+  "surface": {
+    "seed": 89,
+    "scale": 3.0,
+    "ocean_level": 0.25,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.4,
+    "bump": 0.9,
+    "low": "#2e2a06",
+    "mid": "#a89c18",
+    "high": "#f4ee6a",
+    "ocean_deep": "#02121c",
+    "ocean_shallow": "#0f5a6a",
+    "emissive": "#f4ee6a",
+    "emissive_amount": 0.1
+  },
+  "atmosphere": {
+    "color": "#f2e84a",
+    "density": 0.6
+  },
+  "gate": {
+    "min_tier": "start",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 9,
+  "initial_stage": "surveyed",
+  "yields": [
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 4,
+      "max": 8,
+      "chance": 0.7
+    }
+  ],
+  "lore": {
+    "detected": "The Conflux world behind the second sealed door will not hold still for the survey.",
+    "surveyed": "Shiftward rearranges itself between visits, and each arrangement is a complete world with its own weather, its own history and its own account of how you got there."
+  }
+}

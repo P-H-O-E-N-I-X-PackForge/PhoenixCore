@@ -56,5 +56,14 @@
   "lore": {
     "detected": "A bright band in the quasar glare, a gas giant painted blue-white from the side.",
     "surveyed": "Halogen is lit by the jet. Its upper bands streak where the beam crosses them, and the lower bands are dark and cold and absolutely still."
+  },
+  "style": "storm",
+  "rings": {
+    "inner": 1.4,
+    "outer": 2.5,
+    "color": "#e8f2ff",
+    "color2": "#7a98c0",
+    "tilt": 20,
+    "opacity": 0.75
   }
 }

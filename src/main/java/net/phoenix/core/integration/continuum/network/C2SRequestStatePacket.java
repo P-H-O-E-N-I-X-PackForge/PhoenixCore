@@ -7,7 +7,6 @@ import net.phoenix.core.integration.continuum.common.ContinuumServerEvents;
 
 import java.util.function.Supplier;
 
-/** The map was opened: send this player their team's state again so it is fresh. */
 public class C2SRequestStatePacket {
 
     public C2SRequestStatePacket() {}

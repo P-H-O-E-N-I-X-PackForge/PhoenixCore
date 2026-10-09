@@ -11,7 +11,6 @@ public class PhoenixSounds {
 
     public static final SoundEntry MICROVERSE = REGISTRATE.sound(PhoenixCore.id("microverse")).build();
 
-    // Conflux dimension ambience (see DimensionAudioPresets). Seamless 30 s loops.
     public static final SoundEntry PHOENIX_VOLCANIC_RUMBLE = ambient("ambient/phoenix/volcanic_rumble");
     public static final SoundEntry PHOENIX_VOLCANIC_WIND = ambient("ambient/phoenix/volcanic_wind");
     public static final SoundEntry SCULK_BIOLUM_HUM = ambient("ambient/sculk/biolum_hum");
@@ -23,7 +22,6 @@ public class PhoenixSounds {
     public static final SoundEntry SEALED_B_INVERTED_HUM = ambient("ambient/sealed_b/inverted_hum");
     public static final SoundEntry SEALED_B_REALITY_GLITCH = ambient("ambient/sealed_b/reality_glitch");
 
-    // Conflux dimension effects (see DimensionAudioPresets).
     public static final SoundEntry PHOENIX_HEAT_SHIMMER = ambient("effect/phoenix/heat_shimmer");
     public static final SoundEntry PHOENIX_UPDRAFT_FADE = ambient("effect/phoenix/updraft_fade");
     public static final SoundEntry SCULK_CONVEYOR_ACTIVATE = ambient("effect/sculk/conveyor_activate");
@@ -35,7 +33,6 @@ public class PhoenixSounds {
     public static final SoundEntry SEALED_B_GRAVITY_FLIP = ambient("effect/sealed_b/gravity_flip");
     public static final SoundEntry SEALED_B_REALITY_CRACK = ambient("effect/sealed_b/reality_crack");
 
-    // Cutscene background tracks. Seamless 40 s loops, used by the lore cutscenes.
     public static final SoundEntry CUTSCENE_ETHEREAL = cutscene("cutscene/ethereal");
     public static final SoundEntry CUTSCENE_THRESHOLD = cutscene("cutscene/threshold");
     public static final SoundEntry CUTSCENE_PYRE = cutscene("cutscene/pyre");

@@ -55,7 +55,7 @@ public class C2SResearchUnlockPacket {
             boolean success = researchData.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
-                // research can reveal Continuum bodies and systems
+
                 net.phoenix.core.integration.continuum.common.ContinuumServerEvents
                         .sendStateToTeam(player.server, teamId);
 
@@ -65,9 +65,6 @@ public class C2SResearchUnlockPacket {
                             .enterDisciplineDimension(player, teamId, disciplineAfter);
                 }
 
-                // This was never called from anywhere - "world_stage" unlocks (biome color transitions,
-                // structure retheming, skybox transitions) were fully implemented but unreachable, since
-                // nothing invoked the one method that checks a node's unlocks for that type.
                 net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents
                         .onResearchUnlock(player, node, teamId);
             }

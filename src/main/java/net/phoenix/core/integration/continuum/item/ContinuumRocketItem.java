@@ -13,10 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * The rocket a mission flies. It is one persistent item: its wear and upgrades live in its NBT and it comes back from
- * every mission (see {@link RocketStats} for what the numbers do).
- */
 public class ContinuumRocketItem extends Item {
 
     public ContinuumRocketItem(Properties properties) {

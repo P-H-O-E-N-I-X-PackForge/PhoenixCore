@@ -128,6 +128,7 @@ public class PhoenixCore {
         modEventBus.addListener(this::commonSetup);
 
         PhoenixParticles.init(modEventBus);
+        net.phoenix.core.common.entity.PhoenixEntities.init(modEventBus);
         if (FMLLoader.getDist().isClient()) {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);

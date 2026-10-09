@@ -11,11 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * A single-purpose upgrade item for the Cinder Atlas - see {@link CinderAtlasUpgradeType} for the axis
- * it affects. Installed via {@link CinderAtlasScreen}'s Upgrades panel, not consumed by any recipe of
- * its own.
- */
 public class CinderAtlasUpgradeItem extends Item {
 
     private final CinderAtlasUpgradeType upgradeType;

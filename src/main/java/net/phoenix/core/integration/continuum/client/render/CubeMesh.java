@@ -9,10 +9,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-/**
- * A unit cube (corners at +-1) for the blocky planet style. Only six flat faces: the planet shader turns the
- * interpolated position into square cells itself, so the mesh needs no subdivision.
- */
 public final class CubeMesh {
 
     private CubeMesh() {}
@@ -20,13 +16,13 @@ public final class CubeMesh {
     private static @Nullable VertexBuffer buffer;
 
     private static final float[][] FACES = {
-            // each face: four corners counter-clockwise seen from outside
-            { 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1 }, // +x
-            { -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, -1, -1 }, // -x
-            { -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, -1 }, // +y
-            { -1, -1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1 }, // -y
-            { -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1 }, // +z
-            { 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 } // -z
+
+            { 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1 },
+            { -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, -1, -1 },
+            { -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, -1 },
+            { -1, -1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1 },
+            { -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1 },
+            { 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 }
     };
 
     private static VertexBuffer buffer() {

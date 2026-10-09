@@ -16,11 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * Per-team Continuum state: what each team has discovered and which missions it has in flight or waiting to be
- * collected. Teams are whatever {@code TeamUtils.getTeamIdOrPlayerFallback} resolves (Phoenix Guilds, FTB Teams, or the
- * player on their own).
- */
 public class ContinuumTeamData extends SavedData {
 
     private static final String ID = "continuum_state";
@@ -28,14 +23,13 @@ public class ContinuumTeamData extends SavedData {
     private final Map<UUID, Map<ResourceLocation, DiscoveryStage>> stages = new HashMap<>();
     private final Map<UUID, List<Mission>> missions = new HashMap<>();
     private final Map<UUID, Map<ResourceLocation, Outpost>> outposts = new HashMap<>();
-    /** How many of a body's deposits each team has mapped, by body. */
+
     private final Map<UUID, Map<ResourceLocation, Integer>> depths = new HashMap<>();
+    private final Map<UUID, Map<ResourceLocation, Integer>> stations = new HashMap<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(ContinuumTeamData::load, ContinuumTeamData::new, ID);
     }
-
-    // ---------------- discovery ----------------
 
     private static DiscoveryStage initial(ResourceLocation id) {
         ContinuumBody body = ContinuumData.body(id);
@@ -48,17 +42,22 @@ public class ContinuumTeamData extends SavedData {
         return a.atLeast(b) ? a : b;
     }
 
-    /** What the team has earned or started with, ignoring research. */
     public DiscoveryStage storedStage(UUID team, ResourceLocation id) {
         return max(stages.getOrDefault(team, Map.of()).getOrDefault(id, DiscoveryStage.UNKNOWN), initial(id));
     }
 
-    /** What the team can currently see of a body or system: what it has earned, what research grants, what defaults. */
+    public boolean isHidden(MinecraftServer server, UUID team, ContinuumBody body) {
+        if (body.discipline() == null) return false;
+        String chosen = WorldResearchData.get(server.overworld()).getDiscipline(team);
+        return !body.discipline().equals(chosen == null ? "none" : chosen);
+    }
+
     public DiscoveryStage effectiveStage(MinecraftServer server, UUID team, ResourceLocation id) {
         DiscoveryStage stage = max(stages.getOrDefault(team, Map.of()).getOrDefault(id, DiscoveryStage.UNKNOWN),
                 initial(id));
 
         ContinuumBody body = ContinuumData.body(id);
+        if (body != null && isHidden(server, team, body)) return DiscoveryStage.UNKNOWN;
         if (body != null) {
             WorldResearchData research = null;
             if (body.surveyedResearch() != null || body.detectedResearch() != null) {
@@ -74,7 +73,6 @@ public class ContinuumTeamData extends SavedData {
             return stage;
         }
 
-        // a system is as well known as the best-known body in it, or as its own research gate says
         ContinuumSystem system = ContinuumData.system(id);
         if (system != null) {
             if (system.surveyedResearch() != null || system.detectedResearch() != null) {
@@ -95,7 +93,6 @@ public class ContinuumTeamData extends SavedData {
         return stage;
     }
 
-    /** Raises a stage; never lowers one. */
     public boolean raise(UUID team, ResourceLocation id, DiscoveryStage stage) {
         Map<ResourceLocation, DiscoveryStage> map = stages.computeIfAbsent(team, t -> new HashMap<>());
         DiscoveryStage current = map.getOrDefault(id, DiscoveryStage.UNKNOWN);
@@ -105,7 +102,6 @@ public class ContinuumTeamData extends SavedData {
         return true;
     }
 
-    /** Sets a stage outright, including lowering it (admin command). */
     public void force(UUID team, ResourceLocation id, DiscoveryStage stage) {
         stages.computeIfAbsent(team, t -> new HashMap<>()).put(id, stage);
         setDirty();
@@ -117,14 +113,32 @@ public class ContinuumTeamData extends SavedData {
         setDirty();
     }
 
-    // ---------------- survey depth ----------------
+    public int stationLevel(UUID team, ResourceLocation body) {
+        return stations.getOrDefault(team, Map.of()).getOrDefault(body, 0);
+    }
 
-    /** How many deposits of this body the team has mapped. */
+    public Map<ResourceLocation, Integer> stations(UUID team) {
+        return stations.getOrDefault(team, Map.of());
+    }
+
+    public int stationCount(UUID team) {
+        return stations.getOrDefault(team, Map.of()).size();
+    }
+
+    public void setStationLevel(UUID team, ResourceLocation body, int level) {
+        if (level <= 0) {
+            Map<ResourceLocation, Integer> mine = stations.get(team);
+            if (mine != null) mine.remove(body);
+        } else {
+            stations.computeIfAbsent(team, t -> new HashMap<>()).put(body, Math.min(Stations.MAX_LEVEL, level));
+        }
+        setDirty();
+    }
+
     public int depth(UUID team, ResourceLocation body) {
         return depths.getOrDefault(team, Map.of()).getOrDefault(body, 0);
     }
 
-    /** Maps the next unmapped deposit. Returns false if they are all mapped already. */
     public boolean revealDeposit(UUID team, ResourceLocation body, int total) {
         int current = depth(team, body);
         if (current >= total) return false;
@@ -133,13 +147,10 @@ public class ContinuumTeamData extends SavedData {
         return true;
     }
 
-    /** Admin: sets how many deposits of a body are mapped. */
     public void setDepth(UUID team, ResourceLocation body, int depth) {
         depths.computeIfAbsent(team, t -> new HashMap<>()).put(body, Math.max(0, depth));
         setDirty();
     }
-
-    // ---------------- missions ----------------
 
     public List<Mission> missions(UUID team) {
         return missions.computeIfAbsent(team, t -> new ArrayList<>());
@@ -163,8 +174,6 @@ public class ContinuumTeamData extends SavedData {
         return missions(team).stream().filter(m -> m.id.equals(missionId)).findFirst();
     }
 
-    // ---------------- outposts ----------------
-
     public Map<ResourceLocation, Outpost> outposts(UUID team) {
         return outposts.computeIfAbsent(team, t -> new HashMap<>());
     }
@@ -174,7 +183,6 @@ public class ContinuumTeamData extends SavedData {
         return map == null ? null : map.get(body);
     }
 
-    /** Adds probes to the team's outpost on a body, starting one if there is none. */
     public Outpost deployProbes(UUID team, ResourceLocation body, int probes, long now) {
         Outpost outpost = outposts(team).get(body);
         if (outpost == null) {
@@ -192,10 +200,6 @@ public class ContinuumTeamData extends SavedData {
         setDirty();
     }
 
-    /**
-     * Banks the cycles every outpost has finished, charging each team's upkeep to its Tesla Network pool. Cheap enough
-     * to call on every snapshot, and run once a minute so the power drains steadily rather than in lumps.
-     */
     public java.util.Set<UUID> settleOutposts(MinecraftServer server, long now) {
         long cycleMillis = RocketStats.outpostCycleMillis();
         int maxReady = RocketStats.outpostMaxReady();
@@ -218,8 +222,6 @@ public class ContinuumTeamData extends SavedData {
         setDirty();
         return newlyDamaged;
     }
-
-    // ---------------- persistence ----------------
 
     @Override
     public CompoundTag save(CompoundTag tag) {
@@ -275,6 +277,22 @@ public class ContinuumTeamData extends SavedData {
             depthTeams.add(teamTag);
         }
         tag.put("DepthTeams", depthTeams);
+
+        ListTag stationTeams = new ListTag();
+        for (var team : stations.entrySet()) {
+            CompoundTag teamTag = new CompoundTag();
+            teamTag.putUUID("Team", team.getKey());
+            ListTag list = new ListTag();
+            for (var entry : team.getValue().entrySet()) {
+                CompoundTag e = new CompoundTag();
+                e.putString("Body", entry.getKey().toString());
+                e.putInt("Level", entry.getValue());
+                list.add(e);
+            }
+            teamTag.put("Stations", list);
+            stationTeams.add(teamTag);
+        }
+        tag.put("StationTeams", stationTeams);
         return tag;
     }
 
@@ -315,6 +333,16 @@ public class ContinuumTeamData extends SavedData {
                 map.put(new ResourceLocation(e.getString("Body")), e.getInt("Depth"));
             }
             data.depths.put(teamTag.getUUID("Team"), map);
+        }
+
+        for (Tag t : tag.getList("StationTeams", Tag.TAG_COMPOUND)) {
+            CompoundTag teamTag = (CompoundTag) t;
+            Map<ResourceLocation, Integer> map = new HashMap<>();
+            for (Tag s : teamTag.getList("Stations", Tag.TAG_COMPOUND)) {
+                CompoundTag e = (CompoundTag) s;
+                map.put(new ResourceLocation(e.getString("Body")), e.getInt("Level"));
+            }
+            data.stations.put(teamTag.getUUID("Team"), map);
         }
         return data;
     }

@@ -32,25 +32,6 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Design doc feature #6 - radial quick-select for swapping the Cinder Atlas's active loadout/slot
- * without opening the full {@link CinderAtlasScreen} editor. Structurally a straight copy of
- * {@code PhoenixRadialMenu}'s donut/arc drawing approach (labeled pie segments via a raw
- * {@link Tesselator} triangle strip, hover-highlighted, picked by angle+distance in
- * {@link #mouseClicked}) rather than {@code ColorRadialMenuScreen}'s item-icon segments, since a
- * loadout/slot is identified by name, not a renderable stack.
- * <p>
- * Two levels sharing the same donut machinery, switched via {@link #viewingLoadout}: with it {@code null}
- * the ring shows loadouts - picking one doesn't commit anything yet, it drills into a second ring showing
- * that loadout's {@value CinderAtlasData#SLOT_COUNT} pattern slots (target name or "empty"); picking a
- * slot there is what actually sets the active loadout+slot and closes. Clicking the center hub while
- * viewing slots backs out to the loadout ring instead of closing.
- * <p>
- * Carries the same phoenixwiki flourishes {@link CinderAtlasScreen} was themed with (ported from that
- * library's {@code PhoenixThemeEditorScreen}, its one screen with real motion): a pulsing glow arc behind
- * the active segment, and a small spark continuously orbiting the ring, both via the same
- * {@code animPulse} technique. Respects {@link PhoenixTheme#isReduceMotion()}.
- */
 public class CinderAtlasRadialScreen extends Screen {
 
     private static final int RADIUS = 90;
@@ -61,7 +42,6 @@ public class CinderAtlasRadialScreen extends Screen {
     private int activeLoadout = 0;
     private int activeSlot = 0;
 
-    /** {@code null} = showing the loadout ring; otherwise the loadout whose slots are currently shown. */
     private @Nullable Integer viewingLoadout = null;
 
     private int cAccent, cText, cPanel, cCore, cSelected;
@@ -214,10 +194,6 @@ public class CinderAtlasRadialScreen extends Screen {
         return definition != null ? definition.getBlock().getName().getString() : "Slot " + (slot + 1);
     }
 
-    /**
-     * The controller block's own item form, shown in place of a text label for a configured slot -
-     * a slot's target is a real, renderable block, unlike a loadout (a bucket of several slots).
-     */
     private ItemStack slotIcon(int loadout, int slot) {
         CompoundTag tag = CinderAtlasData.peekSlotTag(atlasStack, loadout, slot);
         var definition = tag != null ? CinderSchemaData.getTargetDefinition(tag) : null;
@@ -262,10 +238,6 @@ public class CinderAtlasRadialScreen extends Screen {
         tesselator.end();
     }
 
-    /**
-     * Soft pulsing halo behind the active segment, same {@code animPulse} technique
-     * {@link CinderAtlasScreen#drawGlowBorder} uses for its active tab/slot, adapted to an arc.
-     */
     private void drawGlowArc(GuiGraphics graphics, int cx, int cy, int inner, int outer, float startAngle,
                              float step, int rgb) {
         float pulse = animPulse(0.6f, 0.4f, 500.0);
@@ -273,11 +245,6 @@ public class CinderAtlasRadialScreen extends Screen {
         drawArc(graphics, cx, cy, inner - 3, outer + 3, startAngle, step, (glowA << 24) | (rgb & 0xFFFFFF));
     }
 
-    /**
-     * Ambient "energy flowing" touch - a small spark continuously orbiting the ring, ported from the
-     * same traveling-spark technique {@link CinderAtlasScreen#renderTitleUnderline} uses along its
-     * title's underline, adapted to a circular path instead of a straight one.
-     */
     private void drawOrbitingSpark(GuiGraphics graphics, int cx, int cy, int inner, int outer) {
         if (PhoenixTheme.isReduceMotion()) return;
         double sparkAngle = (System.currentTimeMillis() / 1800.0) % (Math.PI * 2);
@@ -338,11 +305,6 @@ public class CinderAtlasRadialScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    /**
-     * Only reached from the slot-level ring - committing a slot pick from the loadout ring (with no
-     * slot chosen yet) would leave the deploy target ambiguous, so the loadout ring only ever drills
-     * into the slot ring instead of setting anything itself.
-     */
     private void confirmSlot(int slotIndex) {
         if (viewingLoadout == null) return;
         int loadout = viewingLoadout;

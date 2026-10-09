@@ -37,38 +37,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * The Cinder Atlas's loadout editor - see
- * {@code docs/content/Development/Systems/cinder_atlas_deployment_tool.md}. This is the "tabs + slot
- * grid + rename + assign" slice only: pick a loadout, pick a slot in it, pick a target for that slot
- * from the same search list {@link CinderConfiguratorScreen} uses. No sort/pagination controls and no
- * Sound/Preview/HUD toggles from the reference UI yet - those either need systems that don't exist yet
- * (Preview reuses the ghost-preview pipeline, which isn't wired to the Atlas at all) or aren't load
- * -bearing enough to add as inert placeholders. Deep per-slot configuration (slice repeats, block
- * preferences) isn't here either - a slot only gets a target for now, the same starting point a fresh
- * Cinder Core has before its own Configurator screen lets you refine it.
- * <p>
- * Upgrades ({@link CinderAtlasUpgrades}) are shown here read-only (icon strip + wireless range) but
- * installed/removed through the Cinder Forge multiblock instead of this screen - see
- * {@code CinderForgeMachine}'s Atlas/Upgrade slots - matching the existing "interact with the Forge to
- * configure a Cinder item" convention this codebase already uses for Cores, rather than adding a second,
- * inconsistent way to do the same kind of thing.
- * <p>
- * Follows {@link CinderConfiguratorScreen}'s exact structural pattern: a hand-rolled {@code Screen}
- * (no ModularUI - this is a client-only item screen, not a machine GUI), a flat list of click regions
- * checked in {@code mouseClicked}, {@link PhoenixTheme} for colors, and local-edit-then-packet for
- * persistence (this screen holds the player's actual live-held stack reference, so editing its NBT
- * through {@link CinderAtlasData}/{@link CinderSchemaData} updates what's visibly held immediately;
- * the packets just replicate the same edit onto the server's authoritative copy).
- * <p>
- * The panel's gradient background, pulsing title underline (with a traveling "spark" along it), and the
- * glow halo around the active loadout tab / selected slot are ported from {@code PhoenixThemeEditorScreen}
- * (`net.phoenixvine.wiki.theme`, the phoenixwiki library this project depends on) - its
- * {@code animPulse}/{@code blend} helpers and glow-border technique are that library's actual visual
- * signature (used for its own "active" node and animated connector spark), reused here rather than
- * inventing a new flourish style, so the Atlas reads as part of the same suite instead of a flat GTCEu
- * panel with borrowed colors. All motion respects {@link PhoenixTheme#isReduceMotion()}.
- */
 public class CinderAtlasScreen extends Screen {
 
     private static final int PANEL_W = 460;
@@ -124,9 +92,6 @@ public class CinderAtlasScreen extends Screen {
     private int panelTop() {
         return Math.max(16, (height - PANEL_H) / 2);
     }
-
-    // --- vertical layout, each section's Y derived from the one before it so init() and render()
-    // never duplicate the same magic numbers and drift apart. ---
 
     private int titleY(int top) {
         return top + 10;
@@ -248,9 +213,7 @@ public class CinderAtlasScreen extends Screen {
     private void selectSlot(int slotIndex) {
         selectedSlot = selectedSlot != null && selectedSlot == slotIndex ? null : slotIndex;
         if (selectedSlot != null) {
-            // Persisted as the slot that actually deploys in-world (see CinderDeploySource), not just
-            // this screen's own highlight state - deselecting (click-to-toggle-off above) intentionally
-            // leaves the last selection as the deploy target rather than clearing it to "nothing".
+
             CinderAtlasData.setActiveSlot(atlasStack, slotIndex);
             PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasSetActiveSlotPacket(hand, slotIndex));
         }
@@ -278,20 +241,10 @@ public class CinderAtlasScreen extends Screen {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasClearSlotPacket(hand, activeLoadout, selectedSlot));
     }
 
-    /**
-     * Design doc feature #4 - "prepare ahead" - real, headless auto-request of whatever the active
-     * slot is still missing from the linked network, independent of any deploy attempt. Result is
-     * reported back via chat as each item's crafting calculation resolves (see
-     * {@code CinderAtlasWirelessLink#requestMissingMaterials}), not shown in this screen directly.
-     */
     private void requestMaterials() {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasRequestMaterialsPacket(hand));
     }
 
-    /**
-     * Manual escape hatch alongside {@link #requestMaterials()} - opens AE2's real crafting terminal so
-     * the player can browse network stock or request specific items themselves.
-     */
     private void openCraftingTerminal() {
         PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasOpenCraftingTerminalPacket(hand));
         onClose();
@@ -335,7 +288,6 @@ public class CinderAtlasScreen extends Screen {
         drawButton(g, mouseX, mouseY, left + PANEL_W - PAD - 76, buttonY, 76, BUTTON_H, "Close",
                 this::onClose);
 
-        // Drawn last, after every other row/list that might otherwise render on top of it.
         ItemStack hoveredIcon = hoveredSlot != null ? hoveredSlot : hoveredUpgrade;
         if (hoveredIcon != null) g.renderTooltip(font, hoveredIcon, mouseX, mouseY);
 
@@ -362,11 +314,6 @@ public class CinderAtlasScreen extends Screen {
         }
     }
 
-    /**
-     * Returns the hovered slot's icon (for the caller to draw its tooltip last, same convention as
-     * {@link #renderUpgrades} below) - a slot's target is a real block, shown as its own item icon
-     * instead of just the block's name, with the name itself still available as a hover tooltip.
-     */
     private @Nullable ItemStack renderSlots(GuiGraphics g, int mouseX, int mouseY, int left, int y) {
         ItemStack hoveredIcon = null;
         for (int i = 0; i < CinderAtlasData.SLOT_COUNT; i++) {
@@ -405,16 +352,6 @@ public class CinderAtlasScreen extends Screen {
         return hoveredIcon;
     }
 
-    /**
-     * Read-only - installing/removing upgrades happens at the Cinder Forge multiblock (see
-     * {@code CinderForgeMachine}), matching how the Forge is already this codebase's "assemble/configure
-     * a Cinder item" station rather than adding a second, competing way to do the same kind of thing
-     * from this handheld screen. Still shows a hover tooltip on each installed icon (its name/effect
-     * description from {@link net.phoenix.core.common.item.cinder.CinderAtlasUpgradeItem#appendHoverText})
-     * - being read-only doesn't mean unlabeled. Returns the hovered stack rather than drawing its
-     * tooltip directly, so the caller can draw it last and avoid it being overdrawn by the target list
-     * rendered afterward.
-     */
     private @Nullable ItemStack renderUpgrades(GuiGraphics g, int mouseX, int mouseY, int left, int y) {
         g.drawString(font, "Upgrades", left + PAD, y, cTextDim, false);
 
@@ -492,11 +429,6 @@ public class CinderAtlasScreen extends Screen {
         drawBorder(g, x, y, w, h, cBorder);
     }
 
-    /**
-     * Title-row flourish ported from {@code PhoenixThemeEditorScreen}'s header underline: a pulsing
-     * accent line under the title, with a brighter "spark" traveling along it - the same technique that
-     * library uses for its own animated connector line, reused verbatim rather than approximated.
-     */
     private void renderTitleUnderline(GuiGraphics g, int left, int top) {
         int lineX0 = left + PAD;
         int lineX1 = lineX0 + font.width("Cinder Atlas");
@@ -515,11 +447,6 @@ public class CinderAtlasScreen extends Screen {
         }
     }
 
-    /**
-     * Soft halo around an "active"/"selected" element, same technique as
-     * {@code PhoenixThemeEditorScreen}'s glowing active-node border - an inset-by-2 pulsing-alpha border
-     * drawn behind the element's own solid border.
-     */
     private void drawGlowBorder(GuiGraphics g, int x, int y, int w, int h, int rgb) {
         float pulse = animPulse(0.6f, 0.4f, 500.0);
         int glowA = Math.min(255, (int) (0x55 * pulse));

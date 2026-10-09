@@ -245,6 +245,9 @@ dependencies {
     modCompileOnly("dev.ftb.mods:ftb-teams-forge:${ftbteams_version}")
     modCompileOnly("net.phoenixvine.guilds:phoenix_guilds:1.6.4")
 
+    modCompileOnly("curse.maven:the-wings-of-fire-1419633:7413991")
+    modRuntimeOnly("curse.maven:the-wings-of-fire-1419633:7413991")
+
     modRuntimeOnly("dev.ftb.mods:ftb-library-forge:${ftblibrary_version}")
     modRuntimeOnly("dev.ftb.mods:ftb-teams-forge:${ftbteams_version}")
     modRuntimeOnly("net.phoenixvine.guilds:phoenix_guilds:1.6.4")

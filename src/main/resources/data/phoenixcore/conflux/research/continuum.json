@@ -625,6 +625,287 @@
           "value": "space_singularity_shield"
         }
       ]
+    },
+    {
+      "id": "phoenixcore:space_survey_meridian",
+      "title": "Survey: Meridian",
+      "lore": "Resolve Meridian into something a rocket can land on.",
+      "icon": "minecraft:kelp",
+      "position": [
+        8,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_cold_signals"
+      ],
+      "cost": {
+        "computational": 450
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_meridian"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_pelagia",
+      "title": "Survey: Pelagia",
+      "lore": "Resolve Pelagia into something a rocket can land on.",
+      "icon": "minecraft:prismarine_crystals",
+      "position": [
+        9,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_thalassa_bloom"
+      ],
+      "cost": {
+        "biological": 1600,
+        "computational": 1100
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_pelagia"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_steamreach",
+      "title": "Survey: Steamreach",
+      "lore": "Resolve Steamreach into something a rocket can land on.",
+      "icon": "minecraft:water_bucket",
+      "position": [
+        10,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_aurelian_signals"
+      ],
+      "cost": {
+        "computational": 900
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_steamreach"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_survey_carbonado",
+      "title": "Survey: Carbonado",
+      "lore": "Resolve Carbonado into something a rocket can land on.",
+      "icon": "minecraft:diamond",
+      "position": [
+        12,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_kaleid_signal"
+      ],
+      "cost": {
+        "computational": 2200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_survey_carbonado"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_vesper_signal",
+      "title": "Vesper Signal",
+      "lore": "A faint red light, and worlds that never see it set.",
+      "icon": "minecraft:redstone_torch",
+      "position": [
+        -9,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 1800,
+        "material": 1200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_vesper_signal"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_vesper_decode",
+      "title": "Decode Vesper",
+      "lore": "Resolve the evening star and what lives under it.",
+      "icon": "minecraft:lantern",
+      "position": [
+        -9,
+        12
+      ],
+      "prerequisites": [
+        "phoenixcore:space_vesper_signal"
+      ],
+      "cost": {
+        "computational": 3600,
+        "material": 2400
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_vesper_decode"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_carousel_signal",
+      "title": "Carousel Signal",
+      "lore": "Music, faintly, from nowhere. It repeats.",
+      "icon": "minecraft:firework_star",
+      "position": [
+        13,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 2800,
+        "arcane": 1800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_carousel_signal"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_carousel_decode",
+      "title": "Decode Carousel",
+      "lore": "Resolve the source of the tune and its dancers.",
+      "icon": "minecraft:amethyst_cluster",
+      "position": [
+        13,
+        12
+      ],
+      "prerequisites": [
+        "phoenixcore:space_carousel_signal"
+      ],
+      "cost": {
+        "computational": 5600,
+        "arcane": 3600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_carousel_decode"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_reliquary_signal",
+      "title": "Reliquary Signal",
+      "lore": "A very old light, and a very quiet one.",
+      "icon": "minecraft:bone",
+      "position": [
+        -2,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 4500,
+        "arcane": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_reliquary_signal"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_reliquary_decode",
+      "title": "Decode Reliquary",
+      "lore": "Resolve what is left of the worlds that stayed.",
+      "icon": "minecraft:echo_shard",
+      "position": [
+        -2,
+        12
+      ],
+      "prerequisites": [
+        "phoenixcore:space_reliquary_signal"
+      ],
+      "cost": {
+        "computational": 9000,
+        "arcane": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_reliquary_decode"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_trove_signal",
+      "title": "Trove Signal",
+      "lore": "Gold light, and a lot of mass for the size.",
+      "icon": "minecraft:gold_ingot",
+      "position": [
+        6,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 2600,
+        "material": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_trove_signal"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_trove_decode",
+      "title": "Decode Trove",
+      "lore": "Resolve what the star has kept.",
+      "icon": "minecraft:ancient_debris",
+      "position": [
+        6,
+        12
+      ],
+      "prerequisites": [
+        "phoenixcore:space_trove_signal"
+      ],
+      "cost": {
+        "computational": 5200,
+        "material": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_trove_decode"
+        }
+      ],
+      "hidden": true
     }
   ]
 }

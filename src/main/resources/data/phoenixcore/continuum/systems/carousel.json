@@ -1,0 +1,17 @@
+{
+  "name": "Carousel",
+  "description": "A bright white star, two gas giants and a crowd of moons that never stop turning.",
+  "galaxy": [
+    -7.5,
+    1.0,
+    8.0
+  ],
+  "star_color": "#cfe0ff",
+  "star_radius": 1.1,
+  "star_kind": "star",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_carousel_signal",
+    "surveyed_research": "phoenixcore:space_carousel_decode"
+  }
+}

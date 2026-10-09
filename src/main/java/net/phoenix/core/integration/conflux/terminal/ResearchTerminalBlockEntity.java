@@ -24,9 +24,8 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
 
     public static final long CAPACITY_PER_TYPE = ConfluxDataStore.CAPACITY_PER_TYPE;
 
-    /** The team whose data pool this terminal feeds. Set when placed or first used. */
     private @Nullable UUID ownerTeam;
-    /** Data held by terminals from before data moved into {@link ConfluxDataStore}; moved over once owned. */
+
     private final Map<ConfluxDataType, Long> legacy = new EnumMap<>(ConfluxDataType.class);
     private final LazyOptional<IConfluxMultiHandler> handlerOpt;
 
@@ -39,7 +38,6 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
         return ownerTeam;
     }
 
-    /** Takes ownership if nobody has it yet, and moves any legacy contents into the team's pool. */
     public void adopt(UUID team) {
         if (ownerTeam == null) {
             ownerTeam = team;
@@ -90,7 +88,6 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
         };
     }
 
-    /** Server side only; the client reads its team's pool from the research sync instead. */
     public long getStored(ConfluxDataType type) {
         ConfluxDataStore store = store();
         return store == null || ownerTeam == null ? 0L : store.stored(ownerTeam, type);
@@ -100,7 +97,6 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
         return CAPACITY_PER_TYPE;
     }
 
-    /** Spends from the owning team's pool. */
     public boolean trySpend(Map<ConfluxDataType, Long> costs) {
         ConfluxDataStore store = store();
         return store != null && ownerTeam != null && store.trySpend(ownerTeam, costs);

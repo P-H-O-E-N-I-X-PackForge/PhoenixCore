@@ -57,5 +57,6 @@
   "lore": {
     "detected": "Sometimes there, sometimes not. The catalogue lists it with a question mark and a footnote.",
     "surveyed": "Flicker is a moon that is only there when it is not being watched directly. The rocket will go to where it was and the instruments will say it was never anywhere else."
-  }
+  },
+  "style": "shatter"
 }

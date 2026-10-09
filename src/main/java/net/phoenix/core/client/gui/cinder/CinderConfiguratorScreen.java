@@ -465,16 +465,6 @@ public class CinderConfiguratorScreen extends Screen {
         g.pose().popPose();
     }
 
-    /**
-     * Per-position picker opened by right-clicking a specific block in the 3D preview - unlike
-     * {@link #renderDropdownOverlay}'s per-predicate rows (one choice shared by *every* position that
-     * predicate governs), this writes to {@link MultiblockSchemaInfo#getUserGlobalBlockPreferences()},
-     * GTCEu's own position-keyed override map (despite the "global" in its name - see that method's own
-     * doc), so e.g. one hatch position can be forced to Tier 1 while another of the same predicate stays
-     * Tier 3. Candidates are the union of every {@link BasePredicate} the position's {@link
-     * MultiPredicate} accepts ({@link MultiPredicate#expand()}), since a right-click targets one exact
-     * position rather than one already-known base predicate.
-     */
     private void renderPositionPickerOverlay(GuiGraphics g, int mouseX, int mouseY) {
         PositionPicker picker = openPositionPicker;
         if (schemaInfo == null) return;
@@ -594,9 +584,7 @@ public class CinderConfiguratorScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            // Checked first, before the preview-picker logic below, so a click on the picker overlay's
-            // own rows (registered here when open, and frequently rendered right on top of the preview
-            // since it's anchored at the click point) always wins over re-targeting the picker.
+
             for (int i = clickRegions.size() - 1; i >= 0; i--) {
                 ClickRegion region = clickRegions.get(i);
                 if (region.contains(mouseX, mouseY)) {
@@ -605,13 +593,6 @@ public class CinderConfiguratorScreen extends Screen {
                 }
             }
 
-            // Fine-grained per-block picker (left-click a block in the 3D preview) - see
-            // renderPositionPickerOverlay's doc for why this is a separate mechanism from the
-            // per-predicate dropdown rows above. getHoveredLocalPos() is a real GPU depth-buffer pick
-            // against the actual rendered blocks (StructureRenderer#getLastHitResult), not an
-            // approximation, so this only fires when a block is genuinely under the cursor. Left-click
-            // (rather than right) so it matches this screen's normal "click to act on this" convention;
-            // rotating the preview is right-drag instead (see mouseDragged) to avoid the two colliding.
             if (schemaInfo != null && pattern != null && mouseX >= previewX && mouseX < previewX + previewW &&
                     mouseY >= previewY && mouseY < previewY + previewH) {
                 BlockPos hovered = structurePreview.getHoveredLocalPos();
@@ -638,8 +619,6 @@ public class CinderConfiguratorScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        // Right-drag rotates - left is the per-block variant picker (see mouseClicked), so it can't
-        // also mean "rotate" without the two gestures colliding on the same button.
         if (button == 1 && mouseX >= previewX && mouseX < previewX + previewW && mouseY >= previewY &&
                 mouseY < previewY + previewH) {
             structurePreview.mouseDragged(dragX, dragY);

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** Lets {@code AxiomShaderManager} swap between post chains it keeps loaded, instead of rebuilding one per tab. */
 @Mixin(GameRenderer.class)
 public interface GameRendererAccessor {
 

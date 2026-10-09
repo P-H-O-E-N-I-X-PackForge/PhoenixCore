@@ -7,7 +7,6 @@ import net.phoenix.core.common.block.cinema.CutsceneActions;
 
 import java.util.function.Supplier;
 
-/** A cutscene asks the server to run one of its actions (validated by {@link CutsceneActions#trigger}). */
 public class C2SCutsceneActionPacket {
 
     private final ResourceLocation cutscene;

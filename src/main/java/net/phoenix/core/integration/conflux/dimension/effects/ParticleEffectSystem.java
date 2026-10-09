@@ -17,10 +17,6 @@ public abstract class ParticleEffectSystem {
 
     public abstract void update(Level level, @Nullable Player player);
 
-    /**
-     * Dispatches a single particle add to the client thread - every spawn* method below used to be an
-     * empty body, so none of these ambient effects ever actually rendered anything.
-     */
     private static void spawnClientParticle(Level level, SimpleParticleType type, double x, double y, double z,
                                             double vx, double vy, double vz) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
@@ -32,10 +28,6 @@ public abstract class ParticleEffectSystem {
 
     public static class AshRainParticles extends ParticleEffectSystem {
 
-        // The original 16*16*0.8 = ~204 particles/tick (4000+/sec) was never actually run, since
-        // spawnAshParticle was an empty stub - that count would have been a serious frame-time hit.
-        // Scaled down to a sane ambient sprinkle; DimensionEffectsManager also only ticks this every
-        // few client ticks, not every tick.
         private static final int PARTICLES_PER_UPDATE = 6;
 
         @Override
@@ -61,8 +53,6 @@ public abstract class ParticleEffectSystem {
 
     public static class SoundRipples extends ParticleEffectSystem {
 
-        // Sculk's ambient loop is driven by explicit createRipple() calls (e.g. from a nearby sculk
-        // sensor/shrieker triggering), not a per-tick spawn - nothing periodic belongs here.
         @Override
         public void update(Level level, @Nullable Player player) {}
 
@@ -87,8 +77,6 @@ public abstract class ParticleEffectSystem {
 
     public static class CosmicDust extends ParticleEffectSystem {
 
-        // Same rescale reasoning as AshRainParticles - 8*8*0.6 = ~30/tick was never tuned against an
-        // actually-running spawn call.
         private static final int PARTICLES_PER_UPDATE = 3;
 
         @Override

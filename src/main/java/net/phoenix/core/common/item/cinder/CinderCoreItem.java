@@ -121,15 +121,6 @@ public class CinderCoreItem extends Item {
         return tryStockMaterial(cinderCore, slot.getItem(), player);
     }
 
-    /**
-     * Only takes exactly what the configured target still needs of this specific block, not the whole
-     * held stack - previously this inserted {@code heldItem.copy()} unchanged (its full count) with no
-     * cap at all, so left-clicking with a stack of 64 would eat all 64 even if the schema only needed
-     * 12, regardless of whether the block was even part of the target. Caps insertion at
-     * {@code required - alreadyStocked} for this block, using the same
-     * {@link CinderSchemaData#getCachedRequiredBlocks}/{@link CinderSchemaData#tallyStocked} this item's
-     * own tooltip already computes, and refuses to accept a block that isn't part of the schema at all.
-     */
     private static boolean tryStockMaterial(ItemStack cinderCore, ItemStack heldItem, Player player) {
         if (heldItem.isEmpty() || !(heldItem.getItem() instanceof BlockItem blockItem)) return false;
 

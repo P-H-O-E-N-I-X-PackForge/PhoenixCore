@@ -9,7 +9,6 @@ import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 
 import java.util.function.Supplier;
 
-/** What the launch pad has loaded: the first rocket in its item input buses and how many probes and kits. */
 public class S2CPadStockPacket {
 
     private final BlockPos pad;
@@ -17,8 +16,10 @@ public class S2CPadStockPacket {
     private final ItemStack rocket;
     private final int probes;
     private final int kits;
+    private final int rockets;
 
-    public S2CPadStockPacket(BlockPos pad, boolean buses, ItemStack rocket, int probes, int kits) {
+    public S2CPadStockPacket(BlockPos pad, boolean buses, ItemStack rocket, int probes, int kits, int rockets) {
+        this.rockets = rockets;
         this.pad = pad;
         this.buses = buses;
         this.rocket = rocket;
@@ -32,6 +33,7 @@ public class S2CPadStockPacket {
         this.rocket = buf.readItem();
         this.probes = buf.readVarInt();
         this.kits = buf.readVarInt();
+        this.rockets = buf.readVarInt();
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -40,12 +42,14 @@ public class S2CPadStockPacket {
         buf.writeItem(rocket);
         buf.writeVarInt(probes);
         buf.writeVarInt(kits);
+        buf.writeVarInt(rockets);
     }
 
     public static void handle(S2CPadStockPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (FMLEnvironment.dist.isClient()) {
-                ContinuumClientState.acceptPadStock(msg.pad, msg.buses, msg.rocket, msg.probes, msg.kits);
+                ContinuumClientState.acceptPadStock(msg.pad, msg.buses, msg.rocket, msg.probes, msg.kits,
+                        msg.rockets);
             }
         });
         ctx.get().setPacketHandled(true);

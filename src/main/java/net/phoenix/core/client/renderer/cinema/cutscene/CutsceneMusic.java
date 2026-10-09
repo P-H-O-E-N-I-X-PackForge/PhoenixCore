@@ -5,13 +5,8 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
-/**
- * Non-positional background track for a cutscene. {@link CutsceneScreen} drives the volume every frame
- * for the fades.
- */
 public final class CutsceneMusic extends AbstractTickableSoundInstance {
 
-    // Kept above zero so the sound engine never drops the channel mid-fade.
     private static final float MIN_VOLUME = 0.001f;
 
     public CutsceneMusic(SoundEvent event, SoundSource source, float pitch, boolean loop) {

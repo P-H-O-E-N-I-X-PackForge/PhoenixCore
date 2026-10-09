@@ -45,6 +45,8 @@ public class C2SAbandonDisciplinePacket {
                     ResearchTreeRegistry.INSTANCE);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
+                net.phoenix.core.integration.continuum.common.ContinuumServerEvents.sendStateToTeam(player.server,
+                        teamId);
             }
         });
         ctx.get().setPacketHandled(true);

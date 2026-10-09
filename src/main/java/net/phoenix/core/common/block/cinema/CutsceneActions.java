@@ -26,24 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Server-side consequences for cutscene choices, loaded from {@code data/<namespace>/cutscene_actions/<path>.json}.
- * Cutscenes (client assets) only refer to these by id, so a modified client can never run anything that isn't
- * defined here.
- *
- * <pre>
- * {
- *   "cutscene": "phoenixcore:lore/03_ash",     // only this cutscene may trigger it (recommended)
- *   "once": true,                              // at most once per player, ever (default true)
- *   "exclusive_group": "ash_notebook",         // only one action per group per player, ever (optional)
- *   "permission_level": 2,                     // level the commands run at (default 2)
- *   "commands": ["give @s minecraft:book", "advancement grant @s only phoenixcore:lore/ash"]
- * }
- * </pre>
- *
- * Commands run as the player ({@code @s}, their position), with output hidden. A player can only trigger an action
- * while inside a cutscene the server started for them, and only if it belongs to that cutscene.
- */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class CutsceneActions extends SimpleJsonResourceReloadListener {
 
@@ -86,7 +68,6 @@ public final class CutsceneActions extends SimpleJsonResourceReloadListener {
         PhoenixCore.LOGGER.info("Loaded {} cutscene action(s)", actions.size());
     }
 
-    /** Runs an action a client asked for, if the player is allowed to trigger it right now. */
     public static void trigger(ServerPlayer player, ResourceLocation cutsceneId, ResourceLocation actionId) {
         Action action = INSTANCE.actions.get(actionId);
         if (action == null) {
@@ -122,7 +103,6 @@ public final class CutsceneActions extends SimpleJsonResourceReloadListener {
         }
     }
 
-    /** Forgets every action and group this player has used, e.g. for testing. Returns how many were cleared. */
     public static int reset(ServerPlayer player) {
         CompoundTag data = persisted(player);
         int cleared = data.getList(USED_TAG, Tag.TAG_STRING).size();
@@ -131,7 +111,6 @@ public final class CutsceneActions extends SimpleJsonResourceReloadListener {
         return cleared;
     }
 
-    // Stored under Forge's PlayerPersisted tag so it survives death.
     private static CompoundTag persisted(ServerPlayer player) {
         CompoundTag root = player.getPersistentData();
         if (!root.contains(Player.PERSISTED_NBT_TAG, Tag.TAG_COMPOUND)) {

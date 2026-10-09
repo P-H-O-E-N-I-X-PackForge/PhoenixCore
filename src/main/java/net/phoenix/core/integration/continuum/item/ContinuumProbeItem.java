@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** Payload for an extraction mission. A mission consumes the probes it carries and loses them if it fails. */
 public class ContinuumProbeItem extends Item {
 
     public ContinuumProbeItem(Properties properties) {

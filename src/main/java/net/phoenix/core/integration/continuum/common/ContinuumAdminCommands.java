@@ -28,10 +28,6 @@ import java.util.UUID;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-/**
- * {@code /continuumadmin}: operator tools for testing Continuum while the real progression (research, crafting,
- * the GT launch pad) does not exist yet. Everything acts on the sender's own team.
- */
 final class ContinuumAdminCommands {
 
     private ContinuumAdminCommands() {}
@@ -85,6 +81,64 @@ final class ContinuumAdminCommands {
                         .then(literal("clear").executes(ctx -> clearOutposts(ctx.getSource()))))
                 .then(literal("reset").executes(ctx -> reset(ctx.getSource())))
                 .then(literal("missions")
+                        .then(literal("send")
+                                .then(argument("body", ResourceLocationArgument.id())
+                                        .suggests((ctx, builder) -> {
+                                            ContinuumData.allBodies().forEach(b -> builder.suggest(b.id().toString()));
+                                            return builder.buildFuture();
+                                        })
+                                        .then(argument("type", StringArgumentType.word())
+                                                .suggests((ctx,
+                                                           builder) -> net.minecraft.commands.SharedSuggestionProvider
+                                                                   .suggest(List.of("survey", "extract", "deploy",
+                                                                           "haul", "repair",
+                                                                           "rescue", "station"), builder))
+                                                .then(argument("seconds", IntegerArgumentType.integer(1, 604800))
+                                                        .executes(ctx -> sendMission(ctx.getSource(),
+                                                                ResourceLocationArgument.getId(ctx, "body"),
+                                                                StringArgumentType.getString(ctx, "type"),
+                                                                IntegerArgumentType.getInteger(ctx, "seconds"), true,
+                                                                1))
+                                                        .then(argument("outcome", StringArgumentType.word())
+                                                                .suggests(
+                                                                        (ctx,
+                                                                         builder) -> net.minecraft.commands.SharedSuggestionProvider
+                                                                                 .suggest(List.of("success", "fail"),
+                                                                                         builder))
+                                                                .executes(ctx -> sendMission(ctx.getSource(),
+                                                                        ResourceLocationArgument.getId(ctx, "body"),
+                                                                        StringArgumentType.getString(ctx, "type"),
+                                                                        IntegerArgumentType.getInteger(ctx, "seconds"),
+                                                                        !"fail".equals(StringArgumentType
+                                                                                .getString(ctx, "outcome")),
+                                                                        1))
+                                                                .then(argument("count",
+                                                                        IntegerArgumentType.integer(1, 32))
+                                                                        .executes(ctx -> sendMission(ctx.getSource(),
+                                                                                ResourceLocationArgument.getId(ctx,
+                                                                                        "body"),
+                                                                                StringArgumentType.getString(ctx,
+                                                                                        "type"),
+                                                                                IntegerArgumentType.getInteger(ctx,
+                                                                                        "seconds"),
+                                                                                !"fail".equals(StringArgumentType
+                                                                                        .getString(ctx, "outcome")),
+                                                                                IntegerArgumentType.getInteger(ctx,
+                                                                                        "count")))))))))
+                        .then(literal("strand")
+                                .then(argument("body", ResourceLocationArgument.id())
+                                        .suggests((ctx, builder) -> {
+                                            ContinuumData.allBodies().forEach(b -> builder.suggest(b.id().toString()));
+                                            return builder.buildFuture();
+                                        })
+                                        .then(argument("seconds", IntegerArgumentType.integer(1, 604800))
+                                                .executes(ctx -> strandMission(ctx.getSource(),
+                                                        ResourceLocationArgument.getId(ctx, "body"),
+                                                        IntegerArgumentType.getInteger(ctx, "seconds"))))))
+                        .then(literal("time")
+                                .then(argument("seconds", IntegerArgumentType.integer(0, 604800))
+                                        .executes(ctx -> setRemaining(ctx.getSource(),
+                                                IntegerArgumentType.getInteger(ctx, "seconds")))))
                         .then(literal("finish").executes(ctx -> finishMissions(ctx.getSource())))
                         .then(literal("clear").executes(ctx -> clearMissions(ctx.getSource())))));
     }
@@ -165,7 +219,6 @@ final class ContinuumAdminCommands {
         return 1;
     }
 
-    /** Test helper: bank a full stockpile at every outpost so a haul can be flown straight away. */
     private static int fillOutposts(CommandSourceStack source) throws CommandSyntaxException {
         UUID team = team(source);
         ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
@@ -185,7 +238,6 @@ final class ContinuumAdminCommands {
         return count;
     }
 
-    /** Test helper: break (or fix) every outpost of the team. */
     private static int damageOutposts(CommandSourceStack source, boolean damage) throws CommandSyntaxException {
         UUID team = team(source);
         ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
@@ -198,7 +250,8 @@ final class ContinuumAdminCommands {
         data.setDirty();
         ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
         int changed = count;
-        source.sendSuccess(() -> Component.literal((damage ? "Damaged " : "Repaired ") + changed + " outpost(s)."), false);
+        source.sendSuccess(() -> Component.literal((damage ? "Damaged " : "Repaired ") + changed + " outpost(s)."),
+                false);
         return count;
     }
 
@@ -218,13 +271,100 @@ final class ContinuumAdminCommands {
         return 1;
     }
 
+    private static int sendMission(CommandSourceStack source, ResourceLocation bodyId, String typeName, int seconds,
+                                   boolean succeeds, int count) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        var body = ContinuumData.body(bodyId);
+        if (body == null) {
+            source.sendFailure(Component.literal("Unknown body " + bodyId));
+            return 0;
+        }
+        Mission.Type type;
+        try {
+            type = Mission.Type.valueOf(typeName.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            source.sendFailure(Component.literal("Unknown mission type " + typeName));
+            return 0;
+        }
+
+        UUID team = team(source);
+        ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
+        long now = System.currentTimeMillis();
+        int probes = switch (type) {
+            case EXTRACT, DEPLOY -> 3;
+            case STATION -> Math.max(1,
+                    net.phoenix.core.configs.PhoenixConfigs.INSTANCE.continuum.stationProbesPerLevel);
+            case HAUL -> 4;
+            case REPAIR, RESCUE -> 1;
+            case SURVEY -> 0;
+        };
+        for (int i = 0; i < count; i++) {
+            java.util.List<ItemStack> rewards = new java.util.ArrayList<>();
+            if (succeeds && (type == Mission.Type.EXTRACT || type == Mission.Type.HAUL)) {
+                rewards = ContinuumMissions.rollRewards(team, body, type == Mission.Type.HAUL ? 8 : probes,
+                        player.getRandom());
+            }
+            data.addMission(new Mission(UUID.randomUUID(), team, player.getUUID(), player.getGameProfile().getName(),
+                    bodyId, type, probes, rewards, now, seconds * 1000L, succeeds, 0.05f,
+                    new ItemStack(ContinuumRegistry.ROCKET.get()), Mission.State.ACTIVE, new java.util.ArrayList<>()));
+        }
+        data.setDirty();
+        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        source.sendSuccess(() -> Component.literal("Sent " + count + " " + type.label().toLowerCase(Locale.ROOT) +
+                (count == 1 ? "" : "s") + " to " + body.name() + " (" + seconds + "s, " +
+                (succeeds ? "will succeed" : "will fail") + ")."), false);
+        return count;
+    }
+
+    private static int strandMission(CommandSourceStack source, ResourceLocation bodyId, int seconds)
+                                                                                                      throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        var body = ContinuumData.body(bodyId);
+        if (body == null) {
+            source.sendFailure(Component.literal("Unknown body " + bodyId));
+            return 0;
+        }
+        UUID team = team(source);
+        ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
+        long now = System.currentTimeMillis();
+        Mission mission = new Mission(UUID.randomUUID(), team, player.getUUID(), player.getGameProfile().getName(),
+                bodyId, Mission.Type.EXTRACT, 3, new java.util.ArrayList<>(), now, 1L, false, 0.1f,
+                new ItemStack(ContinuumRegistry.ROCKET.get()), Mission.State.FAILED, new java.util.ArrayList<>());
+        mission.distressUntil = now + seconds * 1000L;
+        data.addMission(mission);
+        data.setDirty();
+        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        source.sendSuccess(() -> Component.literal("A rocket is stranded at " + body.name() + "; its signal fades in " +
+                seconds + "s."), false);
+        return 1;
+    }
+
+    private static int setRemaining(CommandSourceStack source, int seconds) throws CommandSyntaxException {
+        UUID team = team(source);
+        ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
+        long now = System.currentTimeMillis();
+        int count = 0;
+        for (Mission mission : data.missions(team)) {
+            if (mission.state != Mission.State.ACTIVE) continue;
+
+            mission.durationMillis = Math.max(1L, now - mission.startMillis + seconds * 1000L);
+            count++;
+        }
+        data.setDirty();
+        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        int changed = count;
+        source.sendSuccess(() -> Component.literal(changed + " running mission(s) will land in " + seconds + "s."),
+                false);
+        return count;
+    }
+
     private static int finishMissions(CommandSourceStack source) throws CommandSyntaxException {
         UUID team = team(source);
         ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
         int count = 0;
         for (Mission mission : List.copyOf(data.missions(team))) {
             if (mission.state == Mission.State.ACTIVE) {
-                // pretend it was launched long enough ago to be due
+
                 mission.startMillis = 0L;
                 mission.durationMillis = 1L;
                 count++;

@@ -17,18 +17,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** A module that raises one of a rocket's upgrades by a level. Use it with a rocket in the other hand. */
 public class ContinuumUpgradeItem extends Item {
 
     private final String upgrade;
     private final int maxLevel;
     private final String effect;
 
-    /**
-     * @param upgrade  the {@link RocketStats} upgrade id this raises
-     * @param maxLevel the highest level the upgrade can reach
-     * @param effect   one line describing what each level does, for the tooltip
-     */
     public ContinuumUpgradeItem(Properties properties, String upgrade, int maxLevel, String effect) {
         super(properties.stacksTo(16));
         this.upgrade = upgrade;
