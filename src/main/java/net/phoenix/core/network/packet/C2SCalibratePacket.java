@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** A chart drawn on the calibration screen: pairs of star indices. */
 public class C2SCalibratePacket {
 
     private final BlockPos pos;

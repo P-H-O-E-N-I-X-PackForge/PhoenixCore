@@ -10,7 +10,6 @@ import net.phoenix.core.utils.TeamUtils;
 
 import java.util.function.Supplier;
 
-/** The history screen asks for the team's mission history. */
 public class C2SRequestHistoryPacket {
 
     public C2SRequestHistoryPacket() {}

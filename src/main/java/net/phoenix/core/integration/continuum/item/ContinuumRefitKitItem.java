@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** A hull refit kit: spent in a rocket's refit screen to raise its hull from the tier below to this one. */
 public class ContinuumRefitKitItem extends Item {
 
     private final int tier;

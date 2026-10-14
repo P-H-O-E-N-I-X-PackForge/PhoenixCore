@@ -10,14 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A sequence of sounds the jukebox has to be played, in order. Every step lists what a sound must have to count; a
- * step may ask for an exact sound, a note, a tag, or any mix of them.
- *
- * <pre>
- * {"steps": [{"note": "C4"}, {"note": "E4"}, {"tag": "low"}, {"sound": "phoenixcore:effect/gong"}]}
- * </pre>
- */
 public record AcousticPuzzle(ResourceLocation id, List<Step> steps) {
 
     public record Step(@Nullable ResourceLocation sound, int note, @Nullable String tag) {

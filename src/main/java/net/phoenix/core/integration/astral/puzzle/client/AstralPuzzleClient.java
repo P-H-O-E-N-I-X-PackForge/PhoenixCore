@@ -7,7 +7,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 
-/** Entry points the calibration packets and the survey item call on the client. */
 @OnlyIn(Dist.CLIENT)
 public final class AstralPuzzleClient {
 

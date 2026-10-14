@@ -1031,9 +1031,9 @@ public class PhoenixMachines {
                     Component.literal("§7sounds. Play them in the right order to solve it; a wrong sound starts over."))
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
-                    .slice("aaa", "afa", "aaa")
-                    .slice("aaa", "aca", "aaa")
                     .slice("aaa", "aaa", "aaa")
+                    .slice("aaa", "aca", "aaa")
+                    .slice("aaa", "afa", "aaa")
                     .where('a', Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
                             .or(Predicates.controller(definition)))
                     .where('c', Predicates.blocks(CASING_TEMPERED_GLASS.get()))

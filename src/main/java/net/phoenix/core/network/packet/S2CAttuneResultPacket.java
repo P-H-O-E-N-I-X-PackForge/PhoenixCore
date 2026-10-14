@@ -8,7 +8,6 @@ import net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient;
 
 import java.util.function.Supplier;
 
-/** The server's verdict on an attunement run, shown on the game screen. */
 public class S2CAttuneResultPacket {
 
     private final BlockPos pos;

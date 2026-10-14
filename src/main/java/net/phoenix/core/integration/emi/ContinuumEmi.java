@@ -23,11 +23,6 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Continuum in EMI: a page per body listing what extraction brings home from it (with the tier, flight time and hull it
- * needs, and whether it is a passing comet), and the rocket refit recipes (each hull tier and what each upgrade module
- * can reach on each hull). The pages are drawn in the Phoenix suite theme.
- */
 public final class ContinuumEmi {
 
     private ContinuumEmi() {}
@@ -55,8 +50,6 @@ public final class ContinuumEmi {
         }
     }
 
-    // ---------------------------------------------------------------- theme
-
     private record Palette(int bg, int border, int title, int text, int dim) {}
 
     private static Palette palette() {
@@ -83,8 +76,6 @@ public final class ContinuumEmi {
         RocketStats.setTier(stack, tier);
         return stack;
     }
-
-    // ---------------------------------------------------------------- one page per body
 
     private static final int COLUMNS = 7;
 
@@ -139,8 +130,6 @@ public final class ContinuumEmi {
             }
         }
     }
-
-    // ---------------------------------------------------------------- the refit
 
     private static class HullRecipe extends BasicEmiRecipe {
 

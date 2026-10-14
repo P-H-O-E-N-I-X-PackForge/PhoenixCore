@@ -195,22 +195,37 @@ public class WorldgenApplier {
                 new DisciplineWorldgenConfig.CaveConfig(1.0f, 1.0f, true));
     }
 
+    @FunctionalInterface
+    public interface BiomeLookup {
+
+        @Nullable
+        String biomeIdAt(int x, int z);
+    }
+
     public static void applyWorldgenProfile(
                                             WorldGenLevel level,
                                             WorldgenProfile profile,
                                             @Nullable String currentStage,
                                             int chunkX,
                                             int chunkZ) {
-        if (profile == null) return;
+        applyWorldgenProfile(level, profile, currentStage, chunkX, chunkZ, null);
+    }
 
-        if (profile.decorations != null) {
-            applyDecorationsFromProfile(level, profile.decorations, level.getRandom(), chunkX, chunkZ);
-            applyTrees(level, profile.decorations.trees, profile.decorations.treeFrequency,
-                    level.getRandom(), chunkX, chunkZ);
-        }
+    public static void applyWorldgenProfile(
+                                            WorldGenLevel level,
+                                            WorldgenProfile profile,
+                                            @Nullable String currentStage,
+                                            int chunkX,
+                                            int chunkZ,
+                                            @Nullable BiomeLookup biomes) {
+        if (profile == null) return;
 
         if (profile.liquids != null) {
             applyLiquidFeatures(level, profile.liquids, chunkX, chunkZ);
+        }
+
+        if (profile.decorations != null) {
+            applyBiomeVegetation(level, profile.decorations, biomes, level.getRandom(), chunkX, chunkZ);
         }
 
         SmallStructures.maybePlace(level, profile.disciplineId, chunkX, chunkZ);
@@ -303,6 +318,96 @@ public class WorldgenApplier {
         }
     }
 
+    private static void applyBiomeVegetation(WorldGenLevel level, WorldgenProfile.DecorationProfile profile,
+                                             @Nullable BiomeLookup biomes, net.minecraft.util.RandomSource random,
+                                             int chunkX, int chunkZ) {
+        int minX = chunkX * 16;
+        int minZ = chunkZ * 16;
+        BlockPos.MutableBlockPos probe = new BlockPos.MutableBlockPos();
+
+        int treeAttempts = Math.max(1, Math.round(profile.treeFrequency * 12 * 2.5f));
+        for (int i = 0; i < treeAttempts; i++) {
+            int x = minX + random.nextInt(16);
+            int z = minZ + random.nextInt(16);
+            BiomeKits.Kit kit = biomes == null ? null : BiomeKits.get(biomes.biomeIdAt(x, z));
+            java.util.List<WorldgenProfile.TreeConfig> trees = kit != null ? kit.trees() : profile.trees;
+            float mul = kit != null ? kit.treeMul() : 1.0f;
+            if (trees == null || trees.isEmpty() || mul <= 0f || random.nextFloat() > mul / 2.5f) continue;
+
+            WorldgenProfile.TreeConfig tree = trees.get(random.nextInt(trees.size()));
+            if (random.nextFloat() > tree.frequency) continue;
+
+            int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
+            BlockPos base = new BlockPos(x, y, z);
+            if (!level.ensureCanWrite(base) || !level.isEmptyBlock(base)) continue;
+            if (level.getBlockState(base.below()).isAir() || isAboveWater(level, base)) continue;
+            placeTree(level, base, tree, random);
+        }
+
+        placeGroundCover(level, profile, biomes, random, minX, minZ, probe, true);
+        placeGroundCover(level, profile, biomes, random, minX, minZ, probe, false);
+    }
+
+    private static void placeGroundCover(WorldGenLevel level, WorldgenProfile.DecorationProfile profile,
+                                         @Nullable BiomeLookup biomes, net.minecraft.util.RandomSource random,
+                                         int minX, int minZ, BlockPos.MutableBlockPos probe, boolean flowers) {
+        float freq = flowers ? profile.flowerFrequency : profile.vegetationDensity;
+        int attempts = Math.max(1, Math.round(256 * freq * 0.03f * 4));
+        for (int i = 0; i < attempts; i++) {
+            int x = minX + random.nextInt(16);
+            int z = minZ + random.nextInt(16);
+            BiomeKits.Kit kit = biomes == null ? null : BiomeKits.get(biomes.biomeIdAt(x, z));
+            java.util.List<String> names = kit != null ? (flowers ? kit.flowers() : kit.shrubs()) :
+                    (flowers ? profile.flowers : profile.shrubs);
+            float mul = kit != null ? (flowers ? kit.flowerMul() : kit.shrubMul()) : 1.0f;
+            if (names == null || names.isEmpty() || mul <= 0f || random.nextFloat() > mul / 2.0f) continue;
+
+            net.minecraft.world.level.block.state.BlockState state = resolveDecoration(
+                    names.get(random.nextInt(names.size())));
+            if (state == null) continue;
+
+            int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
+            BlockPos pos = probe.set(x, y, z).immutable();
+            if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos) && !isAboveWater(level, pos) &&
+                    state.canSurvive(level, pos)) {
+                level.setBlock(pos, state, 3);
+            }
+        }
+    }
+
+    private enum Shape {
+        ROUND,
+        
+        CONE,
+        
+        SPIRE,
+        
+        UMBRELLA,
+        
+        STUMP
+    }
+
+    private static final java.util.Map<String, Shape> TREE_SHAPES = new java.util.HashMap<>();
+    static {
+        TREE_SHAPES.put("fire_tree", Shape.UMBRELLA);
+        TREE_SHAPES.put("dead_tree", Shape.STUMP);
+        TREE_SHAPES.put("charred_stump", Shape.STUMP);
+        TREE_SHAPES.put("rusted_pylon", Shape.STUMP);
+        TREE_SHAPES.put("bone_tree", Shape.STUMP);
+        TREE_SHAPES.put("obsidian_spire", Shape.SPIRE);
+        TREE_SHAPES.put("basalt_column", Shape.SPIRE);
+        TREE_SHAPES.put("sculk_spire", Shape.SPIRE);
+        TREE_SHAPES.put("crystalline_tree", Shape.SPIRE);
+        TREE_SHAPES.put("antenna", Shape.SPIRE);
+        TREE_SHAPES.put("amethyst_spire", Shape.CONE);
+        TREE_SHAPES.put("thicket_pine", Shape.CONE);
+        TREE_SHAPES.put("frost_pine", Shape.CONE);
+        TREE_SHAPES.put("mushroom_tree", Shape.UMBRELLA);
+        TREE_SHAPES.put("marsh_tree", Shape.UMBRELLA);
+        TREE_SHAPES.put("warped_tree", Shape.UMBRELLA);
+        TREE_SHAPES.put("glow_tree", Shape.UMBRELLA);
+    }
+
     private static final java.util.Map<String, net.minecraft.world.level.block.state.BlockState[]> TREE_PALETTES = new java.util.HashMap<>();
     static {
 
@@ -333,6 +438,32 @@ public class WorldgenApplier {
                 Blocks.STRIPPED_SPRUCE_LOG.defaultBlockState(), Blocks.COPPER_BLOCK.defaultBlockState() });
         TREE_PALETTES.put("warped_tree", new net.minecraft.world.level.block.state.BlockState[] {
                 Blocks.WARPED_STEM.defaultBlockState(), Blocks.WARPED_WART_BLOCK.defaultBlockState() });
+        TREE_PALETTES.put("charred_stump", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.STRIPPED_DARK_OAK_LOG.defaultBlockState(), Blocks.AIR.defaultBlockState() });
+        TREE_PALETTES.put("obsidian_spire", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.OBSIDIAN.defaultBlockState(), Blocks.MAGMA_BLOCK.defaultBlockState() });
+        TREE_PALETTES.put("basalt_column", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.BASALT.defaultBlockState(), Blocks.BLACKSTONE.defaultBlockState() });
+        TREE_PALETTES.put("sculk_spire", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.DEEPSLATE.defaultBlockState(), Blocks.SCULK.defaultBlockState() });
+        TREE_PALETTES.put("mushroom_tree", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.MUSHROOM_STEM.defaultBlockState(), Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState() });
+        TREE_PALETTES.put("marsh_tree", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.MANGROVE_LOG.defaultBlockState(), persistentLeaves(Blocks.MANGROVE_LEAVES) });
+        TREE_PALETTES.put("thicket_pine", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.DARK_OAK_LOG.defaultBlockState(), persistentLeaves(Blocks.DARK_OAK_LEAVES) });
+        TREE_PALETTES.put("amethyst_spire", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.QUARTZ_PILLAR.defaultBlockState(), Blocks.AMETHYST_BLOCK.defaultBlockState() });
+        TREE_PALETTES.put("frost_pine", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.SPRUCE_LOG.defaultBlockState(), Blocks.SNOW_BLOCK.defaultBlockState() });
+        TREE_PALETTES.put("antenna", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.IRON_BARS.defaultBlockState(), Blocks.LIGHTNING_ROD.defaultBlockState() });
+        TREE_PALETTES.put("rusted_pylon", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.OXIDIZED_COPPER.defaultBlockState(), Blocks.AIR.defaultBlockState() });
+        TREE_PALETTES.put("bone_tree", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.BONE_BLOCK.defaultBlockState(), Blocks.AIR.defaultBlockState() });
+        TREE_PALETTES.put("glow_tree", new net.minecraft.world.level.block.state.BlockState[] {
+                Blocks.CRIMSON_STEM.defaultBlockState(), Blocks.SHROOMLIGHT.defaultBlockState() });
     }
 
     private static net.minecraft.world.level.block.state.BlockState persistentLeaves(
@@ -389,18 +520,63 @@ public class WorldgenApplier {
         }
 
         BlockPos top = base.above(height);
-        int radius = 2;
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    if (dx * dx + dy * dy + dz * dz > radius * radius + 1) continue;
-                    BlockPos pos = top.offset(dx, dy, dz);
-                    if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos)) {
-                        level.setBlock(pos, canopy, 3);
+        boolean hasCanopy = !canopy.isAir();
+        switch (TREE_SHAPES.getOrDefault(tree.treeType, Shape.ROUND)) {
+            case STUMP -> {
+                
+                int branches = 1 + random.nextInt(2);
+                for (int b = 0; b < branches && height > 2; b++) {
+                    BlockPos stub = base.above(1 + random.nextInt(height - 1))
+                            .relative(net.minecraft.core.Direction.Plane.HORIZONTAL.getRandomDirection(random));
+                    if (level.ensureCanWrite(stub) && level.isEmptyBlock(stub)) level.setBlock(stub, trunk, 3);
+                }
+            }
+            case SPIRE -> {
+                if (!hasCanopy) break;
+                put(level, top, canopy);
+                for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+                    put(level, top.below().relative(dir), canopy);
+                }
+            }
+            case CONE -> {
+                if (!hasCanopy) break;
+                for (int dy = 2; dy <= height + 1; dy++) {
+                    int r = Math.min(3, (height + 2 - dy) / 2);
+                    for (int dx = -r; dx <= r; dx++) {
+                        for (int dz = -r; dz <= r; dz++) {
+                            if (dx * dx + dz * dz > r * r + r / 2) continue;
+                            put(level, base.above(dy).offset(dx, 0, dz), canopy);
+                        }
+                    }
+                }
+            }
+            case UMBRELLA -> {
+                if (!hasCanopy) break;
+                for (int dx = -3; dx <= 3; dx++) {
+                    for (int dz = -3; dz <= 3; dz++) {
+                        int d2 = dx * dx + dz * dz;
+                        if (d2 <= 10) put(level, top.offset(dx, 0, dz), canopy);
+                        if (d2 >= 5 && d2 <= 9) put(level, top.offset(dx, -1, dz), canopy);
+                    }
+                }
+            }
+            default -> {
+                if (!hasCanopy) break;
+                int radius = 2;
+                for (int dx = -radius; dx <= radius; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dz = -radius; dz <= radius; dz++) {
+                            if (dx * dx + dy * dy + dz * dz > radius * radius + 1) continue;
+                            put(level, top.offset(dx, dy, dz), canopy);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private static void put(WorldGenLevel level, BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
+        if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos)) level.setBlock(pos, state, 3);
     }
 
     private static final int LAKE_LEVEL_TOLERANCE = 6;
@@ -432,25 +608,49 @@ public class WorldgenApplier {
         int x = (chunkX * 16) + random.nextInt(16);
         int z = (chunkZ * 16) + random.nextInt(16);
 
-        int centerSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z) -
-                1;
+        int centerSurfaceY = groundY(level, x, z);
         if (Math.abs(centerSurfaceY - targetLevel) > LAKE_LEVEL_TOLERANCE) return;
+
+        int rim = radius + 1;
+        int rimMin = Integer.MAX_VALUE;
+        int rimMax = Integer.MIN_VALUE;
+        for (int dx = -rim; dx <= rim; dx++) {
+            for (int dz = -rim; dz <= rim; dz++) {
+                int d2 = dx * dx + dz * dz;
+                if (d2 > rim * rim || d2 <= radius * radius) continue;
+                int y = groundY(level, x + dx, z + dz);
+                if (!level.getBlockState(new BlockPos(x + dx, y, z + dz)).getFluidState().isEmpty()) return;
+                rimMin = Math.min(rimMin, y);
+                rimMax = Math.max(rimMax, y);
+            }
+        }
+        if (rimMax - rimMin > 2) return;
+        int surface = rimMin;
 
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
-                if (dx * dx + dz * dz > radius * radius) continue;
+                double dist = Math.sqrt(dx * dx + dz * dz);
+                if (dist > radius) continue;
 
                 int px = x + dx;
                 int pz = z + dz;
+                int top = groundY(level, px, pz);
+                int depth = 1 + (int) Math.round((1.0 - dist / radius) * 2.0);
 
-                int columnSurfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING,
-                        px, pz) - 1;
-                BlockPos pos = new BlockPos(px, columnSurfaceY, pz);
-                if (level.ensureCanWrite(pos)) {
-                    level.setBlock(pos, liquid, 3);
+                for (int y = top; y > surface; y--) {
+                    BlockPos pos = new BlockPos(px, y, pz);
+                    if (level.ensureCanWrite(pos)) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+                }
+                for (int y = surface; y > surface - depth; y--) {
+                    BlockPos pos = new BlockPos(px, y, pz);
+                    if (level.ensureCanWrite(pos)) level.setBlock(pos, liquid, 2);
                 }
             }
         }
+    }
+
+    private static int groundY(WorldGenLevel level, int x, int z) {
+        return level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.OCEAN_FLOOR_WG, x, z) - 1;
     }
 
     private static void applyProgressionWorldgen(

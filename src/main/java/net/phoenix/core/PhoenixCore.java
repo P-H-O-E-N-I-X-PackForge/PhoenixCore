@@ -129,6 +129,7 @@ public class PhoenixCore {
 
         PhoenixParticles.init(modEventBus);
         net.phoenix.core.common.entity.PhoenixEntities.init(modEventBus);
+        net.phoenix.core.integration.conflux.structure.ConfluxStructures.init(modEventBus);
         if (FMLLoader.getDist().isClient()) {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);
@@ -297,7 +298,6 @@ public class PhoenixCore {
     }
 
     private void registerOreVeins(GTCEuAPI.RegisterEvent<ResourceLocation, GTOreDefinition> event) {
-        net.phoenix.core.integration.conflux.dimension.worldgen.DefaultDisciplineOres.registerAll();
     }
 
     private void registerWorldGenLayers(GTCEuAPI.RegisterEvent<ResourceLocation, IWorldGenLayer> event) {

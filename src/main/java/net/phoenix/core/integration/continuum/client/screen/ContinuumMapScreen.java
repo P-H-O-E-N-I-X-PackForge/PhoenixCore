@@ -159,12 +159,10 @@ public class ContinuumMapScreen extends Screen {
 
     private static @Nullable ResourceLocation pendingRescue;
 
-    /** Asks the next map screen that opens to jump to a stranded rocket's body and plan its rescue. */
     public static void requestRescue(ResourceLocation body) {
         pendingRescue = body;
     }
 
-    /** Goes to a body and opens the planner on the rescue run (or says why it cannot). */
     private void jumpToRescue(ResourceLocation bodyId) {
         ContinuumBody target = ContinuumData.body(bodyId);
         if (target == null) return;
@@ -444,7 +442,7 @@ public class ContinuumMapScreen extends Screen {
             }
             float angle = orbitAngle(b);
             float radius = orbitWorldRadius(b.orbitAu());
-            // a comet falls in from the edge of the system over the time it is there
+            
             var window = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
             if (window != null) {
                 float progress = Math.max(0.0f, Math.min(1.0f, (ContinuumClientState.now() - window[0]) /
@@ -650,7 +648,7 @@ public class ContinuumMapScreen extends Screen {
             var cometWindow = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
             if (cometWindow != null) {
                 tag += "  [comet - leaves in " + MapUi.duration(cometWindow[1] - ContinuumClientState.now()) + "]";
-                // the tail streams away from the star
+                
                 if (star != null) {
                     float dx = p[0] - star[0];
                     float dy = p[1] - star[1];
@@ -686,7 +684,6 @@ public class ContinuumMapScreen extends Screen {
         return false;
     }
 
-    /** Whether a rocket of the team's is stranded at this body and nobody is on the way yet. */
     private static boolean hasDistress(net.minecraft.resources.ResourceLocation bodyId) {
         for (var mission : ContinuumClientState.missions()) {
             if (mission.destination().equals(bodyId) && mission.stranded() && !mission.rescuing()) return true;
@@ -694,14 +691,12 @@ public class ContinuumMapScreen extends Screen {
         return false;
     }
 
-    /** The status icons for a body: a red distress beacon when a rocket is stranded, a gold crate for output waiting. */
     private void drawBadges(GuiGraphics graphics, net.minecraft.resources.ResourceLocation bodyId, float cx, float cy) {
         boolean output = hasOutput(bodyId);
         if (output) drawOutputIcon(graphics, cx, cy);
         if (hasDistress(bodyId)) drawDistressIcon(graphics, output ? cx - 15.0f : cx, cy);
     }
 
-    /** A red pulsing square with an exclamation mark: a rocket here needs rescuing. */
     private void drawDistressIcon(GuiGraphics graphics, float cx, float cy) {
         int x = Math.round(cx);
         int y = Math.round(cy);
@@ -1220,7 +1215,6 @@ public class ContinuumMapScreen extends Screen {
         return ContinuumClientState.stage(b.id());
     }
 
-    /** The team's missions, finished ones first: click a running mission to watch it, a landed one to collect. */
     private void drawMissions(GuiGraphics graphics, int mouseX, int mouseY) {
         missionRows.clear();
         List<ContinuumStateSnapshot.MissionView> list = new ArrayList<>(ContinuumClientState.missions());
@@ -1231,7 +1225,7 @@ public class ContinuumMapScreen extends Screen {
 
         int rowHeight = 24;
         int w = 214;
-        // as many rows as the window has room for, at a scale that keeps the panel to its corner of the screen
+        
         float s = Math.max(0.5f, Math.min(1.0f, Math.min((width * 0.42f) / w, (height * 0.45f) / (16 + 3 * rowHeight))));
         int fit = Math.max(1, (int) ((height * 0.5f / s - 16) / rowHeight));
         int rows = Math.min(Math.min(5, fit), list.size());
@@ -1240,7 +1234,6 @@ public class ContinuumMapScreen extends Screen {
         int py = height - 30 - Math.round(h * s);
         long now = ContinuumClientState.now();
 
-        // everything below is laid out in the panel's own space, then scaled and moved into the corner
         double mx = (mouseX - px) / s;
         double my = (mouseY - py) / s;
         graphics.pose().pushPose();
@@ -1285,7 +1278,7 @@ public class ContinuumMapScreen extends Screen {
                 case RESCUE -> name + "  (rescue)";
                 case STATION -> name + "  (station)";
             };
-            // a long status leaves the label less room: trim the label rather than let the two run together
+            
             int statusW = font.width(status);
             label = font.plainSubstrByWidth(label, Math.max(20, w - 14 - statusW - 8));
             graphics.drawString(font, label, 7, ry + 2, TITLE);
@@ -1294,7 +1287,6 @@ public class ContinuumMapScreen extends Screen {
                     mission.state() == Mission.State.FAILED ? MapUi.BAD : mission.state().finished() ? MapUi.GOOD :
                             FRAME);
 
-            // clicks are tested in screen space
             missionRows.add(new Object[] { mission.id(), mission.state().finished() && !mission.stranded(),
                     px + Math.round(3 * s), py + Math.round(ry * s), Math.round((w - 6) * s),
                     Math.round((rowHeight - 2) * s), mission.stranded() && !mission.rescuing(),
@@ -1590,7 +1582,7 @@ public class ContinuumMapScreen extends Screen {
             if (MapUi.inside(mouseX, mouseY, (int) row[2], (int) row[3], (int) row[4], (int) row[5])) {
                 UUID id = (UUID) row[0];
                 if (row.length > 6 && (boolean) row[6]) {
-                    // a stranded rocket: take the player straight to its body with the rescue planner open
+                    
                     jumpToRescue((ResourceLocation) row[7]);
                 } else if ((boolean) row[1]) {
                     PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(id));

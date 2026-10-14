@@ -16,11 +16,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.network.PhoenixNetwork;
-import net.phoenix.core.network.packet.C2SAttuneStartPacket;
 import net.phoenix.core.network.packet.S2CAttuneResultPacket;
 import net.phoenix.core.network.packet.S2CAttuneStartPacket;
 
 import brachy.modularui.api.drawable.Text;
+import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.UISettings;
+import brachy.modularui.widget.ParentWidget;
+import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.screen.RichTooltip;
@@ -35,37 +38,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * A sound puzzle as a multiblock of its own: a state machine that listens for sounds played by Resonant Jukeboxes in
- * range, and steps through a puzzle sequence (see {@link AcousticPuzzle}). It runs only on the server sound table, so what
- * a client hears never decides the outcome.
- *
- * <p>
- * A lock starts DORMANT and has to be attuned once, by clearing a short rhythm chart ({@link AcousticChart}); until then
- * it ignores every sound. The server judges the run from the presses the player sends, and the grade it earns decides
- * how many of the puzzle's first notes the lock reveals.
- */
 public class HarmonicLockMachine extends MultiblockControllerMachine implements IMuiMachine {
 
     public static final int DORMANT = 0;
     public static final int ATTUNING = 1;
     public static final int ATTUNED = 2;
 
-    private static final int PERFECT_MS = 60;
-    private static final int GOOD_MS = 120;
-    /** How much later than the lowest offset seen a press may arrive before it is thrown out. */
     private static final int OFFSET_SLACK_MS = 250;
     private static final int RETRY_COOLDOWN_TICKS = 100;
-    private static final double PASS = 0.6;
     private static final double GOOD_GRADE = 0.8;
     private static final double PERFECT_GRADE = 0.95;
 
-    /** The formed locks. Jukeboxes tell these about the sounds they play. */
     private static final Set<HarmonicLockMachine> LOCKS = ConcurrentHashMap.newKeySet();
 
     private final AcousticStateMachine machine = new AcousticStateMachine();
 
-    /** The puzzle this lock is set to; empty means the first one loaded. */
     @SaveField
     public String puzzleId = "";
 
@@ -81,15 +68,20 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private int attuneState = DORMANT;
 
-    /** 0 = passed, 1 = good, 2 = perfect */
     @SaveField
     @SyncToClient
     private int attuneGrade = 0;
 
     @SaveField
+    @SyncToClient
+    private int tuneLevel = 0;
+
+    @SaveField
     private long cooldownUntil = 0;
 
-    // the run in progress (server only)
+    private int strikes = 0;
+    private AttuneDifficulty runDifficulty = AttuneDifficulty.EASY;
+
     private @Nullable AcousticChart chart;
     private @Nullable UUID runner;
     private long runStart;
@@ -134,13 +126,20 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         super.onUnload();
     }
 
-    // ---------------------------------------------------------------- attunement
+    public int getTuneLevel() {
+        return tuneLevel;
+    }
 
-    /** A player asked to start the rhythm game. Server side only. */
-    public void startAttunement(ServerPlayer player) {
-        if (!isFormed() || attuneState != DORMANT) return;
+    public void startAttunement(ServerPlayer player, int difficultyLevel) {
+        if (!isFormed() || attuneState == ATTUNING) return;
         Level level = getLevel();
         if (level == null) return;
+        if (difficultyLevel < 1 || difficultyLevel > AttuneDifficulty.values().length ||
+                difficultyLevel > tuneLevel + 1) {
+            player.displayClientMessage(Component.literal("§cClear the level before it first."), true);
+            return;
+        }
+        runDifficulty = AttuneDifficulty.fromLevel(difficultyLevel);
         if (level.getGameTime() < cooldownUntil) {
             player.displayClientMessage(Component.literal("§cThe lock is still ringing, wait a moment."), true);
             return;
@@ -152,7 +151,8 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         }
         chart = picked;
         runner = player.getUUID();
-        runStart = level.getGameTime();
+        
+        runStart = level.getGameTime() + AttuneDifficulty.LEAD_MS / AcousticChart.MS_PER_TICK;
         judged = new boolean[picked.beats().size()];
         perfects = 0;
         goods = 0;
@@ -160,14 +160,9 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         attuneState = ATTUNING;
         markAsChanged();
         PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CAttuneStartPacket(getBlockPos(), picked));
+                new S2CAttuneStartPacket(getBlockPos(), runDifficulty.level(), picked));
     }
 
-    /**
-     * A lane press from the runner, with the time on the player's own clock. The server trusts that time to judge the beat,
-     * but checks it against its own clock: it may not be ahead of the server, and it may not drift later than the lowest
-     * delay seen so far by more than a little.
-     */
     public void attunePress(ServerPlayer player, int lane, int elapsedMs) {
         AcousticChart current = chart;
         Level level = getLevel();
@@ -175,7 +170,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
 
         int serverMs = (int) ((level.getGameTime() - runStart) * AcousticChart.MS_PER_TICK);
         int offset = serverMs - elapsedMs;
-        if (offset < -AcousticChart.MS_PER_TICK * 2) return;
+        if (offset < -AcousticChart.MS_PER_TICK * 2 - runDifficulty.goodMs()) return;
         if (minOffset != Integer.MAX_VALUE && offset > minOffset + OFFSET_SLACK_MS) return;
         minOffset = Math.min(minOffset, offset);
 
@@ -184,21 +179,21 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         List<AcousticChart.Beat> beats = current.beats();
         for (int i = 0; i < beats.size(); i++) {
             if (judged[i] || beats.get(i).lane() != lane) continue;
-            int delta = Math.abs(beats.get(i).tick() * AcousticChart.MS_PER_TICK - elapsedMs);
+            int delta = Math.abs(runDifficulty.beatMs(beats.get(i).tick()) - elapsedMs);
             if (delta < bestDelta) {
                 bestDelta = delta;
                 best = i;
             }
         }
-        if (best < 0 || bestDelta > GOOD_MS) return;
+        if (best < 0 || bestDelta > runDifficulty.goodMs()) return;
         judged[best] = true;
-        if (bestDelta <= PERFECT_MS) perfects++;
+        if (bestDelta <= runDifficulty.perfectMs()) perfects++;
         else goods++;
     }
 
     private void runTick() {
         if (attuneState != ATTUNING || chart == null || getLevel() == null) return;
-        long endTick = runStart + chart.lastBeatTick() + 60;
+        long endTick = runStart + runDifficulty.beatMs(chart.lastBeatTick()) / AcousticChart.MS_PER_TICK + 60;
         if (getLevel().getGameTime() >= endTick) finishRun();
     }
 
@@ -208,17 +203,21 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         if (current == null || level == null) return;
         int total = current.beats().size();
         double accuracy = (perfects + goods * 0.6) / Math.max(1, total);
-        boolean passed = accuracy >= PASS;
+        boolean passed = accuracy >= runDifficulty.pass();
         int grade = accuracy >= PERFECT_GRADE ? 2 : accuracy >= GOOD_GRADE ? 1 : 0;
 
         if (passed) {
             attuneState = ATTUNED;
-            attuneGrade = grade;
+            
+            if (runDifficulty.level() >= tuneLevel) attuneGrade = grade;
+            tuneLevel = Math.max(tuneLevel, runDifficulty.level());
             machine.reset();
             state = 0;
             step = 0;
+            strikes = 0;
         } else {
-            attuneState = DORMANT;
+            
+            attuneState = tuneLevel > 0 ? ATTUNED : DORMANT;
             cooldownUntil = level.getGameTime() + RETRY_COOLDOWN_TICKS;
         }
         markAsChanged();
@@ -236,16 +235,13 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
 
     private void abortRun() {
         if (attuneState == ATTUNING) {
-            attuneState = DORMANT;
+            attuneState = tuneLevel > 0 ? ATTUNED : DORMANT;
             chart = null;
             runner = null;
             markAsChanged();
         }
     }
 
-    // ---------------------------------------------------------------- the puzzle
-
-    /** A jukebox played a library sound: tell every lock in range of it. Server side only. */
     public static void broadcast(Level level, BlockPos source, int range, String soundLoc) {
         if (level.isClientSide) return;
         ResourceLocation sound = ResourceLocation.tryParse(soundLoc);
@@ -261,7 +257,15 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private void hear(ResourceLocation sound) {
         if (attuneState != ATTUNED) return;
         machine.load(state, step);
-        if (machine.onSound(getPuzzle(), sound)) {
+        AcousticPuzzle puzzle = getPuzzle();
+        
+        if (puzzle != null && getPuzzleState() == AcousticStateMachine.State.LISTENING &&
+                !machine.wouldAccept(puzzle, sound) && strikes < tuneLevel - 1) {
+            strikes++;
+            return;
+        }
+        if (machine.onSound(puzzle, sound)) {
+            strikes = 0;
             state = machine.state().ordinal();
             step = machine.step();
             markAsChanged();
@@ -286,9 +290,8 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         return isAttuned() && getPuzzleState() == AcousticStateMachine.State.SOLVED;
     }
 
-    /** What the lock reveals of the puzzle's first steps, by attunement grade: 1, 2 or 3 steps. */
     private String hint(AcousticPuzzle puzzle) {
-        int shown = Math.min(puzzle.steps().size(), attuneGrade + 1);
+        int shown = Math.min(puzzle.steps().size(), Math.max(1, tuneLevel) + attuneGrade);
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < shown; i++) {
             AcousticPuzzle.Step s = puzzle.steps().get(i);
@@ -306,23 +309,44 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     }
 
     @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
+        Flow column = Flow.col()
+                .coverChildren()
+                .margin(8, 6)
+                .child(Text.dynamic(() -> Component.literal("§bHARMONIC LOCK")).asWidget().marginBottom(8));
+        if (!isFormed()) {
+            column.child(Text.dynamic(() -> Component.literal("§cNot formed")).asWidget());
+        }
+        for (IWidget widget : getWidgetsForDisplay(syncManager)) {
+            column.child(widget);
+        }
+        mainWidget.child(column);
+    }
+
+    @Override
     public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
         List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
         if (!isFormed()) return widgets;
         widgets.add(new TextWidget<>(Text.dynamic(() -> switch (attuneState) {
             case ATTUNING -> Component.literal("§7Lock: §eattuning... §7(play the rhythm game)");
-            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" +
-                    (attuneGrade >= 2 ? "perfect" : attuneGrade == 1 ? "good" : "passed") + ")");
+            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" + AttuneDifficulty.fromLevel(tuneLevel).label() +
+                    ", " + (attuneGrade >= 2 ? "perfect" : attuneGrade == 1 ? "good" : "passed") + ")");
             default -> Component.literal("§7Lock: §cdormant §7- attune it to wake the puzzle");
         })));
         widgets.add(new ButtonWidget<>()
                 .overlay(new ItemDrawable(new ItemStack(Items.NOTE_BLOCK)).asIcon().size(16))
                 .tooltip(new RichTooltip().addLine(Text.of(Component
-                        .literal("Start the attunement rhythm game (keys D F J K)"))))
+                        .literal(tuneLevel == 0 ? "Attune the lock: a rhythm game (keys D F J K)" :
+                                "Retune the lock for a harder level and bigger boosts"))))
                 .onMousePressed((context, button) -> {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SAttuneStartPacket(getBlockPos()));
+                    net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient
+                            .openDifficulty(getBlockPos(), tuneLevel);
                     return true;
                 }));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> tuneLevel == 0 ? Component.empty() :
+                Component.literal("§7Forgives §f" + Math.max(0, tuneLevel - 1) + " §7wrong note" +
+                        (tuneLevel == 2 ? "" : "s") + " in a row."))));
         widgets.add(new TextWidget<>(Text.dynamic(() -> {
             AcousticPuzzle puzzle = getPuzzle();
             if (attuneState != ATTUNED) return Component.literal("§7Puzzle: §8asleep");

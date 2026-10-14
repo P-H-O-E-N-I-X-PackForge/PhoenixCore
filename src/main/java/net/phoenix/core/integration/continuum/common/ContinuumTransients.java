@@ -23,11 +23,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Comets and other passing visitors: bodies whose JSON has a {@code transient} block are only there while the server
- * has a window open for them. This is the world's one shared schedule (everyone sees the same comets), checked once a
- * minute: a body off cooldown opens a window by chance, and the server tells everyone when one opens and when it leaves.
- */
 public final class ContinuumTransients extends SavedData {
 
     private record Window(long start, long end, long nextEligible, boolean ended) {}
@@ -40,13 +35,11 @@ public final class ContinuumTransients extends SavedData {
                 ContinuumTransients::new, "phoenixcore_continuum_transients");
     }
 
-    /** Whether a window is open for this body right now. */
     public boolean active(ResourceLocation body, long now) {
         Window window = windows.get(body);
         return window != null && now >= window.start && now < window.end;
     }
 
-    /** The open window as {start, end} wall-clock milliseconds, or null if there is none. */
     public @Nullable long[] window(ResourceLocation body, long now) {
         Window window = windows.get(body);
         return window != null && now >= window.start && now < window.end ? new long[] { window.start, window.end } :
@@ -61,7 +54,6 @@ public final class ContinuumTransients extends SavedData {
         return open;
     }
 
-    /** Admin: opens a window now, whatever the schedule says. */
     public void open(MinecraftServer server, ContinuumBody body, long minutes) {
         long now = System.currentTimeMillis();
         long end = now + minutes * 60_000L;
@@ -72,7 +64,6 @@ public final class ContinuumTransients extends SavedData {
         announceArrival(server, body, end - now);
     }
 
-    /** Admin: closes a window now. */
     public void close(MinecraftServer server, ContinuumBody body) {
         Window window = windows.get(body.id());
         if (window == null) return;
@@ -80,7 +71,6 @@ public final class ContinuumTransients extends SavedData {
         setDirty();
     }
 
-    /** Once a minute: open windows by chance, and announce the ones that have ended. */
     public void tick(MinecraftServer server) {
         long now = System.currentTimeMillis();
         for (ContinuumBody body : ContinuumData.allBodies()) {
@@ -99,7 +89,6 @@ public final class ContinuumTransients extends SavedData {
             boolean ready = window == null || now >= window.nextEligible;
             if (open || !ready) continue;
 
-            // "chance" is per ten minutes: this runs every minute
             double perMinute = 1.0 - Math.pow(1.0 - Math.max(0.0f, Math.min(1.0f, info.chance())), 0.1);
             if (random.nextDouble() >= perMinute) continue;
 
@@ -121,13 +110,14 @@ public final class ContinuumTransients extends SavedData {
                 ": send an extraction run before it leaves.", ChatFormatting.GOLD);
     }
 
-    /** Tells every player and writes it to each online team's history once. */
     private static void broadcast(MinecraftServer server, ContinuumBody body, String text, ChatFormatting colour) {
         ContinuumTeamData teams = ContinuumTeamData.get(server);
         Set<UUID> logged = new HashSet<>();
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.sendSystemMessage(Component.literal(text).withStyle(colour));
             UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
+            
+            if (!teams.isEngaged(team)) continue;
+            player.sendSystemMessage(Component.literal(text).withStyle(colour));
             if (logged.add(team)) teams.log(team, MissionLog.Kind.COMET, body.id(), text);
             ContinuumServerEvents.sendState(player);
         }

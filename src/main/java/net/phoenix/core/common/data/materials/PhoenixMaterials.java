@@ -70,6 +70,9 @@ public class PhoenixMaterials {
     }
 
     public static void modifyMaterials() {
+        
+        CrystalRoseHelper.addCrystalRoseFlags(net.phoenix.core.integration.conflux.dimension.worldgen.ProvinceVeinTemplates
+                .allMaterials().toArray(new com.gregtechceu.gtceu.api.data.chemical.material.Material[0]));
         CrystalRoseHelper.addCrystalRoseFlags(
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,

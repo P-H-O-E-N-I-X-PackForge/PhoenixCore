@@ -19,7 +19,6 @@ import java.util.List;
 
 public class CrystalGardenMachine extends GrowthMultiblockMachine {
 
-    // controller on the front face; the cavern grows wider, deeper and taller, from 3 wide to 7 x 6 x 7
     private static final IntList[] SHAPES = {
             GrowthStages.bounds(2, 1, 1, 1, 0, 2),
             GrowthStages.bounds(2, 1, 2, 2, 0, 3),
@@ -32,7 +31,7 @@ public class CrystalGardenMachine extends GrowthMultiblockMachine {
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(CrystalGardenMachine::buildStages);
 
     private static List<GrowthStage> buildStages() {
-        // a crystal garden gets faster as it grows, and at full size runs two batches at once
+        
         return GrowthStages.of(SHAPES).costItems(GrowthItems.CRYSTAL_SEED::get, 1).speedPerStage(0.10f).batchAtMax(2).build();
     }
 
@@ -45,7 +44,6 @@ public class CrystalGardenMachine extends GrowthMultiblockMachine {
         return STAGES.get();
     }
 
-    /** The stages, for the recipe viewer. */
     public static List<GrowthStage> stages() {
         return STAGES.get();
     }

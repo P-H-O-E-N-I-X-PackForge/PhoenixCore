@@ -226,7 +226,7 @@ public final class ContinuumMissions {
             }
 
             launchEnergy = GTValues.V[Math.max(0, Math.min(padTier, GTValues.V.length - 1))] * cfg.launchEnergyAmpTicks;
-            // the hatches can only hold so much: never ask for more than they can, whatever the config says
+            
             launchEnergy = Math.min(launchEnergy, complex.energyCapacity() * 9 / 10);
             if (complex.storedEnergy() < launchEnergy) {
                 return "The pad needs " + launchEnergy + " EU stored in its energy hatches to launch (it has " +
@@ -661,7 +661,7 @@ public final class ContinuumMissions {
                             ". " + Stations.describe(built);
                 }
                 case RESCUE -> {
-                    // the one this run was sent to, or (for runs sent without the pad) the one closest to fading
+                    
                     Mission saved = strandedAt(data, mission.team, mission.destination, true);
                     if (saved == null) saved = strandedAt(data, mission.team, mission.destination, false);
                     if (saved != null) {
@@ -825,7 +825,6 @@ public final class ContinuumMissions {
                 null;
     }
 
-    /** Tells the team and writes the same line into their history. */
     static void notifyLogged(MinecraftServer server, ContinuumTeamData data, UUID team, MissionLog.Kind kind,
                              ResourceLocation body, Component message) {
         data.log(team, kind, body, message.getString());
@@ -833,6 +832,7 @@ public final class ContinuumMissions {
     }
 
     static void notifyTeam(MinecraftServer server, UUID team, Component message) {
+        if (!ContinuumTeamData.get(server).isEngaged(team)) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (TeamUtils.isPlayerOnTeam(player, team)) player.sendSystemMessage(message);
         }

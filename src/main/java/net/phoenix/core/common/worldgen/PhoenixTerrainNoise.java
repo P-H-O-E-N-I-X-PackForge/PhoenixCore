@@ -303,7 +303,7 @@ public final class PhoenixTerrainNoise {
             return smoothedLocalHeight(x, z);
         }
 
-        private static final double WATER_COLUMN_THRESHOLD = 0.35;
+        static final double WATER_COLUMN_THRESHOLD = 0.35;
 
         public boolean isWaterColumn(double x, double z) {
             return waterT(x, z) > WATER_COLUMN_THRESHOLD;
@@ -331,13 +331,21 @@ public final class PhoenixTerrainNoise {
     public static TerrainSampler withWater(TerrainSampler terrain, WaterMask mask, double baseY) {
         if (mask == null) return terrain;
         return (x, y, z) -> {
+            double waterT = mask.waterT(x, z);
+            if (waterT <= 0.0) return terrain.sample(x, y, z);
+
+            double rawHeight = terrain.sample(x, (int) baseY, z) + baseY;
+
+            double rim = Math.max(rawHeight, mask.waterSurfaceY(x, z) + 1.0);
 
             double depthFraction = mask.depthFraction(x, z);
-            if (depthFraction <= 0.0) return terrain.sample(x, y, z);
+            if (depthFraction <= 0.0) {
+                double lift = smoothstep(0.0, WaterMask.WATER_COLUMN_THRESHOLD, waterT);
+                return terrain.sample(x, y, z) + (rim - rawHeight) * lift;
+            }
 
             double floorY = mask.floorY(x, z);
-            double rawHeight = terrain.sample(x, (int) baseY, z) + baseY;
-            double blendedHeight = rawHeight + (floorY - rawHeight) * depthFraction;
+            double blendedHeight = rim + (floorY - rim) * depthFraction;
             return blendedHeight - y;
         };
     }

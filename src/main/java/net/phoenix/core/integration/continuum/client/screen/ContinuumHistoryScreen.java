@@ -17,10 +17,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Everything that has happened to the team's rockets, newest first: launches, landings, failures, strandings, rescues,
- * collections and stations. Filter to the problems, scroll with the wheel; hover a line for all of it.
- */
 public class ContinuumHistoryScreen extends Screen {
 
     private static final int ROW = 14;
@@ -56,7 +52,7 @@ public class ContinuumHistoryScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        // new lines can arrive while this is open (a mission landing), so ask again every few seconds
+        
         if (++refresh >= 100) {
             refresh = 0;
             PhoenixNetwork.CHANNEL.sendToServer(new C2SRequestHistoryPacket());

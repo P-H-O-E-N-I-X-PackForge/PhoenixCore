@@ -8,7 +8,6 @@ import net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient;
 
 import java.util.function.Supplier;
 
-/** The machine's verdict on a drawn chart: how many lines were right, and whether that solved it. */
 public class S2CCalibrationResultPacket {
 
     private final BlockPos pos;

@@ -46,7 +46,7 @@ public class DisciplineWorldgenPresets {
                                         "phoenix_crimson", "Crimson Wastes",
                                         2.0f, 0.0f,
                                         0xDC143C, 0x8B0000, 0x4B0000,
-                                        "minecraft:crimson_nylium", "minecraft:netherrack",
+                                        "minecraft:red_sand", "minecraft:red_sandstone",
                                         0.0f, Arrays.asList("phoenix_crimson")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "phoenix_ashlands", "Ashlands",
@@ -64,7 +64,7 @@ public class DisciplineWorldgenPresets {
                                         "phoenix_basalt_flats", "Basalt Flats",
                                         1.3f, 0.0f,
                                         0x4A4A4A, 0x3A3A3A, 0x2A2A2A,
-                                        "minecraft:basalt", "minecraft:smooth_basalt",
+                                        "minecraft:smooth_basalt", "minecraft:tuff",
                                         0.0f, Arrays.asList("phoenix_basalt_flats")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "phoenix_scorched_grove", "Scorched Grove",
@@ -90,10 +90,10 @@ public class DisciplineWorldgenPresets {
                         true, true, false,
                         0.3f)
                 .liquidsFull(
-                        0.05f, 0.15f,
+                        0.0f, 0.15f,
                         64, 32,
                         false, true,
-                        0.05f, 0.2f)
+                        0.0f, 0.2f)
                 .colors(0xD4A574, 0xB8860B, 0xA0522D, 0xFF6347, 0xFF8C00)
                 .build();
     }
@@ -113,7 +113,7 @@ public class DisciplineWorldgenPresets {
                                         "sculk_forest", "Sculk Forest",
                                         0.0f, 1.0f,
                                         0x2F4F4F, 0x1C1C1C, 0x000080,
-                                        "minecraft:moss_block", "minecraft:dirt",
+                                        "minecraft:grass_block", "minecraft:dirt",
                                         0.8f, Arrays.asList("sculk_forest")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sculk_depths", "Void Depths",
@@ -268,43 +268,43 @@ public class DisciplineWorldgenPresets {
                                         0.8f, 0.3f,
                                         0x7F7F7F, 0x696969, 0xA9A9A9,
                                         "minecraft:grass_block", "minecraft:dirt",
-                                        0.3f),
+                                        0.3f, Arrays.asList("sealed_industrial")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_vault", "Vault",
                                         0.5f, 0.0f,
                                         0x4F4F4F, 0x2F2F2F, 0x808080,
                                         "minecraft:iron_block", "minecraft:raw_iron_block",
-                                        0.0f),
+                                        0.0f, Arrays.asList("sealed_vault")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_scrapyard", "Scrapyard",
                                         0.75f, 0.1f,
                                         0xB87333, 0x9C6428, 0x805520,
                                         "minecraft:copper_block", "minecraft:cut_copper",
-                                        0.1f),
+                                        0.1f, Arrays.asList("sealed_scrapyard")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_concrete_flats", "Concrete Flats",
                                         0.7f, 0.15f,
                                         0x9F9F9F, 0x8F8F8F, 0x7F7F7F,
                                         "minecraft:gray_concrete", "minecraft:light_gray_concrete",
-                                        0.15f),
+                                        0.15f, Arrays.asList("sealed_concrete_flats")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_rust_fields", "Rust Fields",
                                         0.65f, 0.2f,
                                         0x6E8B6E, 0x5E7B5E, 0x4E6B4E,
                                         "minecraft:oxidized_copper", "minecraft:weathered_copper",
-                                        0.2f),
+                                        0.2f, Arrays.asList("sealed_rust_fields")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_overgrown_ruins", "Overgrown Ruins",
                                         0.8f, 0.4f,
                                         0x5A7A4A, 0x4A6A3A, 0x3A5A2A,
-                                        "minecraft:moss_block", "minecraft:stone_bricks",
-                                        0.35f),
+                                        "minecraft:rooted_dirt", "minecraft:stone_bricks",
+                                        0.35f, Arrays.asList("sealed_overgrown_ruins")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_ash_yard", "Ash Yard",
                                         0.6f, 0.05f,
                                         0x2F2F2F, 0x1F1F1F, 0x0F0F0F,
                                         "minecraft:blackstone", "minecraft:polished_blackstone",
-                                        0.0f)),
+                                        0.0f, Arrays.asList("sealed_ash_yard"))),
                         "sealed_industrial",
                         0x7F7F7F, 0x696969, 0xA9A9A9, 0x808080, 0x696969)
                 .decorations(
@@ -344,43 +344,43 @@ public class DisciplineWorldgenPresets {
                                         1.5f, 0.0f,
                                         0x8B4513, 0xA0522D, 0x654321,
                                         "minecraft:soul_sand", "minecraft:netherrack",
-                                        0.0f),
+                                        0.0f, Arrays.asList("sealed_nether")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_warped", "Warped Zone",
                                         0.9f, 0.1f,
                                         0x00CED1, 0x20B2AA, 0x008B8B,
                                         "minecraft:warped_nylium", "minecraft:netherrack",
-                                        0.3f),
+                                        0.3f, Arrays.asList("sealed_warped")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_crimson_zone", "Crimson Zone",
                                         1.4f, 0.05f,
                                         0x8B1A1A, 0x6B0A0A, 0x4B0000,
                                         "minecraft:crimson_nylium", "minecraft:netherrack",
-                                        0.0f),
+                                        0.0f, Arrays.asList("sealed_crimson_zone")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_basalt_wastes", "Basalt Wastes",
                                         1.3f, 0.0f,
                                         0x3A3A3A, 0x2A2A2A, 0x1A1A1A,
                                         "minecraft:basalt", "minecraft:blackstone",
-                                        0.0f),
+                                        0.0f, Arrays.asList("sealed_basalt_wastes")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_soul_valley", "Soul Valley",
                                         1.0f, 0.0f,
                                         0x4A6A6A, 0x3A5A5A, 0x2A4A4A,
                                         "minecraft:soul_soil", "minecraft:soul_sand",
-                                        0.0f),
+                                        0.0f, Arrays.asList("sealed_soul_valley")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_warped_depths", "Warped Depths",
                                         0.85f, 0.15f,
                                         0x1E9090, 0x0E7070, 0x005050,
                                         "minecraft:warped_wart_block", "minecraft:warped_nylium",
-                                        0.35f),
+                                        0.35f, Arrays.asList("sealed_warped_depths")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sealed_glowstone_caverns", "Fungal Caverns",
                                         1.1f, 0.1f,
                                         0xA05050, 0x804040, 0x603030,
                                         "minecraft:nether_wart_block", "minecraft:netherrack",
-                                        0.1f)),
+                                        0.1f, Arrays.asList("sealed_glowstone_caverns"))),
                         "sealed_warped",
                         0x8B4513, 0xA0522D, 0x654321, 0xD2691E, 0xA0522D)
                 .decorations(

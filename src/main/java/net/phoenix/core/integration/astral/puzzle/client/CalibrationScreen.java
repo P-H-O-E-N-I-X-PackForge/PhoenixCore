@@ -14,11 +14,6 @@ import net.phoenix.core.network.packet.C2SCalibratePacket;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Draw the machine's constellation. Click a star, then another, to draw a line between them. On a chain the first star
- * you click is where the line starts; on a web the direction does not matter. Click a line's two stars again to take it
- * back. The machine only says how many lines are right.
- */
 @OnlyIn(Dist.CLIENT)
 public class CalibrationScreen extends Screen {
 

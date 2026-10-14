@@ -22,11 +22,6 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Growing machines in EMI: a page for each machine listing what every stage costs and gives, and a page on growth
- * control and tendrils. (The harvest recipes themselves are ordinary GT recipe pages, one type per machine.) Drawn in the
- * Phoenix suite theme.
- */
 public final class GrowthEmi {
 
     private GrowthEmi() {}

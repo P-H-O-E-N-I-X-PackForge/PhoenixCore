@@ -16,12 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * The server tables for the acoustic puzzle, loaded from data packs:
- * {@code data/<ns>/acoustic_sounds/*.json} (what each library sound is) and
- * {@code data/<ns>/acoustic_puzzles/*.json} (the sequences to play) and
- * {@code data/<ns>/acoustic_charts/*.json} (the rhythm charts that attune a lock).
- */
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public final class AcousticData {
 
@@ -41,12 +35,10 @@ public final class AcousticData {
         return id == null ? null : puzzles.get(id);
     }
 
-    /** The puzzle a jukebox falls back on when none is chosen: the first one by id, or null when there are none. */
     public static @Nullable AcousticPuzzle defaultPuzzle() {
         return puzzles.values().stream().findFirst().orElse(null);
     }
 
-    /** The chart a lock plays to attune: the first one by id, or null when there are none. */
     public static @Nullable AcousticChart defaultChart() {
         return charts.values().stream().findFirst().orElse(null);
     }

@@ -160,7 +160,6 @@ final class MissionPlannerPanel {
         int stationLevel = ContinuumClientState.stationLevel(body.id());
         boolean canStation = stage == DiscoveryStage.SURVEYED && stationLevel < Stations.MAX_LEVEL;
 
-        // a passing comet can only be harvested, and only before it leaves
         long[] passing = body.transientInfo() == null ? null : ContinuumClientState.transientWindow(body.id());
         if (body.transientInfo() != null) {
             canSurvey = false;

@@ -42,14 +42,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * An Astral machine that has to be calibrated before it will run. Every machine has a seed of its own, and the seed makes
- * the constellation ({@link StarChart}) it must be calibrated to, so no two machines share an answer. The chart is read
- * from the Survey the Astral Wand makes of the machine, revealed a few lines at a time by the Ritual Pedestal.
- *
- * <p>
- * A machine calibrated while the moon is in its favoured phase (also set by the seed) is "aligned" and works faster.
- */
 @Mod.EventBusSubscriber(modid = "phoenixcore")
 public abstract class AstralCalibratedMachine extends WorkableElectricMultiblockMachine implements IMuiMachine {
 
@@ -78,11 +70,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
 
     public abstract StarChart.Kind chartKind();
 
-    /**
-     * A machine that turns up without a seed was not placed by a player (it was built before calibration existed, or
-     * came from a command or structure), so it starts calibrated. A player placing one resets it, see
-     * {@link #onPlaced}.
-     */
     @Override
     public void onLoad() {
         super.onLoad();
@@ -103,7 +90,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         }
     }
 
-    /** A player placed this machine: it gets a new constellation and has to be calibrated. */
     private void freshlyPlaced() {
         chartSeed = ThreadLocalRandom.current().nextLong() | 1L;
         chart = null;
@@ -129,7 +115,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         return chart;
     }
 
-    /** The moon phase (0 = full moon .. 7) this machine calibrates best under. */
     public int favouredPhase() {
         return favouredPhaseOf(chartSeed);
     }
@@ -145,7 +130,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         return PHASE_NAMES[Math.floorMod(phase, 8)];
     }
 
-    /** A wrong chart scatters some of what the machine is holding. Returns what was lost, for the player to read. */
     private String scatter() {
         StringBuilder lost = new StringBuilder();
         for (var part : getParts()) {
@@ -168,14 +152,12 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         return lost.toString().trim();
     }
 
-    /** Nothing runs until the machine is calibrated. */
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (!calibrated) return false;
         return super.beforeWorking(recipe);
     }
 
-    /** Add it to the definition's {@code recipeModifiers}: an aligned machine runs its recipes faster. */
     public static ModifierFunction alignedModifier(MetaMachine machine, GTRecipe recipe) {
         if (machine instanceof AstralCalibratedMachine astral && astral.aligned) {
             return ModifierFunction.builder().durationMultiplier(ALIGNED_DURATION).build();
@@ -183,9 +165,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         return ModifierFunction.IDENTITY;
     }
 
-    // ---------------------------------------------------------------- the puzzle
-
-    /** The calibration screen was asked for. Server side only. */
     public void openCalibration(ServerPlayer player) {
         if (!isFormed()) {
             player.displayClientMessage(Component.literal("§cThe machine has to be built first."), true);
@@ -196,7 +175,6 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
                 new S2COpenCalibrationPacket(getBlockPos(), c.kind(), c.packedStars(), calibrated));
     }
 
-    /** A chart was submitted: {@code drawn} holds star index pairs. Server side only. */
     public void attempt(ServerPlayer player, List<int[]> drawn) {
         if (!isFormed() || getLevel() == null) return;
         if (drawn.size() > StarChart.MAX_LINES) return;

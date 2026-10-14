@@ -1,8 +1,10 @@
 package net.phoenix.core.common.block;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.client.model.runtimegen.MaterialBlockModelGenerator;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +31,10 @@ public class CrystalRoseBlock extends MaterialBlock {
                 .noOcclusion()
                 .sound(SoundType.GRASS),
                 tagPrefix, material);
+
+        if (GTCEu.isClientSide()) {
+            MaterialBlockModelGenerator.add(this, tagPrefix.materialIconType(), material.getMaterialIconSet());
+        }
     }
 
     @Override

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** The team's mission history, oldest first. */
 public class S2CHistoryPacket {
 
     private final List<MissionLog.Entry> entries;

@@ -1,0 +1,26 @@
+{
+  "structures": [
+    {
+      "structure": "phoenixcore:conflux_void_watchtower",
+      "weight": 3
+    },
+    {
+      "structure": "phoenixcore:conflux_void_compound",
+      "weight": 1
+    },
+    {
+      "structure": "phoenixcore:conflux_void_shrine",
+      "weight": 2
+    },
+    {
+      "structure": "phoenixcore:conflux_void_hall",
+      "weight": 2
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 18,
+    "separation": 8,
+    "salt": 71968
+  }
+}

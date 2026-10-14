@@ -14,7 +14,6 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-/** What a growing machine is up to: its stage and what the stage gives, its progress, and why it may be waiting. */
 public class GrowthMachineProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
     public static final ResourceLocation UID = PhoenixCore.id("growth_machine_info");

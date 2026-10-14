@@ -8,8 +8,6 @@ final class MapUi {
 
     private MapUi() {}
 
-    // The colours of every Continuum screen. They follow the Phoenix suite theme (Phoenix Wiki's PhoenixTheme), so the
-    // map matches the rest of the suite and the theme editor restyles it; refreshTheme() re-reads them each frame.
     static int FRAME = 0xFF7a5cff;
     static int PANEL_BG = 0xD00b0a18;
     static int PANEL_LINE = 0xFF3a2f7a;
@@ -29,12 +27,10 @@ final class MapUi {
     static int SCREEN_BG = 0xFF07061a;
     static int CHROME = 0xAA1a1830;
 
-    /** Re-reads the suite theme into the colours above. Cheap; screens call it at the top of every frame. */
     static void refreshTheme() {
         try {
             net.phoenixvine.wiki.theme.PhoenixTheme theme = net.phoenixvine.wiki.theme.PhoenixTheme.current();
-            // Continuum is drawn over space, so it is always a dark screen: a light suite theme keeps its hues but its
-            // panels are darkened and its text lightened, so nothing ends up dark on dark
+
             int bg = darkened(opaque(theme.bg.getColor()), 0.10f);
             int panel = darkened(opaque(theme.panel.getColor()), 0.16f);
             int accent = lightened(opaque(theme.accent.getColor()), 0.35f);
@@ -56,7 +52,7 @@ final class MapUi {
             BUTTON_LINE = mix(PANEL_LINE, bg, 0.45f);
             CHROME = (BUTTON_OFF & 0x00FFFFFF) | 0xAA000000;
         } catch (RuntimeException | LinkageError ignored) {
-            // the suite theme is optional: keep the built-in colours if it is missing or misbehaves
+            
         }
     }
 
@@ -64,16 +60,14 @@ final class MapUi {
         return (0.2126f * ((rgb >> 16) & 0xFF) + 0.7152f * ((rgb >> 8) & 0xFF) + 0.0722f * (rgb & 0xFF)) / 255.0f;
     }
 
-    /** The colour, brightened toward white until it is at least {@code minLuminance} bright. */
     private static int lightened(int rgb, float minLuminance) {
         float lum = luminance(rgb);
         if (lum >= minLuminance) return rgb;
-        // mixing t of white raises the luminance from lum to lum + t * (1 - lum)
+        
         float t = Math.min(1.0f, (minLuminance - lum) / Math.max(0.001f, 1.0f - lum));
         return mix(rgb, 0xFFFFFF, t);
     }
 
-    /** The colour, dimmed toward black until it is at most {@code maxLuminance} bright. */
     private static int darkened(int rgb, float maxLuminance) {
         float lum = luminance(rgb);
         if (lum <= maxLuminance) return rgb;

@@ -9,7 +9,6 @@ import net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient;
 
 import java.util.function.Supplier;
 
-/** Opens the calibration screen: the machine's stars (never its lines) and whether it is already calibrated. */
 public class S2COpenCalibrationPacket {
 
     private final BlockPos pos;

@@ -34,7 +34,8 @@ public class ConfluxDimensionFactory {
 
         player.teleportTo(dimensionLevel, 0.5, 65, 0.5, 0, 0);
 
-        player.setRespawnPosition(getDimensionKey(discipline), DisciplineStartingArea.ANCHOR, 0f, true, false);
+        player.setRespawnPosition(getDimensionKey(discipline), DisciplineStartingArea.ANCHOR.above(), 0f, true,
+                false);
     }
 
     public static boolean visitDisciplineDimension(ServerPlayer player, String discipline) {

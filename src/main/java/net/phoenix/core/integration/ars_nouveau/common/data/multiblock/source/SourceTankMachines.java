@@ -26,19 +26,10 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.SOURCE_IMBUED_TITANIUM;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/**
- * The three tiers of the source multiblock tank. Each is a hollow source-fiber body with a tempered glass window, growing
- * from a small cube to a tall tower, and each stores more source than the one before. Source goes in and out through
- * source hatches on the body's casing.
- *
- * <p>
- * Pattern reading order: slices go back from the controller, rows go from the top down, and columns go right.
- */
 public final class SourceTankMachines {
 
     private SourceTankMachines() {}
 
-    // placeholder numbers, tune freely
     public static final MultiblockMachineDefinition SOURCE_TANK_T1 = register("source_tank_t1", "Source Tank Mk I",
             5_000_000, 100, SourceTankMachines::patternT1);
     public static final MultiblockMachineDefinition SOURCE_TANK_T2 = register("source_tank_t2", "Source Tank Mk II",
@@ -68,10 +59,9 @@ public final class SourceTankMachines {
     }
 
     private static MultiblockPatternBuilder start() {
-        return MultiblockPatternBuilder.start(RelativeDirection.BACK, RelativeDirection.DOWN, RelativeDirection.RIGHT);
+        return MultiblockPatternBuilder.start(RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.RIGHT);
     }
 
-    /** A block of a mod we only know by id (Ars Nouveau), looked up when the pattern is built. */
     private static MultiPredicate named(String id) {
         Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(id));
         if (block == null || block == Blocks.AIR) {
@@ -84,7 +74,6 @@ public final class SourceTankMachines {
         return Predicates.blocks(ChemicalHelper.getBlock(frameGt, SOURCE_IMBUED_TITANIUM));
     }
 
-    /** Source fiber casing that also takes the tank's source hatches and a maintenance hatch. */
     private static MultiPredicate fiberWithHatches() {
         return Predicates.blocks(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING.get())
                 .or(Predicates.abilities(PhoenixPartAbility.SOURCE_INPUT).setExactLimit(1))

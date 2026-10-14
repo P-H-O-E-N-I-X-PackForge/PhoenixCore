@@ -81,6 +81,13 @@ repositories {
         }
     }
 
+    maven { // Modrinth, for dev-only tools that CurseMaven has no stable file id for
+        url "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+
     maven { // EMI
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
@@ -221,6 +228,9 @@ dependencies {
     modCompileOnly("curse.maven:fancymenu-367706:8652266")
 
     modRuntimeOnly("curse.maven:jade-324717:5390389")
+
+    // spark, the profiler: /spark profiler start|stop in the dev client or server (dev runtime only, never shipped)
+    modRuntimeOnly("maven.modrinth:spark:1.10.53-forge")
     modCompileOnly("curse.maven:jade-324717:5390389")
 
     // Pure Non-Mod Java Libraries added securely to runtime implementation & production build configurations

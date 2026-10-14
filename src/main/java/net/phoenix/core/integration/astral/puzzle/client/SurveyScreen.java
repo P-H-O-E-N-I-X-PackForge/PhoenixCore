@@ -10,7 +10,6 @@ import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.puzzle.AstralSurveyItem;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 
-/** What a Survey knows so far: its machine's stars, and the lines the Ritual Pedestal has revealed. */
 @OnlyIn(Dist.CLIENT)
 public class SurveyScreen extends Screen {
 

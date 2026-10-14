@@ -25,15 +25,6 @@ import java.util.UUID;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-/**
- * {@code /continuumpreview}: client-side commands (no pad, no operator, nothing sent to the server) for watching the
- * launch and landing scenes for any body, for testing and for showing them off.
- *
- * <ul>
- * <li>{@code /continuumpreview ascent <body>}</li>
- * <li>{@code /continuumpreview arrival <body> [success|fail]}</li>
- * </ul>
- */
 @Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class ContinuumPreviewCommands {
 

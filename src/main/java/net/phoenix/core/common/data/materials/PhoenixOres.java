@@ -20,7 +20,6 @@ public class PhoenixOres {
 
     public static Material DORMANT_EMBER;
 
-
     public static void register() {
         NEVVONIAN_IRON = new Material.Builder(PhoenixCore.id("nevvonian_iron"))
                 .langValue("§7Nevvonian Iron")
@@ -89,13 +88,11 @@ public class PhoenixOres {
                 .iconSet(MaterialIconSet.DIAMOND)
                 .buildAndRegister();
 
-
         DORMANT_EMBER = new Material.Builder(PhoenixCore.id("dormant_ember"))
                 .ingot().ore().color(0x704214).iconSet(MaterialIconSet.SHINY)
                 .addOreByproducts(GTMaterials.Iron)
                 .element(PhoenixElements.EMBER)
                 .buildAndRegister();
-
 
     }
 }

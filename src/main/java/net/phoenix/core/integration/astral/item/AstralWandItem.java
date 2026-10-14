@@ -22,10 +22,6 @@ import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntit
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Right-click air to open the Codex. Right-click a formed Spinning Wheel or Loom to make a Survey of it. Hold right-click
- * on a Ritual Pedestal to channel it.
- */
 public class AstralWandItem extends Item {
 
     private static final String CHANNEL_TAG = "ChannelPedestal";

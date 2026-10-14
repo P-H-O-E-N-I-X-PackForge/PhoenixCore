@@ -27,9 +27,20 @@ public class ContinuumTeamData extends SavedData {
     private final Map<UUID, Map<ResourceLocation, Integer>> depths = new HashMap<>();
     private final Map<UUID, Map<ResourceLocation, Integer>> stations = new HashMap<>();
     private final Map<UUID, java.util.List<MissionLog.Entry>> history = new HashMap<>();
+    
+    private final java.util.Set<UUID> engaged = new java.util.HashSet<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(ContinuumTeamData::load, ContinuumTeamData::new, ID);
+    }
+
+    public boolean isEngaged(UUID team) {
+        return engaged.contains(team) || !missions.getOrDefault(team, List.of()).isEmpty() ||
+                !outposts.getOrDefault(team, Map.of()).isEmpty() || !stations.getOrDefault(team, Map.of()).isEmpty();
+    }
+
+    public void markEngaged(UUID team) {
+        if (engaged.add(team)) setDirty();
     }
 
     private static DiscoveryStage initial(ResourceLocation id) {
@@ -48,7 +59,7 @@ public class ContinuumTeamData extends SavedData {
     }
 
     public boolean isHidden(MinecraftServer server, UUID team, ContinuumBody body) {
-        // a comet that is not passing is simply not there
+        
         if (body.transientInfo() != null &&
                 !ContinuumTransients.get(server).active(body.id(), System.currentTimeMillis())) {
             return true;
@@ -64,7 +75,7 @@ public class ContinuumTeamData extends SavedData {
 
         ContinuumBody body = ContinuumData.body(id);
         if (body != null && isHidden(server, team, body)) return DiscoveryStage.UNKNOWN;
-        // a passing comet is fully visible, there is no time to survey it, to anyone who has found its system
+        
         if (body != null && body.transientInfo() != null) {
             return effectiveStage(server, team, body.system()).atLeast(DiscoveryStage.DETECTED) ?
                     DiscoveryStage.SURVEYED : DiscoveryStage.UNKNOWN;
@@ -96,6 +107,8 @@ public class ContinuumTeamData extends SavedData {
                         }
             }
             for (ContinuumBody inSystem : ContinuumData.bodiesOf(id)) {
+                
+                if (inSystem.transientInfo() != null) continue;
                 DiscoveryStage bodyStage = effectiveStage(server, team, inSystem.id());
                 if (bodyStage == DiscoveryStage.SURVEYED) return DiscoveryStage.SURVEYED;
                 if (bodyStage == DiscoveryStage.DETECTED) stage = max(stage, DiscoveryStage.DETECTED);
@@ -124,9 +137,6 @@ public class ContinuumTeamData extends SavedData {
         setDirty();
     }
 
-    // ---------------- mission history ----------------
-
-    /** Adds a line to the team's history (the newest {@link MissionLog#LIMIT} are kept). */
     public void log(UUID team, MissionLog.Kind kind, ResourceLocation body, String text) {
         java.util.List<MissionLog.Entry> list = history.computeIfAbsent(team, t -> new java.util.ArrayList<>());
         list.add(new MissionLog.Entry(System.currentTimeMillis(), kind, body, text));
@@ -134,7 +144,6 @@ public class ContinuumTeamData extends SavedData {
         setDirty();
     }
 
-    /** The team's history, oldest first. */
     public java.util.List<MissionLog.Entry> history(UUID team) {
         return history.getOrDefault(team, java.util.List.of());
     }
@@ -251,6 +260,14 @@ public class ContinuumTeamData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
+        ListTag engagedTeams = new ListTag();
+        for (UUID team : engaged) {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("Team", team);
+            engagedTeams.add(e);
+        }
+        tag.put("Engaged", engagedTeams);
+
         ListTag stageTeams = new ListTag();
         for (var team : stages.entrySet()) {
             CompoundTag teamTag = new CompoundTag();
@@ -336,6 +353,7 @@ public class ContinuumTeamData extends SavedData {
     public static ContinuumTeamData load(CompoundTag tag) {
         ContinuumTeamData data = new ContinuumTeamData();
 
+        for (Tag t : tag.getList("Engaged", Tag.TAG_COMPOUND)) data.engaged.add(((CompoundTag) t).getUUID("Team"));
         for (Tag t : tag.getList("StageTeams", Tag.TAG_COMPOUND)) {
             CompoundTag teamTag = (CompoundTag) t;
             Map<ResourceLocation, DiscoveryStage> map = new HashMap<>();

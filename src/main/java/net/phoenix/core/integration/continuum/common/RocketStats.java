@@ -66,13 +66,11 @@ public final class RocketStats {
         return Math.max(1, PhoenixConfigs.INSTANCE.continuum.outpostMaxStoredCycles);
     }
 
-    /** The best hull a rocket can be refitted to. */
     public static final int MAX_TIER = 4;
 
     private static final String TAG_TIER = "Tier";
     private static final String[] TIER_NAMES = { "Mk I", "Mk II", "Mk III", "Mk IV" };
 
-    /** A rocket's hull tier, 1 to {@link #MAX_TIER}; every rocket starts at Mk I. */
     public static int tier(ItemStack rocket) {
         CompoundTag tag = rocket.getTag();
         int tier = tag == null ? 0 : tag.getInt(TAG_TIER);
@@ -87,10 +85,6 @@ public final class RocketStats {
         return TIER_NAMES[Math.max(1, Math.min(MAX_TIER, tier)) - 1];
     }
 
-    /**
-     * The highest level of an upgrade a hull of this tier can carry. A better hull has room for more of each, and the
-     * shielding modules need a hull strong enough to carry them.
-     */
     public static int upgradeCap(int tier, String upgrade) {
         return switch (upgrade) {
             case OVERDRIVE -> Math.min(5, tier + 1);
@@ -102,7 +96,6 @@ public final class RocketStats {
         };
     }
 
-    /** The hull a rocket needs to work at a body: set by the body's tier. */
     public static int requiredTier(ContinuumBody body) {
         return switch (body.minTier().toLowerCase(java.util.Locale.ROOT)) {
             case "mid" -> 2;
@@ -112,13 +105,11 @@ public final class RocketStats {
         };
     }
 
-    /** Share of the usual wear a trip costs with this hull (reinforced plating and the tier itself). */
     public static float wearFactor(ItemStack rocket) {
         double hull = 1.0 - Math.min(0.75, 0.25 * level(rocket, REINFORCED_HULL));
         return (float) Math.max(0.0, hull * (1.0 - 0.10 * (tier(rocket) - 1)));
     }
 
-    /** Share of the usual failure risk this hull leaves. */
     public static float failureFactor(ItemStack rocket) {
         return 1.0f - 0.12f * (tier(rocket) - 1);
     }

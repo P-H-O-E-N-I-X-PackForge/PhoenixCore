@@ -224,7 +224,7 @@ public class ContinuumFleetScreen extends Screen {
                 ContinuumSounds.click();
                 var id = (java.util.UUID) row[0];
                 if ((boolean) row[6]) {
-                    // a stranded rocket: back to the map, on its body, with the rescue planner open
+                    
                     ContinuumMapScreen.requestRescue((ResourceLocation) row[7]);
                     Minecraft.getInstance().setScreen(parent);
                 } else if ((boolean) row[1]) {

@@ -7,7 +7,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** A block of tendril: more spores than the shell, and the odd glowing mote. */
 public class GrowthTendrilBlock extends Block {
 
     public GrowthTendrilBlock(Properties properties) {

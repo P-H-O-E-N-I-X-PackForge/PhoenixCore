@@ -187,12 +187,6 @@ public class ContinuumArrivalScreen extends Screen {
         return smooth((t - 0.35f) / 0.25f) * (1.0f - smooth((t - 0.74f) / 0.06f));
     }
 
-    /**
-     * The rocket itself. Onto a surface it comes down tail-first from the top of the view, its engine burning under it
-     * and growing as it nears, and stands on its plume; a failed landing leans over more and more and ends in a fire.
-     * Past a star, a black hole or into a gas giant's air it instead sweeps across the view, nose first, and settles
-     * into orbit (or tumbles, if it failed).
-     */
     private void drawRocket(GuiGraphics graphics, boolean crash, boolean hole, long now) {
         float appear = smooth((t - 0.22f) / 0.06f);
         if (appear <= 0.01f) return;
@@ -207,7 +201,6 @@ public class ContinuumArrivalScreen extends Screen {
             float wobble = crash ? (float) Math.sin(now * 0.02) * 18.0f + run * 50.0f : 0.0f;
             int trail = crash ? 0xff5a30 : profile == FlightProfiles.Landing.AEROCAPTURE ? 0xff9a50 : 0x9ad0ff;
 
-            // the engine trail streams out behind it, to the right: it is flying nose-left
             GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
             for (int i = 0; i < 5; i++) {
                 glows.glow(cx + size * (0.55f + i * 0.5f), cy, size * (0.5f - i * 0.06f), i == 0 ? 0xfff0c0 : trail,
@@ -236,7 +229,6 @@ public class ContinuumArrivalScreen extends Screen {
         float tilt = crash ? u * u * 30.0f + (landed ? 38.0f : 0.0f) : 0.0f;
         float sc = rocketH / (height * 0.30f);
 
-        // the retro burn under the tail: it cuts out when the rocket is down
         float engine = (0.45f + 0.55f * profile.retro) * (landed ? 0.0f : 1.0f) * appear;
         if (engine > 0.01f) {
             GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
@@ -256,7 +248,6 @@ public class ContinuumArrivalScreen extends Screen {
         RocketSprite.draw(graphics, cx, tailY, rocketH, appear);
         pose.popPose();
 
-        // a failed landing ends in a fire at the wreck
         if (crash && landed) {
             float burn = 1.0f - smooth((t - 0.70f) / 0.3f) * 0.4f;
             GlowRenderer.Batch fire = GlowRenderer.batch(graphics);

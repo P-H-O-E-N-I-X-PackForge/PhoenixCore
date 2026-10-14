@@ -8,20 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * The constellation an Astral machine has to be calibrated to. It is made from the machine's own seed, so every machine
- * has its own chart. A chart is a handful of stars on a small grid and the lines between them:
- *
- * <ul>
- * <li>{@link Kind#CHAIN} (the Spinning Wheel): one line from star to star in a fixed order. Every line has a direction, and
- * the chart is solved when you draw the same lines the same way round.</li>
- * <li>{@link Kind#WEB} (the Loom): a closed loop with some cross-links. Lines have no direction and no order, only the set of
- * them matters.</li>
- * </ul>
- *
- * A line is a pair of star indices. Stars and lines are packed into ints for NBT and packets: a star is {@code x * 16 + y},
- * a line is {@code from * 16 + to}.
- */
 public final class StarChart {
 
     public enum Kind {
@@ -35,7 +21,7 @@ public final class StarChart {
     private final Kind kind;
     private final int[] starX;
     private final int[] starY;
-    /** Chain: in drawing order, directed. Web: normalised so the first star index is the lower one. */
+    
     private final List<int[]> lines;
 
     private StarChart(Kind kind, int[] starX, int[] starY, List<int[]> lines) {
@@ -118,7 +104,6 @@ public final class StarChart {
         return out;
     }
 
-    /** One line, packed as {@code index * 256 + from * 16 + to}; the index is its place in the chain. */
     public int packedLine(int i) {
         int[] l = lines.get(i);
         return i * 256 + l[0] * 16 + l[1];
@@ -129,7 +114,6 @@ public final class StarChart {
         return from * 16 + to;
     }
 
-    /** How many of the drawn lines are right. {@code drawn} holds pairs of star indices. */
     public int correct(List<int[]> drawn) {
         Set<Integer> right = new HashSet<>();
         for (int[] l : lines) right.add(key(l[0], l[1]));
@@ -142,7 +126,6 @@ public final class StarChart {
         return score;
     }
 
-    /** Right when every line is drawn and nothing extra is. */
     public boolean solvedBy(List<int[]> drawn) {
         Set<Integer> unique = new HashSet<>();
         for (int[] l : drawn) {

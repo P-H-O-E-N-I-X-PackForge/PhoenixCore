@@ -8,7 +8,6 @@ import net.phoenix.core.integration.continuum.common.RocketRefit;
 
 import java.util.function.Supplier;
 
-/** A button in the refit screen: raise the hull, fit a module, or repair the rocket in hand. The server decides. */
 public class C2SRefitPacket {
 
     private final RocketRefit.Action action;

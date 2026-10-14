@@ -15,9 +15,11 @@
     "ae2.MixinCutterHook",
     "ars.DominionWandMixin",
     "emi.EmiApiMixin",
+    "gtceu.ConveyorCoverRateMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
     "gtceu.MixinGTOres",
     "gtceu.MultiblockResearchGateMixin",
+    "gtceu.PumpCoverRateMixin",
     "gtceu.WorkableMultiblockMachineMixin",
     "minecraft.ItemStackTooltipMixin",
     "minecraft.RecipeManagerMixin"

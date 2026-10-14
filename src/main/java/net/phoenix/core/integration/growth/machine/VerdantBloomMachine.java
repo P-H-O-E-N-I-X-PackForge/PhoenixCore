@@ -22,7 +22,6 @@ import java.util.List;
 
 public class VerdantBloomMachine extends GrowthMultiblockMachine {
 
-    // controller on the front face; the greenhouse stays narrow and climbs, from 3 x 4 x 3 to 5 x 9 x 5
     private static final IntList[] SHAPES = {
             GrowthStages.bounds(2, 1, 1, 1, 0, 2),
             GrowthStages.bounds(3, 1, 1, 1, 0, 2),
@@ -35,7 +34,7 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(VerdantBloomMachine::buildStages);
 
     private static List<GrowthStage> buildStages() {
-        // a verdant bloom gets a little faster and a little richer with every stage
+        
         return GrowthStages.of(SHAPES).costItems(GrowthItems.GROWTH_SEED::get, 2).speedPerStage(0.05f).outputPerStage(0.08f)
                 .build();
     }
@@ -49,7 +48,6 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
         return STAGES.get();
     }
 
-    /** The stages, for the recipe viewer. */
     public static List<GrowthStage> stages() {
         return STAGES.get();
     }

@@ -149,7 +149,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         }
 
         this.totalSpeakerRange = totalSpeakerValue;
-        // volume follows the average speaker tier; with no speakers it plays at the base volume
+        
         this.resonancePower = speakerCount == 0 ? 1.0f : amplifierSum / speakerCount;
         this.lastPlayingStreamUrl = "";
         this.lastPlayingLibrarySound = "";
@@ -234,7 +234,6 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         this.markAsChanged();
     }
 
-    /** A library sound was chosen on this jukebox: tell the Harmonic Locks in range. Server side only. */
     public void onLibrarySoundChosen(String soundLoc) {
         if (getLevel() == null || getLevel().isClientSide || !isFormed() || !hasLibraryHatch) return;
         HarmonicLockMachine.broadcast(getLevel(), getBlockPos(), getFinalRange(), soundLoc);

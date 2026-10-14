@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import java.util.function.Supplier;
 
-/** A player asked an Astral machine for its calibration screen. */
 public class C2SOpenCalibrationPacket {
 
     private final BlockPos pos;

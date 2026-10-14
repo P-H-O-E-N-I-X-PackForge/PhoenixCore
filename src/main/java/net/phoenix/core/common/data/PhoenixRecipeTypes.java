@@ -34,7 +34,7 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
     public static GTRecipeType DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
-    /** Crystal Garden's recipes; the botanical and vine types are Verdant Bloom's and Bloomvine Core's. */
+    
     public static GTRecipeType GROWTH_RECIPES, BOTANICAL_GROWTH_RECIPES, VINE_GROWTH_RECIPES;
     public static GTRecipeType ASTRAL_WEAVING_RECIPES;
     public static GTRecipeType SANCTUM_WARD_RECIPES;

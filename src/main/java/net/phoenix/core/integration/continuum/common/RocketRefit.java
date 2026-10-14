@@ -14,11 +14,6 @@ import net.phoenix.core.integration.continuum.item.ContinuumRocketItem;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Refitting a rocket from its refit screen: raise the hull a tier with a Hull Refit Kit, fit an upgrade module, or
- * repair it with a repair kit. The kits and modules are taken from the player's inventory (creative players pay nothing),
- * and the rocket is the one in their hands.
- */
 public final class RocketRefit {
 
     private RocketRefit() {}
@@ -29,7 +24,6 @@ public final class RocketRefit {
         REPAIR
     }
 
-    /** The rocket the player holds, main hand first. */
     public static ItemStack heldRocket(net.minecraft.world.entity.player.Player player) {
         ItemStack main = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (main.getItem() instanceof ContinuumRocketItem) return main;
@@ -37,7 +31,6 @@ public final class RocketRefit {
         return off.getItem() instanceof ContinuumRocketItem ? off : ItemStack.EMPTY;
     }
 
-    /** The kit that raises a hull to this tier. */
     public static @Nullable Item refitKit(int toTier) {
         return switch (toTier) {
             case 2 -> ContinuumRegistry.REFIT_MK2.get();
@@ -47,7 +40,6 @@ public final class RocketRefit {
         };
     }
 
-    /** The module item that fits an upgrade. */
     public static @Nullable Item module(String upgrade) {
         return switch (upgrade) {
             case RocketStats.OVERDRIVE -> ContinuumRegistry.MODULE_OVERDRIVE.get();
@@ -83,7 +75,6 @@ public final class RocketRefit {
         return false;
     }
 
-    /** @return null on success, otherwise the reason it did not work */
     public static @Nullable String apply(ServerPlayer player, Action action, String key) {
         ItemStack rocket = heldRocket(player);
         if (rocket.isEmpty()) return "Hold a Continuum Rocket to refit it.";

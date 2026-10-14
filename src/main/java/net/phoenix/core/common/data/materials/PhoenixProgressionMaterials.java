@@ -325,7 +325,6 @@ public class PhoenixProgressionMaterials {
                 .iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
 
-
         PHOENIX_ENRICHED_NAQUADAH = new Material.Builder(PhoenixCore.id("phoenix_enriched_naquadah"))
                 .langValue("§6Phoenix Enriched Naquadah").ingot()
                 .color(0xFFA500).iconSet(MaterialIconSet.SHINY).cableProperties(GTValues.V[GTValues.ZPM], 64, 8, true)

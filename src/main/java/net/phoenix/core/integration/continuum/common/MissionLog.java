@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-/** One line of a team's mission history: what happened, where and when. The newest {@link #LIMIT} are kept. */
 public final class MissionLog {
 
     private MissionLog() {}
@@ -22,7 +21,6 @@ public final class MissionLog {
         STATION,
         COMET;
 
-        /** Whether this is something that went wrong, for the history screen's filter. */
         public boolean problem() {
             return this == FAILED || this == STRANDED || this == LOST;
         }

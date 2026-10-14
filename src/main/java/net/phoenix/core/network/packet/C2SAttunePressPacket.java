@@ -7,7 +7,6 @@ import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 
 import java.util.function.Supplier;
 
-/** A lane was pressed during attunement, {@code elapsedMs} after the player's screen started its clock. */
 public class C2SAttunePressPacket {
 
     private final BlockPos pos;

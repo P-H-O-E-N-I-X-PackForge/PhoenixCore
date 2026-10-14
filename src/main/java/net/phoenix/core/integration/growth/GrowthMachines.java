@@ -26,7 +26,6 @@ public class GrowthMachines {
     public static final com.gregtechceu.gtceu.api.machine.multiblock.PartAbility GROWTH_CONTROL_ABILITY =
             new com.gregtechceu.gtceu.api.machine.multiblock.PartAbility("growth_control");
 
-    /** Fitting one of these puts a growing machine's growth under the player's control, and stops it breaking blocks. */
     public static final com.gregtechceu.gtceu.api.machine.MachineDefinition GROWTH_CONTROL_HATCH = REGISTRATE
             .machine("growth_control_hatch", GrowthControlHatch::new)
             .langValue("Growth Control Hatch")
@@ -42,7 +41,6 @@ public class GrowthMachines {
             .overlayTieredHullModel("growth_control_hatch")
             .register();
 
-    /** A growing-cube machine: a shell that grows outward from the controller, in casing or living shell. */
     private static <T extends GrowthMultiblockMachine> MultiblockMachineDefinition cubeGrower(
                                                                                               String id,
                                                                                               String name,

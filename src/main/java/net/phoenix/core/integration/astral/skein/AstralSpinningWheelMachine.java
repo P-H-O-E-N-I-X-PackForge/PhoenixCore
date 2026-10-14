@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 
-/** Spins Thread into Skein. Its chart is a chain: one line through the stars, drawn in order. */
 public class AstralSpinningWheelMachine extends AstralCalibratedMachine {
 
     public AstralSpinningWheelMachine(BlockEntityCreationInfo info) {

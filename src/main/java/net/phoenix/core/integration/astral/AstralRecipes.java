@@ -16,11 +16,6 @@ import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
-/**
- * Crafting for the Astral machines, which had none. The chain asks for what it makes: the Spinning Wheel needs only
- * Filament, but the Loom needs Skein (so a Wheel comes first), and the top-tier Thread hatches need Ensorcelled Weave (so a
- * Loom comes first). Everything is a placeholder balance pass.
- */
 public final class AstralRecipes {
 
     private AstralRecipes() {}
@@ -48,7 +43,6 @@ public final class AstralRecipes {
                 .duration(800).EUt(VA[LuV])
                 .save(provider);
 
-        // the Loom needs Skein, which only a Spinning Wheel can make
         ASSEMBLER_RECIPES.recipeBuilder("astral_loom")
                 .inputItems(GTMachines.HULL[ZPM].asStack())
                 .inputItems(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY, 16)
@@ -79,7 +73,7 @@ public final class AstralRecipes {
                         .inputItems(circuits, 2)
                         .inputItems(input ? ELECTRIC_PUMP_IV : ELECTRIC_PUMP_LuV, 1)
                         .inputFluids(AstralMaterials.SKEIN.getFluid(144 * (tier - IV + 1)));
-                // the top tier is woven, not just spun
+                
                 if (top) builder.inputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(288));
                 builder.outputItems((input ? in : out).asStack())
                         .duration(300 + 100 * (tier - IV)).EUt(VA[tier])

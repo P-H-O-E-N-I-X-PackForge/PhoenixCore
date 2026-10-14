@@ -116,12 +116,10 @@ public final class ContinuumClientState {
         history = List.copyOf(entries);
     }
 
-    /** The team's mission history, oldest first, as last sent by the server. */
     public static List<net.phoenix.core.integration.continuum.common.MissionLog.Entry> history() {
         return history;
     }
 
-    /** When a passing comet arrived and leaves ({start, end} in server milliseconds), or null if it is not there. */
     public static @Nullable long[] transientWindow(ResourceLocation body) {
         return transients.get(body);
     }
@@ -179,7 +177,6 @@ public final class ContinuumClientState {
 
     private static final Map<UUID, ContinuumStateSnapshot.MissionView> PREVIEWS = new HashMap<>();
 
-    /** A made-up mission for `/continuumpreview`, so the landing can be watched without flying anything. */
     public static void addPreview(ContinuumStateSnapshot.MissionView view) {
         PREVIEWS.put(view.id(), view);
     }

@@ -15,11 +15,6 @@ import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Water;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
-/**
- * The harvests of the three growing machines. Each machine has its own recipe type, and each recipe needs a growth
- * stage: the further a machine has grown, the better the things it can make. Every one uses a seed (crystal seeds for
- * the Crystal Garden, growth seeds for the botanical machines), which is also what advancing a stage costs.
- */
 public final class GrowthRecipes {
 
     private GrowthRecipes() {}

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -57,6 +58,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     private final long seed;
 
     private volatile TerrainProfile worldSeededProfile;
+    private final net.phoenix.core.integration.conflux.dimension.worldgen.Landforms landforms;
 
     private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer = new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
 
@@ -85,7 +87,13 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 oreNanos.get() / 1_000_000.0, provinceOreNanos.get() / 1_000_000.0);
     }
 
-    private static final double BIOME_REGION_FREQUENCY = 0.0035;
+    private static final double BIOME_REGION_FREQUENCY = 0.0016;
+    private static final double BIOME_WARP_FREQUENCY = 0.004;
+    private static final double BIOME_WARP_STRENGTH = 70.0;
+    private static final double BIOME_BLEND_BAND = 0.14;
+    
+    private static final double ACCENT_FREQUENCY = 0.03;
+    private static final double ACCENT_THRESHOLD = 0.55;
     private volatile SimplexNoise biomeRegionNoise;
 
     public static void register() {
@@ -98,6 +106,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         this.seed = seed;
         this.terrainProfile = createTerrainForDiscipline(disciplineId, seed);
         this.worldgenProfile = DisciplineWorldgenPresets.getPreset(disciplineId);
+        this.landforms = new net.phoenix.core.integration.conflux.dimension.worldgen.Landforms(disciplineId, seed);
     }
 
     private TerrainProfile resolveTerrainProfile(RandomState randomState) {
@@ -128,29 +137,70 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private static final double PRIMARY_BIOME_BIAS = 0.65;
 
-    private static WorldgenProfile.BiomeDefinition selectBiome(List<WorldgenProfile.BiomeDefinition> biomes,
-                                                               String primaryBiomeId,
-                                                               SimplexNoise regionNoise, int x, int z) {
-        if (biomes.isEmpty()) return null;
-        if (biomes.size() == 1) return biomes.get(0);
+    private record BiomePick(WorldgenProfile.BiomeDefinition best, WorldgenProfile.BiomeDefinition second, int bestIndex,
+                             double margin) {}
 
-        WorldgenProfile.BiomeDefinition best = null;
+    private static BiomePick pickBiome(List<WorldgenProfile.BiomeDefinition> biomes, String primaryBiomeId,
+                                       SimplexNoise regionNoise, int x, int z) {
+        if (biomes.isEmpty()) return null;
+        if (biomes.size() == 1) return new BiomePick(biomes.get(0), null, 0, 1.0);
+
+        double wx = x + regionNoise.getValue(x * BIOME_WARP_FREQUENCY + 5000.0, 0, z * BIOME_WARP_FREQUENCY) *
+                BIOME_WARP_STRENGTH;
+        double wz = z + regionNoise.getValue(x * BIOME_WARP_FREQUENCY, 0, z * BIOME_WARP_FREQUENCY + 9000.0) *
+                BIOME_WARP_STRENGTH;
+
+        int bestIndex = -1;
         double bestScore = -Double.MAX_VALUE;
+        int secondIndex = -1;
+        double secondScore = -Double.MAX_VALUE;
         for (int i = 0; i < biomes.size(); i++) {
             WorldgenProfile.BiomeDefinition def = biomes.get(i);
             double offsetX = i * 10037.29;
             double offsetZ = i * 7349.13;
             double score = regionNoise.getValue(
-                    (x + offsetX) * BIOME_REGION_FREQUENCY, 0, (z + offsetZ) * BIOME_REGION_FREQUENCY);
+                    (wx + offsetX) * BIOME_REGION_FREQUENCY, 0, (wz + offsetZ) * BIOME_REGION_FREQUENCY);
             if (def.biomeId.equals(primaryBiomeId)) {
                 score += PRIMARY_BIOME_BIAS;
             }
             if (score > bestScore) {
+                secondScore = bestScore;
+                secondIndex = bestIndex;
                 bestScore = score;
-                best = def;
+                bestIndex = i;
+            } else if (score > secondScore) {
+                secondScore = score;
+                secondIndex = i;
             }
         }
-        return best;
+        return new BiomePick(biomes.get(bestIndex), secondIndex < 0 ? null : biomes.get(secondIndex), bestIndex,
+                bestScore - secondScore);
+    }
+
+    private static WorldgenProfile.BiomeDefinition selectBiome(List<WorldgenProfile.BiomeDefinition> biomes,
+                                                               String primaryBiomeId,
+                                                               SimplexNoise regionNoise, int x, int z) {
+        BiomePick pick = pickBiome(biomes, primaryBiomeId, regionNoise, x, z);
+        return pick == null ? null : pick.best();
+    }
+
+    private WorldgenProfile.BiomeDefinition groundBiome(List<WorldgenProfile.BiomeDefinition> biomes,
+                                                        SimplexNoise regionNoise, int x, int z) {
+        BiomePick pick = pickBiome(biomes, worldgenProfile.biomes.primaryBiome, regionNoise, x, z);
+        if (pick == null) return null;
+        WorldgenProfile.BiomeDefinition chosen = pick.best();
+
+        if (pick.second() != null && pick.margin() < BIOME_BLEND_BAND) {
+            int dither = (int) ((seed * 31 + x * 73428767L + z * 912931L) >>> 7) & 1023;
+            if (dither / 1023.0 < 0.5 * (1.0 - pick.margin() / BIOME_BLEND_BAND)) chosen = pick.second();
+        } else if (biomes.size() > 2) {
+            double patch = regionNoise.getValue(x * ACCENT_FREQUENCY + 3000.0, 0, z * ACCENT_FREQUENCY + 7000.0);
+            if (patch > ACCENT_THRESHOLD) {
+                int step = 1 + (int) ((patch - ACCENT_THRESHOLD) * 40.0) % (biomes.size() - 1);
+                chosen = biomes.get((pick.bestIndex() + step) % biomes.size());
+            }
+        }
+        return chosen;
     }
 
     private static TerrainProfile createTerrainForDiscipline(String disciplineId, long seed) {
@@ -159,35 +209,35 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     .seed(seed)
                     .baseY(72).amplitude(100).frequency(0.004).octaves(6)
                     .style(TerrainProfile.Style.RIDGED)
-                    .ocean(0.0007, 0.18, 25).river(0.0025, 0.07, 5)
+                    .seaLevel(28)
                     .caves(true).build();
 
             case "sculk" -> TerrainProfile.builder("sculk")
                     .seed(seed).baseY(66).amplitude(45)
                     .frequency(0.0035).octaves(5)
                     .style(TerrainProfile.Style.HEIGHTMAP)
-                    .ocean(0.0007, 0.16, 20).river(0.0022, 0.07, 4)
+                    .seaLevel(57)
                     .caves(true).build();
 
             case "void" -> TerrainProfile.builder("void")
                     .seed(seed).baseY(68).amplitude(55)
                     .frequency(0.003).octaves(5)
                     .style(TerrainProfile.Style.HEIGHTMAP)
-                    .ocean(0.0006, 0.06, 15).river(0.002, 0.045, 3)
+                    .seaLevel(55)
                     .caves(true).build();
 
             case "sealed_a" -> TerrainProfile.builder("sealed_a")
                     .seed(seed).baseY(68).amplitude(40)
                     .frequency(0.003).octaves(4)
                     .style(TerrainProfile.Style.TERRACED).terraceStep(6.0)
-                    .ocean(0.0007, 0.17, 22).river(0.0024, 0.07, 4)
+                    .seaLevel(52)
                     .caves(true).build();
 
             case "sealed_b" -> TerrainProfile.builder("sealed_b")
                     .seed(seed).baseY(65).amplitude(75)
                     .frequency(0.0032).octaves(6)
                     .style(TerrainProfile.Style.WARPED).warpStrength(20.0)
-                    .ocean(0.0006, 0.07, 15).river(0.002, 0.045, 3)
+                    .seaLevel(47)
                     .caves(true).build();
 
             default -> TerrainProfile.builder("default").seed(seed).caves(true).build();
@@ -247,9 +297,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
         SimplexNoise regionNoise = resolveBiomeRegionNoise(randomState);
 
-        net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask = resolveTerrainProfile(randomState)
-                .waterMask();
-
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX();
         int minZ = chunkPos.getMinBlockZ();
@@ -269,12 +316,11 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 }
                 if (topY < minY) continue;
 
-                WorldgenProfile.BiomeDefinition biome = selectBiome(biomes, worldgenProfile.biomes.primaryBiome,
-                        regionNoise, x, z);
+                WorldgenProfile.BiomeDefinition biome = groundBiome(biomes, regionNoise, x, z);
 
                 BlockState surface;
                 BlockState subSurface;
-                if (waterMask != null && waterMask.isWaterColumn(x, z)) {
+                if (topY < getSeaLevel()) {
 
                     surface = Blocks.SAND.defaultBlockState();
                     subSurface = Blocks.GRAVEL.defaultBlockState();
@@ -306,6 +352,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         ChunkPos chunkPos = chunk.getPos();
 
         long t0 = System.nanoTime();
+        shapeLandforms(chunk);
+        placeStructures(level, chunk, structureManager);
         applyWorldgenFeatures(level, chunkPos.x, chunkPos.z);
         long t1 = System.nanoTime();
         decorationNanos.addAndGet(t1 - t0);
@@ -314,10 +362,60 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         long t2 = System.nanoTime();
         oreNanos.addAndGet(t2 - t1);
 
-        if ("phoenix".equals(disciplineId) || "void".equals(disciplineId) || "sculk".equals(disciplineId)) {
+        if (!"default".equals(disciplineId)) {
             placeProvinceOres(level, chunk);
             provinceOreNanos.addAndGet(System.nanoTime() - t2);
         }
+    }
+
+    private void placeStructures(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
+        ChunkPos chunkPos = chunk.getPos();
+        int minX = chunkPos.getMinBlockX();
+        int minZ = chunkPos.getMinBlockZ();
+        net.minecraft.core.SectionPos section = net.minecraft.core.SectionPos.of(chunkPos, level.getMinSection());
+        net.minecraft.world.level.levelgen.structure.BoundingBox writable = new net.minecraft.world.level.levelgen.structure.BoundingBox(
+                minX, level.getMinBuildHeight() + 1, minZ, minX + 15, level.getMaxBuildHeight() - 1, minZ + 15);
+
+        WorldgenRandom random = new WorldgenRandom(
+                new XoroshiroRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()));
+        long decorationSeed = random.setDecorationSeed(level.getSeed(), minX, minZ);
+
+        int index = 0;
+        Registry<net.minecraft.world.level.levelgen.structure.Structure> registry = level.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+        for (net.minecraft.world.level.levelgen.structure.Structure structure : registry) {
+            if (!(structure instanceof net.phoenix.core.integration.conflux.structure.ConfluxStructure)) continue;
+            random.setFeatureSeed(decorationSeed, index++, 0);
+            for (net.minecraft.world.level.levelgen.structure.StructureStart start : structureManager
+                    .startsForStructure(section, structure)) {
+                start.placeInChunk(level, structureManager, this, random, writable, chunkPos);
+            }
+        }
+    }
+
+    public boolean landformNear(int x, int z, int margin, RandomState randomState) {
+        TerrainProfile profile = resolveTerrainProfile(randomState);
+        int minY = getMinY();
+        int maxY = minY + getGenDepth();
+        return landforms.occupies(x, z, margin, getSeaLevel(), (gx, gz) -> {
+            for (int y = maxY - 1; y >= minY; y--) {
+                if (profile.sampler().sample(gx, y, gz) > 0) return y + 1;
+            }
+            return minY;
+        });
+    }
+
+    private void shapeLandforms(ChunkAccess chunk) {
+        if (!landforms.enabled()) return;
+        TerrainProfile profile = worldSeededProfile != null ? worldSeededProfile : terrainProfile;
+        int minY = getMinY();
+        int maxY = minY + getGenDepth();
+        landforms.apply(chunk, minY, maxY, getSeaLevel(), (x, z) -> {
+            for (int y = maxY - 1; y >= minY; y--) {
+                if (profile.sampler().sample(x, y, z) > 0) return y + 1;
+            }
+            return minY;
+        });
     }
 
     private void placeProvinceOres(WorldGenLevel level, ChunkAccess chunk) {
@@ -355,11 +453,16 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 }
 
                 placeVeinInChunk(chunk, vein, minX, minZ, worldMinY, worldMaxY);
+                placeVeinIndicators(chunk, vein, minX, minZ, worldMinY, worldMaxY);
             }
         }
     }
 
-    private static final float PROVINCE_BASE_DENSITY = 0.85f;
+    private static final float PROVINCE_CLUMP_CHANCE = 0.85f;
+    private static final int CLUMP_CELL = 5;
+    private static final double CLUMP_RADIUS = 2.6;
+    private static final double CLUMP_FILL = 0.85;
+    private static final double VEIN_SQUASH = 0.6;
 
     private static void placeVeinInChunk(ChunkAccess chunk, ProvinceVeinInstance vein,
                                          int minX, int minZ, int worldMinY, int worldMaxY) {
@@ -368,11 +471,13 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int radius = vein.radius();
         double radiusSq = (double) radius * radius;
 
-        int loY = Math.max(worldMinY, Math.max(template.minY(), origin.getY() - radius));
-        int hiY = Math.min(worldMaxY - 1, Math.min(template.maxY(), origin.getY() + radius));
+        int vertical = (int) Math.ceil(radius * VEIN_SQUASH);
+        int loY = Math.max(worldMinY, Math.max(template.minY(), origin.getY() - vertical));
+        int hiY = Math.min(worldMaxY - 1, Math.min(template.maxY(), origin.getY() + vertical));
         if (loY > hiY) return;
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        double clumpRadiusSq = CLUMP_RADIUS * CLUMP_RADIUS;
         for (int x = minX; x < minX + 16; x++) {
             double dx = x - origin.getX();
             double dxSq = dx * dx;
@@ -384,7 +489,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 if (dxzSq > radiusSq) continue;
 
                 for (int y = loY; y <= hiY; y++) {
-                    double dy = y - origin.getY();
+                    double dy = (y - origin.getY()) / VEIN_SQUASH;
                     double distSq = dxzSq + dy * dy;
                     if (distSq > radiusSq) continue;
 
@@ -392,13 +497,28 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     BlockState current = chunk.getBlockState(pos);
                     if (!current.is(ProvinceVeinTemplates.STONE_TAG)) continue;
 
-                    long hash = positionHash(vein.seed(), x, y, z);
+                    int cellX = Math.floorDiv(x, CLUMP_CELL);
+                    int cellY = Math.floorDiv(y, CLUMP_CELL);
+                    int cellZ = Math.floorDiv(z, CLUMP_CELL);
+                    long cellHash = positionHash(vein.seed() ^ 0x5DEECE66DL, cellX, cellY, cellZ);
 
                     double falloff = 1.0 - Math.sqrt(distSq) / radius;
-                    double densityRoll = ((hash >>> 40) & 0xFFFFFF) / (double) 0x1000000;
-                    if (densityRoll >= PROVINCE_BASE_DENSITY * falloff) continue;
+                    double clumpRoll = ((cellHash >>> 40) & 0xFFFFFF) / (double) 0x1000000;
+                    if (clumpRoll >= PROVINCE_CLUMP_CHANCE * falloff) continue;
 
-                    int materialRoll = (int) (((hash & 0xFFFFFF) / (double) 0x1000000) * template.totalWeight());
+                    double cx = cellX * CLUMP_CELL + ((cellHash & 0xFF) / 255.0) * CLUMP_CELL;
+                    double cy = cellY * CLUMP_CELL + (((cellHash >>> 8) & 0xFF) / 255.0) * CLUMP_CELL;
+                    double cz = cellZ * CLUMP_CELL + (((cellHash >>> 16) & 0xFF) / 255.0) * CLUMP_CELL;
+                    double bx = x + 0.5 - cx;
+                    double by = y + 0.5 - cy;
+                    double bz = z + 0.5 - cz;
+                    if (bx * bx + by * by + bz * bz > clumpRadiusSq) continue;
+
+                    long hash = positionHash(vein.seed(), x, y, z);
+                    if (((hash >>> 40) & 0xFFFFFF) / (double) 0x1000000 >= CLUMP_FILL) continue;
+
+                    int materialRoll = (int) (((cellHash >>> 24) & 0xFFFFFF) / (double) 0x1000000 *
+                            template.totalWeight());
                     Material material = pickMaterial(template, materialRoll);
 
                     Optional<TagPrefix> prefix = ChemicalHelper.getOrePrefix(current);
@@ -410,6 +530,172 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 }
             }
         }
+    }
+
+    private static final int SHAPE_ROUND = 0;
+    private static final int SHAPE_RING = 1;
+    private static final int SHAPE_STREAK = 2;
+    private static final int SHAPE_CLUMPS = 3;
+    private static final int SHAPE_ROWS = 4;
+
+    private record GardenTheme(BlockState bed, BlockState bedAlt, BlockState filler, BlockState filler2,
+                               BlockState accent, int accentOneIn, int shape, double sizeMul, int extraGardens) {}
+
+    private GardenTheme gardenTheme() {
+        return switch (disciplineId) {
+            
+            case "phoenix" -> new GardenTheme(Blocks.BASALT.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState(),
+                    Blocks.DEAD_BUSH.defaultBlockState(), Blocks.CRIMSON_ROOTS.defaultBlockState(),
+                    Blocks.MAGMA_BLOCK.defaultBlockState(), 40, SHAPE_STREAK, 1.1, 0);
+            
+            case "sculk" -> new GardenTheme(Blocks.SCULK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
+                    Blocks.MOSS_CARPET.defaultBlockState(), Blocks.FLOWERING_AZALEA.defaultBlockState(),
+                    Blocks.SCULK_CATALYST.defaultBlockState(), 60, SHAPE_RING, 1.0, 0);
+            
+            case "void" -> new GardenTheme(Blocks.END_STONE.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState(),
+                    Blocks.CHORUS_FLOWER.defaultBlockState(), Blocks.CHORUS_PLANT.defaultBlockState(),
+                    Blocks.AMETHYST_BLOCK.defaultBlockState(), 25, SHAPE_CLUMPS, 0.8, 3);
+            
+            case "sealed_a" -> new GardenTheme(Blocks.PODZOL.defaultBlockState(), Blocks.ROOTED_DIRT.defaultBlockState(),
+                    Blocks.CORNFLOWER.defaultBlockState(), Blocks.ALLIUM.defaultBlockState(),
+                    Blocks.LANTERN.defaultBlockState(), 70, SHAPE_ROWS, 0.9, 1);
+            
+            case "sealed_b" -> new GardenTheme(Blocks.WARPED_NYLIUM.defaultBlockState(),
+                    Blocks.NETHERRACK.defaultBlockState(), Blocks.WARPED_ROOTS.defaultBlockState(),
+                    Blocks.NETHER_SPROUTS.defaultBlockState(), Blocks.SHROOMLIGHT.defaultBlockState(), 45,
+                    SHAPE_ROUND, 1.0, 0);
+            default -> new GardenTheme(Blocks.MOSS_BLOCK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
+                    Blocks.GRASS.defaultBlockState(), Blocks.GRASS.defaultBlockState(),
+                    Blocks.MOSS_BLOCK.defaultBlockState(), 1000, SHAPE_ROUND, 1.0, 0);
+        };
+    }
+
+    private void placeVeinIndicators(ChunkAccess chunk, ProvinceVeinInstance vein, int minX, int minZ,
+                                     int worldMinY, int worldMaxY) {
+        ProvinceVeinTemplates.Template template = vein.template();
+        BlockPos origin = vein.origin();
+        int radius = vein.radius();
+        int vertical = (int) Math.ceil(radius * VEIN_SQUASH);
+        GardenTheme theme = gardenTheme();
+
+        int gardens = 3 + (int) Math.floorMod(vein.seed() >>> 9, 4L) + theme.extraGardens();
+        double[] gx = new double[gardens];
+        double[] gz = new double[gardens];
+        double[] gr = new double[gardens];
+        double[] gAngle = new double[gardens];
+        Material[] gMaterial = new Material[gardens];
+        for (int g = 0; g < gardens; g++) {
+            long h = positionHash(vein.seed() ^ 0x6A4DE11L, g, 7, g * 31);
+            double angle = ((h & 0xFFFF) / 65535.0) * Math.PI * 2.0;
+            double dist = (((h >>> 16) & 0xFFFF) / 65535.0) * radius * 0.7;
+            gx[g] = origin.getX() + Math.cos(angle) * dist;
+            gz[g] = origin.getZ() + Math.sin(angle) * dist;
+            gr[g] = (5.0 + ((h >>> 32) & 0xFF) / 255.0 * 4.0) * theme.sizeMul();
+            gAngle[g] = (((h >>> 8) & 0xFFFF) / 65535.0) * Math.PI;
+            gMaterial[g] = pickMaterial(template, (int) (((h >>> 40) & 0xFFFFFF) / (double) 0x1000000 *
+                    template.totalWeight()));
+        }
+
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int x = minX; x < minX + 16; x++) {
+            for (int z = minZ; z < minZ + 16; z++) {
+                int garden = -1;
+                double gardenDist = 0.0;
+                for (int g = 0; g < gardens; g++) {
+                    double dx = x - gx[g];
+                    double dz = z - gz[g];
+                    double d;
+                    if (theme.shape() == SHAPE_STREAK) {
+                        
+                        double u = dx * Math.cos(gAngle[g]) + dz * Math.sin(gAngle[g]);
+                        double v = -dx * Math.sin(gAngle[g]) + dz * Math.cos(gAngle[g]);
+                        d = Math.hypot(u / 1.7, v / 0.55);
+                    } else {
+                        d = Math.hypot(dx, dz);
+                    }
+                    if (d <= gr[g]) {
+                        garden = g;
+                        gardenDist = d;
+                        break;
+                    }
+                }
+                if (garden < 0) continue;
+
+                int ground = worldMinY;
+                boolean found = false;
+                for (int y = worldMaxY - 2; y > worldMinY; y--) {
+                    BlockState state = chunk.getBlockState(pos.set(x, y, z));
+                    if (state.isAir() || state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS) ||
+                            state.canBeReplaced() && state.getFluidState().isEmpty()) {
+                        continue;
+                    }
+                    ground = y;
+                    found = state.getFluidState().isEmpty();
+                    break;
+                }
+                if (!found) continue;
+
+                double dxo = x - origin.getX();
+                double dzo = z - origin.getZ();
+                double flat = Math.sqrt(dxo * dxo + dzo * dzo);
+                double reach = vertical * Math.sqrt(Math.max(0.0, 1.0 - (flat * flat) / ((double) radius * radius)));
+                int veinTop = Math.min(template.maxY(), origin.getY() + (int) reach);
+                double scale = Math.max(0.35, Math.min(1.0, 1.0 - Math.max(0, ground - veinTop) / 80.0));
+                double reachHere = gr[garden] * scale;
+                if (gardenDist > reachHere) continue;
+                double falloff = 1.0 - gardenDist / reachHere;
+
+                boolean hollow = theme.shape() == SHAPE_RING && falloff > 0.62;
+
+                BlockState above = chunk.getBlockState(pos.set(x, ground + 1, z));
+                if (!above.isAir() && !above.canBeReplaced()) continue;
+
+                long h = positionHash(vein.seed() ^ 0x6A4DE12L, x, 0, z);
+                double roll = ((h >>> 24) & 0xFFFFFF) / (double) 0x1000000;
+                double density = (0.20 + 0.55 * falloff) * (0.5 + 0.5 * scale);
+
+                if (falloff > 0.3 && (h & 3) != 0) {
+                    chunk.setBlockState(pos.set(x, ground, z), (h & 16) == 0 ? theme.bed() : theme.bedAlt(), false);
+                }
+
+                if (falloff > 0.5 && Math.floorMod(h >>> 5, theme.accentOneIn()) == 0) {
+                    chunk.setBlockState(pos.set(x, ground + 1, z), theme.accent(), false);
+                    continue;
+                }
+                if (hollow) continue;
+
+                if (theme.shape() == SHAPE_CLUMPS &&
+                        ((positionHash(vein.seed(), Math.floorDiv(x, 3), 1, Math.floorDiv(z, 3)) >>> 40) & 3) == 0) {
+                    continue;
+                }
+                if (theme.shape() == SHAPE_ROWS && Math.floorMod(x, 3) != 0) continue;
+
+                net.minecraft.world.level.block.Block plant;
+                if (roll < density * 0.60) {
+                    plant = roseOf(gMaterial[garden]);
+                } else if (roll < density * 0.85) {
+                    Material other = pickMaterial(template, (int) (((h >>> 48) & 0xFFFF) / 65536.0 *
+                            template.totalWeight()));
+                    plant = roseOf(other);
+                } else if (roll < density) {
+                    chunk.setBlockState(pos.set(x, ground + 1, z), (h & 32) == 0 ? theme.filler() : theme.filler2(),
+                            false);
+                    continue;
+                } else {
+                    continue;
+                }
+                chunk.setBlockState(pos.set(x, ground + 1, z), plant.defaultBlockState(), false);
+            }
+        }
+    }
+
+    private static net.minecraft.world.level.block.Block roseOf(Material material) {
+        net.minecraft.world.level.block.Block rose = ChemicalHelper.getBlock(
+                net.phoenix.core.common.data.materials.PhoenixMaterialFlags.crystal_rose, material);
+        if (rose == null || rose.defaultBlockState().isAir()) {
+            rose = net.phoenix.core.common.block.PhoenixBlocks.CRYSTAL_ROSE.get();
+        }
+        return rose;
     }
 
     private static Material pickMaterial(ProvinceVeinTemplates.Template template, int roll) {
@@ -502,8 +788,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int minY = getMinY();
         int maxY = minY + getGenDepth();
 
-        net.phoenix.core.common.worldgen.PhoenixTerrainNoise.WaterMask waterMask = profile.waterMask();
-
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
                 for (int y = minY; y < maxY; y++) {
@@ -512,14 +796,16 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     }
                 }
 
-                if (waterMask != null && waterMask.isWaterColumn(x, z)) {
-
-                    int surfaceY = (int) Math.floor(waterMask.waterSurfaceY(x, z));
-                    for (int y = surfaceY; y >= minY; y--) {
-                        BlockPos pos = new BlockPos(x, y, z);
-                        if (!chunk.getBlockState(pos).isAir()) break;
-                        chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
+                int seaLevel = profile.seaLevel();
+                int ground = minY - 1;
+                for (int y = maxY - 1; y >= minY; y--) {
+                    if (!chunk.getBlockState(new BlockPos(x, y, z)).isAir()) {
+                        ground = y;
+                        break;
                     }
+                }
+                for (int y = Math.min(seaLevel, maxY - 1); y > ground; y--) {
+                    chunk.setBlockState(new BlockPos(x, y, z), Blocks.WATER.defaultBlockState(), false);
                 }
             }
         }
@@ -527,7 +813,13 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     public void applyWorldgenFeatures(WorldGenLevel level, int chunkX, int chunkZ) {
-        WorldgenApplier.applyWorldgenProfile(level, worldgenProfile, null, chunkX, chunkZ);
+        SimplexNoise regionNoise = biomeRegionNoise;
+        List<WorldgenProfile.BiomeDefinition> biomes = worldgenProfile.biomes.biomes;
+        WorldgenApplier.BiomeLookup lookup = regionNoise == null || biomes.isEmpty() ? null : (x, z) -> {
+            WorldgenProfile.BiomeDefinition def = groundBiome(biomes, regionNoise, x, z);
+            return def == null ? null : def.biomeId;
+        };
+        WorldgenApplier.applyWorldgenProfile(level, worldgenProfile, null, chunkX, chunkZ, lookup);
 
         applySignatureFeatures(level, chunkX, chunkZ);
     }

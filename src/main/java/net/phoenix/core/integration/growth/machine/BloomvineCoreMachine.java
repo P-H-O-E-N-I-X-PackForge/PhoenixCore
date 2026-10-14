@@ -23,13 +23,12 @@ import java.util.List;
 public class BloomvineCoreMachine extends GrowthMultiblockMachine {
 
     private static final int MAX_MATURITY = 5;
-    // a low, wide bed: 7 x 3 x 7 with the controller on the front face at floor level. It never grows; it matures.
+    
     public static final IntList MAX_BOUNDS = GrowthStages.bounds(2, 0, 3, 3, 0, 6);
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(BloomvineCoreMachine::buildMaturityTicks);
 
-
     private static List<GrowthStage> buildMaturityTicks() {
-        // a bloomvine core stays the same size; it matures into richer harvests, and at full maturity a double batch
+        
         return GrowthStages.fixed(MAX_BOUNDS, MAX_MATURITY).costItems(GrowthItems.GROWTH_SEED::get, 1)
                 .speedPerStage(0.04f).outputPerStage(0.10f)
                 .batchAtMax(2).build();
@@ -44,7 +43,6 @@ public class BloomvineCoreMachine extends GrowthMultiblockMachine {
         return STAGES.get();
     }
 
-    /** The stages, for the recipe viewer. */
     public static List<GrowthStage> stages() {
         return STAGES.get();
     }

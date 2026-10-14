@@ -65,7 +65,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         MAX_STAGE,
         OBSTRUCTED,
         INSUFFICIENT_COST,
-        /** Growth is held: paused, or already at the stage the player capped it at. */
+        
         PAUSED
     }
 
@@ -80,7 +80,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     @SyncToClient
     protected float growthProgress = 0f;
 
-    /** How many tendrils have finished growing (or been stopped) so far; see {@link #getMaxMaturedTendrils()}. */
     @Getter
     @SaveField
     @SyncToClient
@@ -90,45 +89,36 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     public static final int STALL_BLOCKED = 1;
     public static final int STALL_COST = 2;
 
-    /** Why growth is waiting: nothing, something in the way of the next stage, or the next stage's cost unpaid. */
     @Getter
     @SaveField
     @SyncToClient
     protected int growthStall = STALL_NONE;
 
-    // ---- player control: only in force while a growth control hatch is part of the structure ----
-
-    /** Automatic growth is held. */
     @Getter
     @SaveField
     @SyncToClient
     protected boolean growthPaused = false;
 
-    /** The stage growth stops at. */
     @Getter
     @SaveField
     @SyncToClient
     protected int targetStage = 99;
 
-    /** Whether tendrils grow at all. */
     @Getter
     @SaveField
     @SyncToClient
     protected boolean tendrilsEnabled = true;
 
-    /** Which of the machine's tendril anchors are used (bit n is anchor n). */
     @Getter
     @SaveField
     @SyncToClient
     protected int anchorMask = 0xFFFF;
 
-    /** How many tendril blocks are standing now; they speed the machine up and make it richer. */
     @Getter
     @SaveField
     @SyncToClient
     protected int tendrilBlockCount = 0;
 
-    /** Recipe data key: the recipe will not start until the machine has reached at least this growth stage. */
     public static final String MIN_STAGE_KEY = "min_growth_stage";
 
     protected GrowthMultiblockMachine(BlockEntityCreationInfo holder) {
@@ -137,16 +127,11 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
     protected abstract List<GrowthStage> getGrowthStages();
 
-    /** The stage the machine is at now. */
     public GrowthStage currentStage() {
         List<GrowthStage> stages = getGrowthStages();
         return stages.get(Math.max(0, Math.min(growthStage, stages.size() - 1)));
     }
 
-    /**
-     * The recipe modifier every growing machine uses: the machine's current stage makes its recipes faster, richer, or
-     * bigger (see {@link GrowthStage}). Add it to the definition's {@code recipeModifiers}.
-     */
     public static ModifierFunction stageModifier(MetaMachine machine, GTRecipe recipe) {
         if (!(machine instanceof GrowthMultiblockMachine growing)) return ModifierFunction.IDENTITY;
         GrowthStage stage = growing.currentStage();
@@ -165,22 +150,18 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return builder.build();
     }
 
-    /** Share of recipe time the machine saves: its stage plus its tendrils. */
     public float totalSpeedBonus() {
         return Math.min(0.75f, currentStage().speedBonus() + tendrilSpeedBonus());
     }
 
-    /** Extra share of output: its stage plus its tendrils. */
     public float totalOutputBonus() {
         return Math.max(0.0f, currentStage().outputBonus() + tendrilOutputBonus());
     }
 
-    /** What the standing tendril blocks save on recipe time: partly grown tendrils count for what they have grown. */
     public float tendrilSpeedBonus() {
         return Math.min(getMaxTendrilSpeedBonus(), tendrilBlockCount * getTendrilSpeedPerBlock());
     }
 
-    /** What the standing tendril blocks add to output. */
     public float tendrilOutputBonus() {
         return Math.min(getMaxTendrilOutputBonus(), tendrilBlockCount * getTendrilOutputPerBlock());
     }
@@ -201,12 +182,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return 0.30f;
     }
 
-    /** Whether growth breaks the blocks in its way when it is not under control. On by default. */
     protected boolean overridesBlocks() {
         return true;
     }
 
-    /** Whether a growth control hatch is part of the structure: growth is then the player's to direct, and safe. */
     public boolean isControlled() {
         for (var part : getParts()) {
             if (part instanceof GrowthControlHatch) return true;
@@ -218,14 +197,11 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return next >= stages.size() || (isControlled() && next > targetStage);
     }
 
-    /** Whether something stops growth reaching this block: a ward, or (under control, or if unbreakable) any block. */
     private boolean blocksGrowth(ServerLevel level, BlockPos pos, BlockState existing) {
         if (isWarded(level, pos)) return true;
         if (existing.isAir() || existing.canBeReplaced()) return false;
         return isControlled() || !overridesBlocks() || existing.getDestroySpeed(level, pos) < 0;
     }
-
-    // ---- the controls (they do nothing without a hatch) ----
 
     public void togglePaused() {
         if (!isControlled()) return;
@@ -255,7 +231,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         setChanged();
     }
 
-    /** A recipe that needs a higher growth stage than the machine has reached does not start. */
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe != null && recipe.data.contains(MIN_STAGE_KEY) &&
@@ -267,11 +242,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
     protected abstract BlockState getShellBlockState();
 
-    /**
-     * Whether advancing a stage by itself (as recipes finish) takes the stage's cost from the input buses, the way the
-     * controller's button does. If the buses cannot pay, growth waits at the edge of the next stage until they can.
-     * Off by default, which makes automatic growth free.
-     */
     protected boolean chargeOnAutoGrowth() {
         return false;
     }
@@ -324,8 +294,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
         growthProgress -= 1f;
 
-        // automatic growth can be made to cost something: check nothing is in the way first, so a stage that cannot
-        // be built is never paid for, then take the cost
         if (!paid && chargeOnAutoGrowth() && getLevel() instanceof ServerLevel serverLevel) {
             BlockPos obstruction = firstObstruction(serverLevel, stages, next);
             if (obstruction != null) {
@@ -387,7 +355,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return scaled;
     }
 
-    /** The first block in the way of the next stage's shell, or null if it is all clear. */
     private @Nullable BlockPos firstObstruction(ServerLevel level, List<GrowthStage> stages, int next) {
         IntList from = stages.get(growthStage).bounds();
         IntList to = stages.get(next).bounds();
@@ -398,7 +365,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return null;
     }
 
-    /** A burst of spores and a soft sound where the shell has just grown. */
     private void growthEffects(ServerLevel level, List<BlockPos> positions) {
         if (positions.isEmpty()) positions = List.of(getBlockPos().above());
         RandomSource random = level.getRandom();
@@ -430,7 +396,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             }
         }
 
-        // the whole footprint is clear (or, with no control hatch, will be made clear): wild growth breaks what is there
         BlockState shell = getShellBlockState();
         for (BlockPos pos : newPositions) {
             BlockState existing = level.getBlockState(pos);
@@ -501,7 +466,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
     private final List<TendrilInstance> activeTendrils = new ArrayList<>();
 
-    /** Saves the growing tendrils with the machine, so a reload does not lose them. */
     @SaveField
     private final INBTSerializable<Tag> tendrilStore = new TendrilStore();
 
@@ -548,12 +512,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         }
     }
 
-    /** Every tendril block currently standing, as packed positions, so tendrils can boost the machine. */
     private final LongOpenHashSet placedTendrils = new LongOpenHashSet();
 
     private static final int MAX_TRACKED_TENDRIL_BLOCKS = 4096;
 
-    /** Checks a few of the recorded tendril blocks are still there; ones that were broken stop counting. */
     private void validateTendrilBlocks(ServerLevel level) {
         if (placedTendrils.isEmpty()) return;
         long[] sample = placedTendrils.toLongArray();
@@ -575,7 +537,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         setChanged();
     }
 
-    /** How many tendrils the machine grows over its lifetime before it stops sending out new ones. */
     protected int getMaxMaturedTendrils() {
         return 24;
     }
@@ -584,10 +545,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return List.of();
     }
 
-    /**
-     * Anchors at the four corners of the roof, just inside the walls, for machines whose tendrils climb out of the top.
-     * They follow the shell as it grows.
-     */
     protected List<BlockPos> roofAnchors() {
         IntList b = currentStage().bounds();
         int up = b.getInt(0);
@@ -622,7 +579,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         List<BlockPos> anchors = getTendrilAnchors();
         if (anchors.isEmpty()) return;
 
-        // a tendril that has finished or been stopped retires: its blocks stay, and its slot is free again
         int before = activeTendrils.size();
         activeTendrils.removeIf(t -> t.blocked || t.progress >= t.shape.steps().size());
         if (activeTendrils.size() != before) {
@@ -643,7 +599,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         TendrilShape shape = TendrilShapeRegistry.pickWeighted(this, random);
         if (shape == null) return;
 
-        // under control, only the chosen anchors send tendrils out
         List<Integer> usable = new ArrayList<>();
         for (int i = 0; i < anchors.size(); i++) {
             if (!isControlled() || (anchorMask & (1 << i)) != 0) usable.add(i);
@@ -671,7 +626,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             return;
         }
 
-        // a tendril can stop part way (a partly grown tendril still counts), but is never held up by what it may break
         BlockState existing = level.getBlockState(target);
         if (!existing.isAir() && !existing.canBeReplaced()) {
             if (isControlled() || !overridesBlocks() || existing.getDestroySpeed(level, target) < 0) {
@@ -721,7 +675,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     @Override
     public @Nullable PhoenixSkyLayer createSkyLayer() {
         float t = getGrowthStages().isEmpty() ? 0f : growthStage / (float) Math.max(1, getGrowthStages().size() - 1);
-        // pale and green while it is young, deep teal and violet when it has grown
+        
         return new NebulaSkyLayer(
                 new float[] { 0.30f + 0.05f * t, 0.55f + 0.40f * t, 0.35f + 0.25f * t },
                 new float[] { 0.20f + 0.65f * t, 0.35f, 0.30f + 0.65f * t },
@@ -747,7 +701,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         widgets.addAll(StageTrackerWidget.of(syncManager, "growthStagePips", this::getGrowthStage,
                 getGrowthStages().size() - 1));
 
-        // what the current stage does, and what the next one costs
         widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
             GrowthStage stage = currentStage();
             if (!stage.hasBonus()) {
@@ -775,7 +728,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             }
             return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GRAY);
         })));
-        // control: only in force with a growth control hatch fitted, so without one the buttons do nothing
+        
         widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> isControlled() ?
                 net.minecraft.network.chat.Component.literal("Growth control: " + (growthPaused ? "PAUSED" : "running") +
                         "   target stage " + Math.min(targetStage, maxStage()) + "   tendrils " +

@@ -10,14 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * What the server knows about one library sound: its pitch, tempo and tags. The puzzle logic runs on this table, so it
- * never has to trust what a client heard.
- *
- * <pre>
- * {"sound": "phoenixcore:effect/chime_c", "note": "C4", "bpm": 120, "tags": ["bright"]}
- * </pre>
- */
 public record AcousticSoundEntry(ResourceLocation sound, int note, int bpm, Set<String> tags) {
 
     public static final int NO_NOTE = -1;
@@ -34,7 +26,6 @@ public record AcousticSoundEntry(ResourceLocation sound, int note, int bpm, Set<
         return new AcousticSoundEntry(sound, note, bpm, Set.copyOf(tags));
     }
 
-    /** "C4", "F#3", "Bb2" to a MIDI number (C4 = 60), or {@link #NO_NOTE} when it cannot be read. */
     public static int parseNote(@Nullable String text) {
         if (text == null || text.length() < 2) return NO_NOTE;
         int semitone = switch (Character.toUpperCase(text.charAt(0))) {

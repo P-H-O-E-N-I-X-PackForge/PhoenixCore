@@ -20,11 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * The refit screen, opened by sneaking and using a rocket: shows the rocket in hand (hull tier, wear, upgrades and what
- * they add up to) and lets you raise its hull with a Hull Refit Kit, fit upgrade modules the hull has room for, and
- * repair it, all from the kits and modules in your inventory. The server does the work; this only asks.
- */
 public class ContinuumRefitScreen extends Screen {
 
     private static final int W = 380;
@@ -103,7 +98,6 @@ public class ContinuumRefitScreen extends Screen {
                 MapUi.GOOD);
         g.fill(x + 10, sy + 4, x + W - 10, sy + 5, MapUi.PANEL_LINE);
 
-        // the hull
         int ty = sy + 14;
         g.drawString(font, "Hull", x + 10, ty + 5, MapUi.DIM);
         if (tier >= RocketStats.MAX_TIER) {
@@ -122,7 +116,6 @@ public class ContinuumRefitScreen extends Screen {
         g.fill(x + 10, ty, x + W - 10, ty + 1, MapUi.PANEL_LINE);
         ty += 9;
 
-        // the modules
         g.drawString(font, "Modules", x + 10, ty, MapUi.TITLE);
         ty += 16;
         for (String upgrade : MODULES) {
@@ -140,7 +133,6 @@ public class ContinuumRefitScreen extends Screen {
             ty += 28;
         }
 
-        // repair
         g.fill(x + 10, ty, x + W - 10, ty + 1, MapUi.PANEL_LINE);
         ty += 9;
         Item repairKit = ContinuumRegistry.REPAIR_KIT.get();
@@ -153,7 +145,6 @@ public class ContinuumRefitScreen extends Screen {
         g.pose().popPose();
     }
 
-    /** Draws text wrapped to {@code width}; returns the y just below the last line. */
     private int wrapped(GuiGraphics g, String text, int x, int y, int width, int color) {
         for (var line : font.split(Component.literal(text), width)) {
             g.drawString(font, line, x, y, color, false);

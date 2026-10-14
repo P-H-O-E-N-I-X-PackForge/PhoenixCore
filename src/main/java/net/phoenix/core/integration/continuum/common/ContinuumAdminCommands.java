@@ -252,7 +252,7 @@ final class ContinuumAdminCommands {
 
         UUID team = team(source);
         ContinuumTeamData.get(source.getServer()).force(team, target, stage);
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal(target + " is now " + stage.name().toLowerCase(Locale.ROOT) + "."),
                 false);
         return 1;
@@ -266,7 +266,7 @@ final class ContinuumAdminCommands {
         }
         UUID team = team(source);
         ContinuumTeamData.get(source.getServer()).deployProbes(team, body, probes, System.currentTimeMillis());
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("Added " + probes + " probe(s) to the outpost on " + body + "."),
                 false);
         return 1;
@@ -285,7 +285,7 @@ final class ContinuumAdminCommands {
             count++;
         }
         data.setDirty();
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         int filled = count;
         source.sendSuccess(() -> Component.literal("Filled " + filled + " outpost(s)."), false);
         return count;
@@ -301,7 +301,7 @@ final class ContinuumAdminCommands {
             count++;
         }
         data.setDirty();
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         int changed = count;
         source.sendSuccess(() -> Component.literal((damage ? "Damaged " : "Repaired ") + changed + " outpost(s)."),
                 false);
@@ -311,7 +311,7 @@ final class ContinuumAdminCommands {
     private static int clearOutposts(CommandSourceStack source) throws CommandSyntaxException {
         UUID team = team(source);
         ContinuumTeamData.get(source.getServer()).clearOutposts(team);
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("All outposts removed."), false);
         return 1;
     }
@@ -319,7 +319,7 @@ final class ContinuumAdminCommands {
     private static int reset(CommandSourceStack source) throws CommandSyntaxException {
         UUID team = team(source);
         ContinuumTeamData.get(source.getServer()).resetDiscovery(team);
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("Discovery reset to the starting state."), false);
         return 1;
     }
@@ -352,7 +352,7 @@ final class ContinuumAdminCommands {
             case SURVEY -> 0;
         };
         for (int i = 0; i < count; i++) {
-            // a rescue run goes to the stranded rocket closest to fading, which it marks as being answered
+            
             if (type == Mission.Type.RESCUE) {
                 Mission waiting = null;
                 for (Mission other : data.missions(team)) {
@@ -373,7 +373,7 @@ final class ContinuumAdminCommands {
                     new ItemStack(ContinuumRegistry.ROCKET.get()), Mission.State.ACTIVE, new java.util.ArrayList<>()));
         }
         data.setDirty();
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("Sent " + count + " " + type.label().toLowerCase(Locale.ROOT) +
                 (count == 1 ? "" : "s") + " to " + body.name() + " (" + seconds + "s, " +
                 (succeeds ? "will succeed" : "will fail") + ")."), false);
@@ -397,7 +397,7 @@ final class ContinuumAdminCommands {
         mission.distressUntil = now + seconds * 1000L;
         data.addMission(mission);
         data.setDirty();
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("A rocket is stranded at " + body.name() + "; its signal fades in " +
                 seconds + "s."), false);
         return 1;
@@ -415,7 +415,7 @@ final class ContinuumAdminCommands {
             count++;
         }
         data.setDirty();
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         int changed = count;
         source.sendSuccess(() -> Component.literal(changed + " running mission(s) will land in " + seconds + "s."),
                 false);
@@ -445,7 +445,7 @@ final class ContinuumAdminCommands {
         ContinuumTeamData data = ContinuumTeamData.get(source.getServer());
         int count = data.missions(team).size();
         for (Mission mission : List.copyOf(data.missions(team))) data.removeMission(team, mission.id);
-        ContinuumServerEvents.sendStateToTeam(source.getServer(), team);
+        ContinuumServerEvents.engageTeam(source.getServer(), team);
         source.sendSuccess(() -> Component.literal("Removed " + count + " mission(s) (rockets are gone).")
                 .withStyle(ChatFormatting.YELLOW), false);
         return count;

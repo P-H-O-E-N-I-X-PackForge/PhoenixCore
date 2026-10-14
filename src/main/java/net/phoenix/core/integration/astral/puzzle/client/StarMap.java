@@ -5,7 +5,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 
-/** Drawing shared by the calibration screen and the survey screen: a square star field with lines between stars. */
 @OnlyIn(Dist.CLIENT)
 final class StarMap {
 
@@ -47,7 +46,7 @@ final class StarMap {
     void background(GuiGraphics g) {
         g.fill(left, top, left + size, top + size, 0xFF07061A);
         g.renderOutline(left, top, size, size, 0xFF3A2F7A);
-        // a faint grid so the stars have somewhere to sit
+        
         for (int i = 0; i < StarChart.GRID; i++) {
             g.fill(px(i), top + 4, px(i) + 1, top + size - 4, 0x14FFFFFF);
             g.fill(left + 4, py(i), left + size - 4, py(i) + 1, 0x14FFFFFF);
@@ -60,7 +59,6 @@ final class StarMap {
         g.fill(x - r, y - r, x + r + 1, y + r + 1, color);
     }
 
-    /** A straight line, 2 px thick, with an arrowhead near the end when {@code arrow} is set. */
     static void line(GuiGraphics g, int x1, int y1, int x2, int y2, int color, boolean arrow) {
         int dx = x2 - x1;
         int dy = y2 - y1;
@@ -72,7 +70,7 @@ final class StarMap {
             g.fill(x, y, x + 2, y + 2, color);
         }
         if (arrow) {
-            // three bright dots just before the target star point the way
+            
             for (int k = 0; k < 3; k++) {
                 float t = 0.80f - k * 0.07f;
                 int x = x1 + Math.round(dx * t);

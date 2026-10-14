@@ -80,8 +80,24 @@ public final class ContinuumServerEvents {
 
     public static void sendState(ServerPlayer player) {
         UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
+        if (!ContinuumTeamData.get(player.server).isEngaged(team)) return;
+        sendStateAlways(player);
+    }
+
+    public static void engageAndSend(ServerPlayer player) {
+        ContinuumTeamData.get(player.server).markEngaged(TeamUtils.getTeamIdOrPlayerFallback(player.getUUID()));
+        sendStateAlways(player);
+    }
+
+    private static void sendStateAlways(ServerPlayer player) {
+        UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
         PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                 new S2CContinuumStatePacket(ContinuumStateSnapshot.build(player.server, team)));
+    }
+
+    public static void engageTeam(MinecraftServer server, UUID team) {
+        ContinuumTeamData.get(server).markEngaged(team);
+        sendStateToTeam(server, team);
     }
 
     public static void sendStateToTeam(MinecraftServer server, UUID team) {

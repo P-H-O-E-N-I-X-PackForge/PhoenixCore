@@ -7,7 +7,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** The living shell a growing machine builds around itself. It lets off the odd spore. */
 public class GrowthShellBlock extends Block {
 
     public GrowthShellBlock(Properties properties) {

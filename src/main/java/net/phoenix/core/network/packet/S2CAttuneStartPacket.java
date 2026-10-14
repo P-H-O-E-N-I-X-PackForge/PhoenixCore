@@ -11,16 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Opens the attunement game on the player's screen with the chart to play. */
 public class S2CAttuneStartPacket {
 
     private final BlockPos pos;
+    private final int difficulty;
     private final int bpm;
     private final List<Integer> laneNotes;
     private final List<AcousticChart.Beat> beats;
 
-    public S2CAttuneStartPacket(BlockPos pos, AcousticChart chart) {
+    public S2CAttuneStartPacket(BlockPos pos, int difficulty, AcousticChart chart) {
         this.pos = pos;
+        this.difficulty = difficulty;
         this.bpm = chart.bpm();
         this.laneNotes = chart.laneNotes();
         this.beats = chart.beats();
@@ -28,6 +29,7 @@ public class S2CAttuneStartPacket {
 
     public S2CAttuneStartPacket(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
+        this.difficulty = buf.readByte();
         this.bpm = buf.readVarInt();
         int lanes = buf.readVarInt();
         this.laneNotes = new ArrayList<>(lanes);
@@ -39,6 +41,7 @@ public class S2CAttuneStartPacket {
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
+        buf.writeByte(difficulty);
         buf.writeVarInt(bpm);
         buf.writeVarInt(laneNotes.size());
         for (int note : laneNotes) buf.writeVarInt(note);
@@ -52,7 +55,7 @@ public class S2CAttuneStartPacket {
     public static void handle(S2CAttuneStartPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (!FMLEnvironment.dist.isClient()) return;
-            AttuneClient.open(msg.pos, msg.bpm, msg.laneNotes, msg.beats);
+            AttuneClient.open(msg.pos, msg.difficulty, msg.bpm, msg.laneNotes, msg.beats);
         });
         ctx.get().setPacketHandled(true);
     }

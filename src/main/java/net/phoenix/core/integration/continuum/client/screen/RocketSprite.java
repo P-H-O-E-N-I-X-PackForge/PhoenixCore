@@ -2,15 +2,10 @@ package net.phoenix.core.integration.continuum.client.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-/**
- * The rocket, drawn from rows of fills so it needs no texture: an ogive nose, a straight body with a band and a
- * porthole, and fins flaring from the tail. Shared by the ascent and the landing; the caller can rotate the pose first.
- */
 final class RocketSprite {
 
     private RocketSprite() {}
 
-    /** @param tailY screen y of the tail, the rocket standing on it with the nose {@code rocketHeight} above */
     static void draw(GuiGraphics graphics, float cx, float tailY, float rocketHeight, float alpha) {
         if (alpha <= 0.01f || rocketHeight < 2.0f) return;
         int top = Math.round(tailY - rocketHeight);
@@ -20,7 +15,7 @@ final class RocketSprite {
 
         for (int i = 0; i < rows; i++) {
             float u = i / (float) rows;
-            // ogive nose, straight body, fins flaring out of the last fifth
+            
             float half = u < 0.26f ? bodyHalf * (float) Math.sin(Math.PI / 2.0 * (u / 0.26f)) : bodyHalf;
             boolean fin = u > 0.80f;
             float outer = fin ? half + bodyHalf * 0.95f * ((u - 0.80f) / 0.20f) : half;
@@ -43,13 +38,11 @@ final class RocketSprite {
                     a | light);
         }
 
-        // porthole
         int wy = top + Math.round(rocketHeight * 0.38f);
         int wr = Math.max(2, Math.round(bodyHalf * 0.42f));
         graphics.fill((int) cx - wr - 1, wy - wr - 1, (int) cx + wr + 1, wy + wr + 1, a | 0x2a3150);
         graphics.fill((int) cx - wr, wy - wr, (int) cx + wr, wy + wr, a | 0x6cc4ff);
 
-        // nozzle
         int nozzle = Math.max(2, Math.round(bodyHalf * 0.55f));
         graphics.fill((int) cx - nozzle, top + rows, (int) cx + nozzle, top + rows + Math.max(2, nozzle / 2),
                 a | 0x2a2d3a);

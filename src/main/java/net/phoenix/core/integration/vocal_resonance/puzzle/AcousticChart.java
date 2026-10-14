@@ -10,14 +10,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * The rhythm chart a Harmonic Lock plays the first time it is started. Each lane is a note, and each beat is a time
- * (in ticks from the start) and a lane.
- *
- * <pre>
- * {"bpm": 120, "lanes": ["C4", "E4", "G4", "B4"], "beats": [[20, 0], [30, 1], [40, 2], [50, 3]]}
- * </pre>
- */
 public record AcousticChart(ResourceLocation id, int bpm, List<Integer> laneNotes, List<Beat> beats) {
 
     public record Beat(int tick, int lane) {}

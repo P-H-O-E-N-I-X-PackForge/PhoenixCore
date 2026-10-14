@@ -23,11 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * A survey of one Astral machine, made with the Astral Wand. It remembers the machine's stars and which lines of its
- * constellation have been revealed so far. The Ritual Pedestal reveals more of them each time it is channelled while the
- * survey is in the player's inventory. Right-click to read it.
- */
 public class AstralSurveyItem extends Item {
 
     private static final String DIM = "Dim";
@@ -57,7 +52,6 @@ public class AstralSurveyItem extends Item {
         return stack;
     }
 
-    /** Whether this survey is of the machine at {@code pos} with that seed. */
     public static boolean isFor(ItemStack stack, Level level, BlockPos pos, long seed) {
         CompoundTag tag = stack.getTag();
         return tag != null && tag.getLong(POS) == pos.asLong() && tag.getLong(SEED) == seed &&
@@ -100,7 +94,6 @@ public class AstralSurveyItem extends Item {
         if (isSurvey(stack)) stack.getTag().putBoolean(PHASE_KNOWN, true);
     }
 
-    /** The moon phase the machine calibrates best under (0 = full moon). Only meaningful once {@link #phaseKnown}. */
     public static int favouredPhase(ItemStack stack) {
         return stack.hasTag() ? AstralCalibratedMachine.favouredPhaseOf(stack.getTag().getLong(SEED)) : 0;
     }
@@ -109,7 +102,6 @@ public class AstralSurveyItem extends Item {
         return known(stack).length >= total(stack);
     }
 
-    /** Reveals up to {@code count} more lines at random. Returns how many were revealed. */
     public static int reveal(ItemStack stack, RandomSource random, int count) {
         if (!isSurvey(stack)) return 0;
         CompoundTag tag = stack.getTag();

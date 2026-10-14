@@ -41,7 +41,6 @@ public class AstralRitualPedestalBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        // the wand channels the ritual itself (hold right-click); see AstralWandItem
         return InteractionResult.PASS;
     }
 

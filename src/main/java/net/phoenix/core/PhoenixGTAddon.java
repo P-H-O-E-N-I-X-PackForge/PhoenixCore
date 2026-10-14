@@ -56,6 +56,7 @@ public class PhoenixGTAddon implements IGTAddon {
         TeslaHatchRecipes.init(provider);
         TeslaMultiAmpHatchRecipes.init(provider);
         CustomComponetRecipes.init(provider);
+        net.phoenix.core.common.data.recipe.generated.UlvCoverRecipes.init(provider);
         WirelessChargerRecipes.init(provider);
         SourceHatchRecipes.init(provider);
         GTVaultsRecipes.init(provider);

@@ -22,11 +22,6 @@ import net.phoenix.core.integration.astral.puzzle.AstralSurveyItem;
 
 import java.util.Map;
 
-/**
- * The Ritual Pedestal. Hold the Astral Wand on it with a catalyst in your off hand and channel for a few seconds, at
- * night, with the rune ring around it. The moon helps: a full moon makes the ritual give half as much again. If you carry
- * an Astral Survey, the ritual also reveals lines of that machine's constellation.
- */
 public class AstralRitualPedestalBlockEntity extends BlockEntity {
 
     private static final Direction[] RING_OFFSETS_DIRECTIONS = { Direction.NORTH, Direction.SOUTH, Direction.EAST,
@@ -68,7 +63,6 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
         return time >= 13000 && time <= 23000;
     }
 
-    /** 1 at a full moon down to 0 at a new moon. */
     private float moonFullness() {
         if (level == null) return 0.0f;
         int phase = level.getMoonPhase();
@@ -76,7 +70,6 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
         return 1.0f - away / 4.0f;
     }
 
-    /** Whether a channel may start, telling the player why not. Server side only. */
     public boolean canBegin(Player player) {
         if (!(level instanceof ServerLevel serverLevel)) return false;
         if (!isRingFormed()) {
@@ -99,7 +92,6 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
         return true;
     }
 
-    /** Called every tick of the channel: light streams from the runes into the pedestal. */
     public void channelTick(Player player, int ticks) {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!RITUAL_TABLE.containsKey(player.getOffhandItem().getItem())) {
@@ -125,7 +117,6 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
         }
     }
 
-    /** The channel finished: pay out. Server side only. */
     public void complete(Player player) {
         if (!(level instanceof ServerLevel serverLevel)) return;
         ItemStack catalyst = player.getOffhandItem();
@@ -148,7 +139,6 @@ public class AstralRitualPedestalBlockEntity extends BlockEntity {
             dropFilament(serverLevel, filament);
         }
 
-        // lines of a carried survey's constellation
         int lines = 1 + (fullness >= 0.5f ? 1 : 0) + (amethyst ? 1 : 0);
         for (ItemStack stack : player.getInventory().items) {
             if (AstralSurveyItem.isSurvey(stack) && AstralSurveyItem.complete(stack) &&

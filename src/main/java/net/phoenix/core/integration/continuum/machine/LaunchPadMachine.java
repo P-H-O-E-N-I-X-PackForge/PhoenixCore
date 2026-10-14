@@ -113,7 +113,6 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return tier;
     }
 
-    /** The most EU the energy input hatches can hold between them. */
     public long energyCapacity() {
         long total = 0;
         for (var part : getParts()) {
@@ -148,12 +147,28 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
     }
 
     @Override
+    public void formStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.formStructure(substructureName);
+        if (isRemote() || getLevel() == null || getLevel().getServer() == null) return;
+        java.util.UUID owner = getOwnerUUID();
+        if (owner == null) return;
+        var server = getLevel().getServer();
+        var teams = net.phoenix.core.integration.continuum.common.ContinuumTeamData.get(server);
+        teams.markEngaged(net.phoenix.core.utils.TeamUtils.getTeamIdOrPlayerFallback(owner));
+        ServerPlayer builder = server.getPlayerList().getPlayer(owner);
+        if (builder != null) {
+            net.phoenix.core.integration.continuum.common.ContinuumServerEvents.engageAndSend(builder);
+        }
+    }
+
+    @Override
     public InteractionResult onUse(ExtendedUseOnContext context) {
         Player player = context.getPlayer();
         if (!isFormed() || player == null || player.isShiftKeyDown()) return super.onUse(context);
 
         Level level = context.getLevel();
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            net.phoenix.core.integration.continuum.common.ContinuumServerEvents.engageAndSend(serverPlayer);
             PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                     new S2COpenMapPacket(getBlockPos()));
         }

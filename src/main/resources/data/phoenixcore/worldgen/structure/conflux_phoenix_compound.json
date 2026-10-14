@@ -1,0 +1,9 @@
+{
+  "type": "phoenixcore:conflux_structure",
+  "biomes": "phoenixcore:phoenix",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "kind": "compound",
+  "theme": "phoenix"
+}
