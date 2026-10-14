@@ -60,6 +60,9 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         registry.addCategory(FISSION_COOLANT);
         registry.addCategory(FISSION_BREEDING);
 
+        ContinuumEmi.register(registry);
+        GrowthEmi.register(registry);
+
         registry.addCategory(ASTRAL_RITUAL);
         registerAstralRituals(registry);
 

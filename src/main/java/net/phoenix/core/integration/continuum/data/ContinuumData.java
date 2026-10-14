@@ -182,7 +182,16 @@ public final class ContinuumData {
                 GsonHelper.getAsString(lore, "surveyed", ""),
                 json.has("discipline") && !json.get("discipline").isJsonNull() ?
                         GsonHelper.getAsString(json, "discipline") : null,
-                parsePdimCost(json));
+                parsePdimCost(json), parseTransient(json));
+    }
+
+    private static @Nullable ContinuumBody.Transient parseTransient(JsonObject json) {
+        if (!json.has("transient") || !json.get("transient").isJsonObject()) return null;
+        JsonObject t = GsonHelper.getAsJsonObject(json, "transient");
+        return new ContinuumBody.Transient(Math.max(1, GsonHelper.getAsInt(t, "duration_minutes", 360)),
+                Math.max(0, GsonHelper.getAsInt(t, "cooldown_minutes", 720)),
+                GsonHelper.getAsFloat(t, "chance", 0.3f), GsonHelper.getAsFloat(t, "inner_au", 0.4f),
+                GsonHelper.getAsFloat(t, "outer_au", 4.0f));
     }
 
     private static @Nullable ContinuumBody.PdimCost parsePdimCost(JsonObject json) {

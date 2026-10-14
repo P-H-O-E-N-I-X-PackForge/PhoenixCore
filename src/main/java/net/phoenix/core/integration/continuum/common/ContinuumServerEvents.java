@@ -55,6 +55,7 @@ public final class ContinuumServerEvents {
 
         if (++upkeepCounter >= 60) {
             upkeepCounter = 0;
+            ContinuumTransients.get(event.getServer()).tick(event.getServer());
             for (UUID team : ContinuumTeamData.get(event.getServer()).settleOutposts(event.getServer(),
                     System.currentTimeMillis())) {
                 sendStateToTeam(event.getServer(), team);

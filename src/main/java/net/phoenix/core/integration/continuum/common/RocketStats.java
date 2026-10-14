@@ -66,6 +66,63 @@ public final class RocketStats {
         return Math.max(1, PhoenixConfigs.INSTANCE.continuum.outpostMaxStoredCycles);
     }
 
+    /** The best hull a rocket can be refitted to. */
+    public static final int MAX_TIER = 4;
+
+    private static final String TAG_TIER = "Tier";
+    private static final String[] TIER_NAMES = { "Mk I", "Mk II", "Mk III", "Mk IV" };
+
+    /** A rocket's hull tier, 1 to {@link #MAX_TIER}; every rocket starts at Mk I. */
+    public static int tier(ItemStack rocket) {
+        CompoundTag tag = rocket.getTag();
+        int tier = tag == null ? 0 : tag.getInt(TAG_TIER);
+        return Math.max(1, Math.min(MAX_TIER, tier == 0 ? 1 : tier));
+    }
+
+    public static void setTier(ItemStack rocket, int tier) {
+        rocket.getOrCreateTag().putInt(TAG_TIER, Math.max(1, Math.min(MAX_TIER, tier)));
+    }
+
+    public static String tierName(int tier) {
+        return TIER_NAMES[Math.max(1, Math.min(MAX_TIER, tier)) - 1];
+    }
+
+    /**
+     * The highest level of an upgrade a hull of this tier can carry. A better hull has room for more of each, and the
+     * shielding modules need a hull strong enough to carry them.
+     */
+    public static int upgradeCap(int tier, String upgrade) {
+        return switch (upgrade) {
+            case OVERDRIVE -> Math.min(5, tier + 1);
+            case REINFORCED_HULL -> Math.min(3, tier);
+            case HULL_INTERLOCK -> 1;
+            case STELLAR_SHIELD -> tier >= 2 ? 1 : 0;
+            case SINGULARITY_SHIELD -> tier >= 3 ? 1 : 0;
+            default -> 0;
+        };
+    }
+
+    /** The hull a rocket needs to work at a body: set by the body's tier. */
+    public static int requiredTier(ContinuumBody body) {
+        return switch (body.minTier().toLowerCase(java.util.Locale.ROOT)) {
+            case "mid" -> 2;
+            case "late" -> 3;
+            case "endgame" -> 4;
+            default -> 1;
+        };
+    }
+
+    /** Share of the usual wear a trip costs with this hull (reinforced plating and the tier itself). */
+    public static float wearFactor(ItemStack rocket) {
+        double hull = 1.0 - Math.min(0.75, 0.25 * level(rocket, REINFORCED_HULL));
+        return (float) Math.max(0.0, hull * (1.0 - 0.10 * (tier(rocket) - 1)));
+    }
+
+    /** Share of the usual failure risk this hull leaves. */
+    public static float failureFactor(ItemStack rocket) {
+        return 1.0f - 0.12f * (tier(rocket) - 1);
+    }
+
     public static boolean isKnownUpgrade(String id) {
         return HULL_INTERLOCK.equals(id) || OVERDRIVE.equals(id) || REINFORCED_HULL.equals(id) ||
                 STELLAR_SHIELD.equals(id) || SINGULARITY_SHIELD.equals(id);
@@ -93,7 +150,8 @@ public final class RocketStats {
     }
 
     public static float tripReduction(ItemStack rocket) {
-        return (float) Math.min(config().maxTripReduction(), 0.10 * level(rocket, OVERDRIVE));
+        return (float) Math.min(config().maxTripReduction(),
+                0.10 * level(rocket, OVERDRIVE) + 0.05 * (tier(rocket) - 1));
     }
 
     public static long tripMillis(ContinuumBody destination, ItemStack rocket) {
@@ -103,13 +161,12 @@ public final class RocketStats {
 
     public static float wearCost(ContinuumBody destination, ItemStack rocket) {
         double base = 0.05 + 0.04 * (destination.tripMinutes() / 60.0);
-        double hull = 1.0 - Math.min(0.75, 0.25 * level(rocket, REINFORCED_HULL));
-        return (float) Math.max(0.0, base * hull * config().wearMultiplier());
+        return (float) Math.max(0.0, base * wearFactor(rocket) * config().wearMultiplier());
     }
 
     public static float failureChance(ItemStack rocket, DiscoveryStage destinationStage) {
         float chance = Math.max(0.0f, wear(rocket) - SAFE_WEAR) * 1.1f;
         if (destinationStage != DiscoveryStage.SURVEYED) chance += UNSURVEYED_RISK;
-        return Math.max(0.0f, Math.min(0.9f, chance));
+        return Math.max(0.0f, Math.min(0.9f, chance * failureFactor(rocket)));
     }
 }

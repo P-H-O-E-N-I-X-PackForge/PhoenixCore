@@ -76,6 +76,7 @@ public class ContinuumTransitScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        MapUi.refreshTheme();
         long nowMillis = Util.getMillis();
         float dt = Math.min((nowMillis - lastFrame) / 1000.0f, 0.1f);
         lastFrame = nowMillis;
@@ -189,12 +190,12 @@ public class ContinuumTransitScreen extends Screen {
         }
 
         if (mission.state().finished()) {
-            graphics.fill(replayX(), 8, replayX() + 70, 22, 0xAA1a1830);
+            graphics.fill(replayX(), 8, replayX() + 70, 22, MapUi.CHROME);
             graphics.renderOutline(replayX(), 8, 70, 14, MapUi.PANEL_LINE);
             graphics.drawCenteredString(font, "Replay landing", replayX() + 35, 11, MapUi.TEXT);
         }
 
-        graphics.fill(backX(), 8, backX() + 52, 22, 0xAA1a1830);
+        graphics.fill(backX(), 8, backX() + 52, 22, MapUi.CHROME);
         graphics.renderOutline(backX(), 8, 52, 14, MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "< Map", backX() + 26, 11, MapUi.TEXT);
 
@@ -250,9 +251,15 @@ public class ContinuumTransitScreen extends Screen {
                 Math.round(mission.wearAfter() * 100.0f));
         graphics.drawCenteredString(font, wear, width / 2, barY + 12, MapUi.wearColor(mission.wearAfter()));
 
+        if (finished && mission.stranded() && !mission.rescuing()) {
+            boolean hover = MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18);
+            graphics.fill(collectX(), collectY(), collectX() + 124, collectY() + 18, hover ? 0xFF4a2c2c : 0xFF3a1d1d);
+            graphics.renderOutline(collectX(), collectY(), 124, 18, MapUi.WARN);
+            graphics.drawCenteredString(font, "Plan rescue", collectX() + 62, collectY() + 5, MapUi.TITLE);
+        }
         if (finished && !mission.stranded()) {
             boolean hover = MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18);
-            graphics.fill(collectX(), collectY(), collectX() + 124, collectY() + 18, hover ? 0xFF2c2760 : 0xFF1d1a40);
+            graphics.fill(collectX(), collectY(), collectX() + 124, collectY() + 18, hover ? MapUi.BUTTON_HOVER : MapUi.BUTTON);
             graphics.renderOutline(collectX(), collectY(), 124, 18, MapUi.FRAME);
             boolean hasHaul = mission.state() == Mission.State.SUCCESS &&
                     (extraction || mission.type() == Mission.Type.HAUL);
@@ -275,7 +282,14 @@ public class ContinuumTransitScreen extends Screen {
                 Minecraft.getInstance().setScreen(new ContinuumArrivalScreen(missionId, pad));
                 return true;
             }
-            if (mission != null && mission.state().finished() &&
+            if (mission != null && mission.stranded() && !mission.rescuing() &&
+                    MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18)) {
+                ContinuumSounds.click();
+                ContinuumMapScreen.requestRescue(mission.destination());
+                Minecraft.getInstance().setScreen(new ContinuumMapScreen(pad));
+                return true;
+            }
+            if (mission != null && mission.state().finished() && !mission.stranded() &&
                     MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18)) {
                 ContinuumSounds.click();
                 PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(missionId));

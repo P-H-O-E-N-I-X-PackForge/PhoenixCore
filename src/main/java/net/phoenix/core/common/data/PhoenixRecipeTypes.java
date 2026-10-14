@@ -34,16 +34,32 @@ public class PhoenixRecipeTypes {
     public static GTRecipeType HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeType PHOENIXWARE_FUSION_MK1;
     public static GTRecipeType DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
-    public static GTRecipeType GROWTH_RECIPES;
+    /** Crystal Garden's recipes; the botanical and vine types are Verdant Bloom's and Bloomvine Core's. */
+    public static GTRecipeType GROWTH_RECIPES, BOTANICAL_GROWTH_RECIPES, VINE_GROWTH_RECIPES;
     public static GTRecipeType ASTRAL_WEAVING_RECIPES;
     public static GTRecipeType SANCTUM_WARD_RECIPES;
 
     public static void init() {
         GROWTH_RECIPES = register("growth", MULTIBLOCK)
-                .setMaxIOSize(4, 1, 1, 1)
+                .setMaxIOSize(4, 3, 1, 1)
                 .setEUIO(IO.IN)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
                 .setSound(GTSoundEntries.MIXER);
+        BOTANICAL_GROWTH_RECIPES = register("botanical_growth", MULTIBLOCK)
+                .setMaxIOSize(4, 3, 1, 1)
+                .setEUIO(IO.IN)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .setSound(GTSoundEntries.MIXER);
+        VINE_GROWTH_RECIPES = register("vine_growth", MULTIBLOCK)
+                .setMaxIOSize(4, 3, 1, 1)
+                .setEUIO(IO.IN)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .setSound(GTSoundEntries.MIXER);
+        for (GTRecipeType growing : new GTRecipeType[] { GROWTH_RECIPES, BOTANICAL_GROWTH_RECIPES,
+                VINE_GROWTH_RECIPES }) {
+            growing.getDataInfos().add(data -> data.contains("min_growth_stage") ?
+                    "Needs growth stage " + data.getInt("min_growth_stage") : null);
+        }
 
         ASTRAL_WEAVING_RECIPES = register("astral_weaving", MULTIBLOCK)
                 .setMaxIOSize(2, 2, 2, 2)

@@ -308,6 +308,21 @@ public class PhoenixNetwork {
                 net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::new,
                 net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CHistoryPacket.class,
+                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::encode,
+                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::new,
+                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRefitPacket.class,
+                net.phoenix.core.integration.continuum.network.C2SRefitPacket::encode,
+                net.phoenix.core.integration.continuum.network.C2SRefitPacket::new,
+                net.phoenix.core.integration.continuum.network.C2SRefitPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRequestStatePacket.class, C2SRequestStatePacket::encode,
                 C2SRequestStatePacket::new, C2SRequestStatePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -317,5 +332,29 @@ public class PhoenixNetwork {
         CHANNEL.registerMessage(id++, C2SCollectMissionPacket.class, C2SCollectMissionPacket::encode,
                 C2SCollectMissionPacket::new, C2SCollectMissionPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SAttuneStartPacket.class, C2SAttuneStartPacket::encode,
+                C2SAttuneStartPacket::new, C2SAttuneStartPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SAttunePressPacket.class, C2SAttunePressPacket::encode,
+                C2SAttunePressPacket::new, C2SAttunePressPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2CAttuneStartPacket.class, S2CAttuneStartPacket::encode,
+                S2CAttuneStartPacket::new, S2CAttuneStartPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CAttuneResultPacket.class, S2CAttuneResultPacket::encode,
+                S2CAttuneResultPacket::new, S2CAttuneResultPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, C2SOpenCalibrationPacket.class, C2SOpenCalibrationPacket::encode,
+                C2SOpenCalibrationPacket::new, C2SOpenCalibrationPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SCalibratePacket.class, C2SCalibratePacket::encode,
+                C2SCalibratePacket::new, C2SCalibratePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2COpenCalibrationPacket.class, S2COpenCalibrationPacket::encode,
+                S2COpenCalibrationPacket::new, S2COpenCalibrationPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CCalibrationResultPacket.class, S2CCalibrationResultPacket::encode,
+                S2CCalibrationResultPacket::new, S2CCalibrationResultPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

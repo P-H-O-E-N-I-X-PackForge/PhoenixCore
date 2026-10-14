@@ -10,7 +10,7 @@
   "variants": {
     "": {
       "model": {
-        "parent": "phoenixcore:block/machine/part/source_hatch",
+        "parent": "phoenixcore:block/machine/part/astral_thread_hatch",
         "textures": {
           "bottom": "gtceu:block/casings/voltage/iv/bottom",
           "side": "gtceu:block/casings/voltage/iv/side",

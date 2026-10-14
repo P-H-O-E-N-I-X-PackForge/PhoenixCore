@@ -42,12 +42,13 @@ public class ContinuumArchiveScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(0, 0, width, height, 0xFF07061a);
+        MapUi.refreshTheme();
+        graphics.fill(0, 0, width, height, MapUi.SCREEN_BG);
         graphics.renderOutline(1, 1, width - 2, height - 2, MapUi.FRAME);
         graphics.drawString(font, "ARCHIVE", 10, 8, MapUi.TITLE);
         graphics.drawString(font, "Entries are written as bodies are detected and surveyed", 10, 19, MapUi.DIM);
 
-        graphics.fill(width - 62, 8, width - 10, 22, 0xAA1a1830);
+        graphics.fill(width - 62, 8, width - 10, 22, MapUi.CHROME);
         graphics.renderOutline(width - 62, 8, 52, 14, MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "< Back", width - 36, 11, MapUi.TEXT);
 

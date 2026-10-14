@@ -46,6 +46,8 @@ public class C2SSelectSoundPacket {
                 jukebox.resetAcousticData();
             }
 
+            if (!msg.soundLoc.isEmpty() && msg.streamUrl.isEmpty()) jukebox.onLibrarySoundChosen(msg.soundLoc);
+
             jukebox.selectedLibrarySound = msg.soundLoc;
             jukebox.currentStreamUrl = msg.streamUrl;
 

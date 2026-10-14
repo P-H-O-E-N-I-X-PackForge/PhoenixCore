@@ -20,9 +20,36 @@ public class GrowthBlocks {
             .properties(p -> p.strength(3.0f, 6.0f).sound(SoundType.METAL)
                     .isValidSpawn((state, level, pos, ent) -> false))
             .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
-                    prov.models().cubeAll(ctx.getName(),
-                            PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"))))
+                    prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/growth_ward"))))
             .lang("Growth Ward")
+            .item(BlockItem::new)
+            .build()
+            .register();
+
+    /** What a growing machine's shell is made of as it grows. The structure accepts it wherever it accepts casing. */
+    public static final BlockEntry<GrowthShellBlock> GROWTH_SHELL = REGISTRATE
+            .block("growth_shell", GrowthShellBlock::new)
+            .initialProperties(() -> Blocks.MOSS_BLOCK)
+            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .properties(p -> p.strength(3.0f, 6.0f).sound(SoundType.MOSS)
+                    .isValidSpawn((state, level, pos, ent) -> false))
+            .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
+                    prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/growth_shell"))))
+            .lang("Living Shell")
+            .item(BlockItem::new)
+            .build()
+            .register();
+
+    /** What tendrils are made of. */
+    public static final BlockEntry<GrowthTendrilBlock> GROWTH_TENDRIL = REGISTRATE
+            .block("growth_tendril", GrowthTendrilBlock::new)
+            .initialProperties(() -> Blocks.MOSS_BLOCK)
+            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .properties(p -> p.strength(2.0f, 4.0f).sound(SoundType.MOSS)
+                    .isValidSpawn((state, level, pos, ent) -> false))
+            .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
+                    prov.models().cubeAll(ctx.getName(), PhoenixCore.id("block/growth_tendril"))))
+            .lang("Tendril")
             .item(BlockItem::new)
             .build()
             .register();

@@ -80,7 +80,8 @@ public class ContinuumFleetScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(0, 0, width, height, 0xFF07061a);
+        MapUi.refreshTheme();
+        graphics.fill(0, 0, width, height, MapUi.SCREEN_BG);
         graphics.renderOutline(1, 1, width - 2, height - 2, MapUi.FRAME);
         graphics.drawString(font, "FLEET", 10, 8, MapUi.TITLE);
 
@@ -99,13 +100,18 @@ public class ContinuumFleetScreen extends Screen {
                         " in flight, " + landed + " landed, " + stranded + " stranded",
                 10, 19, MapUi.DIM);
 
-        graphics.fill(width - 62, 8, width - 10, 22, 0xAA1a1830);
+        graphics.fill(width - 62, 8, width - 10, 22, MapUi.CHROME);
         graphics.renderOutline(width - 62, 8, 52, 14, MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "< Back", width - 36, 11, MapUi.TEXT);
 
         boolean anyLanded = landed > 0;
+        int historyX = width - 62 - 96 - 66;
+        graphics.fill(historyX, 8, historyX + 60, 22, MapUi.CHROME);
+        graphics.renderOutline(historyX, 8, 60, 14, MapUi.PANEL_LINE);
+        graphics.drawCenteredString(font, "History", historyX + 30, 11, MapUi.TEXT);
+
         int allX = width - 62 - 96;
-        graphics.fill(allX, 8, allX + 90, 22, anyLanded ? 0xAA2c2760 : 0xAA1a1830);
+        graphics.fill(allX, 8, allX + 90, 22, anyLanded ? 0xAA2c2760 : MapUi.CHROME);
         graphics.renderOutline(allX, 8, 90, 14, anyLanded ? MapUi.FRAME : MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, "Collect all", allX + 45, 11, anyLanded ? MapUi.TITLE : MapUi.DIM);
 
@@ -140,7 +146,7 @@ public class ContinuumFleetScreen extends Screen {
             int color;
             if (mission.stranded()) {
                 status = mission.rescuing() ? "STRANDED - rescue en route" :
-                        "STRANDED  " + ContinuumMissions.durationText(mission.distressUntil() - now);
+                        "STRANDED - click to rescue  " + ContinuumMissions.durationText(mission.distressUntil() - now);
                 color = MapUi.WARN;
             } else if (mission.state() == Mission.State.SUCCESS) {
                 status = "Landed - click to collect";
@@ -162,7 +168,7 @@ public class ContinuumFleetScreen extends Screen {
                     MapUi.wearColor(mission.wearAfter()));
 
             rows.add(new Object[] { mission.id(), mission.state().finished() && !mission.stranded(), x + 3, ry, w - 6,
-                    ROW - 3 });
+                    ROW - 3, mission.stranded() && !mission.rescuing(), mission.destination() });
         }
         graphics.disableScissor();
     }
@@ -203,6 +209,11 @@ public class ContinuumFleetScreen extends Screen {
                 onClose();
                 return true;
             }
+            if (MapUi.inside(mouseX, mouseY, width - 62 - 96 - 66, 8, 60, 14)) {
+                ContinuumSounds.click();
+                Minecraft.getInstance().setScreen(new ContinuumHistoryScreen(this));
+                return true;
+            }
             if (MapUi.inside(mouseX, mouseY, width - 62 - 96, 8, 90, 14)) {
                 ContinuumSounds.click();
                 PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectAllPacket());
@@ -212,7 +223,11 @@ public class ContinuumFleetScreen extends Screen {
                 if (!MapUi.inside(mouseX, mouseY, (int) row[2], (int) row[3], (int) row[4], (int) row[5])) continue;
                 ContinuumSounds.click();
                 var id = (java.util.UUID) row[0];
-                if ((boolean) row[1]) {
+                if ((boolean) row[6]) {
+                    // a stranded rocket: back to the map, on its body, with the rescue planner open
+                    ContinuumMapScreen.requestRescue((ResourceLocation) row[7]);
+                    Minecraft.getInstance().setScreen(parent);
+                } else if ((boolean) row[1]) {
                     PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(id));
                 } else {
                     Minecraft.getInstance().setScreen(new ContinuumTransitScreen(id, pad));

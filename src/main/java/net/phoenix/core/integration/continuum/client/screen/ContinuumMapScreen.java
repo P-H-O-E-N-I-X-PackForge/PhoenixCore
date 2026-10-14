@@ -80,12 +80,12 @@ public class ContinuumMapScreen extends Screen {
     private static final float IN_SECONDS = 0.6f;
     private static final float DAYS_PER_SECOND = 4.0f;
 
-    private static final int FRAME = 0xFF7a5cff;
-    private static final int PANEL_BG = 0xD00b0a18;
-    private static final int PANEL_LINE = 0xFF3a2f7a;
-    private static final int TITLE = 0xFFE8D8FF;
-    private static final int TEXT = 0xFFB8B0D8;
-    private static final int DIM = 0xFF7a7498;
+    private static int FRAME = 0xFF7a5cff;
+    private static int PANEL_BG = 0xD00b0a18;
+    private static int PANEL_LINE = 0xFF3a2f7a;
+    private static int TITLE = 0xFFE8D8FF;
+    private static int TEXT = 0xFFB8B0D8;
+    private static int DIM = 0xFF7a7498;
 
     private final MapCamera galaxyCam = new MapCamera(15, 24, GALAXY_DISTANCE, 7, 60);
     private final MapCamera systemCam = new MapCamera(20, 38, SYSTEM_DISTANCE, 6, 30);
@@ -157,9 +157,41 @@ public class ContinuumMapScreen extends Screen {
         }
     }
 
+    private static @Nullable ResourceLocation pendingRescue;
+
+    /** Asks the next map screen that opens to jump to a stranded rocket's body and plan its rescue. */
+    public static void requestRescue(ResourceLocation body) {
+        pendingRescue = body;
+    }
+
+    /** Goes to a body and opens the planner on the rescue run (or says why it cannot). */
+    private void jumpToRescue(ResourceLocation bodyId) {
+        ContinuumBody target = ContinuumData.body(bodyId);
+        if (target == null) return;
+        ContinuumSystem owner = ContinuumData.system(target.system());
+        if (owner != null) {
+            zoomDirection = 1;
+            enterSystem(owner);
+            enterBody(target);
+        }
+        if (pad == null) {
+            flash("Open the map from a Launch Complex to send a rescue run.");
+            return;
+        }
+        var outpost = ContinuumClientState.outpost(target.id());
+        planner.open(ContinuumClientState.stage(target.id()),
+                outpost != null && outpost.readyAt(ContinuumClientState.now()) > 0,
+                outpost != null && outpost.damaged(), true);
+    }
+
     @Override
     public void tick() {
         super.tick();
+        if (pendingRescue != null) {
+            ResourceLocation wanted = pendingRescue;
+            pendingRescue = null;
+            jumpToRescue(wanted);
+        }
         if (++stockTimer >= 20) {
             stockTimer = 0;
             requestPadStock();
@@ -194,6 +226,13 @@ public class ContinuumMapScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        MapUi.refreshTheme();
+        FRAME = MapUi.FRAME;
+        PANEL_BG = MapUi.PANEL_BG;
+        PANEL_LINE = MapUi.PANEL_LINE;
+        TITLE = MapUi.TITLE;
+        TEXT = MapUi.TEXT;
+        DIM = MapUi.DIM;
         long now = Util.getMillis();
         float dt = Math.min((now - lastFrame) / 1000.0f, 0.1f);
         lastFrame = now;
@@ -405,6 +444,15 @@ public class ContinuumMapScreen extends Screen {
             }
             float angle = orbitAngle(b);
             float radius = orbitWorldRadius(b.orbitAu());
+            // a comet falls in from the edge of the system over the time it is there
+            var window = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
+            if (window != null) {
+                float progress = Math.max(0.0f, Math.min(1.0f, (ContinuumClientState.now() - window[0]) /
+                        (float) Math.max(1L, window[1] - window[0])));
+                radius = orbitWorldRadius(b.transientInfo().outerAu() +
+                        (b.transientInfo().innerAu() - b.transientInfo().outerAu()) * progress);
+                angle = (float) (2.0 * Math.PI * (b.phase() + 0.55 * progress));
+            }
             bodyPositions.put(b.id(), new Vector3f((float) Math.cos(angle) * radius, 0.0f,
                     (float) Math.sin(angle) * radius));
         }
@@ -599,11 +647,27 @@ public class ContinuumMapScreen extends Screen {
             String tag = outpostView == null ? "" : outpostView.damaged() ? "  [outpost - DAMAGED]" :
                     outpostView.upkeepPerCycle() > 0 && !outpostView.powered() ? "  [outpost - no power]" :
                             "  [outpost]";
+            var cometWindow = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
+            if (cometWindow != null) {
+                tag += "  [comet - leaves in " + MapUi.duration(cometWindow[1] - ContinuumClientState.now()) + "]";
+                // the tail streams away from the star
+                if (star != null) {
+                    float dx = p[0] - star[0];
+                    float dy = p[1] - star[1];
+                    float length = Math.max(1.0f, (float) Math.sqrt(dx * dx + dy * dy));
+                    dx /= length;
+                    dy /= length;
+                    GlowRenderer.Batch tail = GlowRenderer.batch(graphics);
+                    for (int i = 0; i < 10; i++) {
+                        tail.glow(p[0] + dx * i * (px + 4.0f) * 1.6f, p[1] + dy * i * (px + 4.0f) * 1.6f,
+                                (px + 8.0f) * (1.7f - i * 0.15f), i < 2 ? 0xe8f6ff : 0x7ab8ff, 0.55f * (1.0f - i / 11.0f));
+                    }
+                    tail.draw();
+                }
+            }
             graphics.drawCenteredString(font, b.name() + tag, (int) p[0], (int) (p[1] + px + 6),
                     stage == DiscoveryStage.SURVEYED ? TITLE : DIM);
-            if (hasOutput(b.id())) {
-                drawOutputIcon(graphics, p[0] - font.width(b.name() + tag) / 2.0f - 10.0f, p[1] + px + 10.0f);
-            }
+            drawBadges(graphics, b.id(), p[0] - font.width(b.name() + tag) / 2.0f - 10.0f, p[1] + px + 10.0f);
         }
 
         if (hovered != null && hovered.body() != null) tooltipBody(graphics, hovered.body(), mouseX, mouseY);
@@ -620,6 +684,33 @@ public class ContinuumMapScreen extends Screen {
             }
         }
         return false;
+    }
+
+    /** Whether a rocket of the team's is stranded at this body and nobody is on the way yet. */
+    private static boolean hasDistress(net.minecraft.resources.ResourceLocation bodyId) {
+        for (var mission : ContinuumClientState.missions()) {
+            if (mission.destination().equals(bodyId) && mission.stranded() && !mission.rescuing()) return true;
+        }
+        return false;
+    }
+
+    /** The status icons for a body: a red distress beacon when a rocket is stranded, a gold crate for output waiting. */
+    private void drawBadges(GuiGraphics graphics, net.minecraft.resources.ResourceLocation bodyId, float cx, float cy) {
+        boolean output = hasOutput(bodyId);
+        if (output) drawOutputIcon(graphics, cx, cy);
+        if (hasDistress(bodyId)) drawDistressIcon(graphics, output ? cx - 15.0f : cx, cy);
+    }
+
+    /** A red pulsing square with an exclamation mark: a rocket here needs rescuing. */
+    private void drawDistressIcon(GuiGraphics graphics, float cx, float cy) {
+        int x = Math.round(cx);
+        int y = Math.round(cy);
+        float pulse = 0.55f + 0.45f * (float) Math.abs(Math.sin(clock * 4.0));
+        int a = ((int) (pulse * 255.0f)) << 24;
+        graphics.fill(x - 6, y - 6, x + 6, y + 6, a | 0x300808);
+        graphics.fill(x - 5, y - 5, x + 5, y + 5, a | 0xe04040);
+        graphics.fill(x - 1, y - 4, x + 1, y + 1, 0xFFFFFFFF);
+        graphics.fill(x - 1, y + 2, x + 1, y + 4, 0xFFFFFFFF);
     }
 
     private void drawOutputIcon(GuiGraphics graphics, float cx, float cy) {
@@ -653,9 +744,9 @@ public class ContinuumMapScreen extends Screen {
             glows.draw();
         }
 
-        if (center != null && hasOutput(body.id())) {
+        if (center != null) {
             float px = 1.0f * focal / center[2];
-            drawOutputIcon(graphics, center[0] + px + 14.0f, center[1] - px - 14.0f);
+            drawBadges(graphics, body.id(), center[0] + px + 14.0f, center[1] - px - 14.0f);
         }
 
         List<Object[]> labelled = new ArrayList<>();
@@ -684,8 +775,7 @@ public class ContinuumMapScreen extends Screen {
             float[] p = (float[]) entry[1];
             graphics.drawCenteredString(font, moon.name(), (int) p[0], (int) p[1] + 12,
                     entry[2] == DiscoveryStage.SURVEYED ? TITLE : DIM);
-            if (hasOutput(moon.id()))
-                drawOutputIcon(graphics, p[0] - font.width(moon.name()) / 2.0f - 10.0f, p[1] + 16.0f);
+            drawBadges(graphics, moon.id(), p[0] - font.width(moon.name()) / 2.0f - 10.0f, p[1] + 16.0f);
         }
 
         if (!planner.isOpen()) drawBodyPanel(graphics, body);
@@ -854,6 +944,11 @@ public class ContinuumMapScreen extends Screen {
             }
         }
 
+        var passingWindow = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
+        if (passingWindow != null) {
+            ty = stat(graphics, "Passing", "leaves in " +
+                    MapUi.duration(passingWindow[1] - ContinuumClientState.now()), x + 7, ty);
+        }
         int stationLevel = ContinuumClientState.stationLevel(b.id());
         if (stationLevel > 0) {
             ty = stat(graphics, "Station", "Level " + stationLevel + " of " +
@@ -867,7 +962,7 @@ public class ContinuumMapScreen extends Screen {
     private void drawPdimButton(GuiGraphics graphics, ContinuumBody b, DiscoveryStage stage, int x, int y, int w) {
         pdimRect = null;
         travelRect = null;
-        boolean enabled = stage == DiscoveryStage.SURVEYED;
+        boolean enabled = stage == DiscoveryStage.SURVEYED && b.transientInfo() == null;
         int bx = x + 7;
         int bw = w - 14;
 
@@ -876,24 +971,24 @@ public class ContinuumMapScreen extends Screen {
             boolean inConflux = Minecraft.getInstance().level != null &&
                     net.phoenix.core.integration.continuum.common.ConfluxTravel
                             .isConfluxDimension(Minecraft.getInstance().level.dimension());
-            graphics.fill(bx, y, bx + half, y + 18, enabled ? 0xFF2f4a2a : 0xFF1a1830);
-            graphics.renderOutline(bx, y, half, 18, enabled ? 0xFF6ad06a : 0xFF2a2548);
+            graphics.fill(bx, y, bx + half, y + 18, enabled ? 0xFF2f4a2a : MapUi.BUTTON_OFF);
+            graphics.renderOutline(bx, y, half, 18, enabled ? 0xFF6ad06a : MapUi.BUTTON_LINE);
             graphics.drawCenteredString(font, inConflux ? "Return" : "Travel there", bx + half / 2, y + 5,
-                    enabled ? TITLE : 0xFF565070);
+                    enabled ? TITLE : MapUi.DIM);
             if (enabled) travelRect = new int[] { bx, y, half, 18 };
 
             int rx = bx + half + 4;
             int rw = bw - half - 4;
-            graphics.fill(rx, y, rx + rw, y + 18, enabled ? 0xFF1f2f4a : 0xFF1a1830);
-            graphics.renderOutline(rx, y, rw, 18, enabled ? 0xFF4aa0d0 : 0xFF2a2548);
-            graphics.drawCenteredString(font, "Personal dim", rx + rw / 2, y + 5, enabled ? TITLE : 0xFF565070);
+            graphics.fill(rx, y, rx + rw, y + 18, enabled ? 0xFF1f2f4a : MapUi.BUTTON_OFF);
+            graphics.renderOutline(rx, y, rw, 18, enabled ? 0xFF4aa0d0 : MapUi.BUTTON_LINE);
+            graphics.drawCenteredString(font, "Personal dim", rx + rw / 2, y + 5, enabled ? TITLE : MapUi.DIM);
             if (enabled) pdimRect = new int[] { rx, y, rw, 18 };
             return;
         }
 
-        graphics.fill(bx, y, bx + bw, y + 18, enabled ? 0xFF1f2f4a : 0xFF1a1830);
-        graphics.renderOutline(bx, y, bw, 18, enabled ? 0xFF4aa0d0 : 0xFF2a2548);
-        graphics.drawCenteredString(font, "Personal dimension", bx + bw / 2, y + 5, enabled ? TITLE : 0xFF565070);
+        graphics.fill(bx, y, bx + bw, y + 18, enabled ? 0xFF1f2f4a : MapUi.BUTTON_OFF);
+        graphics.renderOutline(bx, y, bw, 18, enabled ? 0xFF4aa0d0 : MapUi.BUTTON_LINE);
+        graphics.drawCenteredString(font, "Personal dimension", bx + bw / 2, y + 5, enabled ? TITLE : MapUi.DIM);
         if (enabled) pdimRect = new int[] { bx, y, bw, 18 };
     }
 
@@ -904,11 +999,11 @@ public class ContinuumMapScreen extends Screen {
         boolean enabled = pad != null && stage != DiscoveryStage.UNKNOWN;
         int bx = x + 7;
         int bw = w - 14;
-        graphics.fill(bx, y, bx + bw, y + 18, enabled ? 0xFF2c2760 : 0xFF1a1830);
-        graphics.renderOutline(bx, y, bw, 18, enabled ? FRAME : 0xFF2a2548);
+        graphics.fill(bx, y, bx + bw, y + 18, enabled ? MapUi.BUTTON_HOVER : MapUi.BUTTON_OFF);
+        graphics.renderOutline(bx, y, bw, 18, enabled ? FRAME : MapUi.BUTTON_LINE);
         graphics.drawCenteredString(font, pad == null ? "Plan mission  (view only)" : "Plan mission", bx + bw / 2,
                 y + 5,
-                enabled ? TITLE : 0xFF565070);
+                enabled ? TITLE : MapUi.DIM);
         if (enabled) planRect = new int[] { bx, y, bw, 18 };
     }
 
@@ -1125,6 +1220,7 @@ public class ContinuumMapScreen extends Screen {
         return ContinuumClientState.stage(b.id());
     }
 
+    /** The team's missions, finished ones first: click a running mission to watch it, a landed one to collect. */
     private void drawMissions(GuiGraphics graphics, int mouseX, int mouseY) {
         missionRows.clear();
         List<ContinuumStateSnapshot.MissionView> list = new ArrayList<>(ContinuumClientState.missions());
@@ -1133,31 +1229,41 @@ public class ContinuumMapScreen extends Screen {
         list.sort(Comparator.comparing((ContinuumStateSnapshot.MissionView m) -> !m.state().finished())
                 .thenComparing(ContinuumStateSnapshot.MissionView::endMillis));
 
-        int rows = Math.min(5, list.size());
-        int w = 214;
         int rowHeight = 24;
+        int w = 214;
+        // as many rows as the window has room for, at a scale that keeps the panel to its corner of the screen
+        float s = Math.max(0.5f, Math.min(1.0f, Math.min((width * 0.42f) / w, (height * 0.45f) / (16 + 3 * rowHeight))));
+        int fit = Math.max(1, (int) ((height * 0.5f / s - 16) / rowHeight));
+        int rows = Math.min(Math.min(5, fit), list.size());
         int h = 16 + rows * rowHeight;
-        int x = 10;
-        int y = height - 30 - h;
+        int px = 10;
+        int py = height - 30 - Math.round(h * s);
         long now = ContinuumClientState.now();
 
-        panel(graphics, x, y, w, h);
-        graphics.drawString(font, "Missions  (" + list.size() + ")", x + 6, y + 5, TITLE);
+        // everything below is laid out in the panel's own space, then scaled and moved into the corner
+        double mx = (mouseX - px) / s;
+        double my = (mouseY - py) / s;
+        graphics.pose().pushPose();
+        graphics.pose().translate(px, py, 0.0f);
+        graphics.pose().scale(s, s, 1.0f);
+
+        panel(graphics, 0, 0, w, h);
+        graphics.drawString(font, "Missions  (" + list.size() + ")", 6, 5, TITLE);
 
         for (int i = 0; i < rows; i++) {
             ContinuumStateSnapshot.MissionView mission = list.get(i);
             ContinuumBody destination = ContinuumData.body(mission.destination());
             String name = destination != null ? destination.name() : mission.destination().getPath();
 
-            int ry = y + 16 + i * rowHeight;
-            boolean hover = MapUi.inside(mouseX, mouseY, x + 3, ry, w - 6, rowHeight - 2);
-            if (hover) graphics.fill(x + 3, ry, x + w - 3, ry + rowHeight - 2, 0x44ffffff);
+            int ry = 16 + i * rowHeight;
+            boolean hover = MapUi.inside(mx, my, 3, ry, w - 6, rowHeight - 2);
+            if (hover) graphics.fill(3, ry, w - 3, ry + rowHeight - 2, 0x44ffffff);
 
             String status;
             int color;
             if (mission.stranded()) {
                 status = mission.rescuing() ? "Stranded - rescue en route" :
-                        "STRANDED  " + net.phoenix.core.integration.continuum.common.ContinuumMissions
+                        "STRANDED - click to rescue  " + net.phoenix.core.integration.continuum.common.ContinuumMissions
                                 .durationText(mission.distressUntil() - now);
                 color = MapUi.WARN;
             } else if (mission.state() == Mission.State.SUCCESS) {
@@ -1179,15 +1285,22 @@ public class ContinuumMapScreen extends Screen {
                 case RESCUE -> name + "  (rescue)";
                 case STATION -> name + "  (station)";
             };
-            graphics.drawString(font, label, x + 7, ry + 2, TITLE);
-            graphics.drawString(font, status, x + w - 7 - font.width(status), ry + 2, color);
-            MapUi.bar(graphics, x + 7, ry + 14, w - 14, 4, mission.progress(now),
+            // a long status leaves the label less room: trim the label rather than let the two run together
+            int statusW = font.width(status);
+            label = font.plainSubstrByWidth(label, Math.max(20, w - 14 - statusW - 8));
+            graphics.drawString(font, label, 7, ry + 2, TITLE);
+            graphics.drawString(font, status, w - 7 - statusW, ry + 2, color);
+            MapUi.bar(graphics, 7, ry + 14, w - 14, 4, mission.progress(now),
                     mission.state() == Mission.State.FAILED ? MapUi.BAD : mission.state().finished() ? MapUi.GOOD :
                             FRAME);
 
-            missionRows.add(new Object[] { mission.id(), mission.state().finished() && !mission.stranded(), x + 3, ry,
-                    w - 6, rowHeight - 2 });
+            // clicks are tested in screen space
+            missionRows.add(new Object[] { mission.id(), mission.state().finished() && !mission.stranded(),
+                    px + Math.round(3 * s), py + Math.round(ry * s), Math.round((w - 6) * s),
+                    Math.round((rowHeight - 2) * s), mission.stranded() && !mission.rescuing(),
+                    mission.destination() });
         }
+        graphics.pose().popPose();
     }
 
     private int stat(GuiGraphics graphics, String label, String value, int x, int y) {
@@ -1209,25 +1322,29 @@ public class ContinuumMapScreen extends Screen {
 
         if (!planner.isOpen()) {
             if (level != Level.GALAXY) {
-                graphics.fill(width - 62, 8, width - 10, 22, 0xAA1a1830);
+                graphics.fill(width - 62, 8, width - 10, 22, MapUi.CHROME);
                 graphics.renderOutline(width - 62, 8, 52, 14, PANEL_LINE);
                 graphics.drawCenteredString(font, "< Back", width - 36, 11, TEXT);
             }
             int archiveX = level != Level.GALAXY ? width - 126 : width - 62;
-            graphics.fill(archiveX, 8, archiveX + 52, 22, 0xAA1a1830);
+            graphics.fill(archiveX, 8, archiveX + 52, 22, MapUi.CHROME);
             graphics.renderOutline(archiveX, 8, 52, 14, PANEL_LINE);
             graphics.drawCenteredString(font, "Archive", archiveX + 26, 11, TEXT);
             int fleetX = archiveX - 58;
-            graphics.fill(fleetX, 8, fleetX + 52, 22, 0xAA1a1830);
+            graphics.fill(fleetX, 8, fleetX + 52, 22, MapUi.CHROME);
             graphics.renderOutline(fleetX, 8, 52, 14, PANEL_LINE);
             graphics.drawCenteredString(font, "Fleet", fleetX + 26, 11, TEXT);
             if (level != Level.GALAXY) {
                 int orbitX = fleetX - 82;
-                graphics.fill(orbitX, 8, orbitX + 76, 22, orbitsPaused ? 0xAA3a3380 : 0xAA1a1830);
+                graphics.fill(orbitX, 8, orbitX + 76, 22, orbitsPaused ? 0xAA3a3380 : MapUi.CHROME);
                 graphics.renderOutline(orbitX, 8, 76, 14, orbitsPaused ? FRAME : PANEL_LINE);
                 graphics.drawCenteredString(font, orbitsPaused ? "Orbits: held" : "Orbits: moving", orbitX + 38, 11,
                         orbitsPaused ? TITLE : TEXT);
             }
+            int themeX = (level != Level.GALAXY ? fleetX - 82 : fleetX) - 58;
+            graphics.fill(themeX, 8, themeX + 52, 22, MapUi.CHROME);
+            graphics.renderOutline(themeX, 8, 52, 14, PANEL_LINE);
+            graphics.drawCenteredString(font, "Theme", themeX + 26, 11, TEXT);
         }
 
         String hint = "drag: rotate   scroll: zoom   click: open   right-click / Esc: back   [Q] quality: " +
@@ -1410,6 +1527,11 @@ public class ContinuumMapScreen extends Screen {
                 } else if (level != Level.GALAXY && MapUi.inside(mouseX, mouseY, archiveX - 58 - 82, 8, 76, 14)) {
                     ContinuumSounds.click();
                     orbitsPaused = !orbitsPaused;
+                } else if (MapUi.inside(mouseX, mouseY, (level != Level.GALAXY ? archiveX - 58 - 82 : archiveX - 58) - 58,
+                        8, 52, 14)) {
+                    ContinuumSounds.click();
+                    Minecraft.getInstance().setScreen(
+                            new net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen(this, "Continuum"));
                 } else if (level != Level.GALAXY && mouseX >= width - 62 && mouseX <= width - 10 && mouseY >= 8 &&
                         mouseY <= 22) {
                             ContinuumSounds.click();
@@ -1467,7 +1589,10 @@ public class ContinuumMapScreen extends Screen {
         for (Object[] row : missionRows) {
             if (MapUi.inside(mouseX, mouseY, (int) row[2], (int) row[3], (int) row[4], (int) row[5])) {
                 UUID id = (UUID) row[0];
-                if ((boolean) row[1]) {
+                if (row.length > 6 && (boolean) row[6]) {
+                    // a stranded rocket: take the player straight to its body with the rescue planner open
+                    jumpToRescue((ResourceLocation) row[7]);
+                } else if ((boolean) row[1]) {
                     PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(id));
                 } else {
                     Minecraft.getInstance().setScreen(new ContinuumTransitScreen(id, pad));
@@ -1511,6 +1636,10 @@ public class ContinuumMapScreen extends Screen {
         }
         if (keyCode == InputConstants.KEY_P) {
             orbitsPaused = !orbitsPaused;
+            return true;
+        }
+        if (keyCode == InputConstants.KEY_H) {
+            Minecraft.getInstance().setScreen(new ContinuumHistoryScreen(this));
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

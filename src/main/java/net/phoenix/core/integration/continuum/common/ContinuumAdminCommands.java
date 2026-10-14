@@ -38,6 +38,10 @@ final class ContinuumAdminCommands {
                 .then(literal("rocket")
                         .then(literal("give").executes(ctx -> giveRocket(ctx.getSource())))
                         .then(literal("repair").executes(ctx -> setWear(ctx.getSource(), 0.0f)))
+                        .then(literal("tier")
+                                .then(argument("tier", IntegerArgumentType.integer(1, RocketStats.MAX_TIER))
+                                        .executes(ctx -> setTier(ctx.getSource(),
+                                                IntegerArgumentType.getInteger(ctx, "tier")))))
                         .then(literal("wear")
                                 .then(argument("value", FloatArgumentType.floatArg(0.0f, 1.0f))
                                         .executes(ctx -> setWear(ctx.getSource(),
@@ -79,6 +83,25 @@ final class ContinuumAdminCommands {
                         .then(literal("damage").executes(ctx -> damageOutposts(ctx.getSource(), true)))
                         .then(literal("repair").executes(ctx -> damageOutposts(ctx.getSource(), false)))
                         .then(literal("clear").executes(ctx -> clearOutposts(ctx.getSource()))))
+                .then(literal("comet")
+                        .then(literal("spawn")
+                                .then(argument("body", ResourceLocationArgument.id())
+                                        .suggests((ctx, builder) -> {
+                                            ContinuumData.allBodies().stream()
+                                                    .filter(b -> b.transientInfo() != null)
+                                                    .forEach(b -> builder.suggest(b.id().toString()));
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(ctx -> cometSpawn(ctx.getSource(),
+                                                ResourceLocationArgument.getId(ctx, "body"), -1))
+                                        .then(argument("minutes", IntegerArgumentType.integer(1, 10080))
+                                                .executes(ctx -> cometSpawn(ctx.getSource(),
+                                                        ResourceLocationArgument.getId(ctx, "body"),
+                                                        IntegerArgumentType.getInteger(ctx, "minutes"))))))
+                        .then(literal("clear")
+                                .then(argument("body", ResourceLocationArgument.id())
+                                        .executes(ctx -> cometClear(ctx.getSource(),
+                                                ResourceLocationArgument.getId(ctx, "body"))))))
                 .then(literal("reset").executes(ctx -> reset(ctx.getSource())))
                 .then(literal("missions")
                         .then(literal("send")
@@ -161,6 +184,36 @@ final class ContinuumAdminCommands {
             return ItemStack.EMPTY;
         }
         return stack;
+    }
+
+    private static int cometSpawn(CommandSourceStack source, ResourceLocation bodyId, int minutes) {
+        var body = ContinuumData.body(bodyId);
+        if (body == null || body.transientInfo() == null) {
+            source.sendFailure(Component.literal(bodyId + " is not a comet."));
+            return 0;
+        }
+        int length = minutes > 0 ? minutes : body.transientInfo().durationMinutes();
+        ContinuumTransients.get(source.getServer()).open(source.getServer(), body, length);
+        return 1;
+    }
+
+    private static int cometClear(CommandSourceStack source, ResourceLocation bodyId) {
+        var body = ContinuumData.body(bodyId);
+        if (body == null || body.transientInfo() == null) {
+            source.sendFailure(Component.literal(bodyId + " is not a comet."));
+            return 0;
+        }
+        ContinuumTransients.get(source.getServer()).close(source.getServer(), body);
+        source.sendSuccess(() -> Component.literal(body.name() + " has left."), false);
+        return 1;
+    }
+
+    private static int setTier(CommandSourceStack source, int tier) throws CommandSyntaxException {
+        ItemStack rocket = heldRocket(source);
+        if (rocket.isEmpty()) return 0;
+        RocketStats.setTier(rocket, tier);
+        source.sendSuccess(() -> Component.literal("Rocket hull set to " + RocketStats.tierName(tier) + "."), false);
+        return 1;
     }
 
     private static int setWear(CommandSourceStack source, float wear) throws CommandSyntaxException {
@@ -299,6 +352,17 @@ final class ContinuumAdminCommands {
             case SURVEY -> 0;
         };
         for (int i = 0; i < count; i++) {
+            // a rescue run goes to the stranded rocket closest to fading, which it marks as being answered
+            if (type == Mission.Type.RESCUE) {
+                Mission waiting = null;
+                for (Mission other : data.missions(team)) {
+                    if (other.stranded() && !other.rescuing && other.destination.equals(bodyId) &&
+                            (waiting == null || other.distressUntil < waiting.distressUntil)) {
+                        waiting = other;
+                    }
+                }
+                if (waiting != null) waiting.rescuing = true;
+            }
             java.util.List<ItemStack> rewards = new java.util.ArrayList<>();
             if (succeeds && (type == Mission.Type.EXTRACT || type == Mission.Type.HAUL)) {
                 rewards = ContinuumMissions.rollRewards(team, body, type == Mission.Type.HAUL ? 8 : probes,

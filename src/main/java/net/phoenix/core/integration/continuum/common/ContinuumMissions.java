@@ -205,6 +205,13 @@ public final class ContinuumMissions {
         ContinuumBody body = ContinuumData.body(destinationId);
         if (body == null) return "That destination does not exist.";
 
+        long[] passing = null;
+        if (body.transientInfo() != null) {
+            if (type != Mission.Type.EXTRACT) return "Only extraction runs can catch a passing comet.";
+            passing = ContinuumTransients.get(server).window(destinationId, System.currentTimeMillis());
+            if (passing == null) return body.name() + " has passed beyond reach.";
+        }
+
         LaunchPadMachine complex = MetaMachine.getMachine(level, pad) instanceof LaunchPadMachine machine ? machine :
                 null;
         long launchEnergy = 0;
@@ -219,6 +226,8 @@ public final class ContinuumMissions {
             }
 
             launchEnergy = GTValues.V[Math.max(0, Math.min(padTier, GTValues.V.length - 1))] * cfg.launchEnergyAmpTicks;
+            // the hatches can only hold so much: never ask for more than they can, whatever the config says
+            launchEnergy = Math.min(launchEnergy, complex.energyCapacity() * 9 / 10);
             if (complex.storedEnergy() < launchEnergy) {
                 return "The pad needs " + launchEnergy + " EU stored in its energy hatches to launch (it has " +
                         complex.storedEnergy() + ").";
@@ -326,6 +335,12 @@ public final class ContinuumMissions {
         ItemStack rocket = stock.peekRocket();
         if (rocket.isEmpty()) return "You need a rocket " + stock.place() + ".";
 
+        if (type != Mission.Type.SURVEY && cfg.rocketTierGating &&
+                RocketStats.tier(rocket) < RocketStats.requiredTier(body)) {
+            return body.name() + " needs a " + RocketStats.tierName(RocketStats.requiredTier(body)) +
+                    " hull, but this rocket is " + RocketStats.tierName(RocketStats.tier(rocket)) +
+                    ". Refit it (sneak + use the rocket).";
+        }
         String shield = RocketStats.requiredShield(body);
         if (shield != null && type != Mission.Type.SURVEY && RocketStats.level(rocket, shield) <= 0) {
             return "The rocket cannot work that close to " + body.name() + ". Fit a " + RocketStats.shieldName(shield) +
@@ -333,6 +348,14 @@ public final class ContinuumMissions {
         }
         if (RocketStats.interlockRefuses(rocket)) {
             return "Hull interlock engaged: the rocket is too worn to launch. Repair it first.";
+        }
+        if (passing != null) {
+            long arrives = now + Math.round(RocketStats.tripMillis(body, rocket) * Stations.tripFactor(stationLevel) *
+                    affinity.trip());
+            if (arrives > passing[1]) {
+                return body.name() + " will be gone before you arrive (it leaves in " +
+                        durationText(passing[1] - now) + ").";
+            }
         }
         if (stranded != null) {
             long fades = stranded.distressUntil - now;
@@ -397,6 +420,9 @@ public final class ContinuumMissions {
             mission.padPos = pad.asLong();
         }
         data.addMission(mission);
+        data.log(team, MissionLog.Kind.LAUNCH, destinationId,
+                type.label() + " launched to " + body.name() + " (" + durationText(trip) + " flight)" +
+                        (stranded != null ? ", to rescue the stranded rocket" : "") + ".");
         if (stranded != null) {
             stranded.rescuing = true;
             data.setDirty();
@@ -534,9 +560,10 @@ public final class ContinuumMissions {
                 if (!mission.stranded() || mission.rescuing || now < mission.distressUntil) continue;
                 ContinuumBody where = ContinuumData.body(mission.destination);
                 data.removeMission(team, mission.id);
-                notifyTeam(server, team, Component.literal("The distress signal from " +
-                        (where != null ? where.name() : mission.destination.getPath()) +
-                        " faded. The stranded rocket is lost.").withStyle(ChatFormatting.DARK_RED));
+                notifyLogged(server, data, team, MissionLog.Kind.LOST, mission.destination,
+                        Component.literal("The distress signal from " +
+                                (where != null ? where.name() : mission.destination.getPath()) +
+                                " faded. The stranded rocket is lost.").withStyle(ChatFormatting.DARK_RED));
                 changed = true;
             }
             if (changed) {
@@ -634,7 +661,9 @@ public final class ContinuumMissions {
                             ". " + Stations.describe(built);
                 }
                 case RESCUE -> {
+                    // the one this run was sent to, or (for runs sent without the pad) the one closest to fading
                     Mission saved = strandedAt(data, mission.team, mission.destination, true);
+                    if (saved == null) saved = strandedAt(data, mission.team, mission.destination, false);
                     if (saved != null) {
                         saved.distressUntil = 0;
                         saved.rescuing = false;
@@ -643,7 +672,10 @@ public final class ContinuumMissions {
                             "collection.";
                 }
             };
-            notifyTeam(server, mission.team,
+            notifyLogged(server, data, mission.team,
+                    mission.type == Mission.Type.STATION ? MissionLog.Kind.STATION :
+                            mission.type == Mission.Type.RESCUE ? MissionLog.Kind.RESCUED : MissionLog.Kind.LANDED,
+                    mission.destination,
                     Component.literal(message + eventText(mission)).withStyle(ChatFormatting.GREEN));
         } else {
             mission.state = Mission.State.FAILED;
@@ -668,13 +700,14 @@ public final class ContinuumMissions {
             if (canStrand && !Stations.preventsStranding(data.stationLevel(mission.team, mission.destination)) &&
                     RandomSource.create().nextDouble() < cfg.distressChance) {
                 mission.distressUntil = System.currentTimeMillis() + cfg.distressWindowMinutes * 60_000L;
-                notifyTeam(server, mission.team, Component.literal("DISTRESS SIGNAL from " + name + ": the " +
-                        mission.type.label().toLowerCase() + " failed and the rocket is stranded." + lost +
-                        " Send a rescue run with " + Math.max(1, cfg.rescueKits) + " repair kits within " +
-                        durationText(cfg.distressWindowMinutes * 60_000L) + " or it is lost." + eventText(mission))
-                        .withStyle(ChatFormatting.GOLD));
+                notifyLogged(server, data, mission.team, MissionLog.Kind.STRANDED, mission.destination,
+                        Component.literal("DISTRESS SIGNAL from " + name + ": the " +
+                                mission.type.label().toLowerCase() + " failed and the rocket is stranded." + lost +
+                                " Send a rescue run with " + Math.max(1, cfg.rescueKits) + " repair kits within " +
+                                durationText(cfg.distressWindowMinutes * 60_000L) + " or it is lost." +
+                                eventText(mission)).withStyle(ChatFormatting.GOLD));
             } else {
-                notifyTeam(server, mission.team,
+                notifyLogged(server, data, mission.team, MissionLog.Kind.FAILED, mission.destination,
                         Component.literal(mission.type.label() + " to " + name + " failed. The rocket came back " +
                                 "damaged." + lost + eventText(mission)).withStyle(ChatFormatting.RED));
             }
@@ -765,6 +798,11 @@ public final class ContinuumMissions {
         data.removeMission(team, missionId);
         ContinuumServerEvents.sendStateToTeam(server, team);
 
+        ContinuumBody collectedFrom = ContinuumData.body(mission.destination);
+        data.log(team, MissionLog.Kind.COLLECTED, mission.destination,
+                "Collected the rocket from " + (collectedFrom != null ? collectedFrom.name() : mission.destination.getPath()) +
+                        (items > 0 ? " and " + items + " resources" + (delivered > 0 ? " (" + delivered +
+                                " delivered to the output buses)" : "") : "") + ".");
         if (items > 0) {
             String where = delivered >= items ? "all of it in the launch complex's output buses" :
                     delivered > 0 ? delivered + " in the output buses, the rest in your inventory" :
@@ -785,6 +823,13 @@ public final class ContinuumMissions {
         if (level == null || !level.isLoaded(pos)) return null;
         return MetaMachine.getMachine(level, pos) instanceof LaunchPadMachine machine && machine.isFormed() ? machine :
                 null;
+    }
+
+    /** Tells the team and writes the same line into their history. */
+    static void notifyLogged(MinecraftServer server, ContinuumTeamData data, UUID team, MissionLog.Kind kind,
+                             ResourceLocation body, Component message) {
+        data.log(team, kind, body, message.getString());
+        notifyTeam(server, team, message);
     }
 
     static void notifyTeam(MinecraftServer server, UUID team, Component message) {

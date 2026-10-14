@@ -41,13 +41,8 @@ public class AstralRitualPedestalBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        if (level.isClientSide) return InteractionResult.SUCCESS;
-
-        if (level.getBlockEntity(pos) instanceof AstralRitualPedestalBlockEntity pedestal) {
-            ItemStack catalyst = player.getOffhandItem();
-            pedestal.tryActivateRitual(player, catalyst);
-        }
-        return InteractionResult.CONSUME;
+        // the wand channels the ritual itself (hold right-click); see AstralWandItem
+        return InteractionResult.PASS;
     }
 
     @Override

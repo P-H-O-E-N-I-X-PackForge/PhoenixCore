@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
+import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SSelectSoundPacket;
@@ -123,9 +124,16 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         this.totalSpeakerRange = 0;
 
         int totalSpeakerValue = 0;
-        int resonancePowerPercentage = 100;
+        float amplifierSum = 0.0f;
+        int speakerCount = 0;
 
         for (var entry : patternState.getCache().long2ObjectEntrySet()) {
+            if (entry.getValue().getBlockState().getBlock() instanceof SpeakerBlock speaker) {
+                totalSpeakerValue += speaker.getSpeakerType().getRangeBonus();
+                amplifierSum += speaker.getSpeakerType().getResonanceAmplifier();
+                speakerCount++;
+            }
+
             BlockEntity blockEntity = entry.getValue().getBlockEntity();
 
             if (blockEntity instanceof SoundHatchPartMachine hatch) {
@@ -141,7 +149,8 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         }
 
         this.totalSpeakerRange = totalSpeakerValue;
-        this.resonancePower = resonancePowerPercentage / 100.0f;
+        // volume follows the average speaker tier; with no speakers it plays at the base volume
+        this.resonancePower = speakerCount == 0 ? 1.0f : amplifierSum / speakerCount;
         this.lastPlayingStreamUrl = "";
         this.lastPlayingLibrarySound = "";
         this.resetAcousticData();
@@ -223,6 +232,12 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         this.lastPlayingLibrarySound = "";
         this.resetAcousticData();
         this.markAsChanged();
+    }
+
+    /** A library sound was chosen on this jukebox: tell the Harmonic Locks in range. Server side only. */
+    public void onLibrarySoundChosen(String soundLoc) {
+        if (getLevel() == null || getLevel().isClientSide || !isFormed() || !hasLibraryHatch) return;
+        HarmonicLockMachine.broadcast(getLevel(), getBlockPos(), getFinalRange(), soundLoc);
     }
 
     public void syncAndGeneralUpdate() {

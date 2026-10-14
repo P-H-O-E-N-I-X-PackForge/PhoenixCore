@@ -49,7 +49,8 @@ public class DefaultDisciplineOres {
                 .cuboidVeinGenerator(gen -> gen
                         .top(b -> b.mat(Aluminium).size(2))
                         .middle(b -> b.mat(Aluminium).size(3))
-                        .bottom(b -> b.mat(Aluminium).size(2)))
+                        .bottom(b -> b.mat(Aluminium).size(2))
+                        .spread(b -> b.mat(Aluminium)))
                 .surfaceIndicatorGenerator(ind -> ind.surfaceRock(Aluminium)
                         .placement(SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE)));
 
@@ -72,7 +73,8 @@ public class DefaultDisciplineOres {
                 .cuboidVeinGenerator(gen -> gen
                         .top(b -> b.mat(Gold).size(2))
                         .middle(b -> b.mat(Gold).size(3))
-                        .bottom(b -> b.mat(Gold).size(2)))
+                        .bottom(b -> b.mat(Gold).size(2))
+                        .spread(b -> b.mat(Gold)))
                 .surfaceIndicatorGenerator(ind -> ind.surfaceRock(Gold)
                         .placement(SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE)));
 

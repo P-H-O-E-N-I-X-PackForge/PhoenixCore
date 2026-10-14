@@ -82,10 +82,10 @@ final class MissionPlannerPanel {
     private int[] button(GuiGraphics g, Font font, int x, int y, int w, int h, String label, boolean enabled,
                          boolean selected, double mx, double my) {
         boolean hover = enabled && MapUi.inside(mx, my, x, y, w, h);
-        int fill = !enabled ? 0xFF14122a : selected ? 0xFF3a3380 : hover ? 0xFF2c2760 : 0xFF1d1a40;
+        int fill = !enabled ? MapUi.BUTTON_OFF : selected ? MapUi.BUTTON_ON : hover ? MapUi.BUTTON_HOVER : MapUi.BUTTON;
         g.fill(x, y, x + w, y + h, fill);
-        g.renderOutline(x, y, w, h, enabled ? (selected ? MapUi.FRAME : MapUi.PANEL_LINE) : 0xFF2a2548);
-        g.drawCenteredString(font, label, x + w / 2, y + (h - 8) / 2, enabled ? MapUi.TITLE : 0xFF565070);
+        g.renderOutline(x, y, w, h, enabled ? (selected ? MapUi.FRAME : MapUi.PANEL_LINE) : MapUi.BUTTON_LINE);
+        g.drawCenteredString(font, label, x + w / 2, y + (h - 8) / 2, enabled ? MapUi.TITLE : MapUi.DIM);
         return enabled ? new int[] { x, y, w, h } : null;
     }
 
@@ -128,7 +128,7 @@ final class MissionPlannerPanel {
         int x = (virtualW - W) / 2;
         int y = (virtualH - H) / 2;
 
-        g.fill(x, y, x + W, y + H, 0xFF0b0a18);
+        g.fill(x, y, x + W, y + H, MapUi.PANEL_SOLID);
         g.renderOutline(x, y, W, H, MapUi.PANEL_LINE);
 
         var cfg = PhoenixConfigs.INSTANCE.continuum;
@@ -159,6 +159,14 @@ final class MissionPlannerPanel {
         int rescueKits = Math.max(1, cfg.rescueKits);
         int stationLevel = ContinuumClientState.stationLevel(body.id());
         boolean canStation = stage == DiscoveryStage.SURVEYED && stationLevel < Stations.MAX_LEVEL;
+
+        // a passing comet can only be harvested, and only before it leaves
+        long[] passing = body.transientInfo() == null ? null : ContinuumClientState.transientWindow(body.id());
+        if (body.transientInfo() != null) {
+            canSurvey = false;
+            canDeploy = false;
+            canStation = false;
+        }
         int stationProbes = Math.max(1, cfg.stationProbesPerLevel);
         int strandedCount = 0;
         for (var m : ContinuumClientState.missions()) {
@@ -275,6 +283,9 @@ final class MissionPlannerPanel {
         String shield = RocketStats.requiredShield(body);
         boolean needsShield = hasRocket && shield != null && mode != Mission.Type.SURVEY &&
                 RocketStats.level(rocket, shield) <= 0;
+        int hullNeeded = RocketStats.requiredTier(body);
+        boolean needsHull = hasRocket && mode != Mission.Type.SURVEY && cfg.rocketTierGating &&
+                RocketStats.tier(rocket) < hullNeeded;
 
         if (!hasRocket) {
             ty = wrapped(g, font, "No rocket " + loaded + ".", x + 10, ty, 0xFFff9a9a) + 2;
@@ -303,6 +314,18 @@ final class MissionPlannerPanel {
                             "%): it then needs a rescue run within " + cfg.distressWindowMinutes + " min.", x + 10, ty,
                             MapUi.WARN) + 1;
                 }
+            }
+            if (passing != null) {
+                long left = passing[1] - ContinuumClientState.now();
+                ty = row(g, font, "Leaves in", MapUi.duration(left) + (tripMs > left ? "  (gone before you arrive)" : ""),
+                        x + 10, ty, tripMs > left ? MapUi.BAD : MapUi.WARN);
+            }
+            ty = row(g, font, "Rocket hull", RocketStats.tierName(RocketStats.tier(rocket)) +
+                    (hullNeeded > 1 && cfg.rocketTierGating ? "  (needs " + RocketStats.tierName(hullNeeded) + ")" : ""),
+                    x + 10, ty, needsHull ? MapUi.BAD : MapUi.TEXT);
+            if (needsHull) {
+                ty = wrapped(g, font, "This hull is too light for " + body.name() +
+                        ". Refit it: sneak + use the rocket.", x + 10, ty, 0xFFff9a9a) + 1;
             }
             if (needsShield) {
                 ty = wrapped(g, font, "Needs a " + RocketStats.shieldName(shield) +
@@ -384,7 +407,9 @@ final class MissionPlannerPanel {
                 (mode != Mission.Type.RESCUE || kitsOwned >= rescueKits * sending) && rocketsOwned >= sending;
         boolean inTime = mode != Mission.Type.RESCUE || (stranded != null && hasRocket &&
                 tripMs <= stranded.distressUntil() - now);
-        boolean launchable = hasRocket && !refused && !needsShield && enoughProbes && enoughKits && inTime &&
+        boolean cometOk = body.transientInfo() == null ||
+                (passing != null && tripMs <= passing[1] - ContinuumClientState.now());
+        boolean launchable = hasRocket && !refused && !needsShield && !needsHull && cometOk && enoughProbes && enoughKits && inTime &&
                 available(mode, canSurvey, canExtract, canDeploy, canHaul, canRepair, canRescue, canStation);
         launchRect = button(g, font, x + 10, y + H - 26, 150, 18, "Launch", launchable, false, mx, my);
         cancelRect = button(g, font, x + 170, y + H - 26, 152, 18, "Cancel", true, false, mx, my);

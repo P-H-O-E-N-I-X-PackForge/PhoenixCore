@@ -24,8 +24,17 @@ public final class ContinuumClientHooks {
         mc.setScreen(new ContinuumMapScreen(pad));
     }
 
+    public static void openRefit() {
+        Minecraft.getInstance().setScreen(new net.phoenix.core.integration.continuum.client.screen
+                .ContinuumRefitScreen());
+    }
+
     public static void acceptData(ContinuumData.Snapshot snapshot) {
         ContinuumData.acceptSync(snapshot);
+        // EMI's Continuum pages are built from this data, which arrives after EMI has first built its pages
+        if (net.minecraftforge.fml.ModList.get().isLoaded("emi")) {
+            net.phoenix.core.integration.emi.ContinuumEmiBridge.reload();
+        }
     }
 
     public static void acceptState(ContinuumStateSnapshot snapshot) {

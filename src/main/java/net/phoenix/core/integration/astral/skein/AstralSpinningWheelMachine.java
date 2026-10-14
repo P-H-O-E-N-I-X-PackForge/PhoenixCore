@@ -1,11 +1,19 @@
 package net.phoenix.core.integration.astral.skein;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 
-public class AstralSpinningWheelMachine extends WorkableElectricMultiblockMachine {
+import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
+import net.phoenix.core.integration.astral.puzzle.StarChart;
+
+/** Spins Thread into Skein. Its chart is a chain: one line through the stars, drawn in order. */
+public class AstralSpinningWheelMachine extends AstralCalibratedMachine {
 
     public AstralSpinningWheelMachine(BlockEntityCreationInfo info) {
         super(info);
+    }
+
+    @Override
+    public StarChart.Kind chartKind() {
+        return StarChart.Kind.CHAIN;
     }
 }

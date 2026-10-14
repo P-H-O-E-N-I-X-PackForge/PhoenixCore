@@ -113,6 +113,15 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         return tier;
     }
 
+    /** The most EU the energy input hatches can hold between them. */
+    public long energyCapacity() {
+        long total = 0;
+        for (var part : getParts()) {
+            if (part instanceof EnergyHatchPartMachine hatch) total += hatch.energyContainer.getEnergyCapacity();
+        }
+        return total;
+    }
+
     public long storedEnergy() {
         long total = 0;
         for (var part : getParts()) {

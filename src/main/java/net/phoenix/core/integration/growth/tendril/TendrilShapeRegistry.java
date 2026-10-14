@@ -22,6 +22,13 @@ public final class TendrilShapeRegistry {
         REGISTRY.put(shape.id(), new Entry(shape, weight));
     }
 
+    /** The registered shape with this id, or null (a tendril saved with a shape that no longer exists is dropped). */
+    @Nullable
+    public static TendrilShape get(ResourceLocation id) {
+        Entry entry = REGISTRY.get(id);
+        return entry == null ? null : entry.shape();
+    }
+
     public static Collection<TendrilShape> getAll() {
         return REGISTRY.values().stream().map(Entry::shape).toList();
     }

@@ -10,11 +10,13 @@ import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
+import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.skein.AstralConfluenceHatchMachine;
 import net.phoenix.core.integration.astral.skein.AstralLoomMachine;
 import net.phoenix.core.integration.astral.skein.AstralSpinningWheelMachine;
@@ -35,7 +37,7 @@ public class AstralMachines {
                     .langValue(GTValues.VNF[tier] + " Astral Confluence Hatch")
                     .rotationState(RotationState.ALL)
                     .recipeType(PhoenixRecipeTypes.ASTRAL_WEAVING_RECIPES)
-                    .overlayTieredHullModel("source_hatch")
+                    .overlayTieredHullModel("astral_confluence_hatch")
                     .register(),
             new int[] { GTValues.IV });
 
@@ -47,7 +49,7 @@ public class AstralMachines {
                     .rotationState(RotationState.ALL)
                     .abilities(PhoenixPartAbility.ASTRAL_THREAD_INPUT)
                     .modelProperty(GTMachineModelProperties.IS_FORMED, false)
-                    .overlayTieredHullModel("source_hatch")
+                    .overlayTieredHullModel("astral_thread_hatch")
                     .register(),
             GTValues.tiersBetween(GTValues.IV, GTValues.ZPM));
 
@@ -59,7 +61,7 @@ public class AstralMachines {
                     .rotationState(RotationState.ALL)
                     .abilities(PhoenixPartAbility.ASTRAL_THREAD_OUTPUT)
                     .modelProperty(GTMachineModelProperties.IS_FORMED, false)
-                    .overlayTieredHullModel("source_hatch")
+                    .overlayTieredHullModel("astral_thread_hatch")
                     .register(),
             GTValues.tiersBetween(GTValues.IV, GTValues.ZPM));
 
@@ -68,6 +70,7 @@ public class AstralMachines {
             .langValue("Astral Spinning Wheel")
             .rotationState(RotationState.ALL)
             .recipeType(PhoenixRecipeTypes.ASTRAL_WEAVING_RECIPES)
+            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT, AstralCalibratedMachine::alignedModifier)
             .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
@@ -84,7 +87,7 @@ public class AstralMachines {
                     .build())
             .model(createWorkableCasingMachineModel(
                     PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
-                    PhoenixCore.id("block/multiblock/tesla_tower")))
+                    PhoenixCore.id("block/multiblock/astral_spinning_wheel")))
             .register();
 
     public static final MultiblockMachineDefinition ASTRAL_LOOM = REGISTRATE
@@ -92,6 +95,7 @@ public class AstralMachines {
             .langValue("Astral Loom")
             .rotationState(RotationState.ALL)
             .recipeType(PhoenixRecipeTypes.ASTRAL_WEAVING_RECIPES)
+            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT, AstralCalibratedMachine::alignedModifier)
             .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
@@ -109,7 +113,7 @@ public class AstralMachines {
                     .build())
             .model(createWorkableCasingMachineModel(
                     PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
-                    PhoenixCore.id("block/multiblock/tesla_tower")))
+                    PhoenixCore.id("block/multiblock/astral_loom")))
             .register();
 
     public static void init() {}

@@ -5,6 +5,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.phoenix.core.integration.continuum.block.LaunchPadBlock;
 import net.phoenix.core.integration.continuum.common.RocketStats;
 import net.phoenix.core.integration.continuum.item.ContinuumProbeItem;
+import net.phoenix.core.integration.continuum.item.ContinuumRefitKitItem;
 import net.phoenix.core.integration.continuum.item.ContinuumRepairKitItem;
 import net.phoenix.core.integration.continuum.item.ContinuumRocketItem;
 import net.phoenix.core.integration.continuum.item.ContinuumUpgradeItem;
@@ -59,6 +60,21 @@ public final class ContinuumRegistry {
                     p -> new ContinuumUpgradeItem(p, RocketStats.SINGULARITY_SHIELD, 1,
                             "Lets the rocket extract from, and build outposts on, a black hole or quasar"))
             .lang("Singularity Shielding Module")
+            .register();
+
+    public static final ItemEntry<ContinuumRefitKitItem> REFIT_MK2 = REGISTRATE
+            .item("continuum_hull_refit_mk2", p -> new ContinuumRefitKitItem(p, 2))
+            .lang("Hull Refit Kit Mk II")
+            .register();
+
+    public static final ItemEntry<ContinuumRefitKitItem> REFIT_MK3 = REGISTRATE
+            .item("continuum_hull_refit_mk3", p -> new ContinuumRefitKitItem(p, 3))
+            .lang("Hull Refit Kit Mk III")
+            .register();
+
+    public static final ItemEntry<ContinuumRefitKitItem> REFIT_MK4 = REGISTRATE
+            .item("continuum_hull_refit_mk4", p -> new ContinuumRefitKitItem(p, 4))
+            .lang("Hull Refit Kit Mk IV")
             .register();
 
     public static final ItemEntry<ContinuumRepairKitItem> REPAIR_KIT = REGISTRATE

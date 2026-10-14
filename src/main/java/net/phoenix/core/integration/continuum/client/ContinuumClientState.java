@@ -22,7 +22,9 @@ public final class ContinuumClientState {
     private static List<ContinuumStateSnapshot.MissionView> missions = List.of();
     private static Map<ResourceLocation, Integer> stations = Map.of();
     private static int missionSlots;
+    private static List<net.phoenix.core.integration.continuum.common.MissionLog.Entry> history = List.of();
     private static Map<ResourceLocation, ContinuumStateSnapshot.AffinityView> affinities = Map.of();
+    private static Map<ResourceLocation, long[]> transients = Map.of();
     private static int stockRockets;
     private static Map<ResourceLocation, ContinuumStateSnapshot.OutpostView> outposts = Map.of();
     private static Map<ResourceLocation, float[]> deposits = Map.of();
@@ -73,6 +75,7 @@ public final class ContinuumClientState {
         stations = new HashMap<>(snapshot.stations());
         missionSlots = snapshot.missionSlots();
         affinities = new HashMap<>(snapshot.affinities());
+        transients = new HashMap<>(snapshot.transients());
 
         clockOffset = snapshot.serverNow() - System.currentTimeMillis();
     }
@@ -107,6 +110,20 @@ public final class ContinuumClientState {
 
     public static int padKits() {
         return stockKits;
+    }
+
+    public static void acceptHistory(List<net.phoenix.core.integration.continuum.common.MissionLog.Entry> entries) {
+        history = List.copyOf(entries);
+    }
+
+    /** The team's mission history, oldest first, as last sent by the server. */
+    public static List<net.phoenix.core.integration.continuum.common.MissionLog.Entry> history() {
+        return history;
+    }
+
+    /** When a passing comet arrived and leaves ({start, end} in server milliseconds), or null if it is not there. */
+    public static @Nullable long[] transientWindow(ResourceLocation body) {
+        return transients.get(body);
     }
 
     public static int padRockets() {
@@ -160,7 +177,20 @@ public final class ContinuumClientState {
         return outposts.get(body);
     }
 
+    private static final Map<UUID, ContinuumStateSnapshot.MissionView> PREVIEWS = new HashMap<>();
+
+    /** A made-up mission for `/continuumpreview`, so the landing can be watched without flying anything. */
+    public static void addPreview(ContinuumStateSnapshot.MissionView view) {
+        PREVIEWS.put(view.id(), view);
+    }
+
+    public static boolean isPreview(UUID id) {
+        return PREVIEWS.containsKey(id);
+    }
+
     public static @Nullable ContinuumStateSnapshot.MissionView mission(UUID id) {
+        ContinuumStateSnapshot.MissionView preview = PREVIEWS.get(id);
+        if (preview != null) return preview;
         for (ContinuumStateSnapshot.MissionView mission : missions) {
             if (mission.id().equals(id)) return mission;
         }

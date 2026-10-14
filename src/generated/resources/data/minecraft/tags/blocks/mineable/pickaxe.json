@@ -26,6 +26,8 @@
     "phoenixcore:source_fiber_machine_casing",
     "phoenixcore:machine_casing_pristine_rhodium_plated_palladium",
     "phoenixcore:machine_casing_invariant_naquadah_alloy",
-    "phoenixcore:growth_ward"
+    "phoenixcore:growth_ward",
+    "phoenixcore:growth_shell",
+    "phoenixcore:growth_tendril"
   ]
 }

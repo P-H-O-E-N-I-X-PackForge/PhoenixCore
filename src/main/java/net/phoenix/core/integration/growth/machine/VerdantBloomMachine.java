@@ -1,14 +1,18 @@
-package net.phoenix.core.integration.growth.example;
+package net.phoenix.core.integration.growth.machine;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
+import net.phoenix.core.integration.growth.GrowthBlocks;
 import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
+import net.phoenix.core.integration.growth.GrowthItems;
 import net.phoenix.core.integration.growth.GrowthStage;
+import net.phoenix.core.integration.growth.GrowthStages;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
 import net.phoenix.core.integration.growth.tendril.TendrilShapeRegistry;
 
@@ -18,22 +22,22 @@ import java.util.List;
 
 public class VerdantBloomMachine extends GrowthMultiblockMachine {
 
-    private static final int MAX_STAGE = 4;
-    public static final IntList MAX_BOUNDS = IntList.of(
-            1 + MAX_STAGE, 1 + MAX_STAGE, 1 + MAX_STAGE, 1 + MAX_STAGE, 1 + MAX_STAGE, 1 + MAX_STAGE);
+    // controller on the front face; the greenhouse stays narrow and climbs, from 3 x 4 x 3 to 5 x 9 x 5
+    private static final IntList[] SHAPES = {
+            GrowthStages.bounds(2, 1, 1, 1, 0, 2),
+            GrowthStages.bounds(3, 1, 1, 1, 0, 2),
+            GrowthStages.bounds(4, 1, 2, 2, 0, 3),
+            GrowthStages.bounds(5, 1, 2, 2, 0, 4),
+            GrowthStages.bounds(7, 1, 2, 2, 0, 4) };
 
-    private static final List<GrowthStage> STAGES = buildStages();
+    public static final IntList MAX_BOUNDS = SHAPES[SHAPES.length - 1];
+
+    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(VerdantBloomMachine::buildStages);
 
     private static List<GrowthStage> buildStages() {
-        List<GrowthStage> stages = new java.util.ArrayList<>();
-        for (int stage = 0; stage <= MAX_STAGE; stage++) {
-            int r = 1 + stage;
-            IntList bounds = IntList.of(r, r, r, r, r, r);
-            List<ItemStack> cost = stage == 0 ? List.of() :
-                    List.of(new ItemStack(net.minecraft.world.item.Items.EMERALD, stage * 4));
-            stages.add(new GrowthStage(bounds, cost));
-        }
-        return stages;
+        // a verdant bloom gets a little faster and a little richer with every stage
+        return GrowthStages.of(SHAPES).costItems(GrowthItems.GROWTH_SEED::get, 2).speedPerStage(0.05f).outputPerStage(0.08f)
+                .build();
     }
 
     public VerdantBloomMachine(BlockEntityCreationInfo holder) {
@@ -42,33 +46,32 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
 
     @Override
     protected List<GrowthStage> getGrowthStages() {
-        return STAGES;
+        return STAGES.get();
+    }
+
+    /** The stages, for the recipe viewer. */
+    public static List<GrowthStage> stages() {
+        return STAGES.get();
     }
 
     @Override
     protected BlockState getShellBlockState() {
-        return PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get().defaultBlockState();
+        return GrowthBlocks.GROWTH_SHELL.get().defaultBlockState();
+    }
+
+    @Override
+    protected boolean chargeOnAutoGrowth() {
+        return true;
     }
 
     @Override
     protected BlockState getTendrilBlockState() {
-        return PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get().defaultBlockState();
+        return GrowthBlocks.GROWTH_TENDRIL.get().defaultBlockState();
     }
 
     @Override
     protected List<BlockPos> getTendrilAnchors() {
-        IntList bounds = getGrowthStages().get(getGrowthStage()).bounds();
-        int up = bounds.getInt(0);
-        int left = bounds.getInt(2);
-        int right = bounds.getInt(3);
-        int front = bounds.getInt(4);
-        int back = bounds.getInt(5);
-
-        return List.of(
-                new BlockPos(back + 1, up, 0),
-                new BlockPos(-(front + 1), up, 0),
-                new BlockPos(0, up, right + 1),
-                new BlockPos(0, up, -(left + 1)));
+        return roofAnchors();
     }
 
     @Override
@@ -102,6 +105,6 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
         TendrilShapeRegistry.register(REACHING_SHOOT, (machine, shape) -> 10);
 
         TendrilShapeRegistry.register(CURLING_FROND,
-                (machine, shape) -> machine.getGrowthStage() >= MAX_STAGE ? 12 : 0);
+                (machine, shape) -> machine.getGrowthStage() >= machine.maxStage() ? 12 : 0);
     }
 }

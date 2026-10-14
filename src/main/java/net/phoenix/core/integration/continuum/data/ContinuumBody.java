@@ -28,7 +28,15 @@ public record ContinuumBody(
                             String loreDetected,
                             String loreSurveyed,
                             @Nullable String discipline,
-                            @Nullable PdimCost pdimCost) {
+                            @Nullable PdimCost pdimCost,
+                            @Nullable Transient transientInfo) {
+
+    /**
+     * Makes a body a comet or other passing visitor: it is only there while its window is open. The server opens a
+     * window now and then ({@code chance} each ten minutes once off cooldown), for {@code durationMinutes}, then waits
+     * {@code cooldownMinutes}. While it is there it falls from {@code outerAu} in to {@code innerAu}.
+     */
+    public record Transient(int durationMinutes, int cooldownMinutes, float chance, float innerAu, float outerAu) {}
 
     public record PdimCost(ResourceLocation item, int count) {}
 

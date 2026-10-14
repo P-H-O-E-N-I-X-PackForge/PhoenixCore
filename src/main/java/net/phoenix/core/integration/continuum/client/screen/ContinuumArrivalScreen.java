@@ -23,6 +23,8 @@ import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -81,6 +83,7 @@ public class ContinuumArrivalScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        MapUi.refreshTheme();
         long now = Util.getMillis();
         float dt = Math.min((now - lastFrame) / 1000.0f, 0.1f);
         lastFrame = now;
@@ -105,6 +108,7 @@ public class ContinuumArrivalScreen extends Screen {
 
         drawScene(graphics, destination, hole, crash, shake, now);
         drawHeat(graphics, heat, crash, hole, now);
+        drawRocket(graphics, crash, hole, now);
         drawRetroAndDust(graphics, crash, hole, now);
         drawTint(graphics, now);
         drawReadout(graphics, mission, destination, hole);
@@ -181,6 +185,85 @@ public class ContinuumArrivalScreen extends Screen {
 
     private float retroCurve() {
         return smooth((t - 0.35f) / 0.25f) * (1.0f - smooth((t - 0.74f) / 0.06f));
+    }
+
+    /**
+     * The rocket itself. Onto a surface it comes down tail-first from the top of the view, its engine burning under it
+     * and growing as it nears, and stands on its plume; a failed landing leans over more and more and ends in a fire.
+     * Past a star, a black hole or into a gas giant's air it instead sweeps across the view, nose first, and settles
+     * into orbit (or tumbles, if it failed).
+     */
+    private void drawRocket(GuiGraphics graphics, boolean crash, boolean hole, long now) {
+        float appear = smooth((t - 0.22f) / 0.06f);
+        if (appear <= 0.01f) return;
+        float flicker = 0.85f + 0.15f * (float) Math.sin(now * 0.045);
+        PoseStack pose = graphics.pose();
+
+        if (hole || profile == FlightProfiles.Landing.AEROCAPTURE) {
+            float run = smooth((t - 0.2f) / 0.55f);
+            float cx = width * (1.12f - 0.86f * run);
+            float cy = height * 0.68f - height * 0.04f * (float) Math.sin(t * 7.0f);
+            float size = height * 0.13f;
+            float wobble = crash ? (float) Math.sin(now * 0.02) * 18.0f + run * 50.0f : 0.0f;
+            int trail = crash ? 0xff5a30 : profile == FlightProfiles.Landing.AEROCAPTURE ? 0xff9a50 : 0x9ad0ff;
+
+            // the engine trail streams out behind it, to the right: it is flying nose-left
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            for (int i = 0; i < 5; i++) {
+                glows.glow(cx + size * (0.55f + i * 0.5f), cy, size * (0.5f - i * 0.06f), i == 0 ? 0xfff0c0 : trail,
+                        (0.6f - i * 0.1f) * flicker * appear);
+            }
+            if (profile == FlightProfiles.Landing.AEROCAPTURE) {
+                glows.glow(cx - size * 0.5f, cy, size * 0.9f, 0xffb070, 0.35f * appear);
+            }
+            glows.draw();
+
+            pose.pushPose();
+            pose.translate(cx, cy, 0.0f);
+            pose.mulPose(Axis.ZP.rotationDegrees(-90.0f + wobble));
+            pose.translate(-cx, -cy, 0.0f);
+            RocketSprite.draw(graphics, cx, cy + size * 0.5f, size, appear);
+            pose.popPose();
+            return;
+        }
+
+        float u = Math.max(0.0f, Math.min(1.0f, (t - 0.30f) / 0.40f));
+        float eased = 1.0f - (1.0f - u) * (1.0f - u);
+        float tailY = height * (0.14f + 0.76f * eased);
+        float rocketH = height * (0.10f + 0.20f * eased);
+        float cx = width / 2.0f + (float) Math.sin(now * 0.004) * (1.0f - u) * 8.0f;
+        boolean landed = t >= 0.70f;
+        float tilt = crash ? u * u * 30.0f + (landed ? 38.0f : 0.0f) : 0.0f;
+        float sc = rocketH / (height * 0.30f);
+
+        // the retro burn under the tail: it cuts out when the rocket is down
+        float engine = (0.45f + 0.55f * profile.retro) * (landed ? 0.0f : 1.0f) * appear;
+        if (engine > 0.01f) {
+            GlowRenderer.Batch glows = GlowRenderer.batch(graphics);
+            for (int i = 0; i < 5; i++) {
+                float y = tailY + (6.0f + i * 22.0f * (1.0f - u * 0.5f)) * sc;
+                glows.glow(cx, y, (28.0f + i * 9.0f) * sc, i == 0 ? 0xfff0c0 : crash ? 0xff6030 : 0x9ad0ff,
+                        engine * flicker * (0.9f - i * 0.14f));
+            }
+            glows.draw();
+        }
+
+        float midY = tailY - rocketH * 0.5f;
+        pose.pushPose();
+        pose.translate(cx, midY, 0.0f);
+        pose.mulPose(Axis.ZP.rotationDegrees(tilt));
+        pose.translate(-cx, -midY, 0.0f);
+        RocketSprite.draw(graphics, cx, tailY, rocketH, appear);
+        pose.popPose();
+
+        // a failed landing ends in a fire at the wreck
+        if (crash && landed) {
+            float burn = 1.0f - smooth((t - 0.70f) / 0.3f) * 0.4f;
+            GlowRenderer.Batch fire = GlowRenderer.batch(graphics);
+            fire.glow(cx, tailY - rocketH * 0.2f, rocketH * 0.9f, 0xff5020, 0.55f * burn * flicker);
+            fire.glow(cx, tailY - rocketH * 0.5f, rocketH * 0.6f, 0xffb060, 0.45f * burn * flicker);
+            fire.draw();
+        }
     }
 
     private void drawRetroAndDust(GuiGraphics graphics, boolean crash, boolean hole, long now) {
@@ -317,7 +400,7 @@ public class ContinuumArrivalScreen extends Screen {
     private void button(GuiGraphics graphics, int x, int y, int w, int mouseX, int mouseY, String label,
                         boolean primary) {
         boolean hover = MapUi.inside(mouseX, mouseY, x, y, w, 18);
-        graphics.fill(x, y, x + w, y + 18, hover ? 0xFF2c2760 : primary ? 0xFF1d1a40 : 0xFF14122a);
+        graphics.fill(x, y, x + w, y + 18, hover ? MapUi.BUTTON_HOVER : primary ? MapUi.BUTTON : MapUi.BUTTON_OFF);
         graphics.renderOutline(x, y, w, 18, primary ? MapUi.FRAME : MapUi.PANEL_LINE);
         graphics.drawCenteredString(font, label, x + w / 2, y + 5, primary ? MapUi.TITLE : MapUi.TEXT);
     }
@@ -350,7 +433,9 @@ public class ContinuumArrivalScreen extends Screen {
             int x = cardX();
             if (MapUi.inside(mouseX, mouseY, x + 12, collectY(), bw, 18)) {
                 ContinuumSounds.click();
-                PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(missionId));
+                if (!ContinuumClientState.isPreview(missionId)) {
+                    PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(missionId));
+                }
                 leave();
                 return true;
             }

@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultScreen;
+import net.phoenix.core.integration.gregvaults.client.screen.IStackedVaultView;
 import net.phoenix.core.integration.gregvaults.client.screen.AggregatedStack;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultSlot;
 import net.phoenix.core.integration.gregvaults.network.CPacketStackedPickup;
@@ -26,14 +26,14 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     @Shadow
     protected Slot hoveredSlot;
 
-    private AbstractVaultScreen<?> asVaultScreen() {
+    private IStackedVaultView asVaultScreen() {
         Object self = this;
-        return self instanceof AbstractVaultScreen<?> v ? v : null;
+        return self instanceof IStackedVaultView v ? v : null;
     }
 
     @Inject(method = "renderSlot", at = @At("TAIL"))
     private void gregvaults$renderStackedCount(GuiGraphics g, Slot slot, CallbackInfo ci) {
-        AbstractVaultScreen<?> screen = asVaultScreen();
+        IStackedVaultView screen = asVaultScreen();
         if (screen == null || !screen.isStackedMode()) return;
         if (!(slot instanceof VaultSlot vs) || !slot.isActive() || !vs.isAggregated()) return;
 
@@ -47,7 +47,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     private void gregvaults$handleStackedPickup(Slot slot, int slotIdx, int mouseButton,
                                                 ClickType clickType, CallbackInfo ci) {
         if (clickType != ClickType.PICKUP) return;
-        AbstractVaultScreen<?> screen = asVaultScreen();
+        IStackedVaultView screen = asVaultScreen();
         if (screen == null || !screen.isStackedMode()) return;
         if (!(slot instanceof VaultSlot vs) || !vs.isAggregated()) return;
         if (slot.getItem().isEmpty()) return;
@@ -72,7 +72,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
             at = @At("HEAD"),
             cancellable = true)
     private void gregvaults$renderStackedTooltip(GuiGraphics g, int x, int y, CallbackInfo ci) {
-        AbstractVaultScreen<?> screen = asVaultScreen();
+        IStackedVaultView screen = asVaultScreen();
         if (screen == null) return;
         if (!(hoveredSlot instanceof VaultSlot vs) || !vs.isAggregated()) return;
 

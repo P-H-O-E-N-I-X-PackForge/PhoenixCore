@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.integration.astral.item.AstralCodexItem;
 import net.phoenix.core.integration.astral.item.AstralThreadCellItem;
 import net.phoenix.core.integration.astral.item.AstralWandItem;
+import net.phoenix.core.integration.astral.puzzle.AstralSurveyItem;
 
 import com.tterrag.registrate.util.entry.ItemEntry;
 
@@ -33,6 +34,14 @@ public class AstralItems {
             .model((ctx, prov) -> prov.generated(ctx,
                     ResourceLocation.fromNamespaceAndPath("minecraft", "item/enchanted_book")))
             .lang("§dAstral Codex")
+            .register();
+
+    public static final ItemEntry<AstralSurveyItem> ASTRAL_SURVEY = REGISTRATE
+            .item("astral_survey", AstralSurveyItem::new)
+            .properties(p -> p.stacksTo(1))
+            .model((ctx, prov) -> prov.generated(ctx,
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "item/map")))
+            .lang("§bAstral Survey")
             .register();
 
     public static void init() {}

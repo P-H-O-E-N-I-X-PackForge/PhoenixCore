@@ -45,10 +45,14 @@ public class ContinuumUpgradeItem extends Item {
         }
 
         int current = RocketStats.level(rocket, upgrade);
-        if (current >= maxLevel) {
+        int tier = RocketStats.tier(rocket);
+        int cap = Math.min(maxLevel, RocketStats.upgradeCap(tier, upgrade));
+        if (current >= cap) {
             if (!level.isClientSide) {
-                player.displayClientMessage(Component.literal("That upgrade is already at its highest level.")
-                        .withStyle(ChatFormatting.YELLOW), true);
+                String why = cap < maxLevel ? "This " + RocketStats.tierName(tier) +
+                        " hull cannot carry more of that. Refit it to a higher tier (sneak + use the rocket)." :
+                        "That upgrade is already at its highest level.";
+                player.displayClientMessage(Component.literal(why).withStyle(ChatFormatting.YELLOW), true);
             }
             return InteractionResultHolder.fail(module);
         }

@@ -66,6 +66,7 @@ import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.Bi
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.SourceMultiblockTankMachine;
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.SourceReactorMachine;
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
+import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_resonance.SoundHatchPartMachine;
 
 import java.util.Locale;
@@ -1019,5 +1020,31 @@ public class PhoenixMachines {
                     ResourceLocation.fromNamespaceAndPath("minecraft", "block/note_block"))
             .register();
 
-    public static void init() {}
+    public static final MultiblockMachineDefinition HARMONIC_LOCK = REGISTRATE
+            .multiblock("harmonic_lock", HarmonicLockMachine::new)
+            .langValue("Harmonic Lock")
+            .rotationState(RotationState.NON_Y_AXIS)
+            .appearanceBlock(GTBlocks.CASING_STAINLESS_CLEAN)
+            .tooltips(
+                    Component.literal("§bA sound puzzle."),
+                    Component.literal("§7Listens to Resonant Jukeboxes in range and steps through a sequence of"),
+                    Component.literal("§7sounds. Play them in the right order to solve it; a wrong sound starts over."))
+            .pattern(definition -> MultiblockPatternBuilder
+                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
+                    .slice("aaa", "afa", "aaa")
+                    .slice("aaa", "aca", "aaa")
+                    .slice("aaa", "aaa", "aaa")
+                    .where('a', Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
+                            .or(Predicates.controller(definition)))
+                    .where('c', Predicates.blocks(CASING_TEMPERED_GLASS.get()))
+                    .where('f', Predicates.controller(definition))
+                    .build())
+            .workableCasingModel(
+                    GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "block/note_block"))
+            .register();
+
+    public static void init() {
+        net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.SourceTankMachines.init();
+    }
 }

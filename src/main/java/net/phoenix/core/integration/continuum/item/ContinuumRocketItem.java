@@ -20,6 +20,28 @@ public class ContinuumRocketItem extends Item {
     }
 
     @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level,
+                                                                      net.minecraft.world.entity.player.Player player,
+                                                                      net.minecraft.world.InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown()) {
+            if (level.isClientSide) {
+                net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                        () -> net.phoenix.core.integration.continuum.client.ContinuumClientHooks::openRefit);
+            }
+            return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        }
+        return super.use(level, player, hand);
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        int tier = RocketStats.tier(stack);
+        Component name = super.getName(stack);
+        return tier > 1 ? name.copy().append(" " + RocketStats.tierName(tier)) : name;
+    }
+
+    @Override
     public boolean isBarVisible(ItemStack stack) {
         return RocketStats.wear(stack) > 0.0f;
     }
@@ -36,6 +58,9 @@ public class ContinuumRocketItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.literal("Hull: " + RocketStats.tierName(RocketStats.tier(stack)))
+                .withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.literal("Sneak + use to refit").withStyle(ChatFormatting.DARK_GRAY));
         float wear = RocketStats.wear(stack);
         ChatFormatting wearColor = wear < 0.35f ? ChatFormatting.GREEN : wear < 0.7f ? ChatFormatting.YELLOW :
                 ChatFormatting.RED;

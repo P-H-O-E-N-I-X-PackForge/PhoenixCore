@@ -26,6 +26,7 @@ public class ContinuumTeamData extends SavedData {
 
     private final Map<UUID, Map<ResourceLocation, Integer>> depths = new HashMap<>();
     private final Map<UUID, Map<ResourceLocation, Integer>> stations = new HashMap<>();
+    private final Map<UUID, java.util.List<MissionLog.Entry>> history = new HashMap<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(ContinuumTeamData::load, ContinuumTeamData::new, ID);
@@ -47,6 +48,11 @@ public class ContinuumTeamData extends SavedData {
     }
 
     public boolean isHidden(MinecraftServer server, UUID team, ContinuumBody body) {
+        // a comet that is not passing is simply not there
+        if (body.transientInfo() != null &&
+                !ContinuumTransients.get(server).active(body.id(), System.currentTimeMillis())) {
+            return true;
+        }
         if (body.discipline() == null) return false;
         String chosen = WorldResearchData.get(server.overworld()).getDiscipline(team);
         return !body.discipline().equals(chosen == null ? "none" : chosen);
@@ -58,6 +64,11 @@ public class ContinuumTeamData extends SavedData {
 
         ContinuumBody body = ContinuumData.body(id);
         if (body != null && isHidden(server, team, body)) return DiscoveryStage.UNKNOWN;
+        // a passing comet is fully visible, there is no time to survey it, to anyone who has found its system
+        if (body != null && body.transientInfo() != null) {
+            return effectiveStage(server, team, body.system()).atLeast(DiscoveryStage.DETECTED) ?
+                    DiscoveryStage.SURVEYED : DiscoveryStage.UNKNOWN;
+        }
         if (body != null) {
             WorldResearchData research = null;
             if (body.surveyedResearch() != null || body.detectedResearch() != null) {
@@ -111,6 +122,21 @@ public class ContinuumTeamData extends SavedData {
         stages.remove(team);
         depths.remove(team);
         setDirty();
+    }
+
+    // ---------------- mission history ----------------
+
+    /** Adds a line to the team's history (the newest {@link MissionLog#LIMIT} are kept). */
+    public void log(UUID team, MissionLog.Kind kind, ResourceLocation body, String text) {
+        java.util.List<MissionLog.Entry> list = history.computeIfAbsent(team, t -> new java.util.ArrayList<>());
+        list.add(new MissionLog.Entry(System.currentTimeMillis(), kind, body, text));
+        while (list.size() > MissionLog.LIMIT) list.remove(0);
+        setDirty();
+    }
+
+    /** The team's history, oldest first. */
+    public java.util.List<MissionLog.Entry> history(UUID team) {
+        return history.getOrDefault(team, java.util.List.of());
     }
 
     public int stationLevel(UUID team, ResourceLocation body) {
@@ -293,6 +319,17 @@ public class ContinuumTeamData extends SavedData {
             stationTeams.add(teamTag);
         }
         tag.put("StationTeams", stationTeams);
+
+        ListTag historyTeams = new ListTag();
+        for (var team : history.entrySet()) {
+            CompoundTag teamTag = new CompoundTag();
+            teamTag.putUUID("Team", team.getKey());
+            ListTag list = new ListTag();
+            for (MissionLog.Entry entry : team.getValue()) list.add(entry.save());
+            teamTag.put("Entries", list);
+            historyTeams.add(teamTag);
+        }
+        tag.put("HistoryTeams", historyTeams);
         return tag;
     }
 
@@ -343,6 +380,13 @@ public class ContinuumTeamData extends SavedData {
                 map.put(new ResourceLocation(e.getString("Body")), e.getInt("Level"));
             }
             data.stations.put(teamTag.getUUID("Team"), map);
+        }
+
+        for (Tag t : tag.getList("HistoryTeams", Tag.TAG_COMPOUND)) {
+            CompoundTag teamTag = (CompoundTag) t;
+            java.util.List<MissionLog.Entry> list = new java.util.ArrayList<>();
+            for (Tag e : teamTag.getList("Entries", Tag.TAG_COMPOUND)) list.add(MissionLog.Entry.load((CompoundTag) e));
+            data.history.put(teamTag.getUUID("Team"), list);
         }
         return data;
     }

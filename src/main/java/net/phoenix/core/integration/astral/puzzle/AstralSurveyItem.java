@@ -1,0 +1,165 @@
+package net.phoenix.core.integration.astral.puzzle;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.phoenix.core.integration.astral.AstralItems;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * A survey of one Astral machine, made with the Astral Wand. It remembers the machine's stars and which lines of its
+ * constellation have been revealed so far. The Ritual Pedestal reveals more of them each time it is channelled while the
+ * survey is in the player's inventory. Right-click to read it.
+ */
+public class AstralSurveyItem extends Item {
+
+    private static final String DIM = "Dim";
+    private static final String POS = "Pos";
+    private static final String SEED = "Seed";
+    private static final String KIND = "Kind";
+    private static final String STARS = "Stars";
+    private static final String TOTAL = "Total";
+    private static final String KNOWN = "Known";
+    private static final String PHASE_KNOWN = "PhaseKnown";
+
+    public AstralSurveyItem(Properties properties) {
+        super(properties);
+    }
+
+    public static ItemStack create(AstralCalibratedMachine machine, Level level) {
+        ItemStack stack = new ItemStack(AstralItems.ASTRAL_SURVEY.get());
+        StarChart chart = machine.chart();
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putString(DIM, level.dimension().location().toString());
+        tag.putLong(POS, machine.getBlockPos().asLong());
+        tag.putLong(SEED, machine.getChartSeed());
+        tag.putInt(KIND, chart.kind().ordinal());
+        tag.putIntArray(STARS, chart.packedStars());
+        tag.putInt(TOTAL, chart.lineCount());
+        tag.putIntArray(KNOWN, new int[0]);
+        return stack;
+    }
+
+    /** Whether this survey is of the machine at {@code pos} with that seed. */
+    public static boolean isFor(ItemStack stack, Level level, BlockPos pos, long seed) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getLong(POS) == pos.asLong() && tag.getLong(SEED) == seed &&
+                tag.getString(DIM).equals(level.dimension().location().toString());
+    }
+
+    public static boolean isSurvey(ItemStack stack) {
+        return stack.getItem() instanceof AstralSurveyItem && stack.hasTag();
+    }
+
+    public static int[] stars(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getIntArray(STARS) : new int[0];
+    }
+
+    public static int[] known(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getIntArray(KNOWN) : new int[0];
+    }
+
+    public static int total(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getInt(TOTAL) : 0;
+    }
+
+    public static StarChart.Kind kind(ItemStack stack) {
+        int ordinal = stack.hasTag() ? stack.getTag().getInt(KIND) : 0;
+        StarChart.Kind[] values = StarChart.Kind.values();
+        return values[Math.max(0, Math.min(ordinal, values.length - 1))];
+    }
+
+    public static String where(ItemStack stack) {
+        if (!stack.hasTag()) return "?";
+        BlockPos pos = BlockPos.of(stack.getTag().getLong(POS));
+        return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+    }
+
+    public static boolean phaseKnown(ItemStack stack) {
+        return stack.hasTag() && stack.getTag().getBoolean(PHASE_KNOWN);
+    }
+
+    public static void revealPhase(ItemStack stack) {
+        if (isSurvey(stack)) stack.getTag().putBoolean(PHASE_KNOWN, true);
+    }
+
+    /** The moon phase the machine calibrates best under (0 = full moon). Only meaningful once {@link #phaseKnown}. */
+    public static int favouredPhase(ItemStack stack) {
+        return stack.hasTag() ? AstralCalibratedMachine.favouredPhaseOf(stack.getTag().getLong(SEED)) : 0;
+    }
+
+    public static boolean complete(ItemStack stack) {
+        return known(stack).length >= total(stack);
+    }
+
+    /** Reveals up to {@code count} more lines at random. Returns how many were revealed. */
+    public static int reveal(ItemStack stack, RandomSource random, int count) {
+        if (!isSurvey(stack)) return 0;
+        CompoundTag tag = stack.getTag();
+        StarChart chart = StarChart.generate(tag.getLong(SEED), kind(stack));
+        int[] known = known(stack);
+        List<Integer> hidden = new ArrayList<>();
+        for (int i = 0; i < chart.lineCount(); i++) {
+            boolean seen = false;
+            for (int k : known) {
+                if (k >> 8 == i) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (!seen) hidden.add(i);
+        }
+        int revealed = Math.min(count, hidden.size());
+        int[] grown = Arrays.copyOf(known, known.length + revealed);
+        for (int n = 0; n < revealed; n++) {
+            int pick = random.nextInt(hidden.size());
+            grown[known.length + n] = chart.packedLine(hidden.remove(pick));
+        }
+        Arrays.sort(grown);
+        tag.putIntArray(KNOWN, grown);
+        return revealed;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (level.isClientSide && isSurvey(stack)) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                    () -> () -> net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient.openSurvey(stack));
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
+        if (!isSurvey(stack)) return;
+        tooltip.add(Component.literal((kind(stack) == StarChart.Kind.CHAIN ? "Spinning Wheel" : "Loom") + " at " +
+                where(stack)).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.literal(known(stack).length + " of " + total(stack) + " lines revealed")
+                .withStyle(complete(stack) ? ChatFormatting.GREEN : ChatFormatting.AQUA));
+        if (phaseKnown(stack)) {
+            tooltip.add(Component.literal("Favoured moon: " + AstralCalibratedMachine.phaseName(favouredPhase(stack)))
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+        tooltip.add(Component.literal("Right-click to read. Channel the Ritual Pedestal to reveal more.")
+                .withStyle(ChatFormatting.DARK_GRAY));
+    }
+}

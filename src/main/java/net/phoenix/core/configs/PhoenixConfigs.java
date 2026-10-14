@@ -282,6 +282,14 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Whether a body's tier needs a matching rocket hull to work there: mid tier needs Mk II, late Mk III,",
+                "endgame Mk IV (surveys are exempt). Hulls are raised with Hull Refit Kits in the refit screen",
+                "(sneak + use a rocket). Default: true"
+        })
+        public boolean rocketTierGating = true;
+
+        @Configurable
+        @Configurable.Comment({
                 "Volume of the Continuum map's layered ambience (space bed, wind, stellar roar, black hole hum), 0 to 1.",
                 "0 turns it off. Default: 0.6"
         })
@@ -320,10 +328,12 @@ public class PhoenixConfigs {
         @Configurable
         @Configurable.Comment({
                 "Energy a launch draws from the Launch Complex's input hatches, in amp-ticks of the pad's own voltage",
-                "(1200 = 1 amp for a minute). A MV pad pays 128 * this in EU. Default: 1200"
+                "(20 = 1 amp for a second). A MV pad pays 128 * this in EU. An energy hatch only holds 16 times its",
+                "voltage, so a launch never asks for more than 90% of what the pad's hatches can store, whatever this",
+                "is set to. Default: 10"
         })
         @Configurable.Range(min = 0, max = 10000000)
-        public int launchEnergyAmpTicks = 1200;
+        public int launchEnergyAmpTicks = 10;
 
         @Configurable
         @Configurable.Comment({

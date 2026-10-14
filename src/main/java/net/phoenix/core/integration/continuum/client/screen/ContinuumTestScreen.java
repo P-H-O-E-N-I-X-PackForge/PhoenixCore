@@ -58,6 +58,7 @@ public class ContinuumTestScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        MapUi.refreshTheme();
         renderBackground(graphics);
 
         long now = Util.getMillis();

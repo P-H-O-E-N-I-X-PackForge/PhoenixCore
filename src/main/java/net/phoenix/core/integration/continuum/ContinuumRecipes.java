@@ -52,6 +52,34 @@ public final class ContinuumRecipes {
                 .duration(600).EUt(VA[HV])
                 .save(provider);
 
+        ASSEMBLER_RECIPES.recipeBuilder("continuum_hull_refit_mk2")
+                .inputItems(plate, Titanium, 8)
+                .inputItems(plate, StainlessSteel, 8)
+                .inputItems(CustomTags.HV_CIRCUITS, 2)
+                .inputFluids(SolderingAlloy, 144)
+                .outputItems(ContinuumRegistry.REFIT_MK2)
+                .duration(400).EUt(VA[HV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("continuum_hull_refit_mk3")
+                .inputItems(plate, TungstenSteel, 8)
+                .inputItems(plate, Titanium, 8)
+                .inputItems(CustomTags.EV_CIRCUITS, 2)
+                .inputFluids(SolderingAlloy, 288)
+                .outputItems(ContinuumRegistry.REFIT_MK3)
+                .duration(500).EUt(VA[EV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("continuum_hull_refit_mk4")
+                .inputItems(plate, Iridium, 4)
+                .inputItems(plate, TungstenSteel, 8)
+                .inputItems(CustomTags.IV_CIRCUITS, 2)
+                .inputFluids(SolderingAlloy, 576)
+                .inputFluids(net.phoenix.core.common.data.materials.AstralMaterials.ENSORCELLED_WEAVE.getFluid(288))
+                .outputItems(ContinuumRegistry.REFIT_MK4)
+                .duration(600).EUt(VA[IV])
+                .save(provider);
+
         ASSEMBLER_RECIPES.recipeBuilder("continuum_module_hull")
                 .inputItems(plate, Titanium, 6)
                 .inputItems(plate, StainlessSteel, 4)

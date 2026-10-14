@@ -192,6 +192,7 @@ public class PhoenixCore {
         net.phoenix.core.common.block.cinema.CinemaBlocks.init();
         net.phoenix.core.integration.continuum.ContinuumRegistry.init();
         GrowthBlocks.init();
+        net.phoenix.core.integration.growth.GrowthItems.init();
         AstralBlocks.init();
         AstralItems.init();
         PhoenixItems.init();

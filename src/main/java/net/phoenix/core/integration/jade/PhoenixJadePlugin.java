@@ -29,6 +29,7 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(new AstralThreadHatchProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new JadeGregPackProvider(), OmniPackBlockEntity.class);
         registration.registerBlockDataProvider(new VaultProvider(), MetaMachine.class);
+        registration.registerBlockDataProvider(new GrowthMachineProvider(), MetaMachine.class);
     }
 
     @Override
@@ -44,5 +45,6 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(new AstralThreadHatchProvider(), Block.class);
         registration.registerBlockComponent(new JadeGregPackProvider(), OmniPackBlock.class);
         registration.registerBlockComponent(new VaultProvider(), Block.class);
+        registration.registerBlockComponent(new GrowthMachineProvider(), Block.class);
     }
 }

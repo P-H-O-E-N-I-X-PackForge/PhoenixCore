@@ -59,6 +59,7 @@ public class ContinuumPdimScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        MapUi.refreshTheme();
         g.fill(0, 0, width, height, 0xCC000000);
 
         scale = Math.max(0.4f, Math.min(1.0f, Math.min((width - 40.0f) / W, (height - 40.0f) / H)));
@@ -71,7 +72,7 @@ public class ContinuumPdimScreen extends Screen {
 
         int x = (vw - W) / 2;
         int y = (vh - H) / 2;
-        g.fill(x, y, x + W, y + H, 0xFF0b0a18);
+        g.fill(x, y, x + W, y + H, MapUi.PANEL_SOLID);
         g.renderOutline(x, y, W, H, MapUi.PANEL_LINE);
         rects.clear();
 
@@ -142,9 +143,9 @@ public class ContinuumPdimScreen extends Screen {
     private void button(GuiGraphics g, int x, int y, int w, String label, String id, boolean enabled, boolean selected,
                         int mx, int my) {
         boolean hover = enabled && MapUi.inside(mx, my, x, y, w, 18);
-        g.fill(x, y, x + w, y + 18, !enabled ? 0xFF14122a : selected ? 0xFF3a3380 : hover ? 0xFF2c2760 : 0xFF1d1a40);
+        g.fill(x, y, x + w, y + 18, !enabled ? MapUi.BUTTON_OFF : selected ? MapUi.BUTTON_ON : hover ? MapUi.BUTTON_HOVER : MapUi.BUTTON);
         g.renderOutline(x, y, w, 18, selected ? MapUi.FRAME : MapUi.PANEL_LINE);
-        g.drawCenteredString(font, label, x + w / 2, y + 5, enabled ? MapUi.TITLE : 0xFF565070);
+        g.drawCenteredString(font, label, x + w / 2, y + 5, enabled ? MapUi.TITLE : MapUi.DIM);
         if (enabled) rects.add(new Object[] { id, x, y, w });
     }
 

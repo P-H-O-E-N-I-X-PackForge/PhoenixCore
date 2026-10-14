@@ -11,7 +11,7 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "phoenixcore:block/casings/multiblock/machine_casing_invariant_naquadah_alloy",
-          "overlay_front": "phoenixcore:block/multiblock/tesla_tower/overlay_front"
+          "overlay_front": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front"
         }
       }
     },
@@ -20,7 +20,7 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "phoenixcore:block/casings/multiblock/machine_casing_invariant_naquadah_alloy",
-          "overlay_front": "phoenixcore:block/multiblock/tesla_tower/overlay_front"
+          "overlay_front": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front"
         }
       }
     },
@@ -29,8 +29,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "phoenixcore:block/casings/multiblock/machine_casing_invariant_naquadah_alloy",
-          "overlay_front": "phoenixcore:block/multiblock/tesla_tower/overlay_front_active",
-          "overlay_front_emissive": "phoenixcore:block/multiblock/tesla_tower/overlay_front_active_emissive"
+          "overlay_front": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front_active",
+          "overlay_front_emissive": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front_active_emissive"
         }
       }
     },
@@ -39,8 +39,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "phoenixcore:block/casings/multiblock/machine_casing_invariant_naquadah_alloy",
-          "overlay_front": "phoenixcore:block/multiblock/tesla_tower/overlay_front_active",
-          "overlay_front_emissive": "phoenixcore:block/multiblock/tesla_tower/overlay_front_active_emissive"
+          "overlay_front": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front_active",
+          "overlay_front_emissive": "phoenixcore:block/multiblock/astral_spinning_wheel/overlay_front_active_emissive"
         }
       }
     }

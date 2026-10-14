@@ -1,4 +1,4 @@
-package net.phoenix.core.integration.growth.example;
+package net.phoenix.core.integration.growth.machine;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 
@@ -7,8 +7,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
+import net.phoenix.core.integration.growth.GrowthBlocks;
 import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
+import net.phoenix.core.integration.growth.GrowthItems;
 import net.phoenix.core.integration.growth.GrowthStage;
+import net.phoenix.core.integration.growth.GrowthStages;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
 import net.phoenix.core.integration.growth.tendril.TendrilShapeRegistry;
 import net.phoenix.core.integration.growth.tendril.TendrilWeightCondition;
@@ -20,17 +23,16 @@ import java.util.List;
 public class BloomvineCoreMachine extends GrowthMultiblockMachine {
 
     private static final int MAX_MATURITY = 5;
-    private static final IntList CORE_BOUNDS = IntList.of(1, 1, 1, 1, 1, 1);
-    private static final List<GrowthStage> STAGES = buildMaturityTicks();
+    // a low, wide bed: 7 x 3 x 7 with the controller on the front face at floor level. It never grows; it matures.
+    public static final IntList MAX_BOUNDS = GrowthStages.bounds(2, 0, 3, 3, 0, 6);
+    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(BloomvineCoreMachine::buildMaturityTicks);
 
-    private static final List<BlockPos> ANCHORS = List.of(
-            new BlockPos(2, 2, 0), new BlockPos(-2, 2, 0),
-            new BlockPos(0, 2, 2), new BlockPos(0, 2, -2));
 
     private static List<GrowthStage> buildMaturityTicks() {
-        return java.util.stream.IntStream.rangeClosed(0, MAX_MATURITY)
-                .mapToObj(i -> new GrowthStage(CORE_BOUNDS, List.<ItemStack>of()))
-                .toList();
+        // a bloomvine core stays the same size; it matures into richer harvests, and at full maturity a double batch
+        return GrowthStages.fixed(MAX_BOUNDS, MAX_MATURITY).costItems(GrowthItems.GROWTH_SEED::get, 1)
+                .speedPerStage(0.04f).outputPerStage(0.10f)
+                .batchAtMax(2).build();
     }
 
     public BloomvineCoreMachine(BlockEntityCreationInfo holder) {
@@ -39,7 +41,17 @@ public class BloomvineCoreMachine extends GrowthMultiblockMachine {
 
     @Override
     protected List<GrowthStage> getGrowthStages() {
-        return STAGES;
+        return STAGES.get();
+    }
+
+    /** The stages, for the recipe viewer. */
+    public static List<GrowthStage> stages() {
+        return STAGES.get();
+    }
+
+    @Override
+    protected boolean chargeOnAutoGrowth() {
+        return true;
     }
 
     @Override
@@ -49,12 +61,12 @@ public class BloomvineCoreMachine extends GrowthMultiblockMachine {
 
     @Override
     protected BlockState getTendrilBlockState() {
-        return PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get().defaultBlockState();
+        return GrowthBlocks.GROWTH_TENDRIL.get().defaultBlockState();
     }
 
     @Override
     protected List<BlockPos> getTendrilAnchors() {
-        return ANCHORS;
+        return roofAnchors();
     }
 
     @Override

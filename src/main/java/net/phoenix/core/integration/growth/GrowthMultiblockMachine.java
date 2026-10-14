@@ -8,11 +8,27 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
+import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.phoenix.core.api.gui.widget.ActionButtons;
@@ -33,6 +49,7 @@ import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.value.sync.PanelSyncManager;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +64,9 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         PROGRESSED,
         MAX_STAGE,
         OBSTRUCTED,
-        INSUFFICIENT_COST
+        INSUFFICIENT_COST,
+        /** Growth is held: paused, or already at the stage the player capped it at. */
+        PAUSED
     }
 
     @Getter
@@ -61,13 +80,216 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     @SyncToClient
     protected float growthProgress = 0f;
 
+    /** How many tendrils have finished growing (or been stopped) so far; see {@link #getMaxMaturedTendrils()}. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected int maturedTendrils = 0;
+
+    public static final int STALL_NONE = 0;
+    public static final int STALL_BLOCKED = 1;
+    public static final int STALL_COST = 2;
+
+    /** Why growth is waiting: nothing, something in the way of the next stage, or the next stage's cost unpaid. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected int growthStall = STALL_NONE;
+
+    // ---- player control: only in force while a growth control hatch is part of the structure ----
+
+    /** Automatic growth is held. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected boolean growthPaused = false;
+
+    /** The stage growth stops at. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected int targetStage = 99;
+
+    /** Whether tendrils grow at all. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected boolean tendrilsEnabled = true;
+
+    /** Which of the machine's tendril anchors are used (bit n is anchor n). */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected int anchorMask = 0xFFFF;
+
+    /** How many tendril blocks are standing now; they speed the machine up and make it richer. */
+    @Getter
+    @SaveField
+    @SyncToClient
+    protected int tendrilBlockCount = 0;
+
+    /** Recipe data key: the recipe will not start until the machine has reached at least this growth stage. */
+    public static final String MIN_STAGE_KEY = "min_growth_stage";
+
     protected GrowthMultiblockMachine(BlockEntityCreationInfo holder) {
         super(holder);
     }
 
     protected abstract List<GrowthStage> getGrowthStages();
 
+    /** The stage the machine is at now. */
+    public GrowthStage currentStage() {
+        List<GrowthStage> stages = getGrowthStages();
+        return stages.get(Math.max(0, Math.min(growthStage, stages.size() - 1)));
+    }
+
+    /**
+     * The recipe modifier every growing machine uses: the machine's current stage makes its recipes faster, richer, or
+     * bigger (see {@link GrowthStage}). Add it to the definition's {@code recipeModifiers}.
+     */
+    public static ModifierFunction stageModifier(MetaMachine machine, GTRecipe recipe) {
+        if (!(machine instanceof GrowthMultiblockMachine growing)) return ModifierFunction.IDENTITY;
+        GrowthStage stage = growing.currentStage();
+        float speed = growing.totalSpeedBonus();
+        float extra = growing.totalOutputBonus();
+        if (speed <= 0.0f && extra <= 0.0f && stage.batch() <= 1) return ModifierFunction.IDENTITY;
+
+        var builder = ModifierFunction.builder();
+        if (speed > 0.0f) builder.durationMultiplier(Math.max(0.1, 1.0 - speed));
+        double batch = Math.max(1, stage.batch());
+        double output = batch * (1.0 + Math.max(0.0f, extra));
+        if (batch > 1) {
+            builder.inputModifier(ContentModifier.multiplier(batch)).eutMultiplier(batch);
+        }
+        if (output != 1.0) builder.outputModifier(ContentModifier.multiplier(output));
+        return builder.build();
+    }
+
+    /** Share of recipe time the machine saves: its stage plus its tendrils. */
+    public float totalSpeedBonus() {
+        return Math.min(0.75f, currentStage().speedBonus() + tendrilSpeedBonus());
+    }
+
+    /** Extra share of output: its stage plus its tendrils. */
+    public float totalOutputBonus() {
+        return Math.max(0.0f, currentStage().outputBonus() + tendrilOutputBonus());
+    }
+
+    /** What the standing tendril blocks save on recipe time: partly grown tendrils count for what they have grown. */
+    public float tendrilSpeedBonus() {
+        return Math.min(getMaxTendrilSpeedBonus(), tendrilBlockCount * getTendrilSpeedPerBlock());
+    }
+
+    /** What the standing tendril blocks add to output. */
+    public float tendrilOutputBonus() {
+        return Math.min(getMaxTendrilOutputBonus(), tendrilBlockCount * getTendrilOutputPerBlock());
+    }
+
+    protected float getTendrilSpeedPerBlock() {
+        return 0.004f;
+    }
+
+    protected float getMaxTendrilSpeedBonus() {
+        return 0.25f;
+    }
+
+    protected float getTendrilOutputPerBlock() {
+        return 0.005f;
+    }
+
+    protected float getMaxTendrilOutputBonus() {
+        return 0.30f;
+    }
+
+    /** Whether growth breaks the blocks in its way when it is not under control. On by default. */
+    protected boolean overridesBlocks() {
+        return true;
+    }
+
+    /** Whether a growth control hatch is part of the structure: growth is then the player's to direct, and safe. */
+    public boolean isControlled() {
+        for (var part : getParts()) {
+            if (part instanceof GrowthControlHatch) return true;
+        }
+        return false;
+    }
+
+    private boolean atCap(int next, List<GrowthStage> stages) {
+        return next >= stages.size() || (isControlled() && next > targetStage);
+    }
+
+    /** Whether something stops growth reaching this block: a ward, or (under control, or if unbreakable) any block. */
+    private boolean blocksGrowth(ServerLevel level, BlockPos pos, BlockState existing) {
+        if (isWarded(level, pos)) return true;
+        if (existing.isAir() || existing.canBeReplaced()) return false;
+        return isControlled() || !overridesBlocks() || existing.getDestroySpeed(level, pos) < 0;
+    }
+
+    // ---- the controls (they do nothing without a hatch) ----
+
+    public void togglePaused() {
+        if (!isControlled()) return;
+        growthPaused = !growthPaused;
+        getSyncDataHolder().markClientSyncFieldDirty("growthPaused");
+        setChanged();
+    }
+
+    public void adjustTargetStage(int delta) {
+        if (!isControlled()) return;
+        targetStage = Math.max(0, Math.min(maxStage(), Math.min(targetStage, maxStage()) + delta));
+        getSyncDataHolder().markClientSyncFieldDirty("targetStage");
+        setChanged();
+    }
+
+    public void toggleTendrils() {
+        if (!isControlled()) return;
+        tendrilsEnabled = !tendrilsEnabled;
+        getSyncDataHolder().markClientSyncFieldDirty("tendrilsEnabled");
+        setChanged();
+    }
+
+    public void toggleAnchor(int index) {
+        if (!isControlled()) return;
+        anchorMask ^= 1 << index;
+        getSyncDataHolder().markClientSyncFieldDirty("anchorMask");
+        setChanged();
+    }
+
+    /** A recipe that needs a higher growth stage than the machine has reached does not start. */
+    @Override
+    public boolean beforeWorking(@Nullable GTRecipe recipe) {
+        if (recipe != null && recipe.data.contains(MIN_STAGE_KEY) &&
+                growthStage < recipe.data.getInt(MIN_STAGE_KEY)) {
+            return false;
+        }
+        return super.beforeWorking(recipe);
+    }
+
     protected abstract BlockState getShellBlockState();
+
+    /**
+     * Whether advancing a stage by itself (as recipes finish) takes the stage's cost from the input buses, the way the
+     * controller's button does. If the buses cannot pay, growth waits at the edge of the next stage until they can.
+     * Off by default, which makes automatic growth free.
+     */
+    protected boolean chargeOnAutoGrowth() {
+        return false;
+    }
+
+    public int maxStage() {
+        return Math.max(0, getGrowthStages().size() - 1);
+    }
+
+    public int growingTendrils() {
+        return activeTendrils.size();
+    }
+
+    private void setStall(int stall) {
+        if (growthStall == stall) return;
+        growthStall = stall;
+        getSyncDataHolder().markClientSyncFieldDirty("growthStall");
+        setChanged();
+    }
 
     @Override
     public void afterWorking() {
@@ -83,13 +305,14 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     }
 
     public GrowthResult tryGrow() {
-        return addGrowthProgress(getGrowthPerRecipe());
+        if (isControlled() && (growthPaused || growthStage >= targetStage)) return GrowthResult.PAUSED;
+        return addGrowthProgress(getGrowthPerRecipe(), false);
     }
 
-    private GrowthResult addGrowthProgress(float amount) {
+    private GrowthResult addGrowthProgress(float amount, boolean paid) {
         List<GrowthStage> stages = getGrowthStages();
         int next = growthStage + 1;
-        if (next >= stages.size()) return GrowthResult.MAX_STAGE;
+        if (atCap(next, stages)) return GrowthResult.MAX_STAGE;
         if (amount <= 0f) return GrowthResult.PROGRESSED;
 
         growthProgress += amount;
@@ -100,7 +323,32 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         }
 
         growthProgress -= 1f;
+
+        // automatic growth can be made to cost something: check nothing is in the way first, so a stage that cannot
+        // be built is never paid for, then take the cost
+        if (!paid && chargeOnAutoGrowth() && getLevel() instanceof ServerLevel serverLevel) {
+            BlockPos obstruction = firstObstruction(serverLevel, stages, next);
+            if (obstruction != null) {
+                onGrowthObstructed(obstruction);
+                growthProgress = Math.min(growthProgress + 1f, 0.999f);
+                setStall(STALL_BLOCKED);
+                getSyncDataHolder().markClientSyncFieldDirty("growthProgress");
+                setChanged();
+                return GrowthResult.OBSTRUCTED;
+            }
+            List<ItemStack> cost = stages.get(next).cost();
+            if (!cost.isEmpty() && !consumeCost(cost)) {
+                growthProgress = Math.min(growthProgress + 1f, 0.999f);
+                setStall(STALL_COST);
+                getSyncDataHolder().markClientSyncFieldDirty("growthProgress");
+                setChanged();
+                return GrowthResult.INSUFFICIENT_COST;
+            }
+        }
+
         GrowthResult result = advanceStage();
+        setStall(result == GrowthResult.SUCCESS ? STALL_NONE :
+                result == GrowthResult.OBSTRUCTED ? STALL_BLOCKED : growthStall);
         if (result != GrowthResult.SUCCESS) {
 
             growthProgress = Math.min(growthProgress + 1f, 0.999f);
@@ -120,12 +368,12 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
         List<GrowthStage> stages = getGrowthStages();
         int next = growthStage + 1;
-        if (next >= stages.size()) return GrowthResult.MAX_STAGE;
+        if (atCap(next, stages)) return GrowthResult.MAX_STAGE;
 
         List<ItemStack> cost = scaleCost(stages.get(next).cost(), amount);
         if (!cost.isEmpty() && !consumeCost(cost)) return GrowthResult.INSUFFICIENT_COST;
 
-        return addGrowthProgress(amount);
+        return addGrowthProgress(amount, true);
     }
 
     private List<ItemStack> scaleCost(List<ItemStack> cost, float amount) {
@@ -139,10 +387,34 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return scaled;
     }
 
+    /** The first block in the way of the next stage's shell, or null if it is all clear. */
+    private @Nullable BlockPos firstObstruction(ServerLevel level, List<GrowthStage> stages, int next) {
+        IntList from = stages.get(growthStage).bounds();
+        IntList to = stages.get(next).bounds();
+        for (BlockPos pos : GrowthPatternHelper.diffShellPositions(getBlockPos(), getFrontFacing(), getUpwardsFacing(),
+                from, to)) {
+            if (blocksGrowth(level, pos, level.getBlockState(pos))) return pos;
+        }
+        return null;
+    }
+
+    /** A burst of spores and a soft sound where the shell has just grown. */
+    private void growthEffects(ServerLevel level, List<BlockPos> positions) {
+        if (positions.isEmpty()) positions = List.of(getBlockPos().above());
+        RandomSource random = level.getRandom();
+        for (int i = 0; i < Math.min(24, positions.size()); i++) {
+            BlockPos pos = positions.get(random.nextInt(positions.size()));
+            level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3,
+                    0.4, 0.4, 0.4, 0.02);
+        }
+        level.playSound(null, getBlockPos(), SoundEvents.MOSS_PLACE, SoundSource.BLOCKS, 1.0f, 0.8f);
+        level.playSound(null, getBlockPos(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.7f, 1.4f);
+    }
+
     private GrowthResult advanceStage() {
         List<GrowthStage> stages = getGrowthStages();
         int next = growthStage + 1;
-        if (next >= stages.size()) return GrowthResult.MAX_STAGE;
+        if (atCap(next, stages)) return GrowthResult.MAX_STAGE;
         if (!(getLevel() instanceof ServerLevel level)) return GrowthResult.MAX_STAGE;
 
         IntList from = stages.get(growthStage).bounds();
@@ -152,17 +424,20 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
                 getBlockPos(), getFrontFacing(), getUpwardsFacing(), from, to);
 
         for (BlockPos pos : newPositions) {
-            BlockState existing = level.getBlockState(pos);
-            if (!existing.isAir() && !existing.canBeReplaced()) {
+            if (blocksGrowth(level, pos, level.getBlockState(pos))) {
                 onGrowthObstructed(pos);
                 return GrowthResult.OBSTRUCTED;
             }
         }
 
+        // the whole footprint is clear (or, with no control hatch, will be made clear): wild growth breaks what is there
         BlockState shell = getShellBlockState();
         for (BlockPos pos : newPositions) {
+            BlockState existing = level.getBlockState(pos);
+            if (!existing.isAir() && !existing.canBeReplaced()) level.destroyBlock(pos, true);
             level.setBlock(pos, shell, 3);
         }
+        growthEffects(level, newPositions);
 
         growthStage = next;
         getSyncDataHolder().markClientSyncFieldDirty("growthStage");
@@ -226,8 +501,106 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
     private final List<TendrilInstance> activeTendrils = new ArrayList<>();
 
+    /** Saves the growing tendrils with the machine, so a reload does not lose them. */
+    @SaveField
+    private final INBTSerializable<Tag> tendrilStore = new TendrilStore();
+
+    private final class TendrilStore implements INBTSerializable<Tag> {
+
+        @Override
+        public Tag serializeNBT() {
+            ListTag list = new ListTag();
+            for (TendrilInstance tendril : activeTendrils) {
+                CompoundTag tag = new CompoundTag();
+                tag.putLong("Anchor", tendril.anchor.asLong());
+                tag.putString("Shape", tendril.shape.id().toString());
+                tag.putInt("Progress", tendril.progress);
+                tag.putBoolean("Blocked", tendril.blocked);
+                list.add(tag);
+            }
+            CompoundTag whole = new CompoundTag();
+            whole.put("Active", list);
+            whole.put("Placed", new LongArrayTag(placedTendrils.toLongArray()));
+            return whole;
+        }
+
+        @Override
+        public void deserializeNBT(Tag nbt) {
+            activeTendrils.clear();
+            placedTendrils.clear();
+            ListTag list = new ListTag();
+            if (nbt instanceof CompoundTag whole) {
+                list = whole.getList("Active", Tag.TAG_COMPOUND);
+                for (long packed : whole.getLongArray("Placed")) placedTendrils.add(packed);
+            } else if (nbt instanceof ListTag old) {
+                list = old;
+            }
+            tendrilBlockCount = placedTendrils.size();
+            for (Tag entry : list) {
+                if (!(entry instanceof CompoundTag tag)) continue;
+                TendrilShape shape = TendrilShapeRegistry.get(new ResourceLocation(tag.getString("Shape")));
+                if (shape == null) continue;
+                TendrilInstance tendril = new TendrilInstance(BlockPos.of(tag.getLong("Anchor")), shape);
+                tendril.progress = tag.getInt("Progress");
+                tendril.blocked = tag.getBoolean("Blocked");
+                activeTendrils.add(tendril);
+            }
+        }
+    }
+
+    /** Every tendril block currently standing, as packed positions, so tendrils can boost the machine. */
+    private final LongOpenHashSet placedTendrils = new LongOpenHashSet();
+
+    private static final int MAX_TRACKED_TENDRIL_BLOCKS = 4096;
+
+    /** Checks a few of the recorded tendril blocks are still there; ones that were broken stop counting. */
+    private void validateTendrilBlocks(ServerLevel level) {
+        if (placedTendrils.isEmpty()) return;
+        long[] sample = placedTendrils.toLongArray();
+        RandomSource random = level.getRandom();
+        boolean changed = false;
+        for (int i = 0; i < Math.min(12, sample.length); i++) {
+            long packed = sample[random.nextInt(sample.length)];
+            BlockPos pos = BlockPos.of(packed);
+            if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() != getTendrilBlockState().getBlock()) {
+                changed |= placedTendrils.remove(packed);
+            }
+        }
+        if (changed) syncTendrilBlocks();
+    }
+
+    private void syncTendrilBlocks() {
+        tendrilBlockCount = placedTendrils.size();
+        getSyncDataHolder().markClientSyncFieldDirty("tendrilBlockCount");
+        setChanged();
+    }
+
+    /** How many tendrils the machine grows over its lifetime before it stops sending out new ones. */
+    protected int getMaxMaturedTendrils() {
+        return 24;
+    }
+
     protected List<BlockPos> getTendrilAnchors() {
         return List.of();
+    }
+
+    /**
+     * Anchors at the four corners of the roof, just inside the walls, for machines whose tendrils climb out of the top.
+     * They follow the shell as it grows.
+     */
+    protected List<BlockPos> roofAnchors() {
+        IntList b = currentStage().bounds();
+        int up = b.getInt(0);
+        int left = b.getInt(2);
+        int right = b.getInt(3);
+        int back = b.getInt(5);
+        int near = Math.min(1, back);
+        int far = Math.max(back - 1, near);
+        int sideLeft = -Math.max(left - 1, 0);
+        int sideRight = Math.max(right - 1, 0);
+        return List.of(
+                new BlockPos(near, up + 1, sideLeft), new BlockPos(near, up + 1, sideRight),
+                new BlockPos(far, up + 1, sideLeft), new BlockPos(far, up + 1, sideRight));
     }
 
     protected int getMaxTendrils() {
@@ -244,25 +617,43 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
     public void tryGrowTendril() {
         if (!(getLevel() instanceof ServerLevel level)) return;
+        validateTendrilBlocks(level);
+        if (isControlled() && !tendrilsEnabled) return;
         List<BlockPos> anchors = getTendrilAnchors();
         if (anchors.isEmpty()) return;
 
+        // a tendril that has finished or been stopped retires: its blocks stay, and its slot is free again
+        int before = activeTendrils.size();
+        activeTendrils.removeIf(t -> t.blocked || t.progress >= t.shape.steps().size());
+        if (activeTendrils.size() != before) {
+            maturedTendrils += before - activeTendrils.size();
+            getSyncDataHolder().markClientSyncFieldDirty("maturedTendrils");
+            setChanged();
+        }
+
         for (TendrilInstance tendril : activeTendrils) {
-            if (tendril.blocked || tendril.progress >= tendril.shape.steps().size()) continue;
             extendTendril(level, tendril);
+            setChanged();
             return;
         }
 
-        if (activeTendrils.size() >= getMaxTendrils()) return;
+        if (activeTendrils.size() >= getMaxTendrils() || maturedTendrils >= getMaxMaturedTendrils()) return;
 
         RandomSource random = level.getRandom();
         TendrilShape shape = TendrilShapeRegistry.pickWeighted(this, random);
         if (shape == null) return;
 
-        BlockPos anchorOffset = anchors.get(random.nextInt(anchors.size()));
+        // under control, only the chosen anchors send tendrils out
+        List<Integer> usable = new ArrayList<>();
+        for (int i = 0; i < anchors.size(); i++) {
+            if (!isControlled() || (anchorMask & (1 << i)) != 0) usable.add(i);
+        }
+        if (usable.isEmpty()) return;
+        BlockPos anchorOffset = anchors.get(usable.get(random.nextInt(usable.size())));
         BlockPos anchor = GrowthPatternHelper.rotateToWorld(anchorOffset, getFrontFacing(), getUpwardsFacing())
                 .offset(getBlockPos());
         activeTendrils.add(new TendrilInstance(anchor, shape));
+        setChanged();
     }
 
     private void extendTendril(ServerLevel level, TendrilInstance tendril) {
@@ -280,9 +671,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             return;
         }
 
+        // a tendril can stop part way (a partly grown tendril still counts), but is never held up by what it may break
         BlockState existing = level.getBlockState(target);
-        if (!existing.isAir()) {
-            if (existing.getDestroySpeed(level, target) < 0) {
+        if (!existing.isAir() && !existing.canBeReplaced()) {
+            if (isControlled() || !overridesBlocks() || existing.getDestroySpeed(level, target) < 0) {
                 tendril.blocked = true;
                 return;
             }
@@ -290,7 +682,15 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         }
 
         level.setBlock(target, getTendrilBlockState(), 3);
+        if (placedTendrils.size() < MAX_TRACKED_TENDRIL_BLOCKS) {
+            placedTendrils.add(target.asLong());
+            syncTendrilBlocks();
+        }
+        level.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, target.getX() + 0.5, target.getY() + 0.5,
+                target.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.01);
+        level.playSound(null, target, SoundEvents.MOSS_PLACE, SoundSource.BLOCKS, 0.4f, 1.2f);
         tendril.progress++;
+        setChanged();
     }
 
     private boolean isWarded(ServerLevel level, BlockPos pos) {
@@ -321,9 +721,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     @Override
     public @Nullable PhoenixSkyLayer createSkyLayer() {
         float t = getGrowthStages().isEmpty() ? 0f : growthStage / (float) Math.max(1, getGrowthStages().size() - 1);
+        // pale and green while it is young, deep teal and violet when it has grown
         return new NebulaSkyLayer(
-                new float[] { 0.35f, 0.65f, 1.0f },
-                new float[] { 0.85f, 0.35f, 0.95f },
+                new float[] { 0.30f + 0.05f * t, 0.55f + 0.40f * t, 0.35f + 0.25f * t },
+                new float[] { 0.20f + 0.65f * t, 0.35f, 0.30f + 0.65f * t },
                 0.35f + 0.35f * t,
                 1.0f + 0.5f * t,
                 getBlockPos().asLong() % 1000);
@@ -345,6 +746,86 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
         widgets.addAll(StageTrackerWidget.of(syncManager, "growthStagePips", this::getGrowthStage,
                 getGrowthStages().size() - 1));
+
+        // what the current stage does, and what the next one costs
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
+            GrowthStage stage = currentStage();
+            if (!stage.hasBonus()) {
+                return net.minecraft.network.chat.Component.literal("Stage " + growthStage + ": no bonus yet")
+                        .withStyle(ChatFormatting.GRAY);
+            }
+            StringBuilder text = new StringBuilder("Stage " + growthStage + ":");
+            if (stage.speedBonus() > 0.0f) text.append(" ").append(Math.round(stage.speedBonus() * 100)).append("% faster");
+            if (stage.outputBonus() > 0.0f) {
+                text.append(" +").append(Math.round(stage.outputBonus() * 100)).append("% output");
+            }
+            if (stage.batch() > 1) text.append(" x").append(stage.batch()).append(" batch");
+            return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GREEN);
+        })));
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
+            List<GrowthStage> stages = getGrowthStages();
+            if (growthStage + 1 >= stages.size()) {
+                return net.minecraft.network.chat.Component.literal("Fully grown").withStyle(ChatFormatting.GOLD);
+            }
+            StringBuilder text = new StringBuilder("Next stage needs:");
+            List<ItemStack> cost = stages.get(growthStage + 1).cost();
+            if (cost.isEmpty()) text.append(" nothing");
+            for (ItemStack required : cost) {
+                text.append(" ").append(required.getCount()).append("x ").append(required.getHoverName().getString());
+            }
+            return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GRAY);
+        })));
+        // control: only in force with a growth control hatch fitted, so without one the buttons do nothing
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> isControlled() ?
+                net.minecraft.network.chat.Component.literal("Growth control: " + (growthPaused ? "PAUSED" : "running") +
+                        "   target stage " + Math.min(targetStage, maxStage()) + "   tendrils " +
+                        (tendrilsEnabled ? "on" : "off")).withStyle(ChatFormatting.AQUA) :
+                net.minecraft.network.chat.Component.literal("No growth control hatch: growth is wild and breaks " +
+                        "what is in its way").withStyle(ChatFormatting.RED))));
+        widgets.add(ActionButtons.simple(syncManager, "growthPause", this::togglePaused,
+                new ItemDrawable(new ItemStack(Items.CLOCK)).asIcon().size(16),
+                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
+                        .literal("Pause or resume growth (needs a growth control hatch)")))));
+        widgets.add(ActionButtons.simple(syncManager, "growthTargetDown", () -> adjustTargetStage(-1),
+                new ItemDrawable(new ItemStack(Items.RED_DYE)).asIcon().size(16),
+                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
+                        .literal("Lower the stage growth stops at")))));
+        widgets.add(ActionButtons.simple(syncManager, "growthTargetUp", () -> adjustTargetStage(1),
+                new ItemDrawable(new ItemStack(Items.LIME_DYE)).asIcon().size(16),
+                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
+                        .literal("Raise the stage growth stops at")))));
+        widgets.add(ActionButtons.simple(syncManager, "growthTendrilsToggle", this::toggleTendrils,
+                new ItemDrawable(new ItemStack(Items.VINE)).asIcon().size(16),
+                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
+                        .literal("Switch tendril growth on or off")))));
+        for (int i = 0; i < Math.min(6, getTendrilAnchors().size()); i++) {
+            final int anchor = i;
+            widgets.add(ActionButtons.simple(syncManager, "growthAnchor" + i, () -> toggleAnchor(anchor),
+                    new ItemDrawable(new ItemStack(Items.ARROW)).asIcon().size(16),
+                    new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
+                            .literal("Toggle tendril side " + (i + 1) + " (it is " +
+                                    ((anchorMask & (1 << i)) != 0 ? "on" : "off") + ")")))));
+        }
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> net.minecraft.network.chat.Component
+                .literal("Tendril blocks: " + tendrilBlockCount + "  (" + Math.round(tendrilSpeedBonus() * 100) +
+                        "% faster, +" + Math.round(tendrilOutputBonus() * 100) + "% output)")
+                .withStyle(ChatFormatting.DARK_GREEN))));
+
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
+            if (growthStall == STALL_COST) {
+                return net.minecraft.network.chat.Component.literal("Growth is waiting: the next stage's cost is not in " +
+                        "the input buses").withStyle(ChatFormatting.RED);
+            }
+            if (growthStall == STALL_BLOCKED) {
+                return net.minecraft.network.chat.Component.literal("Growth is waiting: something is in the way")
+                        .withStyle(ChatFormatting.RED);
+            }
+            return net.minecraft.network.chat.Component.empty();
+        })));
+        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> net.minecraft.network.chat.Component
+                .literal("Tendrils: " + activeTendrils.size() + " growing, " + maturedTendrils + " of " +
+                        getMaxMaturedTendrils() + " grown")
+                .withStyle(ChatFormatting.GRAY))));
 
         brachy.modularui.value.sync.DoubleSyncValue progressSync = syncManager.getOrCreateSyncHandler(
                 "growthProgressPct", brachy.modularui.value.sync.DoubleSyncValue.class,

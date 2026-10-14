@@ -19,7 +19,7 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
-                                         extends AbstractContainerScreen<T> {
+                                         extends AbstractContainerScreen<T> implements IStackedVaultView {
 
     protected static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft",
             "textures/gui/container/generic_54.png");
@@ -270,14 +270,17 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         g.pose().popPose();
     }
 
+    @Override
     public boolean isStackedMode() {
         return menu.getDisplayMode() == VaultDisplayMode.STACKED;
     }
 
+    @Override
     public int getSlotIndex(Slot slot) {
         return menu.slots.indexOf(slot);
     }
 
+    @Override
     public void applyOptimisticPickup(AggregatedStack agg, boolean half) {
         if (agg == null || menu.clientCache == null) return;
         int backingSlot = agg.backingSlots.isEmpty() ? -1 : agg.backingSlots.get(0);
@@ -291,6 +294,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         menu.applyDeltaUpdate();
     }
 
+    @Override
     public void renderStackedCountLabel(GuiGraphics g, Slot slot, long total) {
         String text = formatStackedCount(total);
         final float scale = 0.5f;
@@ -303,6 +307,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         g.pose().popPose();
     }
 
+    @Override
     public boolean renderStackedTooltip(GuiGraphics g, AggregatedStack agg, int x, int y) {
         net.minecraft.world.item.ItemStack display = agg.displayStack.copy();
         display.setCount(1);

@@ -7,12 +7,14 @@ import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
+import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
+
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
-import net.phoenix.core.integration.growth.example.BloomvineCoreMachine;
-import net.phoenix.core.integration.growth.example.CrystalGardenMachine;
-import net.phoenix.core.integration.growth.example.VerdantBloomMachine;
+import net.phoenix.core.integration.growth.machine.BloomvineCoreMachine;
+import net.phoenix.core.integration.growth.machine.CrystalGardenMachine;
+import net.phoenix.core.integration.growth.machine.VerdantBloomMachine;
 
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.blocks;
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.controller;
@@ -21,80 +23,61 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class GrowthMachines {
 
-    public static final MultiblockMachineDefinition CRYSTAL_GARDEN = REGISTRATE
-            .multiblock("crystal_garden", CrystalGardenMachine::new)
-            .langValue("Crystal Garden")
-            .rotationState(RotationState.ALL)
-            .recipeType(PhoenixRecipeTypes.GROWTH_RECIPES)
-            .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
-            .pattern(definition -> GrowthPatternHelper.getPattern(
-                    definition,
-                    Predicates.blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
-                            .or(Predicates.autoAbilities(definition.getRecipeTypes()))
-                            .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)),
-                    CrystalGardenMachine.MAX_BOUNDS))
+    public static final com.gregtechceu.gtceu.api.machine.multiblock.PartAbility GROWTH_CONTROL_ABILITY =
+            new com.gregtechceu.gtceu.api.machine.multiblock.PartAbility("growth_control");
 
-            .model(createWorkableCasingMachineModel(
-                    PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
-                    PhoenixCore.id("block/multiblock/tesla_tower")))
+    /** Fitting one of these puts a growing machine's growth under the player's control, and stops it breaking blocks. */
+    public static final com.gregtechceu.gtceu.api.machine.MachineDefinition GROWTH_CONTROL_HATCH = REGISTRATE
+            .machine("growth_control_hatch", GrowthControlHatch::new)
+            .langValue("Growth Control Hatch")
+            .tier(com.gregtechceu.gtceu.api.GTValues.HV)
+            .rotationState(RotationState.ALL)
+            .abilities(GROWTH_CONTROL_ABILITY)
+            .tooltips(
+                    net.minecraft.network.chat.Component.literal("Fit to a growing machine to take control of it."),
+                    net.minecraft.network.chat.Component.literal(
+                            "\u00a77Pause it, cap its stage, steer its tendrils, and stop it breaking blocks."),
+                    net.minecraft.network.chat.Component.literal(
+                            "\u00a78Without one, growth is wild and overrides whatever is in its way."))
+            .overlayTieredHullModel("growth_control_hatch")
             .register();
 
-    public static final MultiblockMachineDefinition BLOOMVINE_CORE = REGISTRATE
-            .multiblock("bloomvine_core", BloomvineCoreMachine::new)
-            .langValue("Bloomvine Core")
-            .rotationState(RotationState.ALL)
-            .recipeType(PhoenixRecipeTypes.GROWTH_RECIPES)
-            .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
+    /** A growing-cube machine: a shell that grows outward from the controller, in casing or living shell. */
+    private static <T extends GrowthMultiblockMachine> MultiblockMachineDefinition cubeGrower(
+                                                                                              String id,
+                                                                                              String name,
+                                                                                              java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
+                                                                                              com.gregtechceu.gtceu.api.recipe.GTRecipeType recipeType,
+                                                                                              it.unimi.dsi.fastutil.ints.IntList maxBounds) {
+        return REGISTRATE
+                .multiblock(id, info -> factory.apply(info))
+                .langValue(name)
+                .rotationState(RotationState.ALL)
+                .recipeType(recipeType)
+                .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT, GrowthMultiblockMachine::stageModifier)
+                .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
+                .pattern(definition -> GrowthPatternHelper.getPattern(
+                        definition,
+                        Predicates.blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
+                                .or(Predicates.blocks(GrowthBlocks.GROWTH_SHELL.get()))
+                                .or(Predicates.abilities(GROWTH_CONTROL_ABILITY).setMaxGlobalLimited(1))
+                                .or(Predicates.autoAbilities(definition.getRecipeTypes()))
+                                .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)),
+                        maxBounds))
+                .model(createWorkableCasingMachineModel(
+                        PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
+                        PhoenixCore.id("block/multiblock/tesla_tower")))
+                .register();
+    }
 
-            .pattern(definition -> MultiblockPatternBuilder
-                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
-                    .slice("CCC", "CCC", "CCC")
-                    .slice("CHC", "COC", "CJC")
-                    .slice("CCC", "CCC", "CCC")
-                    .where(' ', Predicates.any())
-                    .where('C', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get()))
-                    .where('H', Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
-                    .where('J', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
-                            .or(Predicates.autoAbilities(definition.getRecipeTypes())))
-                    .where('O', controller(blocks(definition.get())))
-                    .build())
+    public static final MultiblockMachineDefinition CRYSTAL_GARDEN = cubeGrower("crystal_garden", "Crystal Garden",
+            CrystalGardenMachine::new, PhoenixRecipeTypes.GROWTH_RECIPES, CrystalGardenMachine.MAX_BOUNDS);
 
-            .pattern("expanded", definition -> MultiblockPatternBuilder
-                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
-                    .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
-                    .slice("CCCCC", "CCOCC", "CCJCC", "CCHCC", "CCCCC")
-                    .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
-                    .where(' ', Predicates.any())
-                    .where('C', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get()))
-                    .where('H', Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
-                    .where('J', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
-                            .or(Predicates.autoAbilities(definition.getRecipeTypes())))
-                    .where('O', controller(blocks(definition.get())))
-                    .build())
+    public static final MultiblockMachineDefinition BLOOMVINE_CORE = cubeGrower("bloomvine_core", "Bloomvine Core",
+            BloomvineCoreMachine::new, PhoenixRecipeTypes.VINE_GROWTH_RECIPES, BloomvineCoreMachine.MAX_BOUNDS);
 
-            .model(createWorkableCasingMachineModel(
-                    PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
-                    PhoenixCore.id("block/multiblock/tesla_tower")))
-            .register();
-
-    public static final MultiblockMachineDefinition VERDANT_BLOOM = REGISTRATE
-            .multiblock("verdant_bloom", VerdantBloomMachine::new)
-            .langValue("Verdant Bloom")
-            .rotationState(RotationState.ALL)
-            .recipeType(PhoenixRecipeTypes.GROWTH_RECIPES)
-            .appearanceBlock(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY)
-
-            .pattern(definition -> GrowthPatternHelper.getPattern(
-                    definition,
-                    Predicates.blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
-                            .or(Predicates.autoAbilities(definition.getRecipeTypes()))
-                            .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)),
-                    VerdantBloomMachine.MAX_BOUNDS))
-
-            .model(createWorkableCasingMachineModel(
-                    PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
-                    PhoenixCore.id("block/multiblock/tesla_tower")))
-            .register();
+    public static final MultiblockMachineDefinition VERDANT_BLOOM = cubeGrower("verdant_bloom", "Verdant Bloom",
+            VerdantBloomMachine::new, PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES, VerdantBloomMachine.MAX_BOUNDS);
 
     public static void init() {
         BloomvineCoreMachine.registerTendrilShapes();

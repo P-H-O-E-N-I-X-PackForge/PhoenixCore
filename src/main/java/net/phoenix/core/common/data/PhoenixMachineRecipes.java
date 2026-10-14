@@ -202,11 +202,8 @@ public class PhoenixMachineRecipes {
                 .fusionStartEU(140_000_000)
                 .save(provider);
 
-        GROWTH_RECIPES.recipeBuilder(PhoenixCore.id("crystal_garden_growth"))
-                .inputItems(Items.EMERALD, 4)
-                .EUt(30)
-                .duration(200)
-                .save(provider);
+        GrowthRecipes.init(provider);
+        net.phoenix.core.integration.astral.AstralRecipes.init(provider);
 
         ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread")
                 .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 4)
