@@ -28,7 +28,7 @@ public final class ConfluxTerminalRegistry {
 
     static {
         @SuppressWarnings("unchecked")
-        DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new RegistryObject[1];
+        DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new DeferredHolder[1];
 
         TERMINAL = BLOCKS.register("research_terminal",
                 () -> new ResearchTerminalBlock(BlockBehaviour.Properties.of()

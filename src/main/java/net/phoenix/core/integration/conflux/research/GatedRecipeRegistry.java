@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@net.neoforged.fml.common.Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@net.neoforged.fml.common.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
 
     public static final GatedRecipeRegistry INSTANCE = new GatedRecipeRegistry();

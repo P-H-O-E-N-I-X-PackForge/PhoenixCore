@@ -25,26 +25,13 @@ import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.Wir
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
-@GTAddon
+@GTAddon(PhoenixCore.MOD_ID)
 public class PhoenixGTAddon implements IGTAddon {
 
     @Override
     public GTRegistrate getRegistrate() {
         return PhoenixCore.PHOENIX_REGISTRATE;
     }
-
-    @Override
-    public void initializeAddon() {
-        PhoenixCovers.init();
-    }
-
-    @Override
-    public String addonModId() {
-        return PhoenixCore.MOD_ID;
-    }
-
-    @Override
-    public void registerTagPrefixes() {}
 
     @Override
     public void addRecipes(RecipeOutput provider) {
@@ -64,16 +51,5 @@ public class PhoenixGTAddon implements IGTAddon {
         GregPacksModuleBaseRecipes.init(provider);
         GregPacksModuleRecipes.init(provider);
         GregPacksOmniPacksRecipes.init(provider);
-    }
-
-    @Override
-    public void registerElements() {
-        IGTAddon.super.registerElements();
-        PhoenixElements.init();
-    }
-
-    @Override
-    public void registerRecipeCapabilities() {
-        PhoenixRecipeCapabilities.init();
     }
 }

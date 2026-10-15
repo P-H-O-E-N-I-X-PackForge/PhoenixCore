@@ -148,6 +148,10 @@ public class PhoenixCore {
         modEventBus.addListener(this::modifyMaterials);
 
         // GregTech builds its content from its own constructor and so do we, in the same order
+        // elements, recipe capabilities and covers come first, as GregTech's own constructor orders them
+        net.phoenix.core.common.data.materials.PhoenixElements.init();
+        net.phoenix.core.api.capability.PhoenixRecipeCapabilities.init();
+        net.phoenix.core.common.data.PhoenixCovers.init();
         registerMaterialIconSets();
         addMaterials();
         net.phoenix.core.common.data.materials.MaterialLang.register();

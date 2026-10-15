@@ -15,12 +15,12 @@ import net.phoenix.core.integration.gregvaults.client.screen.VaultSortMode;
 import java.util.function.Supplier;
 
 public class CPacketVaultAction implements CustomPacketPayload {
-    public static final Type<CPacketVaultAction> TYPE = new Type<>(
+    public static final CustomPacketPayload.Type<CPacketVaultAction> TYPE = new CustomPacketPayload.Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_vault_action"));
     public static final StreamCodec<RegistryFriendlyByteBuf, CPacketVaultAction> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketVaultAction.encode(msg, buf), CPacketVaultAction::decode);
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
