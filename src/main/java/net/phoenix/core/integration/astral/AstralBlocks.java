@@ -44,7 +44,7 @@ public class AstralBlocks {
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
             .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<AstralRitualPedestalBlock, AstralRitualPedestalBlock> ASTRAL_RITUAL_PEDESTAL;
+    public static final DeferredHolder<Block, AstralRitualPedestalBlock> ASTRAL_RITUAL_PEDESTAL;
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AstralRitualPedestalBlockEntity>> ASTRAL_RITUAL_PEDESTAL_BE;
 
     static {

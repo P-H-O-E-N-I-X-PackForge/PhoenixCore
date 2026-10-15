@@ -19,10 +19,10 @@ public class ConfluxWorldGenLayers {
             () -> new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES),
             confluxDimensionLocations());
 
-    private static Set<ResourceLocation> confluxDimensionLocations() {
-        var locations = new java.util.HashSet<ResourceLocation>();
+    private static Set<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>> confluxDimensionLocations() {
+        var locations = new java.util.HashSet<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>>();
         for (String disciplineId : DISCIPLINE_IDS) {
-            locations.add(ConfluxDimensionFactory.getDimensionKey(disciplineId).location());
+            locations.add(ConfluxDimensionFactory.getDimensionKey(disciplineId));
         }
         return Set.copyOf(locations);
     }

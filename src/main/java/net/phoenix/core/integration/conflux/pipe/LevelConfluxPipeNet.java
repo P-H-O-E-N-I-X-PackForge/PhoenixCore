@@ -2,8 +2,10 @@ package net.phoenix.core.integration.conflux.pipe;
 
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
 
 public class LevelConfluxPipeNet extends LevelPipeNet<ConfluxPipeData, ConfluxPipeNet> {
 
@@ -11,8 +13,8 @@ public class LevelConfluxPipeNet extends LevelPipeNet<ConfluxPipeData, ConfluxPi
 
     public static LevelConfluxPipeNet getOrCreate(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-                tag -> new LevelConfluxPipeNet(level, tag),
-                () -> new LevelConfluxPipeNet(level),
+                new SavedData.Factory<>(() -> new LevelConfluxPipeNet(level),
+                        (tag, provider) -> new LevelConfluxPipeNet(level, tag, provider), null),
                 DATA_ID);
     }
 
@@ -20,8 +22,8 @@ public class LevelConfluxPipeNet extends LevelPipeNet<ConfluxPipeData, ConfluxPi
         super(level);
     }
 
-    public LevelConfluxPipeNet(ServerLevel level, CompoundTag tag) {
-        super(level, tag);
+    public LevelConfluxPipeNet(ServerLevel level, CompoundTag tag, HolderLookup.Provider provider) {
+        super(level, tag, provider);
     }
 
     @Override

@@ -15,7 +15,7 @@ public final class ConfluxStructures {
     private static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister
             .create(Registries.STRUCTURE_PIECE, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<StructureType<ConfluxStructure>, StructureType<ConfluxStructure>> CONFLUX = TYPES.register("conflux_structure",
+    public static final DeferredHolder<StructureType<?>, StructureType<ConfluxStructure>> CONFLUX = TYPES.register("conflux_structure",
             () -> () -> ConfluxStructure.CODEC);
     public static final DeferredHolder<StructurePieceType, StructurePieceType> PIECE = PIECES.register("conflux_piece",
             () -> (StructurePieceType) ConfluxPiece::new);

@@ -46,7 +46,7 @@ public final class ConfluxRegistry {
             @SuppressWarnings("unchecked")
             DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>>[] beHolder = new DeferredHolder[1];
 
-            DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock> block = BLOCKS.register(id,
+            DeferredHolder<Block, ConfluxPipeBlock> block = BLOCKS.register(id,
                     () -> new ConfluxPipeBlock(pipeProps(dt), pipeType, () -> beHolder[0].get()));
 
             DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>> be = BES.register(id,

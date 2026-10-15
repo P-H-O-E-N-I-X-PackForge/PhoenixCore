@@ -67,7 +67,8 @@ public class ConfluxPipeBlock extends PipeBlock<ConfluxPipeType, ConfluxPipeData
 
     @Override
     public boolean canPipeConnectToBlock(IPipeNode<ConfluxPipeType, ConfluxPipeData> selfTile, Direction side,
-                                         @Nullable BlockEntity tile) {
+                                         net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
+        BlockEntity tile = level.getBlockEntity(pos);
         if (tile == null) return false;
         ConfluxDataType dt = pipeType.dataType();
 

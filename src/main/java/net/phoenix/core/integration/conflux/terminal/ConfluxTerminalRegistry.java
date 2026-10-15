@@ -23,7 +23,7 @@ public final class ConfluxTerminalRegistry {
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
             .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<ResearchTerminalBlock, ResearchTerminalBlock> TERMINAL;
+    public static final DeferredHolder<Block, ResearchTerminalBlock> TERMINAL;
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTerminalBlockEntity>> TERMINAL_BE;
 
     static {
