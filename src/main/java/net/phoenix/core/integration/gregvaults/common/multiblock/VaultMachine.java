@@ -27,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultContainerMenu;
@@ -337,7 +336,7 @@ public class VaultMachine extends MultiblockControllerMachine {
                         return menu;
                     },
                     Component.translatable("gui.gregvaults.vault"));
-            NetworkHooks.openScreen(serverPlayer, provider, buf -> buf.writeInt(totalSlots));
+            serverPlayer.openMenu(provider, buf -> buf.writeInt(totalSlots));
             if (windowIdHolder[0] >= 0) {
                 sendFullContents(serverPlayer, windowIdHolder[0]);
             }

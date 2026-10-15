@@ -223,9 +223,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         var level = getLevel();
         if (level == null || level.isClientSide) return;
 
-        PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
-                new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f,
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f,
                         1.0f,
                         (float) getFinalRange()));
 
@@ -281,18 +279,14 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         ResourceLocation soundLoc = ResourceLocation.tryParse(selectedLibrarySound);
         if (soundLoc == null) return;
 
-        PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
-                new S2CPlaySoundPacket(getBlockPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlaySoundPacket(getBlockPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
     }
 
     private void playStreamSound() {
         var level = getLevel();
         if (level == null || level.isClientSide) return;
 
-        PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
-                new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
     }
 
     @Override

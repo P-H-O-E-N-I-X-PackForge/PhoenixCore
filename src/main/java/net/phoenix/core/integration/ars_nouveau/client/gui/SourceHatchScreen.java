@@ -75,7 +75,7 @@ public class SourceHatchScreen extends AbstractContainerScreen<SourceHatchMenu> 
         gg.fill(0, 0, this.width, this.height, 0xFF060712);
 
         float t = (Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0) +
-                Minecraft.getInstance().getFrameTime();
+                Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         int ox = (int) (t * 2) & 255;
         int oy = (int) (t * 1) & 255;
 

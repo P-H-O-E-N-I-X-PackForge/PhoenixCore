@@ -185,7 +185,7 @@ public final class StructureRenderer {
         setupCamera(view, glX, glY, glW, glH);
 
         long currentTick = mc.level != null ? mc.level.getGameTime() : 0;
-        RenderSystem.setShaderGameTime(currentTick, (currentTick + mc.getFrameTime()) / 20f);
+        RenderSystem.setShaderGameTime(currentTick, (currentTick + mc.getTimer().getGameTimeDeltaPartialTick(false)) / 20f);
         snapshotMatrices();
 
         Camera originalCamera = null;
@@ -200,7 +200,7 @@ public final class StructureRenderer {
         try {
             drawVBOs();
 
-            float partial = mc.getFrameTime();
+            float partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
             MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
             turnOnLight();
             float camX = view.eyeX(), camY = view.eyeY(), camZ = view.eyeZ();
@@ -268,7 +268,7 @@ public final class StructureRenderer {
         RenderSystem.activeTexture(33984);
 
         syncCameraEntity(view);
-        camera.setup(world, cameraEntity, false, false, Minecraft.getInstance().getFrameTime());
+        camera.setup(world, cameraEntity, false, false, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
     }
 
     private void syncCameraEntity(CameraView view) {

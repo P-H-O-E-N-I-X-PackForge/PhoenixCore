@@ -69,7 +69,7 @@ public class CinderPreviewTickHandler {
     public static void onRenderWorld(RenderLevelStageEvent event) {
         Minecraft mc = Minecraft.getInstance();
         CinderStructureGhostRenderer.INSTANCE.draw(event.getPoseStack(), mc.renderBuffers().bufferSource(),
-                mc.gameRenderer.getMainCamera(), event.getStage(), mc.getFrameTime());
+                mc.gameRenderer.getMainCamera(), event.getStage(), mc.getTimer().getGameTimeDeltaPartialTick(false));
     }
 
     private static void showGhostPreview(BlockPos anchor, @Nullable Map<BlockPos, BlockInfo> placements,

@@ -23,14 +23,7 @@ public class RadioStreamManager {
 
         int radius = controller.getFinalRange();
 
-        PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                        controller.getBlockPos().getX(),
-                        controller.getBlockPos().getY(),
-                        controller.getBlockPos().getZ(),
-                        radius,
-                        controller.getLevel().dimension())),
-                new S2CPlayStreamPacket(url, controller.getBlockPos(), radius, controller.getResonancePower()));
+        PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) controller.getLevel(), null, controller.getBlockPos().getX(), controller.getBlockPos().getY(), controller.getBlockPos().getZ(), radius, new S2CPlayStreamPacket(url, controller.getBlockPos(), radius, controller.getResonancePower()));
 
         String label = isYoutube(url) ? "YT Audio" : shortenUrl(url);
         controller.setStreamTitle("§eResolving: §f" + label);

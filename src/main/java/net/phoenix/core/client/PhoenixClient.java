@@ -3,6 +3,8 @@ package net.phoenix.core.client;
 
 
 
+
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -131,12 +133,12 @@ public class PhoenixClient {
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
-        event.register(EyeOfHarmonyRender.SPACE_SHELL_MODEL_RL);
-        event.register(EyeOfHarmonyRender.STAR_MODEL_RL);
-        EyeOfHarmonyRender.ORBIT_OBJECTS_RL.forEach(event::register);
-        event.register(ArtificialStarRender.ARTIFICIAL_STAR_MODEL_RL);
-        event.register(PlasmaArcFurnaceRender.RINGS_MODEL_RL);
-        event.register(PlasmaArcFurnaceRender.SPHERE_MODEL_RL);
+        event.register(ModelResourceLocation.standalone(EyeOfHarmonyRender.SPACE_SHELL_MODEL_RL));
+        event.register(ModelResourceLocation.standalone(EyeOfHarmonyRender.STAR_MODEL_RL));
+        EyeOfHarmonyRender.ORBIT_OBJECTS_RL.forEach(rl -> event.register(ModelResourceLocation.standalone(rl)));
+        event.register(ModelResourceLocation.standalone(ArtificialStarRender.ARTIFICIAL_STAR_MODEL_RL));
+        event.register(ModelResourceLocation.standalone(PlasmaArcFurnaceRender.RINGS_MODEL_RL));
+        event.register(ModelResourceLocation.standalone(PlasmaArcFurnaceRender.SPHERE_MODEL_RL));
     }
 
     @SubscribeEvent

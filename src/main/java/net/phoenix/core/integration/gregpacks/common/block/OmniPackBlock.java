@@ -26,7 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +116,7 @@ public class OmniPackBlock extends BaseEntityBlock {
                     tier, be.getUpgradeInventory());
             int realSlots = effects.totalSlots;
 
-            NetworkHooks.openScreen(serverPlayer, be,
+            serverPlayer.openMenu(be,
                     buf -> {
                         buf.writeShort(realSlots);
                         buf.writeByte(tier.defaultMaxUpgrades);

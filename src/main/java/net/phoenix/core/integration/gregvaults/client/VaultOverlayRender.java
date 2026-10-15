@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.client;
 
+
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 
@@ -45,7 +47,7 @@ public class VaultOverlayRender extends DynamicRender<VaultMachine, VaultOverlay
     }
 
     public static void registerModel(ModelEvent.RegisterAdditional event) {
-        event.register(OVERLAY_MODEL);
+        event.register(ModelResourceLocation.standalone(OVERLAY_MODEL));
     }
 
     @Override
@@ -57,7 +59,7 @@ public class VaultOverlayRender extends DynamicRender<VaultMachine, VaultOverlay
     public void render(VaultMachine machine, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
         if (!machine.isFormed()) return;
-        BakedModel overlayModel = Minecraft.getInstance().getModelManager().getModel(OVERLAY_MODEL);
+        BakedModel overlayModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(OVERLAY_MODEL));
         if (overlayModel == null) return;
 
         poseStack.pushPose();

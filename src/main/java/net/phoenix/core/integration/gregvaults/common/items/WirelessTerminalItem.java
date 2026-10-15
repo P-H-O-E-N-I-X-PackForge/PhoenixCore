@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
@@ -285,7 +284,7 @@ public class WirelessTerminalItem extends Item {
                     return menu;
                 },
                 Component.translatable(KEY_VAULT_TERMINAL_TITLE));
-        NetworkHooks.openScreen(serverPlayer, provider, buf -> buf.writeInt(vault.getTotalSlots()));
+        serverPlayer.openMenu(provider, buf -> buf.writeInt(vault.getTotalSlots()));
         if (windowIdHolder[0] >= 0) {
             vault.sendFullContents(serverPlayer, windowIdHolder[0]);
         }
