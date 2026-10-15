@@ -131,6 +131,8 @@ neoForge {
 
     runs {
         configureEach {
+            // the 1.20.1 run folder holds old worlds and configs, so 1.21.1 gets its own
+            gameDirectory = file('run-1211')
             systemProperty 'neoforge.logging.markers', 'REGISTRIES'
             logLevel = org.slf4j.event.Level.DEBUG
         }
