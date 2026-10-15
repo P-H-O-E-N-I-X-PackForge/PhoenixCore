@@ -59,6 +59,5 @@ public class C2SCinderAtlasClearSlotPacket implements CustomPacketPayload {
 
             CinderAtlasData.clearSlot(stack, msg.loadoutIndex, msg.slotIndex);
         });
-        ctx.setPacketHandled(true);
     }
 }

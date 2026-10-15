@@ -46,7 +46,7 @@ public class S2CCinderCommitRejectedPacket implements CustomPacketPayload {
 
     public static void handle(S2CCinderCommitRejectedPacket msg, IPayloadContext ctxGetter) {
         IPayloadContext ctx = ctxGetter;
-        ctx.enqueueWork(() -> if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+        ctx.enqueueWork(() -> { if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             var state = net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE;
             if (msg.insufficientMaterials) {
                 state.armForceBuild();
@@ -56,7 +56,6 @@ public class S2CCinderCommitRejectedPacket implements CustomPacketPayload {
             if (player != null) {
                 player.displayClientMessage(Component.literal(msg.reason), true);
             }
-        });
-        ctx.setPacketHandled(true);
+        } });
     }
 }

@@ -55,6 +55,5 @@ public class C2SCinderAtlasSetActiveSlotPacket implements CustomPacketPayload {
 
             CinderAtlasData.setActiveSlot(stack, msg.slotIndex);
         });
-        ctx.setPacketHandled(true);
     }
 }

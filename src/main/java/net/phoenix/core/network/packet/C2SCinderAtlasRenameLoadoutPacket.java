@@ -61,6 +61,5 @@ public class C2SCinderAtlasRenameLoadoutPacket implements CustomPacketPayload {
 
             CinderAtlasData.setLoadoutName(stack, msg.loadoutIndex, msg.name);
         });
-        ctx.setPacketHandled(true);
     }
 }

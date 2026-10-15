@@ -59,6 +59,5 @@ public class C2SToggleTeslaModePacket implements CustomPacketPayload {
                         SoundSource.PLAYERS, 1.0F, 2.0F);
             }
         });
-        context.setPacketHandled(true);
     }
 }

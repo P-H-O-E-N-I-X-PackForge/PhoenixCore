@@ -114,6 +114,8 @@ public class SPacketVaultDelta implements CustomPacketPayload {
     }
 
     public static void handle(SPacketVaultDelta packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) { ClientVaultPacketHandlers.handleDelta(packet)); }
-        }
+        ctx.enqueueWork(() -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) ClientVaultPacketHandlers.handleDelta(packet);
+        });
+    }
 }

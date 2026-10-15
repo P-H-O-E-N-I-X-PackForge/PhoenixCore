@@ -57,6 +57,8 @@ public class SPacketVaultContents implements CustomPacketPayload {
     }
 
     public static void handle(SPacketVaultContents packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) { ClientVaultPacketHandlers.handleContents(packet)); }
-        }
+        ctx.enqueueWork(() -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) ClientVaultPacketHandlers.handleContents(packet);
+        });
+    }
 }

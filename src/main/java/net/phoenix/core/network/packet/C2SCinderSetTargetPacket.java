@@ -62,6 +62,5 @@ public class C2SCinderSetTargetPacket implements CustomPacketPayload {
                 CinderSchemaData.setTarget(stack, multiblock);
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

@@ -73,6 +73,5 @@ public class C2SCinderAtlasSetSlotTargetPacket implements CustomPacketPayload {
                         CinderAtlasData.getOrCreateSlotTag(stack, msg.loadoutIndex, msg.slotIndex), multiblock);
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

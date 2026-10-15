@@ -50,6 +50,5 @@ public class C2SCinderClearTargetPacket implements CustomPacketPayload {
             if (!(stack.getItem() instanceof CinderCoreItem)) return;
             CinderSchemaData.clearTarget(stack);
         });
-        ctx.setPacketHandled(true);
     }
 }

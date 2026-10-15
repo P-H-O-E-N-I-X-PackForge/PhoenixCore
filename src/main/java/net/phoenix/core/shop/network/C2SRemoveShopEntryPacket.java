@@ -50,6 +50,5 @@ public class C2SRemoveShopEntryPacket implements CustomPacketPayload {
                 C2SAddShopEntryPacket.broadcastSync(data);
             }
         });
-        context.setPacketHandled(true);
     }
 }

@@ -95,6 +95,5 @@ public class C2SCinemaScreenConfigPacket implements CustomPacketPayload {
                 screen.applyConfig(components, msg.color, clampedScale, msg.alignOrdinal, msg.backgroundOrdinal);
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

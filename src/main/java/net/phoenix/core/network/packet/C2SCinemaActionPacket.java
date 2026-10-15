@@ -67,6 +67,5 @@ public class C2SCinemaActionPacket implements CustomPacketPayload {
                 case REMOVE_CURRENT_LINE -> screen.removeCurrentLine();
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

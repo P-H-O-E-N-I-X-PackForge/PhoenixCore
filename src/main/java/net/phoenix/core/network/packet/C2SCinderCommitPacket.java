@@ -161,7 +161,6 @@ public class C2SCinderCommitPacket implements CustomPacketPayload {
                 be.beginConstruction(placements, anchorInfo);
             }
         });
-        ctx.setPacketHandled(true);
     }
 
     private static void reject(ServerPlayer player, String reason, boolean insufficientMaterials) {

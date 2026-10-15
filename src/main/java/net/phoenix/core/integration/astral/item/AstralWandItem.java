@@ -34,7 +34,7 @@ public class AstralWandItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { () -> net.phoenix.core.integration.astral.client.AstralCodexScreen::open; }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.client.AstralCodexScreen.open(); }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

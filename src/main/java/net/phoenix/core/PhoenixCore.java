@@ -2,6 +2,14 @@ package net.phoenix.core;
 
 
 
+
+
+
+
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.fml.ModContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.common.NeoForge;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
@@ -33,8 +41,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -115,8 +121,7 @@ public class PhoenixCore {
                             .build())
             .register();
 
-    public PhoenixCore() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public PhoenixCore(IEventBus modEventBus, ModContainer container) {
 
         PhoenixConfigs.init();
         CrystalRoseIndicatorGenerator.register();
@@ -126,13 +131,13 @@ public class PhoenixCore {
 
         PHOENIX_REGISTRATE.registerEventListeners(modEventBus);
 
-        modEventBus.addListener(this::onRegisterBlocksAndItems);
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerPayloads);
 
         PhoenixParticles.init(modEventBus);
         net.phoenix.core.common.entity.PhoenixEntities.init(modEventBus);
         net.phoenix.core.integration.conflux.structure.ConfluxStructures.init(modEventBus);
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.dist.isClient()) {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);
             modEventBus.addListener(this::clientSetup);
@@ -140,17 +145,18 @@ public class PhoenixCore {
             NeoForge.EVENT_BUS.register(OmniPackKeybind.class);
         }
 
-        modEventBus.addGenericListener(RecipeConditionType.class, this::registerConditions);
-        modEventBus.addGenericListener(GTRecipeType.class, this::registerRecipeTypes);
-        modEventBus.addGenericListener(SoundEntry.class, this::registerSounds);
-        modEventBus.addGenericListener(MachineDefinition.class, this::registerMachines);
-        modEventBus.addGenericListener(GTOreDefinition.class, this::registerOreVeins);
-        modEventBus.addGenericListener(IWorldGenLayer.class, this::registerWorldGenLayers);
-        modEventBus.addGenericListener(MaterialIconSet.class, this::registerMaterialIconSets);
-
         modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(this::addMaterials);
         modEventBus.addListener(this::modifyMaterials);
+
+        // GregTech builds its content from its own constructor and so do we, in the same order
+        registerMaterialIconSets();
+        addMaterials();
+        registerSounds();
+        registerConditions();
+        registerRecipeTypes();
+        registerWorldGenLayers();
+        onRegisterBlocksAndItems();
+        registerMachines();
 
         VaultRegistry.registerEventBus(modEventBus);
         VaultRecipes.SERIALIZERS.register(modEventBus);
@@ -166,7 +172,6 @@ public class PhoenixCore {
 
         ConfluxRegistry.register(modEventBus);
         modEventBus.addListener(ConfluxRegistry::registerCapabilities);
-        ConfluxNetwork.register();
         net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.EtherealSpawnGenerator.register();
@@ -190,7 +195,7 @@ public class PhoenixCore {
         GregPacksBlockEntities.init();
     }
 
-    private void onRegisterBlocksAndItems(net.neoforged.neoforge.registries.RegisterEvent event) {
+    private void onRegisterBlocksAndItems() {
         PhoenixBlocks.init();
         net.phoenix.core.common.block.cinema.CinemaBlocks.init();
         net.phoenix.core.integration.continuum.ContinuumRegistry.init();
@@ -232,32 +237,33 @@ public class PhoenixCore {
             () -> IMenuTypeExtension.create(
                     (windowId, inv, data) -> new RecipeBuilderMenu(windowId, inv)));
 
-    public void registerConditions(GTCEuAPI.RegisterEvent<String, RecipeConditionType<?>> event) {
+    public void registerConditions() {
         FluidInHatchCondition.TYPE = new RecipeConditionType<>(
                 FluidInHatchCondition::new,
                 FluidInHatchCondition.CODEC);
 
-        event.register(PhoenixCore.id("plasma_temp_condition").toString(), FluidInHatchCondition.TYPE);
 
         SoulCondition.TYPE = new RecipeConditionType<>(
                 SoulCondition::new,
                 SoulCondition.CODEC);
 
-        event.register(PhoenixCore.id("soul_resonance").toString(), SoulCondition.TYPE);
 
         AxiomResearchCondition.TYPE = new RecipeConditionType<>(
                 AxiomResearchCondition::new,
                 AxiomResearchCondition.CODEC);
-        event.register(AxiomResearchCondition.CONDITION_ID, AxiomResearchCondition.TYPE);
     }
 
-    @SubscribeEvent
+    private void registerPayloads(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
+        PhoenixNetwork.register(registrar);
+        ConfluxNetwork.register(registrar);
+        VaultNetwork.register(registrar);
+        GregPacksNetwork.register(registrar);
+    }
+
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            PhoenixNetwork.init();
-            VaultNetwork.init();
             VaultRegistry.registerLinkables();
-            GregPacksNetwork.init();
             net.phoenix.core.integration.ae2.CinderAtlasWirelessLink.register();
 
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
@@ -272,11 +278,11 @@ public class PhoenixCore {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {}
 
-    private void registerMaterialIconSets(GTCEuAPI.RegisterEvent<String, MaterialIconSet> event) {
+    private void registerMaterialIconSets() {
         PhoenixMaterialSet.init();
     }
 
-    private void addMaterials(MaterialEvent event) {
+    private void addMaterials() {
         PhoenixOres.register();
         PhoenixMaterials.register();
         PhoenixProgressionMaterials.register();
@@ -291,22 +297,19 @@ public class PhoenixCore {
         PhoenixMaterials.modifyMaterials();
     }
 
-    private void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event) {
+    private void registerRecipeTypes() {
         PhoenixRecipeTypes.init();
     }
 
-    public void registerSounds(GTCEuAPI.RegisterEvent<ResourceLocation, SoundEntry> event) {
+    public void registerSounds() {
         PhoenixSounds.init();
     }
 
-    private void registerOreVeins(GTCEuAPI.RegisterEvent<ResourceLocation, GTOreDefinition> event) {
-    }
-
-    private void registerWorldGenLayers(GTCEuAPI.RegisterEvent<ResourceLocation, IWorldGenLayer> event) {
+    private void registerWorldGenLayers() {
         net.phoenix.core.integration.conflux.dimension.worldgen.ConfluxWorldGenLayers.init();
     }
 
-    private void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
+    private void registerMachines() {
         PhoenixMachines.init();
         PhoenixBeeMachines.init();
         PhoenixTeslaMachines.init();

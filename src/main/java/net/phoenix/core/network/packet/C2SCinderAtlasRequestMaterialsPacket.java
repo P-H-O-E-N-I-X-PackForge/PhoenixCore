@@ -86,6 +86,5 @@ public class C2SCinderAtlasRequestMaterialsPacket implements CustomPacketPayload
 
             CinderAtlasWirelessLink.requestMissingMaterials(player, stack, level, required);
         });
-        ctx.setPacketHandled(true);
     }
 }

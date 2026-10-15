@@ -59,6 +59,5 @@ public class C2STeslaDischargePacket implements CustomPacketPayload {
                 }
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

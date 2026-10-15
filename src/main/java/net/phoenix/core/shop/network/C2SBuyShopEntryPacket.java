@@ -79,6 +79,5 @@ public class C2SBuyShopEntryPacket implements CustomPacketPayload {
                             .append(Component.literal(entry.name).withStyle(ChatFormatting.YELLOW)),
                     false);
         });
-        context.setPacketHandled(true);
     }
 }

@@ -70,6 +70,5 @@ public class C2SCinderAtlasOpenCraftingTerminalPacket implements CustomPacketPay
 
             CinderAtlasItem.openCraftingTerminal(player, msg.hand);
         });
-        ctx.setPacketHandled(true);
     }
 }

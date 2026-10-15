@@ -200,6 +200,5 @@ public class C2SCinderConfigPacket implements CustomPacketPayload {
                     msg.prefBaseIndices, msg.prefCandidateIndices, msg.posKeys, msg.posChars, msg.posBaseIndices,
                     msg.posCandidateIndices);
         });
-        ctx.setPacketHandled(true);
     }
 }

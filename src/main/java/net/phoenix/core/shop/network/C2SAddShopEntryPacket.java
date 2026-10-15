@@ -124,7 +124,6 @@ public class C2SAddShopEntryPacket implements CustomPacketPayload {
 
             broadcastSync(data);
         });
-        context.setPacketHandled(true);
     }
 
     private static ShopReward buildReward(RewardSpec spec) {

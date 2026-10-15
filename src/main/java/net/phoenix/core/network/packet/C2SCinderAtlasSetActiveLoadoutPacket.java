@@ -57,6 +57,5 @@ public class C2SCinderAtlasSetActiveLoadoutPacket implements CustomPacketPayload
 
             CinderAtlasData.setActiveLoadout(stack, msg.loadoutIndex);
         });
-        ctx.setPacketHandled(true);
     }
 }

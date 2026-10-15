@@ -93,7 +93,8 @@ public class S2CShopSyncPacket implements CustomPacketPayload {
 
     public static void handle(S2CShopSyncPacket packet, IPayloadContext contextSupplier) {
         IPayloadContext context = contextSupplier;
-        context.enqueueWork(() -> if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) { net.phoenix.core.shop.client.PhoenixShopScreen.openOrUpdate(packet.entries)); }
-        context.setPacketHandled(true);
+        context.enqueueWork(() -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) net.phoenix.core.shop.client.PhoenixShopScreen.openOrUpdate(packet.entries);
+        });
     }
 }
