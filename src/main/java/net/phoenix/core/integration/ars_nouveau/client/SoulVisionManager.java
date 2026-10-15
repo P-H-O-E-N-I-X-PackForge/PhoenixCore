@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -149,7 +151,7 @@ public final class SoulVisionManager {
     }
 
     private static void updateDensityGrid(ItemStack lens) {
-        CompoundTag tag = lens.getTag();
+        CompoundTag tag = StackNbt.getTag(lens);
         if (tag == null || !tag.contains("MapData")) return;
 
         ListTag mapData = tag.getList("MapData", Tag.TAG_COMPOUND);

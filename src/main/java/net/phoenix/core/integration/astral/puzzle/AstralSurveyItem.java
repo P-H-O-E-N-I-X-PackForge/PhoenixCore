@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.puzzle;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -41,7 +43,7 @@ public class AstralSurveyItem extends Item {
     public static ItemStack create(AstralCalibratedMachine machine, Level level) {
         ItemStack stack = new ItemStack(AstralItems.ASTRAL_SURVEY.get());
         StarChart chart = machine.chart();
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         tag.putString(DIM, level.dimension().location().toString());
         tag.putLong(POS, machine.getBlockPos().asLong());
         tag.putLong(SEED, machine.getChartSeed());
@@ -53,49 +55,49 @@ public class AstralSurveyItem extends Item {
     }
 
     public static boolean isFor(ItemStack stack, Level level, BlockPos pos, long seed) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         return tag != null && tag.getLong(POS) == pos.asLong() && tag.getLong(SEED) == seed &&
                 tag.getString(DIM).equals(level.dimension().location().toString());
     }
 
     public static boolean isSurvey(ItemStack stack) {
-        return stack.getItem() instanceof AstralSurveyItem && stack.hasTag();
+        return stack.getItem() instanceof AstralSurveyItem && StackNbt.hasTag(stack);
     }
 
     public static int[] stars(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getIntArray(STARS) : new int[0];
+        return StackNbt.hasTag(stack) ? StackNbt.getTag(stack).getIntArray(STARS) : new int[0];
     }
 
     public static int[] known(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getIntArray(KNOWN) : new int[0];
+        return StackNbt.hasTag(stack) ? StackNbt.getTag(stack).getIntArray(KNOWN) : new int[0];
     }
 
     public static int total(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt(TOTAL) : 0;
+        return StackNbt.hasTag(stack) ? StackNbt.getTag(stack).getInt(TOTAL) : 0;
     }
 
     public static StarChart.Kind kind(ItemStack stack) {
-        int ordinal = stack.hasTag() ? stack.getTag().getInt(KIND) : 0;
+        int ordinal = StackNbt.hasTag(stack) ? StackNbt.getTag(stack).getInt(KIND) : 0;
         StarChart.Kind[] values = StarChart.Kind.values();
         return values[Math.max(0, Math.min(ordinal, values.length - 1))];
     }
 
     public static String where(ItemStack stack) {
-        if (!stack.hasTag()) return "?";
-        BlockPos pos = BlockPos.of(stack.getTag().getLong(POS));
+        if (!StackNbt.hasTag(stack)) return "?";
+        BlockPos pos = BlockPos.of(StackNbt.getTag(stack).getLong(POS));
         return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
     }
 
     public static boolean phaseKnown(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().getBoolean(PHASE_KNOWN);
+        return StackNbt.hasTag(stack) && StackNbt.getTag(stack).getBoolean(PHASE_KNOWN);
     }
 
     public static void revealPhase(ItemStack stack) {
-        if (isSurvey(stack)) stack.getTag().putBoolean(PHASE_KNOWN, true);
+        if (isSurvey(stack)) StackNbt.getTag(stack).putBoolean(PHASE_KNOWN, true);
     }
 
     public static int favouredPhase(ItemStack stack) {
-        return stack.hasTag() ? AstralCalibratedMachine.favouredPhaseOf(stack.getTag().getLong(SEED)) : 0;
+        return StackNbt.hasTag(stack) ? AstralCalibratedMachine.favouredPhaseOf(StackNbt.getTag(stack).getLong(SEED)) : 0;
     }
 
     public static boolean complete(ItemStack stack) {
@@ -104,7 +106,7 @@ public class AstralSurveyItem extends Item {
 
     public static int reveal(ItemStack stack, RandomSource random, int count) {
         if (!isSurvey(stack)) return 0;
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         StarChart chart = StarChart.generate(tag.getLong(SEED), kind(stack));
         int[] known = known(stack);
         List<Integer> hidden = new ArrayList<>();

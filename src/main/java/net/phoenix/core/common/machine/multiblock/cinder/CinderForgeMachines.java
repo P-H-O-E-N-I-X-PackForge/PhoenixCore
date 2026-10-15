@@ -136,7 +136,7 @@ public final class CinderForgeMachines {
                 .where('B', Predicates.any())
                 .where('C',
                         Predicates.blocks(BuiltInRegistries.BLOCK
-                                .getValue(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
+                                .get(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
                 .where('D', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('E', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('F', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))

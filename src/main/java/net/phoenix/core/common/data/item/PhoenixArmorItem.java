@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 
 import net.minecraft.client.model.HumanoidModel;
@@ -45,7 +47,7 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
         if (entity instanceof Player player) {
-            CompoundTag nbt = stack.getTag();
+            CompoundTag nbt = StackNbt.getTag(stack);
             return nbt != null && nbt.getBoolean("teslaMode");
         }
         return false;
@@ -85,7 +87,7 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
                 }
 
                 ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-                CompoundTag chestNBT = chestplate.getTag();
+                CompoundTag chestNBT = StackNbt.getTag(chestplate);
                 if (chestNBT != null && chestNBT.getInt("wingFlapTick") > 0) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.phoenix.flap"));
                 }

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.item.cinder;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -46,7 +48,7 @@ public final class CinderSchemaData {
     private static final String POSITION_PREFERENCES = "PositionPreferences";
 
     public static void setTarget(ItemStack cinderCore, MultiblockMachineDefinition definition) {
-        setTarget(cinderCore.getOrCreateTag(), definition);
+        setTarget(StackNbt.getOrCreateTag(cinderCore), definition);
     }
 
     public static void setTarget(CompoundTag tag, MultiblockMachineDefinition definition) {
@@ -60,7 +62,7 @@ public final class CinderSchemaData {
     }
 
     public static @Nullable ResourceLocation getTargetId(ItemStack cinderCore) {
-        CompoundTag tag = cinderCore.getTag();
+        CompoundTag tag = StackNbt.getTag(cinderCore);
         return tag == null ? null : getTargetId(tag);
     }
 
@@ -70,7 +72,7 @@ public final class CinderSchemaData {
     }
 
     public static void clearTarget(ItemStack cinderCore) {
-        CompoundTag tag = cinderCore.getTag();
+        CompoundTag tag = StackNbt.getTag(cinderCore);
         if (tag == null) return;
         clearTarget(tag);
     }
@@ -104,7 +106,7 @@ public final class CinderSchemaData {
     }
 
     public static @Nullable MultiblockSchemaInfo resolveSchema(ItemStack cinderCore) {
-        return resolveSchema(cinderCore.getOrCreateTag());
+        return resolveSchema(StackNbt.getOrCreateTag(cinderCore));
     }
 
     public static @Nullable MultiblockSchemaInfo resolveSchema(CompoundTag tag) {
@@ -207,7 +209,7 @@ public final class CinderSchemaData {
     }
 
     public static boolean scanFromWorld(ItemStack cinderCore, Level level, BlockPos controllerPos) {
-        return scanFromWorld(cinderCore.getOrCreateTag(), level, controllerPos);
+        return scanFromWorld(StackNbt.getOrCreateTag(cinderCore), level, controllerPos);
     }
 
     public static boolean scanFromWorld(CompoundTag tag, Level level, BlockPos controllerPos) {
@@ -266,7 +268,7 @@ public final class CinderSchemaData {
                                              char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices,
                                              long[] posKeys, char[] posChars, int[] posBaseIndices,
                                              int[] posCandidateIndices) {
-        return applyConfiguration(cinderCore.getOrCreateTag(), sliceKeys, sliceValues, prefChars, prefBaseIndices,
+        return applyConfiguration(StackNbt.getOrCreateTag(cinderCore), sliceKeys, sliceValues, prefChars, prefBaseIndices,
                 prefCandidateIndices, posKeys, posChars, posBaseIndices, posCandidateIndices);
     }
 
@@ -315,7 +317,7 @@ public final class CinderSchemaData {
 
     public static void writeUserPreferences(ItemStack cinderCore, MultiblockMachineDefinition definition,
                                             MultiblockSchemaInfo info) {
-        writeUserPreferences(cinderCore.getOrCreateTag(), definition, info);
+        writeUserPreferences(StackNbt.getOrCreateTag(cinderCore), definition, info);
     }
 
     public static void writeUserPreferences(CompoundTag tag, MultiblockMachineDefinition definition,
@@ -384,7 +386,7 @@ public final class CinderSchemaData {
     }
 
     public static void adjustSliceRepeat(ItemStack cinderCore, int sliceIndex, int delta) {
-        adjustSliceRepeat(cinderCore.getOrCreateTag(), sliceIndex, delta);
+        adjustSliceRepeat(StackNbt.getOrCreateTag(cinderCore), sliceIndex, delta);
     }
 
     public static void adjustSliceRepeat(CompoundTag tag, int sliceIndex, int delta) {
@@ -408,7 +410,7 @@ public final class CinderSchemaData {
 
     public static void setPredicateCandidate(ItemStack cinderCore, char predicateChar, int baseIndex,
                                              int candidateIndex) {
-        setPredicateCandidate(cinderCore.getOrCreateTag(), predicateChar, baseIndex, candidateIndex);
+        setPredicateCandidate(StackNbt.getOrCreateTag(cinderCore), predicateChar, baseIndex, candidateIndex);
     }
 
     public static void setPredicateCandidate(CompoundTag tag, char predicateChar, int baseIndex,
@@ -433,7 +435,7 @@ public final class CinderSchemaData {
     }
 
     public static int getPredicateCandidateIndex(ItemStack cinderCore, MultiPredicate predicate, BasePredicate base) {
-        return getPredicateCandidateIndex(cinderCore.getOrCreateTag(), predicate, base);
+        return getPredicateCandidateIndex(StackNbt.getOrCreateTag(cinderCore), predicate, base);
     }
 
     public static int getPredicateCandidateIndex(CompoundTag tag, MultiPredicate predicate, BasePredicate base) {
@@ -473,7 +475,7 @@ public final class CinderSchemaData {
     public static @Nullable ResolvedPlacement resolvePlacement(ItemStack cinderCore, BlockPos anchor,
                                                                Direction frontFacing, Direction upFacing,
                                                                boolean isFlipped) {
-        return resolvePlacement(cinderCore.getOrCreateTag(), anchor, frontFacing, upFacing, isFlipped);
+        return resolvePlacement(StackNbt.getOrCreateTag(cinderCore), anchor, frontFacing, upFacing, isFlipped);
     }
 
     public static @Nullable ResolvedPlacement resolvePlacement(CompoundTag tag, BlockPos anchor,
@@ -523,7 +525,7 @@ public final class CinderSchemaData {
     private static Reference2IntMap<Block> cachedRequiredBlocks = new Reference2IntOpenHashMap<>();
 
     public static Reference2IntMap<Block> getCachedRequiredBlocks(ItemStack cinderCore) {
-        CompoundTag tag = cinderCore.getTag();
+        CompoundTag tag = StackNbt.getTag(cinderCore);
         if (tag != null && tag.equals(cachedRequiredTag)) return cachedRequiredBlocks;
 
         MultiblockSchemaInfo info = resolveSchema(cinderCore);

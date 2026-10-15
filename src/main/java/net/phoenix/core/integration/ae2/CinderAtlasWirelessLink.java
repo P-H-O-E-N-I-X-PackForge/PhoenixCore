@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ae2;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -65,17 +67,17 @@ public final class CinderAtlasWirelessLink implements IGridLinkableHandler {
     public void link(ItemStack stack, GlobalPos pos) {
         GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos)
                 .resultOrPartial(error -> PhoenixCore.LOGGER.error("[CinderAtlas] Failed to encode link: {}", error))
-                .ifPresent(encoded -> stack.getOrCreateTag().put(TAG_LINKED_POS, encoded));
+                .ifPresent(encoded -> StackNbt.getOrCreateTag(stack).put(TAG_LINKED_POS, encoded));
     }
 
     @Override
     public void unlink(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag != null) tag.remove(TAG_LINKED_POS);
     }
 
     public static @Nullable GlobalPos getLinkedPosition(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag == null || !tag.contains(TAG_LINKED_POS, Tag.TAG_COMPOUND)) return null;
 
         return GlobalPos.CODEC.decode(NbtOps.INSTANCE, tag.get(TAG_LINKED_POS))

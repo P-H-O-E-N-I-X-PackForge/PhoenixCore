@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.drone;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 
@@ -42,7 +44,7 @@ public class DroneWandItem extends Item {
                 player.displayClientMessage(Component.literal("Added group: " + group.name())
                         .withStyle(ChatFormatting.GREEN), true);
             } else {
-                CompoundTag tag = stack.getOrCreateTag();
+                CompoundTag tag = StackNbt.getOrCreateTag(stack);
                 tag.put(TAG_DRONE_POS, NbtUtils.writeBlockPos(pos));
                 player.displayClientMessage(
                         Component.literal("Drone Wand bound to " + pos.toShortString()).withStyle(ChatFormatting.AQUA),
@@ -53,7 +55,7 @@ public class DroneWandItem extends Item {
 
         if (!(machine instanceof MultiblockControllerMachine)) return InteractionResult.PASS;
 
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag == null || !tag.contains(TAG_DRONE_POS)) {
             player.displayClientMessage(
                     Component.literal("Bind the wand to a drone first (right-click it).").withStyle(ChatFormatting.RED),

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
@@ -179,7 +181,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     public static void setColor(ItemStack stack, @Nullable DyeColor color) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
 
         tag.remove("chromatic_code");
 
@@ -192,7 +194,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
     @Nullable
     public static DyeColor getColor(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag == null || !tag.contains("color") || tag.getInt("color") == -1) {
             return null;
         }
@@ -389,14 +391,14 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     public static void setChromaticCode(ItemStack stack, char code) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         tag.putString("chromatic_code", String.valueOf(code));
         tag.putInt("color", -2);
     }
 
     @Nullable
     public static String getChromaticCode(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag != null && tag.contains("chromatic_code") && tag.getInt("color") == -2) {
             return tag.getString("chromatic_code");
         }

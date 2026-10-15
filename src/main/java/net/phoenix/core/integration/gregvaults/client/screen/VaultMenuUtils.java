@@ -49,7 +49,7 @@ public final class VaultMenuUtils {
             int limit = handler.getSlotLimit(i);
             if (arr[i].getCount() >= limit) continue;
             for (int j = i + 1; j < slots && arr[i].getCount() < limit; j++) {
-                if (arr[j].isEmpty() || !ItemStack.isSameItemSameTags(arr[i], arr[j])) continue;
+                if (arr[j].isEmpty() || !ItemStack.isSameItemSameComponents(arr[i], arr[j])) continue;
                 int canTake = Math.min(arr[j].getCount(), limit - arr[i].getCount());
                 arr[i].grow(canTake);
                 arr[j].shrink(canTake);

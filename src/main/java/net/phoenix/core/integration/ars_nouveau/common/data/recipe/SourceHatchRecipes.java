@@ -40,7 +40,7 @@ public class SourceHatchRecipes {
 
     private static void processSourceHatches(@NotNull RecipeOutput provider, int tier) {
         var sourceStone = BuiltInRegistries.ITEM
-                .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone"));
+                .get(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone"));
 
         if (sourceStone == null || sourceStone.toString().contains("air")) return;
 

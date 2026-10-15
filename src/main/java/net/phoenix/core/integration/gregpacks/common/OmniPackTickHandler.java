@@ -2,6 +2,8 @@ package net.phoenix.core.integration.gregpacks.common;
 
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerPlayer;
@@ -206,12 +208,12 @@ public class OmniPackTickHandler {
     }
 
     public static long getStoredEU(ItemStack stack) {
-        if (!stack.hasTag()) return 0L;
-        return stack.getTag().contains(TAG_EU) ? stack.getTag().getLong(TAG_EU) : 0L;
+        if (!StackNbt.hasTag(stack)) return 0L;
+        return StackNbt.getTag(stack).contains(TAG_EU) ? StackNbt.getTag(stack).getLong(TAG_EU) : 0L;
     }
 
     public static void setStoredEU(ItemStack stack, long eu, long max) {
-        stack.getOrCreateTag().putLong(TAG_EU, Math.max(0, Math.min(eu, max)));
+        StackNbt.getOrCreateTag(stack).putLong(TAG_EU, Math.max(0, Math.min(eu, max)));
     }
 
     private static OmniPackTier getTier(ItemStack stack) {

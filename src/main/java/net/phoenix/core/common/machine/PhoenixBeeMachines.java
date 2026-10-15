@@ -69,7 +69,7 @@ public class PhoenixBeeMachines {
                     .where('B', Predicates.any())
                     .where('C',
                             Predicates.blocks(BuiltInRegistries.BLOCK
-                                    .getValue(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
+                                    .get(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
                     .where('D', Predicates.blocks(CASING_BRONZE_BRICKS.get()))
                     .where('E', Predicates.blocks(CASING_LAMINATED_GLASS.get()))
                     .where('F', Predicates.blocks(CASING_STEEL_SOLID.get()))

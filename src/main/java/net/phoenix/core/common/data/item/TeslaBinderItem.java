@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -111,7 +113,7 @@ public class TeslaBinderItem extends ComponentItem
             if (level instanceof ServerLevel serverLevel &&
                     machine instanceof TieredEnergyMachine tiered && tiered.energyContainer != null) {
 
-                CompoundTag tag = itemStack.getOrCreateTag();
+                CompoundTag tag = StackNbt.getOrCreateTag(itemStack);
                 if (tag.hasUUID("TargetTeam")) {
                     if (machine instanceof BatteryBufferMachine) {
                         player.sendSystemMessage(
@@ -203,7 +205,7 @@ public class TeslaBinderItem extends ComponentItem
         }
 
         if (!level.isClientSide) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = StackNbt.getOrCreateTag(stack);
             if (tag.hasUUID("TargetTeam")) {
                 level.playSound(null, player.blockPosition(),
                         SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 0.4f, 1.5f);
@@ -215,7 +217,7 @@ public class TeslaBinderItem extends ComponentItem
 
     private void bindToPlayer(Player player, ItemStack stack) {
         UUID resolvedId = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
-        var tag = stack.getOrCreateTag();
+        var tag = StackNbt.getOrCreateTag(stack);
 
         String teamName = TeamUtils.getTeamName(resolvedId);
 
@@ -240,9 +242,9 @@ public class TeslaBinderItem extends ComponentItem
 
     @Override
     public @NotNull Component getName(ItemStack stack) {
-        if (stack.hasTag()) {
-            assert stack.getTag() != null;
-            if (stack.getTag().contains("TargetTeam")) {
+        if (StackNbt.hasTag(stack)) {
+            assert StackNbt.getTag(stack) != null;
+            if (StackNbt.getTag(stack).contains("TargetTeam")) {
                 return Component.literal("Tesla Binder (Bound)").withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC);
             }
         }
@@ -252,19 +254,19 @@ public class TeslaBinderItem extends ComponentItem
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip,
                                 @NotNull TooltipFlag flag) {
-        if (stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("OwnerName")) {
+        if (StackNbt.hasTag(stack) && Objects.requireNonNull(StackNbt.getTag(stack)).contains("OwnerName")) {
             int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);
 
             tooltip.add(Component.literal("Right-Click to open the Tesla Network UI.")
                     .withStyle(Style.EMPTY.withColor(color)));
 
             tooltip.add(Component.literal("Bound to Player: ").withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal(stack.getTag().getString("OwnerName"))
+                    .append(Component.literal(StackNbt.getTag(stack).getString("OwnerName"))
                             .withStyle(Style.EMPTY.withColor(color))));
 
-            if (stack.getTag().contains("TeamName")) {
+            if (StackNbt.getTag(stack).contains("TeamName")) {
                 tooltip.add(Component.literal("Bound to Team: ").withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal(stack.getTag().getString("TeamName"))
+                        .append(Component.literal(StackNbt.getTag(stack).getString("TeamName"))
                                 .withStyle(Style.EMPTY.withColor(color))));
             }
         } else {
@@ -295,17 +297,17 @@ public class TeslaBinderItem extends ComponentItem
         Player player = guiData.getPlayer();
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         if (!tag.contains("FilterMode")) tag.putInt("FilterMode", FILTER_ALL);
         if (!tag.contains("SelectedHardwareKey")) tag.putString("SelectedHardwareKey", "");
 
         IntSyncValue filterValue = new IntSyncValue(
-                () -> stack.getOrCreateTag().getInt("FilterMode"),
-                (val) -> stack.getOrCreateTag().putInt("FilterMode", val));
+                () -> StackNbt.getOrCreateTag(stack).getInt("FilterMode"),
+                (val) -> StackNbt.getOrCreateTag(stack).putInt("FilterMode", val));
 
         StringSyncValue selectedKey = new StringSyncValue(
-                () -> stack.getOrCreateTag().getString("SelectedHardwareKey"),
-                (val) -> stack.getOrCreateTag().putString("SelectedHardwareKey", val));
+                () -> StackNbt.getOrCreateTag(stack).getString("SelectedHardwareKey"),
+                (val) -> StackNbt.getOrCreateTag(stack).putString("SelectedHardwareKey", val));
 
         panelSyncManager.syncValue("tesla_filter_mode", 0, filterValue);
         panelSyncManager.syncValue("tesla_selected_key", 1, selectedKey);
@@ -348,7 +350,7 @@ public class TeslaBinderItem extends ComponentItem
 
     private IWidget buildHeaderBox(ItemStack stack) {
         TextWidget headerText = new TextWidget(() -> {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = StackNbt.getOrCreateTag(stack);
             return Component.literal("Network: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(tag.getString("TeamName")).withStyle(ChatFormatting.AQUA))
                     .append(Component.literal("\nStored: ").withStyle(ChatFormatting.GRAY))
@@ -408,7 +410,7 @@ public class TeslaBinderItem extends ComponentItem
                 .widthRel(1f)
                 .collapseDisabledChildren();
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         ListTag hatchData = tag.getList("HatchData", Tag.TAG_COMPOUND);
         ListTag machineData = tag.getList("MachineData", Tag.TAG_COMPOUND);
         ListTag chargerData = tag.getList("ChargerData", Tag.TAG_COMPOUND);
@@ -593,7 +595,7 @@ public class TeslaBinderItem extends ComponentItem
             return null;
         }
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         ListTag list = switch (type) {
             case "hatch" -> tag.getList("HatchData", Tag.TAG_COMPOUND);
             case "machine" -> tag.getList("MachineData", Tag.TAG_COMPOUND);
@@ -735,7 +737,7 @@ public class TeslaBinderItem extends ComponentItem
         boolean isUIOpen = serverPlayer.containerMenu instanceof com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
         if (!isSelected && !isUIOpen) return;
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         if (tag.hasUUID("TargetTeam")) {
             UUID teamUUID = tag.getUUID("TargetTeam");
             ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);

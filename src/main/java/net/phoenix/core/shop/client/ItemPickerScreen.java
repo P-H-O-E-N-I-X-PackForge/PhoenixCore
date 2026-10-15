@@ -198,7 +198,7 @@ public class ItemPickerScreen extends Screen {
     }
 
     private boolean sameItem(ItemStack a, ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b);
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 
     private boolean isSelected(ItemStack stack) {

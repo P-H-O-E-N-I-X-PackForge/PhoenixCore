@@ -144,7 +144,7 @@ public class VaultSlot extends SlotItemHandler {
                 AggregatedStack agg = aggregatedView.get(absolute);
                 for (int backingSlot : agg.backingSlots) {
                     ItemStack inSlot = getRealStackPublic(backingSlot);
-                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameTags(inSlot, agg.displayStack)) {
+                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, agg.displayStack)) {
                         return agg.displayStack.copyWithCount(1);
                     }
                 }
@@ -166,7 +166,7 @@ public class VaultSlot extends SlotItemHandler {
                     AggregatedStack agg = aggregatedView.get(absolute);
                     for (int backingSlot : agg.backingSlots) {
                         ItemStack existing = real.getStackInSlot(backingSlot);
-                        if (!existing.isEmpty() && ItemStack.isSameItemSameTags(existing, stack)) {
+                        if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, stack)) {
                             ItemStack remainder = real.insertItem(backingSlot, stack, simulate);
                             if (remainder.getCount() < stack.getCount()) return remainder;
                         }
@@ -180,7 +180,7 @@ public class VaultSlot extends SlotItemHandler {
                 ItemStack remaining = stack.copy();
                 for (int i = 0; i < real.getSlots() && !remaining.isEmpty(); i++) {
                     ItemStack existing = real.getStackInSlot(i);
-                    if (!existing.isEmpty() && ItemStack.isSameItemSameTags(existing, remaining)) {
+                    if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, remaining)) {
                         remaining = real.insertItem(i, remaining, simulate);
                     }
                 }
@@ -203,7 +203,7 @@ public class VaultSlot extends SlotItemHandler {
                 AggregatedStack agg = aggregatedView.get(absolute);
                 for (int backingSlot : agg.backingSlots) {
                     ItemStack inSlot = getRealStackPublic(backingSlot);
-                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameTags(inSlot, agg.displayStack)) {
+                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, agg.displayStack)) {
                         ItemStack result = real.extractItem(backingSlot, amount, simulate);
                         if (!result.isEmpty()) return result;
                     }
@@ -223,7 +223,7 @@ public class VaultSlot extends SlotItemHandler {
                 int total = 0;
                 for (int backingSlot : agg.backingSlots) {
                     ItemStack inSlot = real.getStackInSlot(backingSlot);
-                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameTags(inSlot, agg.displayStack)) {
+                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, agg.displayStack)) {
                         total += Math.min(real.getSlotLimit(backingSlot), inSlot.getMaxStackSize());
                     }
                 }
@@ -238,7 +238,7 @@ public class VaultSlot extends SlotItemHandler {
             if (aggregatedView != null) {
                 int absolute = offset + slot;
                 if (absolute < 0 || absolute >= aggregatedView.size()) return false;
-                return ItemStack.isSameItemSameTags(aggregatedView.get(absolute).displayStack, stack);
+                return ItemStack.isSameItemSameComponents(aggregatedView.get(absolute).displayStack, stack);
             }
             int ri = realIndex(slot);
             return ri >= 0 && real.isItemValid(ri, stack);

@@ -1,6 +1,8 @@
 package net.phoenix.core.network.packet;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -46,7 +48,7 @@ public class C2STeslaDischargePacket implements CustomPacketPayload {
             ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
 
             if (!boots.isEmpty() && boots.getItem() instanceof PhoenixArmorItem) {
-                CompoundTag data = boots.getOrCreateTag();
+                CompoundTag data = StackNbt.getOrCreateTag(boots);
 
                 if (data.getInt("dischargeCooldown") == 0) {
 

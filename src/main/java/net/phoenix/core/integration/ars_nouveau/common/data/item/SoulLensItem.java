@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -100,7 +102,7 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
                                    UISettings settings) {
         Player player = guiData.getPlayer();
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
 
         ModularPanel<?> panel = ModularPanel.defaultPanel("soul_lens", UI_WIDTH, UI_HEIGHT)
                 .background(PhoenixGuiTextures.TESLA_BACKGROUND);
@@ -122,12 +124,12 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
         panel.child(mapBox);
 
         TextWidget biomeLabel = new TextWidget(() -> Component.literal("Target: ")
-                .append(Component.literal(stack.getOrCreateTag().getString("BiomeName"))
+                .append(Component.literal(StackNbt.getOrCreateTag(stack).getString("BiomeName"))
                         .withStyle(ChatFormatting.GOLD)));
         biomeLabel.pos(160, 20);
 
         TextWidget densityLabel = new TextWidget(() -> {
-            float current = stack.getOrCreateTag().getFloat("CurrentSoul");
+            float current = StackNbt.getOrCreateTag(stack).getFloat("CurrentSoul");
             return Component.literal("Density: ")
                     .append(Component.literal(String.format("%.2fx", current))
                             .withStyle(ChatFormatting.LIGHT_PURPLE));
@@ -135,8 +137,8 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
         densityLabel.pos(160, 40);
 
         TextWidget statusLabel = new TextWidget(() -> {
-            float current = stack.getOrCreateTag().getFloat("CurrentSoul");
-            float max = stack.getOrCreateTag().getFloat("MaxSoul");
+            float current = StackNbt.getOrCreateTag(stack).getFloat("CurrentSoul");
+            float max = StackNbt.getOrCreateTag(stack).getFloat("MaxSoul");
             return Component.literal("Status: ").append(getStatusComponent(current, max));
         });
         statusLabel.pos(160, 60);
@@ -167,7 +169,7 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
                               boolean isSelected) {
         if (level.isClientSide || !(entity instanceof ServerPlayer player)) return;
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         SoulSavedData data = SoulSavedData.get((ServerLevel) level);
         ChunkPos center = new ChunkPos(entity.blockPosition());
 

@@ -433,7 +433,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         int found = 0;
         for (int i = 0; i < inv.getSlots(); i++) {
             ItemStack slot = inv.getStackInSlot(i);
-            if (ItemStack.isSameItemSameTags(slot, required)) found += slot.getCount();
+            if (ItemStack.isSameItemSameComponents(slot, required)) found += slot.getCount();
         }
         return found;
     }
@@ -442,7 +442,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         int remaining = required.getCount();
         for (int i = 0; i < inv.getSlots() && remaining > 0; i++) {
             ItemStack slot = inv.getStackInSlot(i);
-            if (ItemStack.isSameItemSameTags(slot, required)) {
+            if (ItemStack.isSameItemSameComponents(slot, required)) {
                 int extracted = inv.extractItem(i, remaining, false).getCount();
                 remaining -= extracted;
             }

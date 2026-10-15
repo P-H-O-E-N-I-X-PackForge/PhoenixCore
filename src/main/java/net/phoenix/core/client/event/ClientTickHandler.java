@@ -3,6 +3,8 @@ package net.phoenix.core.client.event;
 
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -107,7 +109,7 @@ public class ClientTickHandler {
 
             if (!bootsItem.isEmpty() &&
                     bootsItem.getItem() instanceof net.phoenix.core.common.data.item.PhoenixArmorItem) {
-                CompoundTag nbt = bootsItem.getOrCreateTag();
+                CompoundTag nbt = StackNbt.getOrCreateTag(bootsItem);
 
                 if (nbt.getInt("dischargeCooldown") == 0) {
                     PacketDistributor.sendToServer(new C2STeslaDischargePacket());
@@ -137,8 +139,8 @@ public class ClientTickHandler {
                 double scrollDelta = event.getScrollDelta();
                 event.setCanceled(true);
 
-                int currentColor = stack.getOrCreateTag().getInt("color");
-                if (!stack.getOrCreateTag().contains("color")) currentColor = -1;
+                int currentColor = StackNbt.getOrCreateTag(stack).getInt("color");
+                if (!StackNbt.getOrCreateTag(stack).contains("color")) currentColor = -1;
 
                 int direction = scrollDelta > 0 ? 1 : -1;
                 int nextColor = currentColor + direction;

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 
@@ -287,7 +289,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
             final int slot = i;
             final long count = stack.getCount();
             String key = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString() +
-                    (stack.hasTag() ? Integer.toHexString(stack.getTag().hashCode()) : "");
+                    (StackNbt.hasTag(stack) ? Integer.toHexString(StackNbt.getTag(stack).hashCode()) : "");
             byKey.compute(key, (k, existing) -> {
                 if (existing == null) {
                     List<Integer> slots = new ArrayList<>();
@@ -425,7 +427,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
                 continue;
             }
 
-            if (!ItemStack.isSameItemSameTags(before, after)) continue;
+            if (!ItemStack.isSameItemSameComponents(before, after)) continue;
 
             ItemStack damaged = after.copy();
             damaged.setCount(1);
@@ -490,7 +492,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
                                     deque.poll();
                                     continue;
                                 }
-                                if (!ItemStack.isSameItemSameTags(vaultStack, needed)) {
+                                if (!ItemStack.isSameItemSameComponents(vaultStack, needed)) {
                                     deque.poll();
                                     continue;
                                 }
@@ -520,7 +522,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
                         deque.poll();
                         continue;
                     }
-                    if (!ItemStack.isSameItemSameTags(vaultStack, needed)) {
+                    if (!ItemStack.isSameItemSameComponents(vaultStack, needed)) {
                         deque.poll();
                         continue;
                     }
@@ -562,7 +564,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
         int size = handler.getSlots();
         for (int i = 0; i < size && !stack.isEmpty(); i++) {
             ItemStack existing = handler.getStackInSlot(i);
-            if (existing.isEmpty() || !ItemStack.isSameItemSameTags(existing, stack)) continue;
+            if (existing.isEmpty() || !ItemStack.isSameItemSameComponents(existing, stack)) continue;
             int limit = Math.min(handler.getSlotLimit(i), existing.getMaxStackSize());
             int canFit = limit - existing.getCount();
             if (canFit <= 0) continue;
@@ -590,7 +592,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
             ItemStack carried = getCarried();
             if (carried.isEmpty()) {
                 setCarried(extracted);
-            } else if (ItemStack.isSameItemSameTags(carried, extracted)) {
+            } else if (ItemStack.isSameItemSameComponents(carried, extracted)) {
                 carried.grow(extracted.getCount());
             } else {
                 insertIntoFullVaultInternal(extracted);
@@ -693,11 +695,11 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
                 for (int craft = 0; craft < maxCrafts; craft++) {
                     ItemStack current = slot.getItem();
                     if (current.isEmpty()) break;
-                    if (!ItemStack.isSameItemSameTags(current, itemAtStart)) break;
+                    if (!ItemStack.isSameItemSameComponents(current, itemAtStart)) break;
                     if (computePlayerCapacity(result, invStart, invEnd) < outputPerCraft) break;
 
                     ItemStack crafted = current.copyWithCount(outputPerCraft);
-                    if (!collected.isEmpty() && !ItemStack.isSameItemSameTags(collected, crafted)) break;
+                    if (!collected.isEmpty() && !ItemStack.isSameItemSameComponents(collected, crafted)) break;
 
                     snapshotGridIngredients();
                     slot.onTake(player, current);
@@ -744,7 +746,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
             ItemStack inSlot = s.getItem();
             if (inSlot.isEmpty()) {
                 space += Math.min(s.getMaxStackSize(), template.getMaxStackSize());
-            } else if (ItemStack.isSameItemSameTags(inSlot, template)) {
+            } else if (ItemStack.isSameItemSameComponents(inSlot, template)) {
                 space += Math.min(s.getMaxStackSize(), inSlot.getMaxStackSize()) - inSlot.getCount();
             }
         }

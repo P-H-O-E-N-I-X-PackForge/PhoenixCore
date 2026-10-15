@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric.part;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -283,7 +285,7 @@ public class TeslaEnergyHatchPartMachine extends EnergyHatchPartMachine implemen
     public InteractionResult onDataStickUse(Player player, ItemStack binder) {
         if (!binder.is(PhoenixItems.TESLA_BINDER.get())) return InteractionResult.PASS;
 
-        var tag = binder.getTag();
+        var tag = StackNbt.getTag(binder);
         if (tag != null && tag.hasUUID("TargetTeam")) {
             UUID newTeamUUID = tag.getUUID("TargetTeam");
 

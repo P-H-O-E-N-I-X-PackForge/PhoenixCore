@@ -57,7 +57,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         AbstractContainerScreen<?> self = (AbstractContainerScreen<?>) (Object) this;
         net.minecraft.world.item.ItemStack carried = self.getMenu().getCarried();
 
-        if (!carried.isEmpty() && !net.minecraft.world.item.ItemStack.isSameItemSameTags(carried, slot.getItem()))
+        if (!carried.isEmpty() && !net.minecraft.world.item.ItemStack.isSameItemSameComponents(carried, slot.getItem()))
             return;
 
         int slotIndex = screen.getSlotIndex(slot);

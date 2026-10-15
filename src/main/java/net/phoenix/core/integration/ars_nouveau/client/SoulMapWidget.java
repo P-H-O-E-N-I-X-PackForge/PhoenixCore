@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -25,7 +27,7 @@ public class SoulMapWidget extends ParentWidget<SoulMapWidget> {
     }
 
     private void rebuildGrid() {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag == null || !tag.contains("MapData")) return;
 
         ListTag mapData = tag.getList("MapData", Tag.TAG_COMPOUND);

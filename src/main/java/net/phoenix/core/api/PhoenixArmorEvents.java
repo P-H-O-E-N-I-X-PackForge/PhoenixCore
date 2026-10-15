@@ -1,6 +1,8 @@
 package net.phoenix.core.api;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -64,7 +66,7 @@ public class PhoenixArmorEvents {
 
         ServerLevel level = (ServerLevel) player.level();
         var source = event.getSource();
-        var nbt = chest.getOrCreateTag();
+        var nbt = StackNbt.getOrCreateTag(chest);
 
         if (source.is(net.minecraft.world.damagesource.DamageTypes.FLY_INTO_WALL) ||
                 source.is(net.minecraft.world.damagesource.DamageTypes.FALL)) {

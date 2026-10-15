@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.core.BlockPos;
@@ -49,7 +51,7 @@ public class AstralWandItem extends Item {
         if (level.getBlockEntity(pos) instanceof AstralRitualPedestalBlockEntity pedestal) {
             if (level.isClientSide) return InteractionResult.SUCCESS;
             if (pedestal.canBegin(player)) {
-                context.getItemInHand().getOrCreateTag().putLong(CHANNEL_TAG, pos.asLong());
+                StackNbt.getOrCreateTag(context.getItemInHand()).putLong(CHANNEL_TAG, pos.asLong());
                 player.startUsingItem(context.getHand());
             }
             return InteractionResult.CONSUME;
@@ -90,20 +92,20 @@ public class AstralWandItem extends Item {
 
     @Override
     public void onUseTick(@NotNull Level level, @NotNull LivingEntity entity, @NotNull ItemStack stack, int remaining) {
-        if (level.isClientSide || !(entity instanceof Player player) || !stack.hasTag() ||
-                !stack.getTag().contains(CHANNEL_TAG)) {
+        if (level.isClientSide || !(entity instanceof Player player) || !StackNbt.hasTag(stack) ||
+                !StackNbt.getTag(stack).contains(CHANNEL_TAG)) {
             return;
         }
-        BlockPos pos = BlockPos.of(stack.getTag().getLong(CHANNEL_TAG));
+        BlockPos pos = BlockPos.of(StackNbt.getTag(stack).getLong(CHANNEL_TAG));
         int ticks = getUseDuration(stack) - remaining;
         if (!(level.getBlockEntity(pos) instanceof AstralRitualPedestalBlockEntity pedestal) ||
                 player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 36) {
-            stack.getTag().remove(CHANNEL_TAG);
+            StackNbt.getTag(stack).remove(CHANNEL_TAG);
             player.stopUsingItem();
             return;
         }
         if (ticks >= AstralRitualPedestalBlockEntity.CHANNEL_TICKS) {
-            stack.getTag().remove(CHANNEL_TAG);
+            StackNbt.getTag(stack).remove(CHANNEL_TAG);
             pedestal.complete(player);
             player.stopUsingItem();
         } else {
@@ -114,8 +116,8 @@ public class AstralWandItem extends Item {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity,
                              int timeLeft) {
-        if (level.isClientSide || !stack.hasTag() || !stack.getTag().contains(CHANNEL_TAG)) return;
-        stack.getTag().remove(CHANNEL_TAG);
+        if (level.isClientSide || !StackNbt.hasTag(stack) || !StackNbt.getTag(stack).contains(CHANNEL_TAG)) return;
+        StackNbt.getTag(stack).remove(CHANNEL_TAG);
         if (entity instanceof Player player) {
             player.displayClientMessage(Component.literal("The channel breaks."), true);
         }

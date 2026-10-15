@@ -1,6 +1,8 @@
 package net.phoenix.core.network.packet;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -88,7 +90,7 @@ public class UpdateWingSettingsPacket implements CustomPacketPayload {
             int sprint = Math.max(0, Math.min(20, sprintSpeed));
             int jump = Math.max(0, Math.min(20, jumpHeight));
 
-            CompoundTag tag = chest.getOrCreateTag();
+            CompoundTag tag = StackNbt.getOrCreateTag(chest);
             tag.putString("FlightMode", mode);
             tag.putInt("FlightSpeed", speed);
             tag.putInt("FlightDrift", drift);

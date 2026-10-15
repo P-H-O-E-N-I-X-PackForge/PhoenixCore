@@ -220,7 +220,7 @@ public class VaultMachine extends MultiblockControllerMachine {
                 builder.addRemoved(slot);
                 sent[slot] = ItemStack.EMPTY;
             }
-        } else if (!last.isEmpty() && ItemStack.isSameItemSameTags(current, last)) {
+        } else if (!last.isEmpty() && ItemStack.isSameItemSameComponents(current, last)) {
             if (current.getCount() != last.getCount()) {
                 builder.addCountOnly(slot, current.getCount());
                 sent[slot] = current.copy();

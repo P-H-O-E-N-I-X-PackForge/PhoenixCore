@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.mui.IItemUIHolder;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
@@ -44,20 +46,20 @@ public class WingFlightGui implements IItemUIHolder {
             return ModularPanel.defaultPanel("empty", 100, 100);
         }
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(stack);
         if (!tag.contains(NBT_MODE)) tag.putString(NBT_MODE, MODE_POWERED);
         if (!tag.contains(NBT_SPEED)) tag.putInt(NBT_SPEED, 5);
         if (!tag.contains(NBT_DRIFT)) tag.putInt(NBT_DRIFT, 5);
 
         StringSyncValue modeValue = new StringSyncValue(
-                () -> stack.getOrCreateTag().getString(NBT_MODE),
-                (val) -> stack.getOrCreateTag().putString(NBT_MODE, val));
+                () -> StackNbt.getOrCreateTag(stack).getString(NBT_MODE),
+                (val) -> StackNbt.getOrCreateTag(stack).putString(NBT_MODE, val));
         IntSyncValue speedValue = new IntSyncValue(
-                () -> stack.getOrCreateTag().getInt(NBT_SPEED),
-                (val) -> stack.getOrCreateTag().putInt(NBT_SPEED, val));
+                () -> StackNbt.getOrCreateTag(stack).getInt(NBT_SPEED),
+                (val) -> StackNbt.getOrCreateTag(stack).putInt(NBT_SPEED, val));
         IntSyncValue driftValue = new IntSyncValue(
-                () -> stack.getOrCreateTag().getInt(NBT_DRIFT),
-                (val) -> stack.getOrCreateTag().putInt(NBT_DRIFT, val));
+                () -> StackNbt.getOrCreateTag(stack).getInt(NBT_DRIFT),
+                (val) -> StackNbt.getOrCreateTag(stack).putInt(NBT_DRIFT, val));
 
         panelSyncManager.syncValue("flight_mode", 0, modeValue);
         panelSyncManager.syncValue("flight_speed", 1, speedValue);

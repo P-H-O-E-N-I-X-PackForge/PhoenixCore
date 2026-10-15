@@ -62,7 +62,7 @@ public class CPacketStackedPickup implements CustomPacketPayload {
 
             ItemStack carried = player.containerMenu.getCarried();
             if (!carried.isEmpty()) {
-                if (!ItemStack.isSameItemSameTags(carried, visible)) return;
+                if (!ItemStack.isSameItemSameComponents(carried, visible)) return;
                 amount = Math.min(amount, carried.getMaxStackSize() - carried.getCount());
             }
 

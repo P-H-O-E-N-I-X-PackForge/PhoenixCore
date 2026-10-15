@@ -404,7 +404,7 @@ public class PhoenixMachineRecipes {
                 .inputItems(SOURCE_GEM_BLOCK, 4)
                 .inputItems(pipeLargeFluid, StainlessSteel, 4)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
+                        .get(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
                 .inputItems(CASING_STAINLESS_CLEAN, 4)
                 .inputItems(CustomTags.HV_CIRCUITS, 2)
                 .outputItems(PhoenixMachines.ALCHEMICAL_IMBUER)
@@ -415,7 +415,7 @@ public class PhoenixMachineRecipes {
 
         ASSEMBLER_RECIPES.recipeBuilder("bio_aetheric_engine")
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 32)
+                        .get(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 32)
                 .inputItems(SOURCE_GEM_BLOCK, 12)
                 .inputItems(pipeLargeFluid, SOURCE_IMBUED_TITANIUM, 2)
                 .inputItems(CustomTags.EV_CIRCUITS, 4)
@@ -432,7 +432,7 @@ public class PhoenixMachineRecipes {
                 .inputItems(SOURCE_GEM_BLOCK, 8)
                 .inputItems(pipeNormalFluid, SOURCE_IMBUED_TITANIUM, 4)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
+                        .get(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
                 .inputItems(CustomTags.EV_CIRCUITS, 2)
                 .inputItems(frameGt, SOURCE_IMBUED_TITANIUM, 1)
                 .inputItems(CASING_TITANIUM_STABLE, 2)
@@ -544,138 +544,138 @@ public class PhoenixMachineRecipes {
                 .inputItems(plate, CertusQuartz)
                 .inputItems(CustomTags.LV_CIRCUITS)
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 1)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 1)
                 .duration(200).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_1k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_1k")), 1)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_1k")), 1)
                 .duration(100).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_1k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_1k")), 1)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_1k")), 1)
                 .duration(100).EUt(30).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_4k"))
                 .inputItems(RANDOM_ACCESS_MEMORY)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 3)
                 .inputItems(CustomTags.MV_CIRCUITS)
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 2)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 2)
                 .duration(200).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_4k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_4k")), 2)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_4k")), 2)
                 .duration(100).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_4k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_4k")), 2)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_4k")), 2)
                 .duration(100).EUt(30).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_16k"))
                 .inputItems(ULTRA_LOW_POWER_INTEGRATED_CIRCUIT)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 3)
                 .inputItems(CustomTags.HV_CIRCUITS)
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
                 .duration(200).EUt(120).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_16k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_16k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_16k")), 3)
                 .duration(100).EUt(120).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_16k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_16k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_16k")), 3)
                 .duration(100).EUt(120).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_64k"))
                 .inputItems(LOW_POWER_INTEGRATED_CIRCUIT)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
                 .inputItems(CustomTags.EV_CIRCUITS)
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 4)
                 .duration(200).EUt(480).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_64k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_64k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_64k")), 4)
                 .duration(100).EUt(480).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_64k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_64k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_64k")), 4)
                 .duration(100).EUt(480).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_256k"))
                 .inputItems(QUBIT_CENTRAL_PROCESSING_UNIT)
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 3)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 3)
                 .inputItems(CustomTags.IV_CIRCUITS)
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")), 4)
                 .duration(200).EUt(1920).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_256k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_256k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_256k")), 4)
                 .duration(100).EUt(1920).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_256k"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
                 .outputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_256k")), 4)
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_256k")), 4)
                 .duration(100).EUt(1920).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_view_cell"))
                 .inputItems(BuiltInRegistries.ITEM
-                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                        .get(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(gem, CertusQuartz)
                 .outputItems(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("ae2", "view_cell")))
                 .duration(100).EUt(4).save(provider);

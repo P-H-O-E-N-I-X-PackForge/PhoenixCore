@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.matter_manipulater.common.data.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
@@ -49,17 +51,17 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     public PhoenixManipulatorMode getMode(ItemStack stack) {
-        if (stack.hasTag()) {
-            assert stack.getTag() != null;
-            if (stack.getTag().contains("tool_mode")) {
-                return PhoenixManipulatorMode.values()[stack.getTag().getInt("tool_mode")];
+        if (StackNbt.hasTag(stack)) {
+            assert StackNbt.getTag(stack) != null;
+            if (StackNbt.getTag(stack).contains("tool_mode")) {
+                return PhoenixManipulatorMode.values()[StackNbt.getTag(stack).getInt("tool_mode")];
             }
         }
         return PhoenixManipulatorMode.LINE;
     }
 
     public void setMode(ItemStack stack, PhoenixManipulatorMode mode, Player player) {
-        stack.getOrCreateTag().putInt("tool_mode", mode.ordinal());
+        StackNbt.getOrCreateTag(stack).putInt("tool_mode", mode.ordinal());
         player.displayClientMessage(mode.getDisplayName(), true);
     }
 
@@ -189,25 +191,25 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     private void setStartPos(ItemStack stack, @Nullable BlockPos pos) {
-        if (pos == null) stack.getOrCreateTag().remove("start_pos");
-        else stack.getOrCreateTag().putLong("start_pos", pos.asLong());
+        if (pos == null) StackNbt.getOrCreateTag(stack).remove("start_pos");
+        else StackNbt.getOrCreateTag(stack).putLong("start_pos", pos.asLong());
     }
 
     private void setEndPos(ItemStack stack, @Nullable BlockPos pos) {
-        if (pos == null) stack.getOrCreateTag().remove("end_pos");
-        else stack.getOrCreateTag().putLong("end_pos", pos.asLong());
+        if (pos == null) StackNbt.getOrCreateTag(stack).remove("end_pos");
+        else StackNbt.getOrCreateTag(stack).putLong("end_pos", pos.asLong());
     }
 
     @Nullable
     public BlockPos getStartPos(ItemStack stack) {
-        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("start_pos") ?
-                BlockPos.of(stack.getTag().getLong("start_pos")) : null;
+        return StackNbt.hasTag(stack) && Objects.requireNonNull(StackNbt.getTag(stack)).contains("start_pos") ?
+                BlockPos.of(StackNbt.getTag(stack).getLong("start_pos")) : null;
     }
 
     @Nullable
     public BlockPos getEndPos(ItemStack stack) {
-        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("end_pos") ?
-                BlockPos.of(stack.getTag().getLong("end_pos")) : null;
+        return StackNbt.hasTag(stack) && Objects.requireNonNull(StackNbt.getTag(stack)).contains("end_pos") ?
+                BlockPos.of(StackNbt.getTag(stack).getLong("end_pos")) : null;
     }
 
     private void executeMatterManipulation(Level level, Player player, ItemStack stack) {

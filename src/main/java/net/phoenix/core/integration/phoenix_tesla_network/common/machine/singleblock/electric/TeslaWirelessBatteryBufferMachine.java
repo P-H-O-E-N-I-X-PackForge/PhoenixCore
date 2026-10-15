@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine.singleblock.electric;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -205,7 +207,7 @@ public class TeslaWirelessBatteryBufferMachine extends TieredEnergyMachine
         if (!stick.is(PhoenixItems.TESLA_BINDER.get())) return InteractionResult.PASS;
         if (isRemote()) return InteractionResult.SUCCESS;
 
-        UUID stickTeam = stick.getOrCreateTag().getUUID("TargetTeam");
+        UUID stickTeam = StackNbt.getOrCreateTag(stick).getUUID("TargetTeam");
 
         if (this.boundTeam != null && this.boundTeam.equals(stickTeam)) {
             unregisterFromNetwork();

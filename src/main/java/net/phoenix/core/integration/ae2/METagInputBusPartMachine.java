@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ae2;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
@@ -297,12 +299,12 @@ public class METagInputBusPartMachine extends MEBusPartMachine implements IDataS
 
     @Override
     public final InteractionResult onDataStickUse(Player player, ItemStack dataStick) {
-        if (!dataStick.hasTag() || !dataStick.getTag().contains("METagInputBus")) {
+        if (!StackNbt.hasTag(dataStick) || !StackNbt.getTag(dataStick).contains("METagInputBus")) {
             return InteractionResult.PASS;
         }
 
         if (!isRemote()) {
-            readConfigFromTag(dataStick.getTag().getCompound("METagInputBus"));
+            readConfigFromTag(StackNbt.getTag(dataStick).getCompound("METagInputBus"));
             updateConfigurationFromTags();
             player.sendSystemMessage(Component.literal("Settings Pasted successfully."));
         }

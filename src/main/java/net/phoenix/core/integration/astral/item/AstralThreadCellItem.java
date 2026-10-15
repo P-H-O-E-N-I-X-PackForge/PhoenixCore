@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -26,20 +28,20 @@ public class AstralThreadCellItem extends Item {
     }
 
     public static int getThread(ItemStack stack) {
-        return stack.getOrCreateTag().getInt(TAG_THREAD);
+        return StackNbt.getOrCreateTag(stack).getInt(TAG_THREAD);
     }
 
     public static int addThread(ItemStack stack, int amount) {
         int current = getThread(stack);
         int inserted = Math.min(amount, CAPACITY - current);
-        if (inserted > 0) stack.getOrCreateTag().putInt(TAG_THREAD, current + inserted);
+        if (inserted > 0) StackNbt.getOrCreateTag(stack).putInt(TAG_THREAD, current + inserted);
         return inserted;
     }
 
     public static int removeThread(ItemStack stack, int amount) {
         int current = getThread(stack);
         int extracted = Math.min(amount, current);
-        if (extracted > 0) stack.getOrCreateTag().putInt(TAG_THREAD, current - extracted);
+        if (extracted > 0) StackNbt.getOrCreateTag(stack).putInt(TAG_THREAD, current - extracted);
         return extracted;
     }
 

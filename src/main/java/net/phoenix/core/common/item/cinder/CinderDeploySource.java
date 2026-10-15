@@ -1,5 +1,7 @@
 package net.phoenix.core.common.item.cinder;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +18,7 @@ public final class CinderDeploySource {
 
     public static @Nullable CompoundTag resolveDeployTag(ItemStack stack) {
         if (stack.getItem() instanceof CinderCoreItem) {
-            return stack.getOrCreateTag();
+            return StackNbt.getOrCreateTag(stack);
         }
         if (stack.getItem() instanceof CinderAtlasItem) {
             int loadout = CinderAtlasData.getActiveLoadout(stack);

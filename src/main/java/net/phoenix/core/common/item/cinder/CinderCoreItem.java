@@ -1,5 +1,7 @@
 package net.phoenix.core.common.item.cinder;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -234,7 +236,7 @@ public class CinderCoreItem extends Item {
 
         @Override
         protected void onContentsChanged(int slot) {
-            owner.getOrCreateTag().put(TAG_KEY, serializeNBT());
+            StackNbt.getOrCreateTag(owner).put(TAG_KEY, serializeNBT());
         }
     }
 }

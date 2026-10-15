@@ -83,10 +83,10 @@ public class PhoenixNetwork {
         registrar.playToServer(C2SCutsceneActionPacket.TYPE, C2SCutsceneActionPacket.STREAM_CODEC, C2SCutsceneActionPacket::handle);
 
         registrar.playToServer(C2SCutsceneRequestPacket.TYPE, C2SCutsceneRequestPacket.STREAM_CODEC, C2SCutsceneRequestPacket::handle);
-        registerContinuum();
+        registerContinuum(registrar);
     }
 
-    private static void registerContinuum() {
+    private static void registerContinuum(PayloadRegistrar registrar) {
         registrar.playToClient(S2CContinuumDataPacket.TYPE, S2CContinuumDataPacket.STREAM_CODEC, S2CContinuumDataPacket::handle);
         registrar.playToClient(S2CContinuumStatePacket.TYPE, S2CContinuumStatePacket.STREAM_CODEC, S2CContinuumStatePacket::handle);
         registrar.playToClient(S2COpenMapPacket.TYPE, S2COpenMapPacket.STREAM_CODEC, S2COpenMapPacket::handle);

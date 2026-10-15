@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.item;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
@@ -89,7 +91,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         IElectricItem item = GTCapabilityHelper.getElectricItem(itemStack);
         if (item == null) return;
 
-        CompoundTag data = itemStack.getOrCreateTag();
+        CompoundTag data = StackNbt.getOrCreateTag(itemStack);
         UUID teamID = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
         if (teamID == null) {
             teamID = player.getUUID();
@@ -164,7 +166,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 speedModifier = 0.02F;
             } else {
 
-                CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                CompoundTag chestData = StackNbt.getOrCreateTag(player.getItemBySlot(EquipmentSlot.CHEST));
                 int sprintSpeed = chestData.contains("SprintSpeed") ? chestData.getInt("SprintSpeed") : 5;
                 float percent = Math.max(0, Math.min(20, sprintSpeed)) / 20.0f;
                 PhoenixConfigs.WingFlightConfigs cfg = PhoenixConfigs.wingFlight;
@@ -301,7 +303,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     if (player.getDeltaMovement().y > 0.05) {
                         if (this.charge == 1.0F) player.setDeltaMovement(delta.x * 3.6D, delta.y, delta.z * 3.6D);
 
-                        CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                        CompoundTag chestData = StackNbt.getOrCreateTag(player.getItemBySlot(EquipmentSlot.CHEST));
                         int jumpHeight = chestData.contains("JumpHeight") ? chestData.getInt("JumpHeight") : 5;
                         float jumpPercent = Math.max(0, Math.min(20, jumpHeight)) / 20.0f;
                         PhoenixConfigs.WingFlightConfigs jumpCfg = PhoenixConfigs.wingFlight;
@@ -319,7 +321,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 if (prevOnGround && !player.onGround() && jumping && !sneaking) {
                     item.discharge(energyPerUse / 100, item.getTier(), true, false, false);
                     ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-                    if (!chest.isEmpty()) chest.getOrCreateTag().putInt("wingFlapTick", 15);
+                    if (!chest.isEmpty()) StackNbt.getOrCreateTag(chest).putInt("wingFlapTick", 15);
                 }
                 data.putBoolean("onGround", player.onGround());
             }
@@ -951,7 +953,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
 
         ItemStack chestplate = mc.player.getItemBySlot(EquipmentSlot.CHEST);
-        CompoundTag nbt = chestplate.getTag();
+        CompoundTag nbt = StackNbt.getTag(chestplate);
 
         if (nbt == null || !nbt.getBoolean("teslaMode")) {
             this.HUD.draw(guiGraphics);
@@ -1210,7 +1212,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             UUID teamID = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
 
             if (data.isOnline(teamID)) {
-                CompoundTag nbt = itemStack.getOrCreateTag();
+                CompoundTag nbt = StackNbt.getOrCreateTag(itemStack);
                 if (source.is(net.minecraft.world.damagesource.DamageTypes.FLY_INTO_WALL) ||
                         source.is(net.minecraft.world.damagesource.DamageTypes.FALL) ||
                         nbt.getBoolean("teslaMode")) {
@@ -1222,7 +1224,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                     java.math.BigInteger rebirthCost = java.math.BigInteger.valueOf(10_000_000L);
 
                     ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-                    CompoundTag chestNBT = chestplate.getOrCreateTag();
+                    CompoundTag chestNBT = StackNbt.getOrCreateTag(chestplate);
                     int rebirthCooldown = chestNBT.getInt("rebirthCooldown");
 
                     if (rebirthCooldown <= 0 && network.stored.compareTo(rebirthCost) >= 0) {
@@ -1295,7 +1297,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
 
         if (type == ArmorItem.Type.HELMET) {
-            CompoundTag nbtData = itemStack.getOrCreateTag();
+            CompoundTag nbtData = StackNbt.getOrCreateTag(itemStack);
             boolean nv = nbtData.getBoolean("nightVision");
 
             lines.add(Component.translatable("metaarmor.message.nightvision." + (nv ? "enabled" : "disabled")));
@@ -1310,9 +1312,9 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             lines.add(Component.translatable("metaarmor.tooltip.wings"));
             lines.add(Component.translatable("metaarmor.tooltip.tesla_connection"));
 
-            if (itemStack.hasTag()) {
-                assert itemStack.getTag() != null;
-                if (itemStack.getTag().getInt("TeslaChargingTick") > 0) {
+            if (StackNbt.hasTag(itemStack)) {
+                assert StackNbt.getTag(itemStack) != null;
+                if (StackNbt.getTag(itemStack).getInt("TeslaChargingTick") > 0) {
                     lines.add(Component.literal("⚡ Wireless Charging Active")
                             .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
                 }
@@ -1322,7 +1324,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             lines.add(Component.translatable("metaarmor.tooltip.speed"));
 
         } else if (type == ArmorItem.Type.BOOTS) {
-            CompoundTag nbtData = itemStack.getOrCreateTag();
+            CompoundTag nbtData = StackNbt.getOrCreateTag(itemStack);
             boolean sa = nbtData.getBoolean("stepAssist");
 
             lines.add(Component.translatable("metaarmor.message.step_assist." + (sa ? "enabled" : "disabled")));
@@ -1351,7 +1353,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 }
 
                 ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-                CompoundTag chestNBT = chestplate.getTag();
+                CompoundTag chestNBT = StackNbt.getTag(chestplate);
                 if (chestNBT != null && chestNBT.getInt("wingFlapTick") > 0) {
                     return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.phoenix.flap"));
                 }

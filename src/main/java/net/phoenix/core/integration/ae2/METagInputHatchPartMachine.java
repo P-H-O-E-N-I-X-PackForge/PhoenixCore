@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ae2;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
@@ -322,7 +324,7 @@ public class METagInputHatchPartMachine extends MEHatchPartMachine
             CompoundTag tag = new CompoundTag();
             tag.putString("WhitelistExpr", whitelistExpr);
             tag.putString("BlacklistExpr", blacklistExpr);
-            stick.getOrCreateTag().put("METagInputHatch", tag);
+            StackNbt.getOrCreateTag(stick).put("METagInputHatch", tag);
             player.sendSystemMessage(Component.literal("Tag Fluid Hatch settings copied"));
         }
         return InteractionResult.SUCCESS;
@@ -330,11 +332,11 @@ public class METagInputHatchPartMachine extends MEHatchPartMachine
 
     @Override
     public InteractionResult onDataStickUse(Player player, ItemStack stick) {
-        if (!stick.hasTag() || !stick.getTag().contains("METagInputHatch"))
+        if (!StackNbt.hasTag(stick) || !StackNbt.getTag(stick).contains("METagInputHatch"))
             return InteractionResult.PASS;
 
         if (!isRemote()) {
-            CompoundTag tag = stick.getTag().getCompound("METagInputHatch");
+            CompoundTag tag = StackNbt.getTag(stick).getCompound("METagInputHatch");
             whitelistExpr = tag.getString("WhitelistExpr");
             blacklistExpr = tag.getString("BlacklistExpr");
             updateConfigurationFromTags();

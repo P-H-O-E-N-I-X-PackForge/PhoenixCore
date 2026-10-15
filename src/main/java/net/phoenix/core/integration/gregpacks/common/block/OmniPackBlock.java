@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -129,7 +131,7 @@ public class OmniPackBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state,
                             @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide() && stack.hasTag()) {
+        if (!level.isClientSide() && StackNbt.hasTag(stack)) {
             if (level.getBlockEntity(pos) instanceof OmniPackBlockEntity omniPackBE) {
                 omniPackBE.loadFromItemStack(stack);
                 omniPackBE.setChanged();

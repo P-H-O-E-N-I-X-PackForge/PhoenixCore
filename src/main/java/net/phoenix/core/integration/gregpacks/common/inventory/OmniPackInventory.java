@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -17,12 +19,12 @@ public class OmniPackInventory extends SimpleContainer {
     }
 
     public void saveToItem(ItemStack stack) {
-        stack.getOrCreateTag().put(TAG_ITEMS, serializeToTag());
+        StackNbt.getOrCreateTag(stack).put(TAG_ITEMS, serializeToTag());
     }
 
     public void loadFromItem(ItemStack stack) {
-        if (!stack.hasTag()) return;
-        deserializeFromTag(stack.getTag().getList(TAG_ITEMS, Tag.TAG_COMPOUND));
+        if (!StackNbt.hasTag(stack)) return;
+        deserializeFromTag(StackNbt.getTag(stack).getList(TAG_ITEMS, Tag.TAG_COMPOUND));
     }
 
     public static OmniPackInventory fromItem(ItemStack stack, int slots) {
@@ -32,12 +34,12 @@ public class OmniPackInventory extends SimpleContainer {
     }
 
     public void saveUpgradesToItem(ItemStack stack) {
-        stack.getOrCreateTag().put(TAG_UPGRADES, serializeToTag());
+        StackNbt.getOrCreateTag(stack).put(TAG_UPGRADES, serializeToTag());
     }
 
     public void loadUpgradesFromItem(ItemStack stack) {
-        if (!stack.hasTag()) return;
-        deserializeFromTag(stack.getTag().getList(TAG_UPGRADES, Tag.TAG_COMPOUND));
+        if (!StackNbt.hasTag(stack)) return;
+        deserializeFromTag(StackNbt.getTag(stack).getList(TAG_UPGRADES, Tag.TAG_COMPOUND));
     }
 
     public static OmniPackInventory fromUpgradeItem(ItemStack stack, int slots) {

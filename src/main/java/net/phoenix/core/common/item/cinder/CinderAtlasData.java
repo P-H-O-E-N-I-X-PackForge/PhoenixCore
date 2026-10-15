@@ -1,5 +1,7 @@
 package net.phoenix.core.common.item.cinder;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -24,23 +26,23 @@ public final class CinderAtlasData {
     private static final String UPGRADES = "Upgrades";
 
     public static int getActiveLoadout(ItemStack atlas) {
-        CompoundTag tag = atlas.getTag();
+        CompoundTag tag = StackNbt.getTag(atlas);
         int index = tag != null ? tag.getInt(ACTIVE_LOADOUT) : 0;
         return clamp(index, MAX_LOADOUT_COUNT);
     }
 
     public static void setActiveLoadout(ItemStack atlas, int loadoutIndex) {
-        atlas.getOrCreateTag().putInt(ACTIVE_LOADOUT, clamp(loadoutIndex, MAX_LOADOUT_COUNT));
+        StackNbt.getOrCreateTag(atlas).putInt(ACTIVE_LOADOUT, clamp(loadoutIndex, MAX_LOADOUT_COUNT));
     }
 
     public static int getActiveSlot(ItemStack atlas) {
-        CompoundTag tag = atlas.getTag();
+        CompoundTag tag = StackNbt.getTag(atlas);
         int index = tag != null ? tag.getInt(ACTIVE_SLOT) : 0;
         return clamp(index, SLOT_COUNT);
     }
 
     public static void setActiveSlot(ItemStack atlas, int slotIndex) {
-        atlas.getOrCreateTag().putInt(ACTIVE_SLOT, clamp(slotIndex, SLOT_COUNT));
+        StackNbt.getOrCreateTag(atlas).putInt(ACTIVE_SLOT, clamp(slotIndex, SLOT_COUNT));
     }
 
     public static String getLoadoutName(ItemStack atlas, int loadoutIndex) {
@@ -87,7 +89,7 @@ public final class CinderAtlasData {
     }
 
     private static CompoundTag getOrCreateLoadoutTag(ItemStack atlas, int loadoutIndex) {
-        CompoundTag tag = atlas.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(atlas);
         ListTag loadouts = tag.getList(LOADOUTS, Tag.TAG_COMPOUND);
         loadoutIndex = clamp(loadoutIndex, MAX_LOADOUT_COUNT);
 
@@ -100,7 +102,7 @@ public final class CinderAtlasData {
     }
 
     private static @Nullable CompoundTag peekLoadoutTag(ItemStack atlas, int loadoutIndex) {
-        CompoundTag tag = atlas.getTag();
+        CompoundTag tag = StackNbt.getTag(atlas);
         if (tag == null) return null;
         ListTag loadouts = tag.getList(LOADOUTS, Tag.TAG_COMPOUND);
         loadoutIndex = clamp(loadoutIndex, MAX_LOADOUT_COUNT);
@@ -108,7 +110,7 @@ public final class CinderAtlasData {
     }
 
     public static ItemStack getUpgradeSlot(ItemStack atlas, int slotIndex) {
-        CompoundTag tag = atlas.getTag();
+        CompoundTag tag = StackNbt.getTag(atlas);
         if (tag == null) return ItemStack.EMPTY;
         ListTag upgrades = tag.getList(UPGRADES, Tag.TAG_COMPOUND);
         slotIndex = clamp(slotIndex, UPGRADE_SLOT_COUNT);
@@ -117,7 +119,7 @@ public final class CinderAtlasData {
     }
 
     public static void setUpgradeSlot(ItemStack atlas, int slotIndex, ItemStack upgrade) {
-        CompoundTag tag = atlas.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(atlas);
         ListTag upgrades = tag.getList(UPGRADES, Tag.TAG_COMPOUND);
         slotIndex = clamp(slotIndex, UPGRADE_SLOT_COUNT);
 

@@ -1,6 +1,8 @@
 package net.phoenix.core.network.packet;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -53,8 +55,8 @@ public class SelectColorPacket implements CustomPacketPayload {
             ItemStack stack = player.getItemInHand(msg.hand);
             if (stack.getItem() instanceof ChameleonSprayCanItem) {
 
-                if (stack.hasTag()) {
-                    stack.getTag().remove("chromatic_code");
+                if (StackNbt.hasTag(stack)) {
+                    StackNbt.getTag(stack).remove("chromatic_code");
                 }
 
                 DyeColor[] colors = DyeColor.values();

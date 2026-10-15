@@ -1,6 +1,8 @@
 package net.phoenix.core.client.gui;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -72,7 +74,7 @@ public class WingFlightScreen extends Screen {
     public WingFlightScreen() {
         super(Component.literal("Wing Flight Control"));
         ItemStack chest = Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.CHEST);
-        CompoundTag tag = chest.getOrCreateTag();
+        CompoundTag tag = StackNbt.getOrCreateTag(chest);
         this.flightMode = tag.contains("FlightMode") ? tag.getString("FlightMode") : "basic";
         this.flightSpeed = tag.contains("FlightSpeed") ? tag.getInt("FlightSpeed") : 5;
         this.flightDrift = tag.contains("FlightDrift") ? tag.getInt("FlightDrift") : 5;

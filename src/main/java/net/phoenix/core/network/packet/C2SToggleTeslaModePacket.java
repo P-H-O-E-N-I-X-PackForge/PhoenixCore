@@ -1,6 +1,8 @@
 package net.phoenix.core.network.packet;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -44,7 +46,7 @@ public class C2SToggleTeslaModePacket implements CustomPacketPayload {
             ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
 
             if (!chestplate.isEmpty() && chestplate.getItem() instanceof PhoenixArmorItem) {
-                CompoundTag data = chestplate.getOrCreateTag();
+                CompoundTag data = StackNbt.getOrCreateTag(chestplate);
 
                 long currentTime = player.level().getGameTime();
                 long lastToggle = data.getLong("lastToggleTime");

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.items;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.ChatFormatting;
@@ -111,13 +113,13 @@ public class WirelessTerminalItem extends Item {
     }
 
     public static EmitterTier getEmitterTier(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag == null || !tag.contains(TAG_EMITTER_TIER)) return EmitterTier.NONE;
         return EmitterTier.fromLevel(tag.getInt(TAG_EMITTER_TIER));
     }
 
     public static void setEmitterTier(ItemStack stack, EmitterTier tier) {
-        stack.getOrCreateTag().putInt(TAG_EMITTER_TIER, tier.level);
+        StackNbt.getOrCreateTag(stack).putInt(TAG_EMITTER_TIER, tier.level);
     }
 
     public static double getRange(ItemStack stack) {
@@ -131,7 +133,7 @@ public class WirelessTerminalItem extends Item {
 
     @Nullable
     public static GlobalPos getLinkedPosition(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = StackNbt.getTag(stack);
         if (tag != null && tag.contains(TAG_LINKED_POS, Tag.TAG_COMPOUND)) {
             return GlobalPos.CODEC
                     .decode(NbtOps.INSTANCE, tag.get(TAG_LINKED_POS))
@@ -145,7 +147,7 @@ public class WirelessTerminalItem extends Item {
     public static void link(ItemStack stack, GlobalPos pos) {
         GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos)
                 .result()
-                .ifPresent(tag -> stack.getOrCreateTag().put(TAG_LINKED_POS, tag));
+                .ifPresent(tag -> StackNbt.getOrCreateTag(stack).put(TAG_LINKED_POS, tag));
     }
 
     public static void unlink(ItemStack stack) {

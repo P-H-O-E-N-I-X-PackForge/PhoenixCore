@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
@@ -763,7 +765,7 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
     public InteractionResult onDataStickUse(Player player, ItemStack binder) {
         if (!binder.is(PhoenixItems.TESLA_BINDER.get())) return InteractionResult.PASS;
 
-        var tag = binder.getTag();
+        var tag = StackNbt.getTag(binder);
         if (!getLevel().isClientSide && tag != null && tag.hasUUID("TargetTeam")) {
 
             this.ownerTeamUUID = tag.getUUID("TargetTeam");
@@ -790,7 +792,7 @@ public class TeslaTowerMachine extends UniqueWorkableElectricMultiblockMachine
         if (!getLevel().isClientSide) {
             ensureOwnerTeamUUID();
             if (this.ownerTeamUUID != null) {
-                var tag = binder.getOrCreateTag();
+                var tag = StackNbt.getOrCreateTag(binder);
                 tag.putUUID("TargetTeam", this.ownerTeamUUID);
                 tag.putString("TeamName", player.getName().getString() + "'s Network");
 
