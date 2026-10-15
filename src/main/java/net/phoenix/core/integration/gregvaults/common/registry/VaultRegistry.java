@@ -73,10 +73,10 @@ public final class VaultRegistry {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(
             BuiltInRegistries.MENU, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<MenuType<VaultContainerMenu>, MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register("vault_menu",
+    public static final DeferredHolder<MenuType<?>, MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register("vault_menu",
             () -> IMenuTypeExtension.create(VaultContainerMenu::new));
 
-    public static final DeferredHolder<MenuType<VaultTerminalMenu>, MenuType<VaultTerminalMenu>> VAULT_TERMINAL_MENU = MENU_TYPES
+    public static final DeferredHolder<MenuType<?>, MenuType<VaultTerminalMenu>> VAULT_TERMINAL_MENU = MENU_TYPES
             .register("vault_terminal_menu", () -> IMenuTypeExtension.create(VaultTerminalMenu::new));
 
     public static PartAbility VAULT_INTERFACE_ABILITY;

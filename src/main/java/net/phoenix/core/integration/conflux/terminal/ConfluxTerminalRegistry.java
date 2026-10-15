@@ -24,11 +24,11 @@ public final class ConfluxTerminalRegistry {
             .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
     public static final DeferredHolder<ResearchTerminalBlock, ResearchTerminalBlock> TERMINAL;
-    public static final DeferredHolder<BlockEntityType<ResearchTerminalBlockEntity>, BlockEntityType<ResearchTerminalBlockEntity>> TERMINAL_BE;
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTerminalBlockEntity>> TERMINAL_BE;
 
     static {
         @SuppressWarnings("unchecked")
-        DeferredHolder<BlockEntityType<ResearchTerminalBlockEntity>, BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new RegistryObject[1];
+        DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new RegistryObject[1];
 
         TERMINAL = BLOCKS.register("research_terminal",
                 () -> new ResearchTerminalBlock(BlockBehaviour.Properties.of()

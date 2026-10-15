@@ -35,7 +35,7 @@ public final class ConfluxRegistry {
 
     public static final Map<ConfluxDataType, DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock>> PIPES = new EnumMap<>(
             ConfluxDataType.class);
-    public static final Map<ConfluxDataType, DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>>> PIPE_BES = new EnumMap<>(
+    public static final Map<ConfluxDataType, DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>>> PIPE_BES = new EnumMap<>(
             ConfluxDataType.class);
 
     static {
@@ -44,12 +44,12 @@ public final class ConfluxRegistry {
             ConfluxPipeType pipeType = ConfluxPipeType.values()[dt.ordinal()];
 
             @SuppressWarnings("unchecked")
-            DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>>[] beHolder = new RegistryObject[1];
+            DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>>[] beHolder = new RegistryObject[1];
 
             DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock> block = BLOCKS.register(id,
                     () -> new ConfluxPipeBlock(pipeProps(dt), pipeType, () -> beHolder[0].get()));
 
-            DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>> be = BES.register(id,
+            DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>> be = BES.register(id,
                     () -> BlockEntityType.Builder.of(
                             (pos, state) -> new ConfluxPipeBlockEntity(beHolder[0].get(), pos, state),
                             block.get()).build(null));

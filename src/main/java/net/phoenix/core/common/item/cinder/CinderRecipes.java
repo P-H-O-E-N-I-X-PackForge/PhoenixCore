@@ -13,7 +13,7 @@ public class CinderRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister
             .create(BuiltInRegistries.RECIPE_SERIALIZER, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<RecipeSerializer<CinderCoreForgeRecipe>, RecipeSerializer<CinderCoreForgeRecipe>> CINDER_FORGE_CRAFTING = SERIALIZERS
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CinderCoreForgeRecipe>> CINDER_FORGE_CRAFTING = SERIALIZERS
             .register("cinder_core_forge", () -> new SimpleCraftingRecipeSerializer<>(CinderCoreForgeRecipe::new));
 
     public static void init() {}

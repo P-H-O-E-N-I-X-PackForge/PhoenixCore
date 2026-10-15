@@ -2,6 +2,8 @@ package net.phoenix.core.common.data.recipe.generated;
 
 
 
+
+import net.phoenix.core.util.Mats;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
@@ -79,7 +81,7 @@ public class PhoenixBeeRecipeGenerator {
             case "resonant_ender" -> PhoenixProgressionMaterials.RESONANT_ENDER;
             case "source_gem" -> PhoenixProgressionMaterials.SOURCE_GEM;
             case "prismarine" -> PhoenixProgressionMaterials.PRISMARINE;
-            default -> GTRegistries.MATERIALS.get(id);
+            default -> Mats.byName(id);
         };
 
         if (mat == null && !id.isEmpty()) {

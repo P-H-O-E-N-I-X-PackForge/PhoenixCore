@@ -80,33 +80,6 @@ public class GTVaultsRecipes {
         ResourceLocation recipeId = PhoenixCore.id("terminal_emitter_" + tier.name().toLowerCase());
         ResourceLocation emitterId = BuiltInRegistries.ITEM.getKey(emitterItem);
 
-        provider.accept(new FinishedRecipe() {
-
-            @Override
-            public void serializeRecipeData(JsonObject json) {
-                json.addProperty("tier", tier.level);
-                json.addProperty("emitter", emitterId.toString());
-            }
-
-            @Override
-            public ResourceLocation getId() {
-                return recipeId;
-            }
-
-            @Override
-            public net.minecraft.world.item.crafting.RecipeSerializer<?> getType() {
-                return VaultRecipes.EMITTER_UPGRADE_SERIALIZER.get();
-            }
-
-            @Override
-            public @org.jetbrains.annotations.Nullable JsonObject serializeAdvancement() {
-                return null;
-            }
-
-            @Override
-            public @org.jetbrains.annotations.Nullable ResourceLocation getAdvancementId() {
-                return null;
-            }
-        });
+        provider.accept(recipeId, new EmitterUpgradeRecipe(tier, emitterItem), null);
     }
 }

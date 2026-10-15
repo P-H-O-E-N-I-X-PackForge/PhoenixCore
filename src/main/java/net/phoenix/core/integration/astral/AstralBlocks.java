@@ -45,11 +45,11 @@ public class AstralBlocks {
             .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
     public static final DeferredHolder<AstralRitualPedestalBlock, AstralRitualPedestalBlock> ASTRAL_RITUAL_PEDESTAL;
-    public static final DeferredHolder<BlockEntityType<AstralRitualPedestalBlockEntity>, BlockEntityType<AstralRitualPedestalBlockEntity>> ASTRAL_RITUAL_PEDESTAL_BE;
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AstralRitualPedestalBlockEntity>> ASTRAL_RITUAL_PEDESTAL_BE;
 
     static {
         @SuppressWarnings("unchecked")
-        DeferredHolder<BlockEntityType<AstralRitualPedestalBlockEntity>, BlockEntityType<AstralRitualPedestalBlockEntity>>[] beHolder = new RegistryObject[1];
+        DeferredHolder<BlockEntityType<?>, BlockEntityType<AstralRitualPedestalBlockEntity>>[] beHolder = new RegistryObject[1];
 
         ASTRAL_RITUAL_PEDESTAL = BLOCKS.register("astral_ritual_pedestal",
                 () -> new AstralRitualPedestalBlock(BlockBehaviour.Properties.of()

@@ -28,7 +28,7 @@ public final class PhoenixEntities {
     private static final DeferredRegister<Item> SPAWN_EGGS = DeferredRegister.create(Registries.ITEM,
             PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<EntityType<TetoSlime>, EntityType<TetoSlime>> TETO_SLIME = ENTITY_TYPES.register("teto_slime",
+    public static final DeferredHolder<EntityType<?>, EntityType<TetoSlime>> TETO_SLIME = ENTITY_TYPES.register("teto_slime",
             () -> EntityType.Builder.<TetoSlime>of(TetoSlime::new, MobCategory.CREATURE).sized(2.04f, 2.04f)
                     .clientTrackingRange(10).build("teto_slime"));
 

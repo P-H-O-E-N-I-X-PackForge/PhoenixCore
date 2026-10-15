@@ -25,7 +25,7 @@ public class GregPacksModuleRecipes {
 
     public static void init(RecipeOutput provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("item_module_1"), new ItemStack(GregPacksUpgrades.ITEM_CAPACITY_I),
+                PhoenixCore.id("item_module_1"), new ItemStack(GregPacksUpgrades.ITEM_CAPACITY_I.get()),
                 "ABA", "CDC", "ABA",
                 'A', new MaterialEntry(cableGtSingle, Tin),
                 'B', GTMachines.WOODEN_CRATE.asStack(),
@@ -59,7 +59,7 @@ public class GregPacksModuleRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("fluid_module_1"), new ItemStack(GregPacksUpgrades.FLUID_CAPACITY_I),
+                PhoenixCore.id("fluid_module_1"), new ItemStack(GregPacksUpgrades.FLUID_CAPACITY_I.get()),
                 "ABA", "CDC", "ABA",
                 'A', new MaterialEntry(cableGtSingle, Tin),
                 'B', GTMachines.WOODEN_DRUM.asStack(),
@@ -93,7 +93,7 @@ public class GregPacksModuleRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("energy_module_1"), new ItemStack(GregPacksUpgrades.ENERGY_CAPACITY_I),
+                PhoenixCore.id("energy_module_1"), new ItemStack(GregPacksUpgrades.ENERGY_CAPACITY_I.get()),
                 "ABA", "CDC", "ABA",
                 'A', new MaterialEntry(cableGtSingle, Tin),
                 'B', new MaterialEntry(plate, BatteryAlloy),
@@ -127,7 +127,7 @@ public class GregPacksModuleRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("magnet_module_1"), new ItemStack(GregPacksUpgrades.MAGNET_MODULE_I),
+                PhoenixCore.id("magnet_module_1"), new ItemStack(GregPacksUpgrades.MAGNET_MODULE_I.get()),
                 "ABA", "CDC", "ABA",
                 'A', new MaterialEntry(rod, SteelMagnetic),
                 'B', new MaterialEntry(plate, Gold),
@@ -147,7 +147,7 @@ public class GregPacksModuleRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("feeding_module"), new ItemStack(GregPacksUpgrades.FEEDING_MODULE),
+                PhoenixCore.id("feeding_module"), new ItemStack(GregPacksUpgrades.FEEDING_MODULE.get()),
                 "ABA", "CDC", "ABA",
                 'A', new MaterialEntry(cableGtSingle, Tin),
                 'B', new MaterialEntry(rod, Iron),
@@ -155,7 +155,7 @@ public class GregPacksModuleRecipes {
                 'D', GregPacksItems.LV_MODULE_BASE);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                PhoenixCore.id("maintenance_module"), new ItemStack(GregPacksUpgrades.MAINTENANCE_MODULE),
+                PhoenixCore.id("maintenance_module"), new ItemStack(GregPacksUpgrades.MAINTENANCE_MODULE.get()),
                 "ABA", "CDC", "ABA",
                 'A', CustomTags.LV_CIRCUITS,
                 'B', new MaterialEntry(cableGtSingle, Tin),
@@ -188,7 +188,7 @@ public class GregPacksModuleRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapelessRecipe(provider, PhoenixCore.id("crafting_module"),
-                new ItemStack(GregPacksUpgrades.CRAFTING_MODULE), GregPacksItems.LV_MODULE_BASE, Blocks.CRAFTING_TABLE);
+                new ItemStack(GregPacksUpgrades.CRAFTING_MODULE.get()), GregPacksItems.LV_MODULE_BASE, Blocks.CRAFTING_TABLE);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("processing_module"))
                 .inputItems(GregPacksItems.HV_MODULE_BASE)

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.materials;
 
+
+import net.phoenix.core.util.Mats;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.*;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
@@ -64,7 +66,7 @@ public class PhoenixMaterials {
 
         if (mat == null) {
             PhoenixAPI.LOGGER.warn("{} is not a known Material", name);
-            return GTMaterials.get(null);
+            return Mats.byName(null);
         }
         return mat;
     }

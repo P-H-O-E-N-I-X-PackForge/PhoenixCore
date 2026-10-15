@@ -23,7 +23,7 @@ public final class AetherCrucibleMachines {
 
     public static final PartAbility AETHER_CATALYST_ABILITY = new PartAbility("aether_catalyst");
 
-    public static final MachineDefinition AETHER_CATALYST_HATCH_EV = registerCatalystHatch(GTValues.EV);
+    public static final MachineEntry<MachineDefinition> AETHER_CATALYST_HATCH_EV = registerCatalystHatch(GTValues.EV);
     public static final MachineEntry<MachineDefinition> AETHER_CATALYST_HATCH_IV = registerCatalystHatch(GTValues.IV);
 
     private static MachineDefinition registerCatalystHatch(int tier) {

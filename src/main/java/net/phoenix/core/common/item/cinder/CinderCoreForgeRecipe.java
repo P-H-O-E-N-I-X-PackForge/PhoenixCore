@@ -6,9 +6,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.Optional;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -22,16 +21,16 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 public class CinderCoreForgeRecipe extends CustomRecipe {
 
-    public CinderCoreForgeRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, category);
+    public CinderCoreForgeRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         ItemStack template = ItemStack.EMPTY;
         Reference2IntMap<Block> available = new Reference2IntOpenHashMap<>();
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) continue;
 
@@ -61,9 +60,9 @@ public class CinderCoreForgeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
         ItemStack template = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.getItem() instanceof CinderCoreItem) {
                 template = stack;
@@ -92,7 +91,7 @@ public class CinderCoreForgeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         return new ItemStack(CinderItems.CINDER_CORE.get());
     }
 

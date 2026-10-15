@@ -31,7 +31,7 @@ public class GregPacksModuleBaseRecipes {
         registerModuleBase(provider, "luv", GregPacksItems.LUV_MODULE_BASE, GTMaterials.HSSE);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("module_casting_mold"),
-                new ItemStack(GregPacksItems.MODULE_CASTING_MOLD),
+                new ItemStack(GregPacksItems.MODULE_CASTING_MOLD.get()),
                 "P  ", "   ", "h  ", 'P', GTItems.SHAPE_EMPTY);
         FORMING_PRESS_RECIPES.recipeBuilder(PhoenixCore.id("copy_module_casting_mold"))
                 .inputItems(GTItems.SHAPE_EMPTY)
@@ -42,7 +42,7 @@ public class GregPacksModuleBaseRecipes {
                 .save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("module_extruder_mold"),
-                new ItemStack(GregPacksItems.MODULE_EXTRUDER_MOLD),
+                new ItemStack(GregPacksItems.MODULE_EXTRUDER_MOLD.get()),
                 "P  ", "   ", " h ", 'P', GTItems.SHAPE_EMPTY);
         FORMING_PRESS_RECIPES.recipeBuilder(PhoenixCore.id("copy_module_extruder_mold"))
                 .inputItems(GTItems.SHAPE_EMPTY)

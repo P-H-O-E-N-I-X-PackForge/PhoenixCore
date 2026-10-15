@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine.multiblock.electric.research;
 
+
+import net.phoenix.core.util.Mats;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IControllable;
@@ -401,9 +403,9 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
 
         private int getStrongestAvailableCoolantSlot(IFluidHandler tank) {
             Fluid[] fluids = new Fluid[] {
-                    GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant2).getFluid(),
-                    GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant1).getFluid(),
-                    GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolantBase).getFluid()
+                    Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant2).getFluid(),
+                    Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant1).getFluid(),
+                    Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolantBase).getFluid()
             };
             for (int slot = 0; slot < fluids.length; slot++) {
                 int tanks = tank.getTanks();
@@ -424,9 +426,9 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
 
         private Fluid getCoolant(int slot) {
             return switch (slot) {
-                case 1 -> GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant1).getFluid();
-                case 2 -> GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant2).getFluid();
-                default -> GTMaterials.get(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolantBase).getFluid();
+                case 1 -> Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant1).getFluid();
+                case 2 -> Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolant2).getFluid();
+                default -> Mats.byName(PhoenixConfigs.INSTANCE.features.ActiveCoolerCoolantBase).getFluid();
             };
         }
 
@@ -566,9 +568,9 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
                         .withStyle(ChatFormatting.YELLOW).append(" ");
                 Component coolantName = Component
                         .translatable("gtceu.tooltip.custom_coolant",
-                                GTMaterials.get(INSTANCE.features.ActiveCoolerCoolantBase).getLocalizedName(),
-                                GTMaterials.get(INSTANCE.features.ActiveCoolerCoolant1).getLocalizedName(),
-                                GTMaterials.get(INSTANCE.features.ActiveCoolerCoolant2).getLocalizedName())
+                                Mats.byName(INSTANCE.features.ActiveCoolerCoolantBase).getLocalizedName(),
+                                Mats.byName(INSTANCE.features.ActiveCoolerCoolant1).getLocalizedName(),
+                                Mats.byName(INSTANCE.features.ActiveCoolerCoolant2).getLocalizedName())
                         .withStyle(ChatFormatting.YELLOW);
                 data.append(coolantName);
             } else {

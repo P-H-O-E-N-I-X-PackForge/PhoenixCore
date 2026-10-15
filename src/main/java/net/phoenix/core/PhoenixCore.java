@@ -229,10 +229,10 @@ public class PhoenixCore {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU,
             MOD_ID);
 
-    public static final DeferredHolder<MenuType<SourceHatchMenu>, MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register("source_hatch",
+    public static final DeferredHolder<MenuType<?>, MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register("source_hatch",
             () -> IMenuTypeExtension.create((IContainerFactory<SourceHatchMenu>) SourceHatchMenu::fromNetwork));
 
-    public static final DeferredHolder<MenuType<RecipeBuilderMenu>, MenuType<RecipeBuilderMenu>> RECIPE_BUILDER_MENU = MENUS.register(
+    public static final DeferredHolder<MenuType<?>, MenuType<RecipeBuilderMenu>> RECIPE_BUILDER_MENU = MENUS.register(
             "recipe_builder",
             () -> IMenuTypeExtension.create(
                     (windowId, inv, data) -> new RecipeBuilderMenu(windowId, inv)));
