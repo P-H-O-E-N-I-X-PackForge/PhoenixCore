@@ -22,15 +22,13 @@ public final class GregTechVaultsClient {
     public static void init(IEventBus modEventBus) {
         DynamicRenderManager.register(PhoenixCore.id("vault_overlay"), VaultOverlayRender.TYPE);
         modEventBus.addListener(VaultOverlayRender::registerModel);
-        modEventBus.addListener(GregTechVaultsClient::clientSetup);
+        modEventBus.addListener(GregTechVaultsClient::registerMenuScreens);
         modEventBus.addListener(VaultKeyBindings::register);
         NeoForge.EVENT_BUS.register(VaultKeyBindings.TickHandler.class);
     }
 
-    private static void clientSetup(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            MenuScreens.register(VaultRegistry.VAULT_MENU.get(), VaultScreen::new);
-            MenuScreens.register(VaultRegistry.VAULT_TERMINAL_MENU.get(), VaultTerminalScreen::new);
-        });
+    private static void registerMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+        event.register(VaultRegistry.VAULT_MENU.get(), VaultScreen::new);
+        event.register(VaultRegistry.VAULT_TERMINAL_MENU.get(), VaultTerminalScreen::new);
     }
 }

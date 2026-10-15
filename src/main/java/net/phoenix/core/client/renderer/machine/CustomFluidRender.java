@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
@@ -30,7 +32,7 @@ import java.util.Set;
 public class CustomFluidRender extends DynamicRender<WorkableMultiblockMachine, CustomFluidRender> {
 
     public static final CustomFluidRender INSTANCE = new CustomFluidRender();
-    public static final Codec<CustomFluidRender> CODEC = Codec.unit(CustomFluidRender::new);
+    public static final MapCodec<CustomFluidRender> CODEC = MapCodec.unit(CustomFluidRender::new);
     public static final DynamicRenderType<WorkableMultiblockMachine, CustomFluidRender> TYPE = new DynamicRenderType<>(
             CODEC);
 

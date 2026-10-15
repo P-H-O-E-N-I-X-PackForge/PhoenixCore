@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
@@ -36,7 +38,7 @@ public class HoneyChamberDynamicRender extends
                                        DynamicRender<HoneyCrystallizationChamberMachine, HoneyChamberDynamicRender> {
 
     public static final HoneyChamberDynamicRender INSTANCE = new HoneyChamberDynamicRender();
-    public static final Codec<HoneyChamberDynamicRender> CODEC = Codec.unit(HoneyChamberDynamicRender.INSTANCE);
+    public static final MapCodec<HoneyChamberDynamicRender> CODEC = MapCodec.unit(HoneyChamberDynamicRender.INSTANCE);
     public static final DynamicRenderType<HoneyCrystallizationChamberMachine, HoneyChamberDynamicRender> TYPE = new DynamicRenderType<>(
             CODEC);
 

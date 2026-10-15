@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -29,7 +31,7 @@ import java.util.List;
 public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultiblockMachine, PlasmaArcFurnaceRender> {
 
     public static final PlasmaArcFurnaceRender INSTANCE = new PlasmaArcFurnaceRender();
-    public static final Codec<PlasmaArcFurnaceRender> CODEC = Codec.unit(PlasmaArcFurnaceRender.INSTANCE);
+    public static final MapCodec<PlasmaArcFurnaceRender> CODEC = MapCodec.unit(PlasmaArcFurnaceRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, PlasmaArcFurnaceRender> TYPE = new DynamicRenderType<>(
             PlasmaArcFurnaceRender.CODEC);
 

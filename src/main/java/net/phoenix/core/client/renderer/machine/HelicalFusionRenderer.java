@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -22,7 +24,7 @@ import org.joml.Matrix4f;
 public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, HelicalFusionRenderer> {
 
     public static final HelicalFusionRenderer INSTANCE = new HelicalFusionRenderer();
-    public static final Codec<HelicalFusionRenderer> CODEC = Codec.unit(INSTANCE);
+    public static final MapCodec<HelicalFusionRenderer> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<FusionReactorMachine, HelicalFusionRenderer> TYPE = new DynamicRenderType<>(
             CODEC);
 

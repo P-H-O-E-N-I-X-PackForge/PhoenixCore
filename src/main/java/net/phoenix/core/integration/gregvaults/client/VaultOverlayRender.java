@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregvaults.client;
 
 
+
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -32,7 +34,7 @@ import java.util.List;
 public class VaultOverlayRender extends DynamicRender<VaultMachine, VaultOverlayRender> {
 
     public static final VaultOverlayRender INSTANCE = new VaultOverlayRender();
-    public static final Codec<VaultOverlayRender> CODEC = Codec.unit(INSTANCE);
+    public static final MapCodec<VaultOverlayRender> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<VaultMachine, VaultOverlayRender> TYPE = new DynamicRenderType<>(CODEC);
 
     public static final ResourceLocation OVERLAY_MODEL = PhoenixCore.id("block/vault_controller_overlay");

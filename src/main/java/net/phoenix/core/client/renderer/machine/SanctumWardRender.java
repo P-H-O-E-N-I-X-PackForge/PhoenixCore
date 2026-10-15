@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -27,7 +29,7 @@ import java.util.List;
 public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockMachine, SanctumWardRender> {
 
     public static final SanctumWardRender INSTANCE = new SanctumWardRender();
-    public static final Codec<SanctumWardRender> CODEC = Codec.unit(SanctumWardRender.INSTANCE);
+    public static final MapCodec<SanctumWardRender> CODEC = MapCodec.unit(SanctumWardRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, SanctumWardRender> TYPE = new DynamicRenderType<>(
             SanctumWardRender.CODEC);
 

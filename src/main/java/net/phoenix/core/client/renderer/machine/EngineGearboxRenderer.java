@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -27,7 +29,7 @@ import static com.mojang.math.Axis.YP;
 public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachine, EngineGearboxRenderer> {
 
     public static final EngineGearboxRenderer INSTANCE = new EngineGearboxRenderer();
-    public static final Codec<EngineGearboxRenderer> CODEC = Codec.unit(INSTANCE);
+    public static final MapCodec<EngineGearboxRenderer> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<BioAethericEngineMachine, EngineGearboxRenderer> TYPE = new DynamicRenderType<>(
             CODEC);
 

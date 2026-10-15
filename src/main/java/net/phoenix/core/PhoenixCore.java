@@ -108,7 +108,7 @@ public class PhoenixCore {
     public static final Logger LOGGER = LogManager.getLogger();
     public static GTRegistrate PHOENIX_REGISTRATE = GTRegistrate.create(MOD_ID);
 
-    public static RegistryEntry<CreativeModeTab> PHOENIX_CREATIVE_TAB = REGISTRATE
+    public static RegistryEntry<CreativeModeTab, CreativeModeTab> PHOENIX_CREATIVE_TAB = REGISTRATE
             .defaultCreativeTab(PhoenixCore.MOD_ID,
                     builder -> builder
                             .displayItems(new GTCreativeModeTabs.RegistrateDisplayItemsGenerator(PhoenixCore.MOD_ID,
@@ -139,6 +139,7 @@ public class PhoenixCore {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);
             modEventBus.addListener(this::clientSetup);
+            modEventBus.addListener(this::registerMenuScreens);
             modEventBus.addListener(OmniPackKeybind::register);
             NeoForge.EVENT_BUS.register(OmniPackKeybind.class);
         }
@@ -211,8 +212,11 @@ public class PhoenixCore {
         net.phoenix.core.common.item.cinder.CinderRecipes.init();
     }
 
+    private void registerMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+        event.register(GregPacksMenus.OMNIPACK_MENU.get(), OmniPackScreen::new);
+    }
+
     private void clientSetup(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> MenuScreens.register(GregPacksMenus.OMNIPACK_MENU.get(), OmniPackScreen::new));
         registerCurioRenderers();
     }
 
@@ -238,19 +242,17 @@ public class PhoenixCore {
                     (windowId, inv, data) -> new RecipeBuilderMenu(windowId, inv)));
 
     public void registerConditions() {
-        FluidInHatchCondition.TYPE = new RecipeConditionType<>(
-                FluidInHatchCondition::new,
-                FluidInHatchCondition.CODEC);
+        FluidInHatchCondition.TYPE = REGISTRATE.simple("plasma_temp_condition",
+                com.gregtechceu.gtceu.api.registry.GTRegistries.Keys.RECIPE_CONDITION,
+                () -> new RecipeConditionType<>(FluidInHatchCondition::new, FluidInHatchCondition.CODEC));
 
+        SoulCondition.TYPE = REGISTRATE.simple("soul_resonance",
+                com.gregtechceu.gtceu.api.registry.GTRegistries.Keys.RECIPE_CONDITION,
+                () -> new RecipeConditionType<>(SoulCondition::new, SoulCondition.CODEC));
 
-        SoulCondition.TYPE = new RecipeConditionType<>(
-                SoulCondition::new,
-                SoulCondition.CODEC);
-
-
-        AxiomResearchCondition.TYPE = new RecipeConditionType<>(
-                AxiomResearchCondition::new,
-                AxiomResearchCondition.CODEC);
+        AxiomResearchCondition.TYPE = REGISTRATE.simple("axiom_research",
+                com.gregtechceu.gtceu.api.registry.GTRegistries.Keys.RECIPE_CONDITION,
+                () -> new RecipeConditionType<>(AxiomResearchCondition::new, AxiomResearchCondition.CODEC));
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {

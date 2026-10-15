@@ -11,14 +11,14 @@ import net.minecraft.world.level.ChunkPos;
 import net.phoenix.core.saveddata.SoulSavedData;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class SoulCondition extends RecipeCondition<SoulCondition> {
 
-    public static final Codec<SoulCondition> CODEC = RecordCodecBuilder
-            .create(instance -> RecipeCondition.isReverse(instance)
+    public static final MapCodec<SoulCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> RecipeCondition.isReverse(instance)
                     .and(Codec.FLOAT.fieldOf("minSoul").forGetter(SoulCondition::getMinSoul))
                     .apply(instance, SoulCondition::new));
 
@@ -57,8 +57,8 @@ public class SoulCondition extends RecipeCondition<SoulCondition> {
 
     @Override
     public RecipeConditionType<SoulCondition> getType() {
-        return TYPE;
+        return TYPE.get();
     }
 
-    public static RecipeConditionType<SoulCondition> TYPE;
+        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<SoulCondition>> TYPE;
 }

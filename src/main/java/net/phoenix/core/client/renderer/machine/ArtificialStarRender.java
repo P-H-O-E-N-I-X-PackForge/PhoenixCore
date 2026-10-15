@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -27,7 +29,7 @@ import java.util.List;
 public class ArtificialStarRender extends DynamicRender<WorkableElectricMultiblockMachine, ArtificialStarRender> {
 
     public static final ArtificialStarRender INSTANCE = new ArtificialStarRender();
-    public static final Codec<ArtificialStarRender> CODEC = Codec.unit(ArtificialStarRender.INSTANCE);
+    public static final MapCodec<ArtificialStarRender> CODEC = MapCodec.unit(ArtificialStarRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, ArtificialStarRender> TYPE = new DynamicRenderType<>(
             ArtificialStarRender.CODEC);
 

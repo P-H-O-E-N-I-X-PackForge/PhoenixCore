@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 
@@ -22,7 +24,7 @@ import java.util.List;
 public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTowerRenderer> {
 
     public static final TeslaTowerRenderer INSTANCE = new TeslaTowerRenderer();
-    public static final Codec<TeslaTowerRenderer> CODEC = Codec.unit(INSTANCE);
+    public static final MapCodec<TeslaTowerRenderer> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<TeslaTowerMachine, TeslaTowerRenderer> TYPE = new DynamicRenderType<>(CODEC);
 
     private static final float[] Y_POSITIONS = new float[] { 5.5f, 14.5f, 22.5f };

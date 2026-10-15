@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,12 +26,11 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
 
     public static final String CONDITION_ID = "phoenixcore:axiom_research";
 
-    public static final Codec<AxiomResearchCondition> CODEC = RecordCodecBuilder
-            .create(instance -> RecipeCondition.isReverse(instance)
+    public static final MapCodec<AxiomResearchCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> RecipeCondition.isReverse(instance)
                     .and(Codec.STRING.fieldOf("flag").forGetter(AxiomResearchCondition::getFlag))
                     .apply(instance, AxiomResearchCondition::new));
 
-    public static RecipeConditionType<AxiomResearchCondition> TYPE;
+        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<AxiomResearchCondition>> TYPE;
 
     private static final double CHECK_RADIUS = 24.0;
 
@@ -78,6 +78,6 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     @Override
     public RecipeConditionType<AxiomResearchCondition> getType() {
         if (TYPE == null) throw new IllegalStateException("AxiomResearchCondition.TYPE not registered yet!");
-        return TYPE;
+        return TYPE.get();
     }
 }

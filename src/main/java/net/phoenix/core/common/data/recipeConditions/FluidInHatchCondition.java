@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.common.data.PhoenixMaterialRegistry;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ import java.util.stream.IntStream;
 @NoArgsConstructor
 public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition> {
 
-    public static final Codec<FluidInHatchCondition> CODEC = RecordCodecBuilder.create(instance -> RecipeCondition
+    public static final MapCodec<FluidInHatchCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> RecipeCondition
             .isReverse(instance).and(
                     Codec.STRING.fieldOf("fluidString").forGetter(FluidInHatchCondition::getFluidString))
             .and(
@@ -130,8 +131,8 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
         if (TYPE == null) {
             throw new IllegalStateException("FluidInHatchCondition.TYPE not registered yet!");
         }
-        return TYPE;
+        return TYPE.get();
     }
 
-    public static RecipeConditionType<FluidInHatchCondition> TYPE;
+        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<FluidInHatchCondition>> TYPE;
 }

@@ -172,11 +172,12 @@ public class PhoenixClient {
     }
 
     @SubscribeEvent
-    public static void onClientSetup(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            MenuScreens.register(PhoenixCore.RECIPE_BUILDER_MENU.get(), RecipeBuilderScreen::new);
-        });
+    public static void registerMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+        event.register(PhoenixCore.RECIPE_BUILDER_MENU.get(), RecipeBuilderScreen::new);
+    }
 
+    @SubscribeEvent
+    public static void onClientSetup(final FMLClientSetupEvent event) {
         SpriteCaptureRegistry.register(new AxiomVoidBaker());
         SpriteCaptureRegistry.register(new AxiomPhoenixBaker());
         SpriteCaptureRegistry.register(new AxiomSculkBaker());

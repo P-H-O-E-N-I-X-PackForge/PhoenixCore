@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
+
+import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -25,7 +27,7 @@ import java.util.List;
 public class EyeOfHarmonyRender extends DynamicRender<WorkableElectricMultiblockMachine, EyeOfHarmonyRender> {
 
     public static final EyeOfHarmonyRender INSTANCE = new EyeOfHarmonyRender();
-    public static final Codec<EyeOfHarmonyRender> CODEC = Codec.unit(EyeOfHarmonyRender.INSTANCE);
+    public static final MapCodec<EyeOfHarmonyRender> CODEC = MapCodec.unit(EyeOfHarmonyRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, EyeOfHarmonyRender> TYPE = new DynamicRenderType<>(
             EyeOfHarmonyRender.CODEC);
 
