@@ -90,9 +90,8 @@ public class CinemaScreenBlock extends BaseEntityBlock {
             if (level.isClientSide) {
                 String currentText = screen.getCurrentLine().getString();
                 int currentIndex = screen.getCurrentLineIndex();
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                        () -> () -> net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
-                                .openTypingScreen(pos, currentIndex, currentText));
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
+                                .openTypingScreen(pos, currentIndex, currentText); }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

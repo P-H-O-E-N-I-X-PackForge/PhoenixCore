@@ -1,10 +1,15 @@
 package net.phoenix.core.integration.conflux.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.client.ClientResearchCache;
 
@@ -16,7 +21,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class S2CResearchSyncPacket {
+public class S2CResearchSyncPacket implements CustomPacketPayload {
+    public static final Type<S2CResearchSyncPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_research_sync_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CResearchSyncPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> S2CResearchSyncPacket.encode(msg, buf), S2CResearchSyncPacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final Set<ResourceLocation> unlocked;
     private final Set<ResourceLocation> lockedOut;
@@ -112,10 +126,9 @@ public class S2CResearchSyncPacket {
         return new S2CResearchSyncPacket(unlocked, lockedOut, flags, discId, discTitle, committed, switchCost, data);
     }
 
-    public static void handle(S2CResearchSyncPacket pkt, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> applyOnClient(pkt));
-        ctx.get().setPacketHandled(true);
-    }
+    public static void handle(S2CResearchSyncPacket pkt, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> applyOnClient(pkt));
+        }
 
     @OnlyIn(Dist.CLIENT)
     private static void applyOnClient(S2CResearchSyncPacket pkt) {

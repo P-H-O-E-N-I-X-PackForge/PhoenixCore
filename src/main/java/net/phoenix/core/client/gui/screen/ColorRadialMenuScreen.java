@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -172,7 +174,7 @@ public class ColorRadialMenuScreen extends Screen {
     }
 
     private void sendColorSelection(int id) {
-        PhoenixNetwork.CHANNEL.sendToServer(new SelectColorPacket(hand, id));
+        PacketDistributor.sendToServer(new SelectColorPacket(hand, id));
         if (this.minecraft != null) {
             this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }

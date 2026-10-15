@@ -1,10 +1,11 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 
@@ -20,11 +21,11 @@ public class WirelessChargerRecipes {
 
     private static final int[] VA = GTValues.VA;
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         run(provider);
     }
 
-    public static void run(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void run(@NotNull RecipeOutput provider) {
         for (int tier = GTValues.LV; tier <= GTValues.OpV; tier++) {
             if (PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier] == null) continue;
 
@@ -36,7 +37,7 @@ public class WirelessChargerRecipes {
         }
     }
 
-    private static void processWirelessCharger(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+    private static void processWirelessCharger(@NotNull RecipeOutput provider, int tier) {
         if (GTMachines.SUPER_CHEST[tier] == null || GTMachines.CHARGER_4[tier] == null) return;
 
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
@@ -53,7 +54,7 @@ public class WirelessChargerRecipes {
                 'W', getQuadCableForTier(tier));
     }
 
-    private static void processWirelessChargerWithQuantumChest(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+    private static void processWirelessChargerWithQuantumChest(@NotNull RecipeOutput provider, int tier) {
         if (tier >= GTMachines.QUANTUM_CHEST.length || GTMachines.QUANTUM_CHEST[tier] == null ||
                 tier >= GTMachines.CHARGER_4.length || GTMachines.CHARGER_4[tier] == null)
             return;

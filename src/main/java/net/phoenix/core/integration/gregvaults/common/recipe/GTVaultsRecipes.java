@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregvaults.common.recipe;
 
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
@@ -9,9 +11,7 @@ import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
@@ -27,7 +27,7 @@ import static net.phoenix.core.integration.gregvaults.common.multiblock.VaultMac
 @SuppressWarnings("all")
 public class GTVaultsRecipes {
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("large_bronze_vault"),
                 BRONZE_VAULT.asStack(), "ABA", "CDC", "AEA", 'A', new MaterialEntry(plate, Bronze),
                 'B', CustomTags.ULV_CIRCUITS, 'C', new MaterialEntry(rod, Iron), 'D', GTMachines.BRONZE_CRATE.asStack(),
@@ -74,7 +74,7 @@ public class GTVaultsRecipes {
         addEmitterUpgrade(provider, WirelessTerminalItem.EmitterTier.UV, GTItems.EMITTER_UV.get());
     }
 
-    private static void addEmitterUpgrade(Consumer<FinishedRecipe> provider,
+    private static void addEmitterUpgrade(RecipeOutput provider,
                                           WirelessTerminalItem.EmitterTier tier,
                                           net.minecraft.world.item.Item emitterItem) {
         ResourceLocation recipeId = PhoenixCore.id("terminal_emitter_" + tier.name().toLowerCase());

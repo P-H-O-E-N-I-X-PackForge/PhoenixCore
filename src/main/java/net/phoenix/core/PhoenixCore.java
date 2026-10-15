@@ -1,5 +1,9 @@
 package net.phoenix.core;
 
+
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.common.NeoForge;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
@@ -21,8 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -34,8 +37,7 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.client.PhoenixClient;
@@ -135,7 +137,7 @@ public class PhoenixCore {
             PhoenixClient.init(modEventBus);
             modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(OmniPackKeybind::register);
-            MinecraftForge.EVENT_BUS.register(OmniPackKeybind.class);
+            NeoForge.EVENT_BUS.register(OmniPackKeybind.class);
         }
 
         modEventBus.addGenericListener(RecipeConditionType.class, this::registerConditions);
@@ -172,17 +174,17 @@ public class PhoenixCore {
         AstralBlocks.registerDeferred(modEventBus);
         modEventBus.addListener(PlayerResearchCapability::register);
 
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
-        MinecraftForge.EVENT_BUS
+        NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
+        NeoForge.EVENT_BUS
                 .register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
-        MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
-        MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
-        MinecraftForge.EVENT_BUS.addGenericListener(net.minecraft.world.entity.Entity.class,
+        NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
+        NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
+        NeoForge.EVENT_BUS.addGenericListener(net.minecraft.world.entity.Entity.class,
                 PlayerResearchCapability::onAttachCapabilities);
-        MinecraftForge.EVENT_BUS.addListener(PlayerResearchCapability::onPlayerClone);
-        MinecraftForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
-        MinecraftForge.EVENT_BUS.addListener(
+        NeoForge.EVENT_BUS.addListener(PlayerResearchCapability::onPlayerClone);
+        NeoForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
+        NeoForge.EVENT_BUS.addListener(
                 net.phoenix.core.integration.conflux.research.GatedRecipeRegistry::onAddReloadListeners);
 
         GregPacksBlockEntities.init();
@@ -219,15 +221,15 @@ public class PhoenixCore {
                 GregPacksBlocks.ELITE_OMNIPACK_BLOCK.asItem(), () -> OmniPackCurioRenderer.INSTANCE);
     }
 
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES,
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU,
             MOD_ID);
 
-    public static final RegistryObject<MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register("source_hatch",
-            () -> IForgeMenuType.create((IContainerFactory<SourceHatchMenu>) SourceHatchMenu::fromNetwork));
+    public static final DeferredHolder<MenuType<SourceHatchMenu>, MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register("source_hatch",
+            () -> IMenuTypeExtension.create((IContainerFactory<SourceHatchMenu>) SourceHatchMenu::fromNetwork));
 
-    public static final RegistryObject<MenuType<RecipeBuilderMenu>> RECIPE_BUILDER_MENU = MENUS.register(
+    public static final DeferredHolder<MenuType<RecipeBuilderMenu>, MenuType<RecipeBuilderMenu>> RECIPE_BUILDER_MENU = MENUS.register(
             "recipe_builder",
-            () -> IForgeMenuType.create(
+            () -> IMenuTypeExtension.create(
                     (windowId, inv, data) -> new RecipeBuilderMenu(windowId, inv)));
 
     public void registerConditions(GTCEuAPI.RegisterEvent<String, RecipeConditionType<?>> event) {

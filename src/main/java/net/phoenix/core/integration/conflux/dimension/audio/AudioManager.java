@@ -86,7 +86,7 @@ public class AudioManager {
     }
 
     public void playSoundEffectAt(SoundEffect effect, Vec3 position) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -108,7 +108,7 @@ public class AudioManager {
                     attentuatedVolume * globalVolume,
                     effect.getPitch(),
                     false);
-        });
+        }
     }
 
     public void updateAmbience(float deltaTime) {

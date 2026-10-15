@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.cinder;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -206,7 +208,7 @@ public class CinderAtlasScreen extends Screen {
         activeLoadout = loadoutIndex;
         selectedSlot = null;
         CinderAtlasData.setActiveLoadout(atlasStack, loadoutIndex);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasSetActiveLoadoutPacket(hand, loadoutIndex));
+        PacketDistributor.sendToServer(new C2SCinderAtlasSetActiveLoadoutPacket(hand, loadoutIndex));
         if (renameBox != null) renameBox.setValue(CinderAtlasData.getLoadoutName(atlasStack, activeLoadout));
     }
 
@@ -215,7 +217,7 @@ public class CinderAtlasScreen extends Screen {
         if (selectedSlot != null) {
 
             CinderAtlasData.setActiveSlot(atlasStack, slotIndex);
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasSetActiveSlotPacket(hand, slotIndex));
+            PacketDistributor.sendToServer(new C2SCinderAtlasSetActiveSlotPacket(hand, slotIndex));
         }
     }
 
@@ -224,29 +226,29 @@ public class CinderAtlasScreen extends Screen {
         String name = renameBox.getValue().trim();
         if (name.isEmpty()) return;
         CinderAtlasData.setLoadoutName(atlasStack, activeLoadout, name);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasRenameLoadoutPacket(hand, activeLoadout, name));
+        PacketDistributor.sendToServer(new C2SCinderAtlasRenameLoadoutPacket(hand, activeLoadout, name));
     }
 
     private void assignTargetToSelectedSlot(MultiblockMachineDefinition chosen) {
         if (selectedSlot == null) return;
         CompoundTag slotTag = CinderAtlasData.getOrCreateSlotTag(atlasStack, activeLoadout, selectedSlot);
         CinderSchemaData.setTarget(slotTag, chosen);
-        PhoenixNetwork.CHANNEL.sendToServer(
+        PacketDistributor.sendToServer(
                 new C2SCinderAtlasSetSlotTargetPacket(hand, activeLoadout, selectedSlot, chosen.getId()));
     }
 
     private void clearSelectedSlot() {
         if (selectedSlot == null) return;
         CinderAtlasData.clearSlot(atlasStack, activeLoadout, selectedSlot);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasClearSlotPacket(hand, activeLoadout, selectedSlot));
+        PacketDistributor.sendToServer(new C2SCinderAtlasClearSlotPacket(hand, activeLoadout, selectedSlot));
     }
 
     private void requestMaterials() {
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasRequestMaterialsPacket(hand));
+        PacketDistributor.sendToServer(new C2SCinderAtlasRequestMaterialsPacket(hand));
     }
 
     private void openCraftingTerminal() {
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasOpenCraftingTerminalPacket(hand));
+        PacketDistributor.sendToServer(new C2SCinderAtlasOpenCraftingTerminalPacket(hand));
         onClose();
     }
 

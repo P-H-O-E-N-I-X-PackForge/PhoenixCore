@@ -45,7 +45,7 @@ public final class Cutscenes {
 
     public static void play(ServerPlayer player, ResourceLocation id) {
         SESSIONS.put(player.getUUID(), id);
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayCutscenePacket(id));
+        PacketDistributor.sendToPlayer(player, new S2CPlayCutscenePacket(id));
     }
 
     public static @Nullable ResourceLocation activeCutscene(ServerPlayer player) {

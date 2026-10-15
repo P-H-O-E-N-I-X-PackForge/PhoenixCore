@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -10,7 +12,6 @@ import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,11 +30,11 @@ public class CustomComponetRecipes {
 
     private static final int[] VA = GTValues.VA;
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         run(provider);
     }
 
-    private static void run(@NotNull Consumer<FinishedRecipe> provider) {
+    private static void run(@NotNull RecipeOutput provider) {
         for (int tier = LV; tier <= GTValues.OpV; tier++) {
             if (tier == GTValues.LuV) {
                 processScannerTeslaStabilizerRecipe(provider, tier);
@@ -45,7 +46,7 @@ public class CustomComponetRecipes {
         }
     }
 
-    private static void processTeslaStabilizerRecipe(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+    private static void processTeslaStabilizerRecipe(@NotNull RecipeOutput provider, int tier) {
         var rod = TagPrefix.rod;
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
@@ -65,7 +66,7 @@ public class CustomComponetRecipes {
                 .save(provider);
     }
 
-    private static void processScannerTeslaStabilizerRecipe(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+    private static void processScannerTeslaStabilizerRecipe(@NotNull RecipeOutput provider, int tier) {
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_stabilizer_scanner_" + VN[tier].toLowerCase())
                 .inputFluids(GTMaterials.SolderingAlloy.getFluid(144 * tier))
                 .inputItems(getFrameForTier(tier))
@@ -86,7 +87,7 @@ public class CustomComponetRecipes {
                 .save(provider);
     }
 
-    private static void processStationTeslaStabilizerRecipe(@NotNull Consumer<FinishedRecipe> provider, int tier) {
+    private static void processStationTeslaStabilizerRecipe(@NotNull RecipeOutput provider, int tier) {
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_stabilizer_station_" + VN[tier].toLowerCase())
                 .inputItems(getFrameForTier(tier))
                 .inputItems(GTCraftingComponents.MOTOR.get(tier))

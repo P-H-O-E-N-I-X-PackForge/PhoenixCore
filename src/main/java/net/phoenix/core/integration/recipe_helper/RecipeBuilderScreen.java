@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.recipe_helper;
 
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +15,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.PacketRecipeBuilderGenerate;
 
@@ -279,7 +280,7 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
 
     private void onSendToServer() {
         String java = buildJava();
-        PhoenixNetwork.CHANNEL.sendToServer(new PacketRecipeBuilderGenerate(java));
+        PacketDistributor.sendToServer(new PacketRecipeBuilderGenerate(java));
         assert minecraft != null;
         minecraft.keyboardHandler.setClipboard(java);
         notify("§aSent to server + copied Java!");

@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -153,7 +152,7 @@ public class ItemPickerScreen extends Screen {
                 }
             }
         } else {
-            for (Item item : ForgeRegistries.ITEMS) {
+            for (Item item : BuiltInRegistries.ITEM) {
                 allItems.add(new ItemStack(item));
             }
         }

@@ -1,15 +1,30 @@
 package net.phoenix.core.integration.continuum.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 
 import java.util.function.Supplier;
 
-public class S2CPadStockPacket {
+public class S2CPadStockPacket implements CustomPacketPayload {
+    public static final Type<S2CPadStockPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_pad_stock_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CPadStockPacket> STREAM_CODEC = StreamCodec.ofMember(S2CPadStockPacket::encode, S2CPadStockPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pad;
     private final boolean buses;
@@ -45,13 +60,12 @@ public class S2CPadStockPacket {
         buf.writeVarInt(rockets);
     }
 
-    public static void handle(S2CPadStockPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(S2CPadStockPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             if (FMLEnvironment.dist.isClient()) {
                 ContinuumClientState.acceptPadStock(msg.pad, msg.buses, msg.rocket, msg.probes, msg.kits,
                         msg.rockets);
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

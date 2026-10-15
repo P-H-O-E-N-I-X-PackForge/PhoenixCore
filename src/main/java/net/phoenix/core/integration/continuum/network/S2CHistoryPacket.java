@@ -1,8 +1,14 @@
 package net.phoenix.core.integration.continuum.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.common.MissionLog;
 
@@ -10,7 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class S2CHistoryPacket {
+public class S2CHistoryPacket implements CustomPacketPayload {
+    public static final Type<S2CHistoryPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_history_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CHistoryPacket> STREAM_CODEC = StreamCodec.ofMember(S2CHistoryPacket::encode, S2CHistoryPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final List<MissionLog.Entry> entries;
 
@@ -30,10 +45,9 @@ public class S2CHistoryPacket {
         for (MissionLog.Entry entry : entries) entry.write(buf);
     }
 
-    public static void handle(S2CHistoryPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(S2CHistoryPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             if (FMLEnvironment.dist.isClient()) ContinuumClientState.acceptHistory(msg.entries);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -46,7 +48,7 @@ public class ContinuumHistoryScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SRequestHistoryPacket());
+        PacketDistributor.sendToServer(new C2SRequestHistoryPacket());
     }
 
     @Override
@@ -55,7 +57,7 @@ public class ContinuumHistoryScreen extends Screen {
         
         if (++refresh >= 100) {
             refresh = 0;
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SRequestHistoryPacket());
+            PacketDistributor.sendToServer(new C2SRequestHistoryPacket());
         }
     }
 

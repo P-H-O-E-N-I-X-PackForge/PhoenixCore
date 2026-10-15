@@ -98,8 +98,7 @@ public final class LandformPhysics {
 
     private static void send(Entity e, PhysicsImpulse impulse) {
         if (e instanceof ServerPlayer player) {
-            PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                    new S2CPhysicsImpulsePacket(impulse));
+            PacketDistributor.sendToPlayer(player, new S2CPhysicsImpulsePacket(impulse));
             if (impulse.resetFall()) player.fallDistance = 0.0f;
         } else {
             impulse.apply(e);

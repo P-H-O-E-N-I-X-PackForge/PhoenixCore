@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.cinder;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -312,11 +314,11 @@ public class CinderAtlasRadialScreen extends Screen {
         if (loadout != activeLoadout) {
             activeLoadout = loadout;
             CinderAtlasData.setActiveLoadout(atlasStack, loadout);
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasSetActiveLoadoutPacket(hand, loadout));
+            PacketDistributor.sendToServer(new C2SCinderAtlasSetActiveLoadoutPacket(hand, loadout));
         }
         activeSlot = slotIndex;
         CinderAtlasData.setActiveSlot(atlasStack, slotIndex);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderAtlasSetActiveSlotPacket(hand, slotIndex));
+        PacketDistributor.sendToServer(new C2SCinderAtlasSetActiveSlotPacket(hand, slotIndex));
 
         playClick(1.0F);
         onClose();

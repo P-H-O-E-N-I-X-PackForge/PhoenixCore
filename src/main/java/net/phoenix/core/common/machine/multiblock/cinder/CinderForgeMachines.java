@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine.multiblock.cinder;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
@@ -13,7 +15,6 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.integration.ae2.CinderForgeHatchPartMachine;
 import net.phoenix.core.integration.ae2.CinderRequesterPartMachine;
@@ -134,7 +135,7 @@ public final class CinderForgeMachines {
                 .where('A', Predicates.air())
                 .where('B', Predicates.any())
                 .where('C',
-                        Predicates.blocks(ForgeRegistries.BLOCKS
+                        Predicates.blocks(BuiltInRegistries.BLOCK
                                 .getValue(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
                 .where('D', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('E', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))

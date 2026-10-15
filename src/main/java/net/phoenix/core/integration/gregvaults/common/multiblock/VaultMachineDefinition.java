@@ -129,9 +129,8 @@ public class VaultMachineDefinition {
                     builder.addTextureOverride("top", casingTexture);
                     builder.addTextureOverride("bottom", casingTexture);
 
-                    DistExecutor.unsafeRunWhenOn(net.neoforged.api.distmarker.Dist.CLIENT,
-                            () -> () -> net.phoenix.core.integration.gregvaults.client.VaultClientModelHooks
-                                    .addVaultOverlayRenderer(builder));
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.gregvaults.client.VaultClientModelHooks
+                                    .addVaultOverlayRenderer(builder); }
                 })
                 .pattern(definition -> MultiblockPatternBuilder.start(BACK, UP, RIGHT)
                         .slice("WWWWW", "WWWWW", "WWCWW", "WWWWW", "WWWWW")

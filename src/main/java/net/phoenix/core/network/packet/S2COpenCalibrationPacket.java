@@ -1,15 +1,30 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 import net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient;
 
 import java.util.function.Supplier;
 
-public class S2COpenCalibrationPacket {
+public class S2COpenCalibrationPacket implements CustomPacketPayload {
+    public static final Type<S2COpenCalibrationPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_open_calibration_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2COpenCalibrationPacket> STREAM_CODEC = StreamCodec.ofMember(S2COpenCalibrationPacket::encode, S2COpenCalibrationPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pos;
     private final StarChart.Kind kind;
@@ -37,11 +52,10 @@ public class S2COpenCalibrationPacket {
         buf.writeBoolean(calibrated);
     }
 
-    public static void handle(S2COpenCalibrationPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(S2COpenCalibrationPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             if (!FMLEnvironment.dist.isClient()) return;
             AstralPuzzleClient.openCalibration(msg.pos, msg.kind, msg.stars, msg.calibrated);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

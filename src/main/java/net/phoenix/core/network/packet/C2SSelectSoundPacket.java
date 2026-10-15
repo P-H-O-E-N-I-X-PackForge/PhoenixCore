@@ -1,13 +1,28 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
 
 import java.util.function.Supplier;
 
-public class C2SSelectSoundPacket {
+public class C2SSelectSoundPacket implements CustomPacketPayload {
+    public static final Type<C2SSelectSoundPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_select_sound_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSelectSoundPacket> STREAM_CODEC = StreamCodec.ofMember(C2SSelectSoundPacket::encode, C2SSelectSoundPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pos;
     private final String soundLoc;
@@ -31,9 +46,9 @@ public class C2SSelectSoundPacket {
         buf.writeUtf(this.streamUrl);
     }
 
-    public static void handle(C2SSelectSoundPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var player = ctx.get().getSender();
+    public static void handle(C2SSelectSoundPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
 
             var level = player.level();
@@ -56,6 +71,5 @@ public class C2SSelectSoundPacket {
             var state = level.getBlockState(msg.pos);
             level.sendBlockUpdated(msg.pos, state, state, 3);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

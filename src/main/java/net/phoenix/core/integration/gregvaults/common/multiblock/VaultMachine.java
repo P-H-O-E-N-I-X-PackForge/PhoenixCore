@@ -194,7 +194,7 @@ public class VaultMachine extends MultiblockControllerMachine {
                 buildDeltaEntry(builder, slot, sp);
             }
             if (!builder.isEmpty()) {
-                VaultNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), builder.build());
+                PacketDistributor.sendToPlayer(sp, builder.build());
             }
         }
     }
@@ -205,7 +205,7 @@ public class VaultMachine extends MultiblockControllerMachine {
             SPacketVaultDelta.Builder builder = new SPacketVaultDelta.Builder(sp.containerMenu.containerId);
             buildDeltaEntry(builder, slot, sp);
             if (!builder.isEmpty()) {
-                VaultNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), builder.build());
+                PacketDistributor.sendToPlayer(sp, builder.build());
             }
         }
     }
@@ -237,9 +237,7 @@ public class VaultMachine extends MultiblockControllerMachine {
             stacks[i] = itemHandler.getStackInSlot(i).copy();
         }
         for (ServerPlayer sp : watching) {
-            VaultNetwork.CHANNEL.send(
-                    PacketDistributor.PLAYER.with(() -> sp),
-                    new SPacketVaultContents(sp.containerMenu.containerId, stacks));
+            PacketDistributor.sendToPlayer(sp, new SPacketVaultContents(sp.containerMenu.containerId, stacks));
             ItemStack[] sent = getLastSentItems(sp);
             for (int i = 0; i < stacks.length && i < sent.length; i++) {
                 sent[i] = stacks[i].copy();
@@ -350,9 +348,7 @@ public class VaultMachine extends MultiblockControllerMachine {
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = itemHandler.getStackInSlot(i).copy();
         }
-        VaultNetwork.CHANNEL.send(
-                PacketDistributor.PLAYER.with(() -> player),
-                new SPacketVaultContents(containerId, stacks));
+        PacketDistributor.sendToPlayer(player, new SPacketVaultContents(containerId, stacks));
         ItemStack[] sent = new ItemStack[stacks.length];
         for (int i = 0; i < stacks.length; i++) {
             sent[i] = stacks[i].copy();

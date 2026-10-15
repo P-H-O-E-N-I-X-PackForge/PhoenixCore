@@ -1,6 +1,10 @@
 package net.phoenix.core.client;
 
 
+
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlag;
@@ -23,8 +27,6 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -58,7 +60,7 @@ public class PhoenixClient {
     private PhoenixClient() {}
 
     public static void init(IEventBus modBus) {
-        MinecraftForge.EVENT_BUS.register(VocalVibrancyClientTick.class);
+        NeoForge.EVENT_BUS.register(VocalVibrancyClientTick.class);
         net.phoenix.core.integration.gregvaults.client.GregTechVaultsClient.init(modBus);
         modBus.addListener(PhoenixClient::registerDynamicPipeModels);
         modBus.addListener(WorldFXShaders::onRegisterShaders);
@@ -81,8 +83,7 @@ public class PhoenixClient {
     public static class VocalVibrancyClientTick {
 
         @SubscribeEvent
-        public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) return;
+        public static void onClientTick(ClientTickEvent.Post event) {
             VocalVibrancyClient.tick();
         }
     }

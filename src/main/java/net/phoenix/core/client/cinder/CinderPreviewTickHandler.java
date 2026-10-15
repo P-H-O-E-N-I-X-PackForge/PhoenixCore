@@ -1,6 +1,8 @@
 package net.phoenix.core.client.cinder;
 
 
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.client.mui.schema.MutableSchema;
@@ -16,7 +18,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
@@ -35,8 +36,7 @@ public class CinderPreviewTickHandler {
     private static final int PREVIEW_DISPLAY_TICKS = 4;
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onClientTick(ClientTickEvent.Post event) {
         CinderStructureGhostRenderer.INSTANCE.clientTick();
 
         Minecraft mc = Minecraft.getInstance();

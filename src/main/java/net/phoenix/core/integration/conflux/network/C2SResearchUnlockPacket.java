@@ -1,11 +1,16 @@
 package net.phoenix.core.integration.conflux.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
@@ -15,7 +20,16 @@ import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class C2SResearchUnlockPacket {
+public class C2SResearchUnlockPacket implements CustomPacketPayload {
+    public static final Type<C2SResearchUnlockPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_research_unlock_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SResearchUnlockPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SResearchUnlockPacket.encode(msg, buf), C2SResearchUnlockPacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final ResourceLocation nodeId;
     private final BlockPos terminalPos;
@@ -34,9 +48,9 @@ public class C2SResearchUnlockPacket {
         return new C2SResearchUnlockPacket(buf.readResourceLocation(), buf.readBlockPos());
     }
 
-    public static void handle(C2SResearchUnlockPacket pkt, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(C2SResearchUnlockPacket pkt, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             if (!(player.level() instanceof ServerLevel level)) return;
 
@@ -69,6 +83,5 @@ public class C2SResearchUnlockPacket {
                         .onResearchUnlock(player, node, teamId);
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

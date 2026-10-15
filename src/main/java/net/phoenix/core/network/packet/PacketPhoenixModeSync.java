@@ -1,15 +1,30 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixManipulatorMode;
 import net.phoenix.core.integration.matter_manipulater.common.data.item.PhoenixManipulatorItem;
 
 import java.util.function.Supplier;
 
-public class PacketPhoenixModeSync {
+public class PacketPhoenixModeSync implements CustomPacketPayload {
+    public static final Type<PacketPhoenixModeSync> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "packet_phoenix_mode_sync"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketPhoenixModeSync> STREAM_CODEC = StreamCodec.of((buf, msg) -> PacketPhoenixModeSync.encode(msg, buf), PacketPhoenixModeSync::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final int modeOrdinal;
 
@@ -25,9 +40,9 @@ public class PacketPhoenixModeSync {
         return new PacketPhoenixModeSync(buf.readInt());
     }
 
-    public static void handle(PacketPhoenixModeSync msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketPhoenixModeSync msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player != null) {
                 ItemStack stack = player.getMainHandItem();
                 if (stack.getItem() instanceof PhoenixManipulatorItem tool) {
@@ -35,6 +50,5 @@ public class PacketPhoenixModeSync {
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

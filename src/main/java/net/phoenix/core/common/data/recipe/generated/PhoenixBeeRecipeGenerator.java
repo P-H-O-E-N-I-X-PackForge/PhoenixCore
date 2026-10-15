@@ -1,6 +1,8 @@
 package net.phoenix.core.common.data.recipe.generated;
 
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -9,7 +11,6 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
 import net.phoenix.core.common.data.materials.*;
@@ -44,7 +44,7 @@ public class PhoenixBeeRecipeGenerator {
         return new ItemStack(item, count);
     }
 
-    public static void loadBeeRecipes(Consumer<FinishedRecipe> provider) {
+    public static void loadBeeRecipes(RecipeOutput provider) {
         ItemStack honeyCombBase = safeStack("phoenixcore:honey_comb_base", 1);
 
         if (honeyCombBase.isEmpty()) {
@@ -100,7 +100,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void generateSimulatedColonyRecipes(Consumer<FinishedRecipe> provider, ItemStack base) {
+    public static void generateSimulatedColonyRecipes(RecipeOutput provider, ItemStack base) {
         for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
             Material mat = getMaterial(config.beeId());
             if (mat == null) continue;
@@ -137,7 +137,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void loadBeeCombProductionRecipes(Consumer<FinishedRecipe> provider, ItemStack base) {
+    public static void loadBeeCombProductionRecipes(RecipeOutput provider, ItemStack base) {
         for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
             String beeId = config.beeId();
             Material mat = getMaterial(beeId);
@@ -177,7 +177,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void generateLumberBeeRecipes(Consumer<FinishedRecipe> provider, ItemStack base) {
+    public static void generateLumberBeeRecipes(RecipeOutput provider, ItemStack base) {
         ItemStack lumberBee = safeStack("phoenixcore:lumber_bee", 1);
         if (lumberBee.isEmpty()) return;
 
@@ -196,7 +196,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void generateQuarryBeeRecipes(Consumer<FinishedRecipe> provider, ItemStack base) {
+    public static void generateQuarryBeeRecipes(RecipeOutput provider, ItemStack base) {
         ItemStack quarryBee = safeStack("phoenixcore:quarry_bee", 1);
         if (quarryBee.isEmpty()) return;
 
@@ -217,7 +217,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void generateApisProgenitorRecipes(Consumer<FinishedRecipe> provider) {
+    public static void generateApisProgenitorRecipes(RecipeOutput provider) {
         for (ApisProgenitorConfig cfg : BeeRecipeData.UNIQUE_APIS_PROGENITOR_CONFIGS) {
             Material inMat = getMaterial(cfg.inputMaterialId());
             Material outMat = getMaterial(cfg.outputMaterialId());
@@ -257,7 +257,7 @@ public class PhoenixBeeRecipeGenerator {
         }
     }
 
-    public static void generateSpecialtyBeeRecipes(Consumer<FinishedRecipe> provider, ItemStack base) {
+    public static void generateSpecialtyBeeRecipes(RecipeOutput provider, ItemStack base) {
         Material source = PhoenixProgressionMaterials.SOURCE_GEM;
         ItemStack catalystBee = ChemicalHelper.get(PhoenixMaterialFlags.tier_one_bee, source);
         ItemStack jelly = safeStack("phoenixcore:royal_jelly", 8);

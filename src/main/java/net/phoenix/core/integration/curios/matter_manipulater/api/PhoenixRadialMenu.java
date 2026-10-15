@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.matter_manipulater.api;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -169,7 +171,7 @@ public class PhoenixRadialMenu extends Screen {
         for (int i = 0; i < modes.length; i++) {
             double angle = -Math.PI / 2 + (i * angleStep);
             if (isMouseInSector((int) mouseX, (int) mouseY, centerX, centerY, angle, angleStep)) {
-                PhoenixNetwork.CHANNEL.sendToServer(new PacketPhoenixModeSync(i));
+                PacketDistributor.sendToServer(new PacketPhoenixModeSync(i));
                 Minecraft.getInstance().getSoundManager()
                         .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 this.onClose();

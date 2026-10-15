@@ -1,6 +1,8 @@
 package net.phoenix.core.client.renderer.cinema;
 
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -66,7 +68,7 @@ public class CinemaScrollHandler {
             alignOrdinal = (alignOrdinal + (up ? 1 : -1) + values.length) % values.length;
         }
 
-        PhoenixNetwork.CHANNEL.sendToServer(
+        PacketDistributor.sendToServer(
                 new C2SCinemaScreenConfigPacket(pos, lines, color, scale, alignOrdinal, backgroundOrdinal));
     }
 }

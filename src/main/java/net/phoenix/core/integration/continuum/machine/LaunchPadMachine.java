@@ -169,8 +169,7 @@ public class LaunchPadMachine extends MultiblockControllerMachine {
         Level level = context.getLevel();
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             net.phoenix.core.integration.continuum.common.ContinuumServerEvents.engageAndSend(serverPlayer);
-            PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                    new S2COpenMapPacket(getBlockPos()));
+            PacketDistributor.sendToPlayer(serverPlayer, new S2COpenMapPacket(getBlockPos()));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

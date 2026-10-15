@@ -241,7 +241,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
 
     public void syncAndGeneralUpdate() {
         if (this.getLevel() != null && this.getLevel().isClientSide) {
-            PhoenixNetwork.CHANNEL.sendToServer(
+            PacketDistributor.sendToServer(
                     new C2SSelectSoundPacket(this.getBlockPos(), this.selectedLibrarySound, this.currentStreamUrl));
         }
     }

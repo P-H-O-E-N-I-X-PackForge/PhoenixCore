@@ -5,7 +5,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.PhoenixCore;
 
 public final class ConfluxStructures {
@@ -15,9 +15,9 @@ public final class ConfluxStructures {
     private static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister
             .create(Registries.STRUCTURE_PIECE, PhoenixCore.MOD_ID);
 
-    public static final RegistryObject<StructureType<ConfluxStructure>> CONFLUX = TYPES.register("conflux_structure",
+    public static final DeferredHolder<StructureType<ConfluxStructure>, StructureType<ConfluxStructure>> CONFLUX = TYPES.register("conflux_structure",
             () -> () -> ConfluxStructure.CODEC);
-    public static final RegistryObject<StructurePieceType> PIECE = PIECES.register("conflux_piece",
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> PIECE = PIECES.register("conflux_piece",
             () -> (StructurePieceType) ConfluxPiece::new);
 
     private ConfluxStructures() {}

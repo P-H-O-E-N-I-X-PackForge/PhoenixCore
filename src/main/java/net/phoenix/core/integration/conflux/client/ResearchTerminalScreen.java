@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.client;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -656,7 +658,7 @@ public class ResearchTerminalScreen extends Screen {
         if (selected.hidden && !selected.isVisible(ClientResearchCache.unlocked)) return;
         if (!costsAffordable(selected)) return;
         if (!selected.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut)) return;
-        ConfluxNetwork.CHANNEL.sendToServer(
+        PacketDistributor.sendToServer(
                 new C2SResearchUnlockPacket(selected.id, terminal.getBlockPos()));
     }
 

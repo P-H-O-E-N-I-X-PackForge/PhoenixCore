@@ -1,12 +1,13 @@
 package net.phoenix.core.integration.gregpacks.common.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlocks;
@@ -21,7 +22,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLY_LINE_RECI
 
 public class GregPacksOmniPacksRecipes {
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, false, PhoenixCore.id("basic_omnipack"),
                 new ItemStack(GregPacksBlocks.BASIC_OMNIPACK_BLOCK.asItem()), "ABA", "CED", "ABA",
                 'A', new MaterialEntry(plate, Rubber), 'B', new MaterialEntry(cableGtSingle, Tin),

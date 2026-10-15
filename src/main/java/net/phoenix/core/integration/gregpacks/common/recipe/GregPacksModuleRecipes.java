@@ -1,12 +1,13 @@
 package net.phoenix.core.integration.gregpacks.common.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.phoenix.core.PhoenixCore;
@@ -22,7 +23,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 @SuppressWarnings("all")
 public class GregPacksModuleRecipes {
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, true,
                 PhoenixCore.id("item_module_1"), new ItemStack(GregPacksUpgrades.ITEM_CAPACITY_I),
                 "ABA", "CDC", "ABA",

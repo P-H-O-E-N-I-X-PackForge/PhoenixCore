@@ -1,10 +1,11 @@
 package net.phoenix.core;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.api.capability.PhoenixRecipeCapabilities;
 import net.phoenix.core.common.data.PhoenixCovers;
 import net.phoenix.core.common.data.PhoenixFissionMachineRecipes;
@@ -46,7 +47,7 @@ public class PhoenixGTAddon implements IGTAddon {
     public void registerTagPrefixes() {}
 
     @Override
-    public void addRecipes(Consumer<FinishedRecipe> provider) {
+    public void addRecipes(RecipeOutput provider) {
         PhoenixMachineRecipes.init(provider);
         net.phoenix.core.integration.continuum.ContinuumRecipes.init(provider);
         PhoenixFissionMachineRecipes.init(provider);

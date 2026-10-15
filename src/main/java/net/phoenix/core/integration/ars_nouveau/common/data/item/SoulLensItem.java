@@ -82,7 +82,7 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
 
         if (player.isShiftKeyDown()) {
             if (level.isClientSide) {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SoulVisionManager.toggle(player));
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { SoulVisionManager.toggle(player); }
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
         }

@@ -173,8 +173,7 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
             return;
         }
         StarChart c = chart();
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2COpenCalibrationPacket(getBlockPos(), c.kind(), c.packedStars(), calibrated));
+        PacketDistributor.sendToPlayer(player, new S2COpenCalibrationPacket(getBlockPos(), c.kind(), c.packedStars(), calibrated));
     }
 
     public void attempt(ServerPlayer player, List<int[]> drawn) {
@@ -200,8 +199,7 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
             if (!calibrated) lost = scatter();
             markAsChanged();
         }
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CCalibrationResultPacket(getBlockPos(), solved, aligned && solved, right, c.lineCount(),
+        PacketDistributor.sendToPlayer(player, new S2CCalibrationResultPacket(getBlockPos(), solved, aligned && solved, right, c.lineCount(),
                         drawn.size(), lost));
     }
 
@@ -235,7 +233,7 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
                         .literal(calibrated ? "Recalibrate (draws a new chart over the old)" :
                                 "Open the star chart to calibrate this machine"))))
                 .onMousePressed((context, button) -> {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SOpenCalibrationPacket(getBlockPos()));
+                    PacketDistributor.sendToServer(new C2SOpenCalibrationPacket(getBlockPos()));
                     return true;
                 }));
         return widgets;

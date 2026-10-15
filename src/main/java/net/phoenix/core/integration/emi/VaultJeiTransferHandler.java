@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.emi;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -61,7 +63,7 @@ public class VaultJeiTransferHandler<T extends AbstractVaultMenu>
         }
 
         ResourceLocation recipeId = recipe instanceof Recipe<?> r ? r.getId() : null;
-        VaultNetwork.CHANNEL.sendToServer(new CPacketFillCraftingGrid(recipeId, template));
+        PacketDistributor.sendToServer(new CPacketFillCraftingGrid(recipeId, template));
         return null;
     }
 }

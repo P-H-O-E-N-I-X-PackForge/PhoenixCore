@@ -1,11 +1,17 @@
 package net.phoenix.core.shop.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.RewardSpec;
@@ -22,7 +28,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class C2SAddShopEntryPacket {
+public class C2SAddShopEntryPacket implements CustomPacketPayload {
+    public static final Type<C2SAddShopEntryPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_add_shop_entry_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SAddShopEntryPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SAddShopEntryPacket.encode(msg, buf), C2SAddShopEntryPacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final String name;
     private final ItemStack icon;
@@ -73,10 +88,10 @@ public class C2SAddShopEntryPacket {
         return new C2SAddShopEntryPacket(name, icon, cost, specs, category, editId);
     }
 
-    public static void handle(C2SAddShopEntryPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
+    public static void handle(C2SAddShopEntryPacket packet, IPayloadContext contextSupplier) {
+        IPayloadContext context = contextSupplier;
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) context.player());
             if (player == null || !player.hasPermissions(2)) return;
 
             List<ShopReward> rewards = new ArrayList<>();
@@ -132,6 +147,6 @@ public class C2SAddShopEntryPacket {
 
     public static void broadcastSync(WorldShopData data) {
         S2CShopSyncPacket sync = new S2CShopSyncPacket(data.getEntries());
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), sync);
+        PacketDistributor.sendToAllPlayers(sync);
     }
 }

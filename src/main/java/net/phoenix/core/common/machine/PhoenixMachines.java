@@ -48,7 +48,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
 import net.phoenix.core.api.pattern.PhoenixPredicates;
@@ -556,20 +555,20 @@ public class PhoenixMachines {
                             Predicates.blocks(
                                     BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:sourcestone"))))
                     .where('E',
-                            Predicates.blocks(ForgeRegistries.BLOCKS
+                            Predicates.blocks(BuiltInRegistries.BLOCK
                                     .getValue(ResourceLocation.parse("ars_nouveau:magebloom_block"))))
                     .where('F', Predicates.blocks(GTBlocks.CASING_TEMPERED_GLASS.get()))
                     .where('G',
                             Predicates.blocks(
                                     BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:void_prism"))))
                     .where('H',
-                            Predicates.blocks(ForgeRegistries.BLOCKS
+                            Predicates.blocks(BuiltInRegistries.BLOCK
                                     .getValue(ResourceLocation.parse("ars_nouveau:source_gem_block"))))
                     .where('I',
                             Predicates.blocks(
                                     BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:arcane_core"))))
                     .where('J',
-                            Predicates.blocks(ForgeRegistries.BLOCKS
+                            Predicates.blocks(BuiltInRegistries.BLOCK
                                     .getValue(ResourceLocation.parse("ars_nouveau:vitalic_sourcelink"))))
 
                     .where('K', Predicates.controller(definition))

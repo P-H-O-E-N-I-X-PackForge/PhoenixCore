@@ -20,7 +20,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.common.data.PhoenixMaterialRegistry;
 
 import com.mojang.serialization.Codec;

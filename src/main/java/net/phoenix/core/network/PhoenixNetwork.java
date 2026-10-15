@@ -1,9 +1,8 @@
 package net.phoenix.core.network;
 
+
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.integration.continuum.network.*;
 import net.phoenix.core.network.packet.*;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
@@ -16,348 +15,102 @@ import java.util.Optional;
 @SuppressWarnings("removal")
 public class PhoenixNetwork {
 
-    private static final String PROTOCOL = "1";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath("phoenixcore", "main"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals);
+    public static void register(PayloadRegistrar registrar) {
+        registrar.playToServer(SelectColorPacket.TYPE, SelectColorPacket.STREAM_CODEC, SelectColorPacket::handle);
 
-    private static int id = 0;
+        registrar.playToServer(C2STeslaDischargePacket.TYPE, C2STeslaDischargePacket.STREAM_CODEC, C2STeslaDischargePacket::handle);
 
-    public static void init() {
-        CHANNEL.registerMessage(id++,
-                SelectColorPacket.class,
-                SelectColorPacket::encode,
-                SelectColorPacket::decode,
-                SelectColorPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(UpdateWingSettingsPacket.TYPE, UpdateWingSettingsPacket.STREAM_CODEC, (msg, ctx) -> msg.handle(ctx));
 
-        CHANNEL.registerMessage(id++,
-                C2STeslaDischargePacket.class,
-                C2STeslaDischargePacket::encode,
-                C2STeslaDischargePacket::new,
-                C2STeslaDischargePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(PacketPhoenixModeSync.TYPE, PacketPhoenixModeSync.STREAM_CODEC, PacketPhoenixModeSync::handle);
 
-        CHANNEL.registerMessage(id++,
-                UpdateWingSettingsPacket.class,
-                UpdateWingSettingsPacket::encode,
-                UpdateWingSettingsPacket::new,
-                UpdateWingSettingsPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(CPacketChangeManipulatorMode.TYPE, CPacketChangeManipulatorMode.STREAM_CODEC, CPacketChangeManipulatorMode::handle);
 
-        CHANNEL.registerMessage(id++,
-                PacketPhoenixModeSync.class,
-                PacketPhoenixModeSync::encode,
-                PacketPhoenixModeSync::decode,
-                PacketPhoenixModeSync::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(CPacketManipulatorAction.TYPE, CPacketManipulatorAction.STREAM_CODEC, CPacketManipulatorAction::handle);
 
-        CHANNEL.registerMessage(id++,
-                CPacketChangeManipulatorMode.class,
-                CPacketChangeManipulatorMode::encode,
-                CPacketChangeManipulatorMode::new,
-                CPacketChangeManipulatorMode::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(PacketRecipeBuilderGenerate.TYPE, PacketRecipeBuilderGenerate.STREAM_CODEC, PacketRecipeBuilderGenerate::handle);
 
-        CHANNEL.registerMessage(id++,
-                CPacketManipulatorAction.class,
-                CPacketManipulatorAction::encode,
-                CPacketManipulatorAction::new,
-                CPacketManipulatorAction::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(SelectChromaticCodePacket.TYPE, SelectChromaticCodePacket.STREAM_CODEC, SelectChromaticCodePacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                PacketRecipeBuilderGenerate.class,
-                PacketRecipeBuilderGenerate::encode,
-                PacketRecipeBuilderGenerate::decode,
-                PacketRecipeBuilderGenerate::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SSelectSoundPacket.TYPE, C2SSelectSoundPacket.STREAM_CODEC, C2SSelectSoundPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                SelectChromaticCodePacket.class,
-                SelectChromaticCodePacket::encode,
-                SelectChromaticCodePacket::decode,
-                SelectChromaticCodePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SSoundMetadataPacket.TYPE, C2SSoundMetadataPacket.STREAM_CODEC, C2SSoundMetadataPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SSelectSoundPacket.class,
-                C2SSelectSoundPacket::encode,
-                C2SSelectSoundPacket::new,
-                C2SSelectSoundPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToClient(S2CPlaySoundPacket.TYPE, S2CPlaySoundPacket.STREAM_CODEC, S2CPlaySoundPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SSoundMetadataPacket.class,
-                C2SSoundMetadataPacket::encode,
-                C2SSoundMetadataPacket::new,
-                C2SSoundMetadataPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToClient(S2CPlayStreamPacket.TYPE, S2CPlayStreamPacket.STREAM_CODEC, S2CPlayStreamPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                S2CPlaySoundPacket.class,
-                S2CPlaySoundPacket::encode,
-                S2CPlaySoundPacket::new,
-                S2CPlaySoundPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToServer(C2SToggleTeslaModePacket.TYPE, C2SToggleTeslaModePacket.STREAM_CODEC, C2SToggleTeslaModePacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                S2CPlayStreamPacket.class,
-                S2CPlayStreamPacket::encode,
-                S2CPlayStreamPacket::new,
-                S2CPlayStreamPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToClient(S2CShopSyncPacket.TYPE, S2CShopSyncPacket.STREAM_CODEC, S2CShopSyncPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SToggleTeslaModePacket.class,
-                C2SToggleTeslaModePacket::encode,
-                C2SToggleTeslaModePacket::new,
-                C2SToggleTeslaModePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SBuyShopEntryPacket.TYPE, C2SBuyShopEntryPacket.STREAM_CODEC, C2SBuyShopEntryPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                S2CShopSyncPacket.class,
-                S2CShopSyncPacket::encode,
-                S2CShopSyncPacket::decode,
-                S2CShopSyncPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToServer(C2SAddShopEntryPacket.TYPE, C2SAddShopEntryPacket.STREAM_CODEC, C2SAddShopEntryPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SBuyShopEntryPacket.class,
-                C2SBuyShopEntryPacket::encode,
-                C2SBuyShopEntryPacket::decode,
-                C2SBuyShopEntryPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SRemoveShopEntryPacket.TYPE, C2SRemoveShopEntryPacket.STREAM_CODEC, C2SRemoveShopEntryPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SAddShopEntryPacket.class,
-                C2SAddShopEntryPacket::encode,
-                C2SAddShopEntryPacket::decode,
-                C2SAddShopEntryPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinemaScreenConfigPacket.TYPE, C2SCinemaScreenConfigPacket.STREAM_CODEC, C2SCinemaScreenConfigPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SRemoveShopEntryPacket.class,
-                C2SRemoveShopEntryPacket::encode,
-                C2SRemoveShopEntryPacket::decode,
-                C2SRemoveShopEntryPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinemaActionPacket.TYPE, C2SCinemaActionPacket.STREAM_CODEC, C2SCinemaActionPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinemaScreenConfigPacket.class,
-                C2SCinemaScreenConfigPacket::encode,
-                C2SCinemaScreenConfigPacket::new,
-                C2SCinemaScreenConfigPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderConfigPacket.TYPE, C2SCinderConfigPacket.STREAM_CODEC, C2SCinderConfigPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinemaActionPacket.class,
-                C2SCinemaActionPacket::encode,
-                C2SCinemaActionPacket::new,
-                C2SCinemaActionPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderSetTargetPacket.TYPE, C2SCinderSetTargetPacket.STREAM_CODEC, C2SCinderSetTargetPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderConfigPacket.class,
-                C2SCinderConfigPacket::encode,
-                C2SCinderConfigPacket::new,
-                C2SCinderConfigPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderCommitPacket.TYPE, C2SCinderCommitPacket.STREAM_CODEC, C2SCinderCommitPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderSetTargetPacket.class,
-                C2SCinderSetTargetPacket::encode,
-                C2SCinderSetTargetPacket::new,
-                C2SCinderSetTargetPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToClient(S2CCinderCommitRejectedPacket.TYPE, S2CCinderCommitRejectedPacket.STREAM_CODEC, S2CCinderCommitRejectedPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderCommitPacket.class,
-                C2SCinderCommitPacket::encode,
-                C2SCinderCommitPacket::new,
-                C2SCinderCommitPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderClearTargetPacket.TYPE, C2SCinderClearTargetPacket.STREAM_CODEC, C2SCinderClearTargetPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                S2CCinderCommitRejectedPacket.class,
-                S2CCinderCommitRejectedPacket::encode,
-                S2CCinderCommitRejectedPacket::new,
-                S2CCinderCommitRejectedPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToServer(C2SCinderAtlasSetSlotTargetPacket.TYPE, C2SCinderAtlasSetSlotTargetPacket.STREAM_CODEC, C2SCinderAtlasSetSlotTargetPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderClearTargetPacket.class,
-                C2SCinderClearTargetPacket::encode,
-                C2SCinderClearTargetPacket::new,
-                C2SCinderClearTargetPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasClearSlotPacket.TYPE, C2SCinderAtlasClearSlotPacket.STREAM_CODEC, C2SCinderAtlasClearSlotPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasSetSlotTargetPacket.class,
-                C2SCinderAtlasSetSlotTargetPacket::encode,
-                C2SCinderAtlasSetSlotTargetPacket::new,
-                C2SCinderAtlasSetSlotTargetPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasRenameLoadoutPacket.TYPE, C2SCinderAtlasRenameLoadoutPacket.STREAM_CODEC, C2SCinderAtlasRenameLoadoutPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasClearSlotPacket.class,
-                C2SCinderAtlasClearSlotPacket::encode,
-                C2SCinderAtlasClearSlotPacket::new,
-                C2SCinderAtlasClearSlotPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasSetActiveLoadoutPacket.TYPE, C2SCinderAtlasSetActiveLoadoutPacket.STREAM_CODEC, C2SCinderAtlasSetActiveLoadoutPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasRenameLoadoutPacket.class,
-                C2SCinderAtlasRenameLoadoutPacket::encode,
-                C2SCinderAtlasRenameLoadoutPacket::new,
-                C2SCinderAtlasRenameLoadoutPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasSetActiveSlotPacket.TYPE, C2SCinderAtlasSetActiveSlotPacket.STREAM_CODEC, C2SCinderAtlasSetActiveSlotPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasSetActiveLoadoutPacket.class,
-                C2SCinderAtlasSetActiveLoadoutPacket::encode,
-                C2SCinderAtlasSetActiveLoadoutPacket::new,
-                C2SCinderAtlasSetActiveLoadoutPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasOpenCraftingTerminalPacket.TYPE, C2SCinderAtlasOpenCraftingTerminalPacket.STREAM_CODEC, C2SCinderAtlasOpenCraftingTerminalPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasSetActiveSlotPacket.class,
-                C2SCinderAtlasSetActiveSlotPacket::encode,
-                C2SCinderAtlasSetActiveSlotPacket::new,
-                C2SCinderAtlasSetActiveSlotPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCinderAtlasRequestMaterialsPacket.TYPE, C2SCinderAtlasRequestMaterialsPacket.STREAM_CODEC, C2SCinderAtlasRequestMaterialsPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasOpenCraftingTerminalPacket.class,
-                C2SCinderAtlasOpenCraftingTerminalPacket::encode,
-                C2SCinderAtlasOpenCraftingTerminalPacket::new,
-                C2SCinderAtlasOpenCraftingTerminalPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToClient(S2CPlayCutscenePacket.TYPE, S2CPlayCutscenePacket.STREAM_CODEC, S2CPlayCutscenePacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                C2SCinderAtlasRequestMaterialsPacket.class,
-                C2SCinderAtlasRequestMaterialsPacket::encode,
-                C2SCinderAtlasRequestMaterialsPacket::new,
-                C2SCinderAtlasRequestMaterialsPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCutsceneActionPacket.TYPE, C2SCutsceneActionPacket.STREAM_CODEC, C2SCutsceneActionPacket::handle);
 
-        CHANNEL.registerMessage(id++,
-                S2CPlayCutscenePacket.class,
-                S2CPlayCutscenePacket::encode,
-                S2CPlayCutscenePacket::new,
-                S2CPlayCutscenePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-
-        CHANNEL.registerMessage(id++,
-                C2SCutsceneActionPacket.class,
-                C2SCutsceneActionPacket::encode,
-                C2SCutsceneActionPacket::new,
-                C2SCutsceneActionPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-
-        CHANNEL.registerMessage(id++,
-                C2SCutsceneRequestPacket.class,
-                C2SCutsceneRequestPacket::encode,
-                C2SCutsceneRequestPacket::new,
-                C2SCutsceneRequestPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SCutsceneRequestPacket.TYPE, C2SCutsceneRequestPacket.STREAM_CODEC, C2SCutsceneRequestPacket::handle);
         registerContinuum();
     }
 
     private static void registerContinuum() {
-        CHANNEL.registerMessage(id++, S2CContinuumDataPacket.class, S2CContinuumDataPacket::encode,
-                S2CContinuumDataPacket::new, S2CContinuumDataPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CContinuumStatePacket.class, S2CContinuumStatePacket::encode,
-                S2CContinuumStatePacket::new, S2CContinuumStatePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2COpenMapPacket.class, S2COpenMapPacket::encode, S2COpenMapPacket::new,
-                S2COpenMapPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CMissionLaunchedPacket.class, S2CMissionLaunchedPacket::encode,
-                S2CMissionLaunchedPacket::new, S2CMissionLaunchedPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CPadStockPacket.class,
-                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::encode,
-                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::new,
-                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.class,
-                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::encode,
-                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::new,
-                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SPdimPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SPdimPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SPdimPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SPdimPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.S2CHistoryPacket.class,
-                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::encode,
-                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::new,
-                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, net.phoenix.core.integration.continuum.network.C2SRefitPacket.class,
-                net.phoenix.core.integration.continuum.network.C2SRefitPacket::encode,
-                net.phoenix.core.integration.continuum.network.C2SRefitPacket::new,
-                net.phoenix.core.integration.continuum.network.C2SRefitPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SRequestStatePacket.class, C2SRequestStatePacket::encode,
-                C2SRequestStatePacket::new, C2SRequestStatePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SLaunchMissionPacket.class, C2SLaunchMissionPacket::encode,
-                C2SLaunchMissionPacket::new, C2SLaunchMissionPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SCollectMissionPacket.class, C2SCollectMissionPacket::encode,
-                C2SCollectMissionPacket::new, C2SCollectMissionPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SAttuneStartPacket.class, C2SAttuneStartPacket::encode,
-                C2SAttuneStartPacket::new, C2SAttuneStartPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SAttunePressPacket.class, C2SAttunePressPacket::encode,
-                C2SAttunePressPacket::new, C2SAttunePressPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, S2CAttuneStartPacket.class, S2CAttuneStartPacket::encode,
-                S2CAttuneStartPacket::new, S2CAttuneStartPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CAttuneResultPacket.class, S2CAttuneResultPacket::encode,
-                S2CAttuneResultPacket::new, S2CAttuneResultPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CPhysicsImpulsePacket.class, S2CPhysicsImpulsePacket::encode,
-                S2CPhysicsImpulsePacket::new, S2CPhysicsImpulsePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, C2SOpenCalibrationPacket.class, C2SOpenCalibrationPacket::encode,
-                C2SOpenCalibrationPacket::new, C2SOpenCalibrationPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SCalibratePacket.class, C2SCalibratePacket::encode,
-                C2SCalibratePacket::new, C2SCalibratePacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, S2COpenCalibrationPacket.class, S2COpenCalibrationPacket::encode,
-                S2COpenCalibrationPacket::new, S2COpenCalibrationPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CCalibrationResultPacket.class, S2CCalibrationResultPacket::encode,
-                S2CCalibrationResultPacket::new, S2CCalibrationResultPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToClient(S2CContinuumDataPacket.TYPE, S2CContinuumDataPacket.STREAM_CODEC, S2CContinuumDataPacket::handle);
+        registrar.playToClient(S2CContinuumStatePacket.TYPE, S2CContinuumStatePacket.STREAM_CODEC, S2CContinuumStatePacket::handle);
+        registrar.playToClient(S2COpenMapPacket.TYPE, S2COpenMapPacket.STREAM_CODEC, S2COpenMapPacket::handle);
+        registrar.playToClient(S2CMissionLaunchedPacket.TYPE, S2CMissionLaunchedPacket.STREAM_CODEC, S2CMissionLaunchedPacket::handle);
+        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CPadStockPacket.TYPE, net.phoenix.core.integration.continuum.network.S2CPadStockPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.S2CPadStockPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::handle);
+        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.TYPE, net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SPdimPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SPdimPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SPdimPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::handle);
+        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CHistoryPacket.TYPE, net.phoenix.core.integration.continuum.network.S2CHistoryPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.S2CHistoryPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRefitPacket.TYPE, net.phoenix.core.integration.continuum.network.C2SRefitPacket.STREAM_CODEC, net.phoenix.core.integration.continuum.network.C2SRefitPacket::handle);
+        registrar.playToServer(C2SRequestStatePacket.TYPE, C2SRequestStatePacket.STREAM_CODEC, C2SRequestStatePacket::handle);
+        registrar.playToServer(C2SLaunchMissionPacket.TYPE, C2SLaunchMissionPacket.STREAM_CODEC, C2SLaunchMissionPacket::handle);
+        registrar.playToServer(C2SCollectMissionPacket.TYPE, C2SCollectMissionPacket.STREAM_CODEC, C2SCollectMissionPacket::handle);
+        registrar.playToServer(C2SAttuneStartPacket.TYPE, C2SAttuneStartPacket.STREAM_CODEC, C2SAttuneStartPacket::handle);
+        registrar.playToServer(C2SAttunePressPacket.TYPE, C2SAttunePressPacket.STREAM_CODEC, C2SAttunePressPacket::handle);
+        registrar.playToClient(S2CAttuneStartPacket.TYPE, S2CAttuneStartPacket.STREAM_CODEC, S2CAttuneStartPacket::handle);
+        registrar.playToClient(S2CAttuneResultPacket.TYPE, S2CAttuneResultPacket.STREAM_CODEC, S2CAttuneResultPacket::handle);
+        registrar.playToClient(S2CPhysicsImpulsePacket.TYPE, S2CPhysicsImpulsePacket.STREAM_CODEC, S2CPhysicsImpulsePacket::handle);
+        registrar.playToServer(C2SOpenCalibrationPacket.TYPE, C2SOpenCalibrationPacket.STREAM_CODEC, C2SOpenCalibrationPacket::handle);
+        registrar.playToServer(C2SCalibratePacket.TYPE, C2SCalibratePacket.STREAM_CODEC, C2SCalibratePacket::handle);
+        registrar.playToClient(S2COpenCalibrationPacket.TYPE, S2COpenCalibrationPacket.STREAM_CODEC, S2COpenCalibrationPacket::handle);
+        registrar.playToClient(S2CCalibrationResultPacket.TYPE, S2CCalibrationResultPacket.STREAM_CODEC, S2CCalibrationResultPacket::handle);
     }
 }

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.WireProperties;
@@ -8,7 +10,6 @@ import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.Util;
-import net.minecraft.data.recipes.FinishedRecipe;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
@@ -40,7 +41,7 @@ public class PhoenixWireRecipeHandler {
 
     private PhoenixWireRecipeHandler() {}
 
-    public static void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
+    public static void run(@NotNull RecipeOutput provider, @NotNull Material material) {
         WireProperties property = material.getProperty(PropertyKey.WIRE);
         if (property == null) {
             return;
@@ -53,7 +54,7 @@ public class PhoenixWireRecipeHandler {
         generateCableCovering(provider, property, wireGtHex, material);
     }
 
-    private static void generateCableCovering(@NotNull Consumer<FinishedRecipe> provider,
+    private static void generateCableCovering(@NotNull RecipeOutput provider,
                                               @NotNull WireProperties property,
                                               @NotNull TagPrefix prefix, @NotNull Material material) {
         if (!material.shouldGenerateRecipesFor(prefix) || property.isSuperconductor()) {

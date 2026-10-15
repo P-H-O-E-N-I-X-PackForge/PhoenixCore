@@ -1,13 +1,28 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 
 import java.util.function.Supplier;
 
-public class C2SSoundMetadataPacket {
+public class C2SSoundMetadataPacket implements CustomPacketPayload {
+    public static final Type<C2SSoundMetadataPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_sound_metadata_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSoundMetadataPacket> STREAM_CODEC = StreamCodec.ofMember(C2SSoundMetadataPacket::encode, C2SSoundMetadataPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos soundPos;
     private final float soundRange;
@@ -48,9 +63,9 @@ public class C2SSoundMetadataPacket {
         buf.writeInt(this.bpm);
     }
 
-    public static void handle(C2SSoundMetadataPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var player = ctx.get().getSender();
+    public static void handle(C2SSoundMetadataPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
 
             float safeBass = Math.max(0f, Math.min(msg.bass, 10f));
@@ -63,6 +78,5 @@ public class C2SSoundMetadataPacket {
                     msg.soundPos, safeRange, msg.durationTicks,
                     safeBass, safeMid, safeTreble, safeBPM);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

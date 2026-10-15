@@ -159,8 +159,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         minOffset = Integer.MAX_VALUE;
         attuneState = ATTUNING;
         markAsChanged();
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CAttuneStartPacket(getBlockPos(), runDifficulty.level(), picked));
+        PacketDistributor.sendToPlayer(player, new S2CAttuneStartPacket(getBlockPos(), runDifficulty.level(), picked));
     }
 
     public void attunePress(ServerPlayer player, int lane, int elapsedMs) {
@@ -225,8 +224,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         if (runner != null && level.getServer() != null) {
             ServerPlayer player = level.getServer().getPlayerList().getPlayer(runner);
             if (player != null) {
-                PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                        new S2CAttuneResultPacket(getBlockPos(), passed, grade, perfects, goods, total));
+                PacketDistributor.sendToPlayer(player, new S2CAttuneResultPacket(getBlockPos(), passed, grade, perfects, goods, total));
             }
         }
         chart = null;

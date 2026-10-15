@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.cinema.cutscene;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -216,7 +218,7 @@ public class CutsceneScreen extends Screen {
         sendActions(choice.actions());
         if (choice.cutscene().isPresent()) {
 
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SCutsceneRequestPacket(choice.cutscene().get()));
+            PacketDistributor.sendToServer(new C2SCutsceneRequestPacket(choice.cutscene().get()));
             startOutro(time);
         } else if (choice.end()) {
             startOutro(time);
@@ -262,7 +264,7 @@ public class CutsceneScreen extends Screen {
 
     private void sendActions(List<ResourceLocation> actions) {
         for (ResourceLocation action : actions) {
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SCutsceneActionPacket(id, action));
+            PacketDistributor.sendToServer(new C2SCutsceneActionPacket(id, action));
         }
     }
 

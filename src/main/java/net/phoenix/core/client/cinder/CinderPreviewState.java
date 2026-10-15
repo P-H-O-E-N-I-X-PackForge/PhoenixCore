@@ -1,5 +1,7 @@
 package net.phoenix.core.client.cinder;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.client.Minecraft;
@@ -59,7 +61,7 @@ public final class CinderPreviewState {
     public void commit() {
         if (!active) return;
         boolean force = isForceArmed();
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderCommitPacket(hand, anchor, facing, UP_FACING, false, force));
+        PacketDistributor.sendToServer(new C2SCinderCommitPacket(hand, anchor, facing, UP_FACING, false, force));
         forceArmedAnchor = null;
         cancel();
     }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.registry;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
@@ -8,11 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultContainerMenu;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
@@ -68,13 +69,13 @@ public final class VaultRegistry {
             .register();
 
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(
-            ForgeRegistries.MENU_TYPES, PhoenixCore.MOD_ID);
+            BuiltInRegistries.MENU, PhoenixCore.MOD_ID);
 
-    public static final RegistryObject<MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register("vault_menu",
-            () -> IForgeMenuType.create(VaultContainerMenu::new));
+    public static final DeferredHolder<MenuType<VaultContainerMenu>, MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register("vault_menu",
+            () -> IMenuTypeExtension.create(VaultContainerMenu::new));
 
-    public static final RegistryObject<MenuType<VaultTerminalMenu>> VAULT_TERMINAL_MENU = MENU_TYPES
-            .register("vault_terminal_menu", () -> IForgeMenuType.create(VaultTerminalMenu::new));
+    public static final DeferredHolder<MenuType<VaultTerminalMenu>, MenuType<VaultTerminalMenu>> VAULT_TERMINAL_MENU = MENU_TYPES
+            .register("vault_terminal_menu", () -> IMenuTypeExtension.create(VaultTerminalMenu::new));
 
     public static PartAbility VAULT_INTERFACE_ABILITY;
     public static MachineDefinition VAULT_INTERFACE;

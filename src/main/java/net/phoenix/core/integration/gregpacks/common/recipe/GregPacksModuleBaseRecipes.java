@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -7,7 +9,6 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.phoenix.core.PhoenixCore;
@@ -21,7 +22,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 @SuppressWarnings("all")
 public class GregPacksModuleBaseRecipes {
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         registerModuleBase(provider, "lv", GregPacksItems.LV_MODULE_BASE, GTMaterials.Steel);
         registerModuleBase(provider, "mv", GregPacksItems.MV_MODULE_BASE, GTMaterials.Aluminium);
         registerModuleBase(provider, "hv", GregPacksItems.HV_MODULE_BASE, GTMaterials.StainlessSteel);
@@ -52,7 +53,7 @@ public class GregPacksModuleBaseRecipes {
                 .save(provider);
     }
 
-    private static void registerModuleBase(Consumer<FinishedRecipe> provider, String tier,
+    private static void registerModuleBase(RecipeOutput provider, String tier,
                                            ItemLike output, Material material) {
         VanillaRecipeHelper.addShapedRecipe(provider, false, PhoenixCore.id(tier + "_module_base"),
                 new ItemStack(output), "   ", "PPf", "PPh",

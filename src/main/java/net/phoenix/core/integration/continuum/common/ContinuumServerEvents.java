@@ -1,12 +1,13 @@
 package net.phoenix.core.integration.continuum.common;
 
 
+
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -48,8 +49,7 @@ public final class ContinuumServerEvents {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onServerTick(ServerTickEvent.Post event) {
         if (++tickCounter < 20) return;
         tickCounter = 0;
 
@@ -76,8 +76,7 @@ public final class ContinuumServerEvents {
     }
 
     public static void sendData(ServerPlayer player) {
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CContinuumDataPacket(ContinuumData.snapshot()));
+        PacketDistributor.sendToPlayer(player, new S2CContinuumDataPacket(ContinuumData.snapshot()));
     }
 
     public static void sendState(ServerPlayer player) {
@@ -93,8 +92,7 @@ public final class ContinuumServerEvents {
 
     private static void sendStateAlways(ServerPlayer player) {
         UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CContinuumStatePacket(ContinuumStateSnapshot.build(player.server, team)));
+        PacketDistributor.sendToPlayer(player, new S2CContinuumStatePacket(ContinuumStateSnapshot.build(player.server, team)));
     }
 
     public static void engageTeam(MinecraftServer server, UUID team) {

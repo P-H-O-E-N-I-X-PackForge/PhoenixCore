@@ -1,13 +1,28 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 
 import java.util.function.Supplier;
 
-public class C2SAttunePressPacket {
+public class C2SAttunePressPacket implements CustomPacketPayload {
+    public static final Type<C2SAttunePressPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_attune_press_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SAttunePressPacket> STREAM_CODEC = StreamCodec.ofMember(C2SAttunePressPacket::encode, C2SAttunePressPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pos;
     private final int lane;
@@ -31,14 +46,13 @@ public class C2SAttunePressPacket {
         buf.writeVarInt(elapsedMs);
     }
 
-    public static void handle(C2SAttunePressPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var player = ctx.get().getSender();
+    public static void handle(C2SAttunePressPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             if (player.level().getBlockEntity(msg.pos) instanceof HarmonicLockMachine lock) {
                 lock.attunePress(player, msg.lane, msg.elapsedMs);
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

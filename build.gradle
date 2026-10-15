@@ -202,6 +202,7 @@ dependencies {
     implementation "dev.toma.configuration:configuration-${minecraft_version}:${configuration_version}"
 
     // Optional integrations
+    implementation "maven.modrinth:jade:15.10.6+neoforge"
     compileOnly "org.appliedenergistics:appliedenergistics2:${ae2_version}"
     compileOnly "dev.ftb.mods:ftb-teams-neoforge:${ftbteams_version}"
     compileOnly "dev.ftb.mods:ftb-library-neoforge:${ftblibrary_version}"

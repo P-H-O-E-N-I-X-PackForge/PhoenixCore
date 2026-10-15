@@ -1,11 +1,12 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.data.item.PhoenixItems;
 
@@ -18,7 +19,7 @@ public final class UlvCoverRecipes {
 
     private UlvCoverRecipes() {}
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, PhoenixCore.id("ulv_electric_motor"),
                 PhoenixItems.ULV_ELECTRIC_MOTOR.asStack(),
                 "CWR",

@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -320,7 +322,7 @@ public class WingFlightScreen extends Screen {
     }
 
     private void sendUpdate() {
-        PhoenixNetwork.CHANNEL.sendToServer(
+        PacketDistributor.sendToServer(
                 new UpdateWingSettingsPacket(flightMode, flightSpeed, flightDrift, flightVertical, sprintSpeed,
                         jumpHeight, keepFlyingOnLand));
     }

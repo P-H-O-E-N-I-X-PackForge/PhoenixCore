@@ -1,8 +1,14 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 
@@ -12,7 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class C2SCalibratePacket {
+public class C2SCalibratePacket implements CustomPacketPayload {
+    public static final Type<C2SCalibratePacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_calibrate_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCalibratePacket> STREAM_CODEC = StreamCodec.ofMember(C2SCalibratePacket::encode, C2SCalibratePacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pos;
     private final List<int[]> lines;
@@ -38,15 +53,14 @@ public class C2SCalibratePacket {
         }
     }
 
-    public static void handle(C2SCalibratePacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            var player = ctx.get().getSender();
+    public static void handle(C2SCalibratePacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             if (player.distanceToSqr(msg.pos.getX() + 0.5, msg.pos.getY() + 0.5, msg.pos.getZ() + 0.5) > 64) return;
             if (MetaMachine.getMachine(player.level(), msg.pos) instanceof AstralCalibratedMachine machine) {
                 machine.attempt(player, msg.lines);
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

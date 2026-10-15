@@ -1,14 +1,29 @@
 package net.phoenix.core.shop.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.shop.WorldShopData;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class C2SRemoveShopEntryPacket {
+public class C2SRemoveShopEntryPacket implements CustomPacketPayload {
+    public static final Type<C2SRemoveShopEntryPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_remove_shop_entry_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SRemoveShopEntryPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SRemoveShopEntryPacket.encode(msg, buf), C2SRemoveShopEntryPacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final UUID entryId;
 
@@ -24,10 +39,10 @@ public class C2SRemoveShopEntryPacket {
         return new C2SRemoveShopEntryPacket(buf.readUUID());
     }
 
-    public static void handle(C2SRemoveShopEntryPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
+    public static void handle(C2SRemoveShopEntryPacket packet, IPayloadContext contextSupplier) {
+        IPayloadContext context = contextSupplier;
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) context.player());
             if (player == null || !player.hasPermissions(2)) return;
 
             WorldShopData data = WorldShopData.get(player.serverLevel());

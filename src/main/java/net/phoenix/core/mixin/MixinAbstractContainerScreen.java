@@ -1,5 +1,7 @@
 package net.phoenix.core.mixin;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -64,7 +66,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         AggregatedStack agg = vs.getAggregatedStack();
         screen.applyOptimisticPickup(agg, half);
 
-        VaultNetwork.CHANNEL.sendToServer(new CPacketStackedPickup(slotIndex, half));
+        PacketDistributor.sendToServer(new CPacketStackedPickup(slotIndex, half));
         ci.cancel();
     }
 

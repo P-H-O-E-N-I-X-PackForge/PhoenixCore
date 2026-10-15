@@ -133,8 +133,7 @@ public class AstralSurveyItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide && isSurvey(stack)) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                    () -> () -> net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient.openSurvey(stack));
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient.openSurvey(stack); }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

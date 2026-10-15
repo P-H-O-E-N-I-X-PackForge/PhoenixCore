@@ -2,7 +2,7 @@ package net.phoenix.core.integration.matter_manipulater.common.data.item;
 
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.common.data.item.GTToolActions;
+import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixManipulatorMode;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixPlacementEngine;
 
@@ -182,9 +182,9 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-        return GTToolActions.DEFAULT_WRENCH_ACTIONS.contains(toolAction) ||
-                GTToolActions.DEFAULT_WIRE_CUTTER_ACTIONS.contains(toolAction) ||
+    public boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
+        return GTItemAbilities.DEFAULT_WRENCH_ACTIONS.contains(toolAction) ||
+                GTItemAbilities.DEFAULT_WIRE_CUTTER_ACTIONS.contains(toolAction) ||
                 super.canPerformAction(stack, toolAction);
     }
 

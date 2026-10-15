@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -10,8 +12,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
@@ -25,16 +26,16 @@ import java.util.Map;
 
 public final class ConfluxRegistry {
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK,
             PhoenixCore.MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM,
             PhoenixCore.MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
-            .create(ForgeRegistries.BLOCK_ENTITY_TYPES, PhoenixCore.MOD_ID);
+            .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final Map<ConfluxDataType, RegistryObject<ConfluxPipeBlock>> PIPES = new EnumMap<>(
+    public static final Map<ConfluxDataType, DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock>> PIPES = new EnumMap<>(
             ConfluxDataType.class);
-    public static final Map<ConfluxDataType, RegistryObject<BlockEntityType<ConfluxPipeBlockEntity>>> PIPE_BES = new EnumMap<>(
+    public static final Map<ConfluxDataType, DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>>> PIPE_BES = new EnumMap<>(
             ConfluxDataType.class);
 
     static {
@@ -43,12 +44,12 @@ public final class ConfluxRegistry {
             ConfluxPipeType pipeType = ConfluxPipeType.values()[dt.ordinal()];
 
             @SuppressWarnings("unchecked")
-            RegistryObject<BlockEntityType<ConfluxPipeBlockEntity>>[] beHolder = new RegistryObject[1];
+            DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>>[] beHolder = new RegistryObject[1];
 
-            RegistryObject<ConfluxPipeBlock> block = BLOCKS.register(id,
+            DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock> block = BLOCKS.register(id,
                     () -> new ConfluxPipeBlock(pipeProps(dt), pipeType, () -> beHolder[0].get()));
 
-            RegistryObject<BlockEntityType<ConfluxPipeBlockEntity>> be = BES.register(id,
+            DeferredHolder<BlockEntityType<ConfluxPipeBlockEntity>, BlockEntityType<ConfluxPipeBlockEntity>> be = BES.register(id,
                     () -> BlockEntityType.Builder.of(
                             (pos, state) -> new ConfluxPipeBlockEntity(beHolder[0].get(), pos, state),
                             block.get()).build(null));

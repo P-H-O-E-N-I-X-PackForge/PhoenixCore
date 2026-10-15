@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.cinema;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -75,7 +77,7 @@ public class CinemaTypingScreen extends Screen {
                 lines.add(newText);
             }
 
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SCinemaScreenConfigPacket(
+            PacketDistributor.sendToServer(new C2SCinemaScreenConfigPacket(
                     pos, lines, screen.getTextColor(), screen.getTextScale(), screen.getTextAlign().ordinal(),
                     screen.getBackground().ordinal()));
         }

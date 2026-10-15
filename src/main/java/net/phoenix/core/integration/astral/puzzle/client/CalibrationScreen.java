@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.puzzle.client;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -161,7 +163,7 @@ public class CalibrationScreen extends Screen {
                         }
                         case "go" -> {
                             if (!lines.isEmpty()) {
-                                PhoenixNetwork.CHANNEL.sendToServer(new C2SCalibratePacket(pos, lines));
+                                PacketDistributor.sendToServer(new C2SCalibratePacket(pos, lines));
                             }
                         }
                         default -> onClose();

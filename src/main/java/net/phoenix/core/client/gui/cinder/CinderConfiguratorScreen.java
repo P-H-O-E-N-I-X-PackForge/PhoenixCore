@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.cinder;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -213,13 +215,13 @@ public class CinderConfiguratorScreen extends Screen {
 
     private void pickTarget(MultiblockMachineDefinition chosen) {
         CinderSchemaData.setTarget(cinderCoreStack, chosen);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderSetTargetPacket(hand, chosen.getId()));
+        PacketDistributor.sendToServer(new C2SCinderSetTargetPacket(hand, chosen.getId()));
         reload();
     }
 
     private void changeTarget() {
         CinderSchemaData.clearTarget(cinderCoreStack);
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SCinderClearTargetPacket(hand));
+        PacketDistributor.sendToServer(new C2SCinderClearTargetPacket(hand));
         reload();
     }
 
@@ -305,7 +307,7 @@ public class CinderConfiguratorScreen extends Screen {
         drawButton(g, mouseX, mouseY, left + 8 + 96, buttonY, 70, BUTTON_H, "Reset", this::resetToDefaults);
         drawButton(g, mouseX, mouseY, left + PANEL_W - 78, buttonY, 70, BUTTON_H, "Confirm", () -> {
             if (definition != null && schemaInfo != null) {
-                PhoenixNetwork.CHANNEL.sendToServer(
+                PacketDistributor.sendToServer(
                         C2SCinderConfigPacket.fromSchema(hand, definition, schemaInfo));
             }
             onClose();

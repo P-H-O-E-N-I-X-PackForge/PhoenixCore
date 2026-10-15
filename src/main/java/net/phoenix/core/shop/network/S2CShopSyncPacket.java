@@ -1,10 +1,16 @@
 package net.phoenix.core.shop.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
 
@@ -14,7 +20,16 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class S2CShopSyncPacket {
+public class S2CShopSyncPacket implements CustomPacketPayload {
+    public static final Type<S2CShopSyncPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_shop_sync_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CShopSyncPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> S2CShopSyncPacket.encode(msg, buf), S2CShopSyncPacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     public record ShopEntryView(UUID id, String name, ItemStack icon, int cost, List<String> rewardDescriptions,
                                 List<RewardSpec> rewardSpecs, String category) {}
@@ -76,10 +91,9 @@ public class S2CShopSyncPacket {
         return new S2CShopSyncPacket(views, true);
     }
 
-    public static void handle(S2CShopSyncPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> net.phoenix.core.shop.client.PhoenixShopScreen.openOrUpdate(packet.entries)));
+    public static void handle(S2CShopSyncPacket packet, IPayloadContext contextSupplier) {
+        IPayloadContext context = contextSupplier;
+        context.enqueueWork(() -> if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) { net.phoenix.core.shop.client.PhoenixShopScreen.openOrUpdate(packet.entries)); }
         context.setPacketHandled(true);
     }
 }

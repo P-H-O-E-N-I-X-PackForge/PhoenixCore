@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
@@ -7,7 +9,6 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.phoenix.core.common.data.item.PhoenixItems;
@@ -23,7 +24,7 @@ import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipe
 
 public class TeslaHatchRecipes {
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         final long[] V = GTValues.V;
 
         for (int tier = LV; tier <= OpV; tier++) {
@@ -46,7 +47,7 @@ public class TeslaHatchRecipes {
         }
     }
 
-    private static void processAssemblerHatch(Consumer<FinishedRecipe> provider, int tier, long[] V,
+    private static void processAssemblerHatch(RecipeOutput provider, int tier, long[] V,
                                               ItemStack baseHatch, ItemStack outputBaseHatch) {
         FluidStack fluid = getFluidForTier(tier);
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
@@ -72,7 +73,7 @@ public class TeslaHatchRecipes {
                 .duration(600).EUt(V[tier]).save(provider);
     }
 
-    private static void processAssemblyLineHatchScanner(Consumer<FinishedRecipe> provider, int tier, long[] V,
+    private static void processAssemblyLineHatchScanner(RecipeOutput provider, int tier, long[] V,
                                                         ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
         ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();
@@ -104,7 +105,7 @@ public class TeslaHatchRecipes {
                 .save(provider);
     }
 
-    private static void processAssemblyLineHatchStation(Consumer<FinishedRecipe> provider, int tier, long[] V,
+    private static void processAssemblyLineHatchStation(RecipeOutput provider, int tier, long[] V,
                                                         ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
         ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();

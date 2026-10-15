@@ -1,6 +1,8 @@
 package net.phoenix.core.client.renderer.cinema;
 
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionHand;
@@ -23,7 +25,7 @@ public class CinemaInputHandler {
 
         if (Screen.hasAltDown()) {
             consume(event);
-            PhoenixNetwork.CHANNEL.sendToServer(
+            PacketDistributor.sendToServer(
                     new C2SCinemaActionPacket(event.getPos(), C2SCinemaActionPacket.Action.CYCLE_COLOR));
         } else if (Screen.hasControlDown()) {
             consume(event);
@@ -38,7 +40,7 @@ public class CinemaInputHandler {
         if (!(event.getLevel().getBlockEntity(event.getPos()) instanceof CinemaScreenBlockEntity)) return;
 
         consume(event);
-        PhoenixNetwork.CHANNEL.sendToServer(
+        PacketDistributor.sendToServer(
                 new C2SCinemaActionPacket(event.getPos(), C2SCinemaActionPacket.Action.REMOVE_CURRENT_LINE));
     }
 

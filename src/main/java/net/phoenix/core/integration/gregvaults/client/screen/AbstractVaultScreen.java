@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -132,7 +134,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
             scrollOffset = 0;
             menu.updateSearch(query);
             menu.updateScroll(0);
-            VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.search(query));
+            PacketDistributor.sendToServer(CPacketVaultAction.search(query));
             onSearch(query);
         });
         addRenderableWidget(searchBox);
@@ -140,13 +142,13 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         iconButtons = new ArrayList<>();
         iconButtons.add(new IconBtn(BTN_X_OFFSET, 3 + (BTN_SIZE + BTN_GAP) * 0, BTN_SIZE,
                 Component.literal("Organize"),
-                () -> VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.organize())));
+                () -> PacketDistributor.sendToServer(CPacketVaultAction.organize())));
         iconButtons.add(new IconBtn(BTN_X_OFFSET, 3 + (BTN_SIZE + BTN_GAP) * 1, BTN_SIZE,
                 Component.literal("Stacked / Slot view"),
                 () -> {
                     VaultDisplayMode next = menu.getDisplayMode().next();
                     menu.setDisplayMode(next);
-                    VaultNetwork.CHANNEL.sendToServer(new CPacketVaultDisplayMode(next));
+                    PacketDistributor.sendToServer(new CPacketVaultDisplayMode(next));
                 }));
         iconButtons.add(new IconBtn(BTN_X_OFFSET, 3 + (BTN_SIZE + BTN_GAP) * 2, BTN_SIZE,
                 Component.literal("Sort: Name"),
@@ -157,7 +159,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
                     currentSortReversed = nameSortReversed;
 
                     menu.setSort(VaultSortMode.NAME, nameSortReversed);
-                    VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.sort(VaultSortMode.NAME, nameSortReversed));
+                    PacketDistributor.sendToServer(CPacketVaultAction.sort(VaultSortMode.NAME, nameSortReversed));
                 }));
         iconButtons.add(new IconBtn(BTN_X_OFFSET, 3 + (BTN_SIZE + BTN_GAP) * 3, BTN_SIZE,
                 Component.literal("Sort: Amount"),
@@ -168,19 +170,19 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
                     currentSortReversed = amountSortReversed;
 
                     menu.setSort(VaultSortMode.COUNT, amountSortReversed);
-                    VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.sort(VaultSortMode.COUNT, amountSortReversed));
+                    PacketDistributor.sendToServer(CPacketVaultAction.sort(VaultSortMode.COUNT, amountSortReversed));
                 }));
 
         VaultScreenState.State state = VaultScreenState.get();
         if (state.displayMode != VaultDisplayMode.SLOTS) {
             menu.setDisplayMode(state.displayMode);
-            VaultNetwork.CHANNEL.sendToServer(new CPacketVaultDisplayMode(state.displayMode));
+            PacketDistributor.sendToServer(new CPacketVaultDisplayMode(state.displayMode));
         }
         currentSortMode = state.sortMode;
         currentSortReversed = state.sortReversed;
         if (state.sortMode != VaultSortMode.NAME || state.sortReversed) {
             menu.setSort(state.sortMode, state.sortReversed);
-            VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.sort(state.sortMode, state.sortReversed));
+            PacketDistributor.sendToServer(CPacketVaultAction.sort(state.sortMode, state.sortReversed));
         }
         if (state.searchQuery != null && !state.searchQuery.isEmpty()) {
             searchBox.setValue(state.searchQuery);
@@ -236,7 +238,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         if (newScroll == scrollOffset) return;
         scrollOffset = newScroll;
         menu.updateScroll(scrollOffset);
-        VaultNetwork.CHANNEL.sendToServer(CPacketVaultAction.scroll(scrollOffset));
+        PacketDistributor.sendToServer(CPacketVaultAction.scroll(scrollOffset));
     }
 
     @Override

@@ -1,5 +1,11 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
@@ -12,7 +18,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
@@ -20,7 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class C2SCinderConfigPacket {
+public class C2SCinderConfigPacket implements CustomPacketPayload {
+    public static final Type<C2SCinderConfigPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_config_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderConfigPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderConfigPacket::encode, C2SCinderConfigPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final InteractionHand hand;
     private final int[] sliceKeys;
@@ -173,10 +188,10 @@ public class C2SCinderConfigPacket {
         }
     }
 
-    public static void handle(C2SCinderConfigPacket msg, Supplier<NetworkEvent.Context> ctxGetter) {
-        NetworkEvent.Context ctx = ctxGetter.get();
+    public static void handle(C2SCinderConfigPacket msg, IPayloadContext ctxGetter) {
+        IPayloadContext ctx = ctxGetter;
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             ItemStack stack = player.getItemInHand(msg.hand);
             if (!(stack.getItem() instanceof CinderCoreItem)) return;

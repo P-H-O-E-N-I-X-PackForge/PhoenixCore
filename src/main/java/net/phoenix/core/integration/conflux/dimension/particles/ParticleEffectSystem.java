@@ -8,7 +8,7 @@ import net.neoforged.fml.DistExecutor;
 public class ParticleEffectSystem {
 
     public static void spawnAshRain(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -24,11 +24,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.VOLCANIC_ASH.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnHeatShimmer(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -44,11 +44,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.HEAT_SHIMMER.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnLavaSparks(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -64,11 +64,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.LAVA_SPARK.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnSculkSpores(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -84,11 +84,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.SCULK_SPORE.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnBiolumGlow(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -104,11 +104,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.BIOLUM_GLOW.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnCosmicDust(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -124,11 +124,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.COSMIC_DUST.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnVoidShimmer(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -144,11 +144,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.VOID_SHIMMER.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnNeonSparks(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -164,11 +164,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.NEON_SPARK.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnIndustrialSmoke(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -184,11 +184,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.INDUSTRIAL_SMOKE.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnGlitchEffect(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -204,11 +204,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.GLITCH_EFFECT.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnRealityTears(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -224,11 +224,11 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.REALITY_TEAR.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 
     public static void spawnStarSparkles(Vec3 position, int count) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -244,6 +244,6 @@ public class ParticleEffectSystem {
                 SimpleParticleType particle = DimensionParticleTypes.STAR_SPARKLE.get();
                 mc.level.addParticle(particle, x, y, z, vx, vy, vz);
             }
-        });
+        }
     }
 }

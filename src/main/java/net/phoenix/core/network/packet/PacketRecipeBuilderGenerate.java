@@ -1,13 +1,28 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 
 import java.util.function.Supplier;
 
-public class PacketRecipeBuilderGenerate {
+public class PacketRecipeBuilderGenerate implements CustomPacketPayload {
+    public static final Type<PacketRecipeBuilderGenerate> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "packet_recipe_builder_generate"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeBuilderGenerate> STREAM_CODEC = StreamCodec.of((buf, msg) -> PacketRecipeBuilderGenerate.encode(msg, buf), PacketRecipeBuilderGenerate::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final String code;
 
@@ -23,9 +38,9 @@ public class PacketRecipeBuilderGenerate {
         return new PacketRecipeBuilderGenerate(buf.readUtf(32_768));
     }
 
-    public static void handle(PacketRecipeBuilderGenerate msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketRecipeBuilderGenerate msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             player.sendSystemMessage(Component.literal("§6=== Generated Recipe Code ==="));
             for (String line : msg.code.split("\n")) {
@@ -33,6 +48,5 @@ public class PacketRecipeBuilderGenerate {
             }
             player.sendSystemMessage(Component.literal("§6=============================="));
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

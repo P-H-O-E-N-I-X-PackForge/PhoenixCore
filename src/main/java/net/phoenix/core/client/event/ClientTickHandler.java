@@ -1,6 +1,10 @@
 package net.phoenix.core.client.event;
 
 
+
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -33,8 +36,7 @@ import net.phoenix.core.network.packet.SelectColorPacket;
 public class ClientTickHandler {
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onClientTick(ClientTickEvent.Post event) {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
@@ -96,7 +98,7 @@ public class ClientTickHandler {
             ItemStack chestItem = mc.player.getItemBySlot(EquipmentSlot.CHEST);
             if (!chestItem.isEmpty() &&
                     chestItem.getItem() instanceof net.phoenix.core.common.data.item.PhoenixArmorItem) {
-                PhoenixNetwork.CHANNEL.sendToServer(new net.phoenix.core.network.packet.C2SToggleTeslaModePacket());
+                PacketDistributor.sendToServer(new net.phoenix.core.network.packet.C2SToggleTeslaModePacket());
             }
         }
 
@@ -108,7 +110,7 @@ public class ClientTickHandler {
                 CompoundTag nbt = bootsItem.getOrCreateTag();
 
                 if (nbt.getInt("dischargeCooldown") == 0) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2STeslaDischargePacket());
+                    PacketDistributor.sendToServer(new C2STeslaDischargePacket());
                 }
             }
         }
@@ -144,7 +146,7 @@ public class ClientTickHandler {
                 if (nextColor < -1) nextColor = 15;
                 if (nextColor > 15) nextColor = -1;
 
-                PhoenixNetwork.CHANNEL.sendToServer(new SelectColorPacket(InteractionHand.MAIN_HAND, nextColor));
+                PacketDistributor.sendToServer(new SelectColorPacket(InteractionHand.MAIN_HAND, nextColor));
                 mc.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.1f, 1.5f + (nextColor * 0.05f));
             }
         }

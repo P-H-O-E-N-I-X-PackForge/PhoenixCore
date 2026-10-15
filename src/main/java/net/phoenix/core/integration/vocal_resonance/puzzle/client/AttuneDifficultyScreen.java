@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle.client;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -77,7 +79,7 @@ public class AttuneDifficultyScreen extends Screen {
                 int y = top() + i * (ROW_H + 6);
                 if (all[i].level() <= tuneLevel + 1 && mx >= left() && mx < left() + ROW_W && my >= y &&
                         my < y + ROW_H) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SAttuneStartPacket(pos, all[i].level()));
+                    PacketDistributor.sendToServer(new C2SAttuneStartPacket(pos, all[i].level()));
                     
                     onClose();
                     return true;

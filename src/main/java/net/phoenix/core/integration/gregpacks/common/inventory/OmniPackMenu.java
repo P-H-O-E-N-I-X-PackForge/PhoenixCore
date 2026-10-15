@@ -17,7 +17,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregpacks.common.OmniPackTickHandler;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
@@ -262,7 +261,7 @@ public class OmniPackMenu extends AbstractContainerMenu {
         fluidData.set(3, capacity & 0xFFFF);
 
         String key = fluid.isEmpty() ? "" :
-                ForgeRegistries.FLUIDS
+                BuiltInRegistries.FLUID
                         .getKey(fluid.getFluid()).toString();
         if (!key.equals(lastSentFluidKey)) {
             lastSentFluidKey = key;

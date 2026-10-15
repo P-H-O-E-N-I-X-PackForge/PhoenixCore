@@ -19,11 +19,11 @@ public abstract class ParticleEffectSystem {
 
     private static void spawnClientParticle(Level level, SimpleParticleType type, double x, double y, double z,
                                             double vx, double vy, double vz) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.level == null) return;
             mc.level.addParticle(type, x, y, z, vx, vy, vz);
-        });
+        }
     }
 
     public static class AshRainParticles extends ParticleEffectSystem {
@@ -57,7 +57,7 @@ public abstract class ParticleEffectSystem {
         public void update(Level level, @Nullable Player player) {}
 
         public void createRipple(Level level, BlockPos source, float volume) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
                 net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
                 if (mc.level == null) return;
 
@@ -68,7 +68,7 @@ public abstract class ParticleEffectSystem {
                     double z = source.getZ() + 0.5 + Math.sin(angle) * 0.6;
                     mc.level.addParticle(ParticleTypes.SCULK_CHARGE_POP, x, y, z, 0.0, 0.02, 0.0);
                 }
-            });
+            }
 
             level.playSound(null, source, SoundEvents.SCULK_CLICKING_STOP, SoundSource.AMBIENT,
                     Math.max(0.1f, volume), 1.0f + (level.random.nextFloat() * 0.2f));

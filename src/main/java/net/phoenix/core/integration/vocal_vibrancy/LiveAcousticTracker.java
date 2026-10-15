@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.vocal_vibrancy;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.BlockPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -26,7 +28,7 @@ public class LiveAcousticTracker {
             lastTreble = analyzer.treble;
             lastBpm = analyzer.bpm;
 
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SSoundMetadataPacket(
+            PacketDistributor.sendToServer(new C2SSoundMetadataPacket(
                     soundPos, soundRange, -1,
                     analyzer.bass, analyzer.mid, analyzer.treble, analyzer.bpm));
         }

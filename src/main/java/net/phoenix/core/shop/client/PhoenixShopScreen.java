@@ -1,5 +1,7 @@
 package net.phoenix.core.shop.client;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -538,14 +540,14 @@ public class PhoenixShopScreen extends Screen {
                 }
 
                 if (isOp() && mx >= cx + cw - 10 && my < cy + 10) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SRemoveShopEntryPacket(entry.id()));
+                    PacketDistributor.sendToServer(new C2SRemoveShopEntryPacket(entry.id()));
                 } else if (getFeatherCount() < entry.cost()) {
                     warningEntryName = entry.name();
                     warningTimer = 1.5f;
                 } else if (PhoenixConfigs.INSTANCE != null && PhoenixConfigs.INSTANCE.shopMinigameEnabled) {
                     startMinigame(entry);
                 } else {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SBuyShopEntryPacket(entry.id()));
+                    PacketDistributor.sendToServer(new C2SBuyShopEntryPacket(entry.id()));
                 }
                 return true;
             }
@@ -649,7 +651,7 @@ public class PhoenixShopScreen extends Screen {
         minigameResultTimer = 1.4f;
         if (success) {
             minigameResultText = message + " Purchasing " + minigameEntryName + "...";
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SBuyShopEntryPacket(minigameEntryId));
+            PacketDistributor.sendToServer(new C2SBuyShopEntryPacket(minigameEntryId));
         } else {
             minigameResultText = message;
         }
@@ -804,7 +806,7 @@ public class PhoenixShopScreen extends Screen {
         String category = categoryBox != null && !categoryBox.getValue().isBlank() ? categoryBox.getValue().trim() :
                 ShopEntry.DEFAULT_CATEGORY;
 
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SAddShopEntryPacket(nameBox.getValue(), icon, cost,
+        PacketDistributor.sendToServer(new C2SAddShopEntryPacket(nameBox.getValue(), icon, cost,
                 new ArrayList<>(pendingRewards), category, editingEntryId));
 
         editing = false;

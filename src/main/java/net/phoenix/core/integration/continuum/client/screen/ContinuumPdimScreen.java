@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -162,11 +164,11 @@ public class ContinuumPdimScreen extends Screen {
                     selected = Integer.parseInt(id.substring(6));
                 } else if (id.equals("create") || id.equals("enter")) {
                     float gravity = existing() != null ? existing() : presets.get(selected).gravity();
-                    PhoenixNetwork.CHANNEL.sendToServer(
+                    PacketDistributor.sendToServer(
                             new C2SPdimPacket(C2SPdimPacket.Action.ENTER, body.id(), gravity));
                     Minecraft.getInstance().setScreen(null);
                 } else if (id.equals("leave")) {
-                    PhoenixNetwork.CHANNEL.sendToServer(
+                    PacketDistributor.sendToServer(
                             new C2SPdimPacket(C2SPdimPacket.Action.LEAVE, body.id(), 1.0f));
                     Minecraft.getInstance().setScreen(null);
                 } else {

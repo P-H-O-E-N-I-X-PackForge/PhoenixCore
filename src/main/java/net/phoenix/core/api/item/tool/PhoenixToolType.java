@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
-import com.gregtechceu.gtceu.common.data.item.GTToolActions;
+import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import com.gregtechceu.gtceu.common.item.tool.behavior.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -12,7 +12,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.Spider;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 
 public final class PhoenixToolType {
 
@@ -27,7 +27,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.MV)
             .toolClasses(GTToolType.SCREWDRIVER)
-            .defaultActions(GTToolActions.DEFAULT_SCREWDRIVER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_SCREWDRIVER_ACTIONS)
             .build();
     public static final GTToolType SCREWDRIVER_EV = GTToolType.builder("ev_screwdriver")
             .idFormat("ev_%s_screwdriver")
@@ -40,7 +40,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.EV)
             .toolClasses(GTToolType.SCREWDRIVER)
-            .defaultActions(GTToolActions.DEFAULT_SCREWDRIVER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_SCREWDRIVER_ACTIONS)
             .build();
     public static final GTToolType SCREWDRIVER_LuV = GTToolType.builder("luv_screwdriver")
             .idFormat("luv_%s_screwdriver")
@@ -53,7 +53,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.LuV)
             .toolClasses(GTToolType.SCREWDRIVER)
-            .defaultActions(GTToolActions.DEFAULT_SCREWDRIVER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_SCREWDRIVER_ACTIONS)
             .build();
     public static final GTToolType SCREWDRIVER_ZPM = GTToolType.builder("zpm_screwdriver")
             .idFormat("zpm_%s_screwdriver")
@@ -66,7 +66,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.ZPM)
             .toolClasses(GTToolType.SCREWDRIVER)
-            .defaultActions(GTToolActions.DEFAULT_SCREWDRIVER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_SCREWDRIVER_ACTIONS)
             .build();
 
     public static final GTToolType CHAINSAW_MV = GTToolType.builder("mv_chainsaw")
@@ -85,8 +85,8 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.CHAINSAW_TOOL, true)
             .electric(GTValues.MV)
             .toolClasses(GTToolType.AXE)
-            .defaultActions(ToolActions.AXE_DIG, ToolActions.SWORD_DIG, ToolActions.HOE_DIG,
-                    GTToolActions.SAW_DIG)
+            .defaultActions(ItemAbilities.AXE_DIG, ItemAbilities.SWORD_DIG, ItemAbilities.HOE_DIG,
+                    GTItemAbilities.SAW_DIG)
             .build();
     public static final GTToolType CHAINSAW_EV = GTToolType.builder("ev_chainsaw")
             .idFormat("ev_%s_chainsaw")
@@ -104,8 +104,8 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.CHAINSAW_TOOL, true)
             .electric(GTValues.EV)
             .toolClasses(GTToolType.AXE)
-            .defaultActions(ToolActions.AXE_DIG, ToolActions.SWORD_DIG, ToolActions.HOE_DIG,
-                    GTToolActions.SAW_DIG)
+            .defaultActions(ItemAbilities.AXE_DIG, ItemAbilities.SWORD_DIG, ItemAbilities.HOE_DIG,
+                    GTItemAbilities.SAW_DIG)
             .build();
     public static final GTToolType CHAINSAW_LuV = GTToolType.builder("luv_chainsaw")
             .idFormat("luv_%s_chainsaw")
@@ -123,8 +123,8 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.CHAINSAW_TOOL, true)
             .electric(GTValues.LuV)
             .toolClasses(GTToolType.AXE)
-            .defaultActions(ToolActions.AXE_DIG, ToolActions.SWORD_DIG, ToolActions.HOE_DIG,
-                    GTToolActions.SAW_DIG)
+            .defaultActions(ItemAbilities.AXE_DIG, ItemAbilities.SWORD_DIG, ItemAbilities.HOE_DIG,
+                    GTItemAbilities.SAW_DIG)
             .build();
     public static final GTToolType CHAINSAW_ZPM = GTToolType.builder("zpm_chainsaw")
             .idFormat("zpm_%s_chainsaw")
@@ -142,8 +142,8 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.CHAINSAW_TOOL, true)
             .electric(GTValues.ZPM)
             .toolClasses(GTToolType.AXE)
-            .defaultActions(ToolActions.AXE_DIG, ToolActions.SWORD_DIG, ToolActions.HOE_DIG,
-                    GTToolActions.SAW_DIG)
+            .defaultActions(ItemAbilities.AXE_DIG, ItemAbilities.SWORD_DIG, ItemAbilities.HOE_DIG,
+                    GTItemAbilities.SAW_DIG)
             .build();
 
     public static final GTToolType DRILL_LUV = GTToolType.builder("luv_drill")
@@ -163,7 +163,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.DRILL_TOOL, true)
             .electric(GTValues.LuV)
             .toolClassNames("drill")
-            .defaultActions(GTToolActions.DEFAULT_DRILL_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_DRILL_ACTIONS)
             .build();
     public static final GTToolType DRILL_ZPM = GTToolType.builder("zpm_drill")
             .idFormat("zpm_%s_drill")
@@ -182,7 +182,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.DRILL_TOOL, true)
             .electric(GTValues.ZPM)
             .toolClassNames("drill")
-            .defaultActions(GTToolActions.DEFAULT_DRILL_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_DRILL_ACTIONS)
             .build();
 
     public static final GTToolType WRENCH_MV = GTToolType.builder("mv_wrench")
@@ -200,7 +200,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.MV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultActions(GTToolActions.WRENCH_DIG, GTToolActions.WRENCH_DISMANTLE, GTToolActions.WRENCH_CONNECT)
+            .defaultActions(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_EV = GTToolType.builder("ev_wrench")
             .idFormat("ev_%s_wrench")
@@ -217,7 +217,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.EV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultActions(GTToolActions.WRENCH_DIG, GTToolActions.WRENCH_DISMANTLE, GTToolActions.WRENCH_CONNECT)
+            .defaultActions(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_LuV = GTToolType.builder("luv_wrench")
             .idFormat("luv_%s_wrench")
@@ -234,7 +234,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.LuV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultActions(GTToolActions.WRENCH_DIG, GTToolActions.WRENCH_DISMANTLE, GTToolActions.WRENCH_CONNECT)
+            .defaultActions(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_ZPM = GTToolType.builder("zpm_wrench")
             .idFormat("zpm_%s_wrench")
@@ -251,7 +251,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.ZPM)
             .toolClasses(GTToolType.WRENCH)
-            .defaultActions(GTToolActions.WRENCH_DIG, GTToolActions.WRENCH_DISMANTLE, GTToolActions.WRENCH_CONNECT)
+            .defaultActions(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
             .build();
 
     public static final GTToolType WIRE_CUTTER_MV = GTToolType.builder("mv_wirecutter")
@@ -265,7 +265,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WIRECUTTER_TOOL, true)
             .electric(GTValues.MV)
             .toolClasses(GTToolType.WIRE_CUTTER)
-            .defaultActions(GTToolActions.DEFAULT_WIRE_CUTTER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_WIRE_CUTTER_ACTIONS)
             .build();
     public static final GTToolType WIRE_CUTTER_EV = GTToolType.builder("ev_wirecutter")
             .idFormat("ev_%s_wire_cutter")
@@ -278,7 +278,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WIRECUTTER_TOOL, true)
             .electric(GTValues.EV)
             .toolClasses(GTToolType.WIRE_CUTTER)
-            .defaultActions(GTToolActions.DEFAULT_WIRE_CUTTER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_WIRE_CUTTER_ACTIONS)
             .build();
     public static final GTToolType WIRE_CUTTER_LuV = GTToolType.builder("luv_wirecutter")
             .idFormat("luv_%s_wire_cutter")
@@ -291,7 +291,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WIRECUTTER_TOOL, true)
             .electric(GTValues.LuV)
             .toolClasses(GTToolType.WIRE_CUTTER)
-            .defaultActions(GTToolActions.DEFAULT_WIRE_CUTTER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_WIRE_CUTTER_ACTIONS)
             .build();
     public static final GTToolType WIRE_CUTTER_ZPM = GTToolType.builder("zpm_wirecutter")
             .idFormat("zpm_%s_wire_cutter")
@@ -304,7 +304,7 @@ public final class PhoenixToolType {
             .sound(GTSoundEntries.WIRECUTTER_TOOL, true)
             .electric(GTValues.ZPM)
             .toolClasses(GTToolType.WIRE_CUTTER)
-            .defaultActions(GTToolActions.DEFAULT_WIRE_CUTTER_ACTIONS)
+            .defaultActions(GTItemAbilities.DEFAULT_WIRE_CUTTER_ACTIONS)
             .build();
 
     public static final GTToolType BUZZSAW_MV = GTToolType.builder("mv_buzzsaw")

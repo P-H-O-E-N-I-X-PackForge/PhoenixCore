@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine.multiblock.electric;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
@@ -23,7 +25,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
@@ -51,7 +52,7 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
 
     private static final FluidStack HONEY_STACK;
     static {
-        Fluid honeyFluid = ForgeRegistries.FLUIDS
+        Fluid honeyFluid = BuiltInRegistries.FLUID
                 .getValue(ResourceLocation.fromNamespaceAndPath("productivebees", "honey"));
         if (honeyFluid != null) {
             HONEY_STACK = new FluidStack(honeyFluid, 1000);

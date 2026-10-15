@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -216,7 +218,7 @@ public class ContinuumFleetScreen extends Screen {
             }
             if (MapUi.inside(mouseX, mouseY, width - 62 - 96, 8, 90, 14)) {
                 ContinuumSounds.click();
-                PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectAllPacket());
+                PacketDistributor.sendToServer(new C2SCollectAllPacket());
                 return true;
             }
             for (Object[] row : rows) {
@@ -228,7 +230,7 @@ public class ContinuumFleetScreen extends Screen {
                     ContinuumMapScreen.requestRescue((ResourceLocation) row[7]);
                     Minecraft.getInstance().setScreen(parent);
                 } else if ((boolean) row[1]) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(id));
+                    PacketDistributor.sendToServer(new C2SCollectMissionPacket(id));
                 } else {
                     Minecraft.getInstance().setScreen(new ContinuumTransitScreen(id, pad));
                 }

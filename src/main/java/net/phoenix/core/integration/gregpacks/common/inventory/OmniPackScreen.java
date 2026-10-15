@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -248,7 +250,7 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
         int bx1 = leftPos + imageWidth + BAR_GAP;
         if (mx >= bx1 && mx < bx1 + BAR_W && my >= topPos && my < topPos + imageHeight) {
             if (btn == 0 || btn == 1) {
-                GregPacksNetwork.CHANNEL.sendToServer(new CPacketFluidInteract(btn == 0));
+                PacketDistributor.sendToServer(new CPacketFluidInteract(btn == 0));
                 return true;
             }
         }

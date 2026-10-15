@@ -2,6 +2,8 @@ package net.phoenix.core.integration.conflux.spawn;
 
 
 
+
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.BlockPos;
@@ -19,10 +21,8 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 
@@ -78,8 +78,7 @@ public final class ConfluxSpawns extends SimpleJsonResourceReloadListener {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onServerTick(ServerTickEvent.Post event) {
         var cfg = PhoenixConfigs.INSTANCE.confluxSpawns;
         if (!cfg.enabled || event.getServer().getTickCount() % cfg.intervalTicks != 0) return;
 

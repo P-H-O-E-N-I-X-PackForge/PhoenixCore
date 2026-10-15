@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
+
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -7,7 +11,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.phoenix.core.integration.gregpacks.network.CPacketKeyState;
 import net.phoenix.core.integration.gregpacks.network.CPacketOpenOmniPack;
@@ -35,8 +38,7 @@ public class OmniPackKeybind {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onClientTick(ClientTickEvent.Post event) {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -51,11 +53,11 @@ public class OmniPackKeybind {
             };
             if (!Arrays.equals(keys, lastKeys)) {
                 lastKeys = keys.clone();
-                GregPacksNetwork.CHANNEL.sendToServer(new CPacketKeyState(keys));
+                PacketDistributor.sendToServer(new CPacketKeyState(keys));
             }
 
             while (OPEN_PACK.consumeClick()) {
-                GregPacksNetwork.CHANNEL.sendToServer(new CPacketOpenOmniPack());
+                PacketDistributor.sendToServer(new CPacketOpenOmniPack());
             }
         }
     }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -144,7 +146,7 @@ public class ContinuumMapScreen extends Screen {
     protected void init() {
         super.init();
 
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SRequestStatePacket());
+        PacketDistributor.sendToServer(new C2SRequestStatePacket());
         requestPadStock();
     }
 
@@ -152,7 +154,7 @@ public class ContinuumMapScreen extends Screen {
 
     private void requestPadStock() {
         if (pad != null) {
-            PhoenixNetwork.CHANNEL.sendToServer(
+            PacketDistributor.sendToServer(
                     new net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket(pad));
         }
     }
@@ -1497,7 +1499,7 @@ public class ContinuumMapScreen extends Screen {
                 MissionPlannerPanel.Result result = planner.click(mouseX, mouseY);
                 if (result.consumed()) ContinuumSounds.click();
                 if (result.launchType() != null && body != null && pad != null) {
-                    PhoenixNetwork.CHANNEL.sendToServer(
+                    PacketDistributor.sendToServer(
                             new C2SLaunchMissionPacket(body.id(), pad, result.launchType(), result.probes(),
                                     result.count()));
                 }
@@ -1550,7 +1552,7 @@ public class ContinuumMapScreen extends Screen {
             boolean inConflux = Minecraft.getInstance().level != null &&
                     net.phoenix.core.integration.continuum.common.ConfluxTravel
                             .isConfluxDimension(Minecraft.getInstance().level.dimension());
-            net.phoenix.core.network.PhoenixNetwork.CHANNEL.sendToServer(
+            net.phoenix.core.network.PacketDistributor.sendToServer(
                     new net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket(inConflux, body.id()));
             Minecraft.getInstance().setScreen(null);
             return true;
@@ -1585,7 +1587,7 @@ public class ContinuumMapScreen extends Screen {
                     
                     jumpToRescue((ResourceLocation) row[7]);
                 } else if ((boolean) row[1]) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(id));
+                    PacketDistributor.sendToServer(new C2SCollectMissionPacket(id));
                 } else {
                     Minecraft.getInstance().setScreen(new ContinuumTransitScreen(id, pad));
                 }

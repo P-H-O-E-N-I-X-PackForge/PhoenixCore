@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -292,7 +294,7 @@ public class ContinuumTransitScreen extends Screen {
             if (mission != null && mission.state().finished() && !mission.stranded() &&
                     MapUi.inside(mouseX, mouseY, collectX(), collectY(), 124, 18)) {
                 ContinuumSounds.click();
-                PhoenixNetwork.CHANNEL.sendToServer(new C2SCollectMissionPacket(missionId));
+                PacketDistributor.sendToServer(new C2SCollectMissionPacket(missionId));
                 leave();
                 return true;
             }

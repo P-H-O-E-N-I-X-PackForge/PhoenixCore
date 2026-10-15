@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregpacks.common;
 
 
+
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -10,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -66,8 +67,7 @@ public class OmniPackTickHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.player;
         Level level = player.level();
         if (level.isClientSide) return;
@@ -201,9 +201,7 @@ public class OmniPackTickHandler {
         if (dist >= 1.0E-7) player.moveRelative((float) dist, movement);
 
         if (player instanceof ServerPlayer sp) {
-            GregPacksNetwork.CHANNEL.send(
-                    PacketDistributor.PLAYER.with(() -> sp),
-                    new SPacketJetpackThrust(player.getDeltaMovement().x, newY, player.getDeltaMovement().z));
+            PacketDistributor.sendToPlayer(sp, new SPacketJetpackThrust(player.getDeltaMovement().x, newY, player.getDeltaMovement().z));
         }
     }
 

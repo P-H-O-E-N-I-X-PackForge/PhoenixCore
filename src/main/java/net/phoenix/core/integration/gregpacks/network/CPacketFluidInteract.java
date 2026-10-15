@@ -1,5 +1,11 @@
 package net.phoenix.core.integration.gregpacks.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -7,13 +13,22 @@ import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackMenu;
 
 import java.util.function.Supplier;
 
-public class CPacketFluidInteract {
+public class CPacketFluidInteract implements CustomPacketPayload {
+    public static final Type<CPacketFluidInteract> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_fluid_interact"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketFluidInteract> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketFluidInteract.encode(msg, buf), CPacketFluidInteract::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final boolean isLeftClick;
 
@@ -29,9 +44,9 @@ public class CPacketFluidInteract {
         return new CPacketFluidInteract(buf.readBoolean());
     }
 
-    public static void handle(CPacketFluidInteract msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(CPacketFluidInteract msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null || !(player.containerMenu instanceof OmniPackMenu menu)) return;
 
             ItemStack carried = menu.getCarried();
@@ -78,6 +93,5 @@ public class CPacketFluidInteract {
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

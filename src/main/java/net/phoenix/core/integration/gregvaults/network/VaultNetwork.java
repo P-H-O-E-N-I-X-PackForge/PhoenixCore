@@ -1,37 +1,21 @@
 package net.phoenix.core.integration.gregvaults.network;
 
+
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.PhoenixCore;
 
 @SuppressWarnings("all")
 public class VaultNetwork {
 
-    private static final String PROTOCOL = "2";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "vault"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals);
+    public static void register(PayloadRegistrar registrar) {
+        registrar.playToServer(CPacketVaultAction.TYPE, CPacketVaultAction.STREAM_CODEC, CPacketVaultAction::handle);
+        registrar.playToServer(CPacketOpenTerminal.TYPE, CPacketOpenTerminal.STREAM_CODEC, CPacketOpenTerminal::handle);
+        registrar.playToServer(CPacketFillCraftingGrid.TYPE, CPacketFillCraftingGrid.STREAM_CODEC, CPacketFillCraftingGrid::handle);
 
-    private static int id = 0;
-
-    public static void init() {
-        CHANNEL.registerMessage(id++, CPacketVaultAction.class,
-                CPacketVaultAction::encode, CPacketVaultAction::decode, CPacketVaultAction::handle);
-        CHANNEL.registerMessage(id++, CPacketOpenTerminal.class,
-                CPacketOpenTerminal::encode, CPacketOpenTerminal::decode, CPacketOpenTerminal::handle);
-        CHANNEL.registerMessage(id++, CPacketFillCraftingGrid.class,
-                CPacketFillCraftingGrid::encode, CPacketFillCraftingGrid::decode, CPacketFillCraftingGrid::handle);
-
-        CHANNEL.registerMessage(id++, SPacketVaultContents.class,
-                SPacketVaultContents::encode, SPacketVaultContents::decode, SPacketVaultContents::handle);
-        CHANNEL.registerMessage(id++, SPacketVaultDelta.class,
-                SPacketVaultDelta::encode, SPacketVaultDelta::decode, SPacketVaultDelta::handle);
-        CHANNEL.registerMessage(id++, CPacketVaultDisplayMode.class,
-                CPacketVaultDisplayMode::encode, CPacketVaultDisplayMode::decode, CPacketVaultDisplayMode::handle);
-        CHANNEL.registerMessage(id++, CPacketStackedPickup.class,
-                CPacketStackedPickup::encode, CPacketStackedPickup::decode, CPacketStackedPickup::handle);
+        registrar.playToClient(SPacketVaultContents.TYPE, SPacketVaultContents.STREAM_CODEC, SPacketVaultContents::handle);
+        registrar.playToClient(SPacketVaultDelta.TYPE, SPacketVaultDelta.STREAM_CODEC, SPacketVaultDelta::handle);
+        registrar.playToServer(CPacketVaultDisplayMode.TYPE, CPacketVaultDisplayMode.STREAM_CODEC, CPacketVaultDisplayMode::handle);
+        registrar.playToServer(CPacketStackedPickup.TYPE, CPacketStackedPickup.STREAM_CODEC, CPacketStackedPickup::handle);
     }
 }

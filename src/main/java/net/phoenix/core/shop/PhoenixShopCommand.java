@@ -43,8 +43,7 @@ public class PhoenixShopCommand {
         ServerLevel level = source.getLevel();
 
         WorldShopData data = WorldShopData.get(level);
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CShopSyncPacket(data.getEntries()));
+        PacketDistributor.sendToPlayer(player, new S2CShopSyncPacket(data.getEntries()));
         return 1;
     }
 

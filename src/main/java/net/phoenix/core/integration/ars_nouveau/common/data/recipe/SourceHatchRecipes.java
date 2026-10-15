@@ -1,12 +1,14 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.recipe;
 
+
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +24,11 @@ public class SourceHatchRecipes {
 
     private static final int[] VA = GTValues.VA;
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         run(provider);
     }
 
-    public static void run(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void run(@NotNull RecipeOutput provider) {
         for (int tier = GTValues.LV; tier <= GTValues.OpV; tier++) {
             if (PhoenixMachines.SOURCE_EXPORT_HATCH[tier] == null ||
                     PhoenixMachines.SOURCE_IMPORT_HATCH[tier] == null) {
@@ -36,8 +38,8 @@ public class SourceHatchRecipes {
         }
     }
 
-    private static void processSourceHatches(@NotNull Consumer<FinishedRecipe> provider, int tier) {
-        var sourceStone = ForgeRegistries.ITEMS
+    private static void processSourceHatches(@NotNull RecipeOutput provider, int tier) {
+        var sourceStone = BuiltInRegistries.ITEM
                 .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone"));
 
         if (sourceStone == null || sourceStone.toString().contains("air")) return;

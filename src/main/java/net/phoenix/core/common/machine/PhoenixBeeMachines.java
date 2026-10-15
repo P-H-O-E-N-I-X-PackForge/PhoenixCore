@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
@@ -17,7 +19,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
@@ -67,7 +68,7 @@ public class PhoenixBeeMachines {
                     .where('A', Predicates.air())
                     .where('B', Predicates.any())
                     .where('C',
-                            Predicates.blocks(ForgeRegistries.BLOCKS
+                            Predicates.blocks(BuiltInRegistries.BLOCK
                                     .getValue(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
                     .where('D', Predicates.blocks(CASING_BRONZE_BRICKS.get()))
                     .where('E', Predicates.blocks(CASING_LAMINATED_GLASS.get()))

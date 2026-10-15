@@ -1,11 +1,12 @@
 package net.phoenix.core.integration.conflux.network;
 
+
+
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.conflux.research.DisciplineInfo;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
@@ -16,51 +17,18 @@ import java.util.UUID;
 
 public final class ConfluxNetwork {
 
-    private static final String VERSION = "1";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "conflux"),
-            () -> VERSION, VERSION::equals, VERSION::equals);
+    public static void register(PayloadRegistrar registrar) {
+        registrar.playToServer(C2SResearchUnlockPacket.TYPE, C2SResearchUnlockPacket.STREAM_CODEC, C2SResearchUnlockPacket::handle);
 
-    private static int id = 0;
+        registrar.playToServer(C2SAbandonDisciplinePacket.TYPE, C2SAbandonDisciplinePacket.STREAM_CODEC, C2SAbandonDisciplinePacket::handle);
 
-    public static void register() {
-        CHANNEL.registerMessage(id++, C2SResearchUnlockPacket.class,
-                C2SResearchUnlockPacket::encode,
-                C2SResearchUnlockPacket::decode,
-                C2SResearchUnlockPacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(C2SChooseDisciplinePacket.TYPE, C2SChooseDisciplinePacket.STREAM_CODEC, C2SChooseDisciplinePacket::handle);
 
-        CHANNEL.registerMessage(id++, C2SAbandonDisciplinePacket.class,
-                C2SAbandonDisciplinePacket::encode,
-                C2SAbandonDisciplinePacket::decode,
-                C2SAbandonDisciplinePacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToClient(S2CResearchSyncPacket.TYPE, S2CResearchSyncPacket.STREAM_CODEC, S2CResearchSyncPacket::handle);
 
-        CHANNEL.registerMessage(id++, C2SChooseDisciplinePacket.class,
-                C2SChooseDisciplinePacket::encode,
-                C2SChooseDisciplinePacket::decode,
-                C2SChooseDisciplinePacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        registrar.playToServer(net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.TYPE, net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.STREAM_CODEC, (msg, ctx) -> msg.handle(ctx));
 
-        CHANNEL.registerMessage(id++, S2CResearchSyncPacket.class,
-                S2CResearchSyncPacket::encode,
-                S2CResearchSyncPacket::decode,
-                S2CResearchSyncPacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-
-        CHANNEL.registerMessage(id++,
-                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.class,
-                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::toBytes,
-                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::new,
-                net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
-
-        CHANNEL.registerMessage(id++,
-                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.class,
-                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::toBytes,
-                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::new,
-                net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket::handle,
-                java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        registrar.playToClient(net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.TYPE, net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.STREAM_CODEC, (msg, ctx) -> msg.handle(ctx));
     }
 
     public static void syncResearchToPlayer(ServerPlayer player) {
@@ -68,12 +36,9 @@ public final class ConfluxNetwork {
         UUID teamId = ResearchTeamHelper.getTeamId(player);
         WorldResearchData data = WorldResearchData.get(level);
         DisciplineInfo disc = data.getDisciplineInfo(teamId, ResearchTreeRegistry.INSTANCE);
-        CHANNEL.sendTo(
-                new S2CResearchSyncPacket(
+        PacketDistributor.sendToPlayer(player, new S2CResearchSyncPacket(
                         data.getUnlocked(teamId), data.getLockedOut(teamId), data.getFlags(teamId),
                         disc.disciplineId(), disc.disciplineTitle(), disc.committed(), disc.switchCost(),
-                        net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(level).snapshot(teamId)),
-                player.connection.connection,
-                NetworkDirection.PLAY_TO_CLIENT);
+                        net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(level).snapshot(teamId)));
     }
 }

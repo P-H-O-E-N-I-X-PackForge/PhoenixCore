@@ -1,9 +1,10 @@
 package net.phoenix.core.integration.continuum;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.integration.continuum.machine.ContinuumMachines;
 
 import java.util.function.Consumer;
@@ -19,7 +20,7 @@ public final class ContinuumRecipes {
 
     private ContinuumRecipes() {}
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         ASSEMBLER_RECIPES.recipeBuilder("continuum_probe")
                 .inputItems(plate, Steel, 2)
                 .inputItems(rod, Steel, 2)

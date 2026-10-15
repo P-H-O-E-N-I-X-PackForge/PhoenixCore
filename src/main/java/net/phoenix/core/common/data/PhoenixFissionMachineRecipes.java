@@ -1,7 +1,8 @@
 package net.phoenix.core.common.data;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
@@ -10,5 +11,5 @@ import static net.phoenix.core.common.data.materials.PhoenixFissionMaterials.*;
 
 public class PhoenixFissionMachineRecipes {
 
-    public static void init(Consumer<FinishedRecipe> provider) {}
+    public static void init(RecipeOutput provider) {}
 }

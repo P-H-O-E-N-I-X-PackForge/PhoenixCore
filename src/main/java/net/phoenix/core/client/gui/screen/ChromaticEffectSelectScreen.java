@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -115,7 +117,7 @@ public class ChromaticEffectSelectScreen extends Screen {
             if (mouseX >= x && mouseX <= x + 200 && mouseY >= entryY && mouseY <= entryY + ENTRY_HEIGHT) {
                 char selectedCode = availableCodes.get(i);
 
-                PhoenixNetwork.CHANNEL.sendToServer(new SelectChromaticCodePacket(hand, selectedCode));
+                PacketDistributor.sendToServer(new SelectChromaticCodePacket(hand, selectedCode));
 
                 if (this.minecraft != null) {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

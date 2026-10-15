@@ -1,14 +1,29 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient;
 
 import java.util.function.Supplier;
 
-public class S2CAttuneResultPacket {
+public class S2CAttuneResultPacket implements CustomPacketPayload {
+    public static final Type<S2CAttuneResultPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_attune_result_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CAttuneResultPacket> STREAM_CODEC = StreamCodec.ofMember(S2CAttuneResultPacket::encode, S2CAttuneResultPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final BlockPos pos;
     private final boolean passed;
@@ -44,11 +59,10 @@ public class S2CAttuneResultPacket {
         buf.writeVarInt(total);
     }
 
-    public static void handle(S2CAttuneResultPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(S2CAttuneResultPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             if (!FMLEnvironment.dist.isClient()) return;
             AttuneClient.result(msg.pos, msg.passed, msg.grade, msg.perfect, msg.good, msg.total);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }

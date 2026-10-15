@@ -1,10 +1,11 @@
 package net.phoenix.core.integration.astral;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.materials.AstralMaterials;
 
@@ -20,7 +21,7 @@ public final class AstralRecipes {
 
     private AstralRecipes() {}
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         ASSEMBLER_RECIPES.recipeBuilder("astral_confluence_hatch_iv")
                 .inputItems(GTMachines.HULL[IV].asStack())
                 .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 16)

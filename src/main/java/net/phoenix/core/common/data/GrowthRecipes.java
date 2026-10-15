@@ -1,8 +1,9 @@
 package net.phoenix.core.common.data;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.phoenix.core.PhoenixCore;
@@ -19,14 +20,14 @@ public final class GrowthRecipes {
 
     private GrowthRecipes() {}
 
-    public static void init(Consumer<FinishedRecipe> provider) {
+    public static void init(RecipeOutput provider) {
         seeds(provider);
         crystalGarden(provider);
         verdantBloom(provider);
         bloomvineCore(provider);
     }
 
-    private static void seeds(Consumer<FinishedRecipe> provider) {
+    private static void seeds(RecipeOutput provider) {
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("growth_seed"))
                 .inputItems(Items.BONE_MEAL, 8)
                 .inputItems(Items.WHEAT_SEEDS, 8)
@@ -45,13 +46,13 @@ public final class GrowthRecipes {
                 .save(provider);
     }
 
-    private static void at(GTRecipeType type, String id, int stage, Consumer<com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder> recipe, Consumer<FinishedRecipe> provider) {
+    private static void at(GTRecipeType type, String id, int stage, Consumer<com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder> recipe, RecipeOutput provider) {
         var builder = type.recipeBuilder(PhoenixCore.id(id)).addData(GrowthMultiblockMachine.MIN_STAGE_KEY, stage);
         recipe.accept(builder);
         builder.save(provider);
     }
 
-    private static void crystalGarden(Consumer<FinishedRecipe> provider) {
+    private static void crystalGarden(RecipeOutput provider) {
         GTRecipeType type = PhoenixRecipeTypes.GROWTH_RECIPES;
         Item seed = GrowthItems.CRYSTAL_SEED.get();
 
@@ -66,7 +67,7 @@ public final class GrowthRecipes {
                 .inputItems(Items.SCULK, 8).outputItems(Items.ECHO_SHARD, 2).EUt(1920).duration(1200), provider);
     }
 
-    private static void verdantBloom(Consumer<FinishedRecipe> provider) {
+    private static void verdantBloom(RecipeOutput provider) {
         GTRecipeType type = PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES;
         Item seed = GrowthItems.GROWTH_SEED.get();
 
@@ -87,7 +88,7 @@ public final class GrowthRecipes {
                 .outputItems(Items.SPORE_BLOSSOM, 2).EUt(960).duration(1000), provider);
     }
 
-    private static void bloomvineCore(Consumer<FinishedRecipe> provider) {
+    private static void bloomvineCore(RecipeOutput provider) {
         GTRecipeType type = PhoenixRecipeTypes.VINE_GROWTH_RECIPES;
         Item seed = GrowthItems.GROWTH_SEED.get();
 

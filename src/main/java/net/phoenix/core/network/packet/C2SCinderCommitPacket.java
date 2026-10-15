@@ -1,5 +1,11 @@
 package net.phoenix.core.network.packet;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.core.BlockPos;
@@ -11,7 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.block.cinder.CinderBlocks;
 import net.phoenix.core.common.block.cinder.CinderConstructionBlockEntity;
@@ -27,7 +33,16 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class C2SCinderCommitPacket {
+public class C2SCinderCommitPacket implements CustomPacketPayload {
+    public static final Type<C2SCinderCommitPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_commit_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderCommitPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderCommitPacket::encode, C2SCinderCommitPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     private final InteractionHand hand;
     private final BlockPos anchor;
@@ -64,10 +79,10 @@ public class C2SCinderCommitPacket {
         buf.writeBoolean(force);
     }
 
-    public static void handle(C2SCinderCommitPacket msg, Supplier<NetworkEvent.Context> ctxGetter) {
-        NetworkEvent.Context ctx = ctxGetter.get();
+    public static void handle(C2SCinderCommitPacket msg, IPayloadContext ctxGetter) {
+        IPayloadContext ctx = ctxGetter;
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             ItemStack stack = player.getItemInHand(msg.hand);
             CompoundTag tag = CinderDeploySource.resolveDeployTag(stack);
@@ -150,7 +165,6 @@ public class C2SCinderCommitPacket {
     }
 
     private static void reject(ServerPlayer player, String reason, boolean insufficientMaterials) {
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CCinderCommitRejectedPacket(reason, insufficientMaterials));
+        PacketDistributor.sendToPlayer(player, new S2CCinderCommitRejectedPacket(reason, insufficientMaterials));
     }
 }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.emi;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -67,7 +69,7 @@ public class VaultRecipeHandler<T extends AbstractContainerMenu>
             }
         }
 
-        net.phoenix.core.integration.gregvaults.network.VaultNetwork.CHANNEL.sendToServer(
+        net.phoenix.core.integration.gregvaults.network.PacketDistributor.sendToServer(
                 new net.phoenix.core.integration.gregvaults.network.CPacketFillCraftingGrid(recipe.getId(), template));
         return true;
     }

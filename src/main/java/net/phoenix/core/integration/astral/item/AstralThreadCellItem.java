@@ -54,8 +54,7 @@ public class AstralThreadCellItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                    () -> () -> net.phoenix.core.integration.astral.client.AstralThreadCellScreen.open(hand));
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.client.AstralThreadCellScreen.open(hand); }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.vocal_vibrancy;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -35,7 +37,7 @@ public class VibrancyEvents {
         int duration = OggMetadataProvider.getExactDurationTicks(
                 mc.getResourceManager(), sound.getLocation());
 
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SSoundMetadataPacket(
+        PacketDistributor.sendToServer(new C2SSoundMetadataPacket(
                 soundPos, range, duration, 0f, 0f, 0f, 0));
     }
 

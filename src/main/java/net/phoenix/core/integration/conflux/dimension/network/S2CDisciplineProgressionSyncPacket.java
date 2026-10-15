@@ -32,9 +32,9 @@ public class S2CDisciplineProgressionSyncPacket {
         NetworkEvent.Context context = supplier.get();
 
         context.enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
                 ClientDisciplineProgressionCache.deserializeFromNBT(data);
-            });
+            }
         });
 
         return true;

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -11,7 +13,6 @@ import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.utils.ToolItemHelper;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,7 +37,7 @@ public final class PhoenixToolRecipes {
     private static final Int2ReferenceMap<Material> baseMaterials = new Int2ReferenceArrayMap<>();
     private static final Int2ReferenceMap<List<ItemEntry<? extends Item>>> batteryItems = new Int2ReferenceArrayMap<>();
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         initTierMaps();
         registerPowerUnitRecipes(provider);
 
@@ -54,7 +55,7 @@ public final class PhoenixToolRecipes {
         powerUnitItems.put(GTValues.LuV, PhoenixItems.POWER_UNIT_LUV);
     }
 
-    private static void registerPowerUnitRecipes(@NotNull Consumer<FinishedRecipe> provider) {
+    private static void registerPowerUnitRecipes(@NotNull RecipeOutput provider) {
         for (int tier : powerUnitItems.keySet()) {
             var powerUnitEntry = powerUnitItems.get(tier);
             var motorEntry = motorItems.get(tier);

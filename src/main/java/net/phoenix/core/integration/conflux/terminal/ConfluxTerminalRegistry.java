@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.terminal;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -9,25 +11,24 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.PhoenixCore;
 
 public final class ConfluxTerminalRegistry {
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK,
             PhoenixCore.MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM,
             PhoenixCore.MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
-            .create(ForgeRegistries.BLOCK_ENTITY_TYPES, PhoenixCore.MOD_ID);
+            .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final RegistryObject<ResearchTerminalBlock> TERMINAL;
-    public static final RegistryObject<BlockEntityType<ResearchTerminalBlockEntity>> TERMINAL_BE;
+    public static final DeferredHolder<ResearchTerminalBlock, ResearchTerminalBlock> TERMINAL;
+    public static final DeferredHolder<BlockEntityType<ResearchTerminalBlockEntity>, BlockEntityType<ResearchTerminalBlockEntity>> TERMINAL_BE;
 
     static {
         @SuppressWarnings("unchecked")
-        RegistryObject<BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new RegistryObject[1];
+        DeferredHolder<BlockEntityType<ResearchTerminalBlockEntity>, BlockEntityType<ResearchTerminalBlockEntity>>[] beHolder = new RegistryObject[1];
 
         TERMINAL = BLOCKS.register("research_terminal",
                 () -> new ResearchTerminalBlock(BlockBehaviour.Properties.of()

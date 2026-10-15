@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine.multiblock.ward;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -10,7 +12,6 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 
@@ -61,7 +62,7 @@ public final class SanctumWardMachines {
                     .where('A', Predicates.air())
                     .where('B', Predicates.any())
                     .where('C',
-                            Predicates.blocks(ForgeRegistries.BLOCKS
+                            Predicates.blocks(BuiltInRegistries.BLOCK
                                     .getValue(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
                     .where('D', Predicates.blocks(CASING_BRONZE_BRICKS.get()))
                     .where('E', Predicates.blocks(CASING_LAMINATED_GLASS.get()))

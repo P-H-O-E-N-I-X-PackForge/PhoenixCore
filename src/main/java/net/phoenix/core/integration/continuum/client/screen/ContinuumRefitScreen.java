@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -216,11 +218,11 @@ public class ContinuumRefitScreen extends Screen {
                 if (id.equals("close")) {
                     onClose();
                 } else if (id.equals("tier")) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SRefitPacket(RocketRefit.Action.TIER_UP, ""));
+                    PacketDistributor.sendToServer(new C2SRefitPacket(RocketRefit.Action.TIER_UP, ""));
                 } else if (id.equals("repair")) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SRefitPacket(RocketRefit.Action.REPAIR, ""));
+                    PacketDistributor.sendToServer(new C2SRefitPacket(RocketRefit.Action.REPAIR, ""));
                 } else if (id.startsWith("fit:")) {
-                    PhoenixNetwork.CHANNEL.sendToServer(new C2SRefitPacket(RocketRefit.Action.FIT, id.substring(4)));
+                    PacketDistributor.sendToServer(new C2SRefitPacket(RocketRefit.Action.FIT, id.substring(4)));
                 }
                 return true;
             }

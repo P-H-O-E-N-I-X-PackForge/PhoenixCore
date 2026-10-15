@@ -47,12 +47,10 @@ public class CinderCoreItem extends Item {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player.isShiftKeyDown() && level.isClientSide) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                    () -> () -> net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand));
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand); }
         } else if (!player.isShiftKeyDown() && level.isClientSide) {
 
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                    () -> () -> net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel());
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel(); }
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
@@ -78,8 +76,7 @@ public class CinderCoreItem extends Item {
             CinderSchemaData.scanFromWorld(stack, level, context.getClickedPos());
 
             if (level.isClientSide) {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                        () -> () -> net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand));
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand); }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -96,12 +93,12 @@ public class CinderCoreItem extends Item {
 
         if (level.isClientSide) {
 
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
                 var state = net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE;
                 if (state.isActive() && state.getHand() == hand) {
                     state.commit();
                 }
-            });
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

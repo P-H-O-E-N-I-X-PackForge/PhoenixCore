@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -9,7 +11,6 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
@@ -23,7 +24,7 @@ import static net.phoenix.core.common.data.materials.PhoenixFissionMaterials.CRY
 
 public class CrystalRoseAssemblerGenerator {
 
-    public static void generateCrystalRoseRecipes(Consumer<FinishedRecipe> provider) {
+    public static void generateCrystalRoseRecipes(RecipeOutput provider) {
         if (CRYO_GRAPHITE_BINDING_SOLUTION == null) return;
 
         FluidStack crystalRoseFluid = CRYO_GRAPHITE_BINDING_SOLUTION.getFluid(144);

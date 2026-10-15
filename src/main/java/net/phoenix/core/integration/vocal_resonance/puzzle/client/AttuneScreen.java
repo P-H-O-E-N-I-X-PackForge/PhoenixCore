@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle.client;
 
+
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -130,7 +132,7 @@ public class AttuneScreen extends Screen {
         int now = elapsed();
         laneFlash[lane] = 1.0f;
         playNote(laneNotes.get(lane));
-        PhoenixNetwork.CHANNEL.sendToServer(new C2SAttunePressPacket(pos, lane, now));
+        PacketDistributor.sendToServer(new C2SAttunePressPacket(pos, lane, now));
 
         int best = -1;
         int bestDelta = Integer.MAX_VALUE;

@@ -23,7 +23,7 @@ public class LaunchPadBlock extends Block {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                  BlockHitResult hit) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2COpenMapPacket(pos));
+            PacketDistributor.sendToPlayer(serverPlayer, new S2COpenMapPacket(pos));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

@@ -1,11 +1,12 @@
 package net.phoenix.core.integration.gregvaults.client;
 
+
+import net.neoforged.neoforge.common.NeoForge;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.phoenix.core.PhoenixCore;
@@ -23,7 +24,7 @@ public final class GregTechVaultsClient {
         modEventBus.addListener(VaultOverlayRender::registerModel);
         modEventBus.addListener(GregTechVaultsClient::clientSetup);
         modEventBus.addListener(VaultKeyBindings::register);
-        MinecraftForge.EVENT_BUS.register(VaultKeyBindings.TickHandler.class);
+        NeoForge.EVENT_BUS.register(VaultKeyBindings.TickHandler.class);
     }
 
     private static void clientSetup(final FMLClientSetupEvent event) {

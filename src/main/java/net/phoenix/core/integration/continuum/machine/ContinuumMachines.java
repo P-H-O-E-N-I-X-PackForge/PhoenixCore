@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 

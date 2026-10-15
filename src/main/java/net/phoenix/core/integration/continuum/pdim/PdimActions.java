@@ -126,8 +126,7 @@ public final class PdimActions {
         for (ContinuumBody body : ContinuumData.allBodies()) costs.put(body.id(), PdimCosts.costFor(body));
         boolean everyVisit = PdimCosts.charges(true);
 
-        PhoenixNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new S2CPdimStatePacket(here != null, gravity, mine, costs, everyVisit));
+        PacketDistributor.sendToPlayer(player, new S2CPdimStatePacket(here != null, gravity, mine, costs, everyVisit));
     }
 
     public static boolean isIn(Level level) {

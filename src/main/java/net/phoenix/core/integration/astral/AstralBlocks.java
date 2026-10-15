@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -11,8 +13,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlock;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
@@ -36,19 +37,19 @@ public class AstralBlocks {
             .build()
             .register();
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK,
             PhoenixCore.MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM,
             PhoenixCore.MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
-            .create(ForgeRegistries.BLOCK_ENTITY_TYPES, PhoenixCore.MOD_ID);
+            .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final RegistryObject<AstralRitualPedestalBlock> ASTRAL_RITUAL_PEDESTAL;
-    public static final RegistryObject<BlockEntityType<AstralRitualPedestalBlockEntity>> ASTRAL_RITUAL_PEDESTAL_BE;
+    public static final DeferredHolder<AstralRitualPedestalBlock, AstralRitualPedestalBlock> ASTRAL_RITUAL_PEDESTAL;
+    public static final DeferredHolder<BlockEntityType<AstralRitualPedestalBlockEntity>, BlockEntityType<AstralRitualPedestalBlockEntity>> ASTRAL_RITUAL_PEDESTAL_BE;
 
     static {
         @SuppressWarnings("unchecked")
-        RegistryObject<BlockEntityType<AstralRitualPedestalBlockEntity>>[] beHolder = new RegistryObject[1];
+        DeferredHolder<BlockEntityType<AstralRitualPedestalBlockEntity>, BlockEntityType<AstralRitualPedestalBlockEntity>>[] beHolder = new RegistryObject[1];
 
         ASTRAL_RITUAL_PEDESTAL = BLOCKS.register("astral_ritual_pedestal",
                 () -> new AstralRitualPedestalBlock(BlockBehaviour.Properties.of()

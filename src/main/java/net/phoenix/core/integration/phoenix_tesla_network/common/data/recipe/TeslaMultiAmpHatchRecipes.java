@@ -1,10 +1,11 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe;
 
+
+import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipe
 
 public class TeslaMultiAmpHatchRecipes {
 
-    public static void init(@NotNull Consumer<FinishedRecipe> provider) {
+    public static void init(@NotNull RecipeOutput provider) {
         final long[] V = GTValues.V;
         for (int tier = LV; tier <= OpV; tier++) {
 
@@ -24,7 +25,7 @@ public class TeslaMultiAmpHatchRecipes {
         }
     }
 
-    private static void processMultiAmpAssemblerHatch(Consumer<FinishedRecipe> provider, int tier, long[] V) {
+    private static void processMultiAmpAssemblerHatch(RecipeOutput provider, int tier, long[] V) {
         if (getQuadWireForTier(tier).isEmpty()) return;
 
         if (PhoenixTeslaMachines.TESLA_INPUT_4A[tier] != null && PhoenixTeslaMachines.TESLA_INPUT_2A[tier] != null) {

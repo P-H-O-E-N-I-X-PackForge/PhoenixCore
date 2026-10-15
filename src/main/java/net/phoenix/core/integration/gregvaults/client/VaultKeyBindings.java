@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.gregvaults.client;
 
+
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -7,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.network.CPacketOpenTerminal;
@@ -32,8 +35,7 @@ public class VaultKeyBindings {
     public static class TickHandler {
 
         @SubscribeEvent
-        public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) return;
+        public static void onClientTick(ClientTickEvent.Post event) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null || mc.screen != null) return;
 
@@ -45,13 +47,13 @@ public class VaultKeyBindings {
         private static void findAndOpenTerminal(Player player) {
             ItemStack mainHand = player.getMainHandItem();
             if (mainHand.getItem() instanceof WirelessTerminalItem) {
-                VaultNetwork.CHANNEL.sendToServer(new CPacketOpenTerminal(player.getInventory().selected, false));
+                PacketDistributor.sendToServer(new CPacketOpenTerminal(player.getInventory().selected, false));
                 return;
             }
 
             ItemStack offHand = player.getOffhandItem();
             if (offHand.getItem() instanceof WirelessTerminalItem) {
-                VaultNetwork.CHANNEL.sendToServer(new CPacketOpenTerminal(-1, true));
+                PacketDistributor.sendToServer(new CPacketOpenTerminal(-1, true));
                 return;
             }
 
@@ -60,7 +62,7 @@ public class VaultKeyBindings {
                 if (stack.getItem() instanceof WirelessTerminalItem) {
                     boolean isOffhand = (i == 40);
                     int slot = isOffhand ? -1 : i;
-                    VaultNetwork.CHANNEL.sendToServer(new CPacketOpenTerminal(slot, isOffhand));
+                    PacketDistributor.sendToServer(new CPacketOpenTerminal(slot, isOffhand));
                     return;
                 }
             }

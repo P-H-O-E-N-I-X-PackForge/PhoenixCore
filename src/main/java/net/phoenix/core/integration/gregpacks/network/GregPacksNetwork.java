@@ -1,51 +1,22 @@
 package net.phoenix.core.integration.gregpacks.network;
 
+
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.PhoenixCore;
 
 @SuppressWarnings("all")
 public class GregPacksNetwork {
 
-    private static final String PROTOCOL = "1";
+    public static void register(PayloadRegistrar registrar) {
+        registrar.playToServer(CPacketOpenOmniPack.TYPE, CPacketOpenOmniPack.STREAM_CODEC, CPacketOpenOmniPack::handle);
 
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "gregpacks"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals);
+        registrar.playToServer(CPacketFluidInteract.TYPE, CPacketFluidInteract.STREAM_CODEC, CPacketFluidInteract::handle);
 
-    public static void init() {
-        CHANNEL.messageBuilder(CPacketOpenOmniPack.class, 0, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(CPacketOpenOmniPack::encode)
-                .decoder(CPacketOpenOmniPack::decode)
-                .consumerMainThread(CPacketOpenOmniPack::handle)
-                .add();
+        registrar.playToClient(SPacketFluidSync.TYPE, SPacketFluidSync.STREAM_CODEC, SPacketFluidSync::handle);
 
-        CHANNEL.messageBuilder(CPacketFluidInteract.class, 1, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(CPacketFluidInteract::encode)
-                .decoder(CPacketFluidInteract::decode)
-                .consumerMainThread(CPacketFluidInteract::handle)
-                .add();
+        registrar.playToClient(SPacketJetpackThrust.TYPE, SPacketJetpackThrust.STREAM_CODEC, SPacketJetpackThrust::handle);
 
-        CHANNEL.messageBuilder(SPacketFluidSync.class, 2, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(SPacketFluidSync::encode)
-                .decoder(SPacketFluidSync::decode)
-                .consumerMainThread(SPacketFluidSync::handle)
-                .add();
-
-        CHANNEL.messageBuilder(SPacketJetpackThrust.class, 3, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(SPacketJetpackThrust::encode)
-                .decoder(SPacketJetpackThrust::decode)
-                .consumerMainThread(SPacketJetpackThrust::handle)
-                .add();
-
-        CHANNEL.messageBuilder(CPacketKeyState.class, 4, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(CPacketKeyState::encode)
-                .decoder(CPacketKeyState::decode)
-                .consumerMainThread(CPacketKeyState::handle)
-                .add();
+        registrar.playToServer(CPacketKeyState.TYPE, CPacketKeyState.STREAM_CODEC, CPacketKeyState::handle);
     }
 }

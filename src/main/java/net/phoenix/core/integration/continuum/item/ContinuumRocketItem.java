@@ -26,8 +26,7 @@ public class ContinuumRocketItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             if (level.isClientSide) {
-                net.neoforged.fml.DistExecutor.unsafeRunWhenOn(net.neoforged.api.distmarker.Dist.CLIENT,
-                        () -> net.phoenix.core.integration.continuum.client.ContinuumClientHooks::openRefit);
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { () -> net.phoenix.core.integration.continuum.client.ContinuumClientHooks::openRefit; }
             }
             return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
         }

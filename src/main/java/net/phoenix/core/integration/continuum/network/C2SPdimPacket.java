@@ -1,15 +1,29 @@
 package net.phoenix.core.integration.continuum.network;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
+
 import net.phoenix.core.integration.continuum.pdim.PdimActions;
 
 import java.util.function.Supplier;
 
-public class C2SPdimPacket {
+public class C2SPdimPacket implements CustomPacketPayload {
+    public static final Type<C2SPdimPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_pdim_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SPdimPacket> STREAM_CODEC = StreamCodec.ofMember(C2SPdimPacket::encode, C2SPdimPacket::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
 
     public enum Action {
         ENTER,
@@ -38,15 +52,14 @@ public class C2SPdimPacket {
         buf.writeFloat(gravity);
     }
 
-    public static void handle(C2SPdimPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(C2SPdimPacket msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
 
             String error = msg.action == Action.LEAVE ? PdimActions.leave(player) :
                     PdimActions.createAndEnter(player, msg.body, msg.gravity);
             if (error != null) player.displayClientMessage(Component.literal(error), true);
         });
-        ctx.get().setPacketHandled(true);
-    }
+        }
 }
