@@ -1,6 +1,7 @@
 package net.phoenix.core.integration.conflux.structure;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 public class ConfluxStructure extends Structure {
 
-    public static final Codec<ConfluxStructure> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<ConfluxStructure> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             settingsCodec(instance),
             Codec.STRING.fieldOf("kind").forGetter(s -> s.kind),
             Codec.STRING.fieldOf("theme").forGetter(s -> s.theme)).apply(instance, ConfluxStructure::new));

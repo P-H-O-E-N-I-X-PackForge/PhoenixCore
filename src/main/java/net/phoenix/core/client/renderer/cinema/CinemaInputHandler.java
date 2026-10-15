@@ -45,7 +45,11 @@ public class CinemaInputHandler {
     }
 
     private static void consume(PlayerInteractEvent event) {
-        event.setCanceled(true);
-        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+        if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) cancellable.setCanceled(true);
+        if (event instanceof PlayerInteractEvent.RightClickBlock rightClick) {
+            rightClick.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+        } else if (event instanceof PlayerInteractEvent.LeftClickBlock leftClick) {
+            leftClick.setCanceled(true);
+        }
     }
 }

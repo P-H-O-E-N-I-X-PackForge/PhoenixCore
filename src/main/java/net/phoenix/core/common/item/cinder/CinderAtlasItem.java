@@ -47,13 +47,15 @@ public class CinderAtlasItem extends Item implements IMenuItem {
     }
 
     @Override
-    public @Nullable ItemMenuHost getMenuHost(Player player, int slot, ItemStack stack, @Nullable BlockPos pos) {
+    public @Nullable ItemMenuHost<?> getMenuHost(Player player, appeng.menu.locator.ItemMenuHostLocator locator,
+                                                 @Nullable net.minecraft.world.phys.BlockHitResult hitResult) {
         if (!(player.level() instanceof ServerLevel level)) return null;
+        ItemStack stack = locator.locateItem(player);
 
         var accessPoint = CinderAtlasWirelessLink.getLinkedAccessPoint(stack, level);
         if (accessPoint == null || !CinderAtlasWirelessLink.isInRange(stack, accessPoint, player)) return null;
 
-        return new CinderAtlasMenuHost(player, slot, stack, accessPoint);
+        return new CinderAtlasMenuHost(this, player, locator, accessPoint);
     }
 
     @Override

@@ -23,7 +23,7 @@ public final class SanctumWardEventHandler {
 
         Level level = event.getLevel().getLevel();
         if (MobWardRegistry.isWarded(mob, level, event.getX(), event.getY(), event.getZ())) {
-            event.setResult(Event.Result.DENY);
+            event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
         }
     }
 

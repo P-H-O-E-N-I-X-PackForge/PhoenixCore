@@ -69,8 +69,7 @@ public class TetoSlimeRenderer extends MobRenderer<TetoSlime, TetoSlimeModel<Tet
             shell.prepareMobModel(slime, limbSwing, limbSwingAmount, partialTick);
             shell.setupAnim(slime, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE));
-            shell.renderToBuffer(pose, consumer, light, LivingEntityRenderer.getOverlayCoords(slime, 0.0f), 1.0f, 1.0f,
-                    1.0f, 1.0f);
+            shell.renderToBuffer(pose, consumer, light, LivingEntityRenderer.getOverlayCoords(slime, 0.0f), 0xFFFFFFFF);
         }
     }
 }

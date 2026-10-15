@@ -241,7 +241,8 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
             }
         }
 
-        GenericSyncValue<Component> text = GenericSyncValue.builder(Component.class)
+        GenericSyncValue<net.minecraft.network.FriendlyByteBuf, Component> text = GenericSyncValue
+                .<net.minecraft.network.FriendlyByteBuf, Component>builder(Component.class)
                 .adapter(GTByteBufAdapters.COMPONENT)
                 .getter(() -> {
                     List<Component> list = new ArrayList<>();

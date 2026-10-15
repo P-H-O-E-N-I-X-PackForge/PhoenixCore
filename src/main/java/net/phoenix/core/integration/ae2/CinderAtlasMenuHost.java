@@ -14,12 +14,14 @@ import appeng.menu.ISubMenu;
 import appeng.util.NullConfigManager;
 import org.jetbrains.annotations.Nullable;
 
-public class CinderAtlasMenuHost extends ItemMenuHost implements ITerminalHost, IActionHost {
+public class CinderAtlasMenuHost extends ItemMenuHost<net.phoenix.core.common.item.cinder.CinderAtlasItem>
+        implements ITerminalHost, IActionHost {
 
     private final IWirelessAccessPoint accessPoint;
 
-    public CinderAtlasMenuHost(Player player, int slot, ItemStack stack, IWirelessAccessPoint accessPoint) {
-        super(player, slot, stack);
+    public CinderAtlasMenuHost(net.phoenix.core.common.item.cinder.CinderAtlasItem item, Player player,
+                               appeng.menu.locator.ItemMenuHostLocator locator, IWirelessAccessPoint accessPoint) {
+        super(item, player, locator);
         this.accessPoint = accessPoint;
     }
 
@@ -31,6 +33,11 @@ public class CinderAtlasMenuHost extends ItemMenuHost implements ITerminalHost, 
     @Override
     public @Nullable IGridNode getActionableNode() {
         return accessPoint.getActionableNode();
+    }
+
+    @Override
+    public appeng.api.storage.ILinkStatus getLinkStatus() {
+        return appeng.api.storage.ILinkStatus.ofConnected();
     }
 
     @Override

@@ -80,7 +80,7 @@ public class AstralWandItem extends Item {
     }
 
     @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull net.minecraft.world.entity.LivingEntity entity) {
         return 72000;
     }
 

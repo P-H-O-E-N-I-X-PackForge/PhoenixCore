@@ -153,7 +153,6 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
         return Math.toIntExact(maxSource);
     }
 
-    @Override
     public void setMaxSource(int max) {
         this.maxSource = max;
     }

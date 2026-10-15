@@ -1,6 +1,6 @@
 package net.phoenix.core.integration.drone.mui;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.drone.network.DroneTargetView;
@@ -43,11 +43,11 @@ public class DroneTargetListSyncHandler extends SyncHandler<DroneTargetListSyncH
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void readOnClient(int id, FriendlyByteBuf buf) {
+    public void readOnClient(int id, RegistryFriendlyByteBuf buf) {
         this.targets = DroneTargetView.decodeList(buf);
         if (onChanged != null) onChanged.run();
     }
 
     @Override
-    public void readOnServer(int id, FriendlyByteBuf buf) {}
+    public void readOnServer(int id, RegistryFriendlyByteBuf buf) {}
 }

@@ -71,7 +71,7 @@ public class SourceHatchScreen extends AbstractContainerScreen<SourceHatchMenu> 
     }
 
     @Override
-    public void renderBackground(GuiGraphics gg) {
+    public void renderBackground(GuiGraphics gg, int mouseX, int mouseY, float partialTick) {
         gg.fill(0, 0, this.width, this.height, 0xFF060712);
 
         float t = (Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0) +

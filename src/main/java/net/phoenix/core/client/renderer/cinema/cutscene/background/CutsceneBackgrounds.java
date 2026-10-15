@@ -34,12 +34,12 @@ public final class CutsceneBackgrounds {
     private static final Map<String, MapCodec<? extends CutsceneBackground.Data>> TYPES = new LinkedHashMap<>();
     private static final Map<ResourceLocation, CutsceneBackground> CODE_PRESETS = new LinkedHashMap<>();
 
-    private static final Codec<CutsceneBackground.Data> TYPED_CODEC = ExtraCodecs.validate(Codec.STRING,
+    private static final Codec<CutsceneBackground.Data> TYPED_CODEC = Codec.STRING.validate(
             type -> TYPES.containsKey(type) ? DataResult.success(type) :
                     DataResult.error(() -> "Unknown cutscene background type '" + type + "', known: " + TYPES.keySet()))
             .dispatch("type", CutsceneBackground.Data::type, type -> TYPES.get(type).codec());
 
-    public static final Codec<CutsceneBackground.Data> CODEC = ExtraCodecs.lazyInitializedCodec(() -> Codec.either(
+    public static final Codec<CutsceneBackground.Data> CODEC = Codec.lazyInitialized(() -> Codec.either(
             ResourceLocation.CODEC,
             Codec.either(CutsceneBackgrounds.CODEC.listOf(), TYPED_CODEC))
             .xmap(CutsceneBackgrounds::fromEither, CutsceneBackgrounds::toEither));
@@ -111,8 +111,8 @@ public final class CutsceneBackgrounds {
 
     public record Stack(List<CutsceneBackground.Data> backgrounds) implements CutsceneBackground.Data {
 
-        public static final MapCodec<Stack> CODEC = ExtraCodecs
-                .lazyInitializedCodec(() -> CutsceneBackgrounds.CODEC.listOf())
+        public static final MapCodec<Stack> CODEC = Codec
+                .lazyInitialized(() -> CutsceneBackgrounds.CODEC.listOf())
                 .fieldOf("backgrounds").xmap(Stack::new, Stack::backgrounds);
 
         @Override
@@ -175,7 +175,7 @@ public final class CutsceneBackgrounds {
                 Codec.BOOL.optionalFieldOf("opaque", true).forGetter(Shader::opaque),
                 Codec.unboundedMap(Codec.STRING, UNIFORM_VALUES).optionalFieldOf("uniforms", Map.of())
                         .forGetter(Shader::uniforms),
-                ExtraCodecs.lazyInitializedCodec(() -> CutsceneBackgrounds.CODEC).optionalFieldOf("fallback")
+                Codec.lazyInitialized(() -> CutsceneBackgrounds.CODEC).optionalFieldOf("fallback")
                         .forGetter(Shader::fallback))
                 .apply(i, Shader::new))
                 .flatXmap(shader -> shader.shader().isPresent() != shader.file().isPresent() ?

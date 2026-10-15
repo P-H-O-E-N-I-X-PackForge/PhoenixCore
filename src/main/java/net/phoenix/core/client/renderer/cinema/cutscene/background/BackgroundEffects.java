@@ -27,7 +27,7 @@ public final class BackgroundEffects {
             either -> either.map(DataResult::success, BackgroundEffects::parseColor),
             color -> Either.right(String.format("#%08X", color)));
 
-    public static final MapCodec<BackgroundEffect.Data> MAP_CODEC = ExtraCodecs.validate(Codec.STRING,
+    public static final MapCodec<BackgroundEffect.Data> MAP_CODEC = Codec.STRING.validate(
             type -> TYPES.containsKey(type) ? DataResult.success(type) :
                     DataResult.error(() -> "Unknown background effect '" + type + "', known: " + TYPES.keySet()))
             .dispatchMap("type", BackgroundEffect.Data::type, type -> TYPES.get(type).codec());

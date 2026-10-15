@@ -422,8 +422,9 @@ public class CutsceneScreen extends Screen {
         entity.yHeadRot = entity.yHeadRotO = angle;
 
         graphics.setColor(alpha, alpha, alpha, 1f);
-        InventoryScreen.renderEntityInInventory(graphics, Math.round(x), Math.round(y),
-                Math.round(image.scaleOr(50f)), new Quaternionf().rotateZ((float) Math.PI), null, entity);
+        InventoryScreen.renderEntityInInventory(graphics, (float) Math.round(x), (float) Math.round(y),
+                (float) Math.round(image.scaleOr(50f)), new org.joml.Vector3f(), new Quaternionf().rotateZ((float) Math.PI),
+                null, entity);
         graphics.setColor(1f, 1f, 1f, 1f);
 
         entity.yBodyRot = bodyRot;

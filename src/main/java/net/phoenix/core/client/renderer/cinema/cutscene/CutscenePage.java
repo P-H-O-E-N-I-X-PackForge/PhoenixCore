@@ -59,8 +59,7 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
                                 float scale, float yaw, float rotation, int tint, Optional<Region> region,
                                 Animation animation) {
 
-        public static final Codec<CutsceneImage> CODEC = ExtraCodecs.validate(
-                RecordCodecBuilder.<CutsceneImage>create(i -> i.group(
+        public static final Codec<CutsceneImage> CODEC = RecordCodecBuilder.<CutsceneImage>create(i -> i.group(
                         ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(CutsceneImage::texture),
                         ResourceLocation.CODEC.optionalFieldOf("item").forGetter(CutsceneImage::item),
                         ResourceLocation.CODEC.optionalFieldOf("entity").forGetter(CutsceneImage::entity),
@@ -75,7 +74,7 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
                         Region.CODEC.optionalFieldOf("region").forGetter(CutsceneImage::region),
                         Animation.CODEC.optionalFieldOf("animation", Animation.DEFAULT)
                                 .forGetter(CutsceneImage::animation))
-                        .apply(i, CutsceneImage::new)),
+                        .apply(i, CutsceneImage::new)).validate(
                 image -> (image.texture.isPresent() ? 1 : 0) + (image.item.isPresent() ? 1 : 0) +
                         (image.entity.isPresent() ? 1 : 0) == 1 ? DataResult.success(image) :
                                 DataResult
