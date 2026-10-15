@@ -115,7 +115,7 @@ public final class CinderAtlasData {
         ListTag upgrades = tag.getList(UPGRADES, Tag.TAG_COMPOUND);
         slotIndex = clamp(slotIndex, UPGRADE_SLOT_COUNT);
         if (slotIndex >= upgrades.size()) return ItemStack.EMPTY;
-        return ItemStack.of(upgrades.getCompound(slotIndex));
+        return StackNbt.loadStack(upgrades.getCompound(slotIndex));
     }
 
     public static void setUpgradeSlot(ItemStack atlas, int slotIndex, ItemStack upgrade) {
@@ -127,7 +127,7 @@ public final class CinderAtlasData {
             upgrades.add(new CompoundTag());
         }
         CompoundTag saved = new CompoundTag();
-        if (!upgrade.isEmpty()) upgrade.save(saved);
+        if (!upgrade.isEmpty()) StackNbt.saveInto(upgrade, saved);
         upgrades.set(slotIndex, saved);
         tag.put(UPGRADES, upgrades);
     }

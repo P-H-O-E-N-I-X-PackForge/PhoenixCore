@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.multiblock;
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
@@ -28,7 +30,7 @@ public class VaultMachineDefinition {
 
     public static MultiblockMachineDefinition BRONZE_VAULT;
     public static MultiblockMachineDefinition STEEL_VAULT;
-    public static MultiblockMachineDefinition TITANIUM_VAULT;
+    public static MachineEntry<MultiblockMachineDefinition> TITANIUM_VAULT;
 
     private static final ResourceLocation OVERLAY_DIR = PhoenixCore.id("block/multiblock");
 

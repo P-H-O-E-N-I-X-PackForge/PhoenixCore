@@ -1,5 +1,7 @@
 package net.phoenix.core.shop;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +40,7 @@ public class ShopEntry {
         CompoundTag tag = new CompoundTag();
         tag.putUUID("id", id);
         tag.putString("name", name);
-        tag.put("icon", icon.save(new CompoundTag()));
+        tag.put("icon", StackNbt.saveStack(icon));
         tag.putInt("cost", cost);
         tag.putString("category", category);
         ListTag rewardList = new ListTag();
@@ -56,7 +58,7 @@ public class ShopEntry {
         return new ShopEntry(
                 tag.getUUID("id"),
                 tag.getString("name"),
-                ItemStack.of(tag.getCompound("icon")),
+                StackNbt.loadStack(tag.getCompound("icon")),
                 tag.getInt("cost"),
                 rewards,
                 tag.contains("category") ? tag.getString("category") : DEFAULT_CATEGORY);

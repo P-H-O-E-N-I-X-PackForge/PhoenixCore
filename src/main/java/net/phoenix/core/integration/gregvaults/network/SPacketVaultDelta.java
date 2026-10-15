@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 
@@ -79,7 +79,7 @@ public class SPacketVaultDelta implements CustomPacketPayload {
         }
     }
 
-    public static void encode(SPacketVaultDelta packet, FriendlyByteBuf buf) {
+    public static void encode(SPacketVaultDelta packet, RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(packet.containerId);
         buf.writeShort(packet.entries.size());
         for (Entry e : packet.entries) {
@@ -88,12 +88,12 @@ public class SPacketVaultDelta implements CustomPacketPayload {
             if (e.type() == TYPE_COUNT) {
                 buf.writeVarInt(e.count());
             } else if (e.type() == TYPE_FULL) {
-                buf.writeItem(e.stack());
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, e.stack());
             }
         }
     }
 
-    public static SPacketVaultDelta decode(FriendlyByteBuf buf) {
+    public static SPacketVaultDelta decode(RegistryFriendlyByteBuf buf) {
         int containerId = buf.readVarInt();
         int size = buf.readShort();
         List<Entry> entries = new ArrayList<>(size);
@@ -103,7 +103,7 @@ public class SPacketVaultDelta implements CustomPacketPayload {
             if (type == TYPE_COUNT) {
                 entries.add(new Entry(TYPE_COUNT, slot, ItemStack.EMPTY, buf.readVarInt()));
             } else if (type == TYPE_FULL) {
-                ItemStack stack = buf.readItem();
+                ItemStack stack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
                 entries.add(new Entry(TYPE_FULL, slot, stack, stack.getCount()));
             } else {
                 entries.add(new Entry(TYPE_REMOVED, slot, ItemStack.EMPTY, 0));

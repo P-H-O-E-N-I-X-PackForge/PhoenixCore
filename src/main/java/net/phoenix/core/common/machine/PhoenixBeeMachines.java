@@ -1,6 +1,8 @@
 package net.phoenix.core.common.machine;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -31,7 +33,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class PhoenixBeeMachines {
 
-    public static final MultiblockMachineDefinition HONEY_CRYSTALLIZATION_CHAMBER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> HONEY_CRYSTALLIZATION_CHAMBER = REGISTRATE
             .multiblock("honey_crystallization_chamber", HoneyCrystallizationChamberMachine::new)
             .langValue("Honey Crystallization Chamber")
             .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT, GTRecipeModifiers.PARALLEL_HATCH,
@@ -89,7 +91,7 @@ public class PhoenixBeeMachines {
                             GTCEu.id("block/multiblock/large_miner")))
             .register();
 
-    public static final MultiblockMachineDefinition COMB_DECANTER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> COMB_DECANTER = REGISTRATE
             .multiblock("comb_decanter", WorkableElectricMultiblockMachine::new)
             .langValue("Comb Decanter")
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.OC_NON_PERFECT_SUBTICK,
@@ -131,7 +133,7 @@ public class PhoenixBeeMachines {
                             GTCEu.id("block/multiblock/large_miner")))
             .register();
 
-    public static final MultiblockMachineDefinition SWARM_NURTURER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> SWARM_NURTURER = REGISTRATE
             .multiblock("swarm_nurturer", WorkableElectricMultiblockMachine::new)
             .langValue("Swarm Nurturer")
             .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, GTRecipeModifiers.BATCH_MODE)
@@ -167,7 +169,7 @@ public class PhoenixBeeMachines {
                             GTCEu.id("block/multiblock/large_miner")))
             .register();
 
-    public static final MultiblockMachineDefinition APIS_PROGENITOR = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> APIS_PROGENITOR = REGISTRATE
             .multiblock("apis_progenitor", WorkableElectricMultiblockMachine::new)
             .langValue("Apis Progenitor")
             .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK, GTRecipeModifiers.BATCH_MODE)
@@ -204,7 +206,7 @@ public class PhoenixBeeMachines {
                             PhoenixCore.id("block/multiblock/apis_progenitor")))
             .register();
 
-    public static final MultiblockMachineDefinition SIMULATED_COLONY = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> SIMULATED_COLONY = REGISTRATE
             .multiblock("simulated_colony", WorkableElectricMultiblockMachine::new)
             .langValue("Simulated Colony")
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.BATCH_MODE)

@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -38,16 +38,16 @@ public class CPacketFillCraftingGrid implements CustomPacketPayload {
         this.template = template;
     }
 
-    public static void encode(CPacketFillCraftingGrid packet, FriendlyByteBuf buf) {
+    public static void encode(CPacketFillCraftingGrid packet, RegistryFriendlyByteBuf buf) {
         buf.writeBoolean(packet.recipeId != null);
         if (packet.recipeId != null) buf.writeResourceLocation(packet.recipeId);
-        for (int i = 0; i < 9; i++) buf.writeItem(packet.template[i]);
+        for (int i = 0; i < 9; i++) ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, packet.template[i]);
     }
 
-    public static CPacketFillCraftingGrid decode(FriendlyByteBuf buf) {
+    public static CPacketFillCraftingGrid decode(RegistryFriendlyByteBuf buf) {
         ResourceLocation id = buf.readBoolean() ? buf.readResourceLocation() : null;
         ItemStack[] template = new ItemStack[9];
-        for (int i = 0; i < 9; i++) template[i] = buf.readItem();
+        for (int i = 0; i < 9; i++) template[i] = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         return new CPacketFillCraftingGrid(id, template);
     }
 

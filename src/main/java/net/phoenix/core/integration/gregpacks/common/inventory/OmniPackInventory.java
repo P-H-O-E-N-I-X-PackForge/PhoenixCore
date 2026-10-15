@@ -55,7 +55,7 @@ public class OmniPackInventory extends SimpleContainer {
             if (!s.isEmpty()) {
                 CompoundTag t = new CompoundTag();
                 t.putByte(TAG_SLOT, (byte) i);
-                s.save(t);
+                StackNbt.saveInto(s, t);
                 list.add(t);
             }
         }
@@ -66,7 +66,7 @@ public class OmniPackInventory extends SimpleContainer {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompound(i);
             int slot = t.getByte(TAG_SLOT) & 0xFF;
-            if (slot < getContainerSize()) setItem(slot, ItemStack.of(t));
+            if (slot < getContainerSize()) setItem(slot, StackNbt.loadStack(t));
         }
     }
 }

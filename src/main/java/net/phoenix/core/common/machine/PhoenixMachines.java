@@ -1,6 +1,8 @@
 package net.phoenix.core.common.machine;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -177,7 +179,7 @@ public class PhoenixMachines {
                             ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                             overlay));
 
-    public static final MultiblockMachineDefinition DRONE_CONTROLLER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> DRONE_CONTROLLER = REGISTRATE
             .multiblock("drone_controller", net.phoenix.core.integration.drone.DroneControllerMachine::new)
             .langValue("Drone Controller")
             .tooltips(
@@ -433,7 +435,7 @@ public class PhoenixMachines {
                     "casings/microverse"))
             .register();
 
-    public static final MachineDefinition PHOENIXWARE_FUSION_MK1 = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> PHOENIXWARE_FUSION_MK1 = REGISTRATE
             .multiblock("phoenixware_fusion_mk1", holder -> new FusionReactorMachine(holder, GTValues.UIV))
             .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(PhoenixRecipeTypes.PHOENIXWARE_FUSION_MK1)
@@ -524,7 +526,7 @@ public class PhoenixMachines {
             .hasBER(true)
             .register();
 
-    public static final MultiblockMachineDefinition ALCHEMICAL_IMBUER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> ALCHEMICAL_IMBUER = REGISTRATE
             .multiblock("alchemical_imbuer", AlchemicalImbuerMachine::new)
             .langValue("§5Alchemical Imbuer")
             .recipeTypes(PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES, PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES)
@@ -578,7 +580,7 @@ public class PhoenixMachines {
             .tooltipBuilder(ALCHEMICAL_IMBUER_TOOLTIPS)
             .register();
 
-    public static final MultiblockMachineDefinition STEAM_CENTRIFUGE = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> STEAM_CENTRIFUGE = REGISTRATE
             .multiblock("steam_separator", SteamParallelMultiblockMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .appearanceBlock(CASING_BRONZE_BRICKS)
@@ -603,7 +605,7 @@ public class PhoenixMachines {
             .tooltips(Component.translatable("block.steamadditions.steam_separator.tooltip"))
             .register();
 
-    public static final MultiblockMachineDefinition STEAM_ALLOY_SMELTER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> STEAM_ALLOY_SMELTER = REGISTRATE
             .multiblock("steam_foundry", SteamParallelMultiblockMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .appearanceBlock(CASING_BRONZE_BRICKS)
@@ -631,7 +633,7 @@ public class PhoenixMachines {
             .tooltips(Component.translatable("block.steamadditions.steam_foundry.tooltip"))
             .register();
 
-    public static final MultiblockMachineDefinition SOURCE_REACTOR = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_REACTOR = REGISTRATE
             .multiblock("source_reactor", SourceReactorMachine::new)
             .rotationState(RotationState.ALL)
             .langValue("§5Source Reactor")
@@ -662,7 +664,7 @@ public class PhoenixMachines {
             .tooltipBuilder(SOURCE_REACTOR_TOOLTIPS)
             .register();
 
-    public static final MultiblockMachineDefinition BIO_AETHERIC_ENGINE = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> BIO_AETHERIC_ENGINE = REGISTRATE
             .multiblock("bio_aetheric_engine", BioAethericEngineMachine::new)
             .rotationState(RotationState.ALL)
             .langValue("§5Bio Aetheric Engine")
@@ -714,7 +716,7 @@ public class PhoenixMachines {
             .tooltipBuilder(BIO_ENGINE_TOOLTIPS)
             .register();
 
-    public static final MultiblockMachineDefinition EMBERWAKE_ALLOY_HEARTH = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> EMBERWAKE_ALLOY_HEARTH = REGISTRATE
             .multiblock("emberwake_alloy_hearth", CoilWorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(GCYMRecipeTypes.ALLOY_BLAST_RECIPES)
@@ -754,7 +756,7 @@ public class PhoenixMachines {
                     GTCEu.id("block/multiblock/gcym/blast_alloy_smelter"))
             .register();
 
-    public static final MultiblockMachineDefinition ADVANCED_CRACKING_UNIT = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> ADVANCED_CRACKING_UNIT = REGISTRATE
             .multiblock("advanced_cracking_unit", CoilWorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.CRACKING_RECIPES)
@@ -807,7 +809,7 @@ public class PhoenixMachines {
                     GTCEu.id("block/multiblock/cracking_uni"))
             .register();
 
-    public static final MultiblockMachineDefinition SUPERHEATED_PYROLYSING_OVEN = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> SUPERHEATED_PYROLYSING_OVEN = REGISTRATE
             .multiblock("superheated_pyrolysing_oven", CoilWorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.PYROLYSE_RECIPES)
@@ -861,7 +863,7 @@ public class PhoenixMachines {
                     GTCEu.id("block/multiblock/pyrolyse_oven"))
             .register();
 
-    public static final MultiblockMachineDefinition MELLIFERIOUS_MATRIX = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> MELLIFERIOUS_MATRIX = REGISTRATE
             .multiblock("melliferious_matrix", WorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(PhoenixRecipeTypes.MELLIFERIOUS_MATRIX_RECIPES)
@@ -906,7 +908,7 @@ public class PhoenixMachines {
                     GTCEu.id("block/multiblock/implosion_compressor"))
             .register();
 
-    public static final MultiblockMachineDefinition DIMENSIONAL_ANCHOR = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> DIMENSIONAL_ANCHOR = REGISTRATE
             .multiblock("dimensional_anchor", WorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(PhoenixRecipeTypes.DIMENSIONAL_ANCHORING_RECIPES)
@@ -946,7 +948,7 @@ public class PhoenixMachines {
                     GTCEu.id("gtceu:block/multiblock/large_miner"))
             .register();
 
-    public static final MultiblockMachineDefinition AETHERIAL_FABIRCATOR = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> AETHERIAL_FABIRCATOR = REGISTRATE
             .multiblock("aetherical_fabricator", WorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(PhoenixRecipeTypes.AETHERIAL_FABIRCATION_RECIPES)
@@ -984,7 +986,7 @@ public class PhoenixMachines {
             .tooltipBuilder(AETHERIAL_FABRICATOR_TOOLTIPS)
             .register();
 
-    public static final MultiblockMachineDefinition JUKEBLOCK = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> JUKEBLOCK = REGISTRATE
             .multiblock("jukeblock", ResonantJukeboxMachine::new)
             .rotationState(RotationState.ALL)
             .recipeTypes(PhoenixRecipeTypes.JUKEBLOCK)
@@ -1019,7 +1021,7 @@ public class PhoenixMachines {
                     ResourceLocation.fromNamespaceAndPath("minecraft", "block/note_block"))
             .register();
 
-    public static final MultiblockMachineDefinition HARMONIC_LOCK = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> HARMONIC_LOCK = REGISTRATE
             .multiblock("harmonic_lock", HarmonicLockMachine::new)
             .langValue("Harmonic Lock")
             .rotationState(RotationState.NON_Y_AXIS)

@@ -1,6 +1,8 @@
 package net.phoenix.core.common.machine.multiblock.ward;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -21,7 +23,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public final class SanctumWardMachines {
 
-    public static final MultiblockMachineDefinition SANCTUM_WARD = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> SANCTUM_WARD = REGISTRATE
             .multiblock("sanctum_ward", SanctumWardMachine::new)
             .langValue("Sanctum Ward")
             .recipeType(PhoenixRecipeTypes.SANCTUM_WARD_RECIPES)

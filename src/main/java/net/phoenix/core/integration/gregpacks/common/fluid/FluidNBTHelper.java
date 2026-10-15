@@ -15,7 +15,7 @@ public class FluidNBTHelper {
         if (!StackNbt.hasTag(stack)) return FluidStack.EMPTY;
         CompoundTag root = StackNbt.getTag(stack).getCompound(ROOT);
         if (!root.contains(FLUID)) return FluidStack.EMPTY;
-        return FluidStack.loadFluidStackFromNBT(root.getCompound(FLUID));
+        return StackNbt.loadFluid(root.getCompound(FLUID));
     }
 
     public static int getAmount(ItemStack stack) {
@@ -29,7 +29,7 @@ public class FluidNBTHelper {
         if (fluid.isEmpty()) {
             root.remove(FLUID);
         } else {
-            root.put(FLUID, fluid.writeToNBT(new CompoundTag()));
+            root.put(FLUID, StackNbt.saveFluid(fluid));
         }
 
         tag.put(ROOT, root);

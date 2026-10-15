@@ -23,10 +23,7 @@ public class UniqueMultiblockSavedData extends SavedData {
     private final Map<UUID, UniqueMultiblockData> ownerMap = new HashMap<>();
 
     public static UniqueMultiblockSavedData getOrCreate(ServerLevel level) {
-        return level.getServer().overworld().getDataStorage().computeIfAbsent(
-                UniqueMultiblockSavedData::new,
-                UniqueMultiblockSavedData::new,
-                DATA_NAME);
+        return level.getServer().overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(UniqueMultiblockSavedData::new, (tag, provider) -> new UniqueMultiblockSavedData(tag), null), DATA_NAME);
     }
 
     private UniqueMultiblockSavedData() {}
@@ -45,7 +42,7 @@ public class UniqueMultiblockSavedData extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag list = new ListTag();
 
         for (var entry : ownerMap.entrySet()) {

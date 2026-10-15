@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.continuum.machine;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -23,7 +25,7 @@ public final class ContinuumMachines {
 
     private static final String[][] SLICES = buildSlices();
 
-    public static final MultiblockMachineDefinition LAUNCH_COMPLEX = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> LAUNCH_COMPLEX = REGISTRATE
             .multiblock("continuum_launch_complex", LaunchPadMachine::new)
             .langValue("Continuum Launch Complex")
             .rotationState(RotationState.NON_Y_AXIS)

@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -229,7 +231,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("Items", packInventory.serializeToTag());
         tag.put("Upgrades", upgradeInventory.serializeToTag());
         if (storedEU > 0) tag.putLong("StoredEU", storedEU);
-        if (!fluid.isEmpty()) tag.put("Fluid", fluid.writeToNBT(new CompoundTag()));
+        if (!fluid.isEmpty()) tag.put("Fluid", StackNbt.saveFluid(fluid));
     }
 
     @Override
@@ -238,7 +240,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         packInventory.deserializeFromTag(tag.getList("Items", 10));
         upgradeInventory.deserializeFromTag(tag.getList("Upgrades", 10));
         storedEU = tag.getLong("StoredEU");
-        fluid = tag.contains("Fluid") ? FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid")) : FluidStack.EMPTY;
+        fluid = tag.contains("Fluid") ? StackNbt.loadFluid(tag.getCompound("Fluid")) : FluidStack.EMPTY;
     }
 
     @Override

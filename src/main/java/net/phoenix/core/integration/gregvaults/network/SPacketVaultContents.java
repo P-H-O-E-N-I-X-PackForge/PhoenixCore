@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 
@@ -41,17 +41,17 @@ public class SPacketVaultContents implements CustomPacketPayload {
         return stacks;
     }
 
-    public static void encode(SPacketVaultContents packet, FriendlyByteBuf buf) {
+    public static void encode(SPacketVaultContents packet, RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(packet.containerId);
         buf.writeVarInt(packet.stacks.length);
-        for (ItemStack stack : packet.stacks) buf.writeItem(stack);
+        for (ItemStack stack : packet.stacks) ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);
     }
 
-    public static SPacketVaultContents decode(FriendlyByteBuf buf) {
+    public static SPacketVaultContents decode(RegistryFriendlyByteBuf buf) {
         int containerId = buf.readVarInt();
         int size = buf.readVarInt();
         ItemStack[] stacks = new ItemStack[size];
-        for (int i = 0; i < size; i++) stacks[i] = buf.readItem();
+        for (int i = 0; i < size; i++) stacks[i] = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         return new SPacketVaultContents(containerId, stacks);
     }
 

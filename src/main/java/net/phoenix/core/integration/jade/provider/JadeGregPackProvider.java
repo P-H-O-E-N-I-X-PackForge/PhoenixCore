@@ -2,6 +2,8 @@ package net.phoenix.core.integration.jade.provider;
 
 
 
+
+import net.phoenix.core.util.StackNbt;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
@@ -42,7 +44,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
             if (handler.getTanks() > 0) {
                 FluidStack fluid = handler.getFluidInTank(0);
                 if (!fluid.isEmpty()) {
-                    data.put(KEY_FLUIDS, fluid.writeToNBT(new CompoundTag()));
+                    data.put(KEY_FLUIDS, StackNbt.saveFluid(fluid));
                 }
             }
         });
@@ -53,7 +55,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    itemsTag.put(String.valueOf(i), stack.save(new CompoundTag()));
+                    itemsTag.put(String.valueOf(i), StackNbt.saveStack(stack));
                     count++;
                 }
             }

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.common;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -131,12 +133,12 @@ public final class Mission {
         tag.putLong("Duration", durationMillis);
         tag.putBoolean("WillSucceed", willSucceed);
         tag.putFloat("WearCost", wearCost);
-        tag.put("Rocket", rocket.save(new CompoundTag()));
+        tag.put("Rocket", StackNbt.saveStack(rocket));
         tag.putByte("State", (byte) state.ordinal());
         tag.putByte("Type", (byte) type.ordinal());
         tag.putInt("Probes", probes);
         ListTag rewardList = new ListTag();
-        for (ItemStack reward : rewards) rewardList.add(reward.save(new CompoundTag()));
+        for (ItemStack reward : rewards) rewardList.add(StackNbt.saveStack(reward));
         tag.put("Rewards", rewardList);
         ListTag eventList = new ListTag();
         for (String event : events) eventList.add(net.minecraft.nbt.StringTag.valueOf(event));
@@ -156,14 +158,14 @@ public final class Mission {
         int ordinal = Math.max(0, Math.min(tag.getByte("State"), State.values().length - 1));
         int typeOrdinal = Math.max(0, Math.min(tag.getByte("Type"), Type.values().length - 1));
         List<ItemStack> rewards = new ArrayList<>();
-        for (Tag t : tag.getList("Rewards", Tag.TAG_COMPOUND)) rewards.add(ItemStack.of((CompoundTag) t));
+        for (Tag t : tag.getList("Rewards", Tag.TAG_COMPOUND)) rewards.add(StackNbt.loadStack((CompoundTag) t));
         List<String> events = new ArrayList<>();
         for (Tag t : tag.getList("Events", Tag.TAG_STRING)) events.add(t.getAsString());
         Mission mission = new Mission(
                 tag.getUUID("Id"), tag.getUUID("Team"), tag.getUUID("Launcher"), tag.getString("LauncherName"),
                 ResourceLocation.parse(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
                 rewards, tag.getLong("Start"), tag.getLong("Duration"), tag.getBoolean("WillSucceed"),
-                tag.getFloat("WearCost"), ItemStack.of(tag.getCompound("Rocket")), State.values()[ordinal], events);
+                tag.getFloat("WearCost"), StackNbt.loadStack(tag.getCompound("Rocket")), State.values()[ordinal], events);
         if (tag.contains("PadDimension")) {
             mission.padDimension = tag.getString("PadDimension");
             mission.padPos = tag.getLong("PadPos");

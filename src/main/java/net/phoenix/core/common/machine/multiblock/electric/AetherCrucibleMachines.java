@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine.multiblock.electric;
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
@@ -22,7 +24,7 @@ public final class AetherCrucibleMachines {
     public static final PartAbility AETHER_CATALYST_ABILITY = new PartAbility("aether_catalyst");
 
     public static final MachineDefinition AETHER_CATALYST_HATCH_EV = registerCatalystHatch(GTValues.EV);
-    public static final MachineDefinition AETHER_CATALYST_HATCH_IV = registerCatalystHatch(GTValues.IV);
+    public static final MachineEntry<MachineDefinition> AETHER_CATALYST_HATCH_IV = registerCatalystHatch(GTValues.IV);
 
     private static MachineDefinition registerCatalystHatch(int tier) {
         return REGISTRATE
@@ -39,7 +41,7 @@ public final class AetherCrucibleMachines {
                 .register();
     }
 
-    public static final MachineDefinition AETHER_CRUCIBLE = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> AETHER_CRUCIBLE = REGISTRATE
             .multiblock("aether_crucible", AetherCrucibleMachine::new)
             .langValue("Aether Crucible")
             .rotationState(RotationState.NON_Y_AXIS)

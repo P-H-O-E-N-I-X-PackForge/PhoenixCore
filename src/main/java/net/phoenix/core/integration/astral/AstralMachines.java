@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral;
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -65,7 +67,7 @@ public class AstralMachines {
                     .register(),
             GTValues.tiersBetween(GTValues.IV, GTValues.ZPM));
 
-    public static final MultiblockMachineDefinition ASTRAL_SPINNING_WHEEL = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> ASTRAL_SPINNING_WHEEL = REGISTRATE
             .multiblock("astral_spinning_wheel", AstralSpinningWheelMachine::new)
             .langValue("Astral Spinning Wheel")
             .rotationState(RotationState.ALL)
@@ -91,7 +93,7 @@ public class AstralMachines {
                     PhoenixCore.id("block/multiblock/astral_spinning_wheel")))
             .register();
 
-    public static final MultiblockMachineDefinition ASTRAL_LOOM = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> ASTRAL_LOOM = REGISTRATE
             .multiblock("astral_loom", AstralLoomMachine::new)
             .langValue("Astral Loom")
             .rotationState(RotationState.ALL)

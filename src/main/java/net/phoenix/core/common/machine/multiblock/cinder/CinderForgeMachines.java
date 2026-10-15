@@ -1,6 +1,8 @@
 package net.phoenix.core.common.machine.multiblock.cinder;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;

@@ -40,4 +40,32 @@ public final class StackNbt {
     public static void removeTagKey(ItemStack stack, String key) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.remove(key));
     }
+
+    // ---- whole-stack and fluid serialization (1.20 ItemStack.save/of and FluidStack.writeToNBT shapes)
+
+    public static CompoundTag saveStack(ItemStack stack) {
+        if (stack.isEmpty()) return new CompoundTag();
+        return (CompoundTag) stack.save(NbtRegistries.PROVIDER);
+    }
+
+    public static void saveInto(ItemStack stack, CompoundTag into) {
+        if (!stack.isEmpty()) stack.save(NbtRegistries.PROVIDER, into);
+    }
+
+    public static ItemStack loadStack(CompoundTag tag) {
+        return ItemStack.parseOptional(NbtRegistries.PROVIDER, tag);
+    }
+
+    public static CompoundTag saveFluid(net.neoforged.neoforge.fluids.FluidStack fluid) {
+        if (fluid.isEmpty()) return new CompoundTag();
+        return (CompoundTag) fluid.save(NbtRegistries.PROVIDER);
+    }
+
+    public static void saveFluidInto(net.neoforged.neoforge.fluids.FluidStack fluid, CompoundTag into) {
+        if (!fluid.isEmpty()) fluid.save(NbtRegistries.PROVIDER, into);
+    }
+
+    public static net.neoforged.neoforge.fluids.FluidStack loadFluid(CompoundTag tag) {
+        return net.neoforged.neoforge.fluids.FluidStack.parseOptional(NbtRegistries.PROVIDER, tag);
+    }
 }

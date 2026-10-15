@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -61,29 +61,29 @@ public class C2SAddShopEntryPacket implements CustomPacketPayload {
         this.editId = editId;
     }
 
-    public static void encode(C2SAddShopEntryPacket packet, FriendlyByteBuf buf) {
+    public static void encode(C2SAddShopEntryPacket packet, RegistryFriendlyByteBuf buf) {
         buf.writeUtf(packet.name);
-        buf.writeItem(packet.icon);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, packet.icon);
         buf.writeVarInt(packet.cost);
         buf.writeUtf(packet.category);
         buf.writeVarInt(packet.rewardSpecs.size());
         for (RewardSpec spec : packet.rewardSpecs) {
             buf.writeUtf(spec.type());
             buf.writeUtf(spec.param());
-            buf.writeItem(spec.itemParam());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, spec.itemParam());
         }
         buf.writeBoolean(packet.editId != null);
         if (packet.editId != null) buf.writeUUID(packet.editId);
     }
 
-    public static C2SAddShopEntryPacket decode(FriendlyByteBuf buf) {
+    public static C2SAddShopEntryPacket decode(RegistryFriendlyByteBuf buf) {
         String name = buf.readUtf();
-        ItemStack icon = buf.readItem();
+        ItemStack icon = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         int cost = buf.readVarInt();
         String category = buf.readUtf();
         int count = buf.readVarInt();
         List<RewardSpec> specs = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) specs.add(new RewardSpec(buf.readUtf(), buf.readUtf(), buf.readItem()));
+        for (int i = 0; i < count; i++) specs.add(new RewardSpec(buf.readUtf(), buf.readUtf(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf)));
         UUID editId = buf.readBoolean() ? buf.readUUID() : null;
         return new C2SAddShopEntryPacket(name, icon, cost, specs, category, editId);
     }

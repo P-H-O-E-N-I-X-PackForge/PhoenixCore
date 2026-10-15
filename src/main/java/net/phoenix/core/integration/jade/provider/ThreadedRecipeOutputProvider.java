@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.jade.provider;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -96,7 +98,7 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
                 if (stacks.length == 0 || stacks[0].isEmpty()) continue;
 
                 itemTag = new CompoundTag();
-                stacks[0].save(itemTag);
+                StackNbt.saveInto(stacks[0], itemTag);
 
                 if (out.chance() < out.maxChance()) {
                     double countD = (double) stacks[0].getCount() * runs * out.chance() / out.maxChance();
@@ -121,7 +123,7 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
             } else {
                 FluidStack[] stacks = FluidRecipeCapability.CAP.of(out.content()).getStacks();
                 if (stacks.length == 0 || stacks[0].isEmpty()) continue;
-                stacks[0].writeToNBT(fluidTag);
+                StackNbt.saveFluidInto(stacks[0], fluidTag);
                 if (out.chance() < out.maxChance()) {
                     double amountD = (double) stacks[0].getAmount() * runs * out.chance() / out.maxChance();
                     fluidTag.putInt("Amount", Math.max(1, (int) Math.round(amountD)));
@@ -176,7 +178,7 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
                                 (JsonObject) NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, ct)));
                     } else {
 
-                        ItemStack stack = ItemStack.of(ct);
+                        ItemStack stack = StackNbt.loadStack(ct);
                         if (!stack.isEmpty()) items.add(SizedIngredient.create(stack));
                     }
                 }
@@ -190,7 +192,7 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
                     if (ct.contains("count_provider")) {
                         fluids.add(IntProviderFluidIngredient.fromNBT(ct));
                     } else {
-                        FluidStack stack = FluidStack.loadFluidStackFromNBT(ct);
+                        FluidStack stack = StackNbt.loadFluid(ct);
                         if (!stack.isEmpty()) fluids.add(FluidIngredient.of(stack));
                     }
                 }

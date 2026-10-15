@@ -271,7 +271,7 @@ public class TeslaTeamEnergyData extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag netList = new ListTag();
         networks.forEach((uuid, energy) -> {
             CompoundTag teamTag = new CompoundTag();

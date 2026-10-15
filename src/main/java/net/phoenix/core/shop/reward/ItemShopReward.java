@@ -1,5 +1,7 @@
 package net.phoenix.core.shop.reward;
 
+
+import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,12 +39,12 @@ public class ItemShopReward implements ShopReward {
     @Override
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.put("stack", stack.save(new CompoundTag()));
+        tag.put("stack", StackNbt.saveStack(stack));
         return tag;
     }
 
     public static ItemShopReward load(CompoundTag tag) {
-        return new ItemShopReward(ItemStack.of(tag.getCompound("stack")));
+        return new ItemShopReward(StackNbt.loadStack(tag.getCompound("stack")));
     }
 
     @Override

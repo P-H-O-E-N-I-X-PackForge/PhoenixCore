@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregvaults.common.registry;
 
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
@@ -78,7 +80,7 @@ public final class VaultRegistry {
             .register("vault_terminal_menu", () -> IMenuTypeExtension.create(VaultTerminalMenu::new));
 
     public static PartAbility VAULT_INTERFACE_ABILITY;
-    public static MachineDefinition VAULT_INTERFACE;
+    public static MachineEntry<MachineDefinition> VAULT_INTERFACE;
 
     public static void registerEventBus(IEventBus bus) {
         MENU_TYPES.register(bus);

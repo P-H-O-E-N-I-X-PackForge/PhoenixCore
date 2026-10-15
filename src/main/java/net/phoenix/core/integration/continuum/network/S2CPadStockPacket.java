@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.loading.FMLEnvironment;
 
@@ -42,19 +42,19 @@ public class S2CPadStockPacket implements CustomPacketPayload {
         this.kits = kits;
     }
 
-    public S2CPadStockPacket(FriendlyByteBuf buf) {
+    public S2CPadStockPacket(RegistryFriendlyByteBuf buf) {
         this.pad = buf.readBlockPos();
         this.buses = buf.readBoolean();
-        this.rocket = buf.readItem();
+        this.rocket = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         this.probes = buf.readVarInt();
         this.kits = buf.readVarInt();
         this.rockets = buf.readVarInt();
     }
 
-    public void encode(FriendlyByteBuf buf) {
+    public void encode(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pad);
         buf.writeBoolean(buses);
-        buf.writeItem(rocket);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, rocket);
         buf.writeVarInt(probes);
         buf.writeVarInt(kits);
         buf.writeVarInt(rockets);

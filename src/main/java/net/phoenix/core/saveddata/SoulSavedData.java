@@ -29,8 +29,8 @@ public class SoulSavedData extends SavedData {
 
     public static SoulSavedData get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-                tag -> new SoulSavedData(level, tag),
-                () -> new SoulSavedData(level),
+                new SavedData.Factory<>(() -> new SoulSavedData(level),
+                        (tag, provider) -> new SoulSavedData(level, tag), null),
                 "ars_soul_data");
     }
 
@@ -95,7 +95,7 @@ public class SoulSavedData extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag list = new ListTag();
         soulMap.forEach((pos, entry) -> {
             CompoundTag chunkTag = entry.save();

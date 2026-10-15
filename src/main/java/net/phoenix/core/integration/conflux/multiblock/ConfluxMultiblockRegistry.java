@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -17,7 +19,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public final class ConfluxMultiblockRegistry {
 
-    public static final MultiblockMachineDefinition CASCADE_ENGINE = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> CASCADE_ENGINE = REGISTRATE
             .multiblock("axiom_cascade_engine", ConfluxCascadeEngine::new)
             .langValue("Axiom Cascade Engine")
             .tier(GTValues.ZPM)
@@ -55,7 +57,7 @@ public final class ConfluxMultiblockRegistry {
                     com.gregtechceu.gtceu.GTCEu.id("block/overlay/2_layer/front_emissive")))
             .register();
 
-    public static final MultiblockMachineDefinition RESONANCE_WEB = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> RESONANCE_WEB = REGISTRATE
             .multiblock("axiom_resonance_web", ConfluxResonanceWeb::new)
             .langValue("Axiom Resonance Web")
             .tier(GTValues.UV)
@@ -101,7 +103,7 @@ public final class ConfluxMultiblockRegistry {
                     com.gregtechceu.gtceu.GTCEu.id("block/overlay/2_layer/front_emissive")))
             .register();
 
-    public static final MultiblockMachineDefinition HARMONIC_LENS = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> HARMONIC_LENS = REGISTRATE
             .multiblock("axiom_harmonic_lens", ConfluxHarmonicLens::new)
             .langValue("Axiom Harmonic Lens")
             .tier(GTValues.ZPM)

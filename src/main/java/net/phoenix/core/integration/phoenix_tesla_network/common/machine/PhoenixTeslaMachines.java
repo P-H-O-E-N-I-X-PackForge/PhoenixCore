@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine;
 
+
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
@@ -66,7 +68,7 @@ public class PhoenixTeslaMachines {
         list.add(
                 Component.literal("Internal buffer is §7determined§f by the tier of §7Tesla Battery§f it has."));
     };
-    public static final MultiblockMachineDefinition TESLA_TOWER = REGISTRATE
+    public static final MachineEntry<MultiblockMachineDefinition> TESLA_TOWER = REGISTRATE
             .multiblock("tesla_tower", TeslaTowerMachine::new)
             .langValue("Tesla Tower")
             .rotationState(RotationState.ALL)

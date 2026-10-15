@@ -36,12 +36,11 @@ public class CreativeDataAccessSavedData extends SavedData {
     }
 
     public static CreativeDataAccessSavedData getOrCreate(ServerLevel serverLevel) {
-        return serverLevel.getDataStorage().computeIfAbsent(CreativeDataAccessSavedData::new,
-                CreativeDataAccessSavedData::new, DATA_NAME);
+        return serverLevel.getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(CreativeDataAccessSavedData::new, (tag, provider) -> new CreativeDataAccessSavedData(tag), null), DATA_NAME);
     }
 
     @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag nbt) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag ownerList = new ListTag();
         for (UUID ownerUUID : ownersMap.keySet()) {
             CompoundTag ownerTag = new CompoundTag();

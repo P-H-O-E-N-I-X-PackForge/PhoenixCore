@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.multiblock;
 
+
+import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
@@ -364,7 +366,7 @@ public class VaultMachine extends MultiblockControllerMachine {
             if (stack.isEmpty()) continue;
             CompoundTag entry = new CompoundTag();
             entry.putInt("Slot", i);
-            stack.save(entry);
+            StackNbt.saveInto(stack, entry);
             list.add(entry);
         }
         tag.put("VaultSlots", list);
@@ -375,7 +377,7 @@ public class VaultMachine extends MultiblockControllerMachine {
             if (s == null || s.isEmpty()) continue;
             CompoundTag entry = new CompoundTag();
             entry.putInt("Slot", i);
-            s.save(entry);
+            StackNbt.saveInto(s, entry);
             craftList.add(entry);
         }
         tag.put("CraftingGrid", craftList);
@@ -388,7 +390,7 @@ public class VaultMachine extends MultiblockControllerMachine {
                 CompoundTag entry = list.getCompound(i);
                 int slot = entry.getInt("Slot");
                 if (slot >= 0 && slot < itemHandler.getSlots()) {
-                    itemHandler.setStackInSlot(slot, ItemStack.of(entry));
+                    itemHandler.setStackInSlot(slot, StackNbt.loadStack(entry));
                 }
             }
         }
@@ -400,7 +402,7 @@ public class VaultMachine extends MultiblockControllerMachine {
                 CompoundTag entry = craftList.getCompound(i);
                 int slot = entry.getInt("Slot");
                 if (slot >= 0 && slot < savedCraftingGrid.length) {
-                    savedCraftingGrid[slot] = ItemStack.of(entry);
+                    savedCraftingGrid[slot] = StackNbt.loadStack(entry);
                 }
             }
         }

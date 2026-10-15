@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.drone.network;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -13,12 +13,12 @@ public record DroneTargetView(BlockPos pos, String name, ItemStack icon, boolean
                               String groupName,
                               int priority) {
 
-    public static void encodeList(List<DroneTargetView> views, FriendlyByteBuf buf) {
+    public static void encodeList(List<DroneTargetView> views, RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(views.size());
         for (DroneTargetView view : views) {
             buf.writeBlockPos(view.pos());
             buf.writeUtf(view.name());
-            buf.writeItem(view.icon());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, view.icon());
             buf.writeBoolean(view.controllable());
             buf.writeBoolean(view.workingEnabled());
             buf.writeUtf(view.status());
@@ -34,14 +34,14 @@ public record DroneTargetView(BlockPos pos, String name, ItemStack icon, boolean
         }
     }
 
-    public static List<DroneTargetView> decodeList(FriendlyByteBuf buf) {
+    public static List<DroneTargetView> decodeList(RegistryFriendlyByteBuf buf) {
         int count = buf.readVarInt();
         List<DroneTargetView> views = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             views.add(new DroneTargetView(
                     buf.readBlockPos(),
                     buf.readUtf(),
-                    buf.readItem(),
+                    ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
                     buf.readBoolean(),
                     buf.readBoolean(),
                     buf.readUtf(),
