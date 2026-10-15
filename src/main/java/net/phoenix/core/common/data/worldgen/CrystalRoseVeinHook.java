@@ -1,40 +1,56 @@
-package net.phoenix.core.mixin.gtceu;
+package net.phoenix.core.common.data.worldgen;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.WorldGenLayers;
+import com.gregtechceu.gtceu.api.data.worldgen.WorldGeneratorUtils;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.veins.DikeVeinGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.veins.LayeredVeinGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.veins.VeinedVeinGenerator;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
-import com.gregtechceu.gtceu.common.data.GTOres;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
-import net.phoenix.core.common.data.worldgen.CrystalRoseIndicatorGenerator;
-import net.phoenix.core.mixin.accessor.GTOresAccessor;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-import java.util.Map;
+/**
+ * Swaps every ore vein's surface indicators for crystal roses once the vein registry has loaded. GTCEu 1.21 loads veins
+ * from data, so this runs as a reload listener instead of the old hook at the end of GTOres.init.
+ */
+public class CrystalRoseVeinHook extends ContextAwareReloadListener implements PreparableReloadListener {
 
-@Mixin(value = GTOres.class, remap = false)
-public abstract class MixinGTOres {
+    public static final CrystalRoseVeinHook INSTANCE = new CrystalRoseVeinHook();
 
-    @Inject(method = "init", at = @At("TAIL"))
-    private static void phoenix$bloomCrystalRoses(CallbackInfo ci) {
-        Map<ResourceLocation, GTOreDefinition> veins = GTOresAccessor.getToReRegister();
+    private CrystalRoseVeinHook() {}
+
+    public static void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(INSTANCE);
+    }
+
+    @Override
+    public CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager,
+                                          ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler,
+                                          Executor backgroundExecutor, Executor gameExecutor) {
+        return stage.wait(null).thenRunAsync(this::apply, gameExecutor);
+    }
+
+    private void apply() {
+        var lookup = getRegistryLookup().lookupOrThrow(GTRegistries.Keys.ORE_VEIN);
         RandomSource dummyRandom = RandomSource.create();
 
-        veins.forEach((id, def) -> {
+        for (var holder : lookup.listElements().toList()) {
+            GTOreDefinition def = holder.value();
             Material primaryMat = null;
 
             for (var ig : def.indicatorGenerators()) {
@@ -88,16 +104,16 @@ public abstract class MixinGTOres {
                 }
 
                 def.indicatorGenerators().add(new CrystalRoseIndicatorGenerator(def)
-                        .state(phoenixCore$getCrystalRoseState(primaryMat))
+                        .state(getCrystalRoseState(primaryMat))
                         .placement(placement)
                         .radius(3)
                         .density(0.4f));
             }
-        });
+        }
+        WorldGeneratorUtils.invalidateOreVeinCache();
     }
 
-    @Unique
-    private static BlockState phoenixCore$getCrystalRoseState(Material material) {
+    private static BlockState getCrystalRoseState(Material material) {
         var roseEntry = GTMaterialBlocks.MATERIAL_BLOCKS.get(PhoenixMaterialFlags.crystal_rose, material);
         return roseEntry != null ? roseEntry.get().defaultBlockState() : Blocks.POPPY.defaultBlockState();
     }

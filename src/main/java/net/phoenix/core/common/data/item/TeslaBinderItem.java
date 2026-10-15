@@ -734,7 +734,7 @@ public class TeslaBinderItem extends ComponentItem
         if (level.isClientSide || !(entity instanceof ServerPlayer serverPlayer)) return;
         if (level.getGameTime() % 5 != 0) return;
 
-        boolean isUIOpen = serverPlayer.containerMenu instanceof com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
+        boolean isUIOpen = serverPlayer.containerMenu != serverPlayer.inventoryMenu;
         if (!isSelected && !isUIOpen) return;
 
         CompoundTag tag = StackNbt.getOrCreateTag(stack);

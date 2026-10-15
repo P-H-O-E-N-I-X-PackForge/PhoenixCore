@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.RecordItem;
 import net.phoenix.core.integration.vocal_vibrancy.VocalVibrancyClient;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -110,9 +109,16 @@ public class ResonanceConsoleScreen extends Screen {
     }
 
     private List<ResourceLocation> scanForMusicDiscs() {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        if (level == null) return new ArrayList<>();
+        var access = level.registryAccess();
         return BuiltInRegistries.ITEM.stream()
-                .filter(item -> item instanceof RecordItem)
-                .map(item -> ((RecordItem) item).getSound().getLocation())
+                .map(item -> item.components().get(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE))
+                .filter(java.util.Objects::nonNull)
+                .map(playable -> playable.song().unwrap(access))
+                .flatMap(java.util.Optional::stream)
+                .map(song -> song.value().soundEvent().value().getLocation())
+                .distinct()
                 .collect(Collectors.toList());
     }
 

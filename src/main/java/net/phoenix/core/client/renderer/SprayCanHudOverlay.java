@@ -4,13 +4,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.minecraft.client.gui.LayeredDraw;
 import net.phoenix.core.common.item.ChameleonSprayCanBehaviour;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 
 public class SprayCanHudOverlay {
 
-    public static final IGuiOverlay HUD_SPRAY_CAN = (gui, guiGraphics, partialTick, width, height) -> {
+    public static final LayeredDraw.Layer HUD_SPRAY_CAN = (guiGraphics, deltaTracker) -> {
+        int width = guiGraphics.guiWidth();
+        int height = guiGraphics.guiHeight();
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 

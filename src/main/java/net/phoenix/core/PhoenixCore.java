@@ -14,7 +14,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.common.NeoForge;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
@@ -189,6 +188,7 @@ public class PhoenixCore {
         NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
         NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
         NeoForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
+        NeoForge.EVENT_BUS.addListener(net.phoenix.core.common.data.worldgen.CrystalRoseVeinHook::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(
                 net.phoenix.core.integration.conflux.research.GatedRecipeRegistry::onAddReloadListeners);
 

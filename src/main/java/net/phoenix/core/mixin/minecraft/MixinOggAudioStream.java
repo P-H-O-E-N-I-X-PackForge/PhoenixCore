@@ -1,30 +1,40 @@
 package net.phoenix.core.mixin.minecraft;
 
+import net.minecraft.client.sounds.JOrbisAudioStream;
 import net.phoenix.core.integration.vocal_vibrancy.VocalVibrancyClient;
 
-import com.mojang.blaze3d.audio.OggAudioStream;
+import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-@Mixin(OggAudioStream.class)
+/**
+ * Taps the decoded samples of Ogg sound streams so the vocal vibrancy analyzers can see live audio. 1.21 hands decoded
+ * floats to a consumer, so they are repacked into 16-bit PCM before analysis.
+ */
+@Mixin(JOrbisAudioStream.class)
 public abstract class MixinOggAudioStream {
 
-    @Inject(method = "read", at = @At("RETURN"))
-    private void phoenix$captureLivePCM(int size, CallbackInfoReturnable<ByteBuffer> cir) {
-        if (!VocalVibrancyClient.isAnyTracking()) return;
+    @ModifyVariable(method = "readChunk", at = @At("HEAD"), argsOnly = true)
+    private FloatConsumer phoenix$captureLivePCM(FloatConsumer original) {
+        if (!VocalVibrancyClient.isAnyTracking()) return original;
 
-        ByteBuffer data = cir.getReturnValue();
-        if (data == null || !data.hasRemaining()) return;
-
-        try {
-
-            VocalVibrancyClient.onPCMBuffer(data, 44100);
-        } catch (Exception e) {
-            System.err.println("VocalVibrancy: PCM analysis error: " + e.getMessage());
-        }
+        ByteBuffer pcm = ByteBuffer.allocate(16384).order(ByteOrder.LITTLE_ENDIAN);
+        return sample -> {
+            original.accept(sample);
+            if (pcm.remaining() < 2) {
+                pcm.flip();
+                try {
+                    VocalVibrancyClient.onPCMBuffer(pcm, 44100);
+                } catch (Exception e) {
+                    System.err.println("VocalVibrancy: PCM analysis error: " + e.getMessage());
+                }
+                pcm.clear();
+            }
+            pcm.putShort((short) (Math.max(-1f, Math.min(1f, sample)) * 32767f));
+        };
     }
 }

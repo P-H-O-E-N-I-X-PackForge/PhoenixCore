@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
+import net.minecraft.world.level.storage.loot.functions.CopyCustomDataFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
@@ -19,16 +19,17 @@ import java.util.Set;
 
 public class GregPacksLootTableProvider {
 
-    public static LootTableProvider create(PackOutput output) {
+    public static LootTableProvider create(PackOutput output,
+                                           java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> registries) {
         return new LootTableProvider(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(OmniPackBlockLoot::new,
-                        LootContextParamSets.BLOCK)));
+                        LootContextParamSets.BLOCK)), registries);
     }
 
     static class OmniPackBlockLoot extends BlockLootSubProvider {
 
-        protected OmniPackBlockLoot() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        protected OmniPackBlockLoot(net.minecraft.core.HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override
@@ -44,11 +45,11 @@ public class GregPacksLootTableProvider {
                     LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(block)
-                                    .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
-                                            .copy("Items", "Items", CopyNbtFunction.MergeStrategy.REPLACE)
-                                            .copy("Upgrades", "Upgrades", CopyNbtFunction.MergeStrategy.REPLACE)
-                                            .copy("StoredEU", "StoredEU", CopyNbtFunction.MergeStrategy.REPLACE)
-                                            .copy("Fluid", "Fluid", CopyNbtFunction.MergeStrategy.REPLACE))));
+                                    .apply(CopyCustomDataFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
+                                            .copy("Items", "Items", CopyCustomDataFunction.MergeStrategy.REPLACE)
+                                            .copy("Upgrades", "Upgrades", CopyCustomDataFunction.MergeStrategy.REPLACE)
+                                            .copy("StoredEU", "StoredEU", CopyCustomDataFunction.MergeStrategy.REPLACE)
+                                            .copy("Fluid", "Fluid", CopyCustomDataFunction.MergeStrategy.REPLACE))));
         }
 
         @Override

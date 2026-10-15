@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -38,8 +38,8 @@ public class PhoenixRecipeModifiers {
         List<Fluid> recipeFluids = new ArrayList();
 
         for (var content : recipe.getInputContents(FluidRecipeCapability.CAP)) {
-            if (content.content() instanceof FluidIngredient fluidIngredient) {
-                for (var stack : fluidIngredient.getStacks()) {
+            if (content.content() instanceof SizedFluidIngredient fluidIngredient) {
+                for (var stack : fluidIngredient.getFluids()) {
                     recipeFluids.add(stack.getFluid());
                 }
             }
@@ -63,7 +63,7 @@ public class PhoenixRecipeModifiers {
                                     .build().apply(newRecipe.copy());
                             var inputFluids = modifiedRecipe.inputs.getOrDefault(FluidRecipeCapability.CAP,
                                     new ArrayList<>());
-                            inputFluids.add(new Content(FluidIngredient.of(drained), ChanceLogic.getMaxChancedValue(),
+                            inputFluids.add(new Content(SizedFluidIngredient.of(drained), ChanceLogic.getMaxChancedValue(),
                                     ChanceLogic.getMaxChancedValue()));
                             modifiedRecipe.inputs.put(FluidRecipeCapability.CAP, inputFluids);
                             return modifiedRecipe;

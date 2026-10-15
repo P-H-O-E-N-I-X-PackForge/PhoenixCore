@@ -18,7 +18,7 @@ public class GregPacksDataGenerators {
         if (event.includeServer()) {
             event.getGenerator().addProvider(
                     true,
-                    GregPacksLootTableProvider.create(packOutput));
+                    GregPacksLootTableProvider.create(packOutput, event.getLookupProvider()));
             event.getGenerator().addProvider(true, new GregPacksCuriosProvider(packOutput));
         }
     }

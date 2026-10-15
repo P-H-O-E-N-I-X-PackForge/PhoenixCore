@@ -8,7 +8,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability;
 
 import com.hollingsworth.arsnouveau.common.items.DominionWand;
-import com.hollingsworth.arsnouveau.common.items.DominionWand.DominionData;
+import com.hollingsworth.arsnouveau.common.items.data.DominionWandData;
+import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +25,8 @@ public abstract class DominionWandMixin {
     @Inject(method = "useOn", at = @At("HEAD"))
     private void phoenix$captureStoredData(UseOnContext ctx, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = ctx.getItemInHand();
-        boolean had = new DominionData(stack).hasStoredData();
+        DominionWandData data = stack.get(DataComponentRegistry.DOMINION_WAND);
+        boolean had = data != null && data.hasStoredData();
         phoenix$hadStoredData.set(had);
     }
 

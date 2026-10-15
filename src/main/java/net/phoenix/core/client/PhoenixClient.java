@@ -27,7 +27,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -142,9 +142,9 @@ public class PhoenixClient {
     }
 
     @SubscribeEvent
-    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("spray_can_info", net.phoenix.core.client.renderer.SprayCanHudOverlay.HUD_SPRAY_CAN);
-        event.registerAboveAll("shader_profiler",
+    public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(net.phoenix.core.PhoenixCore.id("spray_can_info"), net.phoenix.core.client.renderer.SprayCanHudOverlay.HUD_SPRAY_CAN);
+        event.registerAboveAll(net.phoenix.core.PhoenixCore.id("shader_profiler"),
                 net.phoenix.core.client.renderer.ShaderProfilerOverlay.HUD_SHADER_PROFILER);
     }
 

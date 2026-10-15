@@ -1,14 +1,17 @@
 package net.phoenix.core.client.renderer;
 
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.minecraft.client.gui.LayeredDraw;
 import net.phoenix.core.client.worldfx.ShaderProfiler;
 
 import java.util.Map;
 
 public class ShaderProfilerOverlay {
 
-    public static final IGuiOverlay HUD_SHADER_PROFILER = (gui, guiGraphics, partialTick, width, height) -> {
+    public static final LayeredDraw.Layer HUD_SHADER_PROFILER = (guiGraphics, deltaTracker) -> {
+        int width = guiGraphics.guiWidth();
+        int height = guiGraphics.guiHeight();
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
         if (!ShaderProfiler.enabled) return;
 
         Map<String, Double> averages = ShaderProfiler.snapshot();
