@@ -1,10 +1,5 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
-/**
- * Conflux physics now comes from the landforms themselves (see {@code LandformPhysics}): a volcano's updraft, a floating
- * island's low gravity, a geyser's eruption. There are no longer zones and platforms at fixed coordinates, which had
- * nothing to do with the terrain. The registry stays for anything that wants to register a zone by hand.
- */
 public class DimensionPhysicsPresets {
 
     public static void initializeDimensionPhysics(String dimensionId) {}

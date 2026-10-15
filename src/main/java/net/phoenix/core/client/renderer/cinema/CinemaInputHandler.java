@@ -1,18 +1,14 @@
 package net.phoenix.core.client.renderer.cinema;
 
-
-
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinemaActionPacket;
 
 @EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)

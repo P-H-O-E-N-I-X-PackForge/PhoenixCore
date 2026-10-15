@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregpacks.common.recipe;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -9,12 +7,11 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.item.GregPacksItems;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.L;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;

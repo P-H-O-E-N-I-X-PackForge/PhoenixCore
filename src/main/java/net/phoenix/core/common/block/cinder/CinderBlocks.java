@@ -16,7 +16,8 @@ public class CinderBlocks {
             .properties(p -> p.strength(-1.0f, 3600000.0f).noLootTable())
 
             .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
-                    prov.models().cubeAll(ctx.getName(), ResourceLocation.fromNamespaceAndPath("minecraft", "block/magma"))))
+                    prov.models().cubeAll(ctx.getName(),
+                            ResourceLocation.fromNamespaceAndPath("minecraft", "block/magma"))))
             .lang("Cinder Construction Site")
             .register();
 

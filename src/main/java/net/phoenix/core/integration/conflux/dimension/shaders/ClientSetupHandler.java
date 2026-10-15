@@ -1,11 +1,9 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 @EventBusSubscriber(modid = "phoenixcore", bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

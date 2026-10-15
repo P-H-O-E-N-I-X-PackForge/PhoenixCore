@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.conflux.client;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,6 +14,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ConfluxWikiScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int HEADER_H = 24;
     private static final int SIDEBAR_W = 90;

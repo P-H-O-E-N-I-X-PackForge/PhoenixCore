@@ -1,6 +1,5 @@
 package net.phoenix.core.client.renderer.cinema.cutscene.background;
 
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.phoenix.core.client.renderer.cinema.cutscene.background.BackgroundEffect.Point;
 

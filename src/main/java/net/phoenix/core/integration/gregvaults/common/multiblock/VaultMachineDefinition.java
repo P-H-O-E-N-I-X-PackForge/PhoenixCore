@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.gregvaults.common.multiblock;
 
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.client.model.machine.overlays.WorkableOverlays;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 
@@ -130,8 +129,10 @@ public class VaultMachineDefinition {
                     builder.addTextureOverride("top", casingTexture);
                     builder.addTextureOverride("bottom", casingTexture);
 
-                    if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.gregvaults.client.VaultClientModelHooks
-                                    .addVaultOverlayRenderer(builder); }
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                        net.phoenix.core.integration.gregvaults.client.VaultClientModelHooks
+                                .addVaultOverlayRenderer(builder);
+                    }
                 })
                 .pattern(definition -> MultiblockPatternBuilder.start(BACK, UP, RIGHT)
                         .slice("WWWWW", "WWWWW", "WWCWW", "WWWWW", "WWWWW")

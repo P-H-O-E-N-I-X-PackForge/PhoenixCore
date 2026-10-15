@@ -13,16 +13,16 @@ import java.util.function.IntBinaryOperator;
 public final class Landforms {
 
     private static final int CELL = 192;
-    
+
     private static final int SPAWN_CLEAR = 96;
 
     enum Kind {
         VOLCANO,
         HOODOOS,
         KARST,
-        
+
         PLATEAU,
-        
+
         SEA_STACKS,
         CENOTE,
         FUNGUS,
@@ -46,8 +46,8 @@ public final class Landforms {
     static final int EXTINCT = 2;
 
     record Instance(Kind kind, int cx, int cz, int reach, long seed, int baseY, int height, int craterRadius,
-                            int craterDepth, double[] rivuletAngles, Pillar[] pillars, Palette palette, int state,
-                            int variant) {}
+                    int craterDepth, double[] rivuletAngles, Pillar[] pillars, Palette palette, int state,
+                    int variant) {}
 
     private final String disciplineId;
     private final long seed;
@@ -133,7 +133,7 @@ public final class Landforms {
             int base = (centreGround * 2 + ground.applyAsInt(cx + radius, cz) + ground.applyAsInt(cx - radius, cz) +
                     ground.applyAsInt(cx, cz + radius) + ground.applyAsInt(cx, cz - radius)) / 6;
             int height = 14 + rnd.nextInt(17);
-            
+
             int pool = rnd.nextInt(3) == 0 ? 0 : 4 + rnd.nextInt(3);
             double[] fall = disciplineId.equals("phoenix") || disciplineId.equals("sealed_b") ?
                     new double[] { rnd.nextDouble() * Math.PI * 2.0 } : null;
@@ -199,7 +199,7 @@ public final class Landforms {
                     height = 12 + rnd.nextInt(6);
                 }
             }
-            
+
             int base = (ground.applyAsInt(cx, cz) * 2 + ground.applyAsInt(cx + radius / 2, cz) +
                     ground.applyAsInt(cx - radius / 2, cz) + ground.applyAsInt(cx, cz + radius / 2) +
                     ground.applyAsInt(cx, cz - radius / 2)) / 6;
@@ -272,8 +272,10 @@ public final class Landforms {
                     Blocks.END_STONE_BRICKS.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState() }, 3,
                     Blocks.OBSIDIAN.defaultBlockState(), Blocks.END_STONE.defaultBlockState());
             case "sealed_a" -> kind == Kind.KARST ?
-                    new Palette(new BlockState[] { Blocks.STONE.defaultBlockState(), Blocks.ANDESITE.defaultBlockState(),
-                            Blocks.STONE.defaultBlockState(), Blocks.CALCITE.defaultBlockState() }, 4,
+                    new Palette(
+                            new BlockState[] { Blocks.STONE.defaultBlockState(), Blocks.ANDESITE.defaultBlockState(),
+                                    Blocks.STONE.defaultBlockState(), Blocks.CALCITE.defaultBlockState() },
+                            4,
                             Blocks.MOSS_BLOCK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState()) :
                     new Palette(new BlockState[] { Blocks.RED_TERRACOTTA.defaultBlockState(),
                             Blocks.ORANGE_TERRACOTTA.defaultBlockState(), Blocks.YELLOW_TERRACOTTA.defaultBlockState(),
@@ -334,7 +336,7 @@ public final class Landforms {
             case STRATO: {
                 double h = crateredCone(v, r, 1.6, 3.0);
                 double t = r / radius;
-                
+
                 double gully = Math.abs(Math.sin(Math.atan2(dz, dx) * 9.0 + (v.seed() & 255) * 0.1));
                 double zone = smooth((t - 0.12) / 0.2) * (1.0 - smooth((t - 0.7) / 0.3));
                 return r < v.craterRadius() ? h : h * (1.0 - 0.10 * gully * zone);
@@ -353,7 +355,7 @@ public final class Landforms {
                 double floor = -4.0 + (r < 16.0 ? 10.0 * (1.0 - (r / 16.0) * (r / 16.0)) : 0.0);
                 return ring + floor * (1.0 - ring / height);
             }
-            default: { 
+            default: {
                 double theta = v.rivuletAngles()[0];
                 double u = dx * Math.cos(theta) + dz * Math.sin(theta);
                 double w = -dx * Math.sin(theta) + dz * Math.cos(theta);
@@ -362,7 +364,7 @@ public final class Landforms {
                 if (d2 >= 1.0) return 0.0;
                 double h = height * Math.pow(1.0 - Math.sqrt(d2), 1.2);
                 if (Math.abs(w) < 2.3 && Math.abs(u) < length * 0.85) h = Math.min(h, height * 0.30);
-                
+
                 for (int k = -1; k <= 1; k++) {
                     double du = u - k * length * 0.5;
                     double dd = Math.sqrt(du * du + w * w);
@@ -405,7 +407,7 @@ public final class Landforms {
     }
 
     static int surfaceGround(ChunkAccess chunk, int x, int z, int minY, int maxY,
-                                     net.minecraft.core.BlockPos.MutableBlockPos pos) {
+                             net.minecraft.core.BlockPos.MutableBlockPos pos) {
         for (int y = maxY - 1; y >= minY; y--) {
             BlockState state = chunk.getBlockState(pos.set(x, y, z));
             if (!state.isAir() && state.getFluidState().isEmpty()) return y;
@@ -444,7 +446,7 @@ public final class Landforms {
             }
             case STRATO: {
                 if (r < v.craterRadius() * 0.85) return extinct ? COARSE : BASALT;
-                
+
                 int band = Math.floorMod((int) (h / 3.0) + ((rough & 7) == 0 ? 1 : 0), 4);
                 BlockState s = switch (band) {
                     case 0 -> TUFF;
@@ -464,7 +466,7 @@ public final class Landforms {
             }
             case DOME: {
                 BlockState s = roll < 6 ? OBSIDIAN : roll < 12 ? BLACKSTONE : BASALT;
-                
+
                 if (hot && (rough & 15) == 0 || hot && f > 0.9 && (rough & 3) == 0) s = MAGMA;
                 if (extinct && f < 0.3 && roll == 15) s = MOSS;
                 return s;
@@ -476,7 +478,7 @@ public final class Landforms {
                 if (h < 2.0) return roll < 8 ? GRAVEL : roll < 13 ? BLACKSTONE : BASALT;
                 return roll < 8 ? OBSIDIAN : roll < 13 ? BLACKSTONE : (hot && roll == 15 ? MAGMA : BASALT);
             }
-            default: { 
+            default: {
                 double theta = v.rivuletAngles()[0];
                 double w = -dx * Math.sin(theta) + dz * Math.cos(theta);
                 if (Math.abs(w) < 2.6) return hot ? MAGMA : BASALT;
@@ -595,10 +597,10 @@ public final class Landforms {
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
                 double d = Math.hypot(x - inst.cx(), z - inst.cz());
-                
+
                 double edge = radius + ((hash2(inst.seed(), x, z) & 7) - 3.5) * 0.5;
                 if (d > edge + 6) continue;
-                
+
                 int columnTop = d <= edge ? top : top - (int) ((d - edge) * (inst.height() / 6.0));
                 int ground = surfaceGround(chunk, x, z, minY, maxY, pos);
                 if (columnTop <= ground) continue;
@@ -614,8 +616,7 @@ public final class Landforms {
                     }
                     chunk.setBlockState(pos.set(x, y, z), state, false);
                 }
-                
-                // a stream of lava runs from the pool and down the flank
+
                 if (inst.rivuletAngles() != null && inst.craterRadius() > 0 && columnTop > ground) {
                     double a = inst.rivuletAngles()[0];
                     double along = (x - inst.cx()) * Math.cos(a) + (z - inst.cz()) * Math.sin(a);
@@ -645,7 +646,7 @@ public final class Landforms {
                 double bestD = 0;
                 for (Pillar p : inst.pillars()) {
                     double d = Math.hypot(x - p.x(), z - p.z());
-                    
+
                     double edge = p.radius() + ((hash2(inst.seed(), x, z) & 3) - 1.5) * 0.35;
                     boolean inShaft = d <= edge;
                     boolean inCap = hoodoo && d <= edge * 1.5;

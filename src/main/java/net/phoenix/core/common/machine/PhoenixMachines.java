@@ -1,24 +1,14 @@
 package net.phoenix.core.common.machine;
 
-
-
-
-
-import com.gregtechceu.gtceu.api.machine.MachineInstanceFactory;
-import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.machine.MachineInstanceFactory;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
@@ -32,21 +22,22 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.registry.registrate.builder.MachineBuilder;
 import com.gregtechceu.gtceu.api.registry.registrate.builder.MultiblockMachineBuilder;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderHelper;
 import com.gregtechceu.gtceu.common.block.BoilerFireboxType;
 import com.gregtechceu.gtceu.common.data.*;
+import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.CleaningMaintenanceHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.steam.SteamParallelMultiblockMachine;
-import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
-import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MachineModifiers;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
@@ -73,10 +64,9 @@ import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.Bi
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.SourceMultiblockTankMachine;
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.SourceReactorMachine;
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
-import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_resonance.SoundHatchPartMachine;
+import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 
-import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -138,11 +128,13 @@ public class PhoenixMachines {
     }
     String technicallyTrue = "false";
 
-    public static MachineEntry<MultiblockMachineDefinition> registerMultiblockSourceTank(GTRegistrate registrate, String name,
-                                                                           String displayName, int capacity,
-                                                                           int maxConsumption,
-                                                                           Supplier<? extends Block> casing,
-                                                                           BiConsumer<MultiblockMachineBuilder<?>, ResourceLocation> rendererSetup) {
+    public static MachineEntry<MultiblockMachineDefinition> registerMultiblockSourceTank(GTRegistrate registrate,
+                                                                                         String name,
+                                                                                         String displayName,
+                                                                                         int capacity,
+                                                                                         int maxConsumption,
+                                                                                         Supplier<? extends Block> casing,
+                                                                                         BiConsumer<MultiblockMachineBuilder<?>, ResourceLocation> rendererSetup) {
         MultiblockMachineBuilder<?> builder = registrate
                 .multiblock(name, holder -> new SourceMultiblockTankMachine(holder, capacity, maxConsumption))
                 .langValue(displayName)
@@ -180,7 +172,8 @@ public class PhoenixMachines {
             (builder, overlay) -> builder
                     .workableCasingModel(
 
-                            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
+                                    "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                             overlay));
 
     public static final MachineEntry<MultiblockMachineDefinition> DRONE_CONTROLLER = REGISTRATE
@@ -204,7 +197,8 @@ public class PhoenixMachines {
                     .build())
             .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .workableCasingModel(
-                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
+                            "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                     GTCEu.id("block/multiblock/multiblock_tank"))
             .register();
 
@@ -222,8 +216,8 @@ public class PhoenixMachines {
             "stream_hatch", "Web Stream Hatch", SoundHatchPartMachine.SoundHatchType.STREAM, SOUND_STREAM);
 
     private static MachineEntry<MachineDefinition>[] registerSoundHatch(String name, String displayName,
-                                                          SoundHatchPartMachine.SoundHatchType type,
-                                                          PartAbility ability) {
+                                                                        SoundHatchPartMachine.SoundHatchType type,
+                                                                        PartAbility ability) {
         return registerTieredMachines(name,
                 (holder, tier) -> new SoundHatchPartMachine(holder, tier, type),
                 (tier, builder) -> builder
@@ -243,7 +237,7 @@ public class PhoenixMachines {
             IO.OUT, ELECTRIC_TIERS, SOURCE_OUTPUT);
 
     private static MachineEntry<MachineDefinition>[] registerSourceHatch(String name, String displayName, IO io,
-                                                           int[] tiers, PartAbility... abilities) {
+                                                                         int[] tiers, PartAbility... abilities) {
         return registerTieredMachines(name,
 
                 (holder, tier) -> new SourceHatchPartMachine(holder, tier, io),
@@ -274,18 +268,20 @@ public class PhoenixMachines {
             IN, PlasmaHatchPartMachine.INITIAL_TANK_CAPACITY_1X, 1, new int[] { 7, 8, 9 },
             PhoenixPartAbility.PLASMA_INPUT);
 
-    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(String name, String displayName, String tooltip,
-                                                            IO io, int initialCapacity, int slots,
-                                                            int[] tiers, PartAbility... abilities) {
+    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(String name, String displayName,
+                                                                          String tooltip,
+                                                                          IO io, int initialCapacity, int slots,
+                                                                          int[] tiers, PartAbility... abilities) {
         return registerPlasmaHatches(GTRegistration.REGISTRATE, name, displayName, tooltip, io, initialCapacity, slots,
                 tiers,
                 abilities);
     }
 
-    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(GTRegistrate registrate, String name, String displayName,
-                                                            String tooltip,
-                                                            IO io, int initialCapacity, int slots,
-                                                            int[] tiers, PartAbility... abilities) {
+    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(GTRegistrate registrate, String name,
+                                                                          String displayName,
+                                                                          String tooltip,
+                                                                          IO io, int initialCapacity, int slots,
+                                                                          int[] tiers, PartAbility... abilities) {
         final String pipeOverlay;
         if (slots >= 9) {
             pipeOverlay = "overlay_pipe_9x";
@@ -343,13 +339,15 @@ public class PhoenixMachines {
     public static MachineEntry<MachineDefinition> ALUMINFROST_DRUM = registerDrum(ALUMINFROST,
             (160 * FluidType.BUCKET_VOLUME),
             "Aluminfrost Drum");
-    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_DRUM = registerDrum(FROST_REINFORCED_STAINED_STEEL,
+    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_DRUM = registerDrum(
+            FROST_REINFORCED_STAINED_STEEL,
             (350 * FluidType.BUCKET_VOLUME),
             "Frost Reinforced Stained Steel Drum");
     public static MachineEntry<MachineDefinition> SOURCE_IMBUED_TITANIUM_DRUM = registerDrum(SOURCE_IMBUED_TITANIUM,
             (750 * FluidType.BUCKET_VOLUME),
             "Source Imbued Titanium Drum");
-    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_DRUM = registerDrum(VOID_TOUCHED_TUNGSTEN_STEEL,
+    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_DRUM = registerDrum(
+            VOID_TOUCHED_TUNGSTEN_STEEL,
             (1300 * FluidType.BUCKET_VOLUME),
             "Void Touched Tungsten Steel Drum");
     public static MachineEntry<MachineDefinition> RESONANT_RHODIUM_ALLOY_DRUM = registerDrum(RESONANT_RHODIUM_ALLOY,
@@ -360,16 +358,19 @@ public class PhoenixMachines {
             "Aurum Steel Crate");
     public static MachineEntry<MachineDefinition> ALUMINFROST_CRATE = registerCrate(ALUMINFROST, 100,
             "Aluminfrost Crate");
-    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_CRATE = registerCrate(FROST_REINFORCED_STAINED_STEEL,
+    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_CRATE = registerCrate(
+            FROST_REINFORCED_STAINED_STEEL,
             116,
             "Frost Reinforced Stained Steel Crate");
     public static MachineEntry<MachineDefinition> SOURCE_IMBUED_TITANIUM_CRATE = registerCrate(
             SOURCE_IMBUED_TITANIUM, 140,
             "Source Imbued Titanium Crate");
-    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(VOID_TOUCHED_TUNGSTEN_STEEL,
+    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(
+            VOID_TOUCHED_TUNGSTEN_STEEL,
             160,
             "Void Touched Tungsten Steel Crate");
-    public static MachineEntry<MachineDefinition> RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
+    public static MachineEntry<MachineDefinition> RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY,
+            200,
             "Resonant Rhodium Alloy Crate");
 
     public static MachineEntry<MachineDefinition> SHIELD_INTEGRITY_SENSOR_HATCH = REGISTRATE

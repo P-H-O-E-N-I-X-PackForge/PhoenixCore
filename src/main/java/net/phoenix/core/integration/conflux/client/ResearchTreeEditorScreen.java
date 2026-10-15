@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.conflux.client;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -26,6 +24,9 @@ import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public class ResearchTreeEditorScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int PANEL_W = 240;
     private static final int TOOLBAR_H = 24;

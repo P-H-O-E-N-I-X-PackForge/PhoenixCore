@@ -13,8 +13,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.phoenix.core.integration.continuum.common.RocketStats;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 
 public class ContinuumUpgradeItem extends Item {
@@ -68,7 +66,8 @@ public class ContinuumUpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
         Level level = context.level();
         tooltip.add(Component.literal(effect).withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.literal("Up to level " + maxLevel).withStyle(ChatFormatting.GRAY));

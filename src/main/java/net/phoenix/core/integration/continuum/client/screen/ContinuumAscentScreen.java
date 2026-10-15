@@ -28,6 +28,9 @@ import org.joml.Vector3f;
 import java.util.Locale;
 
 public class ContinuumAscentScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final ResourceLocation HOME_WORLD = ResourceLocation.fromNamespaceAndPath("phoenixcore", "anvil");
 

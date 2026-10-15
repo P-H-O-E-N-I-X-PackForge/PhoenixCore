@@ -1,18 +1,13 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.Mod;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
 public class ClientDisciplineProgressionCache {
 
     private static final Map<UUID, CachedProgression> progressionCache = new HashMap<>();

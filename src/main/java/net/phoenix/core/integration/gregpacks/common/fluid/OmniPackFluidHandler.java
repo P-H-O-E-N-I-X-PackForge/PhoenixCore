@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.gregpacks.common.fluid;
 
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;

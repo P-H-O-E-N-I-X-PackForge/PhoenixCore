@@ -3,9 +3,9 @@ package net.phoenix.core.integration.conflux.structure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LadderBlock;
@@ -15,7 +15,6 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import net.minecraft.world.level.StructureManager;
 import net.phoenix.core.PhoenixCore;
 
 public class ConfluxPiece extends StructurePiece {
@@ -26,11 +25,11 @@ public class ConfluxPiece extends StructurePiece {
     public enum Kind {
 
         WATCHTOWER("watchtower", 4, 4, 3, 17),
-        
+
         COMPOUND("compound", 11, 11, 4, 11),
-        
+
         SHRINE("shrine", 8, 8, 3, 12),
-        
+
         HALL("hall", 8, 5, 3, 13);
 
         private final String id;
@@ -217,7 +216,7 @@ public class ConfluxPiece extends StructurePiece {
     }
 
     private void tower(Pen p) {
-        int door = (int) (seed & 3); 
+        int door = (int) (seed & 3);
         int ladderX = door == 0 ? -2 : door == 1 ? 2 : 0;
         int ladderZ = door == 2 ? -2 : door == 3 ? 2 : 0;
         Direction ladderFacing = door == 0 ? Direction.EAST : door == 1 ? Direction.WEST :
@@ -273,7 +272,7 @@ public class ConfluxPiece extends StructurePiece {
                 if (plaza || path) p.set(p.t.floor, dx, -1, dz);
 
                 if (ring == 10) {
-                    
+
                     int along = gate < 2 ? dz : dx;
                     boolean onGateWall = switch (gate) {
                         case 0 -> dx == 10;
@@ -287,7 +286,7 @@ public class ConfluxPiece extends StructurePiece {
                         if (gap && y <= 3) {
                             p.air(dx, y, dz);
                         } else if (!gap && y >= 3 && hash(dx, y, dz) % 5 == 0) {
-                            
+
                         } else {
                             p.set(hash(dx, y, dz) % 5 == 1 ? p.t.wallAlt : p.t.wall, dx, y, dz);
                         }
@@ -377,7 +376,7 @@ public class ConfluxPiece extends StructurePiece {
                 if (d <= 3.4) p.set(p.t.floor, dx, 0, dz);
             }
         }
-        
+
         for (int k = 0; k < 8; k++) {
             int px = (int) Math.round(6 * Math.cos(k * Math.PI / 4.0));
             int pz = (int) Math.round(6 * Math.sin(k * Math.PI / 4.0));
@@ -386,7 +385,7 @@ public class ConfluxPiece extends StructurePiece {
             for (int y = 0; y < height; y++) p.set(p.t.pillar, px, y, pz);
             if (!broken) p.set((k & 1) == 0 ? p.t.light : p.t.accent, px, height, pz);
         }
-        
+
         for (int y = 1; y <= 8; y++) p.set(p.t.pillar, 0, y, 0);
         p.set(p.t.accent, 0, 9, 0);
         p.set(p.t.light, 0, 10, 0);
@@ -423,20 +422,20 @@ public class ConfluxPiece extends StructurePiece {
                         else p.set(win ? p.t.window : (hash(dx, y, dz) % 7 == 0 ? p.t.wallAlt : p.t.wall), dx, y, dz);
                     }
                 }
-                
+
                 p.set(p.t.slab, dx, 6, dz);
                 if (abs(dz) <= 3 && abs(dx) <= 7) p.set(p.t.slab, dx, 7, dz);
                 if (abs(dz) <= 1 && abs(dx) <= 6) p.set(p.t.slab, dx, 8, dz);
             }
         }
-        
+
         BlockState furnace = Blocks.BLAST_FURNACE.defaultBlockState()
                 .setValue(net.minecraft.world.level.block.BlastFurnaceBlock.FACING, Direction.SOUTH);
         p.set(furnace, -3, 0, -4);
         p.set(furnace, -2, 0, -4);
         p.set(p.t.focus, 0, 0, -4);
         p.set(Blocks.ANVIL.defaultBlockState(), 2, 0, -4);
-        
+
         for (int y = 2; y <= 11; y++) p.set(p.t.pillar, -3, y, -5);
         p.set(Blocks.CAMPFIRE.defaultBlockState(), -3, 12, -5);
         p.set(p.t.hanging, 4, 5, 0);

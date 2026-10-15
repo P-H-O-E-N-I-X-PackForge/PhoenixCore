@@ -1,29 +1,26 @@
 package net.phoenix.core.integration.gregvaults.network;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultSortMode;
 
-import java.util.function.Supplier;
-
 public class CPacketVaultAction implements CustomPacketPayload {
+
     public static final CustomPacketPayload.Type<CPacketVaultAction> TYPE = new CustomPacketPayload.Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_vault_action"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketVaultAction> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketVaultAction.encode(msg, buf), CPacketVaultAction::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketVaultAction> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> CPacketVaultAction.encode(msg, buf), CPacketVaultAction::decode);
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public enum Type {
         SCROLL,
@@ -103,5 +100,5 @@ public class CPacketVaultAction implements CustomPacketPayload {
                 case ORGANIZE -> menu.organize();
             }
         });
-        }
+    }
 }

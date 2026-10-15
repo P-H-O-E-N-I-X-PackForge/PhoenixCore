@@ -7,7 +7,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -27,7 +26,8 @@ public class UpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context,
+                                @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         net.minecraft.world.level.Level level = context.level();
         tooltipComponents.add(Component.translatable(descriptionKey));
     }

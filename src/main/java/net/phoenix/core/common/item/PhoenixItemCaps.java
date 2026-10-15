@@ -5,8 +5,8 @@ import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -16,15 +16,11 @@ import net.phoenix.core.configs.PhoenixConfigs;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Item capabilities, which in 1.21 are registered up front instead of being provided by the item.
- */
 public final class PhoenixItemCaps {
 
     private static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister
             .create(Registries.DATA_COMPONENT_TYPE, PhoenixCore.MOD_ID);
 
-    /** What the chameleon spray can's paint tank holds. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SimpleFluidContent>> PAINT = COMPONENTS
             .register("paint_content", () -> DataComponentType.<SimpleFluidContent>builder()
                     .persistent(SimpleFluidContent.CODEC)

@@ -1,30 +1,29 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.ContinuumRegistry;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.common.RocketRefit;
 import net.phoenix.core.integration.continuum.common.RocketStats;
 import net.phoenix.core.integration.continuum.network.C2SRefitPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ContinuumRefitScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
-    // a wide, short design: it fits a small window at full size instead of being scaled down to nothing
     private static final int W = 448;
     private static final int H = 260;
     private static final String[] MODULES = { RocketStats.OVERDRIVE, RocketStats.REINFORCED_HULL,
@@ -77,7 +76,7 @@ public class ContinuumRefitScreen extends Screen {
         int y = (Math.round(height / scale) - H) / 2;
         g.fill(x, y, x + W, y + H, MapUi.PANEL_SOLID);
         g.renderOutline(x, y, W, H, MapUi.PANEL_LINE);
-        // the title strip
+
         g.fill(x + 1, y + 1, x + W - 1, y + 25, MapUi.CHROME);
         g.fill(x + 1, y + 25, x + W - 1, y + 26, MapUi.PANEL_LINE);
         g.drawString(font, "Rocket refit", x + 10, y + 9, MapUi.TITLE);
@@ -101,7 +100,6 @@ public class ContinuumRefitScreen extends Screen {
         int top = y + 33;
         int bottom = y + H - 34;
 
-        // ---- the rocket: sprite, wear and what the hull gives
         int lx = x + 10;
         int lw = 160;
         int lh = bottom - top;
@@ -120,7 +118,6 @@ public class ContinuumRefitScreen extends Screen {
         ey = effect(g, lx + 8, ey, "Wear", Math.round((1.0f - RocketStats.wearFactor(rocket)) * 100.0f));
         effect(g, lx + 8, ey, "Failure risk", Math.round((1.0f - RocketStats.failureFactor(rocket)) * 100.0f));
 
-        // the next hull
         int hy = top + lh - 46;
         g.fill(lx + 6, hy - 4, lx + lw - 6, hy - 3, MapUi.PANEL_LINE);
         if (tier >= RocketStats.MAX_TIER) {
@@ -133,7 +130,6 @@ public class ContinuumRefitScreen extends Screen {
             button(g, lx + 8, hy + 20, lw - 16, "Refit hull  (kits: " + have + ")", have > 0, "tier", mx, my);
         }
 
-        // ---- the modules, one card each
         int rx = lx + lw + 10;
         int rw = x + W - 10 - rx;
         g.fill(rx, top, rx + rw, top + lh, MapUi.CHROME);
@@ -151,7 +147,7 @@ public class ContinuumRefitScreen extends Screen {
             if (module != null) g.renderItem(new ItemStack(module), rx + 8, ty + 3);
             g.drawString(font, moduleName(upgrade), rx + 30, ty + 3, MapUi.TEXT);
             g.drawString(font, moduleEffect(upgrade), rx + 30, ty + 15, MapUi.DIM);
-            // one pip per level the hull allows, lit for those fitted
+
             int px = rx + 30 + font.width(moduleName(upgrade)) + 8;
             if (cap == 0) {
                 g.drawString(font, "locked", px, ty + 3, MapUi.BAD);
@@ -167,7 +163,6 @@ public class ContinuumRefitScreen extends Screen {
             ty += 28;
         }
 
-        // ---- repair
         int ry = top + lh - 26;
         g.fill(rx + 4, ry - 4, rx + rw - 4, ry - 3, MapUi.PANEL_LINE);
         Item repairKit = ContinuumRegistry.REPAIR_KIT.get();
@@ -181,7 +176,6 @@ public class ContinuumRefitScreen extends Screen {
         g.pose().popPose();
     }
 
-    /** One line of what the hull and modules give: a label, and the percentage in green. */
     private int effect(GuiGraphics g, int x, int y, String label, int percent) {
         g.drawString(font, label, x, y, MapUi.DIM);
         String value = percent == 0 ? "-" : "-" + percent + "%";

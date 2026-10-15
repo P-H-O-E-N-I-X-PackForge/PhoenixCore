@@ -1,35 +1,31 @@
 package net.phoenix.core.network.packet;
 
-
-
-import net.phoenix.core.util.StackNbt;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.data.item.PhoenixArmorItem;
-
-import java.util.function.Supplier;
+import net.phoenix.core.util.StackNbt;
 
 public class C2SToggleTeslaModePacket implements CustomPacketPayload {
+
     public static final Type<C2SToggleTeslaModePacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_toggle_tesla_mode_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SToggleTeslaModePacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SToggleTeslaModePacket.encode(msg, buf), C2SToggleTeslaModePacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SToggleTeslaModePacket> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> C2SToggleTeslaModePacket.encode(msg, buf), C2SToggleTeslaModePacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public C2SToggleTeslaModePacket() {}
 

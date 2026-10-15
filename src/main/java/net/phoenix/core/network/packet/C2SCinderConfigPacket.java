@@ -1,11 +1,5 @@
 package net.phoenix.core.network.packet;
 
-
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
@@ -15,27 +9,31 @@ import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class C2SCinderConfigPacket implements CustomPacketPayload {
+
     public static final Type<C2SCinderConfigPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_config_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderConfigPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderConfigPacket::encode, C2SCinderConfigPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderConfigPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SCinderConfigPacket::encode, C2SCinderConfigPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final InteractionHand hand;
     private final int[] sliceKeys;

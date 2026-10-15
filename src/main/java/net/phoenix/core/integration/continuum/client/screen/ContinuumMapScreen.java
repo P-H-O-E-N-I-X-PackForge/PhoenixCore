@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
@@ -36,7 +33,6 @@ import net.phoenix.core.integration.continuum.item.ContinuumRocketItem;
 import net.phoenix.core.integration.continuum.network.C2SCollectMissionPacket;
 import net.phoenix.core.integration.continuum.network.C2SLaunchMissionPacket;
 import net.phoenix.core.integration.continuum.network.C2SRequestStatePacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -60,6 +56,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ContinuumMapScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private enum Level {
         GALAXY,
@@ -445,7 +444,7 @@ public class ContinuumMapScreen extends Screen {
             }
             float angle = orbitAngle(b);
             float radius = orbitWorldRadius(b.orbitAu());
-            
+
             var window = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
             if (window != null) {
                 float progress = Math.max(0.0f, Math.min(1.0f, (ContinuumClientState.now() - window[0]) /
@@ -651,7 +650,7 @@ public class ContinuumMapScreen extends Screen {
             var cometWindow = b.transientInfo() == null ? null : ContinuumClientState.transientWindow(b.id());
             if (cometWindow != null) {
                 tag += "  [comet - leaves in " + MapUi.duration(cometWindow[1] - ContinuumClientState.now()) + "]";
-                
+
                 if (star != null) {
                     float dx = p[0] - star[0];
                     float dy = p[1] - star[1];
@@ -661,7 +660,8 @@ public class ContinuumMapScreen extends Screen {
                     GlowRenderer.Batch tail = GlowRenderer.batch(graphics);
                     for (int i = 0; i < 10; i++) {
                         tail.glow(p[0] + dx * i * (px + 4.0f) * 1.6f, p[1] + dy * i * (px + 4.0f) * 1.6f,
-                                (px + 8.0f) * (1.7f - i * 0.15f), i < 2 ? 0xe8f6ff : 0x7ab8ff, 0.55f * (1.0f - i / 11.0f));
+                                (px + 8.0f) * (1.7f - i * 0.15f), i < 2 ? 0xe8f6ff : 0x7ab8ff,
+                                0.55f * (1.0f - i / 11.0f));
                     }
                     tail.draw();
                 }
@@ -1228,8 +1228,9 @@ public class ContinuumMapScreen extends Screen {
 
         int rowHeight = 24;
         int w = 214;
-        
-        float s = Math.max(0.5f, Math.min(1.0f, Math.min((width * 0.42f) / w, (height * 0.45f) / (16 + 3 * rowHeight))));
+
+        float s = Math.max(0.5f,
+                Math.min(1.0f, Math.min((width * 0.42f) / w, (height * 0.45f) / (16 + 3 * rowHeight))));
         int fit = Math.max(1, (int) ((height * 0.5f / s - 16) / rowHeight));
         int rows = Math.min(Math.min(5, fit), list.size());
         int h = 16 + rows * rowHeight;
@@ -1281,7 +1282,7 @@ public class ContinuumMapScreen extends Screen {
                 case RESCUE -> name + "  (rescue)";
                 case STATION -> name + "  (station)";
             };
-            
+
             int statusW = font.width(status);
             label = font.plainSubstrByWidth(label, Math.max(20, w - 14 - statusW - 8));
             graphics.drawString(font, label, 7, ry + 2, TITLE);
@@ -1522,25 +1523,27 @@ public class ContinuumMapScreen extends Screen {
                 } else if (level != Level.GALAXY && MapUi.inside(mouseX, mouseY, archiveX - 58 - 82, 8, 76, 14)) {
                     ContinuumSounds.click();
                     orbitsPaused = !orbitsPaused;
-                } else if (MapUi.inside(mouseX, mouseY, (level != Level.GALAXY ? archiveX - 58 - 82 : archiveX - 58) - 58,
-                        8, 52, 14)) {
-                    ContinuumSounds.click();
-                    Minecraft.getInstance().setScreen(
-                            new net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen(this, "Continuum"));
-                } else if (level != Level.GALAXY && mouseX >= width - 62 && mouseX <= width - 10 && mouseY >= 8 &&
-                        mouseY <= 22) {
-                            ContinuumSounds.click();
-                            goBack();
-                        } else
-                    if (clickPlanner(mouseX, mouseY)) {
-                        ContinuumSounds.click();
-                    } else {
-                        Pick pick = pickAt(mouseX, mouseY);
-                        if (pick != null) {
-                            ContinuumSounds.click();
-                            open(pick);
-                        }
-                    }
+                } else
+                    if (MapUi.inside(mouseX, mouseY, (level != Level.GALAXY ? archiveX - 58 - 82 : archiveX - 58) - 58,
+                            8, 52, 14)) {
+                                ContinuumSounds.click();
+                                Minecraft.getInstance().setScreen(
+                                        new net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen(this, "Continuum"));
+                            } else
+                        if (level != Level.GALAXY && mouseX >= width - 62 && mouseX <= width - 10 && mouseY >= 8 &&
+                                mouseY <= 22) {
+                                    ContinuumSounds.click();
+                                    goBack();
+                                } else
+                            if (clickPlanner(mouseX, mouseY)) {
+                                ContinuumSounds.click();
+                            } else {
+                                Pick pick = pickAt(mouseX, mouseY);
+                                if (pick != null) {
+                                    ContinuumSounds.click();
+                                    open(pick);
+                                }
+                            }
             }
         }
         return true;
@@ -1585,7 +1588,7 @@ public class ContinuumMapScreen extends Screen {
             if (MapUi.inside(mouseX, mouseY, (int) row[2], (int) row[3], (int) row[4], (int) row[5])) {
                 UUID id = (UUID) row[0];
                 if (row.length > 6 && (boolean) row[6]) {
-                    
+
                     jumpToRescue((ResourceLocation) row[7]);
                 } else if ((boolean) row[1]) {
                     PacketDistributor.sendToServer(new C2SCollectMissionPacket(id));

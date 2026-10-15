@@ -5,9 +5,6 @@ import net.phoenix.core.PhoenixCore;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Material display names. GTCEu 1.21 has no name setter on the material builder, so they ride on lang entries.
- */
 public final class MaterialLang {
 
     private static final Map<String, String> NAMES = new LinkedHashMap<>();
@@ -68,7 +65,8 @@ public final class MaterialLang {
         put("cryo_ember_fluid", "§bCryo§f-§cEmber§f Fluid");
         put("phoenix_enriched_naquadah", "§6Phoenix Enriched Naquadah");
         put("phoenix_enriched_tritanium", "§cPhoenix Enriched Tritanium");
-        put("radioactive_and_heavy_metal_contaminated_naquadatite", "Radioactive and Heavy Metal Contaminated Naquadatite");
+        put("radioactive_and_heavy_metal_contaminated_naquadatite",
+                "Radioactive and Heavy Metal Contaminated Naquadatite");
         NAMES.forEach((id, name) -> PhoenixCore.PHOENIX_REGISTRATE.addRawLang("material.phoenixcore." + id, name));
     }
 }

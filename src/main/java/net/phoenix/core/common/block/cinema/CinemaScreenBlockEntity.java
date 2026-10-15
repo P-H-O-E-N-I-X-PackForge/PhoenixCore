@@ -1,8 +1,7 @@
 package net.phoenix.core.common.block.cinema;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -149,7 +148,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         tag.putString("Background", background.name());
         ListTag linesTag = new ListTag();
         for (Component line : lines) {
-            linesTag.add(StringTag.valueOf(Component.Serializer.toJson(line, net.phoenix.core.util.NbtRegistries.PROVIDER)));
+            linesTag.add(
+                    StringTag.valueOf(Component.Serializer.toJson(line, net.phoenix.core.util.NbtRegistries.PROVIDER)));
         }
         tag.put("Lines", linesTag);
     }
@@ -178,7 +178,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         if (tag.contains("Lines", Tag.TAG_LIST)) {
             ListTag linesTag = tag.getList("Lines", Tag.TAG_STRING);
             for (int i = 0; i < linesTag.size(); i++) {
-                Component parsed = Component.Serializer.fromJson(linesTag.getString(i), net.phoenix.core.util.NbtRegistries.PROVIDER);
+                Component parsed = Component.Serializer.fromJson(linesTag.getString(i),
+                        net.phoenix.core.util.NbtRegistries.PROVIDER);
                 lines.add(parsed != null ? parsed : Component.empty());
             }
         }

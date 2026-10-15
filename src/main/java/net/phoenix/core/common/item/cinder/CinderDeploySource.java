@@ -1,13 +1,12 @@
 package net.phoenix.core.common.item.cinder;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
+import net.phoenix.core.util.StackNbt;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import org.jetbrains.annotations.Nullable;

@@ -14,50 +14,53 @@ import net.minecraft.world.level.levelgen.synth.SimplexNoise;
 
 import java.util.List;
 
-/**
- * Underground biomes: the caves of each Conflux dimension are given a character of their own, three kinds per dimension.
- *
- * <p>
- * The cave carving itself is the terrain's. This pass reads the finished chunk, finds every cave floor and ceiling below the
- * surface, and asks a 3D noise which cavern, if any, that spot belongs to. Where there is one, the floor and ceiling are
- * re-skinned, the cavern's growth is scattered across them (mushrooms, moss, crystals, hanging lights), spires rise and
- * stalactites hang, giant fungi may stand, and now and then a flat floor is dug out into a pond of the cavern's liquid.
- * Everything stays inside the chunk, so no chunk has to know about its neighbours, and nothing here is a block entity.
- */
 public final class UndergroundBiomes {
 
     private static final int FLOOR_OF_THE_DEEP = 12;
     private static final int BELOW_SURFACE = 6;
-    /** Rock left between a carved cavern and the surface. */
+
     private static final int ROOF = 10;
-    /** A noise value above this is a chamber: about a tenth of the underground inside a cavern region. */
+
     private static final double CHAMBER_THRESHOLD = 0.42;
-    /** Two noises both this close to zero make a winding tunnel linking the chambers. */
+
     private static final double TUNNEL_WIDTH = 0.045;
     private static final int SHAFT_DEPTH = 70;
 
-    /** A block that is placed with a chance, and optionally only on certain floor blocks. */
     private record Decor(BlockState state, float chance, Block... onlyOn) {}
 
-    /** A column of one block: a stalagmite from the floor, or a stalactite from the ceiling. */
     private record Spire(BlockState block, int minLength, int maxLength, float chance) {}
 
-    /** A giant mushroom or fungus: a stalk with a domed cap. */
     private record Giant(BlockState stem, BlockState cap, BlockState glow, int minHeight, int maxHeight, int capRadius,
                          float chance) {}
 
-    private record Cavern(String id, int minY, int maxY, BlockState[] floor, BlockState[] ceiling, List<Decor> floorDecor,
+    private record Cavern(String id, int minY, int maxY, BlockState[] floor, BlockState[] ceiling,
+                          List<Decor> floorDecor,
                           List<Decor> ceilingDecor, List<Spire> spires, List<Spire> stalactites, Giant giant,
                           BlockState pond, float pondChance) {}
 
-    // ---------------------------------------------------------------- block states that carry properties
+    private static BlockState lichenUp() {
+        return Blocks.GLOW_LICHEN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.UP), true);
+    }
 
-    private static BlockState lichenUp() { return Blocks.GLOW_LICHEN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.UP), true); }
-    private static BlockState veinUp() { return Blocks.SCULK_VEIN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.UP), true); }
-    private static BlockState veinDown() { return Blocks.SCULK_VEIN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.DOWN), true); }
-    private static BlockState clusterDown() { return Blocks.AMETHYST_CLUSTER.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.DOWN); }
-    private static BlockState rodDown() { return Blocks.END_ROD.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.DOWN); }
-    private static BlockState hangingLantern(boolean soul) { return (soul ? Blocks.SOUL_LANTERN : Blocks.LANTERN).defaultBlockState().setValue(LanternBlock.HANGING, true); }
+    private static BlockState veinUp() {
+        return Blocks.SCULK_VEIN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.UP), true);
+    }
+
+    private static BlockState veinDown() {
+        return Blocks.SCULK_VEIN.defaultBlockState().setValue(MultifaceBlock.getFaceProperty(Direction.DOWN), true);
+    }
+
+    private static BlockState clusterDown() {
+        return Blocks.AMETHYST_CLUSTER.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.DOWN);
+    }
+
+    private static BlockState rodDown() {
+        return Blocks.END_ROD.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.DOWN);
+    }
+
+    private static BlockState hangingLantern(boolean soul) {
+        return (soul ? Blocks.SOUL_LANTERN : Blocks.LANTERN).defaultBlockState().setValue(LanternBlock.HANGING, true);
+    }
 
     private static BlockState s(Block block) {
         return block.defaultBlockState();
@@ -77,8 +80,6 @@ public final class UndergroundBiomes {
         return new Spire(block.defaultBlockState(), min, max, chance);
     }
 
-    // ---------------------------------------------------------------- the caverns
-
     private static List<Cavern> cavernsOf(String dimension) {
         return switch (dimension) {
             case "phoenix" -> List.of(
@@ -87,7 +88,8 @@ public final class UndergroundBiomes {
                                     Blocks.SMOOTH_BASALT),
                             mix(Blocks.BLACKSTONE, Blocks.BLACKSTONE, Blocks.BASALT),
                             List.of(), List.of(decor(s(Blocks.SHROOMLIGHT), 0.006f)),
-                            List.of(spire(Blocks.BASALT, 2, 5, 0.012f)), List.of(spire(Blocks.BLACKSTONE, 2, 6, 0.016f)),
+                            List.of(spire(Blocks.BASALT, 2, 5, 0.012f)),
+                            List.of(spire(Blocks.BLACKSTONE, 2, 6, 0.016f)),
                             null, s(Blocks.LAVA), 0.5f),
                     new Cavern("obsidian_hollow", -45, 60,
                             mix(Blocks.OBSIDIAN, Blocks.OBSIDIAN, Blocks.BLACKSTONE, Blocks.BLACKSTONE),
@@ -111,7 +113,8 @@ public final class UndergroundBiomes {
                             List.of(spire(Blocks.DEEPSLATE, 2, 4, 0.006f)), List.of(spire(Blocks.TUFF, 2, 5, 0.01f)),
                             null, null, 0f),
                     new Cavern("lush_hollow", -40, 55,
-                            mix(Blocks.MOSS_BLOCK, Blocks.MOSS_BLOCK, Blocks.MOSS_BLOCK, Blocks.CLAY, Blocks.ROOTED_DIRT),
+                            mix(Blocks.MOSS_BLOCK, Blocks.MOSS_BLOCK, Blocks.MOSS_BLOCK, Blocks.CLAY,
+                                    Blocks.ROOTED_DIRT),
                             mix(Blocks.MOSS_BLOCK, Blocks.MOSS_BLOCK, Blocks.DEEPSLATE),
                             List.of(decor(s(Blocks.MOSS_CARPET), 0.30f), decor(s(Blocks.FLOWERING_AZALEA), 0.015f)),
                             List.of(decor(s(Blocks.HANGING_ROOTS), 0.07f), decor(lichenUp(), 0.05f)),
@@ -127,9 +130,11 @@ public final class UndergroundBiomes {
                             null, 0f));
             case "void" -> List.of(
                     new Cavern("geode_cavern", -55, 50,
-                            mix(Blocks.CALCITE, Blocks.CALCITE, Blocks.AMETHYST_BLOCK, Blocks.SMOOTH_BASALT, Blocks.TUFF),
+                            mix(Blocks.CALCITE, Blocks.CALCITE, Blocks.AMETHYST_BLOCK, Blocks.SMOOTH_BASALT,
+                                    Blocks.TUFF),
                             mix(Blocks.CALCITE, Blocks.CALCITE, Blocks.SMOOTH_BASALT),
-                            List.of(decor(s(Blocks.AMETHYST_CLUSTER), 0.05f), decor(s(Blocks.SMALL_AMETHYST_BUD), 0.06f)),
+                            List.of(decor(s(Blocks.AMETHYST_CLUSTER), 0.05f),
+                                    decor(s(Blocks.SMALL_AMETHYST_BUD), 0.06f)),
                             List.of(decor(clusterDown(), 0.03f), decor(s(Blocks.SEA_LANTERN), 0.003f)),
                             List.of(spire(Blocks.AMETHYST_BLOCK, 2, 5, 0.01f)), List.of(), null, null, 0f),
                     new Cavern("chorus_grotto", -45, 55,
@@ -152,7 +157,8 @@ public final class UndergroundBiomes {
                             List.of(),
                             List.of(decor(s(Blocks.CHAIN), 0.02f), decor(s(Blocks.IRON_BARS), 0.02f),
                                     decor(hangingLantern(false), 0.006f)),
-                            List.of(spire(Blocks.OXIDIZED_COPPER, 1, 4, 0.01f)), List.of(), null, s(Blocks.WATER), 0.4f),
+                            List.of(spire(Blocks.OXIDIZED_COPPER, 1, 4, 0.01f)), List.of(), null, s(Blocks.WATER),
+                            0.4f),
                     new Cavern("bunker_tunnels", -45, 30,
                             mix(Blocks.SMOOTH_STONE, Blocks.SMOOTH_STONE, Blocks.STONE_BRICKS, Blocks.GRAY_CONCRETE),
                             mix(Blocks.GRAY_CONCRETE, Blocks.GRAY_CONCRETE, Blocks.STONE_BRICKS),
@@ -162,7 +168,8 @@ public final class UndergroundBiomes {
                             mix(Blocks.PACKED_ICE, Blocks.PACKED_ICE, Blocks.STONE, Blocks.STONE, Blocks.BLUE_ICE),
                             mix(Blocks.STONE, Blocks.PACKED_ICE),
                             List.of(), List.of(decor(s(Blocks.SEA_LANTERN), 0.003f)),
-                            List.of(spire(Blocks.BLUE_ICE, 1, 3, 0.008f)), List.of(spire(Blocks.PACKED_ICE, 2, 5, 0.012f)),
+                            List.of(spire(Blocks.BLUE_ICE, 1, 3, 0.008f)),
+                            List.of(spire(Blocks.PACKED_ICE, 2, 5, 0.012f)),
                             null, s(Blocks.WATER), 0.6f));
             case "sealed_b" -> List.of(
                     new Cavern("soul_cavern", -50, 40,
@@ -179,7 +186,8 @@ public final class UndergroundBiomes {
                                     decor(s(Blocks.WARPED_FUNGUS), 0.03f, Blocks.WARPED_NYLIUM),
                                     decor(s(Blocks.NETHER_SPROUTS), 0.12f, Blocks.WARPED_NYLIUM)),
                             List.of(decor(s(Blocks.SHROOMLIGHT), 0.008f)), List.of(), List.of(),
-                            new Giant(s(Blocks.WARPED_STEM), s(Blocks.WARPED_WART_BLOCK), s(Blocks.SHROOMLIGHT), 5, 10, 3,
+                            new Giant(s(Blocks.WARPED_STEM), s(Blocks.WARPED_WART_BLOCK), s(Blocks.SHROOMLIGHT), 5, 10,
+                                    3,
                                     0.008f),
                             null, 0f),
                     new Cavern("magma_vents", -55, 30,
@@ -193,13 +201,10 @@ public final class UndergroundBiomes {
         };
     }
 
-    // ---------------------------------------------------------------- applying them
-
     private static boolean solid(BlockState state) {
         return !state.isAir() && state.getFluidState().isEmpty() && !state.canBeReplaced();
     }
 
-    /** Whether a floor or ceiling block is plain rock, so a cavern re-skins stone and leaves ore and bedrock alone. */
     private static boolean rock(BlockState state) {
         return state.is(BlockTags.STONE_ORE_REPLACEABLES) || state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
     }
@@ -210,14 +215,13 @@ public final class UndergroundBiomes {
 
     private static Cavern cavernAt(List<Cavern> caverns, SimplexNoise noise, int x, int y, int z) {
         double n = noise.getValue(x * 0.012 + 21000.0, y * 0.03, z * 0.012 - 13000.0);
-        // a third of the underground has no cavern at all: plain stone caves between them
+
         if (n < -0.1) return null;
         int index = Math.min(caverns.size() - 1, (int) ((n + 0.1) / 1.1 * caverns.size()));
         Cavern cavern = caverns.get(Math.max(0, index));
         return y >= cavern.minY() && y <= cavern.maxY() ? cavern : null;
     }
 
-    /** Whether the underground at a point is hollowed out: a wide chamber, or a tunnel winding between them. */
     private static boolean hollow(SimplexNoise noise, int x, int y, int z) {
         if (noise.getValue(x * 0.017 + 5000.0, y * 0.032, z * 0.017 + 9000.0) > CHAMBER_THRESHOLD) return true;
         double first = noise.getValue(x * 0.011 - 4000.0, y * 0.016 + 77.0, z * 0.011 + 1500.0);
@@ -239,13 +243,12 @@ public final class UndergroundBiomes {
                 int surface = maxY - 2;
                 while (surface > minY && chunk.getBlockState(pos.set(x, surface, z)).isAir()) surface--;
 
-                // each cavern region is hollowed into chambers and linking tunnels of its own, under a thick roof
                 for (int y = surface - ROOF; y >= lowest + 2; y--) {
                     BlockState here = chunk.getBlockState(pos.set(x, y, z));
                     if (!solid(here) || here.is(Blocks.BEDROCK) || cavernAt(caverns, noise, x, y, z) == null) continue;
                     if (hollow(noise, x, y, z)) chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                 }
-                // and now and then a shaft opens from the surface down into them
+
                 if (surface > minY + 40 && noise.getValue(x * 0.04 + 333.0, 0.0, z * 0.04 - 777.0) > 0.88) {
                     for (int y = surface; y >= Math.max(lowest + 2, surface - SHAFT_DEPTH); y--) {
                         BlockState here = chunk.getBlockState(pos.set(x, y, z));
@@ -271,13 +274,15 @@ public final class UndergroundBiomes {
                     long h = Landforms.mix(seed ^ (y * 0x9E3779B97F4A7C15L), x, z);
 
                     if (floor && rock(below)) {
-                        chunk.setBlockState(pos.set(x, y - 1, z), cavern.floor()[(int) (roll(h, 0) * cavern.floor().length)],
+                        chunk.setBlockState(pos.set(x, y - 1, z),
+                                cavern.floor()[(int) (roll(h, 0) * cavern.floor().length)],
                                 false);
                         BlockState top = chunk.getBlockState(pos.set(x, y - 1, z));
                         decorate(chunk, pos, cavern.floorDecor(), top.getBlock(), x, y, z, roll(h, 1));
                         for (Spire sp : cavern.spires()) {
                             if (roll(h, 2) < sp.chance()) {
-                                int length = sp.minLength() + (int) (roll(h, 3) * (sp.maxLength() - sp.minLength() + 1));
+                                int length = sp.minLength() +
+                                        (int) (roll(h, 3) * (sp.maxLength() - sp.minLength() + 1));
                                 for (int k = 0; k < length; k++) {
                                     if (!chunk.getBlockState(pos.set(x, y + k, z)).isAir()) break;
                                     chunk.setBlockState(pos, sp.block(), false);
@@ -295,7 +300,8 @@ public final class UndergroundBiomes {
                         decorate(chunk, pos, cavern.ceilingDecor(), null, x, y, z, roll(h, 3));
                         for (Spire sp : cavern.stalactites()) {
                             if (roll(h, 0) < sp.chance()) {
-                                int length = sp.minLength() + (int) (roll(h, 2) * (sp.maxLength() - sp.minLength() + 1));
+                                int length = sp.minLength() +
+                                        (int) (roll(h, 2) * (sp.maxLength() - sp.minLength() + 1));
                                 for (int k = 0; k < length; k++) {
                                     if (!chunk.getBlockState(pos.set(x, y - k, z)).isAir()) break;
                                     chunk.setBlockState(pos, sp.block(), false);
@@ -326,13 +332,12 @@ public final class UndergroundBiomes {
         }
     }
 
-    /** A giant mushroom or fungus, kept inside the chunk: a stalk, and a domed cap with lights under it. */
     private static void giant(ChunkAccess chunk, Giant g, int minX, int minZ, int x, int y, int z, long h) {
         int cap = g.capRadius();
         if (x - cap < minX || x + cap > minX + 15 || z - cap < minZ || z + cap > minZ + 15) return;
         int height = g.minHeight() + (int) (roll(h, 3) * (g.maxHeight() - g.minHeight() + 1));
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        // room for the stalk; the cap is only laid where there is air, so a low ceiling just clips it
+
         for (int k = 0; k <= height; k++) {
             if (!chunk.getBlockState(pos.set(x, y + k, z)).isAir()) return;
         }
@@ -353,11 +358,6 @@ public final class UndergroundBiomes {
         }
     }
 
-    /**
-     * A pond in a cave floor. Noise-carved floors are never flat, so the spot is levelled first: high ground is cut away to
-     * the pond's level, a rim of the cavern's floor is laid round it, and the pond is filled flush with that rim, so the
-     * liquid is held in on every side. A few spots are tried, and the first that suits a pond-bearing cavern is used.
-     */
     private static void pond(ChunkAccess chunk, List<Cavern> caverns, SimplexNoise noise, long seed, int minX, int minZ,
                              int minY, int maxY, int lowest) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -381,7 +381,7 @@ public final class UndergroundBiomes {
                         !chunk.getBlockState(pos.set(x0, y + 2, z0)).isAir()) {
                     break;
                 }
-                // it must not be hanging over a pit: the ground three below has to be there all round
+
                 boolean sound = true;
                 for (int dx = -radius - 2; dx <= radius + 2 && sound; dx++) {
                     for (int dz = -radius - 2; dz <= radius + 2 && sound; dz++) {
@@ -398,7 +398,7 @@ public final class UndergroundBiomes {
                         if (d > radius + 2.0) continue;
                         int x = x0 + dx;
                         int z = z0 + dz;
-                        // cut the high ground down to the pond's level
+
                         for (int k = 0; k <= 2; k++) {
                             if (solid(chunk.getBlockState(pos.set(x, y + k, z)))) {
                                 chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
@@ -408,7 +408,7 @@ public final class UndergroundBiomes {
                             chunk.setBlockState(pos.set(x, y - 1, z), cavern.pond(), false);
                             chunk.setBlockState(pos.set(x, y - 2, z), cavern.pond(), false);
                         } else {
-                            // the rim, level with the surface of the pond
+
                             chunk.setBlockState(pos.set(x, y - 1, z), rim, false);
                         }
                     }

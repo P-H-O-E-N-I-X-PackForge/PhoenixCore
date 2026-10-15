@@ -1,7 +1,5 @@
 package net.phoenix.core.client.renderer.machine;
 
-
-import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -16,7 +14,7 @@ import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source.Bi
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

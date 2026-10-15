@@ -49,7 +49,8 @@ public final class ContinuumAmbience {
             }
         } else if (system != null) {
             if (system.hasHole()) {
-                add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.get().getMainEvent(), system.isQuasar() ? 0.42f : 0.3f);
+                add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.get().getMainEvent(),
+                        system.isQuasar() ? 0.42f : 0.3f);
                 add(targets, PhoenixSounds.VOID_ETHEREAL_WIND.get().getMainEvent(), 0.14f);
             } else {
                 add(targets, PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.get().getMainEvent(), 0.14f);

@@ -1,7 +1,5 @@
 package net.phoenix.core.client.cinder;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.client.Minecraft;
@@ -11,9 +9,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.item.cinder.CinderDeploySource;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinderCommitPacket;
 
 import org.jetbrains.annotations.Nullable;

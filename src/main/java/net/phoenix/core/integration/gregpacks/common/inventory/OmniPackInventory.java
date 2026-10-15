@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.util.StackNbt;
 
 public class OmniPackInventory extends SimpleContainer {
 

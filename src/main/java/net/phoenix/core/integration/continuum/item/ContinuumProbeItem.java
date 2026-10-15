@@ -7,8 +7,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 
 public class ContinuumProbeItem extends Item {
@@ -18,7 +16,8 @@ public class ContinuumProbeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
         Level level = context.level();
         tooltip.add(Component.literal("Carried by extraction missions to a surveyed body.")
                 .withStyle(ChatFormatting.GRAY));

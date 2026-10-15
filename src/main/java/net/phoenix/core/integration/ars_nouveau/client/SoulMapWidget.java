@@ -1,13 +1,12 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.api.gui.BorderDrawable;
 import net.phoenix.core.api.gui.SolidColorDrawable;
+import net.phoenix.core.util.StackNbt;
 
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widget.Widget;

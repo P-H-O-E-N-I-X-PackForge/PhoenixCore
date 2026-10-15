@@ -1,13 +1,11 @@
 package net.phoenix.core.client.renderer.cinema;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinemaScreenConfigPacket;
 
 import org.lwjgl.glfw.GLFW;
@@ -16,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CinemaTypingScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final BlockPos pos;
     private final int lineIndex;

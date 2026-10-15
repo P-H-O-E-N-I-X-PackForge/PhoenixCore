@@ -316,11 +316,13 @@ final class MissionPlannerPanel {
             }
             if (passing != null) {
                 long left = passing[1] - ContinuumClientState.now();
-                ty = row(g, font, "Leaves in", MapUi.duration(left) + (tripMs > left ? "  (gone before you arrive)" : ""),
+                ty = row(g, font, "Leaves in",
+                        MapUi.duration(left) + (tripMs > left ? "  (gone before you arrive)" : ""),
                         x + 10, ty, tripMs > left ? MapUi.BAD : MapUi.WARN);
             }
             ty = row(g, font, "Rocket hull", RocketStats.tierName(RocketStats.tier(rocket)) +
-                    (hullNeeded > 1 && cfg.rocketTierGating ? "  (needs " + RocketStats.tierName(hullNeeded) + ")" : ""),
+                    (hullNeeded > 1 && cfg.rocketTierGating ? "  (needs " + RocketStats.tierName(hullNeeded) + ")" :
+                            ""),
                     x + 10, ty, needsHull ? MapUi.BAD : MapUi.TEXT);
             if (needsHull) {
                 ty = wrapped(g, font, "This hull is too light for " + body.name() +
@@ -408,7 +410,8 @@ final class MissionPlannerPanel {
                 tripMs <= stranded.distressUntil() - now);
         boolean cometOk = body.transientInfo() == null ||
                 (passing != null && tripMs <= passing[1] - ContinuumClientState.now());
-        boolean launchable = hasRocket && !refused && !needsShield && !needsHull && cometOk && enoughProbes && enoughKits && inTime &&
+        boolean launchable = hasRocket && !refused && !needsShield && !needsHull && cometOk && enoughProbes &&
+                enoughKits && inTime &&
                 available(mode, canSurvey, canExtract, canDeploy, canHaul, canRepair, canRescue, canStation);
         launchRect = button(g, font, x + 10, y + H - 26, 150, 18, "Launch", launchable, false, mx, my);
         cancelRect = button(g, font, x + 170, y + H - 26, 152, 18, "Cancel", true, false, mx, my);

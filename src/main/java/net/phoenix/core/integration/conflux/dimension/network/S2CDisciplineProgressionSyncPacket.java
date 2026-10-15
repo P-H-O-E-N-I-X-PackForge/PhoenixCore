@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.conflux.dimension.client.ClientDisciplineProgressionCache;
 
-
 public class S2CDisciplineProgressionSyncPacket implements CustomPacketPayload {
 
     public static final Type<S2CDisciplineProgressionSyncPacket> TYPE = new Type<>(
@@ -39,6 +38,6 @@ public class S2CDisciplineProgressionSyncPacket implements CustomPacketPayload {
     }
 
     public static void send(ServerPlayer player, CompoundTag data) {
-PacketDistributor.sendToPlayer(player, new S2CDisciplineProgressionSyncPacket(data));
+        PacketDistributor.sendToPlayer(player, new S2CDisciplineProgressionSyncPacket(data));
     }
 }

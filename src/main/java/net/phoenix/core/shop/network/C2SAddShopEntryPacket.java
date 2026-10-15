@@ -1,19 +1,15 @@
 package net.phoenix.core.shop.network;
 
-
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.network.PhoenixNetwork;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
 import net.phoenix.core.shop.WorldShopData;
@@ -26,18 +22,18 @@ import net.phoenix.core.shop.reward.ThreadShopReward;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public class C2SAddShopEntryPacket implements CustomPacketPayload {
+
     public static final Type<C2SAddShopEntryPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_add_shop_entry_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SAddShopEntryPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SAddShopEntryPacket.encode(msg, buf), C2SAddShopEntryPacket::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SAddShopEntryPacket> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> C2SAddShopEntryPacket.encode(msg, buf), C2SAddShopEntryPacket::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final String name;
     private final ItemStack icon;
@@ -83,7 +79,8 @@ public class C2SAddShopEntryPacket implements CustomPacketPayload {
         String category = buf.readUtf();
         int count = buf.readVarInt();
         List<RewardSpec> specs = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) specs.add(new RewardSpec(buf.readUtf(), buf.readUtf(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf)));
+        for (int i = 0; i < count; i++)
+            specs.add(new RewardSpec(buf.readUtf(), buf.readUtf(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf)));
         UUID editId = buf.readBoolean() ? buf.readUUID() : null;
         return new C2SAddShopEntryPacket(name, icon, cost, specs, category, editId);
     }

@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContinuumArchiveScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final Screen parent;
     private final List<Object[]> rows = new ArrayList<>();

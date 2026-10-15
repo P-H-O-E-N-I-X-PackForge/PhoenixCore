@@ -198,7 +198,7 @@ public class ProvinceVeinTemplates {
 
         int shallowCursor = 0;
         int deepCursor = 0;
-        
+
         java.util.List<String> byTop = new java.util.ArrayList<>(regions);
         byTop.sort((a, b) -> Integer.compare(TEMPLATES.get(b).maxY(), TEMPLATES.get(a).maxY()));
         java.util.List<String> byBottom = new java.util.ArrayList<>(regions);

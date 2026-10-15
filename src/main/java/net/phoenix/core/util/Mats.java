@@ -9,9 +9,6 @@ import net.phoenix.core.PhoenixCore;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Looks materials up by bare name, as GTCEu 1.20 did. Materials now live under their mod's namespace.
- */
 public final class Mats {
 
     private Mats() {}

@@ -15,21 +15,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CAttuneResultPacket;
 import net.phoenix.core.network.packet.S2CAttuneStartPacket;
 
 import brachy.modularui.api.drawable.Text;
-import brachy.modularui.factory.PosGuiData;
-import brachy.modularui.screen.UISettings;
-import brachy.modularui.widget.ParentWidget;
-import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.ItemDrawable;
+import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.RichTooltip;
+import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.TextWidget;
+import brachy.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -151,7 +150,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         }
         chart = picked;
         runner = player.getUUID();
-        
+
         runStart = level.getGameTime() + AttuneDifficulty.LEAD_MS / AcousticChart.MS_PER_TICK;
         judged = new boolean[picked.beats().size()];
         perfects = 0;
@@ -207,7 +206,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
 
         if (passed) {
             attuneState = ATTUNED;
-            
+
             if (runDifficulty.level() >= tuneLevel) attuneGrade = grade;
             tuneLevel = Math.max(tuneLevel, runDifficulty.level());
             machine.reset();
@@ -215,7 +214,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
             step = 0;
             strikes = 0;
         } else {
-            
+
             attuneState = tuneLevel > 0 ? ATTUNED : DORMANT;
             cooldownUntil = level.getGameTime() + RETRY_COOLDOWN_TICKS;
         }
@@ -224,7 +223,8 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         if (runner != null && level.getServer() != null) {
             ServerPlayer player = level.getServer().getPlayerList().getPlayer(runner);
             if (player != null) {
-                PacketDistributor.sendToPlayer(player, new S2CAttuneResultPacket(getBlockPos(), passed, grade, perfects, goods, total));
+                PacketDistributor.sendToPlayer(player,
+                        new S2CAttuneResultPacket(getBlockPos(), passed, grade, perfects, goods, total));
             }
         }
         chart = null;
@@ -256,7 +256,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         if (attuneState != ATTUNED) return;
         machine.load(state, step);
         AcousticPuzzle puzzle = getPuzzle();
-        
+
         if (puzzle != null && getPuzzleState() == AcousticStateMachine.State.LISTENING &&
                 !machine.wouldAccept(puzzle, sound) && strikes < tuneLevel - 1) {
             strikes++;

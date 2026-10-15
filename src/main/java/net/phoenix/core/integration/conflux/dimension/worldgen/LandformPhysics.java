@@ -20,7 +20,6 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.dimension.physics.PhysicsHook;
 import net.phoenix.core.integration.conflux.dimension.physics.PhysicsImpulse;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CPhysicsImpulsePacket;
 
 import java.util.Collections;
@@ -29,20 +28,6 @@ import java.util.Set;
 import java.util.function.IntBinaryOperator;
 import java.util.function.Predicate;
 
-/**
- * What the landforms do to whoever stands in them. Every landform that has a physical character carries it with it, worked
- * out from the same seed that built it, so the physics always sits exactly where the terrain is:
- *
- * <ul>
- * <li>Active volcanoes, the cooling towers and the canyon ribs breathe updrafts.
- * <li>Floating islands, geodes, impact craters and cenotes weaken gravity (and so make the fall safe).
- * <li>Fungus caps bounce, geysers erupt on a cycle, polished basalt is slick.
- * <li>The pit-mine haul road and the overpass decks are conveyors.
- * </ul>
- *
- * Only landforms near a player are looked at, and each is handled once a tick however many players are close. Mobs and
- * items are pushed on the server; a player is sent the nudge and applies it to their own motion.
- */
 public final class LandformPhysics {
 
     private static final int RANGE_MARGIN = 40;
@@ -82,15 +67,14 @@ public final class LandformPhysics {
         }
     }
 
-    // ---------------------------------------------------------------- shared
-
     private static boolean affected(Entity e) {
         if (e.isSpectator() || e.isPassenger() || PhysicsHook.exempt(e)) return false;
         if (e instanceof Player p && p.getAbilities().flying) return false;
         return e instanceof LivingEntity || e instanceof ItemEntity;
     }
 
-    private static void each(ServerLevel level, AABB box, Predicate<Entity> test, java.util.function.Consumer<Entity> action) {
+    private static void each(ServerLevel level, AABB box, Predicate<Entity> test,
+                             java.util.function.Consumer<Entity> action) {
         for (Entity e : level.getEntitiesOfClass(Entity.class, box, LandformPhysics::affected)) {
             if (test.test(e)) action.accept(e);
         }
@@ -105,7 +89,7 @@ public final class LandformPhysics {
             e.hurtMarked = true;
         }
         if (impulse.resetFall() && e instanceof LivingEntity living) {
-            // leaving an updraft or a weak-gravity pocket high up must not end in a fall
+
             slowFall(living);
         }
     }
@@ -117,7 +101,6 @@ public final class LandformPhysics {
         }
     }
 
-    /** Weak gravity: Slow Falling for the living (which also makes the way down safe), a lighter pull for items. */
     private static void floaty(Entity e) {
         e.fallDistance = 0.0f;
         if (e instanceof LivingEntity living) {
@@ -145,8 +128,6 @@ public final class LandformPhysics {
     private static AABB box(double cx, double cz, double reach, double y0, double y1) {
         return new AABB(cx - reach, y0, cz - reach, cx + reach, y1, cz + reach);
     }
-
-    // ---------------------------------------------------------------- phoenix: thermals over an active volcano
 
     private static void volcano(ServerLevel level, Landforms.Instance v, long time) {
         if (v.state() != Landforms.ACTIVE || v.variant() == Landforms.DOME) return;
@@ -181,8 +162,6 @@ public final class LandformPhysics {
         each(level, area, inside, e -> send(e, PhysicsImpulse.lift(0.06, 0.38)));
     }
 
-    // ---------------------------------------------------------------- void: floating islands, geodes, craters
-
     private static void skyIslands(ServerLevel level, Landforms.Instance v) {
         for (Landforms.Pillar p : v.pillars()) {
             double reach = p.radius() + 5.0;
@@ -209,13 +188,10 @@ public final class LandformPhysics {
         }, LandformPhysics::floaty);
     }
 
-    /** A pocket of weak gravity: an impact crater, or the shaft of a cenote (a slow and safe way down). */
     private static void well(ServerLevel level, Landforms.Instance v, double radius, double y0, double y1) {
         each(level, box(v.cx(), v.cz(), radius, y0, y1), e -> !e.onGround() && horizontal(e, v.cx(), v.cz()) < radius,
                 LandformPhysics::floaty);
     }
-
-    // ---------------------------------------------------------------- sculk: bouncy fungus caps, canyon thermals
 
     private static void fungus(ServerLevel level, Landforms.Instance v) {
         for (Landforms.Pillar p : v.pillars()) {
@@ -252,16 +228,15 @@ public final class LandformPhysics {
         }, e -> send(e, PhysicsImpulse.lift(0.05, 0.3)));
     }
 
-    // ---------------------------------------------------------------- sealed A: haul road, steam lifts, walkways
-
     private static void pitMine(ServerLevel level, Landforms.Instance v) {
         AABB area = box(v.cx(), v.cz(), v.reach(), v.baseY() - v.craterDepth() - 3, v.baseY() + 3);
         each(level, area, e -> {
             double d = horizontal(e, v.cx(), v.cz());
-            return d < v.craterRadius() && d > 4.0 && standingOn(level, e, Blocks.POLISHED_BLACKSTONE, Blocks.POLISHED_BLACKSTONE_SLAB,
-                    Blocks.YELLOW_CONCRETE, Blocks.WHITE_CONCRETE);
+            return d < v.craterRadius() && d > 4.0 &&
+                    standingOn(level, e, Blocks.POLISHED_BLACKSTONE, Blocks.POLISHED_BLACKSTONE_SLAB,
+                            Blocks.YELLOW_CONCRETE, Blocks.WHITE_CONCRETE);
         }, e -> {
-            // along the road toward the floor: the way the road winds is the direction of increasing angle
+
             double angle = Math.atan2(e.getZ() - v.cz(), e.getX() - v.cx());
             send(e, PhysicsImpulse.push(-Math.sin(angle) * 0.05, Math.cos(angle) * 0.05, 0.28));
         });
@@ -295,8 +270,6 @@ public final class LandformPhysics {
         }, e -> send(e, PhysicsImpulse.push(cos * sign * 0.045, sin * sign * 0.045, 0.27)));
     }
 
-    // ---------------------------------------------------------------- sealed B: slick basalt, geysers
-
     private static void columns(ServerLevel level, Landforms.Instance v) {
         AABB area = box(v.cx(), v.cz(), v.reach(), v.baseY() - 2, v.baseY() + v.height() + 6);
         each(level, area, e -> standingOn(level, e, Blocks.POLISHED_BASALT), e -> send(e, PhysicsImpulse.slide(1.3)));
@@ -313,7 +286,7 @@ public final class LandformPhysics {
             long phase = Math.floorMod(time + Landforms.mix(v.seed(), p.x(), p.z()), (long) GEYSER_PERIOD);
 
             if (phase >= GEYSER_PERIOD - 30 && phase % 4 == 0) {
-                // it gurgles before it blows
+
                 level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP, p.x() + 0.5, top + 0.2, p.z() + 0.5, 4, 0.4, 0.3,
                         0.4, 0.1);
             }

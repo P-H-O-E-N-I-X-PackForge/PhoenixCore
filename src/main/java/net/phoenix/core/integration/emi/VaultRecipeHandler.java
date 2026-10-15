@@ -1,11 +1,10 @@
 package net.phoenix.core.integration.emi;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 
 import dev.emi.emi.api.recipe.EmiPlayerInventory;

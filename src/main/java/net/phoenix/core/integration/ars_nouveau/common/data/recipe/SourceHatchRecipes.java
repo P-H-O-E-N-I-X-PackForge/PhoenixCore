@@ -1,19 +1,15 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.recipe;
 
-
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.common.machine.PhoenixMachines;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.VN;
 import static com.hollingsworth.arsnouveau.setup.registry.BlockRegistry.SOURCE_JAR;

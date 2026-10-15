@@ -1,14 +1,12 @@
 package net.phoenix.core.datagen;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.registry.registrate.builder.SoundEntryBuilder;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 

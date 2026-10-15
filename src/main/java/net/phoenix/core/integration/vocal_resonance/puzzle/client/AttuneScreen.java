@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle.client;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,9 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.puzzle.AcousticChart;
 import net.phoenix.core.integration.vocal_resonance.puzzle.AttuneDifficulty;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SAttunePressPacket;
 
 import org.lwjgl.glfw.GLFW;
@@ -24,6 +22,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class AttuneScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int[] KEYS = { GLFW.GLFW_KEY_D, GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_J, GLFW.GLFW_KEY_K,
             GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_L, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_SEMICOLON };
@@ -41,7 +42,7 @@ public class AttuneScreen extends Screen {
     private final AttuneDifficulty difficulty;
     private final List<Integer> laneNotes;
     private final List<AcousticChart.Beat> beats;
-    
+
     private final byte[] judged;
     private final float[] laneFlash;
     private final boolean[] held;
@@ -111,7 +112,7 @@ public class AttuneScreen extends Screen {
         }
         for (int lane = 0; lane < laneNotes.size() && lane < KEYS.length; lane++) {
             if (key == KEYS[lane]) {
-                
+
                 if (!held[lane] && !resultIn) press(lane);
                 held[lane] = true;
                 return true;
@@ -148,7 +149,7 @@ public class AttuneScreen extends Screen {
         }
         int color = LANE_COLORS[lane % LANE_COLORS.length];
         if (best < 0 || bestDelta > difficulty.goodMs()) {
-            
+
             bursts.add(new Burst(lane, Util.getMillis(), 0x66FFFFFF, false));
             return;
         }
@@ -177,7 +178,7 @@ public class AttuneScreen extends Screen {
 
     private static void playNote(int midi) {
         if (midi < 0) return;
-        
+
         float pitch = (float) Math.pow(2.0, (midi - 66) / 12.0);
         pitch = Math.max(0.5f, Math.min(2.0f, pitch));
         Minecraft.getInstance().getSoundManager()
@@ -255,7 +256,8 @@ public class AttuneScreen extends Screen {
             g.pose().scale(4.0f, 4.0f, 1.0f);
             g.drawCenteredString(font, String.valueOf(n), 0, 0, 0xFFFFE066);
             g.pose().popPose();
-            g.drawCenteredString(font, difficulty.label() + " - get ready", width / 2, height / 2 + 14, difficulty.color());
+            g.drawCenteredString(font, difficulty.label() + " - get ready", width / 2, height / 2 + 14,
+                    difficulty.color());
         }
 
         long since = Util.getMillis() - judgementAt;

@@ -1,7 +1,5 @@
 package net.phoenix.core.client.renderer.cinema.cutscene;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,6 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.MusicSettings;
 import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.SoundSettings;
@@ -26,7 +25,6 @@ import net.phoenix.core.client.renderer.cinema.cutscene.CutsceneDefinition.TextS
 import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.Choice;
 import net.phoenix.core.client.renderer.cinema.cutscene.CutscenePage.CutsceneImage;
 import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackground;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCutsceneActionPacket;
 import net.phoenix.core.network.packet.C2SCutsceneRequestPacket;
 
@@ -42,6 +40,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CutsceneScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final float PAGE_FADE_OUT = 0.4f;
     private static final float LETTER_FADE_IN = 0.15f;
@@ -423,7 +424,8 @@ public class CutsceneScreen extends Screen {
 
         graphics.setColor(alpha, alpha, alpha, 1f);
         InventoryScreen.renderEntityInInventory(graphics, (float) Math.round(x), (float) Math.round(y),
-                (float) Math.round(image.scaleOr(50f)), new org.joml.Vector3f(), new Quaternionf().rotateZ((float) Math.PI),
+                (float) Math.round(image.scaleOr(50f)), new org.joml.Vector3f(),
+                new Quaternionf().rotateZ((float) Math.PI),
                 null, entity);
         graphics.setColor(1f, 1f, 1f, 1f);
 

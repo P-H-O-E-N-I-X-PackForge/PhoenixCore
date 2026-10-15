@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class SoulCondition extends RecipeCondition<SoulCondition> {
 
-    public static final MapCodec<SoulCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> RecipeCondition.isReverse(instance)
+    public static final MapCodec<SoulCondition> CODEC = RecordCodecBuilder
+            .mapCodec(instance -> RecipeCondition.isReverse(instance)
                     .and(Codec.FLOAT.fieldOf("minSoul").forGetter(SoulCondition::getMinSoul))
                     .apply(instance, SoulCondition::new));
 
@@ -60,5 +61,5 @@ public class SoulCondition extends RecipeCondition<SoulCondition> {
         return TYPE.get();
     }
 
-        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<SoulCondition>> TYPE;
+    public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<SoulCondition>> TYPE;
 }

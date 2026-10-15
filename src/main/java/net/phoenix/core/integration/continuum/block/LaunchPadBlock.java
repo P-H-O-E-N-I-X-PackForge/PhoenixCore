@@ -2,7 +2,6 @@ package net.phoenix.core.integration.continuum.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -11,7 +10,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.network.S2COpenMapPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 public class LaunchPadBlock extends Block {
 
@@ -21,7 +19,7 @@ public class LaunchPadBlock extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
-                                                BlockHitResult hit) {
+                                               BlockHitResult hit) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new S2COpenMapPacket(pos));
         }

@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.ae2;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
@@ -30,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.integration.ae2.utils.TagMatcher;
+import net.phoenix.core.util.StackNbt;
 
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEFluidKey;

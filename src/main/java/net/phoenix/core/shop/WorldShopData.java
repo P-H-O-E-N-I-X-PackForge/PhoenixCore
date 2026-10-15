@@ -17,7 +17,8 @@ public class WorldShopData extends SavedData {
 
     public static WorldShopData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldShopData::new, (tag, provider) -> WorldShopData.load(tag), null), ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldShopData::new,
+                        (tag, provider) -> WorldShopData.load(tag), null), ID);
     }
 
     public List<ShopEntry> getEntries() {

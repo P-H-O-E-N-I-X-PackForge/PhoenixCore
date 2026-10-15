@@ -1,15 +1,12 @@
 package net.phoenix.core.integration.astral;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.materials.AstralMaterials;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
@@ -74,7 +71,7 @@ public final class AstralRecipes {
                         .inputItems(circuits, 2)
                         .inputItems(input ? ELECTRIC_PUMP_IV : ELECTRIC_PUMP_LuV, 1)
                         .inputFluids(AstralMaterials.SKEIN.getFluid(144 * (tier - IV + 1)));
-                
+
                 if (top) builder.inputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(288));
                 builder.outputItems((input ? in : out).asStack())
                         .duration(300 + 100 * (tier - IV)).EUt(VA[tier])

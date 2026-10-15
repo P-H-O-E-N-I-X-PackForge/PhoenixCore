@@ -19,7 +19,8 @@ import java.util.Locale;
 public class ItemStackTooltipMixin {
 
     @Inject(method = "getTooltipLines", at = @At("RETURN"))
-    private void phoenix$addFullCountToTooltip(Player player, TooltipFlag isAdvanced,
+    private void phoenix$addFullCountToTooltip(net.minecraft.world.item.Item.TooltipContext context, Player player,
+                                               TooltipFlag isAdvanced,
                                                CallbackInfoReturnable<List<Component>> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         int count = stack.getCount();

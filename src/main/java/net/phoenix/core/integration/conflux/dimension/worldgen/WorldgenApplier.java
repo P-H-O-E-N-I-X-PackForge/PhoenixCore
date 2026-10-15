@@ -201,7 +201,6 @@ public class WorldgenApplier {
         @Nullable
         String biomeIdAt(int x, int z);
 
-        /** The block the ground of this column is made of when nothing has been built on it; null if unknown. */
         @Nullable
         default Block groundBlockAt(int x, int z) {
             return null;
@@ -353,12 +352,6 @@ public class WorldgenApplier {
         placeGroundCover(level, profile, biomes, random, minX, minZ, probe, false);
     }
 
-    /**
-     * The first free block above the natural ground of a column, or null if the top of the column is not natural ground. A
-     * tree raises the heightmap, so measuring from it puts the next tree on the last one's canopy: this ignores leaves,
-     * and then insists that what is underneath is what the ground here is made of, which rules out canopies, trunks,
-     * structures and landform rock alike.
-     */
     @Nullable
     private static BlockPos groundPos(WorldGenLevel level, @Nullable BiomeLookup biomes, int x, int z) {
         int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
@@ -370,7 +363,6 @@ public class WorldgenApplier {
         return pos;
     }
 
-    /** Whether there is a tree growing over this spot already: leaves or logs in the way of a new trunk. */
     private static boolean underTree(WorldGenLevel level, BlockPos base) {
         for (int dy = 0; dy <= 3; dy++) {
             net.minecraft.world.level.block.state.BlockState s = level.getBlockState(base.above(dy));
@@ -411,13 +403,13 @@ public class WorldgenApplier {
 
     private enum Shape {
         ROUND,
-        
+
         CONE,
-        
+
         SPIRE,
-        
+
         UMBRELLA,
-        
+
         STUMP
     }
 
@@ -557,7 +549,7 @@ public class WorldgenApplier {
         boolean hasCanopy = !canopy.isAir();
         switch (TREE_SHAPES.getOrDefault(tree.treeType, Shape.ROUND)) {
             case STUMP -> {
-                
+
                 int branches = 1 + random.nextInt(2);
                 for (int b = 0; b < branches && height > 2; b++) {
                     BlockPos stub = base.above(1 + random.nextInt(height - 1))

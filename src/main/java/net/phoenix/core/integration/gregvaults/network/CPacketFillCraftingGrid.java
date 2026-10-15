@@ -1,11 +1,8 @@
 package net.phoenix.core.integration.gregvaults.network;
 
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -13,22 +10,21 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.neoforged.neoforge.items.ItemStackHandler;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
 
-import java.util.function.Supplier;
-
 public class CPacketFillCraftingGrid implements CustomPacketPayload {
+
     public static final Type<CPacketFillCraftingGrid> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_fill_crafting_grid"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketFillCraftingGrid> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketFillCraftingGrid.encode(msg, buf), CPacketFillCraftingGrid::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketFillCraftingGrid> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> CPacketFillCraftingGrid.encode(msg, buf), CPacketFillCraftingGrid::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final ResourceLocation recipeId;
     private final ItemStack[] template;
@@ -61,7 +57,7 @@ public class CPacketFillCraftingGrid implements CustomPacketPayload {
             Ingredient[] grid = resolveGrid(packet, player);
             fillCraftingGrid(menu, vaultHandler, grid, player);
         });
-        }
+    }
 
     private static Ingredient[] resolveGrid(CPacketFillCraftingGrid packet, ServerPlayer player) {
         Ingredient[] grid = new Ingredient[9];

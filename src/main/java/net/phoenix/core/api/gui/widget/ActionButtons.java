@@ -1,8 +1,7 @@
 package net.phoenix.core.api.gui.widget;
 
-
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.DynamicDrawable;
@@ -10,7 +9,6 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widgets.ButtonWidget;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class ActionButtons {
@@ -29,7 +27,8 @@ public final class ActionButtons {
     }
 
     public static ButtonWidget<?> payload(PanelSyncManager syncManager, String actionKey, ServerAction onServer,
-                                          brachy.modularui.api.IPacketWriter<? super RegistryFriendlyByteBuf> clientPayload, IDrawable overlay,
+                                          brachy.modularui.api.IPacketWriter<? super RegistryFriendlyByteBuf> clientPayload,
+                                          IDrawable overlay,
                                           RichTooltip tooltip) {
         syncManager.registerServerSyncedAction(actionKey, onServer::run);
         return new ButtonWidget<>()

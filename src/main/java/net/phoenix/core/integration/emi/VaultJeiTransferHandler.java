@@ -1,15 +1,12 @@
 package net.phoenix.core.integration.emi;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.network.CPacketFillCraftingGrid;
-import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -62,7 +59,8 @@ public class VaultJeiTransferHandler<T extends AbstractVaultMenu>
                     .ifPresent(stack -> template[idx] = stack.copy());
         }
 
-        ResourceLocation recipeId = recipe instanceof net.minecraft.world.item.crafting.RecipeHolder<?> h ? h.id() : null;
+        ResourceLocation recipeId = recipe instanceof net.minecraft.world.item.crafting.RecipeHolder<?> h ? h.id() :
+                null;
         PacketDistributor.sendToServer(new CPacketFillCraftingGrid(recipeId, template));
         return null;
     }

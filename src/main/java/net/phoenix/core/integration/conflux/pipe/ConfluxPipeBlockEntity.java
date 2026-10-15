@@ -1,24 +1,22 @@
 package net.phoenix.core.integration.conflux.pipe;
 
-
-import net.minecraft.core.HolderLookup;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, ConfluxPipeData>
-        implements ConfluxDataCapability.Holder {
+                                    implements ConfluxDataCapability.Holder {
 
     public static final long THROUGHPUT = 64L;
     public static final long BUFFER = 256L;

@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.astral.item;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.core.BlockPos;
@@ -20,6 +18,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.puzzle.AstralSurveyItem;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +34,9 @@ public class AstralWandItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.client.AstralCodexScreen.open(); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.integration.astral.client.AstralCodexScreen.open();
+            }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

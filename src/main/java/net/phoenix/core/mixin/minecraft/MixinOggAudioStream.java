@@ -11,10 +11,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * Taps the decoded samples of Ogg sound streams so the vocal vibrancy analyzers can see live audio. 1.21 hands decoded
- * floats to a consumer, so they are repacked into 16-bit PCM before analysis.
- */
 @Mixin(JOrbisAudioStream.class)
 public abstract class MixinOggAudioStream {
 

@@ -31,7 +31,11 @@ public final class ContinuumTransients extends SavedData {
     private final Random random = new Random();
 
     public static ContinuumTransients get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTransients::new, (tag, provider) -> ContinuumTransients.load(tag), null), "phoenixcore_continuum_transients");
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(
+                        new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTransients::new,
+                                (tag, provider) -> ContinuumTransients.load(tag), null),
+                        "phoenixcore_continuum_transients");
     }
 
     public boolean active(ResourceLocation body, long now) {
@@ -114,7 +118,7 @@ public final class ContinuumTransients extends SavedData {
         Set<UUID> logged = new HashSet<>();
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
-            
+
             if (!teams.isEngaged(team)) continue;
             player.sendSystemMessage(Component.literal(text).withStyle(colour));
             if (logged.add(team)) teams.log(team, MissionLog.Kind.COMET, body.id(), text);

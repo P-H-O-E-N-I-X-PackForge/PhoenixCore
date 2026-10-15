@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.gregpacks.common.fluid;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.phoenix.core.util.StackNbt;
 
 public class FluidNBTHelper {
 

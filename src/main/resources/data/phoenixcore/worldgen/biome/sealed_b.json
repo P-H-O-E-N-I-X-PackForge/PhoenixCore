@@ -16,7 +16,7 @@
       "offset": 2.0
     }
   },
-  "carvers": [],
+  "carvers": {},
   "features": [[], [], [], [], [], [], [], [], [], [], []],
   "spawners": {
     "monster": [

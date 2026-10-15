@@ -1,17 +1,13 @@
 package net.phoenix.core;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 
-import net.phoenix.core.api.capability.PhoenixRecipeCapabilities;
-import net.phoenix.core.common.data.PhoenixCovers;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.common.data.PhoenixFissionMachineRecipes;
 import net.phoenix.core.common.data.PhoenixMachineRecipes;
 import net.phoenix.core.common.data.PhoenixToolRecipes;
-import net.phoenix.core.common.data.materials.PhoenixElements;
 import net.phoenix.core.common.data.recipe.generated.*;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.SourceHatchRecipes;
 import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksModuleBaseRecipes;
@@ -21,8 +17,6 @@ import net.phoenix.core.integration.gregvaults.common.recipe.GTVaultsRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaHatchRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaMultiAmpHatchRecipes;
 import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.WirelessChargerRecipes;
-
-import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 @GTAddon(PhoenixCore.MOD_ID)

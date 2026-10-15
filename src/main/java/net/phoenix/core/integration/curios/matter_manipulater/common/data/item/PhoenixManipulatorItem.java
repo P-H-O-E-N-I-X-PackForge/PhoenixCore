@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.matter_manipulater.common.data.item;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
@@ -24,6 +22,7 @@ import net.minecraft.world.level.LevelReader;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixManipulatorMode;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixPlacementEngine;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,7 +125,8 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         PhoenixManipulatorMode mode = getMode(stack);
         BlockPos start = getStartPos(stack);

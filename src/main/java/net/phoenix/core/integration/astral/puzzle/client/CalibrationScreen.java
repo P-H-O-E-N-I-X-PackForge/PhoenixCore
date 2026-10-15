@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.astral.puzzle.client;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,8 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCalibratePacket;
 
 import java.util.ArrayList;
@@ -18,6 +16,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class CalibrationScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final BlockPos pos;
     private final StarChart.Kind kind;

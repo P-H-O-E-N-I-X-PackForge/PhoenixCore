@@ -46,7 +46,7 @@ final class StarMap {
     void background(GuiGraphics g) {
         g.fill(left, top, left + size, top + size, 0xFF07061A);
         g.renderOutline(left, top, size, size, 0xFF3A2F7A);
-        
+
         for (int i = 0; i < StarChart.GRID; i++) {
             g.fill(px(i), top + 4, px(i) + 1, top + size - 4, 0x14FFFFFF);
             g.fill(left + 4, py(i), left + size - 4, py(i) + 1, 0x14FFFFFF);
@@ -70,7 +70,7 @@ final class StarMap {
             g.fill(x, y, x + 2, y + 2, color);
         }
         if (arrow) {
-            
+
             for (int k = 0; k < 3; k++) {
                 float t = 0.80f - k * 0.07f;
                 int x = x1 + Math.round(dx * t);

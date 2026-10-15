@@ -1,34 +1,31 @@
 package net.phoenix.core.network.packet;
 
-
-
-import net.phoenix.core.util.StackNbt;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.data.item.PhoenixArmorItem;
+import net.phoenix.core.util.StackNbt;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class UpdateWingSettingsPacket implements CustomPacketPayload {
+
     public static final Type<UpdateWingSettingsPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "update_wing_settings_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateWingSettingsPacket> STREAM_CODEC = StreamCodec.ofMember(UpdateWingSettingsPacket::encode, UpdateWingSettingsPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateWingSettingsPacket> STREAM_CODEC = StreamCodec
+            .ofMember(UpdateWingSettingsPacket::encode, UpdateWingSettingsPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private static final Set<String> VALID_MODES = Set.of(
             "basic",
@@ -101,5 +98,5 @@ public class UpdateWingSettingsPacket implements CustomPacketPayload {
 
             player.inventoryMenu.sendAllDataToRemote();
         });
-        }
+    }
 }

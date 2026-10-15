@@ -1,13 +1,7 @@
 package net.phoenix.core.mixin.emi;
 
-
 import net.minecraft.core.registries.BuiltInRegistries;
-import com.gregtechceu.gtceu.api.item.ComponentItem;
-
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
@@ -47,7 +41,7 @@ public abstract class EmiApiMixin {
         if (stack instanceof EmiStack emiStack) {
             Fluid fluid = Fluids.EMPTY;
             if (emiStack.getKey() instanceof net.minecraft.world.item.Item) {
-                // covers buckets and GregTech fluid containers alike, through the fluid handler capability
+
                 var contained = net.neoforged.neoforge.fluids.FluidUtil.getFluidContained(emiStack.getItemStack());
                 if (contained.isPresent()) fluid = contained.get().getFluid();
             }

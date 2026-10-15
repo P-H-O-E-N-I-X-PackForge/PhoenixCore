@@ -1,7 +1,5 @@
 package net.phoenix.core.client.worldfx.builtin;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
@@ -10,6 +8,7 @@ import net.phoenix.core.client.worldfx.WorldFXShaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;

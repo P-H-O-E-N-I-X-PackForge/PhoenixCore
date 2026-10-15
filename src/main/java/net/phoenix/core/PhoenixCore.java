@@ -1,48 +1,34 @@
 package net.phoenix.core;
 
-
-
-
-
-
-
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.fml.ModContainer;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.neoforge.common.NeoForge;
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
-import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
-import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
-import com.gregtechceu.gtceu.api.data.worldgen.IWorldGenLayer;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
-import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.MapIngredientTypeManager;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
 
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.IContainerFactory;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
 import net.phoenix.core.client.PhoenixClient;
@@ -120,7 +106,6 @@ public class PhoenixCore {
             .register();
 
     public PhoenixCore(IEventBus modEventBus, ModContainer container) {
-
         PhoenixConfigs.init();
         CrystalRoseIndicatorGenerator.register(modEventBus);
         VaultDatagen.init();
@@ -147,8 +132,6 @@ public class PhoenixCore {
         modEventBus.addListener(this::addCreative);
         modEventBus.addListener(this::modifyMaterials);
 
-        // GregTech builds its content from its own constructor and so do we, in the same order
-        // elements, recipe capabilities and covers come first, as GregTech's own constructor orders them
         net.phoenix.core.common.data.materials.PhoenixElements.init();
         net.phoenix.core.api.capability.PhoenixRecipeCapabilities.init();
         net.phoenix.core.common.data.PhoenixCovers.init();
@@ -176,8 +159,10 @@ public class PhoenixCore {
 
         ConfluxRegistry.register(modEventBus);
         modEventBus.addListener(ConfluxRegistry::registerCapabilities);
-        modEventBus.addListener(net.phoenix.core.integration.gregpacks.common.fluid.GregPacksCapabilityHandler::register);
-        modEventBus.addListener(net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability::register);
+        modEventBus
+                .addListener(net.phoenix.core.integration.gregpacks.common.fluid.GregPacksCapabilityHandler::register);
+        modEventBus.addListener(
+                net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability::register);
         net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.ConfluxGenerators.register(modEventBus);
@@ -186,7 +171,7 @@ public class PhoenixCore {
         net.phoenix.core.common.item.PhoenixItemCaps.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
-        NeoForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
+        NeoForge.EVENT_BUS.register(SourceHatchJarTransferTick.class);
         NeoForge.EVENT_BUS
                 .register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
         NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
@@ -236,7 +221,8 @@ public class PhoenixCore {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU,
             MOD_ID);
 
-    public static final DeferredHolder<MenuType<?>, MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register("source_hatch",
+    public static final DeferredHolder<MenuType<?>, MenuType<SourceHatchMenu>> SOURCE_HATCH_MENU = MENUS.register(
+            "source_hatch",
             () -> IMenuTypeExtension.create((IContainerFactory<SourceHatchMenu>) SourceHatchMenu::fromNetwork));
 
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeBuilderMenu>> RECIPE_BUILDER_MENU = MENUS.register(

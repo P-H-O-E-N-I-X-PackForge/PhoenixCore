@@ -1,9 +1,5 @@
 package net.phoenix.core.common.data.item;
 
-
-
-import net.minecraft.world.item.Item;
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -34,6 +30,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -42,6 +39,7 @@ import net.phoenix.core.api.gui.TeslaBackground;
 import net.phoenix.core.integration.phoenix_tesla_network.client.renderer.machine.TeslaHighlightRenderer;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.singleblock.electric.TeslaWirelessBatteryBufferMachine;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
+import net.phoenix.core.util.StackNbt;
 import net.phoenix.core.utils.TeamUtils;
 
 import brachy.modularui.api.widget.IWidget;
@@ -56,7 +54,6 @@ import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.TextWidget;
 import brachy.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -121,7 +118,8 @@ public class TeslaBinderItem extends ComponentItem
                         player.sendSystemMessage(
                                 Component.literal("Danger: High Risk of Voiding. Connection terminated.")
                                         .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.5f,
+                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE.value(),
+                                SoundSource.PLAYERS, 0.5f,
                                 1.2f);
                         return InteractionResult.FAIL;
                     }
@@ -254,7 +252,8 @@ public class TeslaBinderItem extends ComponentItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         if (StackNbt.hasTag(stack) && Objects.requireNonNull(StackNbt.getTag(stack)).contains("OwnerName")) {
             int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);

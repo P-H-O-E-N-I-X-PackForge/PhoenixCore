@@ -36,7 +36,10 @@ public class CreativeDataAccessSavedData extends SavedData {
     }
 
     public static CreativeDataAccessSavedData getOrCreate(ServerLevel serverLevel) {
-        return serverLevel.getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(CreativeDataAccessSavedData::new, (tag, provider) -> new CreativeDataAccessSavedData(tag), null), DATA_NAME);
+        return serverLevel.getDataStorage().computeIfAbsent(
+                new net.minecraft.world.level.saveddata.SavedData.Factory<>(CreativeDataAccessSavedData::new,
+                        (tag, provider) -> new CreativeDataAccessSavedData(tag), null),
+                DATA_NAME);
     }
 
     @Override

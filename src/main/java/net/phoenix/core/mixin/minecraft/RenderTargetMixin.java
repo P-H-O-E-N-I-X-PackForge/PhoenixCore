@@ -28,13 +28,17 @@ public abstract class RenderTargetMixin {
             this.stencilEnabled = true;
             try {
                 this.resize(this.viewWidth, this.viewHeight, Minecraft.ON_OSX);
-            } catch (IllegalStateException e) {
+            } catch (Throwable e) {
                 if (e.getMessage() != null && e.getMessage().contains("Cannot get config value")) {
                     this.stencilEnabled = false;
                     System.out.println("[PhoenixCore] Bypassed early stencil config access check successfully.");
-                } else {
-                    throw e;
-                }
+                } else if (e.getClass().getName().contains("NoClassDefFoundError") ||
+                        e.getClass().getName().contains("UnsatisfiedLinkError")) {
+
+                            this.stencilEnabled = false;
+                        } else {
+                            throw e;
+                        }
             }
         }
     }

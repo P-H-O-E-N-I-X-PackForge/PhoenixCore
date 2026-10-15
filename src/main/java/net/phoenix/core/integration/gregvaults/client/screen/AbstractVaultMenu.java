@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 
@@ -16,6 +14,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -399,7 +398,8 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
                 .map(net.minecraft.world.item.crafting.RecipeHolder::value)
                 .orElse(null);
         craftingResult.setItem(0,
-                recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingGrid.asCraftInput(), level.registryAccess()));
+                recipe == null ? ItemStack.EMPTY :
+                        recipe.assemble(craftingGrid.asCraftInput(), level.registryAccess()));
     }
 
     public void snapshotGridIngredients() {

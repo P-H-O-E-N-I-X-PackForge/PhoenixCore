@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.astral.puzzle;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,9 +14,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.phoenix.core.integration.astral.AstralItems;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,7 +94,8 @@ public class AstralSurveyItem extends Item {
     }
 
     public static int favouredPhase(ItemStack stack) {
-        return StackNbt.hasTag(stack) ? AstralCalibratedMachine.favouredPhaseOf(StackNbt.getTag(stack).getLong(SEED)) : 0;
+        return StackNbt.hasTag(stack) ? AstralCalibratedMachine.favouredPhaseOf(StackNbt.getTag(stack).getLong(SEED)) :
+                0;
     }
 
     public static boolean complete(ItemStack stack) {
@@ -134,13 +133,16 @@ public class AstralSurveyItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide && isSurvey(stack)) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient.openSurvey(stack); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient.openSurvey(stack);
+            }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         if (!isSurvey(stack)) return;
         tooltip.add(Component.literal((kind(stack) == StarChart.Kind.CHAIN ? "Spinning Wheel" : "Loom") + " at " +

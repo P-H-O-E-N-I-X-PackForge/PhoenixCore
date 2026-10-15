@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.recipe_helper;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

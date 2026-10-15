@@ -21,7 +21,7 @@ public final class StarChart {
     private final Kind kind;
     private final int[] starX;
     private final int[] starY;
-    
+
     private final List<int[]> lines;
 
     private StarChart(Kind kind, int[] starX, int[] starY, List<int[]> lines) {

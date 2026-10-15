@@ -2,7 +2,6 @@ package net.phoenix.core.integration.vocal_resonance;
 
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +22,9 @@ public class RadioStreamManager {
 
         int radius = controller.getFinalRange();
 
-        PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) controller.getLevel(), null, controller.getBlockPos().getX(), controller.getBlockPos().getY(), controller.getBlockPos().getZ(), radius, new S2CPlayStreamPacket(url, controller.getBlockPos(), radius, controller.getResonancePower()));
+        PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) controller.getLevel(), null,
+                controller.getBlockPos().getX(), controller.getBlockPos().getY(), controller.getBlockPos().getZ(),
+                radius, new S2CPlayStreamPacket(url, controller.getBlockPos(), radius, controller.getResonancePower()));
 
         String label = isYoutube(url) ? "YT Audio" : shortenUrl(url);
         controller.setStreamTitle("§eResolving: §f" + label);

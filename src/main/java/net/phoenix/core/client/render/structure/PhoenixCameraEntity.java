@@ -15,7 +15,6 @@ public final class PhoenixCameraEntity extends Entity {
 
     @Override
     public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
-        // the camera sits exactly on the entity, so there is no eye offset
         return net.minecraft.world.entity.EntityDimensions.fixed(0.1f, 0.1f).withEyeHeight(0f);
     }
 

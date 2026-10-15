@@ -92,7 +92,10 @@ public final class SmallStructures {
         if (level.ensureCanWrite(chestPos)) {
             level.setBlock(chestPos, Blocks.CHEST.defaultBlockState(), 3);
             if (level.getBlockEntity(chestPos) instanceof RandomizableContainerBlockEntity chestEntity) {
-                chestEntity.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, PhoenixCore.id("chests/ethereal_spawn")), chestPos.asLong());
+                chestEntity.setLootTable(
+                        net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+                                PhoenixCore.id("chests/ethereal_spawn")),
+                        chestPos.asLong());
             }
         }
     }

@@ -52,7 +52,7 @@ final class MapUi {
             BUTTON_LINE = mix(PANEL_LINE, bg, 0.45f);
             CHROME = (BUTTON_OFF & 0x00FFFFFF) | 0xAA000000;
         } catch (RuntimeException | LinkageError ignored) {
-            
+
         }
     }
 
@@ -63,7 +63,7 @@ final class MapUi {
     private static int lightened(int rgb, float minLuminance) {
         float lum = luminance(rgb);
         if (lum >= minLuminance) return rgb;
-        
+
         float t = Math.min(1.0f, (minLuminance - lum) / Math.max(0.001f, 1.0f - lum));
         return mix(rgb, 0xFFFFFF, t);
     }

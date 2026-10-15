@@ -1,9 +1,5 @@
 package net.phoenix.core.shop.client;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,10 +11,10 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
@@ -39,6 +35,9 @@ import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class PhoenixShopScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final String[] REWARD_TYPES = { ItemShopReward.TYPE, CommandShopReward.TYPE,
             ResearchUnlockShopReward.TYPE, ThreadShopReward.TYPE };

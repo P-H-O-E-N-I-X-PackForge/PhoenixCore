@@ -3,7 +3,6 @@ package net.phoenix.core.common.data;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import net.minecraft.core.Holder;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.IOCoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.SimpleCoverRenderer;
@@ -12,7 +11,7 @@ import com.gregtechceu.gtceu.common.cover.FluidRegulatorCover;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
 import com.gregtechceu.gtceu.common.cover.RobotArmCover;
 
-import net.phoenix.core.PhoenixCore;
+import net.minecraft.core.Holder;
 import net.phoenix.core.common.cover.PhoenixCoverSolarPanel;
 
 import java.util.Arrays;
@@ -69,8 +68,8 @@ public class PhoenixCovers {
 
     @SuppressWarnings("unchecked")
     private static Holder<CoverDefinition>[] registerPhoenixTiered(String id,
-                                                                  CoverDefinition.TieredCoverBehaviourProvider behaviorCreator,
-                                                                  int... tiers) {
+                                                                   CoverDefinition.TieredCoverBehaviourProvider behaviorCreator,
+                                                                   int... tiers) {
         return Arrays.stream(tiers).mapToObj(tier -> {
             var name = id + "." + GTValues.VN[tier].toLowerCase(Locale.ROOT);
             return (Holder<CoverDefinition>) REGISTRATE.cover(name,

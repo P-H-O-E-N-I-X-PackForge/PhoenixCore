@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregpacks.common;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -11,9 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackInventory;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;

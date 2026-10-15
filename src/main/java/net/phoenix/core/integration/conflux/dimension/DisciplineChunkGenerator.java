@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -47,10 +47,11 @@ import java.util.concurrent.Executor;
 
 public class DisciplineChunkGenerator extends ChunkGenerator {
 
-    public static final MapCodec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
-            Codec.STRING.fieldOf("discipline_id").forGetter(gen -> gen.disciplineId),
-            Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed))
+    public static final MapCodec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+            .group(
+                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
+                    Codec.STRING.fieldOf("discipline_id").forGetter(gen -> gen.disciplineId),
+                    Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed))
             .apply(instance, instance.stable(DisciplineChunkGenerator::new)));
 
     private final TerrainProfile terrainProfile;
@@ -63,11 +64,10 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer = new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
 
-    /** Layers of ragged bedrock at the bottom of the world, on top of the solid floor. */
     private static final int BEDROCK_LAYERS = 5;
-    /** Caves this close to the floor hold lava. */
+
     private static final int DEEP_LAVA_TOP = 9;
-    /** Stone is deepslate below DEEPSLATE_FULL, and a ragged mix of the two up to DEEPSLATE_TOP. */
+
     private static final int DEEPSLATE_FULL = 0;
     private static final int DEEPSLATE_TOP = 8;
 
@@ -100,7 +100,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     private static final double BIOME_WARP_FREQUENCY = 0.004;
     private static final double BIOME_WARP_STRENGTH = 70.0;
     private static final double BIOME_BLEND_BAND = 0.14;
-    
+
     private static final double ACCENT_FREQUENCY = 0.03;
     private static final double ACCENT_THRESHOLD = 0.55;
     private volatile SimplexNoise biomeRegionNoise;
@@ -142,7 +142,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private static final double PRIMARY_BIOME_BIAS = 0.65;
 
-    private record BiomePick(WorldgenProfile.BiomeDefinition best, WorldgenProfile.BiomeDefinition second, int bestIndex,
+    private record BiomePick(WorldgenProfile.BiomeDefinition best, WorldgenProfile.BiomeDefinition second,
+                             int bestIndex,
                              double margin) {}
 
     private static BiomePick pickBiome(List<WorldgenProfile.BiomeDefinition> biomes, String primaryBiomeId,
@@ -399,7 +400,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         }
     }
 
-    /** Applies the physics of the landforms near the players of this level: updrafts, low gravity, conveyors. */
     public void tickLandformPhysics(net.minecraft.server.level.ServerLevel level) {
         if (level.players().isEmpty() || !landforms.enabled()) return;
         TerrainProfile profile = resolveTerrainProfile(level.getChunkSource().randomState());
@@ -515,7 +515,9 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
                     pos.set(x, y, z);
                     BlockState current = chunk.getBlockState(pos);
-                    if (!current.is(ProvinceVeinTemplates.STONE_TAG) && !current.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) continue;
+                    if (!current.is(ProvinceVeinTemplates.STONE_TAG) &&
+                            !current.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES))
+                        continue;
 
                     int cellX = Math.floorDiv(x, CLUMP_CELL);
                     int cellY = Math.floorDiv(y, CLUMP_CELL);
@@ -563,23 +565,25 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private GardenTheme gardenTheme() {
         return switch (disciplineId) {
-            
+
             case "phoenix" -> new GardenTheme(Blocks.BASALT.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState(),
                     Blocks.DEAD_BUSH.defaultBlockState(), Blocks.CRIMSON_ROOTS.defaultBlockState(),
                     Blocks.MAGMA_BLOCK.defaultBlockState(), 40, SHAPE_STREAK, 1.1, 0);
-            
+
             case "sculk" -> new GardenTheme(Blocks.SCULK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
                     Blocks.MOSS_CARPET.defaultBlockState(), Blocks.FLOWERING_AZALEA.defaultBlockState(),
                     Blocks.VERDANT_FROGLIGHT.defaultBlockState(), 60, SHAPE_RING, 1.0, 0);
-            
-            case "void" -> new GardenTheme(Blocks.END_STONE.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState(),
+
+            case "void" -> new GardenTheme(Blocks.END_STONE.defaultBlockState(),
+                    Blocks.PURPUR_BLOCK.defaultBlockState(),
                     Blocks.CHORUS_FLOWER.defaultBlockState(), Blocks.CHORUS_PLANT.defaultBlockState(),
                     Blocks.AMETHYST_BLOCK.defaultBlockState(), 25, SHAPE_CLUMPS, 0.8, 3);
-            
-            case "sealed_a" -> new GardenTheme(Blocks.PODZOL.defaultBlockState(), Blocks.ROOTED_DIRT.defaultBlockState(),
+
+            case "sealed_a" -> new GardenTheme(Blocks.PODZOL.defaultBlockState(),
+                    Blocks.ROOTED_DIRT.defaultBlockState(),
                     Blocks.CORNFLOWER.defaultBlockState(), Blocks.ALLIUM.defaultBlockState(),
                     Blocks.LANTERN.defaultBlockState(), 70, SHAPE_ROWS, 0.9, 1);
-            
+
             case "sealed_b" -> new GardenTheme(Blocks.WARPED_NYLIUM.defaultBlockState(),
                     Blocks.NETHERRACK.defaultBlockState(), Blocks.WARPED_ROOTS.defaultBlockState(),
                     Blocks.NETHER_SPROUTS.defaultBlockState(), Blocks.SHROOMLIGHT.defaultBlockState(), 45,
@@ -626,7 +630,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     double dz = z - gz[g];
                     double d;
                     if (theme.shape() == SHAPE_STREAK) {
-                        
+
                         double u = dx * Math.cos(gAngle[g]) + dz * Math.sin(gAngle[g]);
                         double v = -dx * Math.sin(gAngle[g]) + dz * Math.cos(gAngle[g]);
                         d = Math.hypot(u / 1.7, v / 0.55);
@@ -748,8 +752,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         RandomSource cellRandom = new XoroshiroRandomSource(
                 seed ^ ((long) cellX * 341873128712L) ^ ((long) cellZ * 132897987541L) ^ 0x50484F454E4958L);
 
-        // the four cells around the world origin always hold a vein, so there is ore within a few hundred blocks of where
-        // anyone starts, however the dice fall
         boolean nearOrigin = cellX >= -1 && cellX <= 0 && cellZ >= -1 && cellZ <= 0;
         float roll = cellRandom.nextFloat();
         if (!nearOrigin && roll >= PROVINCE_VEIN_CHANCE) return null;
@@ -820,20 +822,19 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     boolean solid = profile.sampler().sample(x, y, z) > 0;
                     double roll = ((positionHash(seed ^ 0xDEE95L, x, y, z) >>> 24) & 0xFFFFFF) / (double) 0x1000000;
 
-                    // the floor of the world: solid bedrock at the very bottom, ragged for four layers above it
                     if (y == minY || (solid && y < minY + BEDROCK_LAYERS && roll < (minY + BEDROCK_LAYERS - y) /
                             (double) BEDROCK_LAYERS)) {
                         chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState(), false);
                         continue;
                     }
                     if (!solid) {
-                        // a cave that reaches the deep floods with lava, as in the overworld
+
                         if (y <= minY + DEEP_LAVA_TOP) {
                             chunk.setBlockState(pos, Blocks.LAVA.defaultBlockState(), false);
                         }
                         continue;
                     }
-                    // the deep layer: stone gives way to deepslate through a ragged band, as in the overworld
+
                     boolean deepslate = y < DEEPSLATE_FULL || (y < DEEPSLATE_TOP &&
                             roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
                     chunk.setBlockState(pos, (deepslate ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState(), false);

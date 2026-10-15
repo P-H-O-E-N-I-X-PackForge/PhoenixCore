@@ -1,9 +1,5 @@
 package net.phoenix.core.client.gui.cinder;
 
-
-
-import com.mojang.blaze3d.vertex.BufferUploader;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,17 +12,18 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderAtlasUpgrades;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinderAtlasSetActiveLoadoutPacket;
 import net.phoenix.core.network.packet.C2SCinderAtlasSetActiveSlotPacket;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -37,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CinderAtlasRadialScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int RADIUS = 90;
     private static final int INNER_RADIUS = 30;

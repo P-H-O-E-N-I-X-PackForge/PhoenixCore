@@ -1,8 +1,7 @@
 package net.phoenix.core.integration.emi;
 
-
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -74,13 +73,16 @@ public final class ContinuumEmi {
         });
     }
 
-    // ---- text that wraps. EMI panels are narrow, so every line is fitted to the panel and the panel grows to hold it.
-
     private static final int PANEL_WIDTH = 176;
     private static final int TEXT_WIDTH = PANEL_WIDTH - 12;
     private static final int LINE = 10;
 
-    private enum Tone { TITLE, DIM, TEXT, WARN }
+    private enum Tone {
+        TITLE,
+        DIM,
+        TEXT,
+        WARN
+    }
 
     private record Line(Component text, Tone tone, boolean shadow) {}
 
@@ -105,14 +107,12 @@ public final class ContinuumEmi {
         return font == null ? List.of(text.getVisualOrderText()) : font.split(text, TEXT_WIDTH);
     }
 
-    /** How tall these lines are once wrapped. */
     private static int measure(List<Line> lines) {
         int total = 0;
         for (Line line : lines) total += wrap(line.text()).size() * LINE + 1;
         return total;
     }
 
-    /** Draws the lines, wrapped to the panel, from y; returns the y below the last one. */
     private static int draw(WidgetHolder widgets, List<Line> lines, int y) {
         Palette p = palette();
         for (Line line : lines) {
@@ -149,7 +149,8 @@ public final class ContinuumEmi {
         }
 
         private BodyRecipe(ContinuumBody body, List<Line> head) {
-            super(BODIES, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()),
+            super(BODIES,
+                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()),
                     PANEL_WIDTH, 8 + measure(head) + 6 + (((body.yields().size() + COLUMNS - 1) / COLUMNS) * 18) + 6);
             this.body = body;
             this.head = head;
@@ -212,7 +213,8 @@ public final class ContinuumEmi {
         }
 
         private HullRecipe(int tier, List<Line> head, List<Line> tail) {
-            super(REFIT, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier), PANEL_WIDTH,
+            super(REFIT, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier),
+                    PANEL_WIDTH,
                     5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.tier = tier;
             this.head = head;
@@ -247,7 +249,9 @@ public final class ContinuumEmi {
         }
 
         private ModuleRecipe(String upgrade, List<Line> head, List<Line> tail) {
-            super(REFIT, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade), PANEL_WIDTH,
+            super(REFIT,
+                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade),
+                    PANEL_WIDTH,
                     5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.upgrade = upgrade;
             this.head = head;
@@ -265,7 +269,6 @@ public final class ContinuumEmi {
             return List.of(title("Fit " + (module == null ? upgrade : module.getDescription().getString())));
         }
 
-        /** How many of the module each hull takes: a header, then one line per hull, instead of one long line. */
         private static List<Line> tailOf(String upgrade) {
             List<Line> lines = new java.util.ArrayList<>();
             lines.add(dim("Most you can fit, by hull:"));

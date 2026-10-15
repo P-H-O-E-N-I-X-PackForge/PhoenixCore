@@ -1,19 +1,17 @@
 package net.phoenix.core.integration.continuum.client;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.integration.continuum.client.screen.ContinuumAscentScreen;
 import net.phoenix.core.integration.continuum.client.screen.ContinuumArrivalScreen;
+import net.phoenix.core.integration.continuum.client.screen.ContinuumAscentScreen;
 import net.phoenix.core.integration.continuum.common.ContinuumStateSnapshot;
 import net.phoenix.core.integration.continuum.common.Mission;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
@@ -62,7 +60,8 @@ public final class ContinuumPreviewCommands {
         UUID id = UUID.randomUUID();
         long now = ContinuumClientState.now();
         ContinuumClientState.addPreview(new ContinuumStateSnapshot.MissionView(id, body, Mission.Type.EXTRACT, 3,
-                now - 1000L, 1000L, fail ? Mission.State.FAILED : Mission.State.SUCCESS, 0.35f, "Preview", List.of(), 0L,
+                now - 1000L, 1000L, fail ? Mission.State.FAILED : Mission.State.SUCCESS, 0.35f, "Preview", List.of(),
+                0L,
                 false));
         Minecraft.getInstance().tell(() -> Minecraft.getInstance().setScreen(new ContinuumArrivalScreen(id, null)));
         return 1;

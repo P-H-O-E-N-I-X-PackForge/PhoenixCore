@@ -1,7 +1,5 @@
 package net.phoenix.core.common.data.recipeConditions;
 
-
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -12,7 +10,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +18,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.phoenix.core.common.data.PhoenixMaterialRegistry;
 
 import com.mojang.serialization.Codec;
@@ -86,6 +85,7 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
     @Override
     @OnlyIn(Dist.CLIENT)
     public Component getTooltips() {
+        if (!FMLEnvironment.dist.isClient()) return Component.empty();
         Fluid fluid = getFluid();
         if (fluid != null) {
             Material material = PhoenixMaterialRegistry.getMaterial(fluid);
@@ -134,5 +134,5 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
         return TYPE.get();
     }
 
-        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<FluidInHatchCondition>> TYPE;
+    public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<FluidInHatchCondition>> TYPE;
 }

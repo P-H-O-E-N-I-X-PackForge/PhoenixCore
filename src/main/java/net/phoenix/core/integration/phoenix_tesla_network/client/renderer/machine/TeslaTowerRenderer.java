@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.phoenix_tesla_network.client.renderer.machine;
 
-
-import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 
@@ -15,7 +13,7 @@ import net.phoenix.core.integration.phoenix_tesla_network.common.machine.multibl
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

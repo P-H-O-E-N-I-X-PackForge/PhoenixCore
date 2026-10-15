@@ -1,23 +1,19 @@
 package net.phoenix.core.integration.continuum.common;
 
-
-
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.network.S2CContinuumDataPacket;
 import net.phoenix.core.integration.continuum.network.S2CContinuumStatePacket;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.utils.TeamUtils;
 
 import java.util.UUID;
@@ -92,7 +88,8 @@ public final class ContinuumServerEvents {
 
     private static void sendStateAlways(ServerPlayer player) {
         UUID team = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
-        PacketDistributor.sendToPlayer(player, new S2CContinuumStatePacket(ContinuumStateSnapshot.build(player.server, team)));
+        PacketDistributor.sendToPlayer(player,
+                new S2CContinuumStatePacket(ContinuumStateSnapshot.build(player.server, team)));
     }
 
     public static void engageTeam(MinecraftServer server, UUID team) {

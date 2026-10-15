@@ -27,11 +27,13 @@ public class ContinuumTeamData extends SavedData {
     private final Map<UUID, Map<ResourceLocation, Integer>> depths = new HashMap<>();
     private final Map<UUID, Map<ResourceLocation, Integer>> stations = new HashMap<>();
     private final Map<UUID, java.util.List<MissionLog.Entry>> history = new HashMap<>();
-    
+
     private final java.util.Set<UUID> engaged = new java.util.HashSet<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTeamData::new, (tag, provider) -> ContinuumTeamData.load(tag), null), ID);
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTeamData::new,
+                        (tag, provider) -> ContinuumTeamData.load(tag), null), ID);
     }
 
     public boolean isEngaged(UUID team) {
@@ -59,7 +61,6 @@ public class ContinuumTeamData extends SavedData {
     }
 
     public boolean isHidden(MinecraftServer server, UUID team, ContinuumBody body) {
-        
         if (body.transientInfo() != null &&
                 !ContinuumTransients.get(server).active(body.id(), System.currentTimeMillis())) {
             return true;
@@ -75,7 +76,7 @@ public class ContinuumTeamData extends SavedData {
 
         ContinuumBody body = ContinuumData.body(id);
         if (body != null && isHidden(server, team, body)) return DiscoveryStage.UNKNOWN;
-        
+
         if (body != null && body.transientInfo() != null) {
             return effectiveStage(server, team, body.system()).atLeast(DiscoveryStage.DETECTED) ?
                     DiscoveryStage.SURVEYED : DiscoveryStage.UNKNOWN;
@@ -107,7 +108,7 @@ public class ContinuumTeamData extends SavedData {
                         }
             }
             for (ContinuumBody inSystem : ContinuumData.bodiesOf(id)) {
-                
+
                 if (inSystem.transientInfo() != null) continue;
                 DiscoveryStage bodyStage = effectiveStage(server, team, inSystem.id());
                 if (bodyStage == DiscoveryStage.SURVEYED) return DiscoveryStage.SURVEYED;

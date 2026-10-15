@@ -1,19 +1,17 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
-
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
-import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -33,17 +31,21 @@ public final class SourceTankMachines {
 
     private SourceTankMachines() {}
 
-    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T1 = register("source_tank_t1", "Source Tank Mk I",
+    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T1 = register("source_tank_t1",
+            "Source Tank Mk I",
             5_000_000, 100, SourceTankMachines::patternT1);
-    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T2 = register("source_tank_t2", "Source Tank Mk II",
+    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T2 = register("source_tank_t2",
+            "Source Tank Mk II",
             50_000_000, 1_000, SourceTankMachines::patternT2);
-    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T3 = register("source_tank_t3", "Source Tank Mk III",
+    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T3 = register("source_tank_t3",
+            "Source Tank Mk III",
             500_000_000, 10_000, SourceTankMachines::patternT3);
 
     public static void init() {}
 
-    private static MachineEntry<MultiblockMachineDefinition> register(String id, String name, int capacity, int maxConsumption,
-                                                        Function<MultiblockMachineDefinition, com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern> pattern) {
+    private static MachineEntry<MultiblockMachineDefinition> register(String id, String name, int capacity,
+                                                                      int maxConsumption,
+                                                                      Function<MultiblockMachineDefinition, com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern> pattern) {
         return REGISTRATE
                 .multiblock(id, holder -> new SourceMultiblockTankMachine(holder, capacity, maxConsumption))
                 .langValue(name)
@@ -55,7 +57,8 @@ public final class SourceTankMachines {
                 .pattern(pattern::apply)
                 .appearanceBlock(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING)
                 .workableCasingModel(
-                        ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                        ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
+                                "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                         com.gregtechceu.gtceu.GTCEu.id("block/multiblock/multiblock_tank"))
                 .register();
     }

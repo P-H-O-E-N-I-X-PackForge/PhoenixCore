@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.continuum.common;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.DiscoveryStage;
+import net.phoenix.core.util.StackNbt;
 
 public final class RocketStats {
 

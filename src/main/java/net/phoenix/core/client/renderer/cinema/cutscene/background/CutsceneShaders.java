@@ -153,7 +153,8 @@ public final class CutsceneShaders {
         RenderSystem.setShader(() -> shader);
         Matrix4f matrix = graphics.pose().last().pose();
         int w = context.width(), h = context.height();
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS,
+                DefaultVertexFormat.POSITION_TEX);
         buffer.addVertex(matrix, 0, h, 0).setUv(0, 1);
         buffer.addVertex(matrix, w, h, 0).setUv(1, 1);
         buffer.addVertex(matrix, w, 0, 0).setUv(1, 0);

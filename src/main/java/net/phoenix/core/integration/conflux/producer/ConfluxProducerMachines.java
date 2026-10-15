@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.conflux.producer;
 
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
@@ -17,7 +16,8 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public final class ConfluxProducerMachines {
 
-    public static final Map<ConfluxDataType, MachineEntry<MachineDefinition>[]> PRODUCERS = new EnumMap<>(ConfluxDataType.class);
+    public static final Map<ConfluxDataType, MachineEntry<MachineDefinition>[]> PRODUCERS = new EnumMap<>(
+            ConfluxDataType.class);
 
     private static final int[] TIERS = {
             GTValues.LV, GTValues.MV, GTValues.HV, GTValues.EV, GTValues.IV,

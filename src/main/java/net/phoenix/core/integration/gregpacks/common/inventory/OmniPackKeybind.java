@@ -1,20 +1,17 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
-
-
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.gregpacks.network.CPacketKeyState;
 import net.phoenix.core.integration.gregpacks.network.CPacketOpenOmniPack;
-import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
@@ -39,7 +36,6 @@ public class OmniPackKeybind {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             Options o = mc.options;

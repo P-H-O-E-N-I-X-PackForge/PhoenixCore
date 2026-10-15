@@ -1,15 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
-
-
-
-
-
-import com.mojang.blaze3d.vertex.BufferUploader;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -25,19 +15,23 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.worldfx.IWorldFXEmitter;
 import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
 import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
 import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
+import net.phoenix.core.util.StackNbt;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;

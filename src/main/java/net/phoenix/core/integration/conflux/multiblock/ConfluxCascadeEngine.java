@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
-
-import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -21,18 +19,18 @@ import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
+import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widgets.TextWidget;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
-        implements ConfluxDataCapability.Holder {
+                                  implements ConfluxDataCapability.Holder {
 
     private static final int FUEL_TICKS = 400;
     private static final long BASE_RATE = 200L;

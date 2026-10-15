@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine.singleblock.electric;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -25,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
+import net.phoenix.core.util.StackNbt;
 import net.phoenix.core.utils.TeamUtils;
 
 import brachy.modularui.factory.PosGuiData;

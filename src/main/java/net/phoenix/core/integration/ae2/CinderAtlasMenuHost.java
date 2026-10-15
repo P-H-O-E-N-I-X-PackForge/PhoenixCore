@@ -15,7 +15,7 @@ import appeng.util.NullConfigManager;
 import org.jetbrains.annotations.Nullable;
 
 public class CinderAtlasMenuHost extends ItemMenuHost<net.phoenix.core.common.item.cinder.CinderAtlasItem>
-        implements ITerminalHost, IActionHost {
+                                 implements ITerminalHost, IActionHost {
 
     private final IWirelessAccessPoint accessPoint;
 

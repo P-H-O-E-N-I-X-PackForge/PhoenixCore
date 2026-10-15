@@ -1,13 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.phoenix.core.integration.conflux.client.DisciplinePickerScreen;
 import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
 

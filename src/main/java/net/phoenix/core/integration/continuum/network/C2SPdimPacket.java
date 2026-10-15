@@ -1,29 +1,26 @@
 package net.phoenix.core.integration.continuum.network;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.continuum.pdim.PdimActions;
 
-import java.util.function.Supplier;
-
 public class C2SPdimPacket implements CustomPacketPayload {
+
     public static final Type<C2SPdimPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_pdim_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SPdimPacket> STREAM_CODEC = StreamCodec.ofMember(C2SPdimPacket::encode, C2SPdimPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SPdimPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SPdimPacket::encode, C2SPdimPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public enum Action {
         ENTER,
@@ -61,5 +58,5 @@ public class C2SPdimPacket implements CustomPacketPayload {
                     PdimActions.createAndEnter(player, msg.body, msg.gravity);
             if (error != null) player.displayClientMessage(Component.literal(error), true);
         });
-        }
+    }
 }

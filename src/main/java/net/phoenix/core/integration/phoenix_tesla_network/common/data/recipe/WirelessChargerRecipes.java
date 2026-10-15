@@ -1,17 +1,15 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipes.*;
@@ -41,17 +39,25 @@ public class WirelessChargerRecipes {
         if (GTMachines.SUPER_CHEST[tier] == null || GTMachines.CHARGER_4[tier] == null) return;
 
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
-        if (stabilizer.isEmpty()) return;
+        Object octalWire = getOctalWireForTier(tier);
+        Object quadCable = getQuadCableForTier(tier);
+
+        String recipeId = "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase();
+        if (isMissing(recipeId, "stabilizer", stabilizer) ||
+                isMissing(recipeId, "octal wire", octalWire) ||
+                isMissing(recipeId, "quad cable", quadCable)) {
+            return;
+        }
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase(),
+                recipeId,
                 PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier].asStack(),
                 "WCW", "WTW", "RXR",
                 'C', GTMachines.SUPER_CHEST[tier].asStack(),
                 'T', GTMachines.CHARGER_4[tier].asStack(),
-                'R', getOctalWireForTier(tier),
+                'R', octalWire,
                 'X', stabilizer,
-                'W', getQuadCableForTier(tier));
+                'W', quadCable);
     }
 
     private static void processWirelessChargerWithQuantumChest(@NotNull RecipeOutput provider, int tier) {
@@ -60,16 +66,32 @@ public class WirelessChargerRecipes {
             return;
 
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
-        if (stabilizer.isEmpty()) return;
+        Object octalWire = getOctalWireForTier(tier);
+        Object quadCable = getQuadCableForTier(tier);
+
+        String recipeId = "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase();
+        if (isMissing(recipeId, "stabilizer", stabilizer) ||
+                isMissing(recipeId, "octal wire", octalWire) ||
+                isMissing(recipeId, "quad cable", quadCable)) {
+            return;
+        }
 
         VanillaRecipeHelper.addShapedRecipe(provider, true,
-                "wireless_turbo_charger_" + GTValues.VN[tier].toLowerCase(),
+                recipeId,
                 PhoenixTeslaMachines.TESLA_WIRELESS_CHARGER[tier].asStack(),
                 "WCW", "WTW", "RXR",
                 'C', GTMachines.QUANTUM_CHEST[tier].asStack(),
                 'T', GTMachines.CHARGER_4[tier].asStack(),
-                'R', getOctalWireForTier(tier),
+                'R', octalWire,
                 'X', stabilizer,
-                'W', getQuadCableForTier(tier));
+                'W', quadCable);
+    }
+
+    private static boolean isMissing(String recipeId, String what, Object ingredient) {
+        boolean missing = ingredient == null || (ingredient instanceof ItemStack s && s.isEmpty());
+        if (missing) {
+            PhoenixAPI.LOGGER.warn("Skipping recipe '{}': {} is empty/missing for this tier", recipeId, what);
+        }
+        return missing;
     }
 }

@@ -36,7 +36,7 @@ public class PhoenixRecipeTypes {
     public static GTRecipeTypeEntry HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeTypeEntry PHOENIXWARE_FUSION_MK1;
     public static GTRecipeTypeEntry DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
-    
+
     public static GTRecipeTypeEntry GROWTH_RECIPES, BOTANICAL_GROWTH_RECIPES, VINE_GROWTH_RECIPES;
     public static GTRecipeTypeEntry ASTRAL_WEAVING_RECIPES;
     public static GTRecipeTypeEntry SANCTUM_WARD_RECIPES;
@@ -225,7 +225,8 @@ public class PhoenixRecipeTypes {
                 .setSound(GTSoundEntries.CHEMICAL)
                 .register();
 
-        ADVANCED_PRESSURIZED_FISSION_REACTOR_RECIPES = REGISTRATE.recipeType("advanced_pressurized_fission_reactor", MULTIBLOCK)
+        ADVANCED_PRESSURIZED_FISSION_REACTOR_RECIPES = REGISTRATE
+                .recipeType("advanced_pressurized_fission_reactor", MULTIBLOCK)
                 .setMaxIOSize(1, 1, 1, 1)
                 .setEUIO(IO.OUT)
                 .UI(builder -> builder.setProgressBarSupplier((layout, value, machine) -> new ProgressWidget()
@@ -248,7 +249,6 @@ public class PhoenixRecipeTypes {
                 .register();
     }
 
-    /** Runs once the recipe type registry is filled. */
     public static void postInit() {
         for (GTRecipeType growing : new GTRecipeType[] { GROWTH_RECIPES.get(), BOTANICAL_GROWTH_RECIPES.get(),
                 VINE_GROWTH_RECIPES.get() }) {

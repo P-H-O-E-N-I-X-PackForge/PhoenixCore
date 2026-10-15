@@ -1,28 +1,25 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketRecipeBuilderGenerate implements CustomPacketPayload {
+
     public static final Type<PacketRecipeBuilderGenerate> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "packet_recipe_builder_generate"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeBuilderGenerate> STREAM_CODEC = StreamCodec.of((buf, msg) -> PacketRecipeBuilderGenerate.encode(msg, buf), PacketRecipeBuilderGenerate::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeBuilderGenerate> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> PacketRecipeBuilderGenerate.encode(msg, buf), PacketRecipeBuilderGenerate::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final String code;
 
@@ -48,5 +45,5 @@ public class PacketRecipeBuilderGenerate implements CustomPacketPayload {
             }
             player.sendSystemMessage(Component.literal("§6=============================="));
         });
-        }
+    }
 }

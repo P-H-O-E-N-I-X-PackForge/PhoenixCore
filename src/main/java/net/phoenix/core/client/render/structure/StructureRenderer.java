@@ -1,8 +1,5 @@
 package net.phoenix.core.client.render.structure;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
-
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -186,7 +183,8 @@ public final class StructureRenderer {
         setupCamera(view, glX, glY, glW, glH);
 
         long currentTick = mc.level != null ? mc.level.getGameTime() : 0;
-        RenderSystem.setShaderGameTime(currentTick, (currentTick + mc.getTimer().getGameTimeDeltaPartialTick(false)) / 20f);
+        RenderSystem.setShaderGameTime(currentTick,
+                (currentTick + mc.getTimer().getGameTimeDeltaPartialTick(false)) / 20f);
         snapshotMatrices();
 
         Camera originalCamera = null;
@@ -268,7 +266,8 @@ public final class StructureRenderer {
         RenderSystem.activeTexture(33984);
 
         syncCameraEntity(view);
-        camera.setup(world, cameraEntity, false, false, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+        camera.setup(world, cameraEntity, false, false,
+                Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
     }
 
     private void syncCameraEntity(CameraView view) {
@@ -569,7 +568,8 @@ public final class StructureRenderer {
                                          List<BlockPos> solid, List<BlockPos> fluid) {
         int count = solid.size() + fluid.size();
         int sizeHint = Math.max(layer.bufferSize(), Math.min(count * 512, 64 * 1024 * 1024));
-        BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(sizeHint), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+        BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(sizeHint),
+                VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
         PoseStack ps = new PoseStack();
         TintedVertexConsumer tinted = new TintedVertexConsumer(bb);
 
@@ -611,7 +611,8 @@ public final class StructureRenderer {
 
     private void uploadEmptyVBO(VertexBuffer vbo, RenderType layer) {
         if (!vbo.isInvalid()) {
-            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()),
+                    VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
             var mesh = bb.build();
             if (mesh != null) {
                 vbo.bind();
@@ -625,7 +626,8 @@ public final class StructureRenderer {
         pendingUploads.set(LAYER_COUNT);
         for (int i = 0; i < LAYER_COUNT; i++) {
             RenderType layer = LAYERS.get(i);
-            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()),
+                    VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
             com.mojang.blaze3d.vertex.MeshData rb = bb.build();
             final int fi = i;
             RenderSystem.recordRenderCall(() -> {
@@ -665,7 +667,8 @@ public final class StructureRenderer {
         }
     }
 
-    private static void gluLookAt(org.joml.Matrix4fStack mv, float eyeX, float eyeY, float eyeZ, float centerX, float centerY,
+    private static void gluLookAt(org.joml.Matrix4fStack mv, float eyeX, float eyeY, float eyeZ, float centerX,
+                                  float centerY,
                                   float centerZ, float upX, float upY, float upZ) {
         float fx = centerX - eyeX, fy = centerY - eyeY, fz = centerZ - eyeZ;
         float rLen = 1f / (float) Math.sqrt(fx * fx + fy * fy + fz * fz);

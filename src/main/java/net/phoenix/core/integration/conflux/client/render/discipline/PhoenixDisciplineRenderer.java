@@ -1,8 +1,7 @@
 package net.phoenix.core.integration.conflux.client.render.discipline;
 
-
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.conflux.client.render.*;

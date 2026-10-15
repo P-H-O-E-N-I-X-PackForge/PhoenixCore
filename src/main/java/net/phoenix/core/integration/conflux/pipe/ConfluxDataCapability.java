@@ -18,7 +18,6 @@ public final class ConfluxDataCapability {
     public static final BlockCapability<IConfluxDataHandler, Direction> DATA = BlockCapability
             .createSided(PhoenixCore.id("conflux_data"), IConfluxDataHandler.class);
 
-    /** Implemented by block entities (and GT machines, which are block entities) that expose a data handler. */
     public interface Holder {
 
         @Nullable
@@ -36,8 +35,10 @@ public final class ConfluxDataCapability {
     public static void register(RegisterCapabilitiesEvent event) {
         for (Block block : BuiltInRegistries.BLOCK) {
             if (block instanceof ConfluxPipeBlock) {
-                event.registerBlock(GTCapability.CAPABILITY_COVERABLE, (level, pos, state, be, side) -> be instanceof ConfluxPipeBlockEntity pipe ?
-                        pipe.getCoverContainer() : null, block);
+                event.registerBlock(GTCapability.CAPABILITY_COVERABLE,
+                        (level, pos, state, be, side) -> be instanceof ConfluxPipeBlockEntity pipe ?
+                                pipe.getCoverContainer() : null,
+                        block);
             }
             if (block instanceof MetaMachineBlock || block instanceof ConfluxPipeBlock) {
                 event.registerBlock(DATA, (level, pos, state, be, side) -> be instanceof Holder h ?

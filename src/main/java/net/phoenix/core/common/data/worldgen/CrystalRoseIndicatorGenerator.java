@@ -33,7 +33,8 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
 
     public static final MapCodec<CrystalRoseIndicatorGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
-                    Codec.either(BlockState.CODEC, GTRegistries.MATERIALS.byNameCodec()).fieldOf("block").forGetter(ext -> ext.block),
+                    Codec.either(BlockState.CODEC, GTRegistries.MATERIALS.byNameCodec()).fieldOf("block")
+                            .forGetter(ext -> ext.block),
                     IntProvider.codec(1, 32).fieldOf("radius").forGetter(ext -> ext.radius),
                     FloatProvider.codec(0.0f, 2.0f).fieldOf("density").forGetter(ext -> ext.density),
                     SurfaceIndicatorGenerator.IndicatorPlacement.CODEC.fieldOf("placement")

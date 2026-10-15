@@ -16,7 +16,8 @@ public class DroneWorldData extends SavedData {
     private final Map<BlockPos, DroneConfig> configs = new HashMap<>();
 
     public static DroneWorldData get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(DroneWorldData::new, (tag, provider) -> DroneWorldData.load(tag), null), ID);
+        return level.getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(
+                DroneWorldData::new, (tag, provider) -> DroneWorldData.load(tag), null), ID);
     }
 
     public DroneConfig getOrCreate(BlockPos dronePos) {

@@ -10,8 +10,6 @@ import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.monster.Spider;
 import net.neoforged.neoforge.common.ItemAbilities;
 
 public final class PhoenixToolType {
@@ -22,7 +20,8 @@ public final class PhoenixToolType {
             .toolTag(GTToolType.ToolItemTagType.MATCH, CustomTags.TOOLS_SCREWDRIVER)
             .definition(b -> b.crafting().sneakBypassUse()
                     .attackDamage(-1.0F).attackSpeed(3.0F).durabilityMultiplier(2.0F)
-                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER, net.minecraft.world.entity.EntityType.CAVE_SPIDER))
+                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER,
+                            net.minecraft.world.entity.EntityType.CAVE_SPIDER))
                     .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_MV))
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.MV)
@@ -35,7 +34,8 @@ public final class PhoenixToolType {
             .toolTag(GTToolType.ToolItemTagType.MATCH, CustomTags.TOOLS_SCREWDRIVER)
             .definition(b -> b.crafting().sneakBypassUse()
                     .attackDamage(-1.0F).attackSpeed(3.0F).durabilityMultiplier(4.0F)
-                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER, net.minecraft.world.entity.EntityType.CAVE_SPIDER))
+                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER,
+                            net.minecraft.world.entity.EntityType.CAVE_SPIDER))
                     .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_EV))
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.EV)
@@ -48,7 +48,8 @@ public final class PhoenixToolType {
             .toolTag(GTToolType.ToolItemTagType.MATCH, CustomTags.TOOLS_SCREWDRIVER)
             .definition(b -> b.crafting().sneakBypassUse()
                     .attackDamage(-1.0F).attackSpeed(3.0F).durabilityMultiplier(6.0F)
-                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER, net.minecraft.world.entity.EntityType.CAVE_SPIDER))
+                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER,
+                            net.minecraft.world.entity.EntityType.CAVE_SPIDER))
                     .brokenStack(PhoenixToolHelper.SUPPLY_POWER_UNIT_LUV))
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.LuV)
@@ -61,7 +62,8 @@ public final class PhoenixToolType {
             .toolTag(GTToolType.ToolItemTagType.MATCH, CustomTags.TOOLS_SCREWDRIVER)
             .definition(b -> b.crafting().sneakBypassUse()
                     .attackDamage(-1.0F).attackSpeed(3.0F).durabilityMultiplier(7.0F)
-                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER, net.minecraft.world.entity.EntityType.CAVE_SPIDER))
+                    .behaviors(new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.SPIDER,
+                            net.minecraft.world.entity.EntityType.CAVE_SPIDER))
                     .brokenStack(PhoenixToolHelper.SUPPLY_POWER_UNIT_ZPM))
             .sound(GTSoundEntries.SCREWDRIVER_TOOL)
             .electric(GTValues.ZPM)
@@ -193,13 +195,15 @@ public final class PhoenixToolType {
             .definition(b -> b.blockBreaking().crafting().sneakBypassUse()
                     .efficiencyMultiplier(3.0F)
                     .attackDamage(1.0F).attackSpeed(-2.8F)
-                    .behaviors(BlockRotatingBehavior.INSTANCE, new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
+                    .behaviors(BlockRotatingBehavior.INSTANCE,
+                            new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
                             ToolModeSwitchBehavior.INSTANCE)
                     .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_MV))
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.MV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
+            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE,
+                    GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_EV = GTToolType.builder("ev_wrench")
             .idFormat("ev_%s_wrench")
@@ -209,13 +213,15 @@ public final class PhoenixToolType {
             .definition(b -> b.blockBreaking().crafting().sneakBypassUse()
                     .efficiencyMultiplier(5.0F)
                     .attackDamage(1.0F).attackSpeed(-2.8F)
-                    .behaviors(BlockRotatingBehavior.INSTANCE, new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
+                    .behaviors(BlockRotatingBehavior.INSTANCE,
+                            new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
                             ToolModeSwitchBehavior.INSTANCE)
                     .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_EV))
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.EV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
+            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE,
+                    GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_LuV = GTToolType.builder("luv_wrench")
             .idFormat("luv_%s_wrench")
@@ -225,13 +231,15 @@ public final class PhoenixToolType {
             .definition(b -> b.blockBreaking().crafting().sneakBypassUse()
                     .efficiencyMultiplier(7.0F)
                     .attackDamage(1.0F).attackSpeed(-2.8F)
-                    .behaviors(BlockRotatingBehavior.INSTANCE, new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
+                    .behaviors(BlockRotatingBehavior.INSTANCE,
+                            new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
                             ToolModeSwitchBehavior.INSTANCE)
                     .brokenStack(PhoenixToolHelper.SUPPLY_POWER_UNIT_LUV))
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.LuV)
             .toolClasses(GTToolType.WRENCH)
-            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
+            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE,
+                    GTItemAbilities.WRENCH_CONNECT)
             .build();
     public static final GTToolType WRENCH_ZPM = GTToolType.builder("zpm_wrench")
             .idFormat("zpm_%s_wrench")
@@ -241,13 +249,15 @@ public final class PhoenixToolType {
             .definition(b -> b.blockBreaking().crafting().sneakBypassUse()
                     .efficiencyMultiplier(8.0F)
                     .attackDamage(1.0F).attackSpeed(-2.8F)
-                    .behaviors(BlockRotatingBehavior.INSTANCE, new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
+                    .behaviors(BlockRotatingBehavior.INSTANCE,
+                            new EntityDamageBehavior(3.0F, net.minecraft.world.entity.EntityType.IRON_GOLEM),
                             ToolModeSwitchBehavior.INSTANCE)
                     .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_LV))
             .sound(GTSoundEntries.WRENCH_TOOL, true)
             .electric(GTValues.ZPM)
             .toolClasses(GTToolType.WRENCH)
-            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE, GTItemAbilities.WRENCH_CONNECT)
+            .defaultAbilities(GTItemAbilities.WRENCH_DIG, GTItemAbilities.WRENCH_DISMANTLE,
+                    GTItemAbilities.WRENCH_CONNECT)
             .build();
 
     public static final GTToolType WIRE_CUTTER_MV = GTToolType.builder("mv_wirecutter")

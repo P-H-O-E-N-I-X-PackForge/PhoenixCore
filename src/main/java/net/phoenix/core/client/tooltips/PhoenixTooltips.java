@@ -1,29 +1,28 @@
 package net.phoenix.core.client.tooltips;
 
-
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.phoenix.core.PhoenixCore;
 
-@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public class PhoenixTooltips {
 
     private static final java.util.regex.Pattern GT_COVER_ITEM = java.util.regex.Pattern
-            .compile("(lv|mv|hv|ev|iv|luv|zpm|uv|uhv|uev|uiv|uxv|opv|max)_(electric_pump|conveyor_module|fluid_regulator|robot_arm)");
+            .compile(
+                    "(lv|mv|hv|ev|iv|luv|zpm|uv|uhv|uev|uiv|uxv|opv|max)_(electric_pump|conveyor_module|fluid_regulator|robot_arm)");
 
     private static void scaleCoverRate(java.util.List<Component> tooltip) {
         for (int i = 0; i < tooltip.size(); i++) {

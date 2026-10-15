@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.item;
 
-
-
-import net.minecraft.world.item.Item;
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -27,6 +23,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -37,6 +34,7 @@ import net.phoenix.core.api.gui.PhoenixGuiTextures;
 import net.phoenix.core.integration.ars_nouveau.client.SoulMapWidget;
 import net.phoenix.core.integration.ars_nouveau.client.SoulVisionManager;
 import net.phoenix.core.saveddata.SoulSavedData;
+import net.phoenix.core.util.StackNbt;
 
 import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.screen.ModularPanel;
@@ -45,7 +43,6 @@ import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widgets.TextWidget;
 import brachy.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -85,7 +82,9 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
 
         if (player.isShiftKeyDown()) {
             if (level.isClientSide) {
-                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { SoulVisionManager.toggle(player); }
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                    SoulVisionManager.toggle(player);
+                }
             }
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
         }
@@ -213,7 +212,8 @@ public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInter
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);
         tooltip.add(

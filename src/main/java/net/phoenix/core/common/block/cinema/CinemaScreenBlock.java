@@ -1,10 +1,7 @@
 package net.phoenix.core.common.block.cinema;
 
-
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,6 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;
 
 public class CinemaScreenBlock extends BaseEntityBlock {
@@ -87,7 +85,7 @@ public class CinemaScreenBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
-                                                BlockHitResult hit) {
+                                               BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen)) {
             return InteractionResult.PASS;
         }
@@ -96,8 +94,10 @@ public class CinemaScreenBlock extends BaseEntityBlock {
             if (level.isClientSide) {
                 String currentText = screen.getCurrentLine().getString();
                 int currentIndex = screen.getCurrentLineIndex();
-                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
-                                .openTypingScreen(pos, currentIndex, currentText); }
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                    net.phoenix.core.client.renderer.cinema.CinemaScreenClientHelper
+                            .openTypingScreen(pos, currentIndex, currentText);
+                }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

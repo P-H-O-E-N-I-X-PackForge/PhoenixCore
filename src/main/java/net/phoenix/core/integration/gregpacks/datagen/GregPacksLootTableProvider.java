@@ -23,7 +23,8 @@ public class GregPacksLootTableProvider {
                                            java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> registries) {
         return new LootTableProvider(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(OmniPackBlockLoot::new,
-                        LootContextParamSets.BLOCK)), registries);
+                        LootContextParamSets.BLOCK)),
+                registries);
     }
 
     static class OmniPackBlockLoot extends BlockLootSubProvider {

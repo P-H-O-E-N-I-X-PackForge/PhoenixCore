@@ -1,7 +1,5 @@
 package net.phoenix.core.client.gui.screen;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -14,7 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.network.PhoenixNetwork;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.packet.SelectColorPacket;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -22,6 +20,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.NotNull;
 
 public class ColorRadialMenuScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final InteractionHand hand;
     private static final int RADIUS = 85;

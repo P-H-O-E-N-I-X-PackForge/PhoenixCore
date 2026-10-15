@@ -1,28 +1,25 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
-
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class S2CPlaySoundPacket implements CustomPacketPayload {
+
     public static final Type<S2CPlaySoundPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_play_sound_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, S2CPlaySoundPacket> STREAM_CODEC = StreamCodec.ofMember(S2CPlaySoundPacket::encode, S2CPlaySoundPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CPlaySoundPacket> STREAM_CODEC = StreamCodec
+            .ofMember(S2CPlaySoundPacket::encode, S2CPlaySoundPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final BlockPos pos;
     private final ResourceLocation soundLocation;
@@ -61,5 +58,5 @@ public class S2CPlaySoundPacket implements CustomPacketPayload {
             net.phoenix.core.network.client.ClientSoundHandler.playSound(
                     msg.pos, msg.soundLocation, msg.volume, msg.pitch, msg.range);
         });
-        }
+    }
 }

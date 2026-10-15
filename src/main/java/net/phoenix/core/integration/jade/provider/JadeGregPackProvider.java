@@ -1,11 +1,5 @@
 package net.phoenix.core.integration.jade.provider;
 
-
-
-
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +8,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
+import net.phoenix.core.util.StackNbt;
 
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -22,9 +17,12 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 
+import java.util.Optional;
+
 public class JadeGregPackProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
-    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "omnipack_provider");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
+            "omnipack_provider");
     private static final String KEY_ENERGY = "GP_Energy";
     private static final String KEY_FLUIDS = "GP_Fluids";
     private static final String KEY_ITEMS = "GP_Items";

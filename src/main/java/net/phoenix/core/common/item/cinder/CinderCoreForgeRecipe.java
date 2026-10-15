@@ -1,23 +1,22 @@
 package net.phoenix.core.common.item.cinder;
 
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+
+import java.util.Optional;
 
 public class CinderCoreForgeRecipe extends CustomRecipe {
 

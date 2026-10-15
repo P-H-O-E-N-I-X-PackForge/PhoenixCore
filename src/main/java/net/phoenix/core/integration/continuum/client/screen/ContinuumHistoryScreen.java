@@ -1,20 +1,16 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.common.MissionLog;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -22,10 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContinuumHistoryScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int ROW = 14;
 
     private enum Filter {
+
         ALL("All"),
         LANDINGS("Landings"),
         PROBLEMS("Problems");
@@ -56,7 +56,7 @@ public class ContinuumHistoryScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        
+
         if (++refresh >= 100) {
             refresh = 0;
             PacketDistributor.sendToServer(new C2SRequestHistoryPacket());

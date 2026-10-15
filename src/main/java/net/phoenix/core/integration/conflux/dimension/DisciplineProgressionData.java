@@ -18,7 +18,10 @@ public class DisciplineProgressionData extends SavedData {
 
     public static DisciplineProgressionData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(DisciplineProgressionData::new, (tag, provider) -> DisciplineProgressionData.load(tag), null), ID);
+                .computeIfAbsent(
+                        new net.minecraft.world.level.saveddata.SavedData.Factory<>(DisciplineProgressionData::new,
+                                (tag, provider) -> DisciplineProgressionData.load(tag), null),
+                        ID);
     }
 
     public @Nullable ProgressionState getProgression(UUID teamId) {

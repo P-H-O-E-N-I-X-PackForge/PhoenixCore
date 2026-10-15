@@ -1,18 +1,15 @@
 package net.phoenix.core.shop;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
 import net.phoenix.core.shop.network.S2CShopSyncPacket;
 import net.phoenix.core.shop.reward.ItemShopReward;

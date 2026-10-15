@@ -1,15 +1,14 @@
 package net.phoenix.core.common.machine.multiblock.electric;
 
-
-import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
@@ -85,7 +84,8 @@ public final class AetherCrucibleMachines {
                     .where(' ', Predicates.air())
                     .build())
             .workableCasingModel(
-                    net.minecraft.resources.ResourceLocation.parse("phoenixcore:block/casings/multiblock/aether_casing"),
+                    net.minecraft.resources.ResourceLocation
+                            .parse("phoenixcore:block/casings/multiblock/aether_casing"),
                     net.minecraft.resources.ResourceLocation.parse("phoenixcore:block/multiblock/aether_crucible"))
             .register();
 

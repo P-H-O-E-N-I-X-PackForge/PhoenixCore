@@ -21,7 +21,7 @@ public final class BiomeKits {
     }
 
     static {
-        
+
         kit("phoenix_plains", List.of(tree("phoenix_oak", 4, 7, 0.6f), tree("fire_tree", 5, 8, 0.12f)),
                 List.of("fire_flower", "minecraft:poppy", "minecraft:orange_tulip"),
                 List.of("minecraft:grass", "minecraft:fern"), 0.5f, 1.6f, 1.6f);
@@ -39,7 +39,8 @@ public final class BiomeKits {
                 List.of("minecraft:flowering_azalea", "minecraft:lily_of_the_valley"),
                 List.of("minecraft:fern", "sculk_moss"), 1.5f, 1.2f, 1.4f);
         kit("sculk_depths", List.of(tree("sculk_spire", 4, 10, 0.5f)), List.of(), List.of(), 0.45f, 0f, 0f);
-        kit("sculk_shriek", List.of(tree("sculk_spire", 3, 8, 0.4f)), List.of(), List.of("sculk_carpet"), 0.3f, 0f, 1.5f);
+        kit("sculk_shriek", List.of(tree("sculk_spire", 3, 8, 0.4f)), List.of(), List.of("sculk_carpet"), 0.3f, 0f,
+                1.5f);
         kit("sculk_hollow", List.of(tree("mushroom_tree", 5, 9, 0.6f)),
                 List.of("minecraft:red_mushroom", "minecraft:brown_mushroom"), List.of("minecraft:fern"), 1.4f, 1.6f,
                 0.8f);
@@ -47,7 +48,8 @@ public final class BiomeKits {
                 List.of("minecraft:blue_orchid", "minecraft:brown_mushroom"), List.of("minecraft:fern"), 0.9f, 1.4f,
                 1.0f);
         kit("sculk_thicket", List.of(tree("thicket_pine", 7, 12, 0.7f), tree("moss_oak", 4, 7, 0.2f)),
-                List.of("minecraft:fern", "minecraft:flowering_azalea"), List.of("minecraft:fern", "minecraft:moss_carpet"),
+                List.of("minecraft:fern", "minecraft:flowering_azalea"),
+                List.of("minecraft:fern", "minecraft:moss_carpet"),
                 2.3f, 0.6f, 1.8f);
         kit("sculk_ridge", List.of(tree("sculk_spire", 3, 7, 0.3f)), List.of(), List.of(), 0.25f, 0f, 0f);
 
@@ -61,7 +63,8 @@ public final class BiomeKits {
         kit("void_amethyst_grove", List.of(tree("amethyst_spire", 5, 10, 0.7f)), List.of("ethereal_crystal"),
                 List.of("ethereal_crystal"), 1.5f, 2.0f, 1.2f);
         kit("void_starlit_meadow", List.of(tree("frost_pine", 5, 9, 0.6f)), List.of(), List.of(), 0.9f, 0f, 0f);
-        kit("void_lavender_fields", List.of(), List.of("ethereal_crystal"), List.of("ethereal_crystal"), 0f, 2.0f, 1.5f);
+        kit("void_lavender_fields", List.of(), List.of("ethereal_crystal"), List.of("ethereal_crystal"), 0f, 2.0f,
+                1.5f);
         kit("void_drift", List.of(), List.of(), List.of("minecraft:chorus_flower"), 0f, 0f, 0.7f);
 
         kit("sealed_industrial", List.of(tree("birch_grove", 5, 8, 0.5f), tree("metal_tree", 5, 8, 0.15f),

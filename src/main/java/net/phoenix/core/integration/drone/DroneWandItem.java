@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.drone;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 
@@ -17,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.phoenix.core.integration.drone.group.GroupDefinition;
+import net.phoenix.core.util.StackNbt;
 
 public class DroneWandItem extends Item {
 

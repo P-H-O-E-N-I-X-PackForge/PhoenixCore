@@ -12,6 +12,9 @@ import net.phoenix.core.integration.astral.puzzle.StarChart;
 
 @OnlyIn(Dist.CLIENT)
 public class SurveyScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final int[] stars;
     private final int[] known;

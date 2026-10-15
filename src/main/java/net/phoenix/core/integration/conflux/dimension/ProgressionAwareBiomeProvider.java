@@ -35,7 +35,6 @@ public class ProgressionAwareBiomeProvider extends BiomeSource {
 
     @Override
     protected MapCodec<? extends BiomeSource> codec() {
-        // built in code per world and never serialised through a registered codec
         return null;
     }
 

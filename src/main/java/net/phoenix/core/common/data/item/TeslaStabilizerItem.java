@@ -8,8 +8,6 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 public class TeslaStabilizerItem extends Item {
 
     public TeslaStabilizerItem(Properties properties) {
@@ -17,7 +15,8 @@ public class TeslaStabilizerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
         Level level = context.level();
         tooltip.add(Component.translatable(this.getDescriptionId() + ".tooltip"));
     }

@@ -1,10 +1,9 @@
 package net.phoenix.core.common.block.cinder;
 
-
-import net.minecraft.core.HolderLookup;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;

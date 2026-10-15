@@ -1,31 +1,28 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.fml.loading.FMLEnvironment;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.Supplier;
-
 public class S2CPlayStreamPacket implements CustomPacketPayload {
+
     public static final Type<S2CPlayStreamPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_play_stream_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, S2CPlayStreamPacket> STREAM_CODEC = StreamCodec.ofMember(S2CPlayStreamPacket::encode, S2CPlayStreamPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CPlayStreamPacket> STREAM_CODEC = StreamCodec
+            .ofMember(S2CPlayStreamPacket::encode, S2CPlayStreamPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private static final Logger LOGGER = LogManager.getLogger("VocalResonance");
 
@@ -71,5 +68,5 @@ public class S2CPlayStreamPacket implements CustomPacketPayload {
                 LOGGER.error("VR S2CPlayStreamPacket: exception in enqueueWork", t);
             }
         });
-        }
+    }
 }

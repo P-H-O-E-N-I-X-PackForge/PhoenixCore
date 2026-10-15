@@ -22,8 +22,8 @@
     "minecraft.RecipeManagerMixin"
   ],
   "client": [
-    "MixinAbstractContainerScreen",
-    "MixinMachineModel",
+    "client.MixinAbstractContainerScreen",
+    "client.MixinMachineModel",
     "accessor.GameRendererAccessor",
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",

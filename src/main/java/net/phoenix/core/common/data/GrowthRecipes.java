@@ -1,9 +1,8 @@
 package net.phoenix.core.common.data;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.phoenix.core.PhoenixCore;
@@ -46,7 +45,9 @@ public final class GrowthRecipes {
                 .save(provider);
     }
 
-    private static void at(GTRecipeType type, String id, int stage, Consumer<com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder> recipe, RecipeOutput provider) {
+    private static void at(GTRecipeType type, String id, int stage,
+                           Consumer<com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder> recipe,
+                           RecipeOutput provider) {
         var builder = type.recipeBuilder(PhoenixCore.id(id)).addData(GrowthMultiblockMachine.MIN_STAGE_KEY, stage);
         recipe.accept(builder);
         builder.save(provider);

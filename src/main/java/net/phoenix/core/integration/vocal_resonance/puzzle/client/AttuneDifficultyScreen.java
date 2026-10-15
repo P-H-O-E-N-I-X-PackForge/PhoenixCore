@@ -1,19 +1,20 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle.client;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.puzzle.AttuneDifficulty;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SAttuneStartPacket;
 
 @OnlyIn(Dist.CLIENT)
 public class AttuneDifficultyScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int ROW_H = 40;
     private static final int ROW_W = 320;
@@ -44,9 +45,10 @@ public class AttuneDifficultyScreen extends Screen {
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         g.fill(0, 0, width, height, 0xE60A0A18);
         g.drawCenteredString(font, "Tune the Harmonic Lock", width / 2, 12, 0xFFE8D8FF);
-        g.drawCenteredString(font, tuneLevel == 0 ? "Clear Easy to wake it. Then come back for harder levels and boosts." :
-                "Tuned to " + AttuneDifficulty.fromLevel(tuneLevel).label() +
-                        ". A harder level clears with bigger boosts; failing one changes nothing.",
+        g.drawCenteredString(
+                font, tuneLevel == 0 ? "Clear Easy to wake it. Then come back for harder levels and boosts." :
+                        "Tuned to " + AttuneDifficulty.fromLevel(tuneLevel).label() +
+                                ". A harder level clears with bigger boosts; failing one changes nothing.",
                 width / 2, 25, 0xFF9A94B8);
 
         AttuneDifficulty[] all = AttuneDifficulty.values();
@@ -80,7 +82,7 @@ public class AttuneDifficultyScreen extends Screen {
                 if (all[i].level() <= tuneLevel + 1 && mx >= left() && mx < left() + ROW_W && my >= y &&
                         my < y + ROW_H) {
                     PacketDistributor.sendToServer(new C2SAttuneStartPacket(pos, all[i].level()));
-                    
+
                     onClose();
                     return true;
                 }

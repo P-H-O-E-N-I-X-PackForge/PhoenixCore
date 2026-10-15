@@ -1,34 +1,32 @@
 package net.phoenix.core.shop.network;
 
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.shop.ShopEntry;
 import net.phoenix.core.shop.WorldShopData;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public class C2SBuyShopEntryPacket implements CustomPacketPayload {
+
     public static final Type<C2SBuyShopEntryPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_buy_shop_entry_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SBuyShopEntryPacket> STREAM_CODEC = StreamCodec.of((buf, msg) -> C2SBuyShopEntryPacket.encode(msg, buf), C2SBuyShopEntryPacket::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SBuyShopEntryPacket> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> C2SBuyShopEntryPacket.encode(msg, buf), C2SBuyShopEntryPacket::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final UUID entryId;
 

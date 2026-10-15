@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregpacks.common.registry;
 
-
-import net.minecraft.world.item.Item;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,6 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -76,7 +75,8 @@ public class OmniPackBlockItem extends BlockItem implements ICurioItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         var tier = getBlock().getTier();
         tooltip.add(Component.translatable("item.gregpacks.omnipack.tooltip.slots", tier.defaultSlots));

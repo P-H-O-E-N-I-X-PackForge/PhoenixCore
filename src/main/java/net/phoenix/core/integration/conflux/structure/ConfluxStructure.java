@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.conflux.structure;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -13,6 +9,10 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Optional;
 
@@ -53,7 +53,7 @@ public class ConfluxStructure extends Structure {
                 high = Math.max(high, h);
             }
         }
-        
+
         if (high - low > k.maxSlope()) return Optional.empty();
         if (low <= generator.getSeaLevel() + 2) return Optional.empty();
         if (generator instanceof DisciplineChunkGenerator discipline &&

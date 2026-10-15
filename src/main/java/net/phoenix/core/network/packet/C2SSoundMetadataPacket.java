@@ -1,28 +1,25 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 
-import java.util.function.Supplier;
-
 public class C2SSoundMetadataPacket implements CustomPacketPayload {
+
     public static final Type<C2SSoundMetadataPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_sound_metadata_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSoundMetadataPacket> STREAM_CODEC = StreamCodec.ofMember(C2SSoundMetadataPacket::encode, C2SSoundMetadataPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSoundMetadataPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SSoundMetadataPacket::encode, C2SSoundMetadataPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final BlockPos soundPos;
     private final float soundRange;
@@ -78,5 +75,5 @@ public class C2SSoundMetadataPacket implements CustomPacketPayload {
                     msg.soundPos, safeRange, msg.durationTicks,
                     safeBass, safeMid, safeTreble, safeBPM);
         });
-        }
+    }
 }

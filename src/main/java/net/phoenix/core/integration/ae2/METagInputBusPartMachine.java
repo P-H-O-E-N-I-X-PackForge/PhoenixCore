@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.ae2;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
@@ -23,6 +21,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.integration.ae2.utils.TagMatcher;
+import net.phoenix.core.util.StackNbt;
 
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEItemKey;
@@ -286,11 +285,13 @@ public class METagInputBusPartMachine extends MEBusPartMachine implements IDataS
         if (!isRemote()) {
             CompoundTag tag = new CompoundTag();
             tag.put("METagInputBus", writeConfigToTag());
-            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                    net.minecraft.world.item.component.CustomData.of(tag));
 
             String displayName = whitelistExpr.isBlank() ? "Empty Tag Bus" : "Tag Bus: " + whitelistExpr;
-            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("ME Tag Input Bus Configuration Data")
-                    .withStyle(style -> style.withItalic(true)));
+            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                    Component.literal("ME Tag Input Bus Configuration Data")
+                            .withStyle(style -> style.withItalic(true)));
 
             player.sendSystemMessage(Component.literal("Settings Copied: " + whitelistExpr));
         }

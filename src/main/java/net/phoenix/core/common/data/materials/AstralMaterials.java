@@ -13,7 +13,7 @@ public class AstralMaterials {
 
     public static void register() {
         ASTRAL_FILAMENT = new Material.Builder(PhoenixCore.id("astral_filament"))
-                
+
                 .dust()
                 .color(0x7A4FE0)
                 .secondaryColor(0xB99CFF)
@@ -21,7 +21,7 @@ public class AstralMaterials {
                 .buildAndRegister();
 
         SKEIN = new Material.Builder(PhoenixCore.id("skein"))
-                
+
                 .dust()
                 .fluid()
                 .color(0x5C2FB0)
@@ -30,7 +30,7 @@ public class AstralMaterials {
                 .buildAndRegister();
 
         ENSORCELLED_WEAVE = new Material.Builder(PhoenixCore.id("ensorcelled_weave"))
-                
+
                 .fluid()
                 .color(0x2E0F5C)
                 .secondaryColor(0xC79CFF)

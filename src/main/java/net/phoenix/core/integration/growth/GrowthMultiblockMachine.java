@@ -3,15 +3,14 @@ package net.phoenix.core.integration.growth;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
-import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListener;
-import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
-import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
+import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListener;
+import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -65,7 +64,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         MAX_STAGE,
         OBSTRUCTED,
         INSUFFICIENT_COST,
-        
+
         PAUSED
     }
 
@@ -675,7 +674,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     @Override
     public @Nullable PhoenixSkyLayer createSkyLayer() {
         float t = getGrowthStages().isEmpty() ? 0f : growthStage / (float) Math.max(1, getGrowthStages().size() - 1);
-        
+
         return new NebulaSkyLayer(
                 new float[] { 0.30f + 0.05f * t, 0.55f + 0.40f * t, 0.35f + 0.25f * t },
                 new float[] { 0.20f + 0.65f * t, 0.35f, 0.30f + 0.65f * t },
@@ -708,7 +707,8 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
                         .withStyle(ChatFormatting.GRAY);
             }
             StringBuilder text = new StringBuilder("Stage " + growthStage + ":");
-            if (stage.speedBonus() > 0.0f) text.append(" ").append(Math.round(stage.speedBonus() * 100)).append("% faster");
+            if (stage.speedBonus() > 0.0f)
+                text.append(" ").append(Math.round(stage.speedBonus() * 100)).append("% faster");
             if (stage.outputBonus() > 0.0f) {
                 text.append(" +").append(Math.round(stage.outputBonus() * 100)).append("% output");
             }
@@ -728,11 +728,13 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             }
             return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GRAY);
         })));
-        
+
         widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> isControlled() ?
-                net.minecraft.network.chat.Component.literal("Growth control: " + (growthPaused ? "PAUSED" : "running") +
-                        "   target stage " + Math.min(targetStage, maxStage()) + "   tendrils " +
-                        (tendrilsEnabled ? "on" : "off")).withStyle(ChatFormatting.AQUA) :
+                net.minecraft.network.chat.Component
+                        .literal("Growth control: " + (growthPaused ? "PAUSED" : "running") +
+                                "   target stage " + Math.min(targetStage, maxStage()) + "   tendrils " +
+                                (tendrilsEnabled ? "on" : "off"))
+                        .withStyle(ChatFormatting.AQUA) :
                 net.minecraft.network.chat.Component.literal("No growth control hatch: growth is wild and breaks " +
                         "what is in its way").withStyle(ChatFormatting.RED))));
         widgets.add(ActionButtons.simple(syncManager, "growthPause", this::togglePaused,
@@ -766,8 +768,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
 
         widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
             if (growthStall == STALL_COST) {
-                return net.minecraft.network.chat.Component.literal("Growth is waiting: the next stage's cost is not in " +
-                        "the input buses").withStyle(ChatFormatting.RED);
+                return net.minecraft.network.chat.Component
+                        .literal("Growth is waiting: the next stage's cost is not in " +
+                                "the input buses")
+                        .withStyle(ChatFormatting.RED);
             }
             if (growthStall == STALL_BLOCKED) {
                 return net.minecraft.network.chat.Component.literal("Growth is waiting: something is in the way")

@@ -1,24 +1,22 @@
 package net.phoenix.core.network.packet;
 
-
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.block.cinder.CinderBlocks;
 import net.phoenix.core.common.block.cinder.CinderConstructionBlockEntity;
 import net.phoenix.core.common.block.cinder.CinderVisualEffects;
@@ -26,23 +24,22 @@ import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderDeploySource;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class C2SCinderCommitPacket implements CustomPacketPayload {
+
     public static final Type<C2SCinderCommitPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_commit_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderCommitPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderCommitPacket::encode, C2SCinderCommitPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderCommitPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SCinderCommitPacket::encode, C2SCinderCommitPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final InteractionHand hand;
     private final BlockPos anchor;

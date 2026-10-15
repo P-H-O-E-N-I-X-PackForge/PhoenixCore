@@ -223,8 +223,7 @@ public class PlanetOrbit {
     private void addVertex(VertexConsumer consumer, PoseStack poseStack,
                            float x, float y, float z, int r, int g, int b, int a) {
         consumer.addVertex(poseStack.last().pose(), x, y, z)
-                .setColor(r, g, b, a)
-                ;
+                .setColor(r, g, b, a);
     }
 
     public String getName() {

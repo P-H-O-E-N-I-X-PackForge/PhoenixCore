@@ -30,11 +30,6 @@ public final class GrowthPatternHelper {
 
     private GrowthPatternHelper() {}
 
-    /**
-     * @param minBounds the smallest shape the machine can be (its first stage). The multiblock preview starts from these,
-     *                  so it shows the real starting structure instead of a lone controller.
-     * @param maxBounds the largest shape it can grow into
-     */
     public static IBlockPattern getPattern(MultiblockMachineDefinition definition, MultiPredicate shellPredicate,
                                            IntList minBounds, IntList maxBounds) {
         return ExpandableMultiblockPatternBuilder.start()

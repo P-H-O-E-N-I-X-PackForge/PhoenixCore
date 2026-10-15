@@ -1,11 +1,9 @@
 package net.phoenix.core.integration.conflux.network;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.phoenix.core.PhoenixCore;
 
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)

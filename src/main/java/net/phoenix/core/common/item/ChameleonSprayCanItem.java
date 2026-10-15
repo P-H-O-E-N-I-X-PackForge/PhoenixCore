@@ -1,12 +1,7 @@
 package net.phoenix.core.common.item;
 
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,19 +22,18 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 import net.phoenix.core.configs.PhoenixConfigs;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ChameleonSprayCanItem extends Item {
 
@@ -101,17 +95,19 @@ public class ChameleonSprayCanItem extends Item {
 
             if (state.getBlock() instanceof BucketPickup bucketPickup) {
                 if (state.getFluidState().getType() == PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid()) {
-                    boolean success = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).map(itemCap -> {
-                        FluidStack fillStack = new FluidStack(PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid(),
-                                FluidType.BUCKET_VOLUME);
-                        int filled = itemCap.fill(fillStack, IFluidHandler.FluidAction.SIMULATE);
+                    boolean success = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
+                            .map(itemCap -> {
+                                FluidStack fillStack = new FluidStack(
+                                        PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid(),
+                                        FluidType.BUCKET_VOLUME);
+                                int filled = itemCap.fill(fillStack, IFluidHandler.FluidAction.SIMULATE);
 
-                        if (filled == FluidType.BUCKET_VOLUME) {
-                            itemCap.fill(fillStack, IFluidHandler.FluidAction.EXECUTE);
-                            return true;
-                        }
-                        return false;
-                    }).orElse(false);
+                                if (filled == FluidType.BUCKET_VOLUME) {
+                                    itemCap.fill(fillStack, IFluidHandler.FluidAction.EXECUTE);
+                                    return true;
+                                }
+                                return false;
+                            }).orElse(false);
 
                     if (success) {
                         bucketPickup.pickupBlock(player, level, pos, state);
@@ -174,7 +170,8 @@ public class ChameleonSprayCanItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context,
+                                @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         net.minecraft.world.level.Level level = context.level();
         String chromCode = ChameleonSprayCanBehaviour.getChromaticCode(stack);
         if (chromCode != null) {

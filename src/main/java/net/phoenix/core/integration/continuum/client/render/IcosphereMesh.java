@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.continuum.client.render;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.renderer.ShaderInstance;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -72,7 +70,9 @@ public final class IcosphereMesh implements AutoCloseable {
             triangles = next;
         }
 
-        BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(triangles.size() * 3 * 12 + 64), VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
+        BufferBuilder builder = new BufferBuilder(
+                new com.mojang.blaze3d.vertex.ByteBufferBuilder(triangles.size() * 3 * 12 + 64),
+                VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
         for (Vector3f[] tri : triangles) {
             for (Vector3f v : tri) {
                 builder.addVertex(v.x, v.y, v.z);

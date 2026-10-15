@@ -1,13 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
 
 @EventBusSubscriber(modid = "phoenixcore")

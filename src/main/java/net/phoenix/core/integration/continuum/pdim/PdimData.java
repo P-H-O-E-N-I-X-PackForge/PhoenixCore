@@ -26,7 +26,9 @@ public class PdimData extends SavedData {
     private final Map<UUID, Return> returns = new HashMap<>();
 
     public static PdimData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(PdimData::new, (tag, provider) -> PdimData.load(tag), null), ID);
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(PdimData::new,
+                        (tag, provider) -> PdimData.load(tag), null), ID);
     }
 
     public @Nullable Entry entry(UUID player, ResourceLocation body) {

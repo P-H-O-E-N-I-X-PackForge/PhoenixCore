@@ -1,13 +1,12 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.client.FlightProfiles;
@@ -21,7 +20,6 @@ import net.phoenix.core.integration.continuum.common.Mission;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.network.C2SCollectMissionPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -35,6 +33,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class ContinuumArrivalScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final float SECONDS = 9.0f;
     private static final float CARD_AT = 0.78f;

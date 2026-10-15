@@ -1,16 +1,13 @@
 package net.phoenix.core.integration.conflux.terminal;
 
-
-
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
@@ -33,7 +30,8 @@ public class ConfluxDataStore extends SavedData {
 
     public static ConfluxDataStore get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ConfluxDataStore::new, (tag, provider) -> ConfluxDataStore.load(tag), null), ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ConfluxDataStore::new,
+                        (tag, provider) -> ConfluxDataStore.load(tag), null), ID);
     }
 
     private Map<ConfluxDataType, Long> map(UUID team) {

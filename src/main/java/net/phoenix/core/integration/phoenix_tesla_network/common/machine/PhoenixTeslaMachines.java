@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine;
 
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
@@ -20,6 +18,7 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.registry.registrate.builder.MachineBuilder;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.common.data.GCYMBlocks;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
@@ -396,8 +395,9 @@ public class PhoenixTeslaMachines {
         return "tesla_hatches/tesla_" + iomode + "_" + amperage + "a";
     }
 
-    private static MachineEntry<MachineDefinition>[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability,
-                                                          int... tiers) {
+    private static MachineEntry<MachineDefinition>[] registerTeslaHatch(String name, IO io, int amperage,
+                                                                        PartAbility ability,
+                                                                        int... tiers) {
         String iomode = io == IO.OUT ? "input" : "output";
 
         return registerTieredMachines(
@@ -435,7 +435,8 @@ public class PhoenixTeslaMachines {
         }
     }
 
-    private static MachineEntry<MachineDefinition>[] registerTeslaLaserHatch(String name, IO io, int amperage, PartAbility ability) {
+    private static MachineEntry<MachineDefinition>[] registerTeslaLaserHatch(String name, IO io, int amperage,
+                                                                             PartAbility ability) {
         String iomode = io == IO.OUT ? "input" : "output";
         String laserDisplayName = getLaserName(io, amperage);
 
@@ -486,37 +487,45 @@ public class PhoenixTeslaMachines {
             "tesla_laser_output_hatch_4096a", IO.IN, 4096,
             PartAbility.INPUT_LASER);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_2A = registerTeslaHatch(
+            "tesla_energy_input_hatch", IO.OUT, 2,
             PartAbility.OUTPUT_ENERGY, GTValues.ALL_TIERS);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_4A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 4,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_4A = registerTeslaHatch(
+            "tesla_energy_input_hatch", IO.OUT, 4,
             PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_16A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 16,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_16A = registerTeslaHatch(
+            "tesla_energy_input_hatch", IO.OUT, 16,
             PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_64A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 64,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_64A = registerTeslaHatch(
+            "tesla_energy_input_hatch", IO.OUT, 64,
             PartAbility.SUBSTATION_OUTPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_2A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 2,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_2A = registerTeslaHatch(
+            "tesla_energy_output_hatch", IO.IN, 2,
             PartAbility.INPUT_ENERGY, GTValues.ALL_TIERS);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_4A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 4,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_4A = registerTeslaHatch(
+            "tesla_energy_output_hatch", IO.IN, 4,
             PartAbility.INPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_16A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_16A = registerTeslaHatch(
+            "tesla_energy_output_hatch", IO.IN,
             16, PartAbility.INPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_64A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_64A = registerTeslaHatch(
+            "tesla_energy_output_hatch", IO.IN,
             64, PartAbility.SUBSTATION_INPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
     public static MachineEntry<MachineDefinition>[] registerWirelessCharger(
-                                                              GTRegistrate registrate,
-                                                              String name,
-                                                              BiFunction<BlockEntityCreationInfo, Integer, TeslaWirelessBatteryBufferMachine> factory) {
+                                                                            GTRegistrate registrate,
+                                                                            String name,
+                                                                            BiFunction<BlockEntityCreationInfo, Integer, TeslaWirelessBatteryBufferMachine> factory) {
         return registerChargerTieredMachines(
                 registrate,
                 name,
@@ -544,11 +553,11 @@ public class PhoenixTeslaMachines {
     }
 
     public static MachineEntry<MachineDefinition>[] registerChargerTieredMachines(
-                                                                    GTRegistrate registrate,
-                                                                    String name,
-                                                                    BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> machineFactory,
-                                                                    BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineEntry<MachineDefinition>> definitionBuilder,
-                                                                    int... tiers) {
+                                                                                  GTRegistrate registrate,
+                                                                                  String name,
+                                                                                  BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> machineFactory,
+                                                                                  BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineEntry<MachineDefinition>> definitionBuilder,
+                                                                                  int... tiers) {
         @SuppressWarnings("unchecked")
         MachineEntry<MachineDefinition>[] definitions = new MachineEntry[GTValues.TIER_COUNT];
 

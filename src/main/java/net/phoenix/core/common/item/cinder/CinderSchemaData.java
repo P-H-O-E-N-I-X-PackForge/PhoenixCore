@@ -1,11 +1,5 @@
 package net.phoenix.core.common.item.cinder;
 
-
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -28,7 +22,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.phoenix.core.util.StackNbt;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
@@ -39,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class CinderSchemaData {
 
@@ -271,7 +268,8 @@ public final class CinderSchemaData {
                                              char[] prefChars, int[] prefBaseIndices, int[] prefCandidateIndices,
                                              long[] posKeys, char[] posChars, int[] posBaseIndices,
                                              int[] posCandidateIndices) {
-        return applyConfiguration(StackNbt.getOrCreateTag(cinderCore), sliceKeys, sliceValues, prefChars, prefBaseIndices,
+        return applyConfiguration(StackNbt.getOrCreateTag(cinderCore), sliceKeys, sliceValues, prefChars,
+                prefBaseIndices,
                 prefCandidateIndices, posKeys, posChars, posBaseIndices, posCandidateIndices);
     }
 

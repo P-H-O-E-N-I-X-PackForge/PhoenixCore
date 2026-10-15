@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.recipe_helper;
 
-
-
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -12,10 +8,11 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.network.PhoenixNetwork;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.packet.PacketRecipeBuilderGenerate;
 
 import lombok.Getter;

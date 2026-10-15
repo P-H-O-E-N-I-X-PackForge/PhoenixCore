@@ -1,9 +1,8 @@
 package net.phoenix.core.common.data;
 
-
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;

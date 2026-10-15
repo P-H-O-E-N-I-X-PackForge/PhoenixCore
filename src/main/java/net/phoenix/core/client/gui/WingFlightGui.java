@@ -1,7 +1,5 @@
 package net.phoenix.core.client.gui;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.mui.IItemUIHolder;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
@@ -12,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.common.data.item.PhoenixArmorItem;
+import net.phoenix.core.util.StackNbt;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.factory.PlayerInventoryGuiData;

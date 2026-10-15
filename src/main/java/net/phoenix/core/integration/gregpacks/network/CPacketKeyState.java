@@ -1,31 +1,29 @@
 package net.phoenix.core.integration.gregpacks.network;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 public class CPacketKeyState implements CustomPacketPayload {
+
     public static final Type<CPacketKeyState> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_key_state"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketKeyState> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketKeyState.encode(msg, buf), CPacketKeyState::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketKeyState> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> CPacketKeyState.encode(msg, buf), CPacketKeyState::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public static final Map<UUID, boolean[]> KEYS = new ConcurrentHashMap<>();
 
@@ -50,7 +48,7 @@ public class CPacketKeyState implements CustomPacketPayload {
             ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player != null) KEYS.put(player.getUUID(), msg.keys);
         });
-        }
+    }
 
     public static boolean isJumping(Player player) {
         return get(player, 0);

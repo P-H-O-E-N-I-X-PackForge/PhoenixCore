@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.conflux.client;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,11 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.client.render.*;
 import net.phoenix.core.integration.conflux.client.render.discipline.DisciplineRendererRegistry;
 import net.phoenix.core.integration.conflux.network.C2SResearchUnlockPacket;
-import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTree;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
@@ -31,6 +27,9 @@ import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class ResearchTerminalScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int TAB_H = 20;
     private static final int BOTTOM_H = 48;

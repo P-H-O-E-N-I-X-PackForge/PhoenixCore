@@ -1,18 +1,13 @@
 package net.phoenix.core.common.data.recipe.generated;
 
-
-
-
-import net.phoenix.core.util.Mats;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -27,9 +22,11 @@ import net.phoenix.core.common.data.recipe.records.ApisProgenitorConfig;
 import net.phoenix.core.common.data.recipe.records.FullBeeConfig;
 import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapability;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
+import net.phoenix.core.util.Mats;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
 
 import static com.gregtechceu.gtceu.api.GTValues.HV;
 import static com.gregtechceu.gtceu.api.GTValues.VA;
@@ -40,13 +37,19 @@ import static net.phoenix.core.common.data.bees.BeeRecipeData.MOD_ID;
 @SuppressWarnings({ "unused", "removal" })
 public class PhoenixBeeRecipeGenerator {
 
+    private static final Set<String> WARNED_MISSING = new HashSet<>();
+
     private static ItemStack safeStack(String id, int count) {
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        ResourceLocation rl = ResourceLocation.tryParse(id);
+        if (rl == null) return ItemStack.EMPTY;
+        Item item = BuiltInRegistries.ITEM.get(rl);
         if (item == null || item == Items.AIR) return ItemStack.EMPTY;
         return new ItemStack(item, count);
     }
 
     public static void loadBeeRecipes(RecipeOutput provider) {
+        WARNED_MISSING.clear();
+
         ItemStack honeyCombBase = safeStack("phoenixcore:honey_comb_base", 1);
 
         if (honeyCombBase.isEmpty()) {
@@ -72,6 +75,8 @@ public class PhoenixBeeRecipeGenerator {
     }
 
     private static Material getMaterial(String id) {
+        if (id == null || id.isEmpty()) return null;
+
         Material mat = switch (id) {
             case "fluorite" -> PhoenixOres.FLUORITE;
             case "voidglass_shard" -> PhoenixOres.VOIDGLASS_SHARD;
@@ -84,9 +89,8 @@ public class PhoenixBeeRecipeGenerator {
             default -> Mats.byName(id);
         };
 
-        if (mat == null && !id.isEmpty()) {
-            String cap = id.substring(0, 1).toUpperCase() + id.substring(1);
-            mat = net.phoenix.core.util.Mats.byName(cap);
+        if (mat == null && WARNED_MISSING.add(id)) {
+            PhoenixAPI.LOGGER.warn("Bee recipes: no material found for id '{}', skipping its recipes.", id);
         }
         return mat;
     }
@@ -94,7 +98,9 @@ public class PhoenixBeeRecipeGenerator {
     private static FluidStack safeFluid(String spec) {
         try {
             String[] parts = spec.split(" ");
-            var fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(parts[0]));
+            ResourceLocation rl = ResourceLocation.tryParse(parts[0]);
+            if (rl == null) return FluidStack.EMPTY;
+            var fluid = BuiltInRegistries.FLUID.get(rl);
             int amount = Integer.parseInt(parts[1]);
             return (fluid == null) ? FluidStack.EMPTY : new FluidStack(fluid, amount);
         } catch (Exception e) {
@@ -248,7 +254,12 @@ public class PhoenixBeeRecipeGenerator {
 
     private static void applyExtraInput(GTRecipeBuilder builder, String spec) {
         if (spec.startsWith("#")) {
-            TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(spec.substring(1)));
+            ResourceLocation tagId = ResourceLocation.tryParse(spec.substring(1));
+            if (tagId == null) {
+                PhoenixAPI.LOGGER.warn("Bee recipes: invalid tag id '{}' in extra input, skipping.", spec);
+                return;
+            }
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
             builder.inputItems(Ingredient.of(tag), 1);
         } else {
             String[] parts = spec.split("x ");

@@ -1,7 +1,5 @@
-package net.phoenix.core.mixin;
+package net.phoenix.core.mixin.client;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,11 +7,11 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.integration.gregvaults.client.screen.IStackedVaultView;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.gregvaults.client.screen.AggregatedStack;
+import net.phoenix.core.integration.gregvaults.client.screen.IStackedVaultView;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultSlot;
 import net.phoenix.core.integration.gregvaults.network.CPacketStackedPickup;
-import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

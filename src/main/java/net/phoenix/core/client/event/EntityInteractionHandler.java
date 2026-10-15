@@ -1,19 +1,18 @@
 package net.phoenix.core.client.event;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.phoenix.core.common.item.ChameleonSprayCanBehaviour;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 
-@EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
 public class EntityInteractionHandler {
 
     @SubscribeEvent

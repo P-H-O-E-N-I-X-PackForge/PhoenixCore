@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric.part;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -26,6 +24,7 @@ import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric.TeslaTowerMachine;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.multiblock.electric.TeslaWirelessRegistry;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
+import net.phoenix.core.util.StackNbt;
 import net.phoenix.core.utils.TeamUtils;
 
 import brachy.modularui.api.drawable.Text;

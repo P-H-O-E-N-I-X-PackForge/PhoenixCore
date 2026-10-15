@@ -32,7 +32,8 @@ public class WorldResearchData extends SavedData {
 
     public static WorldResearchData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldResearchData::new, (tag, provider) -> WorldResearchData.load(tag), null), ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldResearchData::new,
+                        (tag, provider) -> WorldResearchData.load(tag), null), ID);
     }
 
     public boolean isUnlocked(UUID team, ResourceLocation nodeId) {

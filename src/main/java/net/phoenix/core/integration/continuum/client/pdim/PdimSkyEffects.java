@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.continuum.client.pdim;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -18,6 +16,7 @@ import net.phoenix.core.integration.continuum.pdim.PdimDimensions;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;

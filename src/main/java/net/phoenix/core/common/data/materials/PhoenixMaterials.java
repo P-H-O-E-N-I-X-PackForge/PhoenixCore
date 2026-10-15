@@ -1,7 +1,5 @@
 package net.phoenix.core.common.data.materials;
 
-
-import net.phoenix.core.util.Mats;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.*;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
@@ -16,6 +14,7 @@ import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.api.item.tool.PhoenixToolType;
 import net.phoenix.core.common.data.recipe.generated.BeePrefixHelper;
 import net.phoenix.core.common.data.recipe.generated.CrystalRoseHelper;
+import net.phoenix.core.util.Mats;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -72,9 +71,9 @@ public class PhoenixMaterials {
     }
 
     public static void modifyMaterials() {
-        
-        CrystalRoseHelper.addCrystalRoseFlags(net.phoenix.core.integration.conflux.dimension.worldgen.ProvinceVeinTemplates
-                .allMaterials().toArray(new com.gregtechceu.gtceu.api.data.chemical.material.Material[0]));
+        CrystalRoseHelper
+                .addCrystalRoseFlags(net.phoenix.core.integration.conflux.dimension.worldgen.ProvinceVeinTemplates
+                        .allMaterials().toArray(new com.gregtechceu.gtceu.api.data.chemical.material.Material[0]));
         CrystalRoseHelper.addCrystalRoseFlags(
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
                 Electrotine, Emerald, Galena, Gold, Ilmenite, Invar, Iron, Lapis,

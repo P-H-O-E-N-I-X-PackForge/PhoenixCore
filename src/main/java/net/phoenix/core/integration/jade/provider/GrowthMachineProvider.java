@@ -52,8 +52,10 @@ public class GrowthMachineProvider implements IBlockComponentProvider, IServerDa
         }
 
         StringBuilder bonus = new StringBuilder();
-        if (data.getFloat("GrowthSpeed") > 0.0f) bonus.append(Math.round(data.getFloat("GrowthSpeed") * 100)).append("% faster  ");
-        if (data.getFloat("GrowthOutput") > 0.0f) bonus.append("+").append(Math.round(data.getFloat("GrowthOutput") * 100)).append("% output  ");
+        if (data.getFloat("GrowthSpeed") > 0.0f)
+            bonus.append(Math.round(data.getFloat("GrowthSpeed") * 100)).append("% faster  ");
+        if (data.getFloat("GrowthOutput") > 0.0f)
+            bonus.append("+").append(Math.round(data.getFloat("GrowthOutput") * 100)).append("% output  ");
         if (data.getInt("GrowthBatch") > 1) bonus.append("x").append(data.getInt("GrowthBatch")).append(" batch");
         if (bonus.length() > 0) tooltip.add(Component.literal(bonus.toString().trim()).withStyle(ChatFormatting.AQUA));
 
@@ -63,7 +65,8 @@ public class GrowthMachineProvider implements IBlockComponentProvider, IServerDa
             tooltip.add(Component.literal("Something is in the way").withStyle(ChatFormatting.RED));
         }
         tooltip.add(Component.literal("Tendrils: " + data.getInt("Tendrils") + " growing, " + data.getInt("Matured") +
-                " grown, " + data.getInt("TendrilBlocks") + " blocks (" + Math.round(data.getFloat("TendrilSpeed") * 100) +
+                " grown, " + data.getInt("TendrilBlocks") + " blocks (" +
+                Math.round(data.getFloat("TendrilSpeed") * 100) +
                 "% faster, +" + Math.round(data.getFloat("TendrilOutput") * 100) + "% output)")
                 .withStyle(ChatFormatting.DARK_GREEN));
         if (data.getBoolean("Controlled")) {

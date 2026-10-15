@@ -3,13 +3,12 @@ package net.phoenix.core.integration.growth.machine;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.integration.growth.GrowthBlocks;
-import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
 import net.phoenix.core.integration.growth.GrowthItems;
+import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
 import net.phoenix.core.integration.growth.GrowthStage;
 import net.phoenix.core.integration.growth.GrowthStages;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
@@ -23,14 +22,14 @@ import java.util.List;
 public class BloomvineCoreMachine extends GrowthMultiblockMachine {
 
     private static final int MAX_MATURITY = 5;
-    
+
     public static final IntList MAX_BOUNDS = GrowthStages.bounds(2, 0, 3, 3, 0, 6);
-    /** Bloomvine does not change shape as it matures, so its smallest shape is its largest. */
+
     public static final IntList MIN_BOUNDS = MAX_BOUNDS;
-    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(BloomvineCoreMachine::buildMaturityTicks);
+    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers
+            .memoize(BloomvineCoreMachine::buildMaturityTicks);
 
     private static List<GrowthStage> buildMaturityTicks() {
-        
         return GrowthStages.fixed(MAX_BOUNDS, MAX_MATURITY).costItems(GrowthItems.GROWTH_SEED::get, 1)
                 .speedPerStage(0.04f).outputPerStage(0.10f)
                 .batchAtMax(2).build();

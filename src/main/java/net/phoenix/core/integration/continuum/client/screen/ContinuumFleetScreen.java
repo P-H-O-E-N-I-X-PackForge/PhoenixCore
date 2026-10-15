@@ -1,15 +1,12 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.common.ContinuumMissions;
@@ -20,7 +17,6 @@ import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.network.C2SCollectAllPacket;
 import net.phoenix.core.integration.continuum.network.C2SCollectMissionPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ContinuumFleetScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int ROW = 30;
 
@@ -228,7 +227,7 @@ public class ContinuumFleetScreen extends Screen {
                 ContinuumSounds.click();
                 var id = (java.util.UUID) row[0];
                 if ((boolean) row[6]) {
-                    
+
                     ContinuumMapScreen.requestRescue((ResourceLocation) row[7]);
                     Minecraft.getInstance().setScreen(parent);
                 } else if ((boolean) row[1]) {

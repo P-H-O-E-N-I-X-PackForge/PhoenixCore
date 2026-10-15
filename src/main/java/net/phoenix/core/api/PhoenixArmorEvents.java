@@ -1,9 +1,5 @@
 package net.phoenix.core.api;
 
-
-
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -13,13 +9,14 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.data.item.PhoenixArmorItem;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
+import net.phoenix.core.util.StackNbt;
 
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class PhoenixArmorEvents {
@@ -36,7 +33,8 @@ public class PhoenixArmorEvents {
             }
 
             if (player.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value()) &&
-                    player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.SUBMERGED_MINING_SPEED) < 1.0) {
+                    player.getAttributeValue(
+                            net.minecraft.world.entity.ai.attributes.Attributes.SUBMERGED_MINING_SPEED) < 1.0) {
                 event.setNewSpeed(event.getNewSpeed() * 5.0f);
             }
         }

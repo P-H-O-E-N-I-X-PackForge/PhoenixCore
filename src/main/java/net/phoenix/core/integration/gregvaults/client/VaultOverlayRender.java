@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.gregvaults.client;
 
-
-
-import com.mojang.serialization.MapCodec;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 
@@ -13,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -26,7 +23,7 @@ import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import java.util.List;
 
@@ -61,7 +58,8 @@ public class VaultOverlayRender extends DynamicRender<VaultMachine, VaultOverlay
     public void render(VaultMachine machine, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
         if (!machine.isFormed()) return;
-        BakedModel overlayModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(OVERLAY_MODEL));
+        BakedModel overlayModel = Minecraft.getInstance().getModelManager()
+                .getModel(ModelResourceLocation.standalone(OVERLAY_MODEL));
         if (overlayModel == null) return;
 
         poseStack.pushPose();

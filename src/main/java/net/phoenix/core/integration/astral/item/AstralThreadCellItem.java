@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.astral.item;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -12,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +44,8 @@ public class AstralThreadCellItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         net.minecraft.world.level.Level level = context.level();
         tooltip.add(Component.literal("Thread: " + getThread(stack) + " / " + CAPACITY)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
@@ -55,7 +55,9 @@ public class AstralThreadCellItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.integration.astral.client.AstralThreadCellScreen.open(hand); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.integration.astral.client.AstralThreadCellScreen.open(hand);
+            }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

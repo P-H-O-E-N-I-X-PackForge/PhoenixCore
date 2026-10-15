@@ -1,16 +1,14 @@
 package net.phoenix.core.client.gui.screen;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
 import net.phoenix.chromatic_codes.config.ModConfig;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.SelectChromaticCodePacket;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -18,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChromaticEffectSelectScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final InteractionHand hand;
     private final List<Character> availableCodes = new ArrayList<>();

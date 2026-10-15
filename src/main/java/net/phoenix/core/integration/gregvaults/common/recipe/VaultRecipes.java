@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.gregvaults.common.recipe;
 
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.phoenix.core.PhoenixCore;
 
 public class VaultRecipes {

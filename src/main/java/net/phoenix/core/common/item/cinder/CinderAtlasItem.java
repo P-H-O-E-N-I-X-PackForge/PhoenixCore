@@ -1,7 +1,6 @@
 package net.phoenix.core.common.item.cinder;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -61,10 +60,14 @@ public class CinderAtlasItem extends Item implements IMenuItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player.isShiftKeyDown() && level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderAtlasScreen.open(hand); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.client.gui.cinder.CinderAtlasScreen.open(hand);
+            }
         } else if (!player.isShiftKeyDown() && level.isClientSide) {
 
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel(); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel();
+            }
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
@@ -122,7 +125,9 @@ public class CinderAtlasItem extends Item implements IMenuItem {
         }
 
         if (level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderAtlasScreen.open(hand); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.client.gui.cinder.CinderAtlasScreen.open(hand);
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

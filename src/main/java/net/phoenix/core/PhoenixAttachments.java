@@ -13,9 +13,6 @@ import net.phoenix.core.integration.conflux.research.PlayerResearchData;
 
 import java.util.function.Supplier;
 
-/**
- * Data attachments, which replace the 1.20 capabilities that only ever carried saved data.
- */
 public final class PhoenixAttachments {
 
     private static final DeferredRegister<AttachmentType<?>> TYPES = DeferredRegister

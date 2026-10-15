@@ -1,31 +1,26 @@
 package net.phoenix.core.common.data.item;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.phoenix.core.client.renderer.PhoenixArmorRenderer;
+import net.phoenix.core.util.StackNbt;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
@@ -33,7 +28,8 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final PhoenixTechSuite logic;
 
-    public PhoenixArmorItem(net.minecraft.core.Holder<ArmorMaterial> material, Type type, Properties properties, PhoenixTechSuite logic) {
+    public PhoenixArmorItem(net.minecraft.core.Holder<ArmorMaterial> material, Type type, Properties properties,
+                            PhoenixTechSuite logic) {
         super(material, type, properties);
         this.logic = logic;
         this.setArmorLogic(logic);

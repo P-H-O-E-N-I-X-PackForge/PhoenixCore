@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.network.S2COpenMapPacket;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import java.util.ArrayList;
 import java.util.List;

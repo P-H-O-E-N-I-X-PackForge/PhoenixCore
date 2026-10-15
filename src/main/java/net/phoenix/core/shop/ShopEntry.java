@@ -1,12 +1,11 @@
 package net.phoenix.core.shop;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.shop.reward.ShopReward;
 import net.phoenix.core.shop.reward.ShopRewardTypes;
+import net.phoenix.core.util.StackNbt;
 
 import java.util.List;
 import java.util.UUID;

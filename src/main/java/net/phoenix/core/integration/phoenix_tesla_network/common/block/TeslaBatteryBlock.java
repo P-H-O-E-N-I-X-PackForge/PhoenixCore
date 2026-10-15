@@ -1,20 +1,17 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.block;
 
-
-import net.minecraft.world.item.Item;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.phoenix.core.integration.phoenix_tesla_network.api.machine.trait.ITeslaBattery;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -32,7 +29,8 @@ public class TeslaBatteryBlock extends Block {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
+                                @NotNull TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
 
         if (batteryData.getTier() == -1) {

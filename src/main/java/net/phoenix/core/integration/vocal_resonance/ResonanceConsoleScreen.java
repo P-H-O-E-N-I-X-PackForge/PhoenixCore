@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.vocal_resonance;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,6 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResonanceConsoleScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final ResonantJukeboxMachine machine;
 

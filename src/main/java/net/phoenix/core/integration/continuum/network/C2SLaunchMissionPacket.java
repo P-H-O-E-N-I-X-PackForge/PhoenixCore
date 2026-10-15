@@ -1,34 +1,30 @@
 package net.phoenix.core.integration.continuum.network;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.continuum.common.ContinuumMissions;
 import net.phoenix.core.integration.continuum.common.ContinuumServerEvents;
 import net.phoenix.core.integration.continuum.common.Mission;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.utils.TeamUtils;
 
-import java.util.function.Supplier;
-
 public class C2SLaunchMissionPacket implements CustomPacketPayload {
+
     public static final Type<C2SLaunchMissionPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_launch_mission_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SLaunchMissionPacket> STREAM_CODEC = StreamCodec.ofMember(C2SLaunchMissionPacket::encode, C2SLaunchMissionPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SLaunchMissionPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SLaunchMissionPacket::encode, C2SLaunchMissionPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final ResourceLocation destination;
     private final BlockPos pad;
@@ -68,11 +64,12 @@ public class C2SLaunchMissionPacket implements CustomPacketPayload {
 
             String error = ContinuumMissions.launchMany(player, msg.destination, msg.pad, msg.type, msg.probes,
                     msg.count);
-            PacketDistributor.sendToPlayer(player, new S2CMissionLaunchedPacket(error == null, msg.destination, msg.pad, error == null ? "" : error));
+            PacketDistributor.sendToPlayer(player,
+                    new S2CMissionLaunchedPacket(error == null, msg.destination, msg.pad, error == null ? "" : error));
             if (error == null) {
                 ContinuumServerEvents.sendStateToTeam(player.server,
                         TeamUtils.getTeamIdOrPlayerFallback(player.getUUID()));
             }
         });
-        }
+    }
 }

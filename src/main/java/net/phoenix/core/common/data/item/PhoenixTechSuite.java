@@ -1,13 +1,5 @@
 package net.phoenix.core.common.data.item;
 
-import net.minecraft.core.Holder;
-
-
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
@@ -20,6 +12,7 @@ import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -44,11 +37,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
 import net.phoenix.core.mixin.accessor.AbilitiesAccessor;
+import net.phoenix.core.util.StackNbt;
 import net.phoenix.core.utils.TeamUtils;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
@@ -64,6 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("removal")
@@ -1154,7 +1150,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     public void supplyFood(@NotNull IElectricItem item, Player player) {
         if (item.canUse(energyPerUse / 10) && player.getFoodData().needsFood()) {
-            IItemHandler playerInv = Optional.ofNullable(player.getCapability(Capabilities.ItemHandler.ENTITY)).orElse(null);
+            IItemHandler playerInv = Optional.ofNullable(player.getCapability(Capabilities.ItemHandler.ENTITY))
+                    .orElse(null);
             if (!(playerInv instanceof IItemHandlerModifiable items)) return;
 
             int bestSlot = -1;
@@ -1205,7 +1202,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     @Override
     public int damageArmor(LivingEntity entity, ItemStack itemStack, int damage, EquipmentSlot equipmentSlot) {
-        // 1.21 no longer passes the damage source in; the entity's last damage source is the closest stand-in
         DamageSource source = entity == null ? null : entity.getLastDamageSource();
         if (source == null) {
             return super.damageArmor(entity, itemStack, damage, equipmentSlot);

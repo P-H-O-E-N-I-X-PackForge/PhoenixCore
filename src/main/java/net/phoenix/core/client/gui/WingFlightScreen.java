@@ -1,9 +1,5 @@
 package net.phoenix.core.client.gui;
 
-
-
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,15 +9,19 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.UpdateWingSettingsPacket;
+import net.phoenix.core.util.StackNbt;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class WingFlightScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private String flightMode;
     private int flightSpeed;

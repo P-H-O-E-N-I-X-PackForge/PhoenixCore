@@ -1,10 +1,7 @@
 package net.phoenix.core.integration.conflux.terminal;
 
-
-import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -17,6 +14,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.conflux.client.ResearchTerminalScreen;
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;
 
 public class ResearchTerminalBlock extends BaseEntityBlock {
@@ -33,7 +31,7 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
-                                                BlockHitResult hit) {
+                                               BlockHitResult hit) {
         if (level.isClientSide) {
 
             if (level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {

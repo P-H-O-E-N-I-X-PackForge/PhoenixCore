@@ -11,10 +11,6 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 
-/**
- * Registers the OmniPack capabilities: fluid and energy on the carried item, and inventory, fluid and energy on the
- * placed block.
- */
 public class GregPacksCapabilityHandler {
 
     public static void register(RegisterCapabilitiesEvent event) {
@@ -28,12 +24,18 @@ public class GregPacksCapabilityHandler {
         }
         for (var block : BuiltInRegistries.BLOCK) {
             if (!(block instanceof OmniPackBlock)) continue;
-            event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
-                    pack.getItemHandler() : null, block);
-            event.registerBlock(Capabilities.FluidHandler.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
-                    pack.getFluidHandler() : null, block);
-            event.registerBlock(Capabilities.EnergyStorage.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
-                    pack.getEnergyHandler() : null, block);
+            event.registerBlock(Capabilities.ItemHandler.BLOCK,
+                    (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                            pack.getItemHandler() : null,
+                    block);
+            event.registerBlock(Capabilities.FluidHandler.BLOCK,
+                    (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                            pack.getFluidHandler() : null,
+                    block);
+            event.registerBlock(Capabilities.EnergyStorage.BLOCK,
+                    (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                            pack.getEnergyHandler() : null,
+                    block);
         }
     }
 

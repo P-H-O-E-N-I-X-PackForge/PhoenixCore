@@ -1,28 +1,25 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
 
-import java.util.function.Supplier;
-
 public class C2SSelectSoundPacket implements CustomPacketPayload {
+
     public static final Type<C2SSelectSoundPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_select_sound_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSelectSoundPacket> STREAM_CODEC = StreamCodec.ofMember(C2SSelectSoundPacket::encode, C2SSelectSoundPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSelectSoundPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SSelectSoundPacket::encode, C2SSelectSoundPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final BlockPos pos;
     private final String soundLoc;
@@ -71,5 +68,5 @@ public class C2SSelectSoundPacket implements CustomPacketPayload {
             var state = level.getBlockState(msg.pos);
             level.sendBlockUpdated(msg.pos, state, state, 3);
         });
-        }
+    }
 }

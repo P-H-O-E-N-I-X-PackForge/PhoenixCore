@@ -1,12 +1,5 @@
 package net.phoenix.core.common.item.cinder;
 
-
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
-import net.phoenix.core.util.StackNbt;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -25,17 +18,18 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.phoenix.core.util.StackNbt;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class CinderCoreItem extends Item {
 
@@ -49,10 +43,14 @@ public class CinderCoreItem extends Item {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player.isShiftKeyDown() && level.isClientSide) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand);
+            }
         } else if (!player.isShiftKeyDown() && level.isClientSide) {
 
-            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel(); }
+            if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                net.phoenix.core.client.cinder.CinderPreviewState.INSTANCE.cancel();
+            }
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
@@ -78,7 +76,9 @@ public class CinderCoreItem extends Item {
             CinderSchemaData.scanFromWorld(stack, level, context.getClickedPos());
 
             if (level.isClientSide) {
-                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) { net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand); }
+                if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+                    net.phoenix.core.client.gui.cinder.CinderConfiguratorScreen.open(hand);
+                }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

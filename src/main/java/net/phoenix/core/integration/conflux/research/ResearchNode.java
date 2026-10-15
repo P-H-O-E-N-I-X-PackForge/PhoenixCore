@@ -79,7 +79,8 @@ public class ResearchNode {
 
         List<ResourceLocation> prereqsAny = new ArrayList<>();
         if (obj.has("prerequisites_any"))
-            obj.getAsJsonArray("prerequisites_any").forEach(e -> prereqsAny.add(ResourceLocation.parse(e.getAsString())));
+            obj.getAsJsonArray("prerequisites_any")
+                    .forEach(e -> prereqsAny.add(ResourceLocation.parse(e.getAsString())));
 
         Map<ConfluxDataType, Long> cost = new EnumMap<>(ConfluxDataType.class);
         if (obj.has("cost")) {

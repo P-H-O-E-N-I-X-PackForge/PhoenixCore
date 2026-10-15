@@ -1,12 +1,10 @@
 package net.phoenix.core.client.renderer.cinema.cutscene;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.renderer.cinema.cutscene.background.CutsceneBackgrounds;
 import net.phoenix.core.common.block.cinema.Cutscenes;

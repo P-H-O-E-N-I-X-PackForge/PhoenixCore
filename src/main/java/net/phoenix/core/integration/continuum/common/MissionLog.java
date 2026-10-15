@@ -11,6 +11,7 @@ public final class MissionLog {
     public static final int LIMIT = 120;
 
     public enum Kind {
+
         LAUNCH,
         LANDED,
         FAILED,

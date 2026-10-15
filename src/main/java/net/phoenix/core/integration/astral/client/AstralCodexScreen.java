@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.astral.client;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,11 +17,15 @@ import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class AstralCodexScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private int[] palette;
     private int cText, cDim, cBorder, cBorderDim, cBg1, cBg2, cPanel1, cPanel2;
 
-    private static final String[] PAGE_NAMES = { "Overview", "The Machine Chain", "Calibration", "The Ritual Pedestal", "The Wand" };
+    private static final String[] PAGE_NAMES = { "Overview", "The Machine Chain", "Calibration", "The Ritual Pedestal",
+            "The Wand" };
 
     private enum LT {
         HEADING,
@@ -354,27 +356,28 @@ public class AstralCodexScreen extends Screen {
 
     private List<WLine> pageCalibration() {
         var L = new ArrayList<WLine>();
-        L.add(WLine.t("The Spinning Wheel and the Loom will not run until they are calibrated. Every machine has a "
-                + "constellation of its own, so no two share an answer."));
+        L.add(WLine.t("The Spinning Wheel and the Loom will not run until they are calibrated. Every machine has a " +
+                "constellation of its own, so no two share an answer."));
         L.add(WLine.sp());
         L.add(WLine.sh("Survey the machine"));
-        L.add(WLine.t("Right-click a formed machine with the Wand to make a Survey. It records the machine's stars, "
-                + "but none of the lines between them."));
+        L.add(WLine.t("Right-click a formed machine with the Wand to make a Survey. It records the machine's stars, " +
+                "but none of the lines between them."));
         L.add(WLine.sp());
         L.add(WLine.sh("Learn the lines"));
-        L.add(WLine.t("Channel the Ritual Pedestal with the Survey in your inventory. Each ritual reveals more of the "
-                + "lines: more under a full moon, and more with an Amethyst Shard. Right-click the Survey to read it."));
+        L.add(WLine
+                .t("Channel the Ritual Pedestal with the Survey in your inventory. Each ritual reveals more of the " +
+                        "lines: more under a full moon, and more with an Amethyst Shard. Right-click the Survey to read it."));
         L.add(WLine.sp());
         L.add(WLine.sh("Draw the chart"));
-        L.add(WLine.t("Open the machine and press the spyglass. Click one star and then another to draw a line, and "
-                + "press Calibrate. The machine tells you how many lines are right, not which."));
+        L.add(WLine.t("Open the machine and press the spyglass. Click one star and then another to draw a line, and " +
+                "press Calibrate. The machine tells you how many lines are right, not which."));
         L.add(WLine.sp());
         L.add(WLine.t("Spinning Wheel: one thread through the stars. Each line has a direction and an order."));
         L.add(WLine.t("Loom: a closed loop with cross-links. Only the set of lines matters."));
         L.add(WLine.sp());
         L.add(WLine.sh("The moon"));
-        L.add(WLine.t("Each machine has a favoured moon phase. Calibrate it under that phase and it is aligned, and "
-                + "runs its recipes a little faster."));
+        L.add(WLine.t("Each machine has a favoured moon phase. Calibrate it under that phase and it is aligned, and " +
+                "runs its recipes a little faster."));
         L.add(WLine.sp());
         L.add(WLine.t("A machine that is broken and rebuilt gets a new constellation."));
         return L;
@@ -388,12 +391,12 @@ public class AstralCodexScreen extends Screen {
         L.add(WLine.sp());
         L.add(WLine.sh("Channeling"));
         L.add(WLine.t(
-                "Hold the Wand, keep a catalyst in your offhand, and hold right-click on the pedestal at night for a few "
-                        + "seconds. Light streams in from the runes. Letting go or walking away breaks the channel."));
+                "Hold the Wand, keep a catalyst in your offhand, and hold right-click on the pedestal at night for a few " +
+                        "seconds. Light streams in from the runes. Letting go or walking away breaks the channel."));
         L.add(WLine.sp());
         L.add(WLine.sh("The moon"));
-        L.add(WLine.t("A full moon makes the ritual give half as much again. If you carry a Survey, the ritual also "
-                + "reveals lines of its machine's constellation."));
+        L.add(WLine.t("A full moon makes the ritual give half as much again. If you carry a Survey, the ritual also " +
+                "reveals lines of its machine's constellation."));
         L.add(WLine.sp());
         L.add(WLine.sh("Known catalysts"));
         L.add(WLine.t("Amethyst Shard - Glowstone Dust"));

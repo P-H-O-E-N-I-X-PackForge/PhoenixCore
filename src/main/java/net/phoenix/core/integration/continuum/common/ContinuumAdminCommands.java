@@ -352,7 +352,7 @@ final class ContinuumAdminCommands {
             case SURVEY -> 0;
         };
         for (int i = 0; i < count; i++) {
-            
+
             if (type == Mission.Type.RESCUE) {
                 Mission waiting = null;
                 for (Mission other : data.missions(team)) {

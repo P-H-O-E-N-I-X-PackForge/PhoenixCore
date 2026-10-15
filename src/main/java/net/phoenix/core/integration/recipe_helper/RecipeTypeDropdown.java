@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.recipe_helper;
 
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -100,6 +98,9 @@ public class RecipeTypeDropdown extends AbstractWidget {
     }
 
     public static class RecipePickerOverlay extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
         private static final int PANEL_W = 260;
         private static final int PANEL_H = 220;

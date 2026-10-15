@@ -14,8 +14,6 @@ import net.minecraft.world.level.Level;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.common.RocketStats;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 
 public class ContinuumRepairKitItem extends Item {
@@ -61,7 +59,8 @@ public class ContinuumRepairKitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
         Level level = context.level();
         tooltip.add(Component.literal("Removes " + Math.round(PhoenixConfigs.INSTANCE.continuum.repairKitWear * 100) +
                 "% wear from a rocket.").withStyle(ChatFormatting.AQUA));

@@ -1,10 +1,9 @@
 package net.phoenix.core.integration.gregpacks.common.registry;
 
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;

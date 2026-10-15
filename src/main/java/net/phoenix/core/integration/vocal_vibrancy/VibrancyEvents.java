@@ -1,15 +1,13 @@
 package net.phoenix.core.integration.vocal_vibrancy;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.RadioClientAudio;
 import net.phoenix.core.integration.vocal_resonance.client.JukeblockSoundInstance;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SSoundMetadataPacket;
 
 @OnlyIn(Dist.CLIENT)

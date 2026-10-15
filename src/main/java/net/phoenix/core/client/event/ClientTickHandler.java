@@ -1,13 +1,5 @@
 package net.phoenix.core.client.event;
 
-
-
-
-
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,10 +9,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.gui.WingFlightScreen;
 import net.phoenix.core.client.gui.screen.ColorRadialMenuScreen;
@@ -29,17 +23,16 @@ import net.phoenix.core.common.data.item.PhoenixArmorItem;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.client.ClientSoundHandler;
 import net.phoenix.core.network.packet.C2STeslaDischargePacket;
 import net.phoenix.core.network.packet.SelectColorPacket;
+import net.phoenix.core.util.StackNbt;
 
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public class ClientTickHandler {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 

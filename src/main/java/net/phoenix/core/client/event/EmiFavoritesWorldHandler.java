@@ -1,14 +1,12 @@
 package net.phoenix.core.client.event;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.emi.PhoenixFavoriteSets;
 import net.phoenix.core.mixin.accessor.MinecraftServerStorageAccessor;

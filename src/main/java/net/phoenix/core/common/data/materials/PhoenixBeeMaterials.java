@@ -30,7 +30,7 @@ public class PhoenixBeeMaterials {
         HONEY = new Material.Builder(PhoenixCore.id("honey")).fluid().ingot().color(0xf9c901)
                 .iconSet(MaterialIconSet.BRIGHT).buildAndRegister();
         SUPERCONDUCTIVE_HONEY = new Material.Builder(PhoenixCore.id("superconductive_honey"))
-                
+
                 .ingot().fluid()
                 .color(0xFFBF00)
                 .secondaryColor(0x87CEFA)

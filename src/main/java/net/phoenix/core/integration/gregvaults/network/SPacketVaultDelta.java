@@ -1,31 +1,27 @@
 package net.phoenix.core.integration.gregvaults.network;
 
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.gregvaults.client.ClientVaultPacketHandlers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class SPacketVaultDelta implements CustomPacketPayload {
+
     public static final Type<SPacketVaultDelta> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s_packet_vault_delta"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, SPacketVaultDelta> STREAM_CODEC = StreamCodec.of((buf, msg) -> SPacketVaultDelta.encode(msg, buf), SPacketVaultDelta::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SPacketVaultDelta> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> SPacketVaultDelta.encode(msg, buf), SPacketVaultDelta::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public static final byte TYPE_COUNT = 0;
     public static final byte TYPE_FULL = 1;

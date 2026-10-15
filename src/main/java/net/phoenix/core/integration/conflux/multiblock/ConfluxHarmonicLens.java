@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
-
-import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -24,6 +22,7 @@ import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
+import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
 
 import brachy.modularui.api.drawable.Text;
@@ -40,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
-        implements ConfluxDataCapability.Holder {
+                                 implements ConfluxDataCapability.Holder {
 
     private static final double BASE_EFFICIENCY = 0.70;
     private static final double MAX_BONUS = 0.30;

@@ -1,9 +1,5 @@
 package net.phoenix.core.client.cinder;
 
-
-
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.client.mui.schema.MutableSchema;
 
@@ -17,9 +13,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.renderer.cinder.CinderStructureGhostRenderer;
 import net.phoenix.core.common.item.cinder.CinderDeploySource;

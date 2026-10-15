@@ -1,11 +1,5 @@
 package net.phoenix.core.integration.gregpacks.common;
 
-
-
-
-import net.phoenix.core.util.StackNbt;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -14,9 +8,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
@@ -28,8 +23,8 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
 import net.phoenix.core.integration.gregpacks.network.CPacketKeyState;
-import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
 import net.phoenix.core.integration.gregpacks.network.SPacketJetpackThrust;
+import net.phoenix.core.util.StackNbt;
 
 import java.util.List;
 
@@ -203,7 +198,8 @@ public class OmniPackTickHandler {
         if (dist >= 1.0E-7) player.moveRelative((float) dist, movement);
 
         if (player instanceof ServerPlayer sp) {
-            PacketDistributor.sendToPlayer(sp, new SPacketJetpackThrust(player.getDeltaMovement().x, newY, player.getDeltaMovement().z));
+            PacketDistributor.sendToPlayer(sp,
+                    new SPacketJetpackThrust(player.getDeltaMovement().x, newY, player.getDeltaMovement().z));
         }
     }
 

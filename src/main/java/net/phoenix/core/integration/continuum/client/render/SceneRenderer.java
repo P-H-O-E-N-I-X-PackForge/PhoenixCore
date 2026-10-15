@@ -1,13 +1,12 @@
 package net.phoenix.core.integration.continuum.client.render;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
@@ -314,7 +313,8 @@ public final class SceneRenderer {
 
     private static VertexBuffer ringQuad() {
         if (ringQuad == null) {
-            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128),
+                    VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
             builder.addVertex(-1, 0, -1);
             builder.addVertex(-1, 0, 1);
             builder.addVertex(1, 0, 1);
@@ -331,7 +331,8 @@ public final class SceneRenderer {
 
     private static VertexBuffer holeQuad() {
         if (holeQuad == null) {
-            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128),
+                    VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
             builder.addVertex(-1, -1, 0);
             builder.addVertex(1, -1, 0);
             builder.addVertex(1, 1, 0);
@@ -440,7 +441,8 @@ public final class SceneRenderer {
                 com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
                 com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS,
+                DefaultVertexFormat.POSITION_TEX_COLOR);
         bb.addVertex(0, 1, 0).setUv(0, 0).setColor(255, 255, 255, 255);
         bb.addVertex(1, 1, 0).setUv(1, 0).setColor(255, 255, 255, 255);
         bb.addVertex(1, 0, 0).setUv(1, 1).setColor(255, 255, 255, 255);

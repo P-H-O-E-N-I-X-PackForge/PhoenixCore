@@ -1,11 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
-
-
-import net.phoenix.core.util.StackNbt;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +12,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -30,11 +25,10 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlockEntities;
 import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlocks;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
+import net.phoenix.core.util.StackNbt;
 
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -151,44 +145,44 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
     public IEnergyStorage getEnergyHandler() {
         return new IEnergyStorage() {
 
-                @Override
-                public int getEnergyStored() {
-                    return (int) Math.min(storedEU, Integer.MAX_VALUE);
-                }
+            @Override
+            public int getEnergyStored() {
+                return (int) Math.min(storedEU, Integer.MAX_VALUE);
+            }
 
-                @Override
-                public int getMaxEnergyStored() {
-                    return (int) Math.min(
-                            new UpgradeEffects(tier, upgradeInventory).totalEnergyStorage,
-                            Integer.MAX_VALUE);
-                }
+            @Override
+            public int getMaxEnergyStored() {
+                return (int) Math.min(
+                        new UpgradeEffects(tier, upgradeInventory).totalEnergyStorage,
+                        Integer.MAX_VALUE);
+            }
 
-                @Override
-                public int receiveEnergy(int max, boolean sim) {
-                    long space = (long) getMaxEnergyStored() - storedEU;
-                    int accepted = (int) Math.min(space, max);
-                    if (!sim && accepted > 0) {
-                        storedEU += accepted;
-                        setChanged();
-                    }
-                    return accepted;
+            @Override
+            public int receiveEnergy(int max, boolean sim) {
+                long space = (long) getMaxEnergyStored() - storedEU;
+                int accepted = (int) Math.min(space, max);
+                if (!sim && accepted > 0) {
+                    storedEU += accepted;
+                    setChanged();
                 }
+                return accepted;
+            }
 
-                @Override
-                public int extractEnergy(int max, boolean sim) {
-                    return 0;
-                }
+            @Override
+            public int extractEnergy(int max, boolean sim) {
+                return 0;
+            }
 
-                @Override
-                public boolean canExtract() {
-                    return false;
-                }
+            @Override
+            public boolean canExtract() {
+                return false;
+            }
 
-                @Override
-                public boolean canReceive() {
-                    return true;
-                }
-            };
+            @Override
+            public boolean canReceive() {
+                return true;
+            }
+        };
     }
 
     public void loadFromItemStack(ItemStack stack) {

@@ -1,13 +1,5 @@
 package net.phoenix.core.common.item;
 
-
-
-
-
-import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
@@ -17,7 +9,6 @@ import com.gregtechceu.gtceu.common.block.LampBlock;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.BreadthFirstBlockSearch;
 
 import net.minecraft.core.BlockPos;
@@ -36,6 +27,7 @@ import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -49,10 +41,12 @@ import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.util.TriPredicate;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.core.util.StackNbt;
 
 import appeng.api.implementations.blockentities.IColorableBlockEntity;
 import appeng.api.util.AEColor;
@@ -62,6 +56,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInformation {
 
@@ -79,7 +74,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
     @SuppressWarnings("deprecation")
     private static Block getBlock(DyeColor color, String postfix) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("minecraft", color.getSerializedName() + "_" + postfix);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("minecraft",
+                color.getSerializedName() + "_" + postfix);
         return BuiltInRegistries.BLOCK.get(id);
     }
 
@@ -177,7 +173,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
         Level level = context.level();
         Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(cap -> {
             int current = cap.getFluidInTank(0).getAmount();
@@ -590,7 +587,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
                 }
                 if (otherTag != null) {
                     BlockEntity newOtherBE = world.getBlockEntity(otherHalfPos);
-                    if (newOtherBE != null) newOtherBE.loadWithComponents(otherTag, newOtherBE.getLevel().registryAccess());
+                    if (newOtherBE != null)
+                        newOtherBE.loadWithComponents(otherTag, newOtherBE.getLevel().registryAccess());
                 }
 
                 world.sendBlockUpdated(pos, currentBedState, newMainState, 3);
@@ -608,7 +606,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
             Block targetBannerBlock;
             if (isWallBanner) {
-                ResourceLocation targetId = ResourceLocation.fromNamespaceAndPath("minecraft", activeColor.getSerializedName() + "_wall_banner");
+                ResourceLocation targetId = ResourceLocation.fromNamespaceAndPath("minecraft",
+                        activeColor.getSerializedName() + "_wall_banner");
                 targetBannerBlock = BuiltInRegistries.BLOCK.get(targetId);
             } else {
                 targetBannerBlock = BANNER_MAP.get(activeColor);
@@ -631,7 +630,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
             if (bannerTag != null) {
                 BlockEntity newBannerBE = world.getBlockEntity(pos);
-                if (newBannerBE != null) newBannerBE.loadWithComponents(bannerTag, newBannerBE.getLevel().registryAccess());
+                if (newBannerBE != null)
+                    newBannerBE.loadWithComponents(bannerTag, newBannerBE.getLevel().registryAccess());
             }
             return true;
         }
@@ -682,7 +682,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             world.setBlockAndUpdate(pos, Blocks.WHITE_CONCRETE.defaultBlockState());
             return true;
         }
-        if (block instanceof net.minecraft.world.level.block.ConcretePowderBlock && block != Blocks.WHITE_CONCRETE_POWDER) {
+        if (block instanceof net.minecraft.world.level.block.ConcretePowderBlock &&
+                block != Blocks.WHITE_CONCRETE_POWDER) {
             world.setBlockAndUpdate(pos, Blocks.WHITE_CONCRETE_POWDER.defaultBlockState());
             return true;
         }

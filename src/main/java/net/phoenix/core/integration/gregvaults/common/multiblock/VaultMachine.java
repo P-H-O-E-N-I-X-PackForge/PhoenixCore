@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregvaults.common.multiblock;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
@@ -34,7 +32,7 @@ import net.phoenix.core.integration.gregvaults.common.blocks.CoreTier;
 import net.phoenix.core.integration.gregvaults.common.blocks.VaultCoreBlock;
 import net.phoenix.core.integration.gregvaults.network.SPacketVaultContents;
 import net.phoenix.core.integration.gregvaults.network.SPacketVaultDelta;
-import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
+import net.phoenix.core.util.StackNbt;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

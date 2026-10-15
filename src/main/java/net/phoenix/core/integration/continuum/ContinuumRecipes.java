@@ -1,13 +1,10 @@
 package net.phoenix.core.integration.continuum;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.integration.continuum.machine.ContinuumMachines;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;

@@ -2,7 +2,6 @@ package net.phoenix.core.integration.conflux.dimension.worldgen;
 
 import com.gregtechceu.gtceu.api.data.worldgen.SimpleWorldGenLayer;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.phoenix.core.PhoenixCore;

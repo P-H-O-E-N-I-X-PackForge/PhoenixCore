@@ -1,12 +1,11 @@
 package net.phoenix.core.common.machine;
 
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 
 import net.minecraft.network.chat.Component;
 import net.phoenix.core.PhoenixCore;

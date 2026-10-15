@@ -1,16 +1,13 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe;
 
-
-import net.minecraft.data.recipes.RecipeOutput;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
+import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipes.*;

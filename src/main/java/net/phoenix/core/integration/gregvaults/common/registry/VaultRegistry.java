@@ -1,21 +1,19 @@
 package net.phoenix.core.integration.gregvaults.common.registry;
 
-
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultContainerMenu;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
@@ -73,7 +71,8 @@ public final class VaultRegistry {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(
             BuiltInRegistries.MENU, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<MenuType<?>, MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register("vault_menu",
+    public static final DeferredHolder<MenuType<?>, MenuType<VaultContainerMenu>> VAULT_MENU = MENU_TYPES.register(
+            "vault_menu",
             () -> IMenuTypeExtension.create(VaultContainerMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<VaultTerminalMenu>> VAULT_TERMINAL_MENU = MENU_TYPES

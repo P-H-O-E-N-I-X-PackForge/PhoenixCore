@@ -25,13 +25,13 @@ public final class ContinuumClientHooks {
     }
 
     public static void openRefit() {
-        Minecraft.getInstance().setScreen(new net.phoenix.core.integration.continuum.client.screen
-                .ContinuumRefitScreen());
+        Minecraft.getInstance()
+                .setScreen(new net.phoenix.core.integration.continuum.client.screen.ContinuumRefitScreen());
     }
 
     public static void acceptData(ContinuumData.Snapshot snapshot) {
         ContinuumData.acceptSync(snapshot);
-        
+
         if (net.neoforged.fml.ModList.get().isLoaded("emi")) {
             net.phoenix.core.integration.emi.ContinuumEmiBridge.reload();
         }

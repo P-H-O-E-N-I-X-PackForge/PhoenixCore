@@ -26,11 +26,12 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
 
     public static final String CONDITION_ID = "phoenixcore:axiom_research";
 
-    public static final MapCodec<AxiomResearchCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> RecipeCondition.isReverse(instance)
+    public static final MapCodec<AxiomResearchCondition> CODEC = RecordCodecBuilder
+            .mapCodec(instance -> RecipeCondition.isReverse(instance)
                     .and(Codec.STRING.fieldOf("flag").forGetter(AxiomResearchCondition::getFlag))
                     .apply(instance, AxiomResearchCondition::new));
 
-        public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<AxiomResearchCondition>> TYPE;
+    public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<AxiomResearchCondition>> TYPE;
 
     private static final double CHECK_RADIUS = 24.0;
 

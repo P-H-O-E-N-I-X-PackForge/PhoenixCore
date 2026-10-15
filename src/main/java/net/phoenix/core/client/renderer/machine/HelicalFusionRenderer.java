@@ -1,7 +1,5 @@
 package net.phoenix.core.client.renderer.machine;
 
-
-import com.mojang.serialization.MapCodec;
 import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -17,7 +15,7 @@ import net.phoenix.core.client.renderer.PhoenixRenderTypes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -312,8 +310,7 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
     private void vertex(VertexConsumer vc, Matrix4f pose,
                         Vec3 p, int r, int g, int b, float a) {
         vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
-                .setColor(r / 255f, g / 255f, b / 255f, a)
-                ;
+                .setColor(r / 255f, g / 255f, b / 255f, a);
     }
 
     @Override

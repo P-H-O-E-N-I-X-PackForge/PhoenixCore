@@ -1,13 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.Mod;
 import net.phoenix.core.integration.conflux.dimension.DisciplineTheme;
 import net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry;
 
-@EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
 public class BiomeColorProvider {
 
     private static String currentDiscipline;

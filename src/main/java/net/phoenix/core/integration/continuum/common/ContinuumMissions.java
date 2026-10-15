@@ -226,7 +226,7 @@ public final class ContinuumMissions {
             }
 
             launchEnergy = GTValues.V[Math.max(0, Math.min(padTier, GTValues.V.length - 1))] * cfg.launchEnergyAmpTicks;
-            
+
             launchEnergy = Math.min(launchEnergy, complex.energyCapacity() * 9 / 10);
             if (complex.storedEnergy() < launchEnergy) {
                 return "The pad needs " + launchEnergy + " EU stored in its energy hatches to launch (it has " +
@@ -661,7 +661,7 @@ public final class ContinuumMissions {
                             ". " + Stations.describe(built);
                 }
                 case RESCUE -> {
-                    
+
                     Mission saved = strandedAt(data, mission.team, mission.destination, true);
                     if (saved == null) saved = strandedAt(data, mission.team, mission.destination, false);
                     if (saved != null) {
@@ -800,9 +800,11 @@ public final class ContinuumMissions {
 
         ContinuumBody collectedFrom = ContinuumData.body(mission.destination);
         data.log(team, MissionLog.Kind.COLLECTED, mission.destination,
-                "Collected the rocket from " + (collectedFrom != null ? collectedFrom.name() : mission.destination.getPath()) +
+                "Collected the rocket from " +
+                        (collectedFrom != null ? collectedFrom.name() : mission.destination.getPath()) +
                         (items > 0 ? " and " + items + " resources" + (delivered > 0 ? " (" + delivered +
-                                " delivered to the output buses)" : "") : "") + ".");
+                                " delivered to the output buses)" : "") : "") +
+                        ".");
         if (items > 0) {
             String where = delivered >= items ? "all of it in the launch complex's output buses" :
                     delivered > 0 ? delivered + " in the output buses, the rest in your inventory" :

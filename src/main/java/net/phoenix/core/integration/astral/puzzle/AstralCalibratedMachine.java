@@ -1,13 +1,11 @@
 package net.phoenix.core.integration.astral.puzzle;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -19,18 +17,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.integration.astral.skein.AstralThreadHatchPartMachine;
 import net.phoenix.core.common.data.materials.AstralMaterials;
-import net.phoenix.core.network.PhoenixNetwork;
+import net.phoenix.core.integration.astral.skein.AstralThreadHatchPartMachine;
 import net.phoenix.core.network.packet.C2SOpenCalibrationPacket;
-import net.phoenix.core.network.packet.S2COpenCalibrationPacket;
 import net.phoenix.core.network.packet.S2CCalibrationResultPacket;
+import net.phoenix.core.network.packet.S2COpenCalibrationPacket;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
@@ -173,7 +170,8 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
             return;
         }
         StarChart c = chart();
-        PacketDistributor.sendToPlayer(player, new S2COpenCalibrationPacket(getBlockPos(), c.kind(), c.packedStars(), calibrated));
+        PacketDistributor.sendToPlayer(player,
+                new S2COpenCalibrationPacket(getBlockPos(), c.kind(), c.packedStars(), calibrated));
     }
 
     public void attempt(ServerPlayer player, List<int[]> drawn) {
@@ -199,7 +197,8 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
             if (!calibrated) lost = scatter();
             markAsChanged();
         }
-        PacketDistributor.sendToPlayer(player, new S2CCalibrationResultPacket(getBlockPos(), solved, aligned && solved, right, c.lineCount(),
+        PacketDistributor.sendToPlayer(player,
+                new S2CCalibrationResultPacket(getBlockPos(), solved, aligned && solved, right, c.lineCount(),
                         drawn.size(), lost));
     }
 

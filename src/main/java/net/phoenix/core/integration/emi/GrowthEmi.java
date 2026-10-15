@@ -123,7 +123,8 @@ public final class GrowthEmi {
     private static class ControlPage extends BasicEmiRecipe {
 
         ControlPage() {
-            super(GROWTH, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/growth_machine/control"), 240, 118);
+            super(GROWTH, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/growth_machine/control"), 240,
+                    118);
             this.inputs = List.of(EmiStack.of(GrowthMachines.GROWTH_CONTROL_HATCH.asStack()));
             this.outputs = List.of(EmiStack.of(GrowthBlocks.GROWTH_TENDRIL.get()));
         }

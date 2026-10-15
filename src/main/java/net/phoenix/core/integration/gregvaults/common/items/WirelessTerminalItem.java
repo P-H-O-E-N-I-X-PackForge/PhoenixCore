@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.gregvaults.common.items;
 
-
-import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.ChatFormatting;
@@ -24,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalMenu;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine;
+import net.phoenix.core.util.StackNbt;
 
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.Nullable;

@@ -3,14 +3,11 @@ package net.phoenix.core.integration.growth.machine;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.integration.growth.GrowthBlocks;
-import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
 import net.phoenix.core.integration.growth.GrowthItems;
+import net.phoenix.core.integration.growth.GrowthMultiblockMachine;
 import net.phoenix.core.integration.growth.GrowthStage;
 import net.phoenix.core.integration.growth.GrowthStages;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
@@ -32,11 +29,12 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
     public static final IntList MIN_BOUNDS = SHAPES[0];
     public static final IntList MAX_BOUNDS = SHAPES[SHAPES.length - 1];
 
-    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(VerdantBloomMachine::buildStages);
+    private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers
+            .memoize(VerdantBloomMachine::buildStages);
 
     private static List<GrowthStage> buildStages() {
-        
-        return GrowthStages.of(SHAPES).costItems(GrowthItems.GROWTH_SEED::get, 2).speedPerStage(0.05f).outputPerStage(0.08f)
+        return GrowthStages.of(SHAPES).costItems(GrowthItems.GROWTH_SEED::get, 2).speedPerStage(0.05f)
+                .outputPerStage(0.08f)
                 .build();
     }
 

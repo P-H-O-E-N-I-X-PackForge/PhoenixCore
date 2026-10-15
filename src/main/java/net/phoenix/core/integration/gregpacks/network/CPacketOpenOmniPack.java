@@ -1,32 +1,29 @@
 package net.phoenix.core.integration.gregpacks.network;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.gregpacks.common.inventory.OpenPackHelper;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 
-import java.util.function.Supplier;
-
 public class CPacketOpenOmniPack implements CustomPacketPayload {
+
     public static final Type<CPacketOpenOmniPack> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_open_omni_pack"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketOpenOmniPack> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketOpenOmniPack.encode(msg, buf), CPacketOpenOmniPack::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketOpenOmniPack> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> CPacketOpenOmniPack.encode(msg, buf), CPacketOpenOmniPack::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     public CPacketOpenOmniPack() {}
 
@@ -65,7 +62,7 @@ public class CPacketOpenOmniPack implements CustomPacketPayload {
                 return;
             }
         });
-        }
+    }
 
     private static OmniPackTier getTier(ItemStack stack) {
         if (stack.getItem() instanceof OmniPackItem packItem) return packItem.getTier();

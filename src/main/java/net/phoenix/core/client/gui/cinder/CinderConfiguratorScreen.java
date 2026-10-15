@@ -1,9 +1,5 @@
 package net.phoenix.core.client.gui.cinder;
 
-
-
-import net.minecraft.core.HolderLookup;
-import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -25,9 +21,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SCinderClearTargetPacket;
 import net.phoenix.core.network.packet.C2SCinderConfigPacket;
 import net.phoenix.core.network.packet.C2SCinderSetTargetPacket;
@@ -42,6 +38,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class CinderConfiguratorScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int PANEL_W = 420;
     private static final int PANEL_H = 320;

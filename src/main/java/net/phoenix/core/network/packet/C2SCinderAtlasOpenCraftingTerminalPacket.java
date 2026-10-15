@@ -1,33 +1,30 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 
-import java.util.function.Supplier;
-
 public class C2SCinderAtlasOpenCraftingTerminalPacket implements CustomPacketPayload {
+
     public static final Type<C2SCinderAtlasOpenCraftingTerminalPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_atlas_open_crafting_terminal_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasOpenCraftingTerminalPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderAtlasOpenCraftingTerminalPacket::encode, C2SCinderAtlasOpenCraftingTerminalPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasOpenCraftingTerminalPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SCinderAtlasOpenCraftingTerminalPacket::encode, C2SCinderAtlasOpenCraftingTerminalPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final InteractionHand hand;
 

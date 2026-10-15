@@ -1,20 +1,18 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
-
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.client.ContinuumSounds;
 import net.phoenix.core.integration.continuum.client.pdim.PdimClientState;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.network.C2SPdimPacket;
 import net.phoenix.core.integration.continuum.pdim.PdimCosts;
 import net.phoenix.core.integration.continuum.pdim.PdimDimensions;
-import net.phoenix.core.network.PhoenixNetwork;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -23,6 +21,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class ContinuumPdimScreen extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private static final int W = 300;
     private static final int H = 206;
@@ -145,7 +146,8 @@ public class ContinuumPdimScreen extends Screen {
     private void button(GuiGraphics g, int x, int y, int w, String label, String id, boolean enabled, boolean selected,
                         int mx, int my) {
         boolean hover = enabled && MapUi.inside(mx, my, x, y, w, 18);
-        g.fill(x, y, x + w, y + 18, !enabled ? MapUi.BUTTON_OFF : selected ? MapUi.BUTTON_ON : hover ? MapUi.BUTTON_HOVER : MapUi.BUTTON);
+        g.fill(x, y, x + w, y + 18,
+                !enabled ? MapUi.BUTTON_OFF : selected ? MapUi.BUTTON_ON : hover ? MapUi.BUTTON_HOVER : MapUi.BUTTON);
         g.renderOutline(x, y, w, 18, selected ? MapUi.FRAME : MapUi.PANEL_LINE);
         g.drawCenteredString(font, label, x + w / 2, y + 5, enabled ? MapUi.TITLE : MapUi.DIM);
         if (enabled) rects.add(new Object[] { id, x, y, w });

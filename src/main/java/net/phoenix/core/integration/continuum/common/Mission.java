@@ -1,12 +1,11 @@
 package net.phoenix.core.integration.continuum.common;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.util.StackNbt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,7 +164,8 @@ public final class Mission {
                 tag.getUUID("Id"), tag.getUUID("Team"), tag.getUUID("Launcher"), tag.getString("LauncherName"),
                 ResourceLocation.parse(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
                 rewards, tag.getLong("Start"), tag.getLong("Duration"), tag.getBoolean("WillSucceed"),
-                tag.getFloat("WearCost"), StackNbt.loadStack(tag.getCompound("Rocket")), State.values()[ordinal], events);
+                tag.getFloat("WearCost"), StackNbt.loadStack(tag.getCompound("Rocket")), State.values()[ordinal],
+                events);
         if (tag.contains("PadDimension")) {
             mission.padDimension = tag.getString("PadDimension");
             mission.padPos = tag.getLong("PadPos");

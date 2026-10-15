@@ -1,8 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -21,7 +19,6 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.phoenix.core.PhoenixCore;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -122,7 +119,10 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
         chunk.setBlockState(chestPos, Blocks.CHEST.defaultBlockState(), false);
 
         if (chunk.getBlockEntity(chestPos) instanceof RandomizableContainerBlockEntity chestEntity) {
-            chestEntity.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, PhoenixCore.id("chests/ethereal_spawn")), chestPos.asLong());
+            chestEntity.setLootTable(
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+                            PhoenixCore.id("chests/ethereal_spawn")),
+                    chestPos.asLong());
         }
     }
 

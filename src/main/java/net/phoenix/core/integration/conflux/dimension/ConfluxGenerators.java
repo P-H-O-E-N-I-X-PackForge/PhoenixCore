@@ -8,10 +8,6 @@ import net.phoenix.core.PhoenixCore;
 
 import com.mojang.serialization.MapCodec;
 
-/**
- * Chunk generator codecs for the Conflux dimensions. Vanilla registries are frozen outside the register event, so the
- * old direct Registry.register calls became a deferred register.
- */
 public final class ConfluxGenerators {
 
     private static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister

@@ -1,32 +1,30 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class C2SCinemaScreenConfigPacket implements CustomPacketPayload {
+
     public static final Type<C2SCinemaScreenConfigPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinema_screen_config_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinemaScreenConfigPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinemaScreenConfigPacket::encode, C2SCinemaScreenConfigPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinemaScreenConfigPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SCinemaScreenConfigPacket::encode, C2SCinemaScreenConfigPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private static final int MAX_LINE_LENGTH = 128;
     private static final int MAX_LINES = 8;

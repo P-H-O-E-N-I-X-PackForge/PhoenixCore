@@ -1,29 +1,26 @@
 package net.phoenix.core.network.packet;
 
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.fml.loading.FMLEnvironment;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.astral.puzzle.client.AstralPuzzleClient;
 
-import java.util.function.Supplier;
-
 public class S2CCalibrationResultPacket implements CustomPacketPayload {
+
     public static final Type<S2CCalibrationResultPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_calibration_result_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, S2CCalibrationResultPacket> STREAM_CODEC = StreamCodec.ofMember(S2CCalibrationResultPacket::encode, S2CCalibrationResultPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CCalibrationResultPacket> STREAM_CODEC = StreamCodec
+            .ofMember(S2CCalibrationResultPacket::encode, S2CCalibrationResultPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final BlockPos pos;
     private final boolean solved;
@@ -67,7 +64,8 @@ public class S2CCalibrationResultPacket implements CustomPacketPayload {
     public static void handle(S2CCalibrationResultPacket msg, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             if (!FMLEnvironment.dist.isClient()) return;
-            AstralPuzzleClient.calibrationResult(msg.pos, msg.solved, msg.aligned, msg.right, msg.total, msg.drawn, msg.lost);
+            AstralPuzzleClient.calibrationResult(msg.pos, msg.solved, msg.aligned, msg.right, msg.total, msg.drawn,
+                    msg.lost);
         });
-        }
+    }
 }

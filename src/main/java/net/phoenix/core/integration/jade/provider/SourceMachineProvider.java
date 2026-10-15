@@ -130,7 +130,8 @@ public class SourceMachineProvider implements IBlockComponentProvider, IServerDa
                 tooltip.add(snownee.jade.api.ui.IElementHelper.get().progress(
                         pct,
                         Component.literal(stored + " / " + cap),
-                        snownee.jade.api.ui.IElementHelper.get().progressStyle().color(0x8F00FF, 0x8F00FF).textColor(0xFFFFFFFF),
+                        snownee.jade.api.ui.IElementHelper.get().progressStyle().color(0x8F00FF, 0x8F00FF)
+                                .textColor(0xFFFFFFFF),
                         BoxStyle.getNestedBox(),
                         true));
             }

@@ -17,7 +17,6 @@ public final class ConfluxMultiHandlerCapability {
     public static final BlockCapability<IConfluxMultiHandler, Direction> MULTI_DATA = BlockCapability
             .createSided(PhoenixCore.id("conflux_multi_data"), IConfluxMultiHandler.class);
 
-    /** Implemented by block entities (and GT machines, which are block entities) that expose a multi handler. */
     public interface Holder {
 
         @Nullable

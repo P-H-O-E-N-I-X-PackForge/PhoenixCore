@@ -198,7 +198,8 @@ public final class ContinuumData {
         if (!json.has("pdim_cost") || !json.get("pdim_cost").isJsonObject()) return null;
         JsonObject cost = GsonHelper.getAsJsonObject(json, "pdim_cost");
         ResourceLocation item = optionalId(cost, "item");
-        return new ContinuumBody.PdimCost(item != null ? item : ResourceLocation.fromNamespaceAndPath("minecraft", "air"),
+        return new ContinuumBody.PdimCost(
+                item != null ? item : ResourceLocation.fromNamespaceAndPath("minecraft", "air"),
                 Math.max(0, GsonHelper.getAsInt(cost, "count", 0)));
     }
 
@@ -271,7 +272,8 @@ public final class ContinuumData {
                     .listResources(dir, path -> path.getPath().endsWith(".json")).entrySet()) {
                 ResourceLocation file = entry.getKey();
                 String path = file.getPath();
-                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(file.getNamespace(), path.substring(dir.length() + 1, path.length() - ".json".length()));
+                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(file.getNamespace(),
+                        path.substring(dir.length() + 1, path.length() - ".json".length()));
                 try (Reader reader = entry.getValue().openAsReader()) {
                     JsonElement element = JsonParser.parseReader(reader);
                     if (element.isJsonObject()) consumer.accept(id, element.getAsJsonObject());

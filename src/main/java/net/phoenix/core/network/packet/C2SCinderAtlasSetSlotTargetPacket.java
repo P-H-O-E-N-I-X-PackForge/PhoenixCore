@@ -1,36 +1,33 @@
 package net.phoenix.core.network.packet;
 
-
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 
-import java.util.function.Supplier;
-
 public class C2SCinderAtlasSetSlotTargetPacket implements CustomPacketPayload {
+
     public static final Type<C2SCinderAtlasSetSlotTargetPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_atlas_set_slot_target_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasSetSlotTargetPacket> STREAM_CODEC = StreamCodec.ofMember(C2SCinderAtlasSetSlotTargetPacket::encode, C2SCinderAtlasSetSlotTargetPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasSetSlotTargetPacket> STREAM_CODEC = StreamCodec
+            .ofMember(C2SCinderAtlasSetSlotTargetPacket::encode, C2SCinderAtlasSetSlotTargetPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final InteractionHand hand;
     private final int loadoutIndex;

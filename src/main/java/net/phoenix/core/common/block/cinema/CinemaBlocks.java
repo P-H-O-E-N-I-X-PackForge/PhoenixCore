@@ -19,7 +19,8 @@ public class CinemaBlocks {
             .properties(p -> p.noOcclusion().strength(2.0f))
 
             .item(BlockItem::new)
-            .model((ctx, prov) -> prov.generated(ctx::getEntry, ResourceLocation.fromNamespaceAndPath("minecraft", "block/iron_block")))
+            .model((ctx, prov) -> prov.generated(ctx::getEntry,
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "block/iron_block")))
             .build()
 
             .blockstate((ctx, prov) -> {})

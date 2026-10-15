@@ -1,7 +1,5 @@
 package net.phoenix.core.common.machine.multiblock.electric.research;
 
-
-import net.phoenix.core.util.Mats;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IControllable;
@@ -21,7 +19,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.sync_system.managed.ISyncManaged;
 import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerList;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.MaintenanceHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.hpca.HPCAComponentPartMachine;
 import com.gregtechceu.gtceu.common.machine.trait.hpca.HPCAComponentTrait;
@@ -40,7 +37,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -48,6 +44,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.core.util.Mats;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
@@ -241,8 +238,8 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
             }
         }
 
-        GenericSyncValue<net.minecraft.network.FriendlyByteBuf, Component> text = GenericSyncValue
-                .<net.minecraft.network.FriendlyByteBuf, Component>builder(Component.class)
+        GenericSyncValue<net.minecraft.network.FriendlyByteBuf, Component> text = GenericSyncValue.<net.minecraft.network.FriendlyByteBuf, Component>builder(
+                Component.class)
                 .adapter(GTByteBufAdapters.COMPONENT)
                 .getter(() -> {
                     List<Component> list = new ArrayList<>();
@@ -636,7 +633,8 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
             if (machine instanceof HPCAComponentPartMachine componentPartMachine) {
                 ItemStack stack = componentPartMachine.getDefinition().asStack();
                 RichTooltip tooltip = new RichTooltip();
-                stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.EMPTY, null, TooltipFlag.NORMAL).forEach(tooltip::addLine);
+                stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.EMPTY, null, TooltipFlag.NORMAL)
+                        .forEach(tooltip::addLine);
                 return tooltip;
             }
             return new RichTooltip();

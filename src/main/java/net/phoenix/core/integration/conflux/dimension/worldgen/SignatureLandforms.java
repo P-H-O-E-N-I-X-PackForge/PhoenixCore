@@ -8,19 +8,6 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 
 import java.util.function.IntBinaryOperator;
 
-/**
- * The signature landforms of the four non-Phoenix dimensions, to sit beside Phoenix's volcanoes:
- *
- * <ul>
- * <li>Sculk: cenotes (sinkholes into a flooded cavern), giant fungus towers, rib arches.
- * <li>Void: floating islands with waterfalls and chains, half-buried amethyst geodes, impact craters.
- * <li>Sealed A: open-pit mines with a spiral haul road, cooling towers and smokestacks, collapsed overpasses.
- * <li>Sealed B: basalt column fields, geyser vents, bone-rib canyons.
- * </ul>
- *
- * Like the volcanoes these are plain arithmetic over the columns of one chunk, worked out from the seed alone: no noise,
- * no features, no block entities, nothing that ticks.
- */
 final class SignatureLandforms {
 
     private static final BlockState AIR = Blocks.AIR.defaultBlockState();
@@ -43,8 +30,6 @@ final class SignatureLandforms {
         };
     }
 
-    // ---------------------------------------------------------------- choosing
-
     private static int average(IntBinaryOperator ground, int cx, int cz, int r) {
         return (ground.applyAsInt(cx, cz) * 2 + ground.applyAsInt(cx + r, cz) + ground.applyAsInt(cx - r, cz) +
                 ground.applyAsInt(cx, cz + r) + ground.applyAsInt(cx, cz - r)) / 6;
@@ -53,7 +38,7 @@ final class SignatureLandforms {
     static Landforms.Instance create(Landforms.Kind kind, String dimension, int cx, int cz, RandomSource rnd,
                                      long seed, int seaLevel, IntBinaryOperator ground) {
         int base = average(ground, cx, cz, 14);
-        // everything but the floating islands wants dry land
+
         if (kind != Landforms.Kind.SKY_ISLAND && base < seaLevel + 3) return null;
 
         switch (kind) {
@@ -128,7 +113,7 @@ final class SignatureLandforms {
                     boolean stack = i >= towers;
                     int px = cx;
                     int pz = cz;
-                    // keep clear of the ones already placed
+
                     for (int attempt = 0; attempt < 12; attempt++) {
                         px = cx + rnd.nextInt(97) - 48;
                         pz = cz + rnd.nextInt(97) - 48;
@@ -156,7 +141,7 @@ final class SignatureLandforms {
                 return new Landforms.Instance(kind, cx, cz, radius + 4, seed, base, 9 + rnd.nextInt(7), radius, 0,
                         null, null, null, 0, 0);
             }
-            default: { // GEYSER
+            default: {
                 int count = 2 + rnd.nextInt(3);
                 Landforms.Pillar[] vents = new Landforms.Pillar[count];
                 int reach = 0;
@@ -171,8 +156,6 @@ final class SignatureLandforms {
             }
         }
     }
-
-    // ---------------------------------------------------------------- building
 
     static void apply(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         switch (v.kind()) {
@@ -207,8 +190,6 @@ final class SignatureLandforms {
         return Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
     }
 
-    // ---- sculk: the cenote ----
-
     private static void cenote(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         int bottom = v.baseY() - v.craterDepth();
@@ -219,7 +200,7 @@ final class SignatureLandforms {
                 double dz = z - v.cz();
                 double r = Math.sqrt(dx * dx + dz * dz);
                 if (r > v.reach()) continue;
-                // a ragged lip, so it is not a perfect circle
+
                 double rim = v.craterRadius() + ((Landforms.hash2(v.seed(), x >> 1, z >> 1) & 7) - 3.5) * 0.4;
                 int ground = Landforms.surfaceGround(chunk, x, z, minY, maxY, pos);
 
@@ -229,7 +210,7 @@ final class SignatureLandforms {
                     set(chunk, pos, x, floor, z, Blocks.CLAY.defaultBlockState(), minY, maxY);
                     fill(chunk, pos, x, z, floor + 1, pool, WATER, minY, maxY);
                 } else if (r < rim * 1.45) {
-                    // the cavern widens below the shaft, like a bell, under a roof of rock
+
                     double t = (r - rim) / (rim * 0.45);
                     int ceiling = bottom + 8 - (int) (t * t * 8.0);
                     int floor = bottom + (int) (t * 3.0);
@@ -245,8 +226,6 @@ final class SignatureLandforms {
             }
         }
     }
-
-    // ---- sculk: giant fungus ----
 
     private static void fungus(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -275,8 +254,6 @@ final class SignatureLandforms {
             }
         }
     }
-
-    // ---- sculk arches and sealed B's bone-rib canyon ----
 
     private static void ribs(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -331,8 +308,6 @@ final class SignatureLandforms {
         }
     }
 
-    // ---- void: floating islands ----
-
     private static void skyIslands(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockState grass = Blocks.GRASS_BLOCK.defaultBlockState();
@@ -347,7 +322,6 @@ final class SignatureLandforms {
                     double radius = p.radius();
                     long ph = Landforms.mix(v.seed(), p.x(), p.z());
 
-                    // a chain tethers the bigger ones to the ground
                     if (p.radius() >= 10 && x == p.x() && z == p.z()) {
                         if (ground == Integer.MIN_VALUE) ground = Landforms.surfaceGround(chunk, x, z, minY, maxY, pos);
                         int tip = p.top() - (int) (radius * 0.95) - 3;
@@ -355,7 +329,6 @@ final class SignatureLandforms {
                         set(chunk, pos, x, ground, z, OBSIDIAN, minY, maxY);
                     }
 
-                    // a waterfall off one edge
                     if ((ph & 1) == 0) {
                         double a = ((ph >>> 8) & 0xFFFF) / 65535.0 * Math.PI * 2.0;
                         int lx = p.x() + (int) Math.round((radius + 1.0) * Math.cos(a));
@@ -377,7 +350,7 @@ final class SignatureLandforms {
                         BlockState s = y == surface ? grass : y > surface - 3 ? dirt : stone;
                         set(chunk, pos, x, y, z, s, minY, maxY);
                     }
-                    // a pond at the middle, held level by the grass around it
+
                     if (d < radius * 0.28) {
                         set(chunk, pos, x, surface, z, AIR, minY, maxY);
                         set(chunk, pos, x, surface - 1, z, WATER, minY, maxY);
@@ -387,8 +360,6 @@ final class SignatureLandforms {
             }
         }
     }
-
-    // ---- void: amethyst geode ----
 
     private static void geode(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -433,8 +404,6 @@ final class SignatureLandforms {
         }
     }
 
-    // ---- void: impact crater ----
-
     private static void impact(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         double radius = v.craterRadius();
@@ -460,7 +429,7 @@ final class SignatureLandforms {
                     surface = r < radius * 0.3 ? (roll < 6 ? CRYING : OBSIDIAN) :
                             roll < 14 ? blackstone : roll < 22 ? SMOOTH_BASALT : roll < 24 ? CRYING : OBSIDIAN;
                 } else if (r < radius * 2.2) {
-                    // ejecta thrown out in rays
+
                     double ray = Math.abs(Math.sin(Math.atan2(dz, dx) * 7.0 + phase));
                     if (ray > 0.92) surface = roll < 16 ? GRAVEL : OBSIDIAN;
                     else if (lip > 1.0) surface = blackstone;
@@ -468,7 +437,7 @@ final class SignatureLandforms {
                 if (top > ground) fill(chunk, pos, x, z, ground + 1, top, blackstone, minY, maxY);
                 else if (top < ground) fill(chunk, pos, x, z, top + 1, ground, AIR, minY, maxY);
                 if (surface != null) set(chunk, pos, x, top, z, surface, minY, maxY);
-                // the fallen star at the heart of it
+
                 if (r < 2.2) {
                     set(chunk, pos, x, top + 1, z, r < 1.0 ? lantern : CRYING, minY, maxY);
                 }
@@ -476,9 +445,6 @@ final class SignatureLandforms {
         }
     }
 
-    // ---- sealed A: open-pit mine ----
-
-    /** Half the width of the haul road: it is 11 blocks across, wide enough for a truck and easy to find from the rim. */
     static final double PIT_ROAD_HALF = 5.5;
     private static final double PIT_TURNS = 2.0;
 
@@ -486,7 +452,7 @@ final class SignatureLandforms {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         double radius = v.craterRadius();
         double phase = v.rivuletAngles()[0];
-        // how fast the road winds: radians of turn per block of radius
+
         double wind = PIT_TURNS * 2.0 * Math.PI / radius;
         BlockState road = Blocks.POLISHED_BLACKSTONE.defaultBlockState();
         BlockState step = Blocks.POLISHED_BLACKSTONE_SLAB.defaultBlockState();
@@ -508,11 +474,10 @@ final class SignatureLandforms {
                 int roll = Landforms.hash2(v.seed(), x, z) & 31;
 
                 if (r < radius) {
-                    // The road is a spiral. Along any bearing it crosses at one radius, the centreline; the pit wall is
-                    // steep, so the road is a LEVEL SHELF at the height of that centreline, not a strip that tilts with
-                    // the wall. How far a column is from the road is measured across it, not along it.
+
                     double along = (1.0 - r / radius) * PIT_TURNS * 2.0 * Math.PI + phase;
-                    double offset = Math.atan2(Math.sin(Math.atan2(dz, dx) - along), Math.cos(Math.atan2(dz, dx) - along));
+                    double offset = Math.atan2(Math.sin(Math.atan2(dz, dx) - along),
+                            Math.cos(Math.atan2(dz, dx) - along));
                     double centre = r - offset / wind;
                     double across = Math.abs(centre - r) * (wind * r) / Math.sqrt(1.0 + wind * wind * r * r);
                     boolean onRoad = r > 7.0 && centre > 7.0 && centre < radius && across < PIT_ROAD_HALF;
@@ -524,7 +489,7 @@ final class SignatureLandforms {
                         if (level >= ground) continue;
                         fill(chunk, pos, x, z, level + 1, ground, AIR, minY, maxY);
                         set(chunk, pos, x, level, z, road, minY, maxY);
-                        // a half block step every so often, so the slope is walkable without jumping
+
                         if (height - level >= 0.5) {
                             set(chunk, pos, x, level + 1, z, step, minY, maxY);
                         } else if (across > PIT_ROAD_HALF - 1.0) {
@@ -532,7 +497,7 @@ final class SignatureLandforms {
                         } else if (across < 0.8 && (int) Math.floor((1.0 - centre / radius) * 70.0) % 2 == 0) {
                             set(chunk, pos, x, level, z, dash, minY, maxY);
                         }
-                        // lamp posts along the edge, so the road reads from the rim
+
                         if (across > PIT_ROAD_HALF - 1.0 && roll == 0) {
                             set(chunk, pos, x, level + 1, z, post, minY, maxY);
                             set(chunk, pos, x, level + 2, z, post, minY, maxY);
@@ -541,20 +506,19 @@ final class SignatureLandforms {
                         continue;
                     }
 
-                    // the benches step down the wall, rounded so that they sit at or below the road beside them
                     double depth = v.craterDepth() * (1.0 - r / radius);
                     int surface = v.baseY() - (int) Math.round(Math.ceil(depth / 4.0) * 4.0);
                     if (surface >= ground) continue;
                     fill(chunk, pos, x, z, surface + 1, ground, AIR, minY, maxY);
                     set(chunk, pos, x, surface, z, roll < 16 ? GRAVEL : roll < 24 ? coarse : andesite, minY, maxY);
-                    // an ore stockpile on the floor
+
                     if (r < 4.5) {
                         int heap = (int) Math.round(3.0 * (1.0 - r / 4.5));
                         fill(chunk, pos, x, z, surface + 1, surface + heap, (roll & 1) == 0 ? rawIron : rawCopper, minY,
                                 maxY);
                     }
                 } else {
-                    // a berm of spoil around the rim
+
                     double q = (r - radius) / (v.reach() - radius);
                     int heap = (int) Math.round(2.0 * (1.0 - q));
                     if (heap > 0) fill(chunk, pos, x, z, ground + 1, ground + heap, andesite, minY, maxY);
@@ -585,7 +549,6 @@ final class SignatureLandforms {
                     double angle = Math.atan2(dz, dx);
                     double damage = ((Landforms.mix(v.seed(), p.x(), p.z()) >>> 12) & 0xFF) / 255.0 * Math.PI * 2.0;
 
-                    // a level pad for it to stand on
                     if (d <= p.radius() + 3) {
                         if (ground < base) fill(chunk, pos, x, z, ground + 1, base - 1, pad, minY, maxY);
                         else if (ground > base) fill(chunk, pos, x, z, base + 1, ground, AIR, minY, maxY);
@@ -599,13 +562,13 @@ final class SignatureLandforms {
 
                         int top = p.top();
                         int hash = Landforms.hash2(v.seed(), x + y * 13, z);
-                        // a broken lip on the damaged side
+
                         if (y > top - 9 && angleDiff(angle, damage) < 0.7 && (hash & 3) != 0 &&
                                 y > top - 3 - (hash >> 3 & 7)) {
                             continue;
                         }
                         if (!stack && y <= base + 5 && angleDiff(angle, damage + Math.PI) < 0.16) {
-                            continue; // an arched entrance at the foot
+                            continue;
                         }
                         BlockState s;
                         if (stack) s = (y / 4) % 2 == 0 ? red : white;
@@ -617,7 +580,6 @@ final class SignatureLandforms {
         }
     }
 
-    /** The radius of a cooling tower's wall at a height: wide at the foot, narrow at the throat, flaring at the mouth. */
     static double towerRadius(Landforms.Pillar p, int base, int y) {
         if (p.radius() <= 4) return p.radius();
         double f = (y - base) / (double) (p.top() - base);
@@ -626,8 +588,6 @@ final class SignatureLandforms {
         return f < 0.62 ? throat + (p.radius() - throat) * Math.pow((0.62 - f) / 0.62, 2.0) :
                 throat + (mouth - throat) * Math.pow((f - 0.62) / 0.38, 2.0);
     }
-
-    // ---- sealed A: collapsed overpass ----
 
     private static void overpass(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -671,20 +631,22 @@ final class SignatureLandforms {
                     set(chunk, pos, x, y - 1, z, under, minY, maxY);
                     set(chunk, pos, x, y, z, Math.abs(w) < 0.6 && Math.floorMod((int) Math.floor(u / 3.0), 2) == 0 ?
                             line : road, minY, maxY);
-                } else if (Math.abs(w) <= 4.5 && Math.abs(w) > 3.5 && deckHere && (Landforms.hash2(v.seed(), x, z) & 3) != 0) {
-                    set(chunk, pos, x, deckY - sag + 1, z, rail, minY, maxY);
-                }
-                // rebar hanging from a broken end
-                if (broken && Math.abs(w) <= 3.0 && k > 0.93 && k <= 1.0 && (Landforms.hash2(v.seed(), x, z) & 3) == 0) {
+                } else if (Math.abs(w) <= 4.5 && Math.abs(w) > 3.5 && deckHere &&
+                        (Landforms.hash2(v.seed(), x, z) & 3) != 0) {
+                            set(chunk, pos, x, deckY - sag + 1, z, rail, minY, maxY);
+                        }
+
+                if (broken && Math.abs(w) <= 3.0 && k > 0.93 && k <= 1.0 &&
+                        (Landforms.hash2(v.seed(), x, z) & 3) == 0) {
                     fill(chunk, pos, x, z, deckY - sag - 3, deckY - sag - 2, rebar, minY, maxY);
                 }
-                // rubble where the deck has come down
+
                 if (broken && !deckHere && Math.abs(w) <= 5.0) {
                     int h = Landforms.hash2(v.seed(), x * 3, z);
                     if (h % 3 == 0) set(chunk, pos, x, ground + 1, z, (h >> 4 & 7) == 0 ? rebar : rubble, minY, maxY);
                     if (h % 9 == 0) set(chunk, pos, x, ground + 2, z, rubble, minY, maxY);
                 }
-                // the piers
+
                 for (int i = 0; i <= spans; i++) {
                     double s = start + i * spacing;
                     if (Math.abs(u - s) > 1.2) continue;
@@ -699,8 +661,6 @@ final class SignatureLandforms {
         }
     }
 
-    // ---- sealed B: basalt column field ----
-
     private static void columns(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         double cell = 4.4;
@@ -713,7 +673,6 @@ final class SignatureLandforms {
                 double r = Math.sqrt(dx * dx + dz * dz);
                 if (r >= v.reach()) continue;
 
-                // the nearest and second-nearest column centre, on a jittered grid, so each column is a many-sided prism
                 int cellX = (int) Math.floor(x / cell);
                 int cellZ = (int) Math.floor(z / cell);
                 double best = Double.MAX_VALUE;
@@ -734,7 +693,8 @@ final class SignatureLandforms {
                         }
                     }
                 }
-                double env = r < v.craterRadius() ? Math.pow(1.0 - (r / v.craterRadius()) * (r / v.craterRadius()), 0.7) :
+                double env = r < v.craterRadius() ?
+                        Math.pow(1.0 - (r / v.craterRadius()) * (r / v.craterRadius()), 0.7) :
                         0.0;
                 double height = v.height() * env * (0.45 + 0.55 * ((bestId >>> 16 & 0xFF) / 255.0));
                 int rise = (int) Math.round(height) - (second - best < 0.55 ? 2 : 0);
@@ -747,8 +707,6 @@ final class SignatureLandforms {
             }
         }
     }
-
-    // ---- sealed B: geyser vents ----
 
     private static void geysers(Landforms.Instance v, ChunkAccess chunk, int minX, int minZ, int minY, int maxY) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -764,11 +722,11 @@ final class SignatureLandforms {
                     int rise = (int) Math.round(4.0 * Math.pow(1.0 - d / p.radius(), 1.2));
                     int top = ground + rise;
                     fill(chunk, pos, x, z, ground + 1, top, sinter[0], minY, maxY);
-                    // terraces of sinter in rings of different colours
+
                     set(chunk, pos, x, top, z, sinter[(int) (d / 1.6) % sinter.length], minY, maxY);
 
                     if (d <= 1.6) {
-                        // the vent itself: boiling water over a bed of soul sand, so it bubbles
+
                         fill(chunk, pos, x, z, ground - 4, top - 1, WATER, minY, maxY);
                         set(chunk, pos, x, ground - 5, z, Blocks.SOUL_SAND.defaultBlockState(), minY, maxY);
                         fill(chunk, pos, x, z, top, top, AIR, minY, maxY);

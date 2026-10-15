@@ -1,9 +1,5 @@
 package net.phoenix.core.common.data;
 
-
-
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -12,6 +8,8 @@ import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -30,8 +28,6 @@ import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapab
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
 import net.phoenix.core.integration.astral.api.capability.AstralThreadIngredient;
 import net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability;
-
-import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;

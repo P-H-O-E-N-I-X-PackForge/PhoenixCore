@@ -1,11 +1,10 @@
 package net.phoenix.core.integration.conflux.client.render;
 
-
-import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.renderer.GameRenderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import org.lwjgl.opengl.GL11;
 
 public final class CanvasMask {

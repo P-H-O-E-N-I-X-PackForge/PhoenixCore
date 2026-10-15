@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.ae2;
 
-
-import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -18,6 +16,7 @@ import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderAtlasUpgrades;
 import net.phoenix.core.common.item.cinder.CinderItems;
+import net.phoenix.core.util.StackNbt;
 
 import appeng.api.config.Actionable;
 import appeng.api.features.GridLinkables;

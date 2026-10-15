@@ -13,7 +13,6 @@ import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.data.DiscoveryStage;
 import net.phoenix.core.integration.continuum.network.S2CPdimStatePacket;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.utils.TeamUtils;
 
 import org.jetbrains.annotations.Nullable;

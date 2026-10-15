@@ -1,14 +1,10 @@
 package net.phoenix.core.integration.growth;
 
-
-import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
-import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
-import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
-
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
 import net.phoenix.core.PhoenixCore;
@@ -19,14 +15,13 @@ import net.phoenix.core.integration.growth.machine.CrystalGardenMachine;
 import net.phoenix.core.integration.growth.machine.VerdantBloomMachine;
 
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.blocks;
-import static com.gregtechceu.gtceu.api.multiblock.Predicates.controller;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class GrowthMachines {
 
-    public static final com.gregtechceu.gtceu.api.machine.multiblock.PartAbility GROWTH_CONTROL_ABILITY =
-            new com.gregtechceu.gtceu.api.machine.multiblock.PartAbility("growth_control");
+    public static final com.gregtechceu.gtceu.api.machine.multiblock.PartAbility GROWTH_CONTROL_ABILITY = new com.gregtechceu.gtceu.api.machine.multiblock.PartAbility(
+            "growth_control");
 
     public static final MachineEntry<com.gregtechceu.gtceu.api.machine.MachineDefinition> GROWTH_CONTROL_HATCH = REGISTRATE
             .machine("growth_control_hatch", GrowthControlHatch::new)
@@ -44,12 +39,12 @@ public class GrowthMachines {
             .register();
 
     private static <T extends GrowthMultiblockMachine> MachineEntry<MultiblockMachineDefinition> cubeGrower(
-                                                                                              String id,
-                                                                                              String name,
-                                                                                              java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
-                                                                                              com.gregtechceu.gtceu.api.registry.registrate.entry.GTRecipeTypeEntry recipeType,
-                                                                                              it.unimi.dsi.fastutil.ints.IntList minBounds,
-                                                                                              it.unimi.dsi.fastutil.ints.IntList maxBounds) {
+                                                                                                            String id,
+                                                                                                            String name,
+                                                                                                            java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
+                                                                                                            com.gregtechceu.gtceu.api.registry.registrate.entry.GTRecipeTypeEntry recipeType,
+                                                                                                            it.unimi.dsi.fastutil.ints.IntList minBounds,
+                                                                                                            it.unimi.dsi.fastutil.ints.IntList maxBounds) {
         return REGISTRATE
                 .multiblock(id, info -> factory.apply(info))
                 .langValue(name)
@@ -71,15 +66,18 @@ public class GrowthMachines {
                 .register();
     }
 
-    public static final MachineEntry<MultiblockMachineDefinition> CRYSTAL_GARDEN = cubeGrower("crystal_garden", "Crystal Garden",
+    public static final MachineEntry<MultiblockMachineDefinition> CRYSTAL_GARDEN = cubeGrower("crystal_garden",
+            "Crystal Garden",
             CrystalGardenMachine::new, PhoenixRecipeTypes.GROWTH_RECIPES, CrystalGardenMachine.MIN_BOUNDS,
             CrystalGardenMachine.MAX_BOUNDS);
 
-    public static final MachineEntry<MultiblockMachineDefinition> BLOOMVINE_CORE = cubeGrower("bloomvine_core", "Bloomvine Core",
+    public static final MachineEntry<MultiblockMachineDefinition> BLOOMVINE_CORE = cubeGrower("bloomvine_core",
+            "Bloomvine Core",
             BloomvineCoreMachine::new, PhoenixRecipeTypes.VINE_GROWTH_RECIPES, BloomvineCoreMachine.MIN_BOUNDS,
             BloomvineCoreMachine.MAX_BOUNDS);
 
-    public static final MachineEntry<MultiblockMachineDefinition> VERDANT_BLOOM = cubeGrower("verdant_bloom", "Verdant Bloom",
+    public static final MachineEntry<MultiblockMachineDefinition> VERDANT_BLOOM = cubeGrower("verdant_bloom",
+            "Verdant Bloom",
             VerdantBloomMachine::new, PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES, VerdantBloomMachine.MIN_BOUNDS,
             VerdantBloomMachine.MAX_BOUNDS);
 

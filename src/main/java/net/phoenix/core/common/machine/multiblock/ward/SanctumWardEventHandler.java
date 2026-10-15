@@ -1,15 +1,12 @@
 package net.phoenix.core.common.machine.multiblock.ward;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)

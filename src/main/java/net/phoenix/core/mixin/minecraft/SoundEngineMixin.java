@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SoundEngine.class)
+@Mixin(value = SoundEngine.class, priority = 1000)
 public class SoundEngineMixin {
 
-    @Inject(method = "play", at = @At("HEAD"))
+    @Inject(method = "play", at = @At("HEAD"), require = 0)
     private void phoenix$onSoundPlay(SoundInstance sound, CallbackInfo ci) {
         if (sound != null) {
             VibrancyEvents.onSoundStarted(sound);

@@ -1,37 +1,33 @@
 package net.phoenix.core.integration.gregpacks.network;
 
-
-
-
-import net.neoforged.neoforge.capabilities.Capabilities;
-import java.util.Optional;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackMenu;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 
 public class CPacketFluidInteract implements CustomPacketPayload {
+
     public static final Type<CPacketFluidInteract> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c_packet_fluid_interact"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketFluidInteract> STREAM_CODEC = StreamCodec.of((buf, msg) -> CPacketFluidInteract.encode(msg, buf), CPacketFluidInteract::decode);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CPacketFluidInteract> STREAM_CODEC = StreamCodec
+            .of((buf, msg) -> CPacketFluidInteract.encode(msg, buf), CPacketFluidInteract::decode);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 
     private final boolean isLeftClick;
 
@@ -64,13 +60,15 @@ public class CPacketFluidInteract implements CustomPacketPayload {
                 result = FluidUtil.tryEmptyContainer(carried, packHandler, Integer.MAX_VALUE, player, true);
 
                 if (!result.isSuccess()) {
-                    result = Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM)).map(itemHandler -> {
+                    result = Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM))
+                            .map(itemHandler -> {
 
-                        int moved = FluidUtil.tryFluidTransfer(packHandler, itemHandler, Integer.MAX_VALUE, true)
-                                .getAmount();
-                        return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) :
-                                FluidActionResult.FAILURE;
-                    }).orElse(FluidActionResult.FAILURE);
+                                int moved = FluidUtil
+                                        .tryFluidTransfer(packHandler, itemHandler, Integer.MAX_VALUE, true)
+                                        .getAmount();
+                                return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) :
+                                        FluidActionResult.FAILURE;
+                            }).orElse(FluidActionResult.FAILURE);
                 }
             } else {
                 result = Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM)).map(itemHandler -> {
@@ -96,5 +94,5 @@ public class CPacketFluidInteract implements CustomPacketPayload {
                 }
             }
         });
-        }
+    }
 }

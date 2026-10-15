@@ -22,7 +22,7 @@ public class PhoenixOres {
 
     public static void register() {
         NEVVONIAN_IRON = new Material.Builder(PhoenixCore.id("nevvonian_iron"))
-                
+
                 .ingot()
                 .ore()
                 .color(0x7A687F)
@@ -30,7 +30,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         VOIDGLASS_SHARD = new Material.Builder(PhoenixCore.id("voidglass_shard"))
-                
+
                 .gem()
                 .ore()
                 .color(0x6A00AA)
@@ -47,7 +47,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         POLARITY_FLIPPED_BISMUTHITE = new Material.Builder(PhoenixCore.id("polarity_flipped_bismuthite"))
-                
+
                 .dust()
                 .ore()
                 .color(0xE4D6FF)
@@ -56,7 +56,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         PERMAFROST = new Material.Builder(PhoenixCore.id("permafrost"))
-                
+
                 .dust()
                 .ore()
                 .color(0xA7D1EB)
@@ -64,7 +64,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         FLUORITE = new Material.Builder(PhoenixCore.id("fluorite"))
-                
+
                 .gem()
                 .ore()
                 .color(0x0C9949)
@@ -73,7 +73,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         IGNISIUM = new Material.Builder(PhoenixCore.id("ignisium"))
-                
+
                 .dust()
                 .ore()
                 .color(0xFF4500)
@@ -81,7 +81,7 @@ public class PhoenixOres {
                 .buildAndRegister();
 
         CRYSTALLIZED_FLUXSTONE = new Material.Builder(PhoenixCore.id("crystallized_fluxstone"))
-                
+
                 .dust()
                 .ore()
                 .color(0xD4BFFF)
@@ -93,6 +93,5 @@ public class PhoenixOres {
                 .addOreByproducts(GTMaterials.Iron)
                 .element(PhoenixElements.EMBER)
                 .buildAndRegister();
-
     }
 }

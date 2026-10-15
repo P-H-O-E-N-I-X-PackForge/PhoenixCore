@@ -1,9 +1,5 @@
 package net.phoenix.core.integration.matter_manipulater.api;
 
-
-
-import com.mojang.blaze3d.vertex.BufferUploader;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,18 +7,22 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.phoenix.core.network.PhoenixNetwork;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.packet.PacketPhoenixModeSync;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PhoenixRadialMenu extends Screen {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    }
 
     private final int radius = 100;
     private final int innerRadius = 35;

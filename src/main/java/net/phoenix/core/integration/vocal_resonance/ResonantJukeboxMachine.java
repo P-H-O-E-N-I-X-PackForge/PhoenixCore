@@ -17,7 +17,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
 import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
-import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SSelectSoundPacket;
 import net.phoenix.core.network.packet.S2CPlaySoundPacket;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
@@ -149,7 +148,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         }
 
         this.totalSpeakerRange = totalSpeakerValue;
-        
+
         this.resonancePower = speakerCount == 0 ? 1.0f : amplifierSum / speakerCount;
         this.lastPlayingStreamUrl = "";
         this.lastPlayingLibrarySound = "";
@@ -223,7 +222,9 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         var level = getLevel();
         if (level == null || level.isClientSide) return;
 
-        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f,
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level,
+                level.getChunkAt(getBlockPos()).getPos(),
+                new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f,
                         1.0f,
                         (float) getFinalRange()));
 
@@ -279,14 +280,18 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         ResourceLocation soundLoc = ResourceLocation.tryParse(selectedLibrarySound);
         if (soundLoc == null) return;
 
-        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlaySoundPacket(getBlockPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level,
+                level.getChunkAt(getBlockPos()).getPos(),
+                new S2CPlaySoundPacket(getBlockPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
     }
 
     private void playStreamSound() {
         var level = getLevel();
         if (level == null || level.isClientSide) return;
 
-        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level, level.getChunkAt(getBlockPos()).getPos(), new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
+        PacketDistributor.sendToPlayersTrackingChunk((net.minecraft.server.level.ServerLevel) level,
+                level.getChunkAt(getBlockPos()).getPos(),
+                new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
     }
 
     @Override
