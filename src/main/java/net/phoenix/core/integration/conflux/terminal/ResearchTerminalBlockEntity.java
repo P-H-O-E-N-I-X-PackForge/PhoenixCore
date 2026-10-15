@@ -7,8 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
@@ -20,18 +18,18 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ResearchTerminalBlockEntity extends BlockEntity {
+public class ResearchTerminalBlockEntity extends BlockEntity implements ConfluxMultiHandlerCapability.Holder {
 
     public static final long CAPACITY_PER_TYPE = ConfluxDataStore.CAPACITY_PER_TYPE;
 
     private @Nullable UUID ownerTeam;
 
     private final Map<ConfluxDataType, Long> legacy = new EnumMap<>(ConfluxDataType.class);
-    private final LazyOptional<IConfluxMultiHandler> handlerOpt;
+    private final IConfluxMultiHandler handler;
 
     public ResearchTerminalBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        handlerOpt = LazyOptional.of(this::buildHandler);
+        handler = buildHandler();
     }
 
     public @Nullable UUID getOwnerTeam() {
@@ -103,15 +101,8 @@ public class ResearchTerminalBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ConfluxMultiHandlerCapability.MULTI_DATA) return handlerOpt.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handlerOpt.invalidate();
+    public @Nullable IConfluxMultiHandler getConfluxMultiHandler(@Nullable Direction side) {
+        return handler;
     }
 
     @Override

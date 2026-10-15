@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
+
+import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -15,8 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
@@ -31,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
+public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
+        implements ConfluxDataCapability.Holder {
 
     private static final int FUEL_TICKS = 400;
     private static final long BASE_RATE = 200L;
@@ -63,12 +64,12 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
     @SaveField
     private final NotifiableItemStackHandler fuelSlot;
 
-    private final LazyOptional<IConfluxDataHandler> outputCap;
+    private final IConfluxDataHandler outputHandler;
 
     public ConfluxCascadeEngine(BlockEntityCreationInfo holder) {
         super(holder);
         this.fuelSlot = new NotifiableItemStackHandler(1, IO.IN);
-        this.outputCap = LazyOptional.of(this::makeOutputHandler);
+        this.outputHandler = makeOutputHandler();
         subscribeServerTick(this::engineTick);
     }
 
@@ -130,9 +131,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
             BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
             if (be == null) continue;
 
-            var singleCap = be.getCapability(ConfluxDataCapability.DATA, dir.getOpposite());
-            if (singleCap.isPresent()) {
-                var h = singleCap.orElseThrow(IllegalStateException::new);
+            IConfluxDataHandler h = ConfluxDataCapability.find(be, dir.getOpposite());
+            if (h != null) {
                 if (h.getDataType() == outputType) {
                     long sent = h.insert(budget);
                     dataBuffer -= sent;
@@ -141,9 +141,9 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
                 continue;
             }
 
-            var multiCap = be.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA, dir.getOpposite());
-            if (multiCap.isPresent()) {
-                long sent = multiCap.orElseThrow(IllegalStateException::new).insert(outputType, budget);
+            IConfluxMultiHandler multiCap = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
+            if (multiCap != null) {
+                long sent = multiCap.insert(outputType, budget);
                 dataBuffer -= sent;
                 budget -= sent;
             }
@@ -197,9 +197,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ConfluxDataCapability.DATA) return outputCap.cast();
-        return super.getCapability(cap, side);
+    public @Nullable IConfluxDataHandler getConfluxDataHandler(@Nullable Direction side) {
+        return outputHandler;
     }
 
     @Override
@@ -230,7 +229,6 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine {
     @Override
     public void onUnload() {
         super.onUnload();
-        outputCap.invalidate();
     }
 
     public ConfluxDataType getOutputType() {

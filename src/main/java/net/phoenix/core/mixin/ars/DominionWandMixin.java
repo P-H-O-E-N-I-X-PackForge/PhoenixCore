@@ -39,7 +39,7 @@ public abstract class DominionWandMixin {
             BlockEntity be = level.getBlockEntity(ctx.getClickedPos());
             if (be == null) return;
 
-            if (be.getCapability(ISourceProviderCapability.CAPABILITY).isPresent() &&
+            if (ISourceProviderCapability.find(be) != null &&
                     cir.getReturnValue() == InteractionResult.PASS) {
                 cir.setReturnValue(InteractionResult.CONSUME);
             }

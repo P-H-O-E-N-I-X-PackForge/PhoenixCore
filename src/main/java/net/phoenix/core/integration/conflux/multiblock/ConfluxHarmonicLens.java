@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
+
+import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -18,8 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
@@ -39,7 +39,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
+public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
+        implements ConfluxDataCapability.Holder {
 
     private static final double BASE_EFFICIENCY = 0.70;
     private static final double MAX_BONUS = 0.30;
@@ -57,7 +58,8 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
     private boolean lensActive = false;
     private double currentEfficiency = BASE_EFFICIENCY;
 
-    private LazyOptional<IConfluxDataHandler> inputCap = LazyOptional.empty();
+    @Nullable
+    private IConfluxDataHandler inputHandler;
     private int researchScanCooldown = 0;
 
     public ConfluxHarmonicLens(BlockEntityCreationInfo holder) {
@@ -127,9 +129,8 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
             BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
             if (be == null) continue;
 
-            var single = be.getCapability(ConfluxDataCapability.DATA, dir.getOpposite());
-            if (single.isPresent()) {
-                IConfluxDataHandler h = single.orElseThrow(IllegalStateException::new);
+            IConfluxDataHandler h = ConfluxDataCapability.find(be, dir.getOpposite());
+            if (h != null) {
                 if (h.getDataType() == outputType) {
                     long sent = h.insert(budget);
                     outputBuffer -= sent;
@@ -138,9 +139,9 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
                 continue;
             }
 
-            var multi = be.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA, dir.getOpposite());
-            if (multi.isPresent()) {
-                long sent = multi.orElseThrow(IllegalStateException::new).insert(outputType, budget);
+            IConfluxMultiHandler multi = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
+            if (multi != null) {
+                long sent = multi.insert(outputType, budget);
                 outputBuffer -= sent;
                 budget -= sent;
             }
@@ -165,7 +166,6 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
                     next = (next + 1) % types.length;
                 } while (types[next] == outputType);
                 inputType = types[next];
-                inputCap.invalidate();
                 rebuildInputCap();
                 player.sendSystemMessage(Component.literal("Input type: ").append(inputType.displayComponent()));
             } else {
@@ -183,7 +183,7 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
     }
 
     private void rebuildInputCap() {
-        inputCap = LazyOptional.of(() -> new IConfluxDataHandler() {
+        inputHandler = new IConfluxDataHandler() {
 
             @Override
             public ConfluxDataType getDataType() {
@@ -213,13 +213,12 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
             public long getCapacity() {
                 return INPUT_BUFFER;
             }
-        });
+        };
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ConfluxDataCapability.DATA) return inputCap.cast();
-        return super.getCapability(cap, side);
+    public @Nullable IConfluxDataHandler getConfluxDataHandler(@Nullable Direction side) {
+        return inputHandler;
     }
 
     @Override
@@ -261,7 +260,7 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
     public void invalidateStructure(@org.jetbrains.annotations.NotNull String substructureName) {
         super.invalidateStructure(substructureName);
         lensActive = false;
-        inputCap.invalidate();
+        inputHandler = null;
     }
 
     @Override
@@ -273,7 +272,7 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine {
     @Override
     public void onUnload() {
         super.onUnload();
-        inputCap.invalidate();
+        inputHandler = null;
     }
 
     public ConfluxDataType getInputType() {

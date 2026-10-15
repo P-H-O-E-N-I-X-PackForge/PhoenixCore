@@ -71,7 +71,6 @@ import net.phoenix.core.integration.conflux.multiblock.ConfluxMultiblockRegistry
 import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 import net.phoenix.core.integration.conflux.producer.ConfluxProducerMachines;
 import net.phoenix.core.integration.conflux.research.AxiomResearchCondition;
-import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.gregpacks.client.OmniPackCurioRenderer;
 import net.phoenix.core.integration.gregpacks.common.inventory.GregPacksMenus;
@@ -173,12 +172,13 @@ public class PhoenixCore {
 
         ConfluxRegistry.register(modEventBus);
         modEventBus.addListener(ConfluxRegistry::registerCapabilities);
+        modEventBus.addListener(net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability::register);
         net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.EtherealSpawnGenerator.register();
         net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator.register();
         AstralBlocks.registerDeferred(modEventBus);
-        modEventBus.addListener(PlayerResearchCapability::register);
+        PhoenixAttachments.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
@@ -186,9 +186,6 @@ public class PhoenixCore {
                 .register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
         NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
         NeoForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
-        NeoForge.EVENT_BUS.addGenericListener(net.minecraft.world.entity.Entity.class,
-                PlayerResearchCapability::onAttachCapabilities);
-        NeoForge.EVENT_BUS.addListener(PlayerResearchCapability::onPlayerClone);
         NeoForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(
                 net.phoenix.core.integration.conflux.research.GatedRecipeRegistry::onAddReloadListeners);

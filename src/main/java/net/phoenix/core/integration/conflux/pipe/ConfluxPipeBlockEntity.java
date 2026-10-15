@@ -1,7 +1,6 @@
 package net.phoenix.core.integration.conflux.pipe;
 
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 
@@ -11,45 +10,32 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, ConfluxPipeData> {
+public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, ConfluxPipeData>
+        implements ConfluxDataCapability.Holder {
 
     public static final long THROUGHPUT = 64L;
     public static final long BUFFER = 256L;
 
     @SaveField(nbtKey = "stored")
     private long stored = 0L;
-    private final LazyOptional<IConfluxDataHandler> handlerOpt;
+    private final IConfluxDataHandler handler;
     @Nullable
     private TickableSubscription tickSub;
 
     public ConfluxPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        this.handlerOpt = LazyOptional.of(this::buildHandler);
+        this.handler = buildHandler();
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ConfluxDataCapability.DATA) {
-            if (side != null && !isConnected(side)) return LazyOptional.empty();
-            return handlerOpt.cast();
-        }
-        if (cap == GTCapability.CAPABILITY_COVERABLE) {
-            return GTCapability.CAPABILITY_COVERABLE.orEmpty(cap, LazyOptional.of(this::getCoverContainer));
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handlerOpt.invalidate();
+    public @Nullable IConfluxDataHandler getConfluxDataHandler(@Nullable Direction side) {
+        if (side != null && !isConnected(side)) return null;
+        return handler;
     }
 
     private IConfluxDataHandler buildHandler() {
@@ -97,12 +83,11 @@ public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, Con
         if (neighbor == null || neighbor instanceof ConfluxPipeBlockEntity) return false;
 
         ConfluxDataType dt = getPipeType().dataType();
-        if (neighbor.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA, side.getOpposite()).isPresent()) {
+        if (ConfluxMultiHandlerCapability.find(neighbor, side.getOpposite()) != null) {
             return true;
         }
-        return neighbor.getCapability(ConfluxDataCapability.DATA, side.getOpposite())
-                .map(h -> h.getDataType() == dt)
-                .orElse(false);
+        IConfluxDataHandler h = ConfluxDataCapability.find(neighbor, side.getOpposite());
+        return h != null && h.getDataType() == dt;
     }
 
     private void scheduleTickIfNeeded() {
@@ -130,9 +115,8 @@ public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, Con
 
             if (be instanceof ConfluxPipeBlockEntity peer && peer.stored >= stored) continue;
 
-            LazyOptional<IConfluxDataHandler> single = be.getCapability(ConfluxDataCapability.DATA, dir.getOpposite());
-            if (single.isPresent()) {
-                IConfluxDataHandler h = single.orElseThrow(IllegalStateException::new);
+            IConfluxDataHandler h = ConfluxDataCapability.find(be, dir.getOpposite());
+            if (h != null) {
                 if (h.getDataType() != dt) continue;
                 long accepted = h.insert(budget);
                 if (accepted > 0) {
@@ -143,10 +127,9 @@ public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, Con
                 continue;
             }
 
-            LazyOptional<IConfluxMultiHandler> multi = be.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA,
-                    dir.getOpposite());
-            if (multi.isPresent()) {
-                long accepted = multi.orElseThrow(IllegalStateException::new).insert(dt, budget);
+            IConfluxMultiHandler multi = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
+            if (multi != null) {
+                long accepted = multi.insert(dt, budget);
                 if (accepted > 0) {
                     stored -= accepted;
                     budget -= accepted;

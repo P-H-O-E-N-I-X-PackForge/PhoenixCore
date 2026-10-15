@@ -123,9 +123,8 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
             BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
             if (be == null) continue;
 
-            var multiCap = be.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA, dir.getOpposite());
-            if (!multiCap.isPresent()) continue;
-            IConfluxMultiHandler handler = multiCap.orElseThrow(IllegalStateException::new);
+            IConfluxMultiHandler handler = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
+            if (handler == null) continue;
 
             for (ConfluxDataType type : ConfluxDataType.values()) {
                 long stored = buffer.get(type);

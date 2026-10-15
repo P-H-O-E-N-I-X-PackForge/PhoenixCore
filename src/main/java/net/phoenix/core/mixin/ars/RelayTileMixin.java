@@ -39,11 +39,8 @@ public abstract class RelayTileMixin {
         if (be instanceof AbstractSourceMachine asm) return asm;
         if (be == null) return null;
 
-        var cap = be.getCapability(ISourceProviderCapability.CAPABILITY);
-        if (cap.isPresent()) {
-            return cap.resolve().map(ISourceProviderCapability::getSource).orElse(null);
-        }
-        return null;
+        var cap = ISourceProviderCapability.find(be);
+        return cap == null ? null : cap.getSource();
     }
 
     @Unique

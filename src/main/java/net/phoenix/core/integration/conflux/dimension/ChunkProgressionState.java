@@ -72,7 +72,6 @@ public class ChunkProgressionState {
     }
 
     public static ChunkProgressionState getOrCreate(LevelChunk chunk) {
-        return chunk.getCapability(ChunkProgressionProvider.CHUNK_PROGRESSION_CAP)
-                .orElse(new ChunkProgressionState());
+        return chunk.getData(net.phoenix.core.PhoenixAttachments.CHUNK_PROGRESSION);
     }
 }

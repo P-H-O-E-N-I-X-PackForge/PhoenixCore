@@ -71,13 +71,12 @@ public class ConfluxPipeBlock extends PipeBlock<ConfluxPipeType, ConfluxPipeData
         if (tile == null) return false;
         ConfluxDataType dt = pipeType.dataType();
 
-        if (tile.getCapability(ConfluxMultiHandlerCapability.MULTI_DATA, side.getOpposite()).isPresent()) {
+        if (ConfluxMultiHandlerCapability.find(tile, side.getOpposite()) != null) {
             return true;
         }
 
-        return tile.getCapability(ConfluxDataCapability.DATA, side.getOpposite())
-                .map(h -> h.getDataType() == dt)
-                .orElse(false);
+        IConfluxDataHandler h = ConfluxDataCapability.find(tile, side.getOpposite());
+        return h != null && h.getDataType() == dt;
     }
 
     @Override
