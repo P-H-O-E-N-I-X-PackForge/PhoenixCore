@@ -72,7 +72,7 @@ public class PhoenixMaterialHelpers {
             b.secondaryColor(secondaryColor);
         }
         if (langValue != null) {
-            b.langValue(langValue);
+            MaterialLang.put(id, langValue);
         }
         if (formula != null && !formula.isBlank()) {
             b.formula(formula);
@@ -149,7 +149,7 @@ public class PhoenixMaterialHelpers {
             b.secondaryColor(secondaryColor);
         }
         if (langValue != null) {
-            b.langValue(langValue);
+            MaterialLang.put(id, langValue);
         }
         if (itemPipeOpts != null) {
             b.itemPipeProperties(itemPipeOpts.priority(), itemPipeOpts.throughput());
@@ -220,7 +220,7 @@ public class PhoenixMaterialHelpers {
             b.secondaryColor(secondaryColor);
         }
         if (langValue != null) {
-            b.langValue(langValue);
+            MaterialLang.put(id, langValue);
         }
         if (itemPipeOpts != null) {
             b.itemPipeProperties(itemPipeOpts.priority(), itemPipeOpts.throughput());

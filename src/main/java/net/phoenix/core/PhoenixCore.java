@@ -151,6 +151,7 @@ public class PhoenixCore {
         // GregTech builds its content from its own constructor and so do we, in the same order
         registerMaterialIconSets();
         addMaterials();
+        net.phoenix.core.common.data.materials.MaterialLang.register();
         registerSounds();
         registerConditions();
         registerRecipeTypes();

@@ -15,7 +15,7 @@ public class PhoenixPolymerMaterials {
 
     public static void register() {
         POLYMETHYL_METHACRYLATE = new Material.Builder(PhoenixCore.id("polymethyl_methacrylate"))
-                .langValue("Polymethyl Methacrylate (PMMA)").ingot().polymer()
+                .ingot().polymer()
                 .fluid().color(0xF0F8FF).secondaryColor(0xF5FFFF).flags(GENERATE_PLATE).iconSet(MaterialIconSet.DULL)
                 .buildAndRegister();
         METHYL_METHACRYLATE = new Material.Builder(PhoenixCore.id("methyl_methacrylate")).fluid().color(0xE8F8F8)
