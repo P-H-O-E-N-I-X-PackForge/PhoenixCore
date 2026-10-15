@@ -46,8 +46,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
     @Setter
     private boolean pickedUp = false;
 
-    private final LazyOptional<IItemHandler> itemCap;
-    private final LazyOptional<IFluidHandler> fluidCap;
+    private final IFluidHandler fluidHandler;
 
     public OmniPackBlockEntity(BlockPos pos, BlockState state, OmniPackTier tier) {
         super(GregPacksBlockEntities.getTypeForTier(tier), pos, state);
@@ -55,9 +54,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         this.packInventory = new OmniPackInventory(tier.defaultSlots);
         this.upgradeInventory = new OmniPackInventory(tier.defaultMaxUpgrades);
 
-        this.itemCap = LazyOptional.of(() -> new InvWrapper(packInventory));
-
-        this.fluidCap = LazyOptional.of(() -> new IFluidHandler() {
+        this.fluidHandler = new IFluidHandler() {
 
             @Override
             public int getTanks() {
@@ -116,7 +113,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
                 }
                 return result;
             }
-        });
+        };
     }
 
     @Override
@@ -142,13 +139,16 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         return menu;
     }
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return itemCap.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return fluidCap.cast();
+    public IItemHandler getItemHandler() {
+        return new InvWrapper(packInventory);
+    }
 
-        if (cap == ForgeCapabilities.ENERGY) {
-            return LazyOptional.of(() -> new IEnergyStorage() {
+    public IFluidHandler getFluidHandler() {
+        return fluidHandler;
+    }
+
+    public IEnergyStorage getEnergyHandler() {
+        return new IEnergyStorage() {
 
                 @Override
                 public int getEnergyStored() {
@@ -187,9 +187,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
                 public boolean canReceive() {
                     return true;
                 }
-            }).cast();
-        }
-        return super.getCapability(cap, side);
+            };
     }
 
     public void loadFromItemStack(ItemStack stack) {
@@ -239,13 +237,6 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         upgradeInventory.deserializeFromTag(tag.getList("Upgrades", 10));
         storedEU = tag.getLong("StoredEU");
         fluid = tag.contains("Fluid") ? FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid")) : FluidStack.EMPTY;
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        itemCap.invalidate();
-        fluidCap.invalidate();
     }
 
     @Override

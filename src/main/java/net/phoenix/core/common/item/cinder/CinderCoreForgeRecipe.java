@@ -1,5 +1,9 @@
 package net.phoenix.core.common.item.cinder;
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 
 import net.minecraft.core.RegistryAccess;
@@ -12,7 +16,6 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
@@ -74,7 +77,7 @@ public class CinderCoreForgeRecipe extends CustomRecipe {
         var required = schemaInfo.getBlockCounts();
 
         ItemStack output = template.copy();
-        output.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(output.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(handler -> {
             int slot = 0;
             for (var entry : required.reference2IntEntrySet()) {
                 handler.insertItem(slot++, new ItemStack(entry.getKey().asItem(), entry.getIntValue()), false);

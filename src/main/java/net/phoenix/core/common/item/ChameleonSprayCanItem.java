@@ -1,5 +1,9 @@
 package net.phoenix.core.common.item;
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -61,7 +64,7 @@ public class ChameleonSprayCanItem extends Item {
 
         if (temporaryHandler.isPresent()) {
             final var blockFluidHandler = temporaryHandler;
-            boolean filledTank = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+            boolean filledTank = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                     .map(itemCap -> blockFluidHandler.map(blockCap -> {
                         int emptySpace = itemCap.getTankCapacity(0) - itemCap.getFluidInTank(0).getAmount();
                         if (emptySpace <= 0) return false;
@@ -100,7 +103,7 @@ public class ChameleonSprayCanItem extends Item {
 
             if (state.getBlock() instanceof BucketPickup bucketPickup) {
                 if (state.getFluidState().getType() == PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid()) {
-                    boolean success = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(itemCap -> {
+                    boolean success = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).map(itemCap -> {
                         FluidStack fillStack = new FluidStack(PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid(),
                                 FluidType.BUCKET_VOLUME);
                         int filled = itemCap.fill(fillStack, IFluidHandler.FluidAction.SIMULATE);
@@ -131,7 +134,7 @@ public class ChameleonSprayCanItem extends Item {
                                             @NotNull net.minecraft.world.entity.SlotAccess slotAccess) {
         if (action != ClickAction.SECONDARY || heldItem.isEmpty()) return false;
 
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                 .map(canCap -> FluidUtil.getFluidHandler(heldItem).map(heldCap -> {
                     var transferred = FluidUtil.tryFluidTransfer(canCap, heldCap, canCap.getTankCapacity(0), true);
                     if (!transferred.isEmpty()) {
@@ -152,7 +155,7 @@ public class ChameleonSprayCanItem extends Item {
         ItemStack targetContainer = slot.getItem();
         if (targetContainer.isEmpty()) return false;
 
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                 .map(canCap -> FluidUtil.getFluidHandler(targetContainer).map(heldCap -> {
                     var transferred = FluidUtil.tryFluidTransfer(canCap, heldCap, canCap.getTankCapacity(0), true);
                     if (!transferred.isEmpty()) {
@@ -219,7 +222,7 @@ public class ChameleonSprayCanItem extends Item {
 
     @Override
     public int getBarWidth(@NotNull ItemStack stack) {
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                 .map(fluidHandler -> {
                     int max = fluidHandler.getTankCapacity(0);
                     int current = fluidHandler.getFluidInTank(0).getAmount();
@@ -230,30 +233,6 @@ public class ChameleonSprayCanItem extends Item {
     @Override
     public int getBarColor(@NotNull ItemStack stack) {
         return 0x00FFFF;
-    }
-
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ICapabilityProvider() {
-
-            private final int capacity = PhoenixConfigs.INSTANCE.features.chameleonSprayCanCapacity;
-            private final LazyOptional<FluidHandlerItemStack> holder = LazyOptional
-                    .of(() -> new FluidHandlerItemStack(stack, capacity) {
-
-                        @Override
-                        public boolean isFluidValid(int tank, @NotNull FluidStack fluidStack) {
-                            return fluidStack.getFluid() == PhoenixProgressionMaterials.PRISMATIC_PAINT.getFluid();
-                        }
-                    });
-
-            @Override
-            public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                if (cap == ForgeCapabilities.FLUID_HANDLER_ITEM) {
-                    return holder.cast();
-                }
-                return LazyOptional.empty();
-            }
-        };
     }
 
     @Override

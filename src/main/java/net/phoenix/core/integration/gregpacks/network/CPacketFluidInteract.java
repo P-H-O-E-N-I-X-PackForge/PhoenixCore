@@ -1,6 +1,10 @@
 package net.phoenix.core.integration.gregpacks.network;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -9,7 +13,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -61,7 +64,7 @@ public class CPacketFluidInteract implements CustomPacketPayload {
                 result = FluidUtil.tryEmptyContainer(carried, packHandler, Integer.MAX_VALUE, player, true);
 
                 if (!result.isSuccess()) {
-                    result = carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(itemHandler -> {
+                    result = Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM)).map(itemHandler -> {
 
                         int moved = FluidUtil.tryFluidTransfer(packHandler, itemHandler, Integer.MAX_VALUE, true)
                                 .getAmount();
@@ -70,7 +73,7 @@ public class CPacketFluidInteract implements CustomPacketPayload {
                     }).orElse(FluidActionResult.FAILURE);
                 }
             } else {
-                result = carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(itemHandler -> {
+                result = Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM)).map(itemHandler -> {
                     int moved = FluidUtil.tryFluidTransfer(itemHandler, packHandler, Integer.MAX_VALUE, true)
                             .getAmount();
                     return moved > 0 ? new FluidActionResult(itemHandler.getContainer()) : FluidActionResult.FAILURE;

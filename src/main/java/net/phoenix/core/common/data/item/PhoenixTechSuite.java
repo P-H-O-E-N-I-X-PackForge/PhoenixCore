@@ -1,6 +1,10 @@
 package net.phoenix.core.common.data.item;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -38,7 +42,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.phoenix.core.configs.PhoenixConfigs;
@@ -1149,7 +1152,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     public void supplyFood(@NotNull IElectricItem item, Player player) {
         if (item.canUse(energyPerUse / 10) && player.getFoodData().needsFood()) {
-            IItemHandler playerInv = player.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
+            IItemHandler playerInv = Optional.ofNullable(player.getCapability(Capabilities.ItemHandler.ENTITY)).orElse(null);
             if (!(playerInv instanceof IItemHandlerModifiable items)) return;
 
             int bestSlot = -1;

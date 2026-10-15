@@ -1,35 +1,45 @@
 package net.phoenix.core.integration.gregpacks.common.fluid;
 
-
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.phoenix.core.PhoenixCore;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlock;
+import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
+import net.phoenix.core.integration.gregpacks.common.energy.OmniPackEnergyHandler;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 
-@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+/**
+ * Registers the OmniPack capabilities: fluid and energy on the carried item, and inventory, fluid and energy on the
+ * placed block.
+ */
 public class GregPacksCapabilityHandler {
 
-    private static final ResourceLocation FLUID_CAP_KEY = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "omnipack_fluid");
-
-    @SubscribeEvent
-    public static void onAttachItemCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-        ItemStack stack = event.getObject();
-        OmniPackTier tier = getTier(stack);
-        if (tier == null) return;
-
-        event.addCapability(FLUID_CAP_KEY,
-                new OmniPackCapabilityProvider(stack, tier));
+    public static void register(RegisterCapabilitiesEvent event) {
+        for (Item item : BuiltInRegistries.ITEM) {
+            OmniPackTier tier = getTier(item);
+            if (tier == null) continue;
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new OmniPackFluidHandler(stack, tier),
+                    item);
+            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, ctx) -> new OmniPackEnergyHandler(stack, tier),
+                    item);
+        }
+        for (var block : BuiltInRegistries.BLOCK) {
+            if (!(block instanceof OmniPackBlock)) continue;
+            event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                    pack.getItemHandler() : null, block);
+            event.registerBlock(Capabilities.FluidHandler.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                    pack.getFluidHandler() : null, block);
+            event.registerBlock(Capabilities.EnergyStorage.BLOCK, (level, pos, state, be, side) -> be instanceof OmniPackBlockEntity pack ?
+                    pack.getEnergyHandler() : null, block);
+        }
     }
 
-    private static OmniPackTier getTier(ItemStack stack) {
-        if (stack.getItem() instanceof OmniPackItem item) return item.getTier();
-        if (stack.getItem() instanceof OmniPackBlockItem item) return item.getBlock().getTier();
+    private static OmniPackTier getTier(Item item) {
+        if (item instanceof OmniPackItem pack) return pack.getTier();
+        if (item instanceof OmniPackBlockItem pack) return pack.getBlock().getTier();
         return null;
     }
 }

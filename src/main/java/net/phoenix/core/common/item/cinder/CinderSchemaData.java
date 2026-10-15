@@ -1,6 +1,10 @@
 package net.phoenix.core.common.item.cinder;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -24,7 +28,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -542,7 +545,7 @@ public final class CinderSchemaData {
 
     public static Reference2IntMap<Block> tallyStocked(ItemStack cinderCore) {
         Reference2IntMap<Block> stocked = new Reference2IntOpenHashMap<>();
-        cinderCore.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(cinderCore.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(handler -> {
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
                 if (stack.isEmpty()) continue;
@@ -563,7 +566,7 @@ public final class CinderSchemaData {
     }
 
     public static void consumeMaterials(ItemStack cinderCore, Reference2IntMap<Block> required) {
-        cinderCore.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(cinderCore.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(handler -> {
             for (var entry : required.reference2IntEntrySet()) {
                 int remaining = entry.getIntValue();
                 for (int i = 0; i < handler.getSlots() && remaining > 0; i++) {
@@ -618,7 +621,7 @@ public final class CinderSchemaData {
             }
         }
 
-        core.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(core.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(handler -> {
             int slot = 0;
             for (var entry : required.reference2IntEntrySet()) {
                 handler.insertItem(slot++, new ItemStack(entry.getKey().asItem(), entry.getIntValue()), false);

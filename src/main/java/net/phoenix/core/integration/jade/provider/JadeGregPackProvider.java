@@ -1,10 +1,13 @@
 package net.phoenix.core.integration.jade.provider;
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
@@ -35,7 +38,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
         energyTag.putLong("capacity", capacity);
         data.put(KEY_ENERGY, energyTag);
 
-        entity.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(entity.getFluidHandler()).ifPresent(handler -> {
             if (handler.getTanks() > 0) {
                 FluidStack fluid = handler.getFluidInTank(0);
                 if (!fluid.isEmpty()) {
@@ -44,7 +47,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
             }
         });
 
-        entity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        Optional.ofNullable(entity.getItemHandler()).ifPresent(handler -> {
             CompoundTag itemsTag = new CompoundTag();
             int count = 0;
             for (int i = 0; i < handler.getSlots(); i++) {

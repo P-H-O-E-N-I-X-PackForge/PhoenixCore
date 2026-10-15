@@ -1,6 +1,10 @@
 package net.phoenix.core.common.item.cinder;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.fml.DistExecutor;
@@ -133,7 +136,7 @@ public class CinderCoreItem extends Item {
 
         int toInsert = Math.min(stillNeeded, heldItem.getCount());
 
-        return cinderCore.getCapability(ForgeCapabilities.ITEM_HANDLER).map(handler -> {
+        return Optional.ofNullable(cinderCore.getCapability(Capabilities.ItemHandler.ITEM)).map(handler -> {
             ItemStack candidate = heldItem.copy();
             candidate.setCount(toInsert);
             ItemStack remainder = ItemHandlerHelper.insertItem(handler, candidate, false);
@@ -204,39 +207,25 @@ public class CinderCoreItem extends Item {
         }
     }
 
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ICapabilityProvider() {
-
-            private final LazyOptional<ItemStackHandler> holder = LazyOptional
-                    .of(() -> new StockedMaterialsHandler(stack));
-
-            @Override
-            public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                if (cap == ForgeCapabilities.ITEM_HANDLER) {
-                    return holder.cast();
-                }
-                return LazyOptional.empty();
-            }
-        };
-    }
-
-    private static class StockedMaterialsHandler extends ItemStackHandler {
+    public static class StockedMaterialsHandler extends ItemStackHandler {
 
         private static final String TAG_KEY = "StockedMaterials";
 
         private final ItemStack owner;
 
-        private StockedMaterialsHandler(ItemStack owner) {
+        public StockedMaterialsHandler(ItemStack owner) {
             super(INVENTORY_SIZE);
             this.owner = owner;
-            CompoundTag saved = owner.getTagElement(TAG_KEY);
-            if (saved != null) deserializeNBT(saved);
+            CompoundTag all = StackNbt.getTag(owner);
+            if (all != null && all.contains(TAG_KEY)) {
+                deserializeNBT(net.phoenix.core.util.NbtRegistries.PROVIDER, all.getCompound(TAG_KEY));
+            }
         }
 
         @Override
         protected void onContentsChanged(int slot) {
-            StackNbt.getOrCreateTag(owner).put(TAG_KEY, serializeNBT());
+            CompoundTag all = StackNbt.getOrCreateTag(owner);
+            all.put(TAG_KEY, serializeNBT(net.phoenix.core.util.NbtRegistries.PROVIDER));
         }
     }
 }

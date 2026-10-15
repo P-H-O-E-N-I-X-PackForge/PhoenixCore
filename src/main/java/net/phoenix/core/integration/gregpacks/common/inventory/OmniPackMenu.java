@@ -1,6 +1,10 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +18,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.configs.PhoenixConfigs;
@@ -265,19 +268,17 @@ public class OmniPackMenu extends AbstractContainerMenu {
                         .getKey(fluid.getFluid()).toString();
         if (!key.equals(lastSentFluidKey)) {
             lastSentFluidKey = key;
-            net.phoenix.core.integration.gregpacks.network.GregPacksNetwork.CHANNEL.send(
-                    net.neoforged.neoforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
-                    new net.phoenix.core.integration.gregpacks.network.SPacketFluidSync(key));
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(serverPlayer, new net.phoenix.core.integration.gregpacks.network.SPacketFluidSync(key));
         }
     }
 
     @Nullable
     public IFluidHandler getFluidHandler() {
         if (sourceBlockEntity != null) {
-            return sourceBlockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+            return sourceBlockEntity.getFluidHandler();
         }
         ItemStack stack = getActiveStack();
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).orElse(null);
     }
 
     private void syncEnergyData() {

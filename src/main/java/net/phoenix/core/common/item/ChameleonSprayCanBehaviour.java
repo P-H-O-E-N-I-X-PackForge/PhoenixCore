@@ -1,6 +1,10 @@
 package net.phoenix.core.common.item;
 
 
+
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
@@ -44,7 +48,6 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.common.util.TriPredicate;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.configs.PhoenixConfigs;
@@ -173,7 +176,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(cap -> {
+        Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(cap -> {
             int current = cap.getFluidInTank(0).getAmount();
             int max = cap.getTankCapacity(0);
             tooltip.add(Component.translatable("behaviour.paintspray.chameleon.tooltip.fluid", current, max));
@@ -730,7 +733,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     private static boolean consumePaint(ItemStack stack, int operationsCount, boolean isBulk) {
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                 .map(cap -> {
                     int costPerOp = PhoenixConfigs.INSTANCE.features.chameleonSprayCanCostPerOperation;
                     int totalRequired = costPerOp * operationsCount;
@@ -750,7 +753,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     private static int getAvailableOperations(ItemStack stack) {
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM))
                 .map(cap -> {
                     int currentFluid = cap.getFluidInTank(0).getAmount();
                     int costPerOp = PhoenixConfigs.INSTANCE.features.chameleonSprayCanCostPerOperation;

@@ -172,6 +172,7 @@ public class PhoenixCore {
 
         ConfluxRegistry.register(modEventBus);
         modEventBus.addListener(ConfluxRegistry::registerCapabilities);
+        modEventBus.addListener(net.phoenix.core.integration.gregpacks.common.fluid.GregPacksCapabilityHandler::register);
         modEventBus.addListener(net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability::register);
         net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
@@ -179,6 +180,7 @@ public class PhoenixCore {
         net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator.register();
         AstralBlocks.registerDeferred(modEventBus);
         PhoenixAttachments.register(modEventBus);
+        net.phoenix.core.common.item.PhoenixItemCaps.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
