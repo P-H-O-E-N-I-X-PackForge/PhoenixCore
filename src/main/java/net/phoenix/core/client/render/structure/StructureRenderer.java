@@ -2,7 +2,6 @@ package net.phoenix.core.client.render.structure;
 
 
 import com.mojang.blaze3d.vertex.BufferUploader;
-import com.lowdragmc.lowdraglib.client.scene.WorldSceneRenderer;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -261,12 +260,11 @@ public final class StructureRenderer {
                 new Matrix4f().setPerspective((float) Math.toRadians(FOV), aspect, NEAR, FAR),
                 VertexSorting.byDistance(new Vector3f(view.eyeX(), view.eyeY(), view.eyeZ())));
 
-        PoseStack mv = RenderSystem.getModelViewStack();
-        mv.pushPose();
-        mv.setIdentity();
+        org.joml.Matrix4fStack mv = RenderSystem.getModelViewStack();
+        mv.pushMatrix();
+        mv.identity();
         gluLookAt(mv, view.eyeX(), view.eyeY(), view.eyeZ(), view.lookAtX(), view.lookAtY(), view.lookAtZ(), 0f, 1f,
                 0f);
-        RenderSystem.applyModelViewMatrix();
         RenderSystem.activeTexture(33984);
 
         syncCameraEntity(view);
@@ -309,9 +307,8 @@ public final class StructureRenderer {
         Minecraft mc = Minecraft.getInstance();
         RenderSystem.viewport(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight());
         RenderSystem.restoreProjectionMatrix();
-        PoseStack mv = RenderSystem.getModelViewStack();
-        mv.popPose();
-        RenderSystem.applyModelViewMatrix();
+        org.joml.Matrix4fStack mv = RenderSystem.getModelViewStack();
+        mv.popMatrix();
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
@@ -515,7 +512,7 @@ public final class StructureRenderer {
             } finally {
                 ModelBlockRenderer.clearCache();
                 if (!bakeDone) {
-                    for (BakedLayer bl : baked) if (bl != null) bl.renderedBuffer().release();
+                    for (BakedLayer bl : baked) if (bl != null) bl.renderedBuffer().close();
                 }
             }
             if (!bakeDone) return;
@@ -585,7 +582,7 @@ public final class StructureRenderer {
             BlockState state = world.getBlockState(pos);
             ps.pushPose();
             ps.translate(pos.getX(), pos.getY(), pos.getZ());
-            WorldSceneRenderer.renderBlocksForge(brd, state, pos, world, ps, tinted, random, layer);
+            renderBlocksForge(brd, state, pos, world, ps, tinted, random, layer);
             ps.popPose();
             tinted.resetTint();
         }
@@ -646,10 +643,29 @@ public final class StructureRenderer {
     private static boolean canRenderInLayer(BlockRenderDispatcher brd, BlockState state, BlockPos pos,
                                             net.minecraft.world.level.BlockAndTintGetter world, RenderType layer,
                                             RandomSource random) {
-        return WorldSceneRenderer.canRenderInLayer(brd, state, pos, world, layer, random);
+        var model = brd.getBlockModel(state);
+        var be = world instanceof net.minecraft.world.level.BlockGetter getter ? getter.getBlockEntity(pos) : null;
+        var data = be != null ? be.getModelData() : net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
+        data = model.getModelData(world, pos, state, data);
+        random.setSeed(state.getSeed(pos));
+        return model.getRenderTypes(state, random, data).contains(layer);
     }
 
-    private static void gluLookAt(PoseStack mv, float eyeX, float eyeY, float eyeZ, float centerX, float centerY,
+    private static void renderBlocksForge(BlockRenderDispatcher brd, BlockState state, BlockPos pos,
+                                          net.minecraft.world.level.BlockAndTintGetter world, PoseStack ps,
+                                          com.mojang.blaze3d.vertex.VertexConsumer consumer, RandomSource random,
+                                          RenderType layer) {
+        var model = brd.getBlockModel(state);
+        var be = world instanceof net.minecraft.world.level.BlockGetter getter ? getter.getBlockEntity(pos) : null;
+        var data = be != null ? be.getModelData() : net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
+        data = model.getModelData(world, pos, state, data);
+        random.setSeed(state.getSeed(pos));
+        if (model.getRenderTypes(state, random, data).contains(layer)) {
+            brd.renderBatched(state, pos, world, ps, consumer, false, random, data, layer);
+        }
+    }
+
+    private static void gluLookAt(org.joml.Matrix4fStack mv, float eyeX, float eyeY, float eyeZ, float centerX, float centerY,
                                   float centerZ, float upX, float upY, float upZ) {
         float fx = centerX - eyeX, fy = centerY - eyeY, fz = centerZ - eyeZ;
         float rLen = 1f / (float) Math.sqrt(fx * fx + fy * fy + fz * fz);
@@ -670,7 +686,7 @@ public final class StructureRenderer {
                 -(ux * eyeX + uy * eyeY + uz * eyeZ),
                 (fx * eyeX + fy * eyeY + fz * eyeZ),
                 1);
-        mv.mulPoseMatrix(m);
+        mv.mul(m);
     }
 
     private static boolean gluUnProject(float winX, float winY, float winZ, FloatBuffer mv, FloatBuffer proj,
