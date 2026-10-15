@@ -42,7 +42,7 @@ public final class SourceTankMachines {
 
     public static void init() {}
 
-    private static MultiblockMachineDefinition register(String id, String name, int capacity, int maxConsumption,
+    private static MachineEntry<MultiblockMachineDefinition> register(String id, String name, int capacity, int maxConsumption,
                                                         Function<MultiblockMachineDefinition, com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern> pattern) {
         return REGISTRATE
                 .multiblock(id, holder -> new SourceMultiblockTankMachine(holder, capacity, maxConsumption))

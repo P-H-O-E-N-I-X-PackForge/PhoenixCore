@@ -32,7 +32,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class AstralMachines {
 
-    public static final MachineDefinition[] ASTRAL_CONFLUENCE_HATCH = registerTieredMachines(
+    public static final MachineEntry<MachineDefinition>[] ASTRAL_CONFLUENCE_HATCH = registerTieredMachines(
             "astral_confluence_hatch",
             (holder, tier) -> new AstralConfluenceHatchMachine(holder, tier),
             (tier, builder) -> builder
@@ -43,7 +43,7 @@ public class AstralMachines {
                     .register(),
             new int[] { GTValues.IV });
 
-    public static final MachineDefinition[] ASTRAL_THREAD_HATCH_INPUT = registerTieredMachines(
+    public static final MachineEntry<MachineDefinition>[] ASTRAL_THREAD_HATCH_INPUT = registerTieredMachines(
             "astral_thread_hatch_input",
             (holder, tier) -> new AstralThreadHatchPartMachine(holder, tier, IO.IN),
             (tier, builder) -> builder
@@ -55,7 +55,7 @@ public class AstralMachines {
                     .register(),
             GTValues.tiersBetween(GTValues.IV, GTValues.ZPM));
 
-    public static final MachineDefinition[] ASTRAL_THREAD_HATCH_OUTPUT = registerTieredMachines(
+    public static final MachineEntry<MachineDefinition>[] ASTRAL_THREAD_HATCH_OUTPUT = registerTieredMachines(
             "astral_thread_hatch_output",
             (holder, tier) -> new AstralThreadHatchPartMachine(holder, tier, IO.OUT),
             (tier, builder) -> builder

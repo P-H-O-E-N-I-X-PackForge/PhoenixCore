@@ -82,7 +82,7 @@ public class VaultMachineDefinition {
         };
     }
 
-    private static MultiblockMachineDefinition registerVault(VaultTier tier) {
+    private static MachineEntry<MultiblockMachineDefinition> registerVault(VaultTier tier) {
         var casingBlock = switch (tier) {
             case BRONZE -> GTBlocks.CASING_BRONZE_BRICKS;
             case STEEL -> GTBlocks.CASING_STEEL_SOLID;

@@ -396,7 +396,7 @@ public class PhoenixTeslaMachines {
         return "tesla_hatches/tesla_" + iomode + "_" + amperage + "a";
     }
 
-    private static MachineDefinition[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability,
+    private static MachineEntry<MachineDefinition>[] registerTeslaHatch(String name, IO io, int amperage, PartAbility ability,
                                                           int... tiers) {
         String iomode = io == IO.OUT ? "input" : "output";
 
@@ -435,7 +435,7 @@ public class PhoenixTeslaMachines {
         }
     }
 
-    private static MachineDefinition[] registerTeslaLaserHatch(String name, IO io, int amperage, PartAbility ability) {
+    private static MachineEntry<MachineDefinition>[] registerTeslaLaserHatch(String name, IO io, int amperage, PartAbility ability) {
         String iomode = io == IO.OUT ? "input" : "output";
         String laserDisplayName = getLaserName(io, amperage);
 
@@ -465,55 +465,55 @@ public class PhoenixTeslaMachines {
         return "tesla_hatches/tesla_" + iomode + "_" + "laser" + "_" + amperage + "a";
     }
 
-    public static final MachineDefinition[] TESLA_LASER_INPUT_256A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_INPUT_256A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_256a", IO.OUT, 256,
             PartAbility.OUTPUT_LASER);
-    public static final MachineDefinition[] TESLA_LASER_OUTPUT_256A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_OUTPUT_256A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_256a", IO.IN, 256,
             PartAbility.INPUT_LASER);
 
-    public static final MachineDefinition[] TESLA_LASER_INPUT_1024A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_INPUT_1024A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_1024a", IO.OUT, 1024,
             PartAbility.OUTPUT_LASER);
-    public static final MachineDefinition[] TESLA_LASER_OUTPUT_1024A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_OUTPUT_1024A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_1024a", IO.IN, 1024,
             PartAbility.INPUT_LASER);
 
-    public static final MachineDefinition[] TESLA_LASER_INPUT_4096A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_INPUT_4096A = registerTeslaLaserHatch(
             "tesla_laser_input_hatch_4096a", IO.OUT, 4096,
             PartAbility.OUTPUT_LASER);
-    public static final MachineDefinition[] TESLA_LASER_OUTPUT_4096A = registerTeslaLaserHatch(
+    public static final MachineEntry<MachineDefinition>[] TESLA_LASER_OUTPUT_4096A = registerTeslaLaserHatch(
             "tesla_laser_output_hatch_4096a", IO.IN, 4096,
             PartAbility.INPUT_LASER);
 
-    public static final MachineDefinition[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_2A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 2,
             PartAbility.OUTPUT_ENERGY, GTValues.ALL_TIERS);
 
-    public static final MachineDefinition[] TESLA_INPUT_4A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 4,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_4A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 4,
             PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineDefinition[] TESLA_INPUT_16A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 16,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_16A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 16,
             PartAbility.OUTPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineDefinition[] TESLA_INPUT_64A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 64,
+    public static final MachineEntry<MachineDefinition>[] TESLA_INPUT_64A = registerTeslaHatch("tesla_energy_input_hatch", IO.OUT, 64,
             PartAbility.SUBSTATION_OUTPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineDefinition[] TESLA_OUTPUT_2A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 2,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_2A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 2,
             PartAbility.INPUT_ENERGY, GTValues.ALL_TIERS);
 
-    public static final MachineDefinition[] TESLA_OUTPUT_4A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 4,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_4A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN, 4,
             PartAbility.INPUT_ENERGY, MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineDefinition[] TESLA_OUTPUT_16A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_16A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
             16, PartAbility.INPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
-    public static final MachineDefinition[] TESLA_OUTPUT_64A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
+    public static final MachineEntry<MachineDefinition>[] TESLA_OUTPUT_64A = registerTeslaHatch("tesla_energy_output_hatch", IO.IN,
             64, PartAbility.SUBSTATION_INPUT_ENERGY,
             MULTI_AMP_TESLA_HATCH);
 
-    public static MachineDefinition[] registerWirelessCharger(
+    public static MachineEntry<MachineDefinition>[] registerWirelessCharger(
                                                               GTRegistrate registrate,
                                                               String name,
                                                               BiFunction<BlockEntityCreationInfo, Integer, TeslaWirelessBatteryBufferMachine> factory) {
@@ -543,7 +543,7 @@ public class PhoenixTeslaMachines {
                 GTValues.ALL_TIERS);
     }
 
-    public static MachineDefinition[] registerChargerTieredMachines(
+    public static MachineEntry<MachineDefinition>[] registerChargerTieredMachines(
                                                                     GTRegistrate registrate,
                                                                     String name,
                                                                     BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> machineFactory,
@@ -563,7 +563,7 @@ public class PhoenixTeslaMachines {
         return definitions;
     }
 
-    public static final MachineDefinition[] TESLA_WIRELESS_CHARGER = registerWirelessCharger(
+    public static final MachineEntry<MachineDefinition>[] TESLA_WIRELESS_CHARGER = registerWirelessCharger(
             PhoenixRegistration.REGISTRATE,
             "tesla_wireless_charger",
             TeslaWirelessBatteryBufferMachine::new);

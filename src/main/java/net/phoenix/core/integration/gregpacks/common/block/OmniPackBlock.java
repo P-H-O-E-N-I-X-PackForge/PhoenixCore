@@ -1,6 +1,10 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
 
+
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.phoenix.core.util.StackNbt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -70,6 +74,12 @@ public class OmniPackBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        // blocks are registered through Registrate, which never serialises through this codec
+        return MapCodec.unit(() -> new OmniPackBlock(OmniPackTier.BASIC, BlockBehaviour.Properties.of()));
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -86,8 +96,8 @@ public class OmniPackBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos,
-                                 Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
 

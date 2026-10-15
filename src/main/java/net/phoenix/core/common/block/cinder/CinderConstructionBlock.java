@@ -1,5 +1,7 @@
 package net.phoenix.core.common.block.cinder;
 
+
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,6 +29,11 @@ public class CinderConstructionBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(CinderConstructionBlock::new);
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -42,8 +49,8 @@ public class CinderConstructionBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.block.cinema;
 
+
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -57,6 +59,11 @@ public class CinemaScreenBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(CinemaScreenBlock::new);
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
@@ -79,8 +86,8 @@ public class CinemaScreenBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                 InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen)) {
             return InteractionResult.PASS;
         }

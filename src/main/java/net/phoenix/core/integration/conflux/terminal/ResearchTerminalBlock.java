@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.terminal;
 
+
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -30,8 +32,8 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos,
-                                 Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         if (level.isClientSide) {
 
             if (level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
@@ -55,6 +57,11 @@ public class ResearchTerminalBlock extends BaseEntityBlock {
                 level.getBlockEntity(pos) instanceof ResearchTerminalBlockEntity terminal) {
             terminal.adopt(net.phoenix.core.integration.conflux.research.ResearchTeamHelper.getTeamId(sp));
         }
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(ResearchTerminalBlock::new);
     }
 
     @Override

@@ -53,7 +53,7 @@ public final class GrowthRecipes {
     }
 
     private static void crystalGarden(RecipeOutput provider) {
-        GTRecipeType type = PhoenixRecipeTypes.GROWTH_RECIPES;
+        GTRecipeType type = PhoenixRecipeTypes.GROWTH_RECIPES.get();
         Item seed = GrowthItems.CRYSTAL_SEED.get();
 
         at(type, "crystal_amethyst", 0, r -> r.inputItems(seed, 1).inputItems(Items.QUARTZ, 8)
@@ -68,7 +68,7 @@ public final class GrowthRecipes {
     }
 
     private static void verdantBloom(RecipeOutput provider) {
-        GTRecipeType type = PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES;
+        GTRecipeType type = PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES.get();
         Item seed = GrowthItems.GROWTH_SEED.get();
 
         at(type, "botanical_logs", 0, r -> r.inputItems(seed, 1).inputItems(Items.BONE_MEAL, 4)
@@ -89,7 +89,7 @@ public final class GrowthRecipes {
     }
 
     private static void bloomvineCore(RecipeOutput provider) {
-        GTRecipeType type = PhoenixRecipeTypes.VINE_GROWTH_RECIPES;
+        GTRecipeType type = PhoenixRecipeTypes.VINE_GROWTH_RECIPES.get();
         Item seed = GrowthItems.GROWTH_SEED.get();
 
         at(type, "vine_vines", 0, r -> r.inputItems(seed, 1).inputItems(Items.BONE_MEAL, 2)

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.ritual;
 
+
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -32,9 +34,8 @@ public class AstralRitualPedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos,
-                                 Player player, InteractionHand hand, BlockHitResult hit) {
-        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         ItemStack held = player.getMainHandItem();
         if (!(held.getItem() instanceof AstralWandItem)) {
             player.displayClientMessage(Component.literal("The pedestal needs a Wand to channel."), true);
@@ -42,6 +43,11 @@ public class AstralRitualPedestalBlock extends BaseEntityBlock {
         }
 
         return InteractionResult.PASS;
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(AstralRitualPedestalBlock::new);
     }
 
     @Override

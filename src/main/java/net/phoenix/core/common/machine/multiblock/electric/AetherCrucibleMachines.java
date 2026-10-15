@@ -27,7 +27,7 @@ public final class AetherCrucibleMachines {
     public static final MachineEntry<MachineDefinition> AETHER_CATALYST_HATCH_EV = registerCatalystHatch(GTValues.EV);
     public static final MachineEntry<MachineDefinition> AETHER_CATALYST_HATCH_IV = registerCatalystHatch(GTValues.IV);
 
-    private static MachineDefinition registerCatalystHatch(int tier) {
+    private static MachineEntry<MachineDefinition> registerCatalystHatch(int tier) {
         return REGISTRATE
                 .machine("aether_catalyst_hatch_" + GTValues.VN[tier].toLowerCase(),
                         holder -> new AetherCrucibleMachine.AetherCatalystHatch(holder, tier))

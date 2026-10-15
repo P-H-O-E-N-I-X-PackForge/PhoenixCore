@@ -150,7 +150,7 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
 
         double efficiencyFactor = 1.0 + ((resonance - 1.0) * 0.9);
 
-        if (recipe.recipeType == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES) {
+        if (recipe.recipeType == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get()) {
             return PhoenixRecipeModifier.builder()
                     .durationMultiplier(0.8)
                     .sourceMultiplier(1.1 * efficiencyFactor)

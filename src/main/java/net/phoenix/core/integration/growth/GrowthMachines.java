@@ -47,7 +47,7 @@ public class GrowthMachines {
                                                                                               String id,
                                                                                               String name,
                                                                                               java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
-                                                                                              com.gregtechceu.gtceu.api.recipe.GTRecipeType recipeType,
+                                                                                              com.gregtechceu.gtceu.api.registry.registrate.entry.GTRecipeTypeEntry recipeType,
                                                                                               it.unimi.dsi.fastutil.ints.IntList minBounds,
                                                                                               it.unimi.dsi.fastutil.ints.IntList maxBounds) {
         return REGISTRATE
