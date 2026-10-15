@@ -89,7 +89,7 @@ public class OmniPackFluidHandler implements IFluidHandlerItem {
         if (current.isEmpty() || maxDrain <= 0) return FluidStack.EMPTY;
 
         int drainedAmount = Math.min(current.getAmount(), maxDrain);
-        FluidStack result = new FluidStack(current, drainedAmount);
+        FluidStack result = current.copyWithAmount(drainedAmount);
 
         if (action.execute()) {
             int remaining = current.getAmount() - drainedAmount;

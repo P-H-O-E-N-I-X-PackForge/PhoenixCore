@@ -17,7 +17,7 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public final class ConfluxProducerMachines {
 
-    public static final Map<ConfluxDataType, MachineDefinition[]> PRODUCERS = new EnumMap<>(ConfluxDataType.class);
+    public static final Map<ConfluxDataType, MachineEntry<MachineDefinition>[]> PRODUCERS = new EnumMap<>(ConfluxDataType.class);
 
     private static final int[] TIERS = {
             GTValues.LV, GTValues.MV, GTValues.HV, GTValues.EV, GTValues.IV,
@@ -26,7 +26,8 @@ public final class ConfluxProducerMachines {
 
     static {
         for (ConfluxDataType type : ConfluxDataType.values()) {
-            MachineDefinition[] defs = new MachineDefinition[GTValues.TIER_COUNT];
+            @SuppressWarnings("unchecked")
+            MachineEntry<MachineDefinition>[] defs = new MachineEntry[GTValues.TIER_COUNT];
             for (int tier : TIERS) {
                 String id = GTValues.VN[tier].toLowerCase() + "_" + type.id() + "_data_producer";
                 String lang = GTValues.VN[tier] + " " + type.displayName + " Data Producer";

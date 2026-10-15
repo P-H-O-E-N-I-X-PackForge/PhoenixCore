@@ -26,9 +26,9 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public final class CinderForgeMachines {
 
-    public static MachineDefinition CINDER_FORGE_HATCH = null;
-    public static MachineDefinition CINDER_REQUESTER = null;
-    public static MachineDefinition CINDER_FORGE = null;
+    public static MachineEntry<MachineDefinition> CINDER_FORGE_HATCH = null;
+    public static MachineEntry<MachineDefinition> CINDER_REQUESTER = null;
+    public static MachineEntry<MachineDefinition> CINDER_FORGE = null;
 
     static {
         if (GTCEu.Mods.isAE2Loaded() || GTCEu.isDataGen()) {

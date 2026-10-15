@@ -28,7 +28,7 @@ public class GrowthMachines {
     public static final com.gregtechceu.gtceu.api.machine.multiblock.PartAbility GROWTH_CONTROL_ABILITY =
             new com.gregtechceu.gtceu.api.machine.multiblock.PartAbility("growth_control");
 
-    public static final com.gregtechceu.gtceu.api.machine.MachineDefinition GROWTH_CONTROL_HATCH = REGISTRATE
+    public static final MachineEntry<com.gregtechceu.gtceu.api.machine.MachineDefinition> GROWTH_CONTROL_HATCH = REGISTRATE
             .machine("growth_control_hatch", GrowthControlHatch::new)
             .langValue("Growth Control Hatch")
             .tier(com.gregtechceu.gtceu.api.GTValues.HV)
@@ -43,7 +43,7 @@ public class GrowthMachines {
             .overlayTieredHullModel("growth_control_hatch")
             .register();
 
-    private static <T extends GrowthMultiblockMachine> MultiblockMachineDefinition cubeGrower(
+    private static <T extends GrowthMultiblockMachine> MachineEntry<MultiblockMachineDefinition> cubeGrower(
                                                                                               String id,
                                                                                               String name,
                                                                                               java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
@@ -71,15 +71,15 @@ public class GrowthMachines {
                 .register();
     }
 
-    public static final MultiblockMachineDefinition CRYSTAL_GARDEN = cubeGrower("crystal_garden", "Crystal Garden",
+    public static final MachineEntry<MultiblockMachineDefinition> CRYSTAL_GARDEN = cubeGrower("crystal_garden", "Crystal Garden",
             CrystalGardenMachine::new, PhoenixRecipeTypes.GROWTH_RECIPES, CrystalGardenMachine.MIN_BOUNDS,
             CrystalGardenMachine.MAX_BOUNDS);
 
-    public static final MultiblockMachineDefinition BLOOMVINE_CORE = cubeGrower("bloomvine_core", "Bloomvine Core",
+    public static final MachineEntry<MultiblockMachineDefinition> BLOOMVINE_CORE = cubeGrower("bloomvine_core", "Bloomvine Core",
             BloomvineCoreMachine::new, PhoenixRecipeTypes.VINE_GROWTH_RECIPES, BloomvineCoreMachine.MIN_BOUNDS,
             BloomvineCoreMachine.MAX_BOUNDS);
 
-    public static final MultiblockMachineDefinition VERDANT_BLOOM = cubeGrower("verdant_bloom", "Verdant Bloom",
+    public static final MachineEntry<MultiblockMachineDefinition> VERDANT_BLOOM = cubeGrower("verdant_bloom", "Verdant Bloom",
             VerdantBloomMachine::new, PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES, VerdantBloomMachine.MIN_BOUNDS,
             VerdantBloomMachine.MAX_BOUNDS);
 

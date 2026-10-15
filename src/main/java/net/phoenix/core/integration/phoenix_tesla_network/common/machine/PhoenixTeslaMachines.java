@@ -549,7 +549,8 @@ public class PhoenixTeslaMachines {
                                                                     BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> machineFactory,
                                                                     BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineDefinition> definitionBuilder,
                                                                     int... tiers) {
-        MachineDefinition[] definitions = new MachineDefinition[GTValues.TIER_COUNT];
+        @SuppressWarnings("unchecked")
+        MachineEntry<MachineDefinition>[] definitions = new MachineEntry[GTValues.TIER_COUNT];
 
         for (int tier : tiers) {
             var builder = registrate

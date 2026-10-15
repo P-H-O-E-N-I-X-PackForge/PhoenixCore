@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.phoenix.core.PhoenixCore;
 
 import java.util.Collection;
@@ -16,13 +16,14 @@ public final class RecipeGateApplier {
 
     private RecipeGateApplier() {}
 
-    public static void applyGates(Collection<Recipe<?>> recipes) {
+    public static void applyGates(Collection<RecipeHolder<?>> recipes) {
         var rules = GatedRecipeRegistry.INSTANCE.getRules();
         if (rules.isEmpty()) return;
 
         int gated = 0;
-        for (Recipe<?> r : recipes) {
-            if (!(r instanceof GTRecipe recipe)) continue;
+        for (RecipeHolder<?> holder : recipes) {
+            if (!(holder.value() instanceof GTRecipe recipe)) continue;
+            recipe.id = holder.id();
 
             for (GatedRecipeRule rule : rules) {
                 if (matches(recipe, rule) && !alreadyGated(recipe, rule.flag())) {
@@ -66,7 +67,7 @@ public final class RecipeGateApplier {
             long voltage = Math.max(recipe.getInputEUt().voltage(), recipe.getOutputEUt().voltage());
             byte recipeTier = GTUtil.getTierByVoltage(voltage);
             for (GatedRecipeRule.TypeTierGate gate : rule.recipeTypes()) {
-                if (!gate.recipeType().equals(recipe.recipeType.registryName)) continue;
+                if (!gate.recipeType().equals(recipe.recipeType.id)) continue;
                 if (recipeTier >= GTUtil.getTierByName(gate.minTier())) return true;
             }
         }

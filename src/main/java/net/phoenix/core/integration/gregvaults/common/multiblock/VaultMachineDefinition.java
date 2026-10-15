@@ -28,8 +28,8 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 @SuppressWarnings("all")
 public class VaultMachineDefinition {
 
-    public static MultiblockMachineDefinition BRONZE_VAULT;
-    public static MultiblockMachineDefinition STEEL_VAULT;
+    public static MachineEntry<MultiblockMachineDefinition> BRONZE_VAULT;
+    public static MachineEntry<MultiblockMachineDefinition> STEEL_VAULT;
     public static MachineEntry<MultiblockMachineDefinition> TITANIUM_VAULT;
 
     private static final ResourceLocation OVERLAY_DIR = PhoenixCore.id("block/multiblock");

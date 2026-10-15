@@ -124,7 +124,7 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
         chunk.setBlockState(chestPos, Blocks.CHEST.defaultBlockState(), false);
 
         if (chunk.getBlockEntity(chestPos) instanceof RandomizableContainerBlockEntity chestEntity) {
-            chestEntity.setLootTable(PhoenixCore.id("chests/ethereal_spawn"), chestPos.asLong());
+            chestEntity.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, PhoenixCore.id("chests/ethereal_spawn")), chestPos.asLong());
         }
     }
 

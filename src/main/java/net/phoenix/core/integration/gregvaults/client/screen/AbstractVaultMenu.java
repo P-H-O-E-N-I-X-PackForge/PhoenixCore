@@ -395,10 +395,11 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
         Level level = getLevel();
         if (level == null) return;
         var recipe = level.getRecipeManager()
-                .getRecipeFor(RecipeType.CRAFTING, craftingGrid, level)
+                .getRecipeFor(RecipeType.CRAFTING, craftingGrid.asCraftInput(), level)
+                .map(net.minecraft.world.item.crafting.RecipeHolder::value)
                 .orElse(null);
         craftingResult.setItem(0,
-                recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingGrid, level.registryAccess()));
+                recipe == null ? ItemStack.EMPTY : recipe.assemble(craftingGrid.asCraftInput(), level.registryAccess()));
     }
 
     public void snapshotGridIngredients() {
@@ -448,7 +449,7 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
         if (stack.getItem() instanceof IGTTool || !ToolHelper.getCraftingToolTypes(stack).isEmpty()) {
             ToolHelper.damageItemWhenCrafting(stack, player);
         } else if (stack.isDamageableItem()) {
-            stack.hurtAndBreak(1, player, p -> {});
+            stack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
         }
     }
 
@@ -663,7 +664,8 @@ public abstract class AbstractVaultMenu extends AbstractContainerMenu {
             if (level == null) return ItemStack.EMPTY;
 
             var recipe = level.getRecipeManager()
-                    .getRecipeFor(RecipeType.CRAFTING, craftingGrid, level)
+                    .getRecipeFor(RecipeType.CRAFTING, craftingGrid.asCraftInput(), level)
+                    .map(net.minecraft.world.item.crafting.RecipeHolder::value)
                     .orElse(null);
             if (recipe == null) return ItemStack.EMPTY;
 

@@ -388,7 +388,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
             progress = workable.getRecipeLogic().getProgress();
             duration = workable.getRecipeLogic().getDuration();
             multiRecipe = workable.getRecipeTypes().length > 1;
-            recipeTypeName = workable.getRecipeType().registryName.getPath();
+            recipeTypeName = workable.getRecipeType().id.getPath();
         }
         if (controller instanceof WorkableElectricMultiblockMachine electricMachine) {
             electric = true;

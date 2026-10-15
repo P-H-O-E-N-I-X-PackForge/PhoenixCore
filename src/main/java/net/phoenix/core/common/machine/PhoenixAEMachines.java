@@ -19,8 +19,8 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 public class PhoenixAEMachines {
 
-    public static MachineDefinition ME_TAG_INPUT_BUS = null;
-    public static MachineDefinition ME_TAG_INPUT_HATCH = null;
+    public static MachineEntry<MachineDefinition> ME_TAG_INPUT_BUS = null;
+    public static MachineEntry<MachineDefinition> ME_TAG_INPUT_HATCH = null;
 
     static {
         if (PhoenixConfigs.INSTANCE.features.tagInputsEnabled && GTCEu.Mods.isAE2Loaded() || GTCEu.isDataGen()) {

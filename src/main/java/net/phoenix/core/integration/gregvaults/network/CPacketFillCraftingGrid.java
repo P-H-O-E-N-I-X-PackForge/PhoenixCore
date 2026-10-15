@@ -70,7 +70,7 @@ public class CPacketFillCraftingGrid implements CustomPacketPayload {
         if (packet.recipeId != null) {
             var recipeOpt = player.level().getRecipeManager().byKey(packet.recipeId);
             if (recipeOpt.isPresent()) {
-                Recipe<?> recipe = recipeOpt.get();
+                Recipe<?> recipe = recipeOpt.get().value();
                 var ingredients = recipe.getIngredients();
 
                 if (recipe instanceof ShapedRecipe shaped) {

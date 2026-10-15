@@ -86,7 +86,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
                 if (filled <= 0) return 0;
                 if (action.execute()) {
                     if (fluid.isEmpty()) {
-                        fluid = new FluidStack(resource, filled);
+                        fluid = resource.copyWithAmount(filled);
                     } else {
                         fluid.setAmount(fluid.getAmount() + filled);
                     }
@@ -106,7 +106,7 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
             public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
                 if (fluid.isEmpty() || maxDrain <= 0) return FluidStack.EMPTY;
                 int drained = Math.min(fluid.getAmount(), maxDrain);
-                FluidStack result = new FluidStack(fluid, drained);
+                FluidStack result = fluid.copyWithAmount(drained);
                 if (action.execute()) {
                     fluid.setAmount(fluid.getAmount() - drained);
                     if (fluid.getAmount() <= 0) fluid = FluidStack.EMPTY;

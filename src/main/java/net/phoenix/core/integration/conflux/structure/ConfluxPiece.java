@@ -20,7 +20,8 @@ import net.phoenix.core.PhoenixCore;
 
 public class ConfluxPiece extends StructurePiece {
 
-    private static final ResourceLocation LOOT = PhoenixCore.id("chests/ethereal_spawn");
+    private static final net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> LOOT = net.minecraft.resources.ResourceKey
+            .create(net.minecraft.core.registries.Registries.LOOT_TABLE, PhoenixCore.id("chests/ethereal_spawn"));
 
     public enum Kind {
 
