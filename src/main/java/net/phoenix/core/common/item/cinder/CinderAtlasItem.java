@@ -126,8 +126,9 @@ public class CinderAtlasItem extends Item implements IMenuItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
+        Level level = context.level();
         int active = CinderAtlasData.getActiveLoadout(stack);
         int capacity = CinderAtlasUpgrades.getLoadoutCapacity(stack);
 

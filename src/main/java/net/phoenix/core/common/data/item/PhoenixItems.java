@@ -39,7 +39,7 @@ public class PhoenixItems {
             .lang("ULV Electric Piston")
             .register();
     public static final ItemEntry<ComponentItem> ULV_ELECTRIC_PUMP = REGISTRATE
-            .item("ulv_electric_pump", ComponentItem::create)
+            .item("ulv_electric_pump", ComponentItem::new)
             .lang("ULV Electric Pump")
             .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_PUMP),
                     new TooltipBehavior(lines -> {
@@ -49,7 +49,7 @@ public class PhoenixItems {
                     })))
             .register();
     public static final ItemEntry<ComponentItem> ULV_CONVEYOR_MODULE = REGISTRATE
-            .item("ulv_conveyor_module", ComponentItem::create)
+            .item("ulv_conveyor_module", ComponentItem::new)
             .lang("ULV Conveyor Module")
             .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_CONVEYOR),
                     new TooltipBehavior(lines -> {
@@ -59,7 +59,7 @@ public class PhoenixItems {
                     })))
             .register();
     public static final ItemEntry<ComponentItem> ULV_FLUID_REGULATOR = REGISTRATE
-            .item("ulv_fluid_regulator", ComponentItem::create)
+            .item("ulv_fluid_regulator", ComponentItem::new)
             .lang("ULV Fluid Regulator")
             .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_FLUID_REGULATOR),
                     new TooltipBehavior(lines -> {
@@ -69,7 +69,7 @@ public class PhoenixItems {
                     })))
             .register();
     public static final ItemEntry<ComponentItem> ULV_ROBOT_ARM = REGISTRATE
-            .item("ulv_robot_arm", ComponentItem::create)
+            .item("ulv_robot_arm", ComponentItem::new)
             .lang("ULV Robot Arm")
             .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_ROBOT_ARM),
                     new TooltipBehavior(lines -> {
@@ -79,13 +79,13 @@ public class PhoenixItems {
                     })))
             .register();
 
-    public static ItemEntry<ComponentItem> POWER_UNIT_LUV = REGISTRATE.item("luv_power_unit", ComponentItem::create)
+    public static ItemEntry<ComponentItem> POWER_UNIT_LUV = REGISTRATE.item("luv_power_unit", ComponentItem::new)
             .lang("LuV Power Unit")
             .properties(p -> p.stacksTo(8))
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tools/power_unit_luv")))
             .onRegister((c) -> c.attachComponents(ElectricStats.createElectricItem(102400000L, GTValues.LuV)))
             .register();
-    public static ItemEntry<ComponentItem> POWER_UNIT_ZPM = REGISTRATE.item("zpm_power_unit", ComponentItem::create)
+    public static ItemEntry<ComponentItem> POWER_UNIT_ZPM = REGISTRATE.item("zpm_power_unit", ComponentItem::new)
             .lang("ZPM Power Unit")
             .properties(p -> p.stacksTo(8))
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tools/power_unit_zpm")))
@@ -354,7 +354,7 @@ public class PhoenixItems {
                             8)))
             .lang("Phoenix Tech Suite Helmet")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_HELMETS)
+            .tag(net.minecraft.tags.ItemTags.HEAD_ARMOR)
             .tag(CustomTags.PPE_ARMOR)
             .register();
 
@@ -363,7 +363,7 @@ public class PhoenixItems {
                     new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 6)))
             .lang("Phoenix Wings")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .tag(net.minecraft.tags.ItemTags.CHEST_ARMOR)
             .register();
 
     public static ItemEntry<PhoenixArmorItem> PHOENIX_CHESTPLATE = REGISTRATE
@@ -372,7 +372,7 @@ public class PhoenixItems {
                             new PhoenixTechSuite(ArmorItem.Type.CHESTPLATE, 16384, 500_000_000L, 6)))
             .lang("Phoenix Tech Suite Chestplate")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .tag(net.minecraft.tags.ItemTags.CHEST_ARMOR)
             .tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
             .tag(CustomTags.PPE_ARMOR)
             .register();
@@ -385,7 +385,7 @@ public class PhoenixItems {
                             6)))
             .lang("Phoenix Tech Suite Leggings")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_LEGGINGS)
+            .tag(net.minecraft.tags.ItemTags.LEG_ARMOR)
             .tag(CustomTags.PPE_ARMOR)
             .register();
 
@@ -397,7 +397,7 @@ public class PhoenixItems {
                             6)))
             .lang("Phoenix Tech Suite Boots")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_BOOTS)
+            .tag(net.minecraft.tags.ItemTags.FOOT_ARMOR)
             .tag(CustomTags.PPE_ARMOR)
             .tag(CustomTags.STEP_BOOTS)
             .register();

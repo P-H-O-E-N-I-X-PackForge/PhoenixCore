@@ -58,8 +58,9 @@ public class GregPacksItems {
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-            super.appendHoverText(stack, level, tooltip, flag);
+        public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
+            super.appendHoverText(stack, context, tooltip, flag);
             String key = stack.getItem().getDescriptionId() + ".tooltip";
             if (I18n.exists(key)) {
                 tooltip.add(Component.translatable(key));

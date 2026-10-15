@@ -294,8 +294,9 @@ public class WirelessTerminalItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level,
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
         EmitterTier tier = getEmitterTier(stack);
         PhoenixConfigs.WirelessTerminal cfg = PhoenixConfigs.INSTANCE.wirelessTerminal;
 

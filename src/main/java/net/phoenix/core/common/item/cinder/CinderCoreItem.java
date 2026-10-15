@@ -151,8 +151,9 @@ public class CinderCoreItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
+        Level level = context.level();
         var definition = CinderSchemaData.getTargetDefinition(stack);
         if (definition != null) {
             tooltip.add(Component.translatable("tooltip.phoenixcore.cinder_core.target",

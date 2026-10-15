@@ -68,7 +68,8 @@ public class ContinuumUpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
         tooltip.add(Component.literal(effect).withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.literal("Up to level " + maxLevel).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.literal("Hold a rocket in your other hand and use.").withStyle(ChatFormatting.DARK_GRAY));

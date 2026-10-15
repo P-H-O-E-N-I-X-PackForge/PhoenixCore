@@ -18,7 +18,8 @@ public class ContinuumProbeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
         tooltip.add(Component.literal("Carried by extraction missions to a surveyed body.")
                 .withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.literal("Each probe brings back a share of the body's resources.")

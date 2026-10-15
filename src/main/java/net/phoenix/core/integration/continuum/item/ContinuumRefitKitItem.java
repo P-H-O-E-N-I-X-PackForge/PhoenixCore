@@ -38,7 +38,8 @@ public class ContinuumRefitKitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
         tooltip.add(Component.literal("Raises a rocket's hull from " + RocketStats.tierName(tier - 1) + " to " +
                 RocketStats.tierName(tier) + ".").withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.literal("A better hull flies faster, wears less and fails less, carries more upgrades "

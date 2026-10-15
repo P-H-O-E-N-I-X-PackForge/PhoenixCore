@@ -25,8 +25,9 @@ public class CinderAtlasUpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
+        Level level = context.level();
         tooltip.add(Component.literal(switch (upgradeType) {
             case LOADOUT_EXPANSION -> "Adds +1 loadout slot to a Cinder Atlas (stacks with more copies).";
             case RANGE_EXTENDER_I -> "Extends a Cinder Atlas's wireless range to " +

@@ -3,6 +3,8 @@ package net.phoenix.core.common.item;
 
 
 
+
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.Optional;
 import net.phoenix.core.util.StackNbt;
@@ -167,7 +169,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
                 }
 
         if (changesMade) {
-            GTSoundEntries.SPRAY_CAN_TOOL.play(level, null, player.position(), 1.0f, 1.0f);
+            GTSoundEntries.SPRAY_CAN_TOOL.get().play(level, null, player.position(), 1.0f, 1.0f);
             return InteractionResult.SUCCESS;
         }
 
@@ -175,7 +177,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        Level level = context.level();
         Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(cap -> {
             int current = cap.getFluidInTank(0).getAmount();
             int max = cap.getTankCapacity(0);
@@ -370,7 +373,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             }
             return false;
         } else if (first instanceof ShulkerBoxBlockEntity shulkerBox) {
-            var tag = shulkerBox.saveWithoutMetadata();
+            var tag = shulkerBox.saveWithoutMetadata(shulkerBox.getLevel().registryAccess());
             var level = first.getLevel();
             var pos = first.getBlockPos();
             if (recolorBlockNoState(SHULKER_BOX_MAP, color, level, pos, Blocks.SHULKER_BOX)) {
@@ -529,7 +532,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     private boolean tryPaintSpecialBlock(Level world, BlockPos pos, Block block, DyeColor color) {
         DyeColor activeColor = (color == null) ? DyeColor.WHITE : color;
 
-        if (block.defaultBlockState().is(Tags.Blocks.GLASS))
+        if (block.defaultBlockState().is(Tags.Blocks.GLASS_BLOCKS))
             return recolorBlockNoState(GLASS_MAP, activeColor, world, pos, Blocks.GLASS);
         if (block.defaultBlockState().is(Tags.Blocks.GLASS_PANES))
             return recolorBlockNoState(GLASS_PANE_MAP, activeColor, world, pos, Blocks.GLASS_PANE);
@@ -539,9 +542,9 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             return recolorBlockNoState(WOOL_MAP, activeColor, world, pos, null);
         if (block.defaultBlockState().is(BlockTags.WOOL_CARPETS))
             return recolorBlockNoState(CARPET_MAP, activeColor, world, pos, null);
-        if (block.defaultBlockState().is(CustomTags.CONCRETE_BLOCK))
+        if (block.defaultBlockState().is(Tags.Blocks.CONCRETES))
             return recolorBlockNoState(CONCRETE_MAP, activeColor, world, pos, null);
-        if (block.defaultBlockState().is(CustomTags.CONCRETE_POWDER_BLOCK))
+        if (block instanceof net.minecraft.world.level.block.ConcretePowderBlock)
             return recolorBlockNoState(CONCRETE_POWDER_MAP, activeColor, world, pos, null);
 
         if (block.defaultBlockState().is(BlockTags.BEDS)) {
@@ -560,11 +563,11 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
                 CompoundTag mainTag = null;
                 BlockEntity mainBE = world.getBlockEntity(pos);
-                if (mainBE != null) mainTag = mainBE.saveWithFullMetadata();
+                if (mainBE != null) mainTag = mainBE.saveWithFullMetadata(mainBE.getLevel().registryAccess());
 
                 CompoundTag otherTag = null;
                 BlockEntity otherBE = world.getBlockEntity(otherHalfPos);
-                if (otherBE != null) otherTag = otherBE.saveWithFullMetadata();
+                if (otherBE != null) otherTag = otherBE.saveWithFullMetadata(otherBE.getLevel().registryAccess());
 
                 BlockState newMainState = targetBedBlock.defaultBlockState()
                         .setValue(net.minecraft.world.level.block.BedBlock.FACING, facing)
@@ -583,11 +586,11 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
                 if (mainTag != null) {
                     BlockEntity newMainBE = world.getBlockEntity(pos);
-                    if (newMainBE != null) newMainBE.load(mainTag);
+                    if (newMainBE != null) newMainBE.loadWithComponents(mainTag, newMainBE.getLevel().registryAccess());
                 }
                 if (otherTag != null) {
                     BlockEntity newOtherBE = world.getBlockEntity(otherHalfPos);
-                    if (newOtherBE != null) newOtherBE.load(otherTag);
+                    if (newOtherBE != null) newOtherBE.loadWithComponents(otherTag, newOtherBE.getLevel().registryAccess());
                 }
 
                 world.sendBlockUpdated(pos, currentBedState, newMainState, 3);
@@ -615,7 +618,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
             CompoundTag bannerTag = null;
             BlockEntity bannerBE = world.getBlockEntity(pos);
-            if (bannerBE != null) bannerTag = bannerBE.saveWithFullMetadata();
+            if (bannerBE != null) bannerTag = bannerBE.saveWithFullMetadata(bannerBE.getLevel().registryAccess());
 
             BlockState newBannerState = targetBannerBlock.defaultBlockState();
             for (Property property : bannerState.getProperties()) {
@@ -628,7 +631,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
             if (bannerTag != null) {
                 BlockEntity newBannerBE = world.getBlockEntity(pos);
-                if (newBannerBE != null) newBannerBE.load(bannerTag);
+                if (newBannerBE != null) newBannerBE.loadWithComponents(bannerTag, newBannerBE.getLevel().registryAccess());
             }
             return true;
         }
@@ -675,11 +678,11 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             world.setBlockAndUpdate(pos, Blocks.WHITE_CARPET.defaultBlockState());
             return true;
         }
-        if (block.defaultBlockState().is(CustomTags.CONCRETE_BLOCK) && block != Blocks.WHITE_CONCRETE) {
+        if (block.defaultBlockState().is(Tags.Blocks.CONCRETES) && block != Blocks.WHITE_CONCRETE) {
             world.setBlockAndUpdate(pos, Blocks.WHITE_CONCRETE.defaultBlockState());
             return true;
         }
-        if (block.defaultBlockState().is(CustomTags.CONCRETE_POWDER_BLOCK) && block != Blocks.WHITE_CONCRETE_POWDER) {
+        if (block instanceof net.minecraft.world.level.block.ConcretePowderBlock && block != Blocks.WHITE_CONCRETE_POWDER) {
             world.setBlockAndUpdate(pos, Blocks.WHITE_CONCRETE_POWDER.defaultBlockState());
             return true;
         }
@@ -806,7 +809,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
         if (changed) {
             consumePaint(stack, 1, false);
-            GTSoundEntries.SPRAY_CAN_TOOL.play(level, null, player.position(), 1.0f, 1.0f);
+            GTSoundEntries.SPRAY_CAN_TOOL.get().play(level, null, player.position(), 1.0f, 1.0f);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 

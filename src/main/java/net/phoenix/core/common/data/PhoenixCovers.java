@@ -3,7 +3,7 @@ package net.phoenix.core.common.data;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import net.minecraft.core.Holder;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.IOCoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.SimpleCoverRenderer;
@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.Supplier;
 
+import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
+
 public class PhoenixCovers {
 
     public static final int START_TIER = GTValues.UHV;
@@ -26,18 +28,17 @@ public class PhoenixCovers {
 
     public static final int[] PHOENIX_SOLAR_PANEL_TIERS = GTValues.tiersBetween(START_TIER, END_TIER);
 
-    public final static CoverDefinition[] SOLAR_PANEL_TIERED;
+    public final static Holder<CoverDefinition>[] SOLAR_PANEL_TIERED;
 
     public static final int ULV_ITEMS_PER_SECOND = CoverRates.ULV_ITEMS_PER_SECOND;
     public static final int ULV_FLUID_PER_TICK = CoverRates.ULV_FLUID_PER_TICK;
 
-    public final static CoverDefinition ULV_CONVEYOR;
-    public final static CoverDefinition ULV_ROBOT_ARM;
-    public final static CoverDefinition ULV_PUMP;
-    public final static CoverDefinition ULV_FLUID_REGULATOR;
+    public final static Holder<CoverDefinition> ULV_CONVEYOR;
+    public final static Holder<CoverDefinition> ULV_ROBOT_ARM;
+    public final static Holder<CoverDefinition> ULV_PUMP;
+    public final static Holder<CoverDefinition> ULV_FLUID_REGULATOR;
 
     static {
-        GTRegistries.COVERS.unfreeze();
         ULV_CONVEYOR = register("ulv_conveyor",
                 (def, cov, side) -> new ConveyorCover(def, cov, side, GTValues.ULV, ULV_ITEMS_PER_SECOND),
                 () -> () -> new IOCoverRenderer(GTCEu.id("block/cover/conveyor"), null,
@@ -57,33 +58,24 @@ public class PhoenixCovers {
                 "solar_panel",
                 PhoenixCoverSolarPanel::new,
                 PHOENIX_SOLAR_PANEL_TIERS);
-        GTRegistries.COVERS.freeze();
     }
 
     public static void init() {}
 
-    private static CoverDefinition register(String id, CoverDefinition.CoverBehaviourProvider behavior,
-                                            Supplier<Supplier<ICoverRenderer>> renderer) {
-        var definition = new CoverDefinition(PhoenixCore.id(id), behavior, renderer);
-        GTRegistries.COVERS.register(definition.getId(), definition);
-        return definition;
+    private static Holder<CoverDefinition> register(String id, CoverDefinition.CoverBehaviourProvider behavior,
+                                                    Supplier<Supplier<ICoverRenderer>> renderer) {
+        return REGISTRATE.cover(id, behavior, renderer);
     }
 
-    private static CoverDefinition[] registerPhoenixTiered(
-                                                           String id,
-                                                           CoverDefinition.TieredCoverBehaviourProvider behaviorCreator,
-                                                           int... tiers) {
+    @SuppressWarnings("unchecked")
+    private static Holder<CoverDefinition>[] registerPhoenixTiered(String id,
+                                                                  CoverDefinition.TieredCoverBehaviourProvider behaviorCreator,
+                                                                  int... tiers) {
         return Arrays.stream(tiers).mapToObj(tier -> {
             var name = id + "." + GTValues.VN[tier].toLowerCase(Locale.ROOT);
-            var resourceLocation = PhoenixCore.id(name);
-
-            var definition = new CoverDefinition(
-                    resourceLocation,
+            return (Holder<CoverDefinition>) REGISTRATE.cover(name,
                     (def, coverable, side) -> behaviorCreator.create(def, coverable, side, tier),
                     () -> () -> new SimpleCoverRenderer(GTCEu.id("block/cover/" + id)));
-
-            GTRegistries.COVERS.register(definition.getId(), definition);
-            return definition;
-        }).toArray(CoverDefinition[]::new);
+        }).toArray(Holder[]::new);
     }
 }
