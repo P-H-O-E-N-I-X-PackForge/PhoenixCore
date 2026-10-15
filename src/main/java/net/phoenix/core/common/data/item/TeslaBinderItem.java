@@ -842,7 +842,7 @@ public class TeslaBinderItem extends ComponentItem
         target.hurt(target.damageSources().playerAttack((Player) attacker), 16.0f);
 
         target.level().playSound(null, target.blockPosition(),
-                SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5f, 2.0f);
+                SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 0.5f, 2.0f);
 
         return true;
     }

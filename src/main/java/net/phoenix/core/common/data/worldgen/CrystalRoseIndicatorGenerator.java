@@ -1,7 +1,6 @@
 package net.phoenix.core.common.data.worldgen;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.WorldGeneratorUtils;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.indicators.SurfaceIndicatorGenerator;
@@ -21,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,11 +31,9 @@ import java.util.stream.Stream;
 
 public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
 
-    public static final Codec<CrystalRoseIndicatorGenerator> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<CrystalRoseIndicatorGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
-                    ((Codec<Either<BlockState, Material>>) Codec.either(
-                            BlockState.CODEC,
-                            GTRegistries.MATERIALS.codec())).fieldOf("block").forGetter(ext -> ext.block),
+                    Codec.either(BlockState.CODEC, GTRegistries.MATERIALS.byNameCodec()).fieldOf("block").forGetter(ext -> ext.block),
                     IntProvider.codec(1, 32).fieldOf("radius").forGetter(ext -> ext.radius),
                     FloatProvider.codec(0.0f, 2.0f).fieldOf("density").forGetter(ext -> ext.density),
                     SurfaceIndicatorGenerator.IndicatorPlacement.CODEC.fieldOf("placement")
@@ -47,13 +45,13 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
     private FloatProvider density = ConstantFloat.of(0.2f);
     private SurfaceIndicatorGenerator.IndicatorPlacement placement = SurfaceIndicatorGenerator.IndicatorPlacement.SURFACE;
 
-    public CrystalRoseIndicatorGenerator(GTOreDefinition entry) {
-        super(entry);
+    public CrystalRoseIndicatorGenerator() {
+        super();
     }
 
     public CrystalRoseIndicatorGenerator(Either<BlockState, Material> block, IntProvider radius, FloatProvider density,
                                          SurfaceIndicatorGenerator.IndicatorPlacement placement) {
-        super(null);
+        super();
         this.block = block;
         this.radius = radius;
         this.density = density;
@@ -179,32 +177,15 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public static void register() {
-        try {
+    private static final net.neoforged.neoforge.registries.DeferredRegister<MapCodec<? extends IndicatorGenerator>> INDICATOR_GENERATORS = net.neoforged.neoforge.registries.DeferredRegister
+            .create(GTRegistries.Keys.INDICATOR_GENERATOR, net.phoenix.core.PhoenixCore.MOD_ID);
 
-            net.minecraft.resources.ResourceKey<net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>>> registryKey = net.minecraft.resources.ResourceKey
-                    .createRegistryKey(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("gtceu", "indicator_generator"));
+    static {
+        INDICATOR_GENERATORS.register("crystal_rose_indicator", () -> CODEC);
+    }
 
-            net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>> registry = (net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>>) net.minecraft.core.registries.BuiltInRegistries.REGISTRY
-                    .get(registryKey.location());
-
-            if (registry != null) {
-
-                net.minecraft.core.Registry.register(
-                        registry,
-                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("phoenix", "crystal_rose_indicator"),
-                        CODEC);
-                com.gregtechceu.gtceu.GTCEu.LOGGER
-                        .info("[Phoenix Core] Successfully registered CrystalRoseIndicatorGenerator codec.");
-            } else {
-                com.gregtechceu.gtceu.GTCEu.LOGGER
-                        .error("[Phoenix Core] Could not find 'gtceu:indicator_generator' registry wrapper!");
-            }
-        } catch (Exception e) {
-            com.gregtechceu.gtceu.GTCEu.LOGGER
-                    .error("[Phoenix Core] Critical error during Indicator Generator codec registration!", e);
-        }
+    public static void register(net.neoforged.bus.api.IEventBus modBus) {
+        INDICATOR_GENERATORS.register(modBus);
     }
 
     @Nullable
@@ -219,7 +200,7 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
     }
 
     @Override
-    public @NotNull Codec<? extends IndicatorGenerator> codec() {
+    public @NotNull MapCodec<? extends IndicatorGenerator> codec() {
         return CODEC;
     }
 }

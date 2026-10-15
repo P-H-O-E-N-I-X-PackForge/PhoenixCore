@@ -103,7 +103,7 @@ public class CrystalRoseVeinHook extends ContextAwareReloadListener implements P
                     placement = SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE;
                 }
 
-                def.indicatorGenerators().add(new CrystalRoseIndicatorGenerator(def)
+                def.indicatorGenerators().add(new CrystalRoseIndicatorGenerator()
                         .state(getCrystalRoseState(primaryMat))
                         .placement(placement)
                         .radius(3)

@@ -147,7 +147,7 @@ public final class ConfluxSpawns extends SimpleJsonResourceReloadListener {
             if (entity == null) return;
             entity.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360.0f, 0.0f);
             if (entity instanceof Mob mob) {
-                mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.NATURAL, null, null);
+                mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.NATURAL, null);
             }
             level.addFreshEntity(entity);
             return;

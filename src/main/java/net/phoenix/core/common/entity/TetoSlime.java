@@ -35,9 +35,8 @@ public class TetoSlime extends Slime {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-                                        MobSpawnType reason, @Nullable SpawnGroupData spawnData,
-                                        @Nullable CompoundTag dataTag) {
-        SpawnGroupData data = super.finalizeSpawn(level, difficulty, reason, spawnData, dataTag);
+                                        MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        SpawnGroupData data = super.finalizeSpawn(level, difficulty, reason, spawnData);
         if (reason != MobSpawnType.SPAWN_EGG && reason != MobSpawnType.COMMAND) {
             float roll = level.getRandom().nextFloat();
             setSize(roll < 0.55f ? 1 : roll < 0.90f ? 2 : 4, true);

@@ -122,7 +122,7 @@ public class PhoenixCore {
     public PhoenixCore(IEventBus modEventBus, ModContainer container) {
 
         PhoenixConfigs.init();
-        CrystalRoseIndicatorGenerator.register();
+        CrystalRoseIndicatorGenerator.register(modEventBus);
         VaultDatagen.init();
         GregPacksDatagen.init();
         GregPacksUpgrades.init();

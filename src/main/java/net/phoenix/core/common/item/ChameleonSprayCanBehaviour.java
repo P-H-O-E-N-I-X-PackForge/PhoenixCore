@@ -378,7 +378,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
             var pos = first.getBlockPos();
             if (recolorBlockNoState(SHULKER_BOX_MAP, color, level, pos, Blocks.SHULKER_BOX)) {
                 if (level.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity newShulker) {
-                    newShulker.load(tag);
+                    newShulker.loadWithComponents(tag, level.registryAccess());
                 }
                 consumePaint(stack, 1, false);
                 return true;
@@ -726,7 +726,8 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
     }
 
     @Override
-    public boolean onEntitySwing(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
+    public boolean onEntitySwing(@NotNull ItemStack stack, @NotNull LivingEntity entity,
+                                 net.minecraft.world.InteractionHand hand) {
         return false;
     }
 

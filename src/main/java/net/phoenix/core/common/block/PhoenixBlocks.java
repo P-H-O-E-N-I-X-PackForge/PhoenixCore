@@ -55,7 +55,7 @@ public class PhoenixBlocks {
     }
 
     public static final BlockEntry<FlowerBlock> CRYSTAL_ROSE = REGISTRATE
-            .block("crystal_rose", p -> new FlowerBlock(() -> MobEffects.GLOWING, 5, p))
+            .block("crystal_rose", p -> new FlowerBlock(MobEffects.GLOWING, 5, p))
             .initialProperties(() -> Blocks.POPPY)
             .addLayer(() -> RenderType::cutout)
             .blockstate((ctx, prov) -> prov.simpleBlock(ctx.get(),

@@ -33,7 +33,7 @@ public final class PhoenixEntities {
                     .clientTrackingRange(10).build("teto_slime"));
 
     public static final DeferredHolder<Item, Item> TETO_SLIME_SPAWN_EGG = SPAWN_EGGS.register("teto_slime_spawn_egg",
-            () -> new SpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0, new Item.Properties()));
+            () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0, new Item.Properties()));
 
     public static void init(IEventBus modEventBus) {
         ENTITY_TYPES.register(modEventBus);

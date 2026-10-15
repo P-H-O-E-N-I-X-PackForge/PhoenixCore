@@ -46,8 +46,8 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-        return IInteractionItem.super.onEntitySwing(stack, entity);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
+        return IInteractionItem.super.onEntitySwing(stack, entity, hand);
     }
 
     public PhoenixManipulatorMode getMode(ItemStack stack) {
