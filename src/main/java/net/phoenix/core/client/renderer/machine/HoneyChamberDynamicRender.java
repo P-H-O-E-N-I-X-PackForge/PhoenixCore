@@ -181,7 +181,7 @@ public class HoneyChamberDynamicRender extends
     }
 
     private void vertex(VertexConsumer vc, Matrix4f pose, Vec3 p, float r, float g, float b, float a) {
-        vc.vertex(pose, (float) p.x, (float) p.y, (float) p.z).color(r, g, b, a).endVertex();
+        vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z).setColor(r, g, b, a);
     }
 
     private void renderBees(PoseStack stack, VertexConsumer vc, float time, float progress) {
@@ -225,10 +225,10 @@ public class HoneyChamberDynamicRender extends
             stack.mulPose(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
             Matrix4f pose = stack.last().pose();
 
-            vc.vertex(pose, -size, -size, 0).color(r, g, b, alpha).endVertex();
-            vc.vertex(pose, -size, size, 0).color(r, g, b, alpha).endVertex();
-            vc.vertex(pose, size, size, 0).color(r, g, b, alpha).endVertex();
-            vc.vertex(pose, size, -size, 0).color(r, g, b, alpha).endVertex();
+            vc.addVertex(pose, -size, -size, 0).setColor(r, g, b, alpha);
+            vc.addVertex(pose, -size, size, 0).setColor(r, g, b, alpha);
+            vc.addVertex(pose, size, size, 0).setColor(r, g, b, alpha);
+            vc.addVertex(pose, size, -size, 0).setColor(r, g, b, alpha);
 
             stack.popPose();
         }

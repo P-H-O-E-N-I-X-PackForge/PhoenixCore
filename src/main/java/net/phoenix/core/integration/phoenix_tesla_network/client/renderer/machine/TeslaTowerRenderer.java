@@ -144,10 +144,10 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
             float nx = -dz * width;
             float nz = dx * width;
 
-            vc.vertex(pose, (float) s.x - nx, (float) s.y, (float) s.z - nz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) s.x + nx, (float) s.y, (float) s.z + nz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) e.x + nx, (float) e.y, (float) e.z + nz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) e.x - nx, (float) e.y, (float) e.z - nz).color(r, g, b, a).endVertex();
+            vc.addVertex(pose, (float) s.x - nx, (float) s.y, (float) s.z - nz).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) s.x + nx, (float) s.y, (float) s.z + nz).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) e.x + nx, (float) e.y, (float) e.z + nz).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) e.x - nx, (float) e.y, (float) e.z - nz).setColor(r, g, b, a);
         }
     }
 
@@ -166,8 +166,8 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
                 b = 197 / 255f;
                 a = 0.5f;
             }
-            vc.vertex(pose, (float) s.x, (float) s.y, (float) s.z).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) e.x, (float) e.y, (float) e.z).color(r, g, b, a).endVertex();
+            vc.addVertex(pose, (float) s.x, (float) s.y, (float) s.z).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) e.x, (float) e.y, (float) e.z).setColor(r, g, b, a);
             return;
         }
 
@@ -239,16 +239,16 @@ public class TeslaTowerRenderer extends DynamicRender<TeslaTowerMachine, TeslaTo
             float ny = angleY;
             float nz = dx * angleX;
 
-            vc.vertex(pose, (float) s.x - nx, (float) s.y - ny, (float) s.z - nz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) s.x + nx, (float) s.y + ny, (float) s.z + nz).color(r, g, b, a).endVertex();
+            vc.addVertex(pose, (float) s.x - nx, (float) s.y - ny, (float) s.z - nz).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) s.x + nx, (float) s.y + ny, (float) s.z + nz).setColor(r, g, b, a);
 
             float nextRoll = ((i + 1) * 0.5f) + twistSpeed;
             float nnx = -dz * (float) Math.cos(nextRoll) * width;
             float nny = (float) Math.sin(nextRoll) * width;
             float nnz = dx * (float) Math.cos(nextRoll) * width;
 
-            vc.vertex(pose, (float) e.x + nnx, (float) e.y + nny, (float) e.z + nnz).color(r, g, b, a).endVertex();
-            vc.vertex(pose, (float) e.x - nnx, (float) e.y - nny, (float) e.z - nnz).color(r, g, b, a).endVertex();
+            vc.addVertex(pose, (float) e.x + nnx, (float) e.y + nny, (float) e.z + nnz).setColor(r, g, b, a);
+            vc.addVertex(pose, (float) e.x - nnx, (float) e.y - nny, (float) e.z - nnz).setColor(r, g, b, a);
         }
     }
 

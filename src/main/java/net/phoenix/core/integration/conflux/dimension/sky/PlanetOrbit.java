@@ -84,8 +84,7 @@ public class PlanetOrbit {
         RenderSystem.depthMask(true);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder consumer = tesselator.getBuilder();
-        consumer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder consumer = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
 
         int baseR = (color >> 16) & 0xFF;
         int baseG = (color >> 8) & 0xFF;
@@ -133,7 +132,7 @@ public class PlanetOrbit {
             }
         }
 
-        BufferUploader.drawWithShader(consumer.end());
+        BufferUploader.drawWithShader(consumer.buildOrThrow());
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
     }
@@ -170,8 +169,7 @@ public class PlanetOrbit {
         RenderSystem.depthMask(true);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder consumer = tesselator.getBuilder();
-        consumer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder consumer = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
 
         int r = (int) ((color >> 16 & 0xFF) * glowIntensity);
         int g = (int) ((color >> 8 & 0xFF) * glowIntensity);
@@ -215,7 +213,7 @@ public class PlanetOrbit {
             }
         }
 
-        BufferUploader.drawWithShader(consumer.end());
+        BufferUploader.drawWithShader(consumer.buildOrThrow());
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
 
@@ -224,9 +222,9 @@ public class PlanetOrbit {
 
     private void addVertex(VertexConsumer consumer, PoseStack poseStack,
                            float x, float y, float z, int r, int g, int b, int a) {
-        consumer.vertex(poseStack.last().pose(), x, y, z)
-                .color(r, g, b, a)
-                .endVertex();
+        consumer.addVertex(poseStack.last().pose(), x, y, z)
+                .setColor(r, g, b, a)
+                ;
     }
 
     public String getName() {

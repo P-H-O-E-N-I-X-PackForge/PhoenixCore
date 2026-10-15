@@ -403,14 +403,13 @@ public class ContinuumMapScreen extends Screen {
         RenderSystem.setShaderTexture(0, scene.getColorTextureId());
 
         Matrix4f pose = graphics.pose().last().pose();
-        BufferBuilder bb = Tesselator.getInstance().getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        bb.vertex(pose, -1, height + 1, 0).uv(0, 0).endVertex();
-        bb.vertex(pose, width + 1, height + 1, 0).uv(1, 0).endVertex();
-        bb.vertex(pose, width + 1, -1, 0).uv(1, 1).endVertex();
-        bb.vertex(pose, -1, -1, 0).uv(0, 1).endVertex();
-        BufferUploader.drawWithShader(bb.end());
+        bb.addVertex(pose, -1, height + 1, 0).setUv(0, 0);
+        bb.addVertex(pose, width + 1, height + 1, 0).setUv(1, 0);
+        bb.addVertex(pose, width + 1, -1, 0).setUv(1, 1);
+        bb.addVertex(pose, -1, -1, 0).setUv(0, 1);
+        BufferUploader.drawWithShader(bb.buildOrThrow());
         RenderSystem.enableBlend();
     }
 

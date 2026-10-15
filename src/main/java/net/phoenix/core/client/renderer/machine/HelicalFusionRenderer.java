@@ -309,9 +309,9 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
 
     private void vertex(VertexConsumer vc, Matrix4f pose,
                         Vec3 p, int r, int g, int b, float a) {
-        vc.vertex(pose, (float) p.x, (float) p.y, (float) p.z)
-                .color(r / 255f, g / 255f, b / 255f, a)
-                .endVertex();
+        vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
+                .setColor(r / 255f, g / 255f, b / 255f, a)
+                ;
     }
 
     @Override

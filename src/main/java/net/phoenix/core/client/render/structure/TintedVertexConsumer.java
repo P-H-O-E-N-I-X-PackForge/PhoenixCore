@@ -45,7 +45,7 @@ public final class TintedVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer vertex(double x, double y, double z) {
-        return delegate.vertex(x + offsetX, y + offsetY, z + offsetZ);
+        return delegate.addVertex(x + offsetX, y + offsetY, z + offsetZ);
     }
 
     @Override

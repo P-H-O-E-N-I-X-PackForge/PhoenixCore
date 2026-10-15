@@ -213,14 +213,13 @@ public class CinderAtlasRadialScreen extends Screen {
     private void drawDonut(GuiGraphics graphics, int cx, int cy, int inner, int outer, int color) {
         RenderSystem.enableBlend();
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = graphics.pose().last().pose();
 
         for (int i = 0; i <= 360; i += 5) {
             float rad = (float) Math.toRadians(i);
-            buffer.vertex(matrix, cx + Mth.cos(rad) * outer, cy + Mth.sin(rad) * outer, 0).color(color).endVertex();
-            buffer.vertex(matrix, cx + Mth.cos(rad) * inner, cy + Mth.sin(rad) * inner, 0).color(color).endVertex();
+            buffer.addVertex(matrix, cx + Mth.cos(rad) * outer, cy + Mth.sin(rad) * outer, 0).setColor(color);
+            buffer.addVertex(matrix, cx + Mth.cos(rad) * inner, cy + Mth.sin(rad) * inner, 0).setColor(color);
         }
         tesselator.end();
     }
@@ -229,13 +228,12 @@ public class CinderAtlasRadialScreen extends Screen {
                          int color) {
         RenderSystem.enableBlend();
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = graphics.pose().last().pose();
 
         for (float a = startAngle - step / 2; a <= startAngle + step / 2; a += 0.05f) {
-            buffer.vertex(matrix, cx + Mth.cos(a) * outer, cy + Mth.sin(a) * outer, 0).color(color).endVertex();
-            buffer.vertex(matrix, cx + Mth.cos(a) * inner, cy + Mth.sin(a) * inner, 0).color(color).endVertex();
+            buffer.addVertex(matrix, cx + Mth.cos(a) * outer, cy + Mth.sin(a) * outer, 0).setColor(color);
+            buffer.addVertex(matrix, cx + Mth.cos(a) * inner, cy + Mth.sin(a) * inner, 0).setColor(color);
         }
         tesselator.end();
     }

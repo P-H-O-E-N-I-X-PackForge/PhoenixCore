@@ -27,10 +27,10 @@ public final class GlowRenderer {
         }
 
         public Batch glow(float x, float y, float radius, float r, float g, float b, float a) {
-            builder.vertex(pose, x - radius, y + radius, 0).uv(0, 1).color(r, g, b, a).endVertex();
-            builder.vertex(pose, x + radius, y + radius, 0).uv(1, 1).color(r, g, b, a).endVertex();
-            builder.vertex(pose, x + radius, y - radius, 0).uv(1, 0).color(r, g, b, a).endVertex();
-            builder.vertex(pose, x - radius, y - radius, 0).uv(0, 0).color(r, g, b, a).endVertex();
+            builder.addVertex(pose, x - radius, y + radius, 0).setUv(0, 1).setColor(r, g, b, a);
+            builder.addVertex(pose, x + radius, y + radius, 0).setUv(1, 1).setColor(r, g, b, a);
+            builder.addVertex(pose, x + radius, y - radius, 0).setUv(1, 0).setColor(r, g, b, a);
+            builder.addVertex(pose, x - radius, y - radius, 0).setUv(0, 0).setColor(r, g, b, a);
             empty = false;
             return this;
         }
@@ -48,7 +48,7 @@ public final class GlowRenderer {
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.setShader(() -> ContinuumShaders.GLOW);
-            BufferUploader.drawWithShader(builder.end());
+            BufferUploader.drawWithShader(builder.buildOrThrow());
         }
     }
 
@@ -68,8 +68,8 @@ public final class GlowRenderer {
         }
 
         public Lines line(float x1, float y1, float x2, float y2, float r, float g, float b, float a) {
-            builder.vertex(pose, x1, y1, 0).color(r, g, b, a).endVertex();
-            builder.vertex(pose, x2, y2, 0).color(r, g, b, a).endVertex();
+            builder.addVertex(pose, x1, y1, 0).setColor(r, g, b, a);
+            builder.addVertex(pose, x2, y2, 0).setColor(r, g, b, a);
             empty = false;
             return this;
         }
@@ -98,7 +98,7 @@ public final class GlowRenderer {
             RenderSystem.disableDepthTest();
             RenderSystem.lineWidth(width);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            BufferUploader.drawWithShader(builder.end());
+            BufferUploader.drawWithShader(builder.buildOrThrow());
             RenderSystem.lineWidth(1.0f);
         }
     }

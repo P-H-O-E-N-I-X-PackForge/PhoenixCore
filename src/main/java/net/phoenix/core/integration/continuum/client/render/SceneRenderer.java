@@ -314,10 +314,10 @@ public final class SceneRenderer {
         if (ringQuad == null) {
             BufferBuilder builder = new BufferBuilder(128);
             builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-            builder.vertex(-1, 0, -1).endVertex();
-            builder.vertex(-1, 0, 1).endVertex();
-            builder.vertex(1, 0, 1).endVertex();
-            builder.vertex(1, 0, -1).endVertex();
+            builder.addVertex(-1, 0, -1);
+            builder.addVertex(-1, 0, 1);
+            builder.addVertex(1, 0, 1);
+            builder.addVertex(1, 0, -1);
             ringQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             ringQuad.bind();
             ringQuad.upload(builder.end());
@@ -332,10 +332,10 @@ public final class SceneRenderer {
         if (holeQuad == null) {
             BufferBuilder builder = new BufferBuilder(128);
             builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-            builder.vertex(-1, -1, 0).endVertex();
-            builder.vertex(1, -1, 0).endVertex();
-            builder.vertex(1, 1, 0).endVertex();
-            builder.vertex(-1, 1, 0).endVertex();
+            builder.addVertex(-1, -1, 0);
+            builder.addVertex(1, -1, 0);
+            builder.addVertex(1, 1, 0);
+            builder.addVertex(-1, 1, 0);
             holeQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             holeQuad.bind();
             holeQuad.upload(builder.end());
@@ -440,13 +440,12 @@ public final class SceneRenderer {
                 com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
                 com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        BufferBuilder bb = Tesselator.getInstance().getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bb.vertex(0, 1, 0).uv(0, 0).color(255, 255, 255, 255).endVertex();
-        bb.vertex(1, 1, 0).uv(1, 0).color(255, 255, 255, 255).endVertex();
-        bb.vertex(1, 0, 0).uv(1, 1).color(255, 255, 255, 255).endVertex();
-        bb.vertex(0, 0, 0).uv(0, 1).color(255, 255, 255, 255).endVertex();
-        com.mojang.blaze3d.vertex.BufferUploader.draw(bb.end());
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bb.addVertex(0, 1, 0).setUv(0, 0).setColor(255, 255, 255, 255);
+        bb.addVertex(1, 1, 0).setUv(1, 0).setColor(255, 255, 255, 255);
+        bb.addVertex(1, 0, 0).setUv(1, 1).setColor(255, 255, 255, 255);
+        bb.addVertex(0, 0, 0).setUv(0, 1).setColor(255, 255, 255, 255);
+        com.mojang.blaze3d.vertex.BufferUploader.draw(bb.buildOrThrow());
         blit.clear();
 
         RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
@@ -469,12 +468,11 @@ public final class SceneRenderer {
         backdrop.safeGetUniform("SecondaryColor").set(0.1f, 0.35f, 0.9f);
 
         backdrop.apply();
-        BufferBuilder bb = Tesselator.getInstance().getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bb.vertex(-1, -1, 0).endVertex();
-        bb.vertex(1, -1, 0).endVertex();
-        bb.vertex(1, 1, 0).endVertex();
-        bb.vertex(-1, 1, 0).endVertex();
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bb.addVertex(-1, -1, 0);
+        bb.addVertex(1, -1, 0);
+        bb.addVertex(1, 1, 0);
+        bb.addVertex(-1, 1, 0);
         Tesselator.getInstance().end();
         backdrop.clear();
     }

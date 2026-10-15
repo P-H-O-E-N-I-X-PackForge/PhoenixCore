@@ -154,8 +154,7 @@ public class PhysicsDebugRenderer {
 
     private static void renderSphere(PoseStack poseStack, double radius, float r, float g, float b, float alpha) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f matrix = poseStack.last().pose();
 
@@ -191,8 +190,7 @@ public class PhysicsDebugRenderer {
         AABB box = new AABB(-w, -h, -d, w, h, d);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
         LevelRenderer.renderLineBox(poseStack, builder, box, r, g, b, alpha);
 
@@ -201,8 +199,7 @@ public class PhysicsDebugRenderer {
 
     private static void renderArrow(PoseStack poseStack, double x, double y, double z, float r, float g, float b) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f matrix = poseStack.last().pose();
         addLine(builder, matrix, 0, 0, 0, x, y, z, r, g, b, 1.0f);
@@ -212,8 +209,8 @@ public class PhysicsDebugRenderer {
 
     private static void addLine(VertexConsumer consumer, Matrix4f matrix, double x1, double y1, double z1,
                                 double x2, double y2, double z2, float r, float g, float b, float a) {
-        consumer.vertex(matrix, (float) x1, (float) y1, (float) z1).color(r, g, b, a).endVertex();
-        consumer.vertex(matrix, (float) x2, (float) y2, (float) z2).color(r, g, b, a).endVertex();
+        consumer.addVertex(matrix, (float) x1, (float) y1, (float) z1).setColor(r, g, b, a);
+        consumer.addVertex(matrix, (float) x2, (float) y2, (float) z2).setColor(r, g, b, a);
     }
 
     private static String getDimensionId(Level level) {

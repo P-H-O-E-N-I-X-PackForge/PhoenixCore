@@ -99,10 +99,10 @@ public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachin
     }
 
     private void drawParticleQuad(VertexConsumer vc, Matrix4f matrix, float s, float r, float g, float b, float a) {
-        vc.vertex(matrix, -s, -s, 0).color(r, g, b, a).endVertex();
-        vc.vertex(matrix, -s, s, 0).color(r, g, b, a).endVertex();
-        vc.vertex(matrix, s, s, 0).color(r, g, b, a).endVertex();
-        vc.vertex(matrix, s, -s, 0).color(r, g, b, a).endVertex();
+        vc.addVertex(matrix, -s, -s, 0).setColor(r, g, b, a);
+        vc.addVertex(matrix, -s, s, 0).setColor(r, g, b, a);
+        vc.addVertex(matrix, s, s, 0).setColor(r, g, b, a);
+        vc.addVertex(matrix, s, -s, 0).setColor(r, g, b, a);
     }
 
     @Override

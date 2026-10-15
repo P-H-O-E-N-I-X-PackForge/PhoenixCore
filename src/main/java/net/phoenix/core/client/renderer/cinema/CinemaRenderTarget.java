@@ -131,12 +131,11 @@ public final class CinemaRenderTarget {
     }
 
     private static void drawFullNdcQuad() {
-        BufferBuilder bb = Tesselator.getInstance().getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bb.vertex(-1, -1, 0).endVertex();
-        bb.vertex(1, -1, 0).endVertex();
-        bb.vertex(1, 1, 0).endVertex();
-        bb.vertex(-1, 1, 0).endVertex();
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bb.addVertex(-1, -1, 0);
+        bb.addVertex(1, -1, 0);
+        bb.addVertex(1, 1, 0);
+        bb.addVertex(-1, 1, 0);
         Tesselator.getInstance().end();
     }
 }

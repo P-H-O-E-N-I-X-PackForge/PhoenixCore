@@ -116,10 +116,10 @@ public final class CutsceneBackgroundBuilder {
                 for (int gx = 0; gx < cols; gx++) {
                     float x0 = gx * width / (float) cols, x1 = (gx + 1) * width / (float) cols;
                     int i = gy * (cols + 1) + gx;
-                    consumer.vertex(matrix, x0, y0, 0).color(colors[i]).endVertex();
-                    consumer.vertex(matrix, x0, y1, 0).color(colors[i + cols + 1]).endVertex();
-                    consumer.vertex(matrix, x1, y1, 0).color(colors[i + cols + 2]).endVertex();
-                    consumer.vertex(matrix, x1, y0, 0).color(colors[i + 1]).endVertex();
+                    consumer.addVertex(matrix, x0, y0, 0).setColor(colors[i]);
+                    consumer.addVertex(matrix, x0, y1, 0).setColor(colors[i + cols + 1]);
+                    consumer.addVertex(matrix, x1, y1, 0).setColor(colors[i + cols + 2]);
+                    consumer.addVertex(matrix, x1, y0, 0).setColor(colors[i + 1]);
                 }
             }
             graphics.flush();

@@ -71,12 +71,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(matrix, -halfSize, -halfSize, 0).uv(u0, v1).endVertex();
-        buffer.vertex(matrix, halfSize, -halfSize, 0).uv(u1, v1).endVertex();
-        buffer.vertex(matrix, halfSize, halfSize, 0).uv(u1, v0).endVertex();
-        buffer.vertex(matrix, -halfSize, halfSize, 0).uv(u0, v0).endVertex();
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.addVertex(matrix, -halfSize, -halfSize, 0).setUv(u0, v1);
+        buffer.addVertex(matrix, halfSize, -halfSize, 0).setUv(u1, v1);
+        buffer.addVertex(matrix, halfSize, halfSize, 0).setUv(u1, v0);
+        buffer.addVertex(matrix, -halfSize, halfSize, 0).setUv(u0, v0);
         Tesselator.getInstance().end();
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

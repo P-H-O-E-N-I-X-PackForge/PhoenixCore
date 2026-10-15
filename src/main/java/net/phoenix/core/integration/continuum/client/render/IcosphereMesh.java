@@ -74,7 +74,7 @@ public final class IcosphereMesh implements AutoCloseable {
         builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
         for (Vector3f[] tri : triangles) {
             for (Vector3f v : tri) {
-                builder.vertex(v.x, v.y, v.z).endVertex();
+                builder.addVertex(v.x, v.y, v.z);
             }
         }
 

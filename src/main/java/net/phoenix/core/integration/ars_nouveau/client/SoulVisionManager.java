@@ -245,8 +245,7 @@ public final class SoulVisionManager {
         RenderSystem.depthMask(false);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         int playerChunkX = mc.player != null ? mc.player.blockPosition().getX() >> 4 : Integer.MIN_VALUE;
         int playerChunkZ = mc.player != null ? mc.player.blockPosition().getZ() >> 4 : Integer.MIN_VALUE;
@@ -341,16 +340,16 @@ public final class SoulVisionManager {
         float rz1 = (float) (z1 - camPos.z);
 
         if (DEBUG_SOLID_RED) {
-            buffer.vertex(pose, rx0, y00 - (float) camPos.y, rz0).color(1f, 0f, 0f, 1f).endVertex();
-            buffer.vertex(pose, rx0, y01 - (float) camPos.y, rz1).color(1f, 0f, 0f, 1f).endVertex();
-            buffer.vertex(pose, rx1, y11 - (float) camPos.y, rz1).color(1f, 0f, 0f, 1f).endVertex();
-            buffer.vertex(pose, rx1, y10 - (float) camPos.y, rz0).color(1f, 0f, 0f, 1f).endVertex();
+            buffer.addVertex(pose, rx0, y00 - (float) camPos.y, rz0).setColor(1f, 0f, 0f, 1f);
+            buffer.addVertex(pose, rx0, y01 - (float) camPos.y, rz1).setColor(1f, 0f, 0f, 1f);
+            buffer.addVertex(pose, rx1, y11 - (float) camPos.y, rz1).setColor(1f, 0f, 0f, 1f);
+            buffer.addVertex(pose, rx1, y10 - (float) camPos.y, rz0).setColor(1f, 0f, 0f, 1f);
             return;
         }
 
-        buffer.vertex(pose, rx0, y00 - (float) camPos.y, rz0).color(0f, 0f, 0f, factor).endVertex();
-        buffer.vertex(pose, rx0, y01 - (float) camPos.y, rz1).color(0f, 0f, 0f, factor).endVertex();
-        buffer.vertex(pose, rx1, y11 - (float) camPos.y, rz1).color(0f, 0f, 0f, factor).endVertex();
-        buffer.vertex(pose, rx1, y10 - (float) camPos.y, rz0).color(0f, 0f, 0f, factor).endVertex();
+        buffer.addVertex(pose, rx0, y00 - (float) camPos.y, rz0).setColor(0f, 0f, 0f, factor);
+        buffer.addVertex(pose, rx0, y01 - (float) camPos.y, rz1).setColor(0f, 0f, 0f, factor);
+        buffer.addVertex(pose, rx1, y11 - (float) camPos.y, rz1).setColor(0f, 0f, 0f, factor);
+        buffer.addVertex(pose, rx1, y10 - (float) camPos.y, rz0).setColor(0f, 0f, 0f, factor);
     }
 }

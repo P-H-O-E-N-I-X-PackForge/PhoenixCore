@@ -33,7 +33,7 @@ public final class CubeMesh {
                 int[][] order = { { 0, 1, 2 }, { 0, 2, 3 } };
                 for (int[] tri : order) {
                     for (int corner : tri) {
-                        builder.vertex(f[corner * 3], f[corner * 3 + 1], f[corner * 3 + 2]).endVertex();
+                        builder.addVertex(f[corner * 3], f[corner * 3 + 1], f[corner * 3 + 2]);
                     }
                 }
             }

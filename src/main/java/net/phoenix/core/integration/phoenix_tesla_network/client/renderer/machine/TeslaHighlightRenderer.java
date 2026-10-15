@@ -109,9 +109,7 @@ public class TeslaHighlightRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-
-        bufferbuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
         float r = 0.74f, g = 0.0f, b = 1.0f, a = 1.0f;
         drawBox(stack, bufferbuilder, 0, 0, 0, 1, 1, 1, r, g, b, a);
@@ -144,7 +142,7 @@ public class TeslaHighlightRenderer {
 
     private static void line(Matrix4f pose, VertexConsumer buffer, float x1, float y1, float z1, float x2, float y2,
                              float z2, float r, float g, float b, float a) {
-        buffer.vertex(pose, x1, y1, z1).color(r, g, b, a).endVertex();
-        buffer.vertex(pose, x2, y2, z2).color(r, g, b, a).endVertex();
+        buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a);
+        buffer.addVertex(pose, x2, y2, z2).setColor(r, g, b, a);
     }
 }

@@ -38,13 +38,12 @@ public final class CanvasMask {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         Tesselator tess = Tesselator.getInstance();
-        BufferBuilder buf = tess.getBuilder();
-        buf.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION);
-        buf.vertex(cx, cy, 0).endVertex();
+        BufferBuilder buf = tess.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION);
+        buf.addVertex(cx, cy, 0);
         for (int i = 0; i < poly.length; i += 2) {
-            buf.vertex(poly[i], poly[i + 1], 0).endVertex();
+            buf.addVertex(poly[i], poly[i + 1], 0);
         }
-        buf.vertex(poly[0], poly[1], 0).endVertex();
+        buf.addVertex(poly[0], poly[1], 0);
         tess.end();
     }
 

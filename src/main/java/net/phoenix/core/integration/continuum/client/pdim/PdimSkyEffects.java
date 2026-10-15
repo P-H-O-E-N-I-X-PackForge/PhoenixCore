@@ -100,12 +100,11 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
                 ((secondary >> 8) & 0xFF) / 255.0f * 0.7f, (secondary & 0xFF) / 255.0f * 0.7f);
 
         sky.apply();
-        BufferBuilder bb = Tesselator.getInstance().getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bb.vertex(-1, -1, 0).endVertex();
-        bb.vertex(1, -1, 0).endVertex();
-        bb.vertex(1, 1, 0).endVertex();
-        bb.vertex(-1, 1, 0).endVertex();
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bb.addVertex(-1, -1, 0);
+        bb.addVertex(1, -1, 0);
+        bb.addVertex(1, 1, 0);
+        bb.addVertex(-1, 1, 0);
         Tesselator.getInstance().end();
         sky.clear();
     }
