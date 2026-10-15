@@ -47,7 +47,7 @@ public final class GrowthPatternHelper {
                         IntIntPair.of(minBounds.getInt(4), maxBounds.getInt(4)),
                         IntIntPair.of(minBounds.getInt(5), maxBounds.getInt(5))))
 
-                .where(CONTROLLER_KEY, Predicates.controller(Predicates.blocks(definition.get())))
+                .where(CONTROLLER_KEY, Predicates.controller(Predicates.blocks(definition.getBlock())))
                 .where(SHELL_KEY, shellPredicate)
                 .where(ANY_KEY, Predicates.any())
                 .predicateProvider((pos, bounds) -> pos.equals(BlockPos.ZERO) ? CONTROLLER_KEY :

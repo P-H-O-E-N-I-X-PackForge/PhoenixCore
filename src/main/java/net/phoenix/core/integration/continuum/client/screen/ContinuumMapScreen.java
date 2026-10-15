@@ -1553,7 +1553,7 @@ public class ContinuumMapScreen extends Screen {
             boolean inConflux = Minecraft.getInstance().level != null &&
                     net.phoenix.core.integration.continuum.common.ConfluxTravel
                             .isConfluxDimension(Minecraft.getInstance().level.dimension());
-            net.phoenix.core.network.PacketDistributor.sendToServer(
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(
                     new net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket(inConflux, body.id()));
             Minecraft.getInstance().setScreen(null);
             return true;

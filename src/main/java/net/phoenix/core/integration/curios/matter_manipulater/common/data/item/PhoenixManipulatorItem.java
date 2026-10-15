@@ -86,7 +86,7 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
             if (start != null && pos.getY() > start.getY()) {
                 player.displayClientMessage(
                         Component.literal("§c⚠ Error: Point 2 (Shift-Click) cannot be higher than Point 1!"), true);
-                player.playSound(SoundEvents.NOTE_BLOCK_BASS.get(), 1.0f, 0.5f);
+                player.playSound(SoundEvents.NOTE_BLOCK_BASS.value(), 1.0f, 0.5f);
                 return InteractionResult.FAIL;
             }
             setEndPos(stack, pos);
@@ -223,7 +223,7 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
 
         if (end.getY() > start.getY()) {
             player.displayClientMessage(Component.literal("§cCannot Build: Point 2 is higher than Point 1!"), true);
-            player.playSound(SoundEvents.NOTE_BLOCK_BASS.get(), 1.0f, 0.5f);
+            player.playSound(SoundEvents.NOTE_BLOCK_BASS.value(), 1.0f, 0.5f);
             return;
         }
 

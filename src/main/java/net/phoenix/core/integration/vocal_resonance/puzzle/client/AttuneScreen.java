@@ -181,7 +181,7 @@ public class AttuneScreen extends Screen {
         float pitch = (float) Math.pow(2.0, (midi - 66) / 12.0);
         pitch = Math.max(0.5f, Math.min(2.0f, pitch));
         Minecraft.getInstance().getSoundManager()
-                .play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP.get(), pitch, 1.0f));
+                .play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP.value(), pitch, 1.0f));
     }
 
     @Override

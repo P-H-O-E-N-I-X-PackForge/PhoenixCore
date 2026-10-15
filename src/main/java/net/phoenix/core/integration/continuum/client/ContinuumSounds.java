@@ -23,7 +23,7 @@ public final class ContinuumSounds {
     }
 
     public static void click() {
-        play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.get(), 1.5f, 0.45f));
+        play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.5f, 0.45f));
     }
 
     public static void liftoff() {
@@ -32,7 +32,7 @@ public final class ContinuumSounds {
     }
 
     public static void waypoint() {
-        play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_CHIME.get(), 1.7f, 0.35f));
+        play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.7f, 0.35f));
     }
 
     public static void entry() {
@@ -53,8 +53,8 @@ public final class ContinuumSounds {
 
     public static void warning() {
         for (int i = 0; i < 3; i++) {
-            SoundInstance pulse = SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_BASS.get(), 0.5f, 0.9f);
-            SoundInstance edge = SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING.get(), 0.5f, 0.35f);
+            SoundInstance pulse = SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_BASS.value(), 0.5f, 0.9f);
+            SoundInstance edge = SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING.value(), 0.5f, 0.35f);
             if (i == 0) {
                 play(pulse);
                 play(edge);

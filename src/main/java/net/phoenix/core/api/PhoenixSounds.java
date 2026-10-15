@@ -9,7 +9,7 @@ import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
 public class PhoenixSounds {
 
-    public static final SoundEntry MICROVERSE = REGISTRATE.sound(PhoenixCore.id("microverse")).build();
+    public static final SoundEntry MICROVERSE = REGISTRATE.sound("microverse").build();
 
     public static final SoundEntry PHOENIX_VOLCANIC_RUMBLE = ambient("ambient/phoenix/volcanic_rumble");
     public static final SoundEntry PHOENIX_VOLCANIC_WIND = ambient("ambient/phoenix/volcanic_wind");
@@ -39,11 +39,11 @@ public class PhoenixSounds {
     public static final SoundEntry CUTSCENE_HORIZON = cutscene("cutscene/horizon");
 
     private static SoundEntry ambient(String path) {
-        return REGISTRATE.sound(PhoenixCore.id(path)).noSubtitle().category(SoundSource.AMBIENT).build();
+        return REGISTRATE.sound(path).noSubtitle().category(SoundSource.AMBIENT).build();
     }
 
     private static SoundEntry cutscene(String path) {
-        return REGISTRATE.sound(PhoenixCore.id(path)).noSubtitle().category(SoundSource.MUSIC).build();
+        return REGISTRATE.sound(path).noSubtitle().category(SoundSource.MUSIC).build();
     }
 
     public static void init() {}

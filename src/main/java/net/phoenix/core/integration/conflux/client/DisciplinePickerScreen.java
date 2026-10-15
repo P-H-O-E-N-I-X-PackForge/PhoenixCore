@@ -536,11 +536,11 @@ public class DisciplinePickerScreen extends Screen {
 
             net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket choosePacket = new net.phoenix.core.integration.conflux.network.C2SChooseDisciplinePacket(
                     card.id);
-            net.phoenix.core.integration.conflux.network.PacketDistributor.sendToServer(choosePacket);
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(choosePacket);
 
             net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket packet = new net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket(
                     "enter");
-            net.phoenix.core.integration.conflux.network.PacketDistributor.sendToServer(packet);
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(packet);
         }
         onClose();
     }

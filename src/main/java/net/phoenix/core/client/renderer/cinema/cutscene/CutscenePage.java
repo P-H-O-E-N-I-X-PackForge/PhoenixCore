@@ -19,7 +19,7 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
 
     private static final Codec<CutscenePage> OBJECT_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.optionalFieldOf("id").forGetter(CutscenePage::id),
-            ExtraCodecs.COMPONENT.fieldOf("content").forGetter(CutscenePage::content),
+            net.minecraft.network.chat.ComponentSerialization.CODEC.fieldOf("content").forGetter(CutscenePage::content),
             Codec.FLOAT.optionalFieldOf("text_y").forGetter(CutscenePage::textY),
             CutsceneImage.CODEC.listOf().optionalFieldOf("images", List.of()).forGetter(CutscenePage::images),
             ResourceLocation.CODEC.listOf().optionalFieldOf("actions", List.of()).forGetter(CutscenePage::actions),
@@ -28,7 +28,7 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
             Codec.BOOL.optionalFieldOf("end", false).forGetter(CutscenePage::end))
             .apply(i, CutscenePage::new));
 
-    public static final Codec<CutscenePage> CODEC = Codec.either(OBJECT_CODEC, ExtraCodecs.COMPONENT).xmap(
+    public static final Codec<CutscenePage> CODEC = Codec.either(OBJECT_CODEC, net.minecraft.network.chat.ComponentSerialization.CODEC).xmap(
             either -> either.map(page -> page, CutscenePage::text),
             page -> page.isPlain() ? Either.right(page.content()) : Either.left(page));
 
@@ -46,7 +46,7 @@ public record CutscenePage(Optional<String> id, Component content, Optional<Floa
                          Optional<ResourceLocation> cutscene, boolean end) {
 
         public static final Codec<Choice> CODEC = RecordCodecBuilder.create(i -> i.group(
-                ExtraCodecs.COMPONENT.fieldOf("text").forGetter(Choice::text),
+                net.minecraft.network.chat.ComponentSerialization.CODEC.fieldOf("text").forGetter(Choice::text),
                 ResourceLocation.CODEC.listOf().optionalFieldOf("actions", List.of()).forGetter(Choice::actions),
                 Codec.STRING.optionalFieldOf("goto").forGetter(Choice::gotoLabel),
                 ResourceLocation.CODEC.optionalFieldOf("cutscene").forGetter(Choice::cutscene),

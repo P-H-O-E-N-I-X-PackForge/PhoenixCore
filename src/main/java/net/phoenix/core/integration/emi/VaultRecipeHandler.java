@@ -69,7 +69,7 @@ public class VaultRecipeHandler<T extends AbstractContainerMenu>
             }
         }
 
-        net.phoenix.core.integration.gregvaults.network.PacketDistributor.sendToServer(
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(
                 new net.phoenix.core.integration.gregvaults.network.CPacketFillCraftingGrid(recipe.getId(), template));
         return true;
     }

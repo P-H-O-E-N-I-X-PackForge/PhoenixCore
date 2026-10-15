@@ -373,7 +373,7 @@ public class PhoenixTeslaMachines {
                     .where('L', blocks(PhoenixBlocks.RELIABLE_NAQUADAH_ALLOY_MACHINE_CASING.get()))
                     .where('M', PhoenixPredicates.teslaBatteries())
                     .where('N', blocks(GTBlocks.COIL_CUPRONICKEL.get()))
-                    .where('O', controller(blocks(definition.get())))
+                    .where('O', controller(blocks(definition.getBlock())))
                     .build())
 
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)

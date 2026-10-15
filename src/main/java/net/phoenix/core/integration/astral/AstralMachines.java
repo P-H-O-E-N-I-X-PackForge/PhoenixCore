@@ -86,7 +86,7 @@ public class AstralMachines {
                     .where('T', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
                             .or(Predicates.abilities(PhoenixPartAbility.ASTRAL_THREAD_INPUT).setPreviewCount(1))
                             .or(Predicates.autoAbilities(definition.getRecipeTypes())))
-                    .where('O', controller(blocks(definition.get())))
+                    .where('O', controller(blocks(definition.getBlock())))
                     .build())
             .model(createWorkableCasingMachineModel(
                     PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
@@ -112,7 +112,7 @@ public class AstralMachines {
                     .where('T', blocks(PhoenixBlocks.MACHINE_CASING_NAQUADAH_ALLOY.get())
                             .or(Predicates.abilities(PhoenixPartAbility.ASTRAL_THREAD_INPUT).setPreviewCount(1))
                             .or(Predicates.autoAbilities(definition.getRecipeTypes())))
-                    .where('O', controller(blocks(definition.get())))
+                    .where('O', controller(blocks(definition.getBlock())))
                     .build())
             .model(createWorkableCasingMachineModel(
                     PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),

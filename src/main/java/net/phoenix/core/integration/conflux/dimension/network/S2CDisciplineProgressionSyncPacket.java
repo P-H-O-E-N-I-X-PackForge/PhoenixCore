@@ -1,17 +1,28 @@
 package net.phoenix.core.integration.conflux.dimension.network;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.conflux.dimension.client.ClientDisciplineProgressionCache;
-import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 
-import java.util.function.Supplier;
 
-public class S2CDisciplineProgressionSyncPacket {
+public class S2CDisciplineProgressionSyncPacket implements CustomPacketPayload {
+
+    public static final Type<S2CDisciplineProgressionSyncPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2c_discipline_progression_sync"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CDisciplineProgressionSyncPacket> STREAM_CODEC = StreamCodec
+            .of((buf, pkt) -> buf.writeNbt(pkt.data), buf -> new S2CDisciplineProgressionSyncPacket(buf.readNbt()));
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     private final CompoundTag data;
 
@@ -19,28 +30,15 @@ public class S2CDisciplineProgressionSyncPacket {
         this.data = data;
     }
 
-    public S2CDisciplineProgressionSyncPacket(FriendlyByteBuf buf) {
-        this.data = buf.readNbt();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeNbt(data);
-    }
-
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
             if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
                 ClientDisciplineProgressionCache.deserializeFromNBT(data);
             }
         });
-
-        return true;
     }
 
     public static void send(ServerPlayer player, CompoundTag data) {
-        ConfluxNetwork.CHANNEL.sendTo(new S2CDisciplineProgressionSyncPacket(data), player.connection.connection,
-                NetworkDirection.PLAY_TO_CLIENT);
+PacketDistributor.sendToPlayer(player, new S2CDisciplineProgressionSyncPacket(data));
     }
 }
