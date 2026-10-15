@@ -1,9 +1,9 @@
 package net.phoenix.core.client.command;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.phoenix.core.client.gui.screen.TerrainPreviewScreen;
 
 import static net.minecraft.commands.Commands.literal;

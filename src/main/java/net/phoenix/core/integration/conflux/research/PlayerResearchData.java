@@ -104,11 +104,11 @@ public class PlayerResearchData {
 
         if (tag.contains("unlocked", Tag.TAG_LIST))
             tag.getList("unlocked", Tag.TAG_STRING)
-                    .forEach(t -> unlocked.add(new ResourceLocation(t.getAsString())));
+                    .forEach(t -> unlocked.add(ResourceLocation.parse(t.getAsString())));
 
         if (tag.contains("locked_out", Tag.TAG_LIST))
             tag.getList("locked_out", Tag.TAG_STRING)
-                    .forEach(t -> lockedOut.add(new ResourceLocation(t.getAsString())));
+                    .forEach(t -> lockedOut.add(ResourceLocation.parse(t.getAsString())));
 
         if (tag.contains("flags", Tag.TAG_LIST))
             tag.getList("flags", Tag.TAG_STRING)

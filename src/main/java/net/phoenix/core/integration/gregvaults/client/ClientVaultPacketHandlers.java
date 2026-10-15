@@ -2,8 +2,8 @@ package net.phoenix.core.integration.gregvaults.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.network.SPacketVaultContents;
 import net.phoenix.core.integration.gregvaults.network.SPacketVaultDelta;

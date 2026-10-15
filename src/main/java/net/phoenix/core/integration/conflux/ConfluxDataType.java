@@ -30,7 +30,7 @@ public enum ConfluxDataType {
     public boolean isAvailable() {
         if (!softDep) return true;
         if (this == ARCANE) {
-            return net.minecraftforge.fml.ModList.get().isLoaded("ars_nouveau");
+            return net.neoforged.fml.ModList.get().isLoaded("ars_nouveau");
         }
         return true;
     }

@@ -1,14 +1,16 @@
 package net.phoenix.core.integration.continuum.pdim;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
@@ -21,7 +23,7 @@ import java.util.Locale;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class PdimCommands {
 
     private PdimCommands() {}

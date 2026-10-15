@@ -57,7 +57,7 @@ public class ShaderManager {
         String vertexSource = loadShaderSource(
                 ResourceLocation.fromNamespaceAndPath("phoenixcore", "shaders/core/basic.vsh"));
 
-        String fragmentSource = loadShaderSource(new ResourceLocation("phoenixcore", "shaders/" + path + ".fsh"));
+        String fragmentSource = loadShaderSource(ResourceLocation.fromNamespaceAndPath("phoenixcore", "shaders/" + path + ".fsh"));
 
         if (vertexSource == null || fragmentSource == null) {
             System.err.println("[PhoenixCore] Failed to load shader: " + name);

@@ -1,8 +1,10 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public final class RecipeBuilderState {
         for (SlotPanel.SlotEntry e : p.getEntries()) {
             SavedItem s = new SavedItem();
             if (!e.stack.isEmpty()) {
-                s.key = ForgeRegistries.ITEMS.getKey(e.stack.getItem()).toString();
+                s.key = BuiltInRegistries.ITEM.getKey(e.stack.getItem()).toString();
                 s.count = e.count;
                 s.notConsumable = e.notConsumable;
             }
@@ -108,7 +110,7 @@ public final class RecipeBuilderState {
             SavedItem s = saved.get(i);
             if (s.key == null || s.key.isEmpty()) continue;
             try {
-                var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(s.key));
+                var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(s.key));
                 if (item != null) {
                     SlotPanel.SlotEntry e = entries.get(i);
                     e.stack = new ItemStack(item, s.count);

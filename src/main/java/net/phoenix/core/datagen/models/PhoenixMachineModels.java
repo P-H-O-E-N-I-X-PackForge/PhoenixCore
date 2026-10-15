@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.model.PartRenderProfile;
 import net.phoenix.core.common.machine.multiblock.part.ShieldRenderProperty;

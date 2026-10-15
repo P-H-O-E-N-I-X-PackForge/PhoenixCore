@@ -1,13 +1,15 @@
 package net.phoenix.core.integration.ars_nouveau.common.event;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine;
@@ -18,7 +20,7 @@ import com.hollingsworth.arsnouveau.common.block.tile.SourceJarTile;
 
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class SourceHatchJarTransferTick {
 
     @SubscribeEvent

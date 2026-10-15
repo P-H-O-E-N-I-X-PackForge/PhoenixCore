@@ -184,7 +184,7 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
         try {
 
             net.minecraft.resources.ResourceKey<net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>>> registryKey = net.minecraft.resources.ResourceKey
-                    .createRegistryKey(new net.minecraft.resources.ResourceLocation("gtceu", "indicator_generator"));
+                    .createRegistryKey(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("gtceu", "indicator_generator"));
 
             net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>> registry = (net.minecraft.core.Registry<com.mojang.serialization.Codec<? extends com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator>>) net.minecraft.core.registries.BuiltInRegistries.REGISTRY
                     .get(registryKey.location());
@@ -193,7 +193,7 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
 
                 net.minecraft.core.Registry.register(
                         registry,
-                        new net.minecraft.resources.ResourceLocation("phoenix", "crystal_rose_indicator"),
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("phoenix", "crystal_rose_indicator"),
                         CODEC);
                 com.gregtechceu.gtceu.GTCEu.LOGGER
                         .info("[Phoenix Core] Successfully registered CrystalRoseIndicatorGenerator codec.");

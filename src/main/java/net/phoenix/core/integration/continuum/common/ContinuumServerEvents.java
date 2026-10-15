@@ -1,15 +1,17 @@
 package net.phoenix.core.integration.continuum.common;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.continuum.data.ContinuumData;
 import net.phoenix.core.integration.continuum.network.S2CContinuumDataPacket;
@@ -19,7 +21,7 @@ import net.phoenix.core.utils.TeamUtils;
 
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ContinuumServerEvents {
 
     private ContinuumServerEvents() {}

@@ -1,5 +1,7 @@
 package net.phoenix.core.mixin.emi;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 
 import net.minecraft.nbt.CompoundTag;
@@ -8,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -67,13 +69,13 @@ public abstract class EmiApiMixin {
 
     @Unique
     private static Fluid gto$getFluid(String location) {
-        var fluid = ForgeRegistries.FLUIDS.getValue(ResourceLocation.parse(location));
+        var fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(location));
         return fluid == null ? Fluids.EMPTY : fluid;
     }
 
     @Unique
     private static boolean gto$isLiquidConcrete(Fluid fluid) {
-        ResourceLocation id = ForgeRegistries.FLUIDS.getKey(fluid);
+        ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
         if (id == null) return false;
 
         return id.getNamespace().equals("gtceu") && id.getPath().equals("concrete");

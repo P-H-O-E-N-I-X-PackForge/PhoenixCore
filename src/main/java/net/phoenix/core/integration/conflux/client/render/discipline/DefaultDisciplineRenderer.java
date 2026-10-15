@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.client.render.discipline;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.phoenix.core.integration.conflux.client.render.*;
@@ -141,7 +143,7 @@ public class DefaultDisciplineRenderer implements DisciplineRenderer {
         if (iconId == null || iconId.isEmpty()) return;
         ResourceLocation rl = ResourceLocation.tryParse(iconId);
         if (rl == null) return;
-        var item = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(rl);
+        var item = net.neoforged.neoforge.registries.BuiltInRegistries.ITEM.get(rl);
         if (item != null && item != net.minecraft.world.item.Items.AIR)
             g.renderItem(new net.minecraft.world.item.ItemStack(item), x, y);
     }

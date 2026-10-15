@@ -22,7 +22,7 @@ public class GTVeinPlacement {
 
         def.dimensions(Set.of(disciplineDimension(disciplineId)));
         config.accept(def);
-        def.register(new ResourceLocation("phoenixcore", disciplineId + "_" + veinName));
+        def.register(ResourceLocation.fromNamespaceAndPath("phoenixcore", disciplineId + "_" + veinName));
         return def;
     }
 }

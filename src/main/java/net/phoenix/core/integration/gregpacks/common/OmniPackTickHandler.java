@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -8,11 +10,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
@@ -28,7 +30,7 @@ import net.phoenix.core.integration.gregpacks.network.SPacketJetpackThrust;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class OmniPackTickHandler {
 
     private static final int TICK_INTERVAL = 10;
@@ -53,7 +55,7 @@ public class OmniPackTickHandler {
         player.getInventory().setChanged();
 
         int packSlot = menu.getPackSlotIndex();
-        if (packSlot >= 0) {} else if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
+        if (packSlot >= 0) {} else if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
             top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player).ifPresent(inv -> {
                 var slots = inv.getCurios();
                 if (slots.containsKey("back")) {
@@ -104,7 +106,7 @@ public class OmniPackTickHandler {
     }
 
     private static ItemStack findPackInCurios(Player player) {
-        if (!net.minecraftforge.fml.ModList.get().isLoaded("curios")) return null;
+        if (!net.neoforged.fml.ModList.get().isLoaded("curios")) return null;
         return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player)
                 .map(inv -> {
                     var slots = inv.getCurios();

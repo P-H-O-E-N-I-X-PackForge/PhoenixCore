@@ -3,9 +3,9 @@ package net.phoenix.core.integration.conflux.network;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkDirection;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.conflux.research.DisciplineInfo;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
@@ -18,7 +18,7 @@ public final class ConfluxNetwork {
 
     private static final String VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(PhoenixCore.MOD_ID, "conflux"),
+            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "conflux"),
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     private static int id = 0;

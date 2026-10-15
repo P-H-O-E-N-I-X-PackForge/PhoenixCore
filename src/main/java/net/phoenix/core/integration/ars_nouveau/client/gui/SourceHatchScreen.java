@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class SourceHatchScreen extends AbstractContainerScreen<SourceHatchMenu> {
 
-    private static final ResourceLocation VIGNETTE = new ResourceLocation("textures/misc/vignette.png");
+    private static final ResourceLocation VIGNETTE = ResourceLocation.parse("textures/misc/vignette.png");
 
     private int[] noise;
     private int noiseW = 256;

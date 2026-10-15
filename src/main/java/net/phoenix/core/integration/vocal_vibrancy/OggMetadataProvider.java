@@ -40,6 +40,6 @@ public class OggMetadataProvider {
 
     private static ResourceLocation convertToPath(ResourceLocation loc) {
         String path = loc.getPath().replace(".", "/");
-        return new ResourceLocation(loc.getNamespace(), "sounds/" + path + ".ogg");
+        return ResourceLocation.fromNamespaceAndPath(loc.getNamespace(), "sounds/" + path + ".ogg");
     }
 }

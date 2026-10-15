@@ -1,9 +1,9 @@
 package net.phoenix.core.network;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkDirection;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.phoenix.core.integration.continuum.network.*;
 import net.phoenix.core.network.packet.*;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;

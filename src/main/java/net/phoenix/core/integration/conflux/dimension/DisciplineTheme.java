@@ -85,7 +85,7 @@ public class DisciplineTheme {
             if (json.has("default_biomes")) {
                 JsonObject defaultObj = json.getAsJsonObject("default_biomes");
                 for (String key : defaultObj.keySet()) {
-                    defaultBiomes.put(key, new ResourceLocation(defaultObj.get(key).getAsString()));
+                    defaultBiomes.put(key, ResourceLocation.parse(defaultObj.get(key).getAsString()));
                 }
             }
 
@@ -106,7 +106,7 @@ public class DisciplineTheme {
                 String stageName = json.get("stage").getAsString();
                 List<ResourceLocation> biomes = new ArrayList<>();
                 for (JsonElement elem : json.getAsJsonArray("biomes")) {
-                    biomes.add(new ResourceLocation(elem.getAsString()));
+                    biomes.add(ResourceLocation.parse(elem.getAsString()));
                 }
                 return new StageEntry(stageName, biomes);
             }

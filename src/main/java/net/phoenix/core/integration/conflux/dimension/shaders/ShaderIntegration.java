@@ -1,22 +1,24 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
 public class ShaderIntegration {
 
     private static String currentDimension = "";
     private static long lastShaderUpdate = 0;
 
     @SubscribeEvent
-    public static void onClientTick(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
-        if (event.phase == net.minecraftforge.event.TickEvent.Phase.END) {
+    public static void onClientTick(net.neoforged.neoforge.event.TickEvent.ClientTickEvent event) {
+        if (event.phase == net.neoforged.neoforge.event.TickEvent.Phase.END) {
             return;
         }
 

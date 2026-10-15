@@ -1,8 +1,8 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

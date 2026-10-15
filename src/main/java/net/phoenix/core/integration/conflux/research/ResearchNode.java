@@ -56,7 +56,7 @@ public class ResearchNode {
     }
 
     public static ResearchNode fromJson(JsonObject obj) {
-        ResourceLocation id = new ResourceLocation(obj.get("id").getAsString());
+        ResourceLocation id = ResourceLocation.parse(obj.get("id").getAsString());
         String title = obj.has("title") ? obj.get("title").getAsString() : id.getPath();
         String lore = obj.has("lore") ? obj.get("lore").getAsString() : "";
         String hint = obj.has("hint") ? obj.get("hint").getAsString() : "";
@@ -75,11 +75,11 @@ public class ResearchNode {
 
         List<ResourceLocation> prereqs = new ArrayList<>();
         if (obj.has("prerequisites"))
-            obj.getAsJsonArray("prerequisites").forEach(e -> prereqs.add(new ResourceLocation(e.getAsString())));
+            obj.getAsJsonArray("prerequisites").forEach(e -> prereqs.add(ResourceLocation.parse(e.getAsString())));
 
         List<ResourceLocation> prereqsAny = new ArrayList<>();
         if (obj.has("prerequisites_any"))
-            obj.getAsJsonArray("prerequisites_any").forEach(e -> prereqsAny.add(new ResourceLocation(e.getAsString())));
+            obj.getAsJsonArray("prerequisites_any").forEach(e -> prereqsAny.add(ResourceLocation.parse(e.getAsString())));
 
         Map<ConfluxDataType, Long> cost = new EnumMap<>(ConfluxDataType.class);
         if (obj.has("cost")) {

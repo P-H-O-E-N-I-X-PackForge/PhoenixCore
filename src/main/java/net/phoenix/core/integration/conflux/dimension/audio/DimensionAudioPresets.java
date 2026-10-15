@@ -13,10 +13,10 @@ public class DimensionAudioPresets {
     }
 
     private static void initializePhoenixAudio(AudioManager manager) {
-        ResourceLocation modId = new ResourceLocation("phoenixcore");
+        ResourceLocation modId = ResourceLocation.parse("phoenixcore");
 
         AmbientTrack phoenixMain = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/phoenix/volcanic_rumble"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/phoenix/volcanic_rumble"),
                 0.5f,
                 1.0f,
                 true,
@@ -26,20 +26,20 @@ public class DimensionAudioPresets {
         manager.registerAmbientTrack("phoenix_main", phoenixMain);
 
         AmbientTrack phoenixWind = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/phoenix/volcanic_wind"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/phoenix/volcanic_wind"),
                 0.3f, 0.9f, true, 2.0f, 2.0f,
                 "Phoenix - Volcanic Wind");
         manager.registerAmbientTrack("phoenix_wind", phoenixWind);
 
         SoundEffect phoenixGravityEnter = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/phoenix/heat_shimmer"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/phoenix/heat_shimmer"),
                 SoundEffect.SoundType.GRAVITY_ZONE_ENTER,
                 0.6f, 1.0f, 20.0f,
                 "Phoenix - Heat Shimmer (Enter Zone)");
         manager.registerSoundEffect("phoenix_gravity_enter", phoenixGravityEnter);
 
         SoundEffect phoenixGravityExit = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/phoenix/updraft_fade"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/phoenix/updraft_fade"),
                 SoundEffect.SoundType.GRAVITY_ZONE_EXIT,
                 0.5f, 0.95f, 15.0f,
                 "Phoenix - Updraft Fade (Exit Zone)");
@@ -49,29 +49,29 @@ public class DimensionAudioPresets {
     }
 
     private static void initializeSculkAudio(AudioManager manager) {
-        ResourceLocation modId = new ResourceLocation("phoenixcore");
+        ResourceLocation modId = ResourceLocation.parse("phoenixcore");
 
         AmbientTrack sculkMain = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sculk/deep_cave"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sculk/deep_cave"),
                 0.4f, 1.0f, true, 3.0f, 2.5f,
                 "Sculk - Deep Cave Ambience");
         manager.registerAmbientTrack("sculk_main", sculkMain);
 
         AmbientTrack sculkBiolum = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sculk/biolum_hum"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sculk/biolum_hum"),
                 0.2f, 0.85f, true, 2.0f, 2.0f,
                 "Sculk - Bioluminescent Hum");
         manager.registerAmbientTrack("sculk_biolum", sculkBiolum);
 
         SoundEffect sculkPlatformBoard = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sculk/conveyor_activate"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sculk/conveyor_activate"),
                 SoundEffect.SoundType.PLATFORM_BOARDING,
                 0.7f, 1.0f, 25.0f,
                 "Sculk - Conveyor Activate");
         manager.registerSoundEffect("sculk_platform_board", sculkPlatformBoard);
 
         SoundEffect sculkConveyorLoop = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sculk/conveyor_loop"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sculk/conveyor_loop"),
                 SoundEffect.SoundType.PLATFORM_MOVING,
                 0.4f, 0.8f, 30.0f,
                 "Sculk - Conveyor Loop");
@@ -81,29 +81,29 @@ public class DimensionAudioPresets {
     }
 
     private static void initializeVoidAudio(AudioManager manager) {
-        ResourceLocation modId = new ResourceLocation("phoenixcore");
+        ResourceLocation modId = ResourceLocation.parse("phoenixcore");
 
         AmbientTrack voidMain = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/void/cosmic_drone"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/void/cosmic_drone"),
                 0.3f, 0.95f, true, 4.0f, 3.0f,
                 "Void - Cosmic Drone");
         manager.registerAmbientTrack("void_main", voidMain);
 
         AmbientTrack voidWind = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/void/ethereal_wind"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/void/ethereal_wind"),
                 0.25f, 0.9f, true, 2.5f, 2.5f,
                 "Void - Ethereal Wind");
         manager.registerAmbientTrack("void_wind", voidWind);
 
         SoundEffect voidGravityZero = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/void/zero_g_enter"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/void/zero_g_enter"),
                 SoundEffect.SoundType.GRAVITY_ZONE_ENTER,
                 0.5f, 1.1f, 20.0f,
                 "Void - Zero-G Enter");
         manager.registerSoundEffect("void_gravity_enter", voidGravityZero);
 
         SoundEffect voidSpiralRise = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/void/spiral_ascend"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/void/spiral_ascend"),
                 SoundEffect.SoundType.PLATFORM_MOVING,
                 0.6f, 0.8f, 30.0f,
                 "Void - Spiral Ascend");
@@ -113,29 +113,29 @@ public class DimensionAudioPresets {
     }
 
     private static void initializeSealedAAudio(AudioManager manager) {
-        ResourceLocation modId = new ResourceLocation("phoenixcore");
+        ResourceLocation modId = ResourceLocation.parse("phoenixcore");
 
         AmbientTrack sealedAMain = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sealed_a/industrial"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sealed_a/industrial"),
                 0.5f, 1.0f, true, 2.0f, 2.0f,
                 "Sealed-A - Industrial Machinery");
         manager.registerAmbientTrack("sealed_a_main", sealedAMain);
 
         AmbientTrack sealedANeon = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sealed_a/neon_hum"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sealed_a/neon_hum"),
                 0.3f, 1.05f, true, 2.0f, 2.0f,
                 "Sealed-A - Neon Hum");
         manager.registerAmbientTrack("sealed_a_neon", sealedANeon);
 
         SoundEffect sealedAConveyor = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sealed_a/conveyor_whirr"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sealed_a/conveyor_whirr"),
                 SoundEffect.SoundType.PLATFORM_MOVING,
                 0.6f, 1.0f, 32.0f,
                 "Sealed-A - Conveyor Whirr");
         manager.registerSoundEffect("sealed_a_conveyor", sealedAConveyor);
 
         SoundEffect sealedAElevator = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sealed_a/elevator_hum"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sealed_a/elevator_hum"),
                 SoundEffect.SoundType.PLATFORM_BOARDING,
                 0.7f, 0.95f, 25.0f,
                 "Sealed-A - Elevator Hum");
@@ -145,29 +145,29 @@ public class DimensionAudioPresets {
     }
 
     private static void initializeSealedBAudio(AudioManager manager) {
-        ResourceLocation modId = new ResourceLocation("phoenixcore");
+        ResourceLocation modId = ResourceLocation.parse("phoenixcore");
 
         AmbientTrack sealedBMain = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sealed_b/reality_glitch"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sealed_b/reality_glitch"),
                 0.4f, 1.0f, true, 3.0f, 2.5f,
                 "Sealed-B - Reality Glitch");
         manager.registerAmbientTrack("sealed_b_main", sealedBMain);
 
         AmbientTrack sealedBInverted = new AmbientTrack(
-                new ResourceLocation(modId.getNamespace(), "ambient/sealed_b/inverted_hum"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "ambient/sealed_b/inverted_hum"),
                 0.25f, 0.7f, true, 2.5f, 2.5f,
                 "Sealed-B - Inverted Hum");
         manager.registerAmbientTrack("sealed_b_inverted", sealedBInverted);
 
         SoundEffect sealedBGravityInvert = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sealed_b/gravity_flip"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sealed_b/gravity_flip"),
                 SoundEffect.SoundType.GRAVITY_ZONE_ENTER,
                 0.8f, 0.6f, 20.0f,
                 "Sealed-B - Gravity Flip");
         manager.registerSoundEffect("sealed_b_gravity_flip", sealedBGravityInvert);
 
         SoundEffect sealedBGlitch = new SoundEffect(
-                new ResourceLocation(modId.getNamespace(), "effect/sealed_b/reality_crack"),
+                ResourceLocation.fromNamespaceAndPath(modId.getNamespace(), "effect/sealed_b/reality_crack"),
                 SoundEffect.SoundType.SHADER_ACTIVE,
                 0.7f, 1.1f, 15.0f,
                 "Sealed-B - Reality Crack");

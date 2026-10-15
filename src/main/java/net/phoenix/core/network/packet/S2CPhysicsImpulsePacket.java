@@ -1,8 +1,8 @@
 package net.phoenix.core.network.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.conflux.dimension.physics.ClientImpulses;
 import net.phoenix.core.integration.conflux.dimension.physics.PhysicsImpulse;
 

@@ -82,8 +82,8 @@ public final class AetherCrucibleMachines {
                     .where(' ', Predicates.air())
                     .build())
             .workableCasingModel(
-                    new net.minecraft.resources.ResourceLocation("phoenixcore:block/casings/multiblock/aether_casing"),
-                    new net.minecraft.resources.ResourceLocation("phoenixcore:block/multiblock/aether_crucible"))
+                    net.minecraft.resources.ResourceLocation.parse("phoenixcore:block/casings/multiblock/aether_casing"),
+                    net.minecraft.resources.ResourceLocation.parse("phoenixcore:block/multiblock/aether_crucible"))
             .register();
 
     public static void init() {}

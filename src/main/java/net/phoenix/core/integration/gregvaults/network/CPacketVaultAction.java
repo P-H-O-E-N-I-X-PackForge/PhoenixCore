@@ -2,7 +2,7 @@ package net.phoenix.core.integration.gregvaults.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.gregvaults.client.screen.AbstractVaultMenu;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultSortMode;
 

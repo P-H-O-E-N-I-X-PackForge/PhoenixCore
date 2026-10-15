@@ -12,8 +12,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 final class RocketSprite {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation("phoenixcore",
-            "textures/item/continuum_rocket.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("phoenixcore", "textures/item/continuum_rocket.png");
     private static final int TEXEL = 16;
 
     private RocketSprite() {}

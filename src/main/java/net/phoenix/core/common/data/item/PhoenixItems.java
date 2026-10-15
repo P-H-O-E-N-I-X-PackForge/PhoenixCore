@@ -15,7 +15,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import net.phoenix.core.common.data.PhoenixCovers;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;

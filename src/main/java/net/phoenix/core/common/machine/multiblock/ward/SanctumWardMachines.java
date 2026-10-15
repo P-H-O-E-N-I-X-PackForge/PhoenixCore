@@ -10,7 +10,7 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 

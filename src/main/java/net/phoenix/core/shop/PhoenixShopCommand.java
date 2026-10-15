@@ -1,15 +1,17 @@
 package net.phoenix.core.shop;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
 import net.phoenix.core.shop.network.S2CShopSyncPacket;
@@ -21,7 +23,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class PhoenixShopCommand {
 
     @SubscribeEvent

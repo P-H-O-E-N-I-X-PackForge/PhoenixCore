@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;

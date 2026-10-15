@@ -1,10 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
@@ -13,7 +15,7 @@ import net.phoenix.core.integration.conflux.research.WorldResearchData;
 
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore")
 public class ConfluxProgressionEvents {
 
     @SubscribeEvent

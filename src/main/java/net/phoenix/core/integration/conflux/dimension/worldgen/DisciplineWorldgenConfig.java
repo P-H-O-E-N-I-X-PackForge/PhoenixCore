@@ -95,7 +95,7 @@ public class DisciplineWorldgenConfig {
         }
 
         public static OreConfig fromJson(JsonObject json) {
-            ResourceLocation ore = new ResourceLocation(json.get("ore").getAsString());
+            ResourceLocation ore = ResourceLocation.parse(json.get("ore").getAsString());
             int veinSize = json.get("vein_size").getAsInt();
             int veinsPerChunk = json.get("veins_per_chunk").getAsInt();
             int minY = json.has("min_y") ? json.get("min_y").getAsInt() : 0;

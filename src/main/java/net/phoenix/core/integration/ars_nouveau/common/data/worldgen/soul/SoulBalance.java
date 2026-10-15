@@ -34,7 +34,7 @@ public class SoulBalance {
     }
 
     private static void register(String id, float min, float max, float regen) {
-        REGISTRY.put(new ResourceLocation(id), new SoulProfile(min, max, regen));
+        REGISTRY.put(ResourceLocation.parse(id), new SoulProfile(min, max, regen));
     }
 
     public static SoulProfile get(Holder<Biome> biomeHolder, Level level) {

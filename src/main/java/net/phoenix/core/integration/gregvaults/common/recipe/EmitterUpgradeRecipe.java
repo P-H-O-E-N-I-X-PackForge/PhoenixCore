@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregvaults.common.recipe;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +12,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.integration.gregvaults.common.items.WirelessTerminalItem;
 import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
 
@@ -92,8 +94,8 @@ public class EmitterUpgradeRecipe extends CustomRecipe {
         public EmitterUpgradeRecipe fromJson(ResourceLocation id, JsonObject json) {
             int tierLevel = json.get("tier").getAsInt();
             WirelessTerminalItem.EmitterTier tier = WirelessTerminalItem.EmitterTier.fromLevel(tierLevel);
-            ResourceLocation itemId = new ResourceLocation(json.get("emitter").getAsString());
-            Item item = ForgeRegistries.ITEMS.getValue(itemId);
+            ResourceLocation itemId = ResourceLocation.parse(json.get("emitter").getAsString());
+            Item item = BuiltInRegistries.ITEM.get(itemId);
             return new EmitterUpgradeRecipe(id, tier, item);
         }
 
@@ -101,14 +103,14 @@ public class EmitterUpgradeRecipe extends CustomRecipe {
         public @Nullable EmitterUpgradeRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
             WirelessTerminalItem.EmitterTier tier = WirelessTerminalItem.EmitterTier.fromLevel(buf.readInt());
             ResourceLocation itemId = buf.readResourceLocation();
-            Item item = ForgeRegistries.ITEMS.getValue(itemId);
+            Item item = BuiltInRegistries.ITEM.get(itemId);
             return new EmitterUpgradeRecipe(id, tier, item);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, EmitterUpgradeRecipe recipe) {
             buf.writeInt(recipe.tier.level);
-            buf.writeResourceLocation(ForgeRegistries.ITEMS.getKey(recipe.emitterItem));
+            buf.writeResourceLocation(BuiltInRegistries.ITEM.getKey(recipe.emitterItem));
         }
     }
 }

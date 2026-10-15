@@ -1,8 +1,8 @@
 package net.phoenix.core.integration.drone.mui;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.drone.network.DroneTargetView;
 
 import brachy.modularui.value.sync.SyncHandler;

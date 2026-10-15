@@ -1,10 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.MOD)
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+
+@EventBusSubscriber(modid = "phoenixcore", bus = EventBusSubscriber.Bus.MOD)
 public class PhysicsInitializer {
 
     private static boolean physicsInitialized = false;

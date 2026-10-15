@@ -1,19 +1,21 @@
 package net.phoenix.core.integration.gregpacks.common.fluid;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class GregPacksCapabilityHandler {
 
-    private static final ResourceLocation FLUID_CAP_KEY = new ResourceLocation(PhoenixCore.MOD_ID, "omnipack_fluid");
+    private static final ResourceLocation FLUID_CAP_KEY = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "omnipack_fluid");
 
     @SubscribeEvent
     public static void onAttachItemCapabilities(AttachCapabilitiesEvent<ItemStack> event) {

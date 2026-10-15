@@ -5,14 +5,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.CapabilityManager;
+import net.neoforged.neoforge.capabilities.CapabilityToken;
+import net.neoforged.neoforge.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.phoenix.core.PhoenixCore;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public final class PlayerResearchCapability {
 
     public static final Capability<PlayerResearchData> RESEARCH = CapabilityManager.get(new CapabilityToken<>() {});
 
-    public static final ResourceLocation ID = new ResourceLocation(PhoenixCore.MOD_ID, "axiom_research");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "axiom_research");
 
     private PlayerResearchCapability() {}
 

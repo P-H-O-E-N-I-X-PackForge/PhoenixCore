@@ -2,7 +2,7 @@ package net.phoenix.core.integration.continuum.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.continuum.common.ContinuumServerEvents;
 
 import java.util.function.Supplier;

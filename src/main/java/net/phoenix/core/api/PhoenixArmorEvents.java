@@ -1,5 +1,7 @@
 package net.phoenix.core.api;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -9,15 +11,15 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.data.item.PhoenixArmorItem;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class PhoenixArmorEvents {
 
     @SubscribeEvent
@@ -31,7 +33,7 @@ public class PhoenixArmorEvents {
                 event.setNewSpeed(event.getNewSpeed() * 5.0f);
             }
 
-            if (player.isEyeInFluidType(net.minecraftforge.common.ForgeMod.WATER_TYPE.get()) &&
+            if (player.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get()) &&
                     !net.minecraft.world.item.enchantment.EnchantmentHelper.hasAquaAffinity(player)) {
                 event.setNewSpeed(event.getNewSpeed() * 5.0f);
             }

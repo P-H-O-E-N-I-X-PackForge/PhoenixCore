@@ -34,11 +34,11 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
 import net.phoenix.core.mixin.accessor.AbilitiesAccessor;
@@ -1256,7 +1256,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     @Override
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         String name = (slot == EquipmentSlot.LEGS) ? "phoenix_tech_suite_2" : "phoenix_tech_suite_1";
-        return new ResourceLocation("phoenixcore", "textures/armor/" + name + ".png");
+        return ResourceLocation.fromNamespaceAndPath("phoenixcore", "textures/armor/" + name + ".png");
     }
 
     @Override
@@ -1273,8 +1273,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     public void addInfo(ItemStack itemStack, List<Component> lines) {
         super.addInfo(itemStack, lines);
 
-        if (net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer() != null) {
-            var level = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer().overworld();
+        if (net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer() != null) {
+            var level = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer().overworld();
             var data = TeslaTeamEnergyData.get(level);
 
             assert Minecraft.getInstance().player != null;

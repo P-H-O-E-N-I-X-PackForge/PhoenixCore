@@ -49,7 +49,7 @@ public class CutsceneScreen extends Screen {
     private static final float CHOICE_SCALE = 1.15f;
     private static final float TEXT_Z = 400;
     private static final float NOT_COMPLETED = Float.MAX_VALUE;
-    private static final ResourceLocation PLAYER = new ResourceLocation("minecraft", "player");
+    private static final ResourceLocation PLAYER = ResourceLocation.fromNamespaceAndPath("minecraft", "player");
 
     private final ResourceLocation id;
     private final CutsceneDefinition definition;

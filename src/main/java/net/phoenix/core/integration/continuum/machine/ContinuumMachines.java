@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.machine;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -12,7 +14,7 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
@@ -48,7 +50,7 @@ public final class ContinuumMachines {
         for (String[] slice : SLICES) builder = builder.slice(slice);
 
         var casing = Predicates.blocks(GTBlocks.CASING_STEEL_SOLID.get());
-        var frame = Predicates.blocks(ForgeRegistries.BLOCKS.getValue(
+        var frame = Predicates.blocks(BuiltInRegistries.BLOCK.get(
                 ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame")));
 
         return builder

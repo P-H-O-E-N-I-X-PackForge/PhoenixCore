@@ -32,7 +32,7 @@ public final class ContinuumClientHooks {
     public static void acceptData(ContinuumData.Snapshot snapshot) {
         ContinuumData.acceptSync(snapshot);
         
-        if (net.minecraftforge.fml.ModList.get().isLoaded("emi")) {
+        if (net.neoforged.fml.ModList.get().isLoaded("emi")) {
             net.phoenix.core.integration.emi.ContinuumEmiBridge.reload();
         }
     }

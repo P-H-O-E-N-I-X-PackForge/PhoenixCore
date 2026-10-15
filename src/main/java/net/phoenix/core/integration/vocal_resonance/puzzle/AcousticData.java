@@ -1,12 +1,14 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.TreeMap;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore")
 public final class AcousticData {
 
     private static final Gson GSON = new Gson();

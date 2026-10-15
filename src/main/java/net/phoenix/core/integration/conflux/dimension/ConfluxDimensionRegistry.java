@@ -1,6 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension;
 
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 
 public class ConfluxDimensionRegistry {
 

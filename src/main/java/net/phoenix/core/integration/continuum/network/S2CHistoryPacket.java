@@ -1,8 +1,8 @@
 package net.phoenix.core.integration.continuum.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 import net.phoenix.core.integration.continuum.common.MissionLog;
 

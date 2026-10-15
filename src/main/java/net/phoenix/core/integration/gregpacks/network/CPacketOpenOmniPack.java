@@ -3,7 +3,7 @@ package net.phoenix.core.integration.gregpacks.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.gregpacks.common.inventory.OpenPackHelper;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
@@ -26,7 +26,7 @@ public class CPacketOpenOmniPack {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
 
-            if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
+            if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
                 top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player).ifPresent(inv -> {
                     var slots = inv.getCurios();
                     if (!slots.containsKey("back")) return;

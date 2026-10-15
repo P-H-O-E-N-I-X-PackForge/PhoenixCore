@@ -1,12 +1,14 @@
 package net.phoenix.core.datagen;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.registry.registrate.SoundEntryBuilder;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 
@@ -15,7 +17,7 @@ import com.tterrag.registrate.providers.loot.RegistrateLootTableProvider;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class PhoenixDataGenerators {
 
     static {

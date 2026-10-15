@@ -13,7 +13,7 @@ import net.phoenix.core.PhoenixCore;
 public class PhoenixDamageSources {
 
     public static final ResourceKey<DamageType> STERILIZED = ResourceKey.create(Registries.DAMAGE_TYPE,
-            new ResourceLocation(PhoenixCore.MOD_ID, "sterilized"));
+            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "sterilized"));
 
     public static void bootstrap(BootstapContext<DamageType> context) {
         context.register(STERILIZED, new DamageType("sterilized", 0.1F));

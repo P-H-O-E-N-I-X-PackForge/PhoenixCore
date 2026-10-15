@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipeConditions;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -16,9 +18,9 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.common.data.PhoenixMaterialRegistry;
 
 import com.mojang.serialization.Codec;
@@ -57,7 +59,7 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
     }
 
     public static FluidInHatchCondition of(@NotNull Fluid fluid) {
-        ResourceLocation id = ForgeRegistries.FLUIDS.getKey(fluid);
+        ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
         if (id == null) throw new IllegalArgumentException("Fluid has no registry ID: " + fluid);
         return new FluidInHatchCondition(false, id.toString(), "");
     }
@@ -76,7 +78,7 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
 
     public Fluid getFluid() {
         if (cachedFluid == null) {
-            cachedFluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidString));
+            cachedFluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(fluidString));
         }
         return cachedFluid;
     }
@@ -88,7 +90,7 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
         if (fluid != null) {
             Material material = PhoenixMaterialRegistry.getMaterial(fluid);
             String localizedName = material != null ? I18n.get(material.getDefaultTranslation()) :
-                    new ResourceLocation(fluidString).getPath().replace('_', ' ');
+                    ResourceLocation.parse(fluidString).getPath().replace('_', ' ');
 
             if (material == null) {
                 localizedName = Arrays.stream(localizedName.split(" "))

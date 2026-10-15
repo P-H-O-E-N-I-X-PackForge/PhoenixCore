@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.emi;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -7,7 +9,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.continuum.ContinuumRegistry;
 import net.phoenix.core.integration.continuum.common.RocketRefit;
@@ -30,11 +32,11 @@ public final class ContinuumEmi {
     private ContinuumEmi() {}
 
     public static final EmiRecipeCategory BODIES = new EmiRecipeCategory(
-            new ResourceLocation(PhoenixCore.MOD_ID, "continuum_bodies"),
+            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "continuum_bodies"),
             EmiStack.of(ContinuumRegistry.ROCKET.get()));
 
     public static final EmiRecipeCategory REFIT = new EmiRecipeCategory(
-            new ResourceLocation(PhoenixCore.MOD_ID, "continuum_refit"),
+            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "continuum_refit"),
             EmiStack.of(ContinuumRegistry.REFIT_MK2.get()));
 
     static void register(EmiRegistry registry) {
@@ -148,13 +150,13 @@ public final class ContinuumEmi {
         }
 
         private BodyRecipe(ContinuumBody body, List<Line> head) {
-            super(BODIES, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()),
+            super(BODIES, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()),
                     PANEL_WIDTH, 8 + measure(head) + 6 + (((body.yields().size() + COLUMNS - 1) / COLUMNS) * 18) + 6);
             this.body = body;
             this.head = head;
             this.inputs = List.of(EmiStack.of(ContinuumRegistry.PROBE.get()));
             this.outputs = body.yields().stream().map(y -> {
-                Item item = ForgeRegistries.ITEMS.getValue(y.item());
+                Item item = BuiltInRegistries.ITEM.get(y.item());
                 return EmiStack.of(item == null ? Items.BARRIER : item, Math.max(1, y.max()))
                         .setChance(Math.max(0.01f, Math.min(1.0f, y.chance())));
             }).toList();
@@ -211,7 +213,7 @@ public final class ContinuumEmi {
         }
 
         private HullRecipe(int tier, List<Line> head, List<Line> tail) {
-            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier), PANEL_WIDTH,
+            super(REFIT, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier), PANEL_WIDTH,
                     5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.tier = tier;
             this.head = head;
@@ -246,7 +248,7 @@ public final class ContinuumEmi {
         }
 
         private ModuleRecipe(String upgrade, List<Line> head, List<Line> tail) {
-            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade), PANEL_WIDTH,
+            super(REFIT, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade), PANEL_WIDTH,
                     5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.upgrade = upgrade;
             this.head = head;

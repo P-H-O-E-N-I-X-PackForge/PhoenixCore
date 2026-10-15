@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public class ContinuumAscentScreen extends Screen {
 
-    private static final ResourceLocation HOME_WORLD = new ResourceLocation("phoenixcore", "anvil");
+    private static final ResourceLocation HOME_WORLD = ResourceLocation.fromNamespaceAndPath("phoenixcore", "anvil");
 
     private final ResourceLocation destination;
     private final @Nullable BlockPos pad;

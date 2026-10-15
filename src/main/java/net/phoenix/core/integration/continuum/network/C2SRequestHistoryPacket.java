@@ -2,8 +2,8 @@ package net.phoenix.core.integration.continuum.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.continuum.common.ContinuumTeamData;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.utils.TeamUtils;

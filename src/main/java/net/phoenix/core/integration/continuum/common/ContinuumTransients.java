@@ -143,7 +143,7 @@ public final class ContinuumTransients extends SavedData {
         ContinuumTransients transients = new ContinuumTransients();
         for (Tag t : tag.getList("Windows", Tag.TAG_COMPOUND)) {
             CompoundTag e = (CompoundTag) t;
-            transients.windows.put(new ResourceLocation(e.getString("Body")),
+            transients.windows.put(ResourceLocation.parse(e.getString("Body")),
                     new Window(e.getLong("Start"), e.getLong("End"), e.getLong("Next"), e.getBoolean("Ended")));
         }
         return transients;

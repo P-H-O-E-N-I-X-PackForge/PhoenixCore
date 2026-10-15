@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.phoenix.core.PhoenixCore;
 
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@net.neoforged.fml.common.Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
 
     public static final GatedRecipeRegistry INSTANCE = new GatedRecipeRegistry();
@@ -37,7 +37,7 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
         rules = List.copyOf(loaded);
         PhoenixCore.LOGGER.info("Loaded {} gated recipe rule(s)", rules.size());
 
-        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null) RecipeGateApplier.applyGates(server.getRecipeManager().getRecipes());
     }
 
@@ -49,13 +49,13 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
         event.addListener(INSTANCE);
     }
 
-    @net.minecraftforge.eventbus.api.SubscribeEvent
-    public static void onServerStarted(net.minecraftforge.event.server.ServerStartedEvent event) {
+    @net.neoforged.bus.api.SubscribeEvent
+    public static void onServerStarted(net.neoforged.neoforge.event.server.ServerStartedEvent event) {
         RecipeGateApplier.applyGates(event.getServer().getRecipeManager().getRecipes());
     }
 
-    @net.minecraftforge.eventbus.api.SubscribeEvent
-    public static void onDatapackSync(net.minecraftforge.event.OnDatapackSyncEvent event) {
+    @net.neoforged.bus.api.SubscribeEvent
+    public static void onDatapackSync(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
         var server = event.getPlayerList().getServer();
         RecipeGateApplier.applyGates(server.getRecipeManager().getRecipes());
     }

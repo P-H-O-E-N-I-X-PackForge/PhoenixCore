@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.continuum.client.render;
 
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraftforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;

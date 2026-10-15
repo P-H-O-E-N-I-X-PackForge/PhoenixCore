@@ -11,8 +11,8 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.fml.DistExecutor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine.VaultTier;
@@ -129,7 +129,7 @@ public class VaultMachineDefinition {
                     builder.addTextureOverride("top", casingTexture);
                     builder.addTextureOverride("bottom", casingTexture);
 
-                    DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                    DistExecutor.unsafeRunWhenOn(net.neoforged.api.distmarker.Dist.CLIENT,
                             () -> () -> net.phoenix.core.integration.gregvaults.client.VaultClientModelHooks
                                     .addVaultOverlayRenderer(builder));
                 })

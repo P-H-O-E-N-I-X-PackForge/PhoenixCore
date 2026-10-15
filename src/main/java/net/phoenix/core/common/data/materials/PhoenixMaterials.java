@@ -60,7 +60,7 @@ public class PhoenixMaterials {
 
     @NotNull
     public static Material get(String name) {
-        Material mat = GTRegistries.MATERIALS.get(new ResourceLocation("phoenixcore", name));
+        Material mat = GTRegistries.MATERIALS.get(ResourceLocation.fromNamespaceAndPath("phoenixcore", name));
 
         if (mat == null) {
             PhoenixAPI.LOGGER.warn("{} is not a known Material", name);

@@ -1,16 +1,18 @@
 package net.phoenix.core.integration.ars_nouveau.common.capability;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability;
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine;
@@ -18,10 +20,10 @@ import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.sour
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class PhoenixCapabilityAttach {
 
-    private static final ResourceLocation KEY = new ResourceLocation(PhoenixCore.MOD_ID, "source_provider");
+    private static final ResourceLocation KEY = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "source_provider");
 
     private PhoenixCapabilityAttach() {}
 

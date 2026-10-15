@@ -1,13 +1,15 @@
 package net.phoenix.core.integration.conflux.terminal;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
@@ -19,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore")
 public class ConfluxDataStore extends SavedData {
 
     public static final long CAPACITY_PER_TYPE = 1_000_000L;

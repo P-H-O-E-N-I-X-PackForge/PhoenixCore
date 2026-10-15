@@ -1,5 +1,7 @@
 package net.phoenix.core.common.machine;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
@@ -45,8 +47,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
 import net.phoenix.core.api.pattern.PhoenixPredicates;
@@ -173,8 +175,7 @@ public class PhoenixMachines {
             (builder, overlay) -> builder
                     .workableCasingModel(
 
-                            new ResourceLocation(PhoenixCore.MOD_ID,
-                                    "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                             overlay));
 
     public static final MultiblockMachineDefinition DRONE_CONTROLLER = REGISTRATE
@@ -198,8 +199,7 @@ public class PhoenixMachines {
                     .build())
             .appearanceBlock(SOURCE_FIBER_MACHINE_CASING)
             .workableCasingModel(
-                    new ResourceLocation(PhoenixCore.MOD_ID,
-                            "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                     GTCEu.id("block/multiblock/multiblock_tank"))
             .register();
 
@@ -518,7 +518,7 @@ public class PhoenixMachines {
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
 
             .model(createWorkableCasingMachineModel(
-                    new ResourceLocation(PhoenixCore.MOD_ID, "block/casings/multiblock/tesla_casing"),
+                    ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/tesla_casing"),
                     GTCEu.id("block/multiblock/fusion_reactor"))
                     .andThen(b -> b.addDynamicRenderer(
                             com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderHelper::createFusionRingRender)))
@@ -554,20 +554,20 @@ public class PhoenixMachines {
 
                     .where('D',
                             Predicates.blocks(
-                                    ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse("ars_nouveau:sourcestone"))))
+                                    BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:sourcestone"))))
                     .where('E',
                             Predicates.blocks(ForgeRegistries.BLOCKS
                                     .getValue(ResourceLocation.parse("ars_nouveau:magebloom_block"))))
                     .where('F', Predicates.blocks(GTBlocks.CASING_TEMPERED_GLASS.get()))
                     .where('G',
                             Predicates.blocks(
-                                    ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse("ars_nouveau:void_prism"))))
+                                    BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:void_prism"))))
                     .where('H',
                             Predicates.blocks(ForgeRegistries.BLOCKS
                                     .getValue(ResourceLocation.parse("ars_nouveau:source_gem_block"))))
                     .where('I',
                             Predicates.blocks(
-                                    ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse("ars_nouveau:arcane_core"))))
+                                    BuiltInRegistries.BLOCK.get(ResourceLocation.parse("ars_nouveau:arcane_core"))))
                     .where('J',
                             Predicates.blocks(ForgeRegistries.BLOCKS
                                     .getValue(ResourceLocation.parse("ars_nouveau:vitalic_sourcelink"))))

@@ -39,7 +39,7 @@ public final class MissionLog {
 
         public static Entry load(CompoundTag tag) {
             int ordinal = Math.max(0, Math.min(tag.getByte("Kind"), Kind.values().length - 1));
-            return new Entry(tag.getLong("Time"), Kind.values()[ordinal], new ResourceLocation(tag.getString("Body")),
+            return new Entry(tag.getLong("Time"), Kind.values()[ordinal], ResourceLocation.parse(tag.getString("Body")),
                     tag.getString("Text"));
         }
 

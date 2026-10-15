@@ -1,5 +1,7 @@
 package net.phoenix.core.common.block.cinema;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -10,9 +12,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 
 import com.google.gson.Gson;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class CutsceneActions extends SimpleJsonResourceReloadListener {
 
     public static final CutsceneActions INSTANCE = new CutsceneActions();

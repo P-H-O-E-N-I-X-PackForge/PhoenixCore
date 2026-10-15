@@ -119,7 +119,7 @@ public class PhoenixElements {
                                   String symbol, boolean isIsotope) {
         Element element = new Element(protons, neutrons, halfLife, decayTo, name, symbol, isIsotope);
 
-        ResourceLocation registryId = new ResourceLocation("phoenixcore", id);
+        ResourceLocation registryId = ResourceLocation.fromNamespaceAndPath("phoenixcore", id);
 
         GTRegistries.ELEMENTS.register(registryId, element);
 

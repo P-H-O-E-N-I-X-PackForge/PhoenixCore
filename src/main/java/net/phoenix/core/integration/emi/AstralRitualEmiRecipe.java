@@ -23,8 +23,7 @@ public class AstralRitualEmiRecipe extends BasicEmiRecipe {
     private final RitualResult result;
 
     public AstralRitualEmiRecipe(Item catalyst, RitualResult result) {
-        super(PhoenixEmiPlugin.ASTRAL_RITUAL, new ResourceLocation(PhoenixCore.MOD_ID,
-                "astral_ritual/" + catalyst.builtInRegistryHolder().key().location().getPath()), 130, 40);
+        super(PhoenixEmiPlugin.ASTRAL_RITUAL, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "astral_ritual/" + catalyst.builtInRegistryHolder().key().location().getPath()), 130, 40);
         this.result = result;
         this.inputs = List.of(EmiStack.of(new ItemStack(catalyst)));
         this.outputs = List

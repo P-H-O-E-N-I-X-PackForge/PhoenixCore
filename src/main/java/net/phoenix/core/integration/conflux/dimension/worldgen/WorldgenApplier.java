@@ -55,7 +55,7 @@ public class WorldgenApplier {
 
                     level.setBlock(grassPos,
                             net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                                    new ResourceLocation(blocks.grass))
+                                    ResourceLocation.parse(blocks.grass))
                                     .defaultBlockState(),
                             3);
 
@@ -64,7 +64,7 @@ public class WorldgenApplier {
                         if (level.ensureCanWrite(dirtPos)) {
                             level.setBlock(dirtPos,
                                     net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                                            new ResourceLocation(blocks.dirt))
+                                            ResourceLocation.parse(blocks.dirt))
                                             .defaultBlockState(),
                                     3);
                         }
@@ -105,7 +105,7 @@ public class WorldgenApplier {
                 if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos)) {
                     try {
                         var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
-                                new ResourceLocation(decoration));
+                                ResourceLocation.parse(decoration));
                         if (block != Blocks.AIR) {
                             level.setBlock(pos, block.defaultBlockState(), 3);
                         }
@@ -148,7 +148,7 @@ public class WorldgenApplier {
     private static DisciplineWorldgenConfig createPhoenixConfig() {
         DisciplineWorldgenConfig.OreConfig[] ores = {
                 new DisciplineWorldgenConfig.OreConfig(
-                        new ResourceLocation("minecraft:iron_ore"),
+                        ResourceLocation.parse("minecraft:iron_ore"),
                         8, 20, 0, 64, "minecraft:stone")
         };
         return new DisciplineWorldgenConfig("phoenix", ores,
@@ -180,10 +180,10 @@ public class WorldgenApplier {
     private static DisciplineWorldgenConfig createDefaultConfig() {
         DisciplineWorldgenConfig.OreConfig[] ores = {
                 new DisciplineWorldgenConfig.OreConfig(
-                        new ResourceLocation("minecraft:iron_ore"),
+                        ResourceLocation.parse("minecraft:iron_ore"),
                         8, 10, 0, 64, "minecraft:stone"),
                 new DisciplineWorldgenConfig.OreConfig(
-                        new ResourceLocation("minecraft:coal_ore"),
+                        ResourceLocation.parse("minecraft:coal_ore"),
                         16, 20, 0, 128, "minecraft:stone")
         };
 
@@ -725,7 +725,7 @@ public class WorldgenApplier {
                 BlockPos pos = new BlockPos(x, y, z);
                 if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos)) {
                     try {
-                        Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(decoration));
+                        Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(decoration));
                         if (block != Blocks.AIR) {
                             level.setBlock(pos, block.defaultBlockState(), 3);
                         }

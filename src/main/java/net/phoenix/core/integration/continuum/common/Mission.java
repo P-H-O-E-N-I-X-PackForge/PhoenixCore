@@ -161,7 +161,7 @@ public final class Mission {
         for (Tag t : tag.getList("Events", Tag.TAG_STRING)) events.add(t.getAsString());
         Mission mission = new Mission(
                 tag.getUUID("Id"), tag.getUUID("Team"), tag.getUUID("Launcher"), tag.getString("LauncherName"),
-                new ResourceLocation(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
+                ResourceLocation.parse(tag.getString("Destination")), Type.values()[typeOrdinal], tag.getInt("Probes"),
                 rewards, tag.getLong("Start"), tag.getLong("Duration"), tag.getBoolean("WillSucceed"),
                 tag.getFloat("WearCost"), ItemStack.of(tag.getCompound("Rocket")), State.values()[ordinal], events);
         if (tag.contains("PadDimension")) {

@@ -1,6 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension.worldgen;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 import org.jetbrains.annotations.Nullable;
 

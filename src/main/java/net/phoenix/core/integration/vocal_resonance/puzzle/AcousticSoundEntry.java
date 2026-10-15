@@ -15,7 +15,7 @@ public record AcousticSoundEntry(ResourceLocation sound, int note, int bpm, Set<
     public static final int NO_NOTE = -1;
 
     public static AcousticSoundEntry fromJson(JsonObject json) {
-        ResourceLocation sound = new ResourceLocation(json.get("sound").getAsString());
+        ResourceLocation sound = ResourceLocation.parse(json.get("sound").getAsString());
         int note = json.has("note") ? parseNote(json.get("note").getAsString()) : NO_NOTE;
         int bpm = json.has("bpm") ? json.get("bpm").getAsInt() : 0;
         Set<String> tags = new HashSet<>();

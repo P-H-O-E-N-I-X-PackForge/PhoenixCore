@@ -195,7 +195,7 @@ public class TeslaTeamEnergyData extends SavedData {
                 for (int i = 0; i < dimList.size(); i++) {
                     CompoundTag entry = dimList.getCompound(i);
                     BlockPos pos = BlockPos.of(entry.getLong("p"));
-                    ResourceLocation dimLoc = new ResourceLocation(entry.getString("d"));
+                    ResourceLocation dimLoc = ResourceLocation.parse(entry.getString("d"));
                     e.posToDimension.put(pos, ResourceKey.create(Registries.DIMENSION, dimLoc));
                 }
             }

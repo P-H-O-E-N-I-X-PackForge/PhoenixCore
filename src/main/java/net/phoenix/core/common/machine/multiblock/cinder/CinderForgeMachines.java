@@ -13,7 +13,7 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.integration.ae2.CinderForgeHatchPartMachine;
 import net.phoenix.core.integration.ae2.CinderRequesterPartMachine;

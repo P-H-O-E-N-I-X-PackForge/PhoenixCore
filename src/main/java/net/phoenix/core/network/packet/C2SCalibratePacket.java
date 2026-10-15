@@ -2,7 +2,7 @@ package net.phoenix.core.network.packet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.astral.puzzle.AstralCalibratedMachine;
 import net.phoenix.core.integration.astral.puzzle.StarChart;
 

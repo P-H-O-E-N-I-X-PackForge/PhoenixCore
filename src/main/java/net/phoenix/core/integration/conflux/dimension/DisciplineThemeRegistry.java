@@ -1,10 +1,12 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -15,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore")
 public class DisciplineThemeRegistry {
 
     private static final Map<String, DisciplineTheme> THEMES = new HashMap<>();

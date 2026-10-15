@@ -1,8 +1,10 @@
 package net.phoenix.core.integration.gregpacks.common.fluid;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackInventory;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
@@ -52,7 +54,7 @@ public class OmniPackFluidHandler implements IFluidHandlerItem {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         PhoenixCore.LOGGER.info("[FluidHandler] fill called resource={} amount={} action={}",
-                net.minecraftforge.registries.ForgeRegistries.FLUIDS.getKey(resource.getFluid()),
+                net.neoforged.neoforge.registries.BuiltInRegistries.FLUID.getKey(resource.getFluid()),
                 resource.getAmount(), action);
         if (resource.isEmpty()) return 0;
 

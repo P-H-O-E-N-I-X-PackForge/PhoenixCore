@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -8,16 +10,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore")
+@EventBusSubscriber(modid = "phoenixcore")
 public class ConfluxDimensionFactory {
 
     public static ResourceKey<Level> getDimensionKey(String disciplineId) {
         return ResourceKey.create(Registries.DIMENSION,
-                new ResourceLocation("phoenixcore", "conflux/" + disciplineId.toLowerCase()));
+                ResourceLocation.fromNamespaceAndPath("phoenixcore", "conflux/" + disciplineId.toLowerCase()));
     }
 
     public static void enterDisciplineDimension(ServerPlayer player, UUID teamId, String discipline) {

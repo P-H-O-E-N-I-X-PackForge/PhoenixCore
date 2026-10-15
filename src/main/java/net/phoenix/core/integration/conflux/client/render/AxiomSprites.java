@@ -21,8 +21,7 @@ public final class AxiomSprites {
     public record Sheet(String name, int frames) {
 
         public ResourceLocation location() {
-            return new ResourceLocation(PhoenixCore.MOD_ID,
-                    "textures/gui/axiom/" + name + ".png");
+            return ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "textures/gui/axiom/" + name + ".png");
         }
     }
 

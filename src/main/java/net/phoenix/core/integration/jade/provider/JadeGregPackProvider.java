@@ -4,8 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
@@ -19,7 +19,7 @@ import snownee.jade.api.ui.IElementHelper;
 
 public class JadeGregPackProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
-    private static final ResourceLocation UID = new ResourceLocation(PhoenixCore.MOD_ID, "omnipack_provider");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "omnipack_provider");
     private static final String KEY_ENERGY = "GP_Energy";
     private static final String KEY_FLUIDS = "GP_Fluids";
     private static final String KEY_ITEMS = "GP_Items";

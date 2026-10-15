@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.energy;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.phoenix.core.integration.gregpacks.common.OmniPackTickHandler;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackInventory;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;

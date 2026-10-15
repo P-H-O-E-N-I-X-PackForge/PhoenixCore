@@ -1061,8 +1061,8 @@ public class ContinuumMapScreen extends Screen {
         return ItemStack.EMPTY;
     }
 
-    private static final ResourceLocation HOME_SYSTEM = new ResourceLocation("phoenixcore", "home");
-    private static final ResourceLocation HOME_BODY = new ResourceLocation("phoenixcore", "anvil");
+    private static final ResourceLocation HOME_SYSTEM = ResourceLocation.fromNamespaceAndPath("phoenixcore", "home");
+    private static final ResourceLocation HOME_BODY = ResourceLocation.fromNamespaceAndPath("phoenixcore", "anvil");
 
     private void drawTrails(GuiGraphics graphics) {
         if (level == Level.BODY || phase != Phase.NONE) return;

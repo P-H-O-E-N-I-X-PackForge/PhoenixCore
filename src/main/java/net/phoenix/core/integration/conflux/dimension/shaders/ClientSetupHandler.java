@@ -1,12 +1,14 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+
+@EventBusSubscriber(modid = "phoenixcore", bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetupHandler {
 
     private static boolean shadersInitialized = false;

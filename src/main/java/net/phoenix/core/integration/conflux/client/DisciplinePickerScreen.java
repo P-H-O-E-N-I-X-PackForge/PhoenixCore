@@ -3,8 +3,8 @@ package net.phoenix.core.integration.conflux.client;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 
 import org.lwjgl.glfw.GLFW;

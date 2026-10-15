@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -73,7 +73,7 @@ public class RecipeBlacklist {
             RecipeConfig fileConfig = GSON.fromJson(reader, RecipeConfig.class);
             if (fileConfig != null) {
 
-                fileConfig.remove_by_id.forEach(s -> BY_ID.add(new ResourceLocation(s)));
+                fileConfig.remove_by_id.forEach(s -> BY_ID.add(ResourceLocation.parse(s)));
                 BY_MOD.addAll(fileConfig.remove_by_mod);
                 BY_OUTPUT.addAll(fileConfig.remove_by_output);
                 BY_INPUT.addAll(fileConfig.remove_by_input);

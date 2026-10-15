@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.wingsoffire;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -11,11 +13,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 
@@ -23,13 +25,13 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class WingsOfFireCompat {
 
     private WingsOfFireCompat() {}
 
     public static final TagKey<EntityType<?>> PHOENIX = TagKey.create(Registries.ENTITY_TYPE,
-            new ResourceLocation("wings_of_fire", "phoenix"));
+            ResourceLocation.fromNamespaceAndPath("wings_of_fire", "phoenix"));
 
     private static final String STAY_TAG = "pft_stay";
 

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -9,9 +11,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackInventory;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackItem;
@@ -19,7 +21,7 @@ import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 import net.phoenix.core.integration.gregpacks.common.registry.OmniPackBlockItem;
 import net.phoenix.core.integration.gregpacks.common.upgrade.UpgradeEffects;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class MaintenanceModuleHandler {
 
     @SubscribeEvent
@@ -104,7 +106,7 @@ public class MaintenanceModuleHandler {
     }
 
     private static ItemStack findPackWithMaintenance(Player player) {
-        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
+        if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
             ItemStack curiosPack = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player)
                     .map(inv -> {
                         var slots = inv.getCurios();

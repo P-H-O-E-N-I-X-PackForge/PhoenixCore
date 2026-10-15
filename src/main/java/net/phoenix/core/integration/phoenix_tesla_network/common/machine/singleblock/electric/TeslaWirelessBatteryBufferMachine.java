@@ -20,7 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.phoenix.core.common.data.item.PhoenixItems;
 import net.phoenix.core.integration.phoenix_tesla_network.saveddata.TeslaTeamEnergyData;
 import net.phoenix.core.utils.TeamUtils;
@@ -113,7 +113,7 @@ public class TeslaWirelessBatteryBufferMachine extends TieredEnergyMachine
 
             for (Player player : playersToCharge) {
                 List<IItemHandler> inventories = new ArrayList<>();
-                inventories.add(new net.minecraftforge.items.wrapper.PlayerMainInvWrapper(player.getInventory()));
+                inventories.add(new net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper(player.getInventory()));
                 CuriosApi.getCuriosInventory(player).ifPresent(h -> inventories.add(h.getEquippedCurios()));
 
                 for (IItemHandler handler : inventories) {

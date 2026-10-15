@@ -2,7 +2,7 @@ package net.phoenix.core.network.packet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
 
 import java.util.function.Supplier;

@@ -1,5 +1,7 @@
 package net.phoenix.core.shop.client;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -8,9 +10,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.integration.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
@@ -167,7 +169,7 @@ public class ItemPickerScreen extends Screen {
         }
         displayItems = new ArrayList<>();
         for (ItemStack stack : allItems) {
-            String registryName = String.valueOf(ForgeRegistries.ITEMS.getKey(stack.getItem()));
+            String registryName = String.valueOf(BuiltInRegistries.ITEM.getKey(stack.getItem()));
             String displayName = stack.getHoverName().getString().toLowerCase();
             if (registryName.toLowerCase().contains(query) || displayName.contains(query)) {
                 displayItems.add(stack);

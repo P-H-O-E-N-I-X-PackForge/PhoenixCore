@@ -1,8 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /** Applies a landform impulse to the local player, whose motion the client owns. */
 @OnlyIn(Dist.CLIENT)

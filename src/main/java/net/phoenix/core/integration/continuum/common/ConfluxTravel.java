@@ -70,7 +70,7 @@ public final class ConfluxTravel {
         if (back.isEmpty()) return "You have nowhere to return to.";
 
         ServerLevel level = player.server.getLevel(
-                ResourceKey.create(Registries.DIMENSION, new ResourceLocation(back.getString("Dimension"))));
+                ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(back.getString("Dimension"))));
         if (level == null) return "The place you left from is gone.";
 
         player.fallDistance = 0.0f;

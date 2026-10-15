@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -7,7 +9,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -477,7 +479,7 @@ public class ConditionsScreen extends Screen {
                     int bx = formX + FORM_PAD, by = fieldBoxY(i);
                     if (mx >= bx && mx < bx + 18 && my >= by && my < by + 18) {
                         slotStacks[i] = carried.copy();
-                        slotKeys[i] = ForgeRegistries.ITEMS.getKey(carried.getItem()).toString();
+                        slotKeys[i] = BuiltInRegistries.ITEM.getKey(carried.getItem()).toString();
                         return true;
                     }
                 }

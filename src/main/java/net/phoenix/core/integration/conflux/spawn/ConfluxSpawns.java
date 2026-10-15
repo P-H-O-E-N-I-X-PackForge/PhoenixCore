@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.conflux.spawn;
 
+
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,11 +18,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 
@@ -31,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = PhoenixCore.MOD_ID)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ConfluxSpawns extends SimpleJsonResourceReloadListener {
 
     public static final ConfluxSpawns INSTANCE = new ConfluxSpawns();
@@ -60,7 +64,7 @@ public final class ConfluxSpawns extends SimpleJsonResourceReloadListener {
                 for (JsonElement spawn : GsonHelper.getAsJsonArray(json, "spawns")) {
                     JsonObject s = GsonHelper.convertToJsonObject(spawn, "spawn");
                     loaded.computeIfAbsent(discipline, d -> new ArrayList<>()).add(new Entry(
-                            new ResourceLocation(GsonHelper.getAsString(s, "entity")),
+                            ResourceLocation.parse(GsonHelper.getAsString(s, "entity")),
                             Math.max(1, GsonHelper.getAsInt(s, "weight", 1)),
                             Math.max(1, GsonHelper.getAsInt(s, "cap", 2)),
                             "air".equals(GsonHelper.getAsString(s, "placement", "ground"))));
@@ -100,8 +104,8 @@ public final class ConfluxSpawns extends SimpleJsonResourceReloadListener {
         AABB area = player.getBoundingBox().inflate(cfg.countRadius);
         int total = 0;
         for (Entry entry : entries) {
-            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(entry.entity());
-            if (type == null || !ForgeRegistries.ENTITY_TYPES.containsKey(entry.entity())) continue;
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(entry.entity());
+            if (type == null || !BuiltInRegistries.ENTITY_TYPE.containsKey(entry.entity())) continue;
             long near = level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, area,
                     e -> e.getType() == type).size();
             if (near >= entry.cap()) continue;

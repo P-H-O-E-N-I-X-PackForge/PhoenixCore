@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipe.generated;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -14,8 +16,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.common.data.bees.BeeRecipeData;
 import net.phoenix.core.common.data.materials.*;
@@ -37,7 +39,7 @@ import static net.phoenix.core.common.data.bees.BeeRecipeData.MOD_ID;
 public class PhoenixBeeRecipeGenerator {
 
     private static ItemStack safeStack(String id, int count) {
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
         if (item == null || item == Items.AIR) return ItemStack.EMPTY;
         return new ItemStack(item, count);
     }
@@ -90,7 +92,7 @@ public class PhoenixBeeRecipeGenerator {
     private static FluidStack safeFluid(String spec) {
         try {
             String[] parts = spec.split(" ");
-            var fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(parts[0]));
+            var fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(parts[0]));
             int amount = Integer.parseInt(parts[1]);
             return (fluid == null) ? FluidStack.EMPTY : new FluidStack(fluid, amount);
         } catch (Exception e) {
@@ -244,7 +246,7 @@ public class PhoenixBeeRecipeGenerator {
 
     private static void applyExtraInput(GTRecipeBuilder builder, String spec) {
         if (spec.startsWith("#")) {
-            TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(spec.substring(1)));
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(spec.substring(1)));
             builder.inputItems(Ingredient.of(tag), 1);
         } else {
             String[] parts = spec.split("x ");

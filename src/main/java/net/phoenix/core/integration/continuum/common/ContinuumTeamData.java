@@ -360,7 +360,7 @@ public class ContinuumTeamData extends SavedData {
             for (Tag s : teamTag.getList("Stages", Tag.TAG_COMPOUND)) {
                 CompoundTag e = (CompoundTag) s;
                 int ordinal = Math.max(0, Math.min(e.getByte("Stage"), DiscoveryStage.values().length - 1));
-                map.put(new ResourceLocation(e.getString("Id")), DiscoveryStage.values()[ordinal]);
+                map.put(ResourceLocation.parse(e.getString("Id")), DiscoveryStage.values()[ordinal]);
             }
             data.stages.put(teamTag.getUUID("Team"), map);
         }
@@ -375,7 +375,7 @@ public class ContinuumTeamData extends SavedData {
             Map<ResourceLocation, Outpost> map = new HashMap<>();
             for (Tag o : teamTag.getList("Outposts", Tag.TAG_COMPOUND)) {
                 CompoundTag e = (CompoundTag) o;
-                map.put(new ResourceLocation(e.getString("Body")), Outpost.load(e));
+                map.put(ResourceLocation.parse(e.getString("Body")), Outpost.load(e));
             }
             data.outposts.put(teamTag.getUUID("Team"), map);
         }
@@ -385,7 +385,7 @@ public class ContinuumTeamData extends SavedData {
             Map<ResourceLocation, Integer> map = new HashMap<>();
             for (Tag d : teamTag.getList("Depths", Tag.TAG_COMPOUND)) {
                 CompoundTag e = (CompoundTag) d;
-                map.put(new ResourceLocation(e.getString("Body")), e.getInt("Depth"));
+                map.put(ResourceLocation.parse(e.getString("Body")), e.getInt("Depth"));
             }
             data.depths.put(teamTag.getUUID("Team"), map);
         }
@@ -395,7 +395,7 @@ public class ContinuumTeamData extends SavedData {
             Map<ResourceLocation, Integer> map = new HashMap<>();
             for (Tag s : teamTag.getList("Stations", Tag.TAG_COMPOUND)) {
                 CompoundTag e = (CompoundTag) s;
-                map.put(new ResourceLocation(e.getString("Body")), e.getInt("Level"));
+                map.put(ResourceLocation.parse(e.getString("Body")), e.getInt("Level"));
             }
             data.stations.put(teamTag.getUUID("Team"), map);
         }

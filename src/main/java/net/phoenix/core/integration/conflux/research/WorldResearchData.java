@@ -293,7 +293,7 @@ public class WorldResearchData extends SavedData {
     private static Set<ResourceLocation> readRLSet(CompoundTag tag, String key) {
         Set<ResourceLocation> set = new HashSet<>();
         if (tag.contains(key, Tag.TAG_LIST))
-            tag.getList(key, Tag.TAG_STRING).forEach(t -> set.add(new ResourceLocation(t.getAsString())));
+            tag.getList(key, Tag.TAG_STRING).forEach(t -> set.add(ResourceLocation.parse(t.getAsString())));
         return set;
     }
 

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
@@ -14,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.machine.PhoenixPartAbility;
 import net.phoenix.core.common.block.PhoenixBlocks;
@@ -52,8 +54,7 @@ public final class SourceTankMachines {
                 .pattern(pattern::apply)
                 .appearanceBlock(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING)
                 .workableCasingModel(
-                        new ResourceLocation(PhoenixCore.MOD_ID,
-                                "block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                        ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "block/casings/multiblock/machine_casing_source_fiber_mesh"),
                         com.gregtechceu.gtceu.GTCEu.id("block/multiblock/multiblock_tank"))
                 .register();
     }
@@ -63,7 +64,7 @@ public final class SourceTankMachines {
     }
 
     private static MultiPredicate named(String id) {
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(id));
+        Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
         if (block == null || block == Blocks.AIR) {
             throw new IllegalStateException("Missing block for the source tank pattern: " + id);
         }

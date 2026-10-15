@@ -27,7 +27,7 @@ public final class GrowthEmi {
     private GrowthEmi() {}
 
     public static final EmiRecipeCategory GROWTH = new EmiRecipeCategory(
-            new ResourceLocation(PhoenixCore.MOD_ID, "growth_machines"),
+            ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "growth_machines"),
             EmiStack.of(GrowthBlocks.GROWTH_SHELL.get()));
 
     static void register(EmiRegistry registry) {
@@ -73,7 +73,7 @@ public final class GrowthEmi {
 
         MachinePage(String id, String name, Supplier<? extends net.minecraft.world.item.Item> seed,
                     Supplier<List<GrowthStage>> stages, String blurb) {
-            super(GROWTH, new ResourceLocation(PhoenixCore.MOD_ID, "/growth_machine/" + id), 300,
+            super(GROWTH, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/growth_machine/" + id), 300,
                     36 + stages.get().size() * 22);
             this.name = name;
             this.blurb = blurb;
@@ -123,7 +123,7 @@ public final class GrowthEmi {
     private static class ControlPage extends BasicEmiRecipe {
 
         ControlPage() {
-            super(GROWTH, new ResourceLocation(PhoenixCore.MOD_ID, "/growth_machine/control"), 240, 118);
+            super(GROWTH, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "/growth_machine/control"), 240, 118);
             this.inputs = List.of(EmiStack.of(GrowthMachines.GROWTH_CONTROL_HATCH.asStack()));
             this.outputs = List.of(EmiStack.of(GrowthBlocks.GROWTH_TENDRIL.get()));
         }

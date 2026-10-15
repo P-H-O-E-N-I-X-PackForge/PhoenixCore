@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.dimension.physics.PhysicsHook;
 import net.phoenix.core.integration.conflux.dimension.physics.PhysicsImpulse;
 import net.phoenix.core.network.PhoenixNetwork;

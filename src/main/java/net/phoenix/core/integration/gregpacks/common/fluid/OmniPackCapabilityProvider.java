@@ -2,10 +2,10 @@ package net.phoenix.core.integration.gregpacks.common.fluid;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import net.phoenix.core.integration.gregpacks.common.energy.OmniPackEnergyHandler;
 import net.phoenix.core.integration.gregpacks.common.item.OmniPackTier;
 

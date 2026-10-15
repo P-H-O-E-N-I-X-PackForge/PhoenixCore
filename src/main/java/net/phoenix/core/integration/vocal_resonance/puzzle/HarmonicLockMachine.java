@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CAttuneResultPacket;
 import net.phoenix.core.network.packet.S2CAttuneStartPacket;

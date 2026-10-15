@@ -13,7 +13,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
 import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;

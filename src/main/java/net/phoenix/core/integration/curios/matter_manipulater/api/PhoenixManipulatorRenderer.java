@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.phoenix.core.integration.matter_manipulater.common.data.item.PhoenixManipulatorItem;
 
 import com.mojang.blaze3d.vertex.PoseStack;

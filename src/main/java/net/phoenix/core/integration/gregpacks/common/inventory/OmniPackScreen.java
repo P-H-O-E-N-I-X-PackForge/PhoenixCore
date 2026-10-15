@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.gregpacks.network.CPacketFluidInteract;
 import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;

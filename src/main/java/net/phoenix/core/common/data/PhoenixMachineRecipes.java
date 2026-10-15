@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -15,7 +17,7 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.item.PhoenixItems;
@@ -675,7 +677,7 @@ public class PhoenixMachineRecipes {
                 .inputItems(ForgeRegistries.ITEMS
                         .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(gem, CertusQuartz)
-                .outputItems(ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("ae2", "view_cell")))
+                .outputItems(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("ae2", "view_cell")))
                 .duration(100).EUt(4).save(provider);
     }
 }

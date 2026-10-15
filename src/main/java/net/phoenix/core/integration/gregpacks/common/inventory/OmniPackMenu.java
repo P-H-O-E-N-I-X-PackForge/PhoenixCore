@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.inventory;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,10 +14,10 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregpacks.common.OmniPackTickHandler;
 import net.phoenix.core.integration.gregpacks.common.block.OmniPackBlockEntity;
@@ -265,7 +267,7 @@ public class OmniPackMenu extends AbstractContainerMenu {
         if (!key.equals(lastSentFluidKey)) {
             lastSentFluidKey = key;
             net.phoenix.core.integration.gregpacks.network.GregPacksNetwork.CHANNEL.send(
-                    net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
+                    net.neoforged.neoforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
                     new net.phoenix.core.integration.gregpacks.network.SPacketFluidSync(key));
         }
     }
@@ -339,7 +341,7 @@ public class OmniPackMenu extends AbstractContainerMenu {
 
     public Fluid getSyncedFluid() {
         if (syncedFluidKey.isEmpty()) return null;
-        return ForgeRegistries.FLUIDS.getValue(new ResourceLocation(syncedFluidKey));
+        return BuiltInRegistries.FLUID.get(ResourceLocation.parse(syncedFluidKey));
     }
 
     @Override

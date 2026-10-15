@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.continuum.block.LaunchPadBlock;
 import net.phoenix.core.integration.continuum.data.ContinuumBody;
@@ -817,7 +817,7 @@ public final class ContinuumMissions {
     private static @Nullable LaunchPadMachine launchComplexOf(MinecraftServer server, Mission mission) {
         if (mission.padDimension == null) return null;
         var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION,
-                new ResourceLocation(mission.padDimension));
+                ResourceLocation.parse(mission.padDimension));
         var level = server.getLevel(key);
         BlockPos pos = BlockPos.of(mission.padPos);
         if (level == null || !level.isLoaded(pos)) return null;

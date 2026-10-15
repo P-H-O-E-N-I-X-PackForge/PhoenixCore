@@ -3,10 +3,10 @@ package net.phoenix.core.integration.conflux.dimension.network;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.neoforge.network.NetworkDirection;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.conflux.dimension.client.ClientDisciplineProgressionCache;
 import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
 

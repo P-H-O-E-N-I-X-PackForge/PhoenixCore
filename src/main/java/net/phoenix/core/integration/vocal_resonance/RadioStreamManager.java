@@ -1,7 +1,7 @@
 package net.phoenix.core.integration.vocal_resonance;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
 

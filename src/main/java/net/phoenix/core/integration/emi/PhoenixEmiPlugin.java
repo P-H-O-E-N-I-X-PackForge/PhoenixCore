@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackScreen;
 import net.phoenix.core.integration.gregvaults.client.screen.VaultScreen;

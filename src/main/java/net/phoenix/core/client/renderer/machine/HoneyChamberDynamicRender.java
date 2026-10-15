@@ -17,7 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.RenderTypeHelper;
+import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.phoenix.core.client.renderer.PhoenixRenderTypes;
 import net.phoenix.core.common.machine.multiblock.electric.HoneyCrystallizationChamberMachine;
 

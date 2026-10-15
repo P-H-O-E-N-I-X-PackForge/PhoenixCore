@@ -2,8 +2,8 @@ package net.phoenix.core.integration.vocal_resonance.puzzle.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.vocal_resonance.puzzle.AcousticChart;
 import net.phoenix.core.integration.vocal_resonance.puzzle.AttuneDifficulty;
 

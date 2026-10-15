@@ -19,7 +19,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixManipulatorMode;
 import net.phoenix.core.integration.matter_manipulater.api.PhoenixPlacementEngine;
 

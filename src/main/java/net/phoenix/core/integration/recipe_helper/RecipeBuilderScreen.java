@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -11,7 +13,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.PacketRecipeBuilderGenerate;
 
@@ -318,7 +320,7 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
         List<String> iIn = new ArrayList<>();
         for (SlotPanel.SlotEntry e : itemInputPanel.getEntries()) {
             if (e.stack == null || e.stack.isEmpty()) continue;
-            String reg = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(e.stack.getItem())).toString();
+            String reg = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(e.stack.getItem())).toString();
             iIn.add("\"" + (e.count > 1 ? e.count + "x " : "") + reg + "\"");
         }
         if (!iIn.isEmpty()) sb.append("    .itemInputs(").append(String.join(", ", iIn)).append(")\n");
@@ -333,7 +335,7 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
         List<String> iOut = new ArrayList<>();
         for (SlotPanel.SlotEntry e : itemOutputPanel.getEntries()) {
             if (e.stack == null || e.stack.isEmpty()) continue;
-            String reg = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(e.stack.getItem())).toString();
+            String reg = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(e.stack.getItem())).toString();
             iOut.add("\"" + (e.count > 1 ? e.count + "x " : "") + reg + "\"");
         }
         if (!iOut.isEmpty()) sb.append("    .itemOutputs(").append(String.join(", ", iOut)).append(")\n");
@@ -381,18 +383,18 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
 
         for (SlotPanel.SlotEntry e : itemInputPanel.getEntries()) {
             if (e.stack == null || e.stack.isEmpty()) continue;
-            String reg = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(e.stack.getItem())).toString();
+            String reg = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(e.stack.getItem())).toString();
             if (e.notConsumable)
-                sb.append("        .notConsumable(ForgeRegistries.ITEMS.getValue(new ResourceLocation(\"").append(reg)
+                sb.append("        .notConsumable(BuiltInRegistries.ITEM.get(ResourceLocation.parse(\"").append(reg)
                         .append("\")))\n");
             else
-                sb.append("        .inputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(\"")
+                sb.append("        .inputItems(new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(\"")
                         .append(reg).append("\")), ").append(e.count).append("))\n");
         }
         for (SlotPanel.SlotEntry e : itemOutputPanel.getEntries()) {
             if (e.stack == null || e.stack.isEmpty()) continue;
-            String reg = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(e.stack.getItem())).toString();
-            sb.append("        .outputItems(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(\"")
+            String reg = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(e.stack.getItem())).toString();
+            sb.append("        .outputItems(new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(\"")
                     .append(reg).append("\")), ").append(e.count).append("))\n");
         }
         for (FluidSlotPanel.FluidEntry e : fluidInputPanel.getEntries()) {

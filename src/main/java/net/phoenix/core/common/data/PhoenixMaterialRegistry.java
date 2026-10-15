@@ -1,11 +1,13 @@
 package net.phoenix.core.common.data;
 
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,8 +29,8 @@ public class PhoenixMaterialRegistry {
     }
 
     public static @Nullable Material getMaterial(@NotNull String fluidId) {
-        ResourceLocation loc = new ResourceLocation(fluidId);
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(loc);
+        ResourceLocation loc = ResourceLocation.parse(fluidId);
+        Fluid fluid = BuiltInRegistries.FLUID.get(loc);
         if (fluid == null) return null;
         return getMaterial(fluid);
     }

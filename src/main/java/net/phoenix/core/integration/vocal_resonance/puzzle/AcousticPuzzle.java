@@ -26,7 +26,7 @@ public record AcousticPuzzle(ResourceLocation id, List<Step> steps) {
         JsonArray array = json.getAsJsonArray("steps");
         for (JsonElement element : array) {
             JsonObject step = element.getAsJsonObject();
-            ResourceLocation sound = step.has("sound") ? new ResourceLocation(step.get("sound").getAsString()) : null;
+            ResourceLocation sound = step.has("sound") ? ResourceLocation.parse(step.get("sound").getAsString()) : null;
             int note = step.has("note") ? AcousticSoundEntry.parseNote(step.get("note").getAsString()) :
                     AcousticSoundEntry.NO_NOTE;
             String tag = step.has("tag") ? step.get("tag").getAsString() : null;

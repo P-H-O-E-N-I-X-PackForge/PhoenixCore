@@ -3,8 +3,8 @@ package net.phoenix.core.integration.continuum.network;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.continuum.client.ContinuumClientState;
 
 import java.util.function.Supplier;

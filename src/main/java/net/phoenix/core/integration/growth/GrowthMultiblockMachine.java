@@ -28,9 +28,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.phoenix.core.api.gui.widget.ActionButtons;
 import net.phoenix.core.api.gui.widget.StageTrackerWidget;
 import net.phoenix.core.client.worldfx.IWorldFXEmitter;
@@ -502,7 +502,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
             tendrilBlockCount = placedTendrils.size();
             for (Tag entry : list) {
                 if (!(entry instanceof CompoundTag tag)) continue;
-                TendrilShape shape = TendrilShapeRegistry.get(new ResourceLocation(tag.getString("Shape")));
+                TendrilShape shape = TendrilShapeRegistry.get(ResourceLocation.parse(tag.getString("Shape")));
                 if (shape == null) continue;
                 TendrilInstance tendril = new TendrilInstance(BlockPos.of(tag.getLong("Anchor")), shape);
                 tendril.progress = tag.getInt("Progress");

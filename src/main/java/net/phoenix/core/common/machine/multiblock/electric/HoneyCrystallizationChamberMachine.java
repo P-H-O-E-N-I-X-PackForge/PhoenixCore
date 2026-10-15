@@ -21,9 +21,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
@@ -156,11 +156,11 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
 
                         if (inputFluidHandler
                                 .drain(requiredStack,
-                                        net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE)
+                                        net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE)
                                 .getAmount() == boost.consumeAmount()) {
 
                             inputFluidHandler.drain(requiredStack,
-                                    net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+                                    net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
                             isPlasmaBoosted = true;
                             activeBoost = boost;
                             break;

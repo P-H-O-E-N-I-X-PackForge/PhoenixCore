@@ -41,10 +41,10 @@ import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.TriPredicate;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.util.TriPredicate;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.configs.PhoenixConfigs;
 
 import appeng.api.implementations.blockentities.IColorableBlockEntity;
@@ -72,7 +72,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
     @SuppressWarnings("deprecation")
     private static Block getBlock(DyeColor color, String postfix) {
-        ResourceLocation id = new ResourceLocation("minecraft", color.getSerializedName() + "_" + postfix);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("minecraft", color.getSerializedName() + "_" + postfix);
         return BuiltInRegistries.BLOCK.get(id);
     }
 
@@ -600,8 +600,7 @@ public class ChameleonSprayCanBehaviour implements IInteractionItem, IAddInforma
 
             Block targetBannerBlock;
             if (isWallBanner) {
-                ResourceLocation targetId = new ResourceLocation("minecraft",
-                        activeColor.getSerializedName() + "_wall_banner");
+                ResourceLocation targetId = ResourceLocation.fromNamespaceAndPath("minecraft", activeColor.getSerializedName() + "_wall_banner");
                 targetBannerBlock = BuiltInRegistries.BLOCK.get(targetId);
             } else {
                 targetBannerBlock = BANNER_MAP.get(activeColor);

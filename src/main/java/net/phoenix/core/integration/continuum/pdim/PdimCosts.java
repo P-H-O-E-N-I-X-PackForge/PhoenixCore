@@ -32,7 +32,7 @@ public final class PdimCosts {
 
         var cfg = PhoenixConfigs.INSTANCE.continuum;
         ResourceLocation id = ResourceLocation.tryParse(cfg.pdimCostItem);
-        return new Cost(id != null ? id : new ResourceLocation("minecraft", "air"), cfg.pdimCostCount);
+        return new Cost(id != null ? id : ResourceLocation.fromNamespaceAndPath("minecraft", "air"), cfg.pdimCostCount);
     }
 
     public static boolean charges(boolean alreadyHasDimension) {

@@ -1,14 +1,16 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = "phoenixcore", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "phoenixcore")
 public class PhysicsHook {
 
     @SubscribeEvent
@@ -58,7 +60,7 @@ public class PhysicsHook {
 
     private static final net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> IGNORES_PHYSICS = net.minecraft.tags.TagKey
             .create(net.minecraft.core.registries.Registries.ENTITY_TYPE,
-                    new net.minecraft.resources.ResourceLocation("phoenixcore", "ignores_conflux_physics"));
+                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("phoenixcore", "ignores_conflux_physics"));
 
     public static boolean exempt(Entity entity) {
         if (entity.getType().is(IGNORES_PHYSICS)) return true;

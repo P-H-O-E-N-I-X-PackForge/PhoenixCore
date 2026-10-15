@@ -2,8 +2,8 @@ package net.phoenix.core.integration.conflux.dimension.particles;
 
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.DistExecutor;
 
 public class ParticleEffectSystem {
 

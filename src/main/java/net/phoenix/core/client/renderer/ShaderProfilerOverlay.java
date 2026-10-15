@@ -1,7 +1,7 @@
 package net.phoenix.core.client.renderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.phoenix.core.client.worldfx.ShaderProfiler;
 
 import java.util.Map;
