@@ -196,6 +196,9 @@ dependencies {
         version { strictly "[${phoenix_wiki_version},)"; prefer phoenix_wiki_version }
     }
     compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
+    // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
+    implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
+    compileOnly "maven.modrinth:extended-ae:1.21-2.2.35-neoforge"
 
     // Mods PhoenixCore builds on
     implementation "com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${ars_nouveau_version}"
