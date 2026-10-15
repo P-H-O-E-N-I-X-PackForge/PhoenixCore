@@ -33,15 +33,10 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final PhoenixTechSuite logic;
 
-    public PhoenixArmorItem(ArmorMaterial material, Type type, Properties properties, PhoenixTechSuite logic) {
+    public PhoenixArmorItem(net.minecraft.core.Holder<ArmorMaterial> material, Type type, Properties properties, PhoenixTechSuite logic) {
         super(material, type, properties);
         this.logic = logic;
         this.setArmorLogic(logic);
-    }
-
-    @Override
-    public void onArmorTick(ItemStack stack, Level world, Player player) {
-        this.logic.onArmorTick(world, player, stack);
     }
 
     @Override
@@ -60,12 +55,6 @@ public class PhoenixArmorItem extends ArmorComponentItem implements GeoItem {
             entity.gameEvent(GameEvent.ELYTRA_GLIDE);
         }
         return true;
-    }
-
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level world, @NotNull List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
-        this.logic.addInfo(stack, tooltip);
     }
 
     @Override

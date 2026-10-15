@@ -31,7 +31,7 @@ public class PhoenixArmorRenderer extends GeoArmorRenderer<PhoenixArmorItem> {
 
                     getRenderer().reRender(model, poseStack, bufferSource, animatable, wingsRenderType,
                             bufferSource.getBuffer(wingsRenderType), partialTick, packedLight, packedOverlay,
-                            1, 1, 1, 1);
+                            0xFFFFFFFF);
                 }
             }
         });

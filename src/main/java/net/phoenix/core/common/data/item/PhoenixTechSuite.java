@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.item;
 
+import net.minecraft.core.Holder;
+
 
 
 
@@ -68,7 +70,7 @@ import java.util.UUID;
 public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final Reference2IntMap<MobEffect> potionRemovalCost = new Reference2IntOpenHashMap<>();
+    public static final Reference2IntMap<Holder<MobEffect>> potionRemovalCost = new Reference2IntOpenHashMap<>();
     private float charge = 0.0F;
     private static final byte RUNNING_TIMER = 10;
     private static final byte JUMPING_TIMER = 10;
@@ -861,7 +863,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
                     player.level().playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS,
                             1.5f, 0.8f);
-                    player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE,
+                    player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(),
                             SoundSource.PLAYERS, 0.5f, 1.2f);
 
                     player.displayClientMessage(Component.literal("§6§l⚡ PHOENIX REBIRTH ACTIVATED ⚡"), true);
@@ -1130,7 +1132,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         for (Entity target : targets) {
             if (target instanceof LivingEntity living && !(target instanceof Player)) {
                 living.hurt(level.damageSources().lightningBolt(), 20.0f);
-                living.setSecondsOnFire(3);
+                living.igniteForSeconds(3);
                 level.sendParticles(ParticleTypes.ELECTRIC_SPARK,
                         living.getX(), living.getY() + 1, living.getZ(),
                         15, 0.3, 0.3, 0.3, 0.1);
@@ -1163,7 +1165,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 var foodProps = current.getFoodProperties(player);
                 if (foodProps == null) continue;
 
-                float saturation = foodProps.getSaturationModifier();
+                float saturation = foodProps.saturation();
                 boolean isHotbar = i < 9;
                 float priority = saturation + (isHotbar ? 0.1f : 0f);
 
@@ -1189,7 +1191,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
     public static void removeNegativeEffects(@NotNull IElectricItem item, Player player) {
         for (MobEffectInstance effect : new LinkedList<>(player.getActiveEffects())) {
-            MobEffect potion = effect.getEffect();
+            Holder<MobEffect> potion = effect.getEffect();
             int cost = potionRemovalCost.getOrDefault(potion, -1);
             if (cost != -1) {
                 cost = cost * (effect.getAmplifier() + 1);
@@ -1202,10 +1204,11 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     }
 
     @Override
-    public int damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
-                           EquipmentSlot equipmentSlot) {
+    public int damageArmor(LivingEntity entity, ItemStack itemStack, int damage, EquipmentSlot equipmentSlot) {
+        // 1.21 no longer passes the damage source in; the entity's last damage source is the closest stand-in
+        DamageSource source = entity == null ? null : entity.getLastDamageSource();
         if (source == null) {
-            return super.damageArmor(entity, itemStack, source, damage, equipmentSlot);
+            return super.damageArmor(entity, itemStack, damage, equipmentSlot);
         }
 
         if (entity instanceof Player player && !player.level().isClientSide &&
@@ -1255,11 +1258,12 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 }
             }
         }
-        return super.damageArmor(entity, itemStack, source, damage, equipmentSlot);
+        return super.damageArmor(entity, itemStack, damage, equipmentSlot);
     }
 
     @Override
-    public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+    public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot,
+                                            net.minecraft.world.item.ArmorMaterial.Layer layer) {
         String name = (slot == EquipmentSlot.LEGS) ? "phoenix_tech_suite_2" : "phoenix_tech_suite_1";
         return ResourceLocation.fromNamespaceAndPath("phoenixcore", "textures/armor/" + name + ".png");
     }
