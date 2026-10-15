@@ -182,7 +182,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         CinderForgeTier tier = currentTier();
         if (tier != null) allowedTag = tier.allowedTag;
 
-        for (MachineDefinition candidate : GTRegistries.MACHINES.values()) {
+        for (MachineDefinition candidate : GTRegistries.MACHINES) {
             if (!(candidate instanceof MultiblockMachineDefinition multiblock)) continue;
             var patternSupplier = multiblock.getStructurePatterns()
                     .get(com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine.DEFAULT_STRUCTURE);

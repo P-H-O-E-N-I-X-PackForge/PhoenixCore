@@ -189,7 +189,7 @@ public class CinderConfiguratorScreen extends Screen {
 
     private void populateTargetList() {
         allTargets.clear();
-        for (MachineDefinition candidate : GTRegistries.MACHINES.values()) {
+        for (MachineDefinition candidate : GTRegistries.MACHINES) {
             if (!(candidate instanceof MultiblockMachineDefinition multiblock)) continue;
             var patternSupplier = multiblock.getStructurePatterns().get(MultiblockControllerMachine.DEFAULT_STRUCTURE);
             if (patternSupplier == null) continue;

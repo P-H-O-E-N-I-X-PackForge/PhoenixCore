@@ -137,7 +137,7 @@ public class PhoenixMaterials {
                 RESONANT_ENDER, FLUIX, SPONGE, Sculk, SLIME, MAGMA, Blaze, Salt, Bone, ZOMBIE, WITHERED, GHOSTLY, SILKY,
                 PRISMARINE);
 
-        for (Material material : GTRegistries.MATERIALS.values()) {
+        for (Material material : GTRegistries.MATERIALS.stream().toList()) {
             ToolProperty toolProperty = material.getProperty(PropertyKey.TOOL);
 
             if (toolProperty != null && toolProperty.hasType(GTToolType.SCREWDRIVER_LV)) {
@@ -147,7 +147,7 @@ public class PhoenixMaterials {
                 toolProperty.addTypes(PhoenixToolType.SCREWDRIVER_ZPM);
             }
 
-            if (toolProperty != null && toolProperty.hasType(GTToolType.BUZZSAW)) {
+            if (toolProperty != null && toolProperty.hasType(GTToolType.BUZZSAW_LV)) {
                 toolProperty.addTypes(PhoenixToolType.BUZZSAW_MV);
                 toolProperty.addTypes(PhoenixToolType.BUZZSAW_HV);
                 toolProperty.addTypes(PhoenixToolType.BUZZSAW_EV);

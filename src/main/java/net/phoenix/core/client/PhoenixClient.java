@@ -158,7 +158,7 @@ public class PhoenixClient {
 
     private static void registerBeeTierColors(RegisterColorHandlersEvent.Item event, MaterialFlag flag,
                                               TagPrefix prefix) {
-        GTRegistries.MATERIALS.values().stream()
+        GTRegistries.MATERIALS.stream()
                 .filter(mat -> mat.hasFlag(flag))
                 .forEach(mat -> {
                     ItemStack stack = ChemicalHelper.get(prefix, mat);

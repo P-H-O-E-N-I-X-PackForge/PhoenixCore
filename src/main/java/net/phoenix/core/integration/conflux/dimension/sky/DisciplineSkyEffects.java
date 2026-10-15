@@ -65,14 +65,14 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
                 ShaderProfiler.time("sealed_b_chaos", () -> renderSealedBChaos(poseStack, projectionMatrix));
             }
 
-            RenderSystem.getModelViewStack().pushPose();
-            RenderSystem.getModelViewStack().setIdentity();
+            RenderSystem.getModelViewStack().pushMatrix();
+            RenderSystem.getModelViewStack().identity();
             RenderSystem.applyModelViewMatrix();
 
             manager.render(poseStack, mc.renderBuffers().bufferSource(), partialTick, skyBrightness);
             mc.renderBuffers().bufferSource().endBatch();
 
-            RenderSystem.getModelViewStack().popPose();
+            RenderSystem.getModelViewStack().popMatrix();
             RenderSystem.applyModelViewMatrix();
         } catch (Exception e) {
             System.err.println("[PhoenixCore Sky] Error rendering sky: " + e.getMessage());

@@ -38,7 +38,7 @@ public class CinemaScrollHandler {
         if (!(mc.level.getBlockEntity(pos) instanceof CinemaScreenBlockEntity screen)) return;
 
         event.setCanceled(true);
-        boolean up = event.getScrollDelta() > 0;
+        boolean up = event.getScrollDeltaY() > 0;
         boolean editBackground = Screen.hasAltDown();
 
         if (editBackground) {

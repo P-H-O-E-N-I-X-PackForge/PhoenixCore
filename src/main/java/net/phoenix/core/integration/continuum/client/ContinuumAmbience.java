@@ -22,7 +22,7 @@ public final class ContinuumAmbience {
         Map<SoundEvent, Float> targets = new HashMap<>();
         float master = (float) PhoenixConfigs.INSTANCE.continuum.ambienceVolume * duck;
 
-        add(targets, PhoenixSounds.VOID_COSMIC_DRONE.getMainEvent(),
+        add(targets, PhoenixSounds.VOID_COSMIC_DRONE.get().getMainEvent(),
                 body != null ? 0.16f : system != null ? 0.26f : 0.32f);
 
         if (body != null) {
@@ -30,29 +30,29 @@ public final class ContinuumAmbience {
             float known = stage == DiscoveryStage.SURVEYED ? 1.0f : 0.45f;
             PlanetParams params = body.params();
             switch (body.type()) {
-                case STAR -> add(targets, PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.getMainEvent(), 0.4f);
+                case STAR -> add(targets, PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.get().getMainEvent(), 0.4f);
                 case BLACK_HOLE -> {
-                    add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.getMainEvent(), 0.5f);
-                    add(targets, PhoenixSounds.VOID_COSMIC_DRONE.getMainEvent(), 0.3f);
+                    add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.get().getMainEvent(), 0.5f);
+                    add(targets, PhoenixSounds.VOID_COSMIC_DRONE.get().getMainEvent(), 0.3f);
                 }
-                case MOON -> add(targets, PhoenixSounds.VOID_ETHEREAL_WIND.getMainEvent(), 0.12f * known);
+                case MOON -> add(targets, PhoenixSounds.VOID_ETHEREAL_WIND.get().getMainEvent(), 0.12f * known);
                 default -> {
-                    add(targets, PhoenixSounds.PHOENIX_VOLCANIC_WIND.getMainEvent(),
+                    add(targets, PhoenixSounds.PHOENIX_VOLCANIC_WIND.get().getMainEvent(),
                             Math.min(1.0f, params.atmoDensity()) * (params.gasGiant() ? 0.6f : 0.42f) * known);
                     if (params.oceanLevel() >= 0.5f) {
-                        add(targets, PhoenixSounds.SCULK_DEEP_CAVE.getMainEvent(), 0.34f * known);
+                        add(targets, PhoenixSounds.SCULK_DEEP_CAVE.get().getMainEvent(), 0.34f * known);
                     }
                     if (params.emissiveAmount() >= 0.3f) {
-                        add(targets, PhoenixSounds.SEALED_A_NEON_HUM.getMainEvent(), 0.28f * known);
+                        add(targets, PhoenixSounds.SEALED_A_NEON_HUM.get().getMainEvent(), 0.28f * known);
                     }
                 }
             }
         } else if (system != null) {
             if (system.hasHole()) {
-                add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.getMainEvent(), system.isQuasar() ? 0.42f : 0.3f);
-                add(targets, PhoenixSounds.VOID_ETHEREAL_WIND.getMainEvent(), 0.14f);
+                add(targets, PhoenixSounds.SEALED_B_INVERTED_HUM.get().getMainEvent(), system.isQuasar() ? 0.42f : 0.3f);
+                add(targets, PhoenixSounds.VOID_ETHEREAL_WIND.get().getMainEvent(), 0.14f);
             } else {
-                add(targets, PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.getMainEvent(), 0.14f);
+                add(targets, PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.get().getMainEvent(), 0.14f);
             }
         }
 

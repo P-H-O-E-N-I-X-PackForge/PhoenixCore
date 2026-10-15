@@ -136,7 +136,7 @@ public class ClientTickHandler {
         if (mc.options.keyShift.isDown()) {
             ItemStack stack = mc.player.getMainHandItem();
             if (stack.getItem() instanceof ChameleonSprayCanItem) {
-                double scrollDelta = event.getScrollDelta();
+                double scrollDelta = event.getScrollDeltaY();
                 event.setCanceled(true);
 
                 int currentColor = StackNbt.getOrCreateTag(stack).getInt("color");

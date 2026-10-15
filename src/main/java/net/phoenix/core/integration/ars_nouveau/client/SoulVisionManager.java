@@ -215,7 +215,7 @@ public final class SoulVisionManager {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
 
             if (!DEBUG_SOLID_RED) {
-                WorldFXManager.applyScreenEffects(event.getPartialTick());
+                WorldFXManager.applyScreenEffects(event.getPartialTick().getGameTimeDeltaPartialTick(false));
             }
             return;
         }

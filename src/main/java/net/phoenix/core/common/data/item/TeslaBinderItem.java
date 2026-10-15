@@ -119,7 +119,7 @@ public class TeslaBinderItem extends ComponentItem
                         player.sendSystemMessage(
                                 Component.literal("Danger: High Risk of Voiding. Connection terminated.")
                                         .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.5f,
+                        serverLevel.playSound(null, clickedPos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.5f,
                                 1.2f);
                         return InteractionResult.FAIL;
                     }

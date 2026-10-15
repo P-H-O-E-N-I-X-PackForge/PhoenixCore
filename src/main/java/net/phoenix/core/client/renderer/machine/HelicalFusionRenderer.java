@@ -77,7 +77,7 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
             lastColor = recipeColor;
             delta = FADEOUT;
         } else if (delta > 0 && lastColor != -1) {
-            delta -= Minecraft.getInstance().getDeltaFrameTime();
+            delta -= Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
         } else return;
 
         float alpha = Mth.clamp(delta / FADEOUT, 0f, 1f);

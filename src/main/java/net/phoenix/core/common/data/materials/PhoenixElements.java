@@ -121,7 +121,7 @@ public class PhoenixElements {
 
         ResourceLocation registryId = ResourceLocation.fromNamespaceAndPath("phoenixcore", id);
 
-        GTRegistries.ELEMENTS.register(registryId, element);
+        GTRegistries.register(GTRegistries.ELEMENTS, registryId, element);
 
         return element;
     }

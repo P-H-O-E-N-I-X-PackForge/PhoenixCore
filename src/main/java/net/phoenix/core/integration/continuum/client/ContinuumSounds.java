@@ -69,7 +69,7 @@ public final class ContinuumSounds {
         switch (touch) {
             case HARD -> {
                 play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 0.5f, 0.4f));
-                play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE, 0.35f, 0.25f));
+                play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 0.35f, 0.25f));
             }
             case DUST -> {
                 play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 0.4f, 0.25f));
@@ -85,7 +85,7 @@ public final class ContinuumSounds {
             }
             case NONE -> {}
         }
-        if (crash) play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE, 0.5f, 0.35f));
+        if (crash) play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 0.5f, 0.35f));
     }
 
     public static void stageSeparation() {
@@ -98,11 +98,11 @@ public final class ContinuumSounds {
     }
 
     public static Loop engineLoop() {
-        return startLoop(PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.getMainEvent(), 0.0f);
+        return startLoop(PhoenixSounds.PHOENIX_VOLCANIC_RUMBLE.get().getMainEvent(), 0.0f);
     }
 
     public static Loop humLoop() {
-        return startLoop(PhoenixSounds.VOID_COSMIC_DRONE.getMainEvent(), 0.0f);
+        return startLoop(PhoenixSounds.VOID_COSMIC_DRONE.get().getMainEvent(), 0.0f);
     }
 
     private static Loop startLoop(SoundEvent event, float volume) {

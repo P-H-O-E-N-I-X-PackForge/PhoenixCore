@@ -64,7 +64,7 @@ public class TeslaHighlightRenderer {
                         posestack.scale(0.99975F, 0.99975F, 0.99975F);
                         RenderSystem.applyModelViewMatrix();
                     }, () -> {
-                        RenderSystem.getModelViewStack().popPose();
+                        RenderSystem.getModelViewStack().popMatrix();
                         RenderSystem.applyModelViewMatrix();
                     }))
                     .setTransparencyState(

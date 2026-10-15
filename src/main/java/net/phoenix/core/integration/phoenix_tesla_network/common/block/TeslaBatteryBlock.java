@@ -32,7 +32,7 @@ public class TeslaBatteryBlock extends Block {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable BlockGetter level, @NotNull List<Component> tooltip,
                                 @NotNull TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, tooltip, flag);
 
         if (batteryData.getTier() == -1) {
             tooltip.add(Component.translatable("block.phoenixcore.tesla_battery.tooltip_empty"));

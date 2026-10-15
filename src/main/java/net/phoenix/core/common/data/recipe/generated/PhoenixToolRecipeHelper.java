@@ -110,7 +110,7 @@ public class PhoenixToolRecipeHelper {
                         'S', new MaterialEntry(screw, GTMaterials.Steel));
             }
 
-            if (property.hasType(GTToolType.BUZZSAW)) {
+            if (property.hasType(GTToolType.BUZZSAW_LV)) {
                 toolPrefix = TagPrefix.toolHeadBuzzSaw;
                 addElectricToolRecipe(provider, toolPrefix,
                         new GTToolType[] { PhoenixToolType.BUZZSAW_MV, PhoenixToolType.BUZZSAW_HV,

@@ -22,7 +22,7 @@ public class VaultCoreBlock extends Block {
         tooltip.add(Component.translatable(
                 "tooltip.gregtechvaults.vault_core_" + tier.name().toLowerCase(),
                 slots));
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, tooltip, flag);
     }
 
     public VaultCoreBlock(CoreTier tier, Properties properties) {

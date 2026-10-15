@@ -37,7 +37,7 @@ public class ConfluxClientEvents {
         String currentDiscipline = ClientDisciplineProgressionCache.getCurrentDiscipline();
         if (currentDiscipline != null) {
             PoseStack poseStack = event.getPoseStack();
-            DisciplineSkyRenderer.renderCustomSky(poseStack, mc.level, event.getPartialTick());
+            DisciplineSkyRenderer.renderCustomSky(poseStack, mc.level, event.getPartialTick().getGameTimeDeltaPartialTick(false));
         }
     }
 
