@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -1607,7 +1609,7 @@ public class ContinuumMapScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         if (phase == Phase.NONE && !planner.isOpen()) cam().zoom((float) delta);
         return true;
     }

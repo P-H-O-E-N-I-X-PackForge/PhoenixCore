@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.astral.client;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -415,7 +417,7 @@ public class AstralCodexScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double rmx, double rmy, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         int bookH = Math.min(vh - 40, MIN_BOOK_H);
         int visibleH = bookH - 20 - 24;
         int maxScroll = Math.max(0, cachedContentH - visibleH);

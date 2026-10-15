@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -159,7 +161,7 @@ public class ContinuumArchiveScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         scroll = Math.max(0, scroll - (int) (delta * 14));
         return true;
     }

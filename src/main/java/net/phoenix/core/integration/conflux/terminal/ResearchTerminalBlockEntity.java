@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.terminal;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -106,8 +108,8 @@ public class ResearchTerminalBlockEntity extends BlockEntity implements ConfluxM
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (ownerTeam != null) tag.putUUID("owner", ownerTeam);
         if (!legacy.isEmpty()) {
             CompoundTag data = new CompoundTag();
@@ -117,8 +119,8 @@ public class ResearchTerminalBlockEntity extends BlockEntity implements ConfluxM
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (tag.hasUUID("owner")) ownerTeam = tag.getUUID("owner");
         legacy.clear();
         if (tag.contains("data")) {

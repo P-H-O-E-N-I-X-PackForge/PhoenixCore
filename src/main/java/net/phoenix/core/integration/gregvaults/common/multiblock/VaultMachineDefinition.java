@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
-import net.neoforged.fml.DistExecutor;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachine.VaultTier;

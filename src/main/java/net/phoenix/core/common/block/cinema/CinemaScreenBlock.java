@@ -22,7 +22,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -33,7 +33,7 @@ public class ConfluxDataStore extends SavedData {
 
     public static ConfluxDataStore get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(ConfluxDataStore::load, ConfluxDataStore::new, ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ConfluxDataStore::new, (tag, provider) -> ConfluxDataStore.load(tag), null), ID);
     }
 
     private Map<ConfluxDataType, Long> map(UUID team) {
@@ -100,7 +100,7 @@ public class ConfluxDataStore extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         CompoundTag teams = new CompoundTag();
         data.forEach((team, m) -> {
             CompoundTag t = new CompoundTag();

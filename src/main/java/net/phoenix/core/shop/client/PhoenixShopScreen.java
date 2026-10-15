@@ -1,6 +1,8 @@
 package net.phoenix.core.shop.client;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -569,7 +571,7 @@ public class PhoenixShopScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         if (!editing && !minigameActive) {
             int panelW = Math.min(vw - 40, MIN_PANEL_W);
             int panelH = Math.min(vh - 40, MIN_PANEL_H);

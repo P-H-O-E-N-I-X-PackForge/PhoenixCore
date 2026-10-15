@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -138,7 +140,7 @@ public class ContinuumTestScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         distance = Math.max(2.4f, Math.min(9.0f, distance - (float) delta * 0.3f));
         return true;
     }

@@ -28,7 +28,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 

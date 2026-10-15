@@ -31,7 +31,7 @@ public class ContinuumTeamData extends SavedData {
     private final java.util.Set<UUID> engaged = new java.util.HashSet<>();
 
     public static ContinuumTeamData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(ContinuumTeamData::load, ContinuumTeamData::new, ID);
+        return server.overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTeamData::new, (tag, provider) -> ContinuumTeamData.load(tag), null), ID);
     }
 
     public boolean isEngaged(UUID team) {
@@ -259,7 +259,7 @@ public class ContinuumTeamData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag engagedTeams = new ListTag();
         for (UUID team : engaged) {
             CompoundTag e = new CompoundTag();

@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.gregvaults.client.screen;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -437,7 +439,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         applyScroll(scrollOffset + (delta < 0 ? 1 : -1));
         return true;
     }

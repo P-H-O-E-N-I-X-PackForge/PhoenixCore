@@ -1,5 +1,7 @@
 package net.phoenix.core.client.gui.screen;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -453,7 +455,7 @@ public class TerrainPreviewScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double rmx, double rmy, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         return super.mouseScrolled(rmx / uiScale, rmy / uiScale, delta);
     }
 

@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -97,7 +99,7 @@ public class SlotPanel extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         if (!this.visible) return false;
 
         int i = slotAt(mx, my);

@@ -16,7 +16,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 import net.phoenix.core.integration.ae2.CinderAtlasMenuHost;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
 

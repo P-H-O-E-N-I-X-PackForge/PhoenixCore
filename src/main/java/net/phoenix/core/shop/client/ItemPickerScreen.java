@@ -1,6 +1,8 @@
 package net.phoenix.core.shop.client;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -392,7 +394,7 @@ public class ItemPickerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         if (awaitingQuantity) return super.mouseScrolled(mx, my, delta);
         int maxRow = Math.max(0, (displayItems.size() - 1) / SLOTS_PER_ROW);
         int visibleRows = (gridBottom(0) - gridTop(0)) / SLOT_SIZE;

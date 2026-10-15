@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.continuum.client.screen;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -241,7 +243,7 @@ public class ContinuumFleetScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         scroll = Math.max(0, scroll - (int) Math.signum(delta));
         return true;
     }

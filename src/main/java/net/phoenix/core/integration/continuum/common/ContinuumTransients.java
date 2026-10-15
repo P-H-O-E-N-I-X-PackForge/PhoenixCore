@@ -31,8 +31,7 @@ public final class ContinuumTransients extends SavedData {
     private final Random random = new Random();
 
     public static ContinuumTransients get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(ContinuumTransients::load,
-                ContinuumTransients::new, "phoenixcore_continuum_transients");
+        return server.overworld().getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(ContinuumTransients::new, (tag, provider) -> ContinuumTransients.load(tag), null), "phoenixcore_continuum_transients");
     }
 
     public boolean active(ResourceLocation body, long now) {
@@ -124,7 +123,7 @@ public final class ContinuumTransients extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag list = new ListTag();
         windows.forEach((id, w) -> {
             CompoundTag e = new CompoundTag();

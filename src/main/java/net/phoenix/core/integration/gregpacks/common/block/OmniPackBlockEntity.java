@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.gregpacks.common.block;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -222,8 +224,8 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.put("Items", packInventory.serializeToTag());
         tag.put("Upgrades", upgradeInventory.serializeToTag());
         if (storedEU > 0) tag.putLong("StoredEU", storedEU);
@@ -231,8 +233,8 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         packInventory.deserializeFromTag(tag.getList("Items", 10));
         upgradeInventory.deserializeFromTag(tag.getList("Upgrades", 10));
         storedEU = tag.getLong("StoredEU");

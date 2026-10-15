@@ -1,6 +1,8 @@
 package net.phoenix.core.client.gui.cinder;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -507,7 +509,7 @@ public class CinderAtlasScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         int listY = targetListTop(panelTop());
         int listH = panelTop() + PANEL_H - BUTTON_H - PAD * 2 - listY;
         int maxScroll = Math.max(0, filteredTargets.size() * TARGET_ROW_H - listH);

@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.neoforge.network.NetworkDirection;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.phoenix.core.integration.conflux.dimension.client.ClientDisciplineProgressionCache;

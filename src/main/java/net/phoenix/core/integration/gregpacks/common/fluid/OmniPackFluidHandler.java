@@ -54,7 +54,7 @@ public class OmniPackFluidHandler implements IFluidHandlerItem {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         PhoenixCore.LOGGER.info("[FluidHandler] fill called resource={} amount={} action={}",
-                net.neoforged.neoforge.registries.BuiltInRegistries.FLUID.getKey(resource.getFluid()),
+                net.minecraft.core.registries.BuiltInRegistries.FLUID.getKey(resource.getFluid()),
                 resource.getAmount(), action);
         if (resource.isEmpty()) return 0;
 

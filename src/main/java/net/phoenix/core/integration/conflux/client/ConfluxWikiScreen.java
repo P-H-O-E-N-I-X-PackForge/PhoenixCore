@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.client;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -402,7 +404,7 @@ public class ConfluxWikiScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double rmx, double rmy, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         int visibleH = vh - MARGIN - (HEADER_H + MARGIN);
         int maxScroll = Math.max(0, cachedContentH - visibleH);
         scrollY = Math.max(0, Math.min(maxScroll, (int) (scrollY - delta * 14)));

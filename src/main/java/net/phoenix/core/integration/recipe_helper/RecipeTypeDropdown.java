@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -272,7 +274,7 @@ public class RecipeTypeDropdown extends AbstractWidget {
         }
 
         @Override
-        public boolean mouseScrolled(double mx, double my, double delta) {
+        public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
             int max = Math.max(0, filtered.size() - visibleRows());
             scrollOffset = clamp(scrollOffset - (int) delta, 0, max);
             return true;

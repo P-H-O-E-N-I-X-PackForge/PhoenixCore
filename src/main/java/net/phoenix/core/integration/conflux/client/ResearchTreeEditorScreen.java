@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.client;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -494,7 +496,7 @@ public class ResearchTreeEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double rmx, double rmy, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         double mx = rmx / uiScale;
         double my = rmy / uiScale;
         if (mx < canvasW()) {

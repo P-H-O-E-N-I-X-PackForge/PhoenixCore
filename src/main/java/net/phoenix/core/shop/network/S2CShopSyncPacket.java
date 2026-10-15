@@ -9,7 +9,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;

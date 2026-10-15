@@ -1,6 +1,8 @@
 package net.phoenix.core.client.gui.cinder;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -630,7 +632,7 @@ public class CinderConfiguratorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         if (mouseX >= previewX && mouseX < previewX + previewW && mouseY >= previewY &&
                 mouseY < previewY + previewH) {
             structurePreview.mouseScrolled(delta);

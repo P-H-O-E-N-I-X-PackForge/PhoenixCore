@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.recipe_helper;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -78,7 +80,7 @@ public class FluidSlotPanel extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         if (!this.visible) return false;
         int i = colAt(mx, my);
         if (i >= 0) {

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.block.cinder;
 
+
+import net.minecraft.core.HolderLookup;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.core.BlockPos;
@@ -102,8 +104,8 @@ public class CinderConstructionBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putLong("FallStartGameTime", fallStartGameTime);
         tag.putBoolean("Finished", finished);
 
@@ -124,8 +126,8 @@ public class CinderConstructionBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         fallStartGameTime = tag.getLong("FallStartGameTime");
         finished = tag.getBoolean("Finished");
 
@@ -148,8 +150,8 @@ public class CinderConstructionBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
         saveAdditional(tag);
         return tag;
     }

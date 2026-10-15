@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
 
 import org.jetbrains.annotations.Nullable;

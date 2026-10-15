@@ -263,6 +263,7 @@ public class PhoenixCore {
 
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            PhoenixRecipeTypes.postInit();
             VaultRegistry.registerLinkables();
             net.phoenix.core.integration.ae2.CinderAtlasWirelessLink.register();
 

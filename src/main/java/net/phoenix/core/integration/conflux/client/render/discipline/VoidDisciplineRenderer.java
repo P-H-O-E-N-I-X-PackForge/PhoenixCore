@@ -301,7 +301,7 @@ public class VoidDisciplineRenderer implements DisciplineRenderer {
         if (iconId == null || iconId.isEmpty()) return;
         ResourceLocation rl = ResourceLocation.tryParse(iconId);
         if (rl == null) return;
-        var item = net.neoforged.neoforge.registries.BuiltInRegistries.ITEM.get(rl);
+        var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(rl);
         if (item != null && item != net.minecraft.world.item.Items.AIR)
             g.renderItem(new net.minecraft.world.item.ItemStack(item), x, y);
     }

@@ -335,7 +335,6 @@ public class TeslaTeamEnergyData extends SavedData {
 
     public static TeslaTeamEnergyData get(ServerLevel level) {
         ServerLevel overworld = level.getServer().getLevel(Level.OVERWORLD);
-        return (overworld == null ? level : overworld).getDataStorage().computeIfAbsent(
-                TeslaTeamEnergyData::load, TeslaTeamEnergyData::new, DATA_NAME);
+        return (overworld == null ? level : overworld).getDataStorage().computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(TeslaTeamEnergyData::new, (tag, provider) -> TeslaTeamEnergyData.load(tag), null), DATA_NAME);
     }
 }

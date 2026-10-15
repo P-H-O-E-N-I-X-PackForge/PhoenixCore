@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.recipe_helper;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -222,7 +224,7 @@ public class ConditionsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double rmx, double rmy, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         int total = conditions.size() * (PILL_H + PILL_GAP);
         int view = PANEL_H - HDR_H - 4;
         pillScroll = clamp(pillScroll - (int) (delta * (PILL_H + PILL_GAP)), Math.max(0, total - view));
@@ -650,7 +652,7 @@ public class ConditionsScreen extends Screen {
         }
 
         @Override
-        public boolean mouseScrolled(double rmx, double rmy, double delta) {
+        public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
             int vis = (PANEL_H - HEADER_H - 12) / ROW_H;
             scrollOffset = Math.max(0, Math.min(Math.max(0, filtered.length - vis), scrollOffset - (int) delta));
             return true;

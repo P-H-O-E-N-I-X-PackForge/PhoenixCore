@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.pipe;
 
+
+import net.minecraft.core.HolderLookup;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -147,8 +149,8 @@ public class ConfluxPipeBlockEntity extends PipeBlockEntity<ConfluxPipeType, Con
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (stored > 0) scheduleTickIfNeeded();
     }
 

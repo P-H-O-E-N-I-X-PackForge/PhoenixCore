@@ -1,5 +1,7 @@
 package net.phoenix.core.common.block.cinema;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -138,8 +140,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("CurrentLine", currentLine);
         tag.putInt("TextColor", textColor);
         tag.putFloat("TextScale", textScale);
@@ -153,8 +155,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         currentLine = tag.getInt("CurrentLine");
         textColor = tag.contains("TextColor") ? tag.getInt("TextColor") : DEFAULT_COLOR;
         textScale = tag.contains("TextScale") ? tag.getFloat("TextScale") : DEFAULT_SCALE;
@@ -183,8 +185,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
         saveAdditional(tag);
         return tag;
     }

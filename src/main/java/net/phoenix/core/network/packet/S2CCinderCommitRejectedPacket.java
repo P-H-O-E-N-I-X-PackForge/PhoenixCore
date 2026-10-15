@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 
 
 import java.util.function.Supplier;

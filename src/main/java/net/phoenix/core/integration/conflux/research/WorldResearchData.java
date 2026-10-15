@@ -32,7 +32,7 @@ public class WorldResearchData extends SavedData {
 
     public static WorldResearchData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(WorldResearchData::load, WorldResearchData::new, ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldResearchData::new, (tag, provider) -> WorldResearchData.load(tag), null), ID);
     }
 
     public boolean isUnlocked(UUID team, ResourceLocation nodeId) {
@@ -256,7 +256,7 @@ public class WorldResearchData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag teams = new ListTag();
         Set<UUID> allTeams = new HashSet<>();
         allTeams.addAll(unlocked.keySet());

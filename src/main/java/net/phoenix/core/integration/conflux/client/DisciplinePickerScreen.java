@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.conflux.client;
 
 
+
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -490,7 +492,7 @@ public class DisciplinePickerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         arcVelocity += (float) (delta * -200f);
         return true;
     }

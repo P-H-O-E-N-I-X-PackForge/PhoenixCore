@@ -17,7 +17,7 @@ public class WorldShopData extends SavedData {
 
     public static WorldShopData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(WorldShopData::load, WorldShopData::new, ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldShopData::new, (tag, provider) -> WorldShopData.load(tag), null), ID);
     }
 
     public List<ShopEntry> getEntries() {
@@ -58,7 +58,7 @@ public class WorldShopData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag list = new ListTag();
         for (ShopEntry entry : entries) list.add(entry.save());
         tag.put("entries", list);

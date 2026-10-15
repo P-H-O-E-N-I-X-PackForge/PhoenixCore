@@ -18,7 +18,7 @@ public class DisciplineProgressionData extends SavedData {
 
     public static DisciplineProgressionData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(DisciplineProgressionData::load, DisciplineProgressionData::new, ID);
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(DisciplineProgressionData::new, (tag, provider) -> DisciplineProgressionData.load(tag), null), ID);
     }
 
     public @Nullable ProgressionState getProgression(UUID teamId) {
@@ -88,7 +88,7 @@ public class DisciplineProgressionData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag progressionsTag = new ListTag();
         for (Map.Entry<UUID, ProgressionState> entry : progressions.entrySet()) {
             CompoundTag progressTag = entry.getValue().save();

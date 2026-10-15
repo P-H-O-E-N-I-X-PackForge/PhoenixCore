@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.vocal_resonance;
 
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -178,7 +180,7 @@ public class ResonanceConsoleScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         if (mouseX < this.width / 3.0) {
             this.scrollOffset = Math.max(0, Math.min(filteredSounds.size() - 1, scrollOffset - (int) delta));
             updateFilteredSounds();
