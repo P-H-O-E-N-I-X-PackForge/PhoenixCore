@@ -126,8 +126,8 @@ public class PhoenixManipulatorItem extends Item implements IInteractionItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
+        net.minecraft.world.level.Level level = context.level();
         PhoenixManipulatorMode mode = getMode(stack);
         BlockPos start = getStartPos(stack);
         BlockPos end = getEndPos(stack);

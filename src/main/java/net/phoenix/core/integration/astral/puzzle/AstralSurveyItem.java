@@ -140,8 +140,8 @@ public class AstralSurveyItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+        net.minecraft.world.level.Level level = context.level();
         if (!isSurvey(stack)) return;
         tooltip.add(Component.literal((kind(stack) == StarChart.Kind.CHAIN ? "Spinning Wheel" : "Loom") + " at " +
                 where(stack)).withStyle(ChatFormatting.GRAY));

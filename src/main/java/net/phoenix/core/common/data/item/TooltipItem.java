@@ -24,14 +24,14 @@ public class TooltipItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level,
-                                @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        net.minecraft.world.level.Level level = context.level();
         for (Supplier<Component> builder : tooltipBuilders) {
             if (builder != null) {
                 tooltipComponents.add(builder.get());
             }
         }
 
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 }

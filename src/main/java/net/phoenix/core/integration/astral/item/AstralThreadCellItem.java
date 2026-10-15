@@ -45,8 +45,8 @@ public class AstralThreadCellItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Level level, List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag flag) {
+        net.minecraft.world.level.Level level = context.level();
         tooltip.add(Component.literal("Thread: " + getThread(stack) + " / " + CAPACITY)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
     }

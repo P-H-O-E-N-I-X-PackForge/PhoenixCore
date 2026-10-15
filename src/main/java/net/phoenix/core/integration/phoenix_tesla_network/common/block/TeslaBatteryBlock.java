@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.phoenix_tesla_network.common.block;
 
+
+import net.minecraft.world.item.Item;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -30,8 +32,7 @@ public class TeslaBatteryBlock extends Block {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable BlockGetter level, @NotNull List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
 
         if (batteryData.getTier() == -1) {

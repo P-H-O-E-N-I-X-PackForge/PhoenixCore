@@ -1,6 +1,8 @@
 package net.phoenix.core.common.data.item;
 
 
+
+import net.minecraft.world.item.Item;
 import net.phoenix.core.util.StackNbt;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
@@ -252,8 +254,8 @@ public class TeslaBinderItem extends ComponentItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip,
-                                @NotNull TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+        net.minecraft.world.level.Level level = context.level();
         if (StackNbt.hasTag(stack) && Objects.requireNonNull(StackNbt.getTag(stack)).contains("OwnerName")) {
             int color = getAnimatedColor(0xA330FF, 0xFF66CC, 2000);
 

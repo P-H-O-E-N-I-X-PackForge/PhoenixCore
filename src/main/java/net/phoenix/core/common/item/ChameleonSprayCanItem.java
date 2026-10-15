@@ -174,8 +174,8 @@ public class ChameleonSprayCanItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level,
-                                @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        net.minecraft.world.level.Level level = context.level();
         String chromCode = ChameleonSprayCanBehaviour.getChromaticCode(stack);
         if (chromCode != null) {
             tooltipComponents.add(Component.literal("§7Color Mode: §" + chromCode + "Chromatic (" + chromCode + ")"));
@@ -190,7 +190,7 @@ public class ChameleonSprayCanItem extends Item {
             }
         }
 
-        this.behaviour.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        this.behaviour.appendHoverText(stack, context, tooltipComponents, isAdvanced);
 
         tooltipComponents.add(Component.literal(""));
 

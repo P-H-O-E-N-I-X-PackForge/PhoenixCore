@@ -55,8 +55,8 @@ public class OmniPackItem extends Item implements ICurioItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level,
-                                @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        net.minecraft.world.level.Level level = context.level();
         tooltipComponents.add(Component.translatable("item.gregpacks.omnipack.tooltip.slots", tier.defaultSlots));
         tooltipComponents
                 .add(Component.translatable("item.gregpacks.omnipack.tooltip.fluid", tier.defaultFluidStorage));
