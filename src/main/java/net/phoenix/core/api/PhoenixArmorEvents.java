@@ -35,8 +35,8 @@ public class PhoenixArmorEvents {
                 event.setNewSpeed(event.getNewSpeed() * 5.0f);
             }
 
-            if (player.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get()) &&
-                    !net.minecraft..world.item.enchantmentEnchantmentHelper.hasAquaAffinity(player)) {
+            if (player.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get()) &&
+                    player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.SUBMERGED_MINING_SPEED) < 1.0) {
                 event.setNewSpeed(event.getNewSpeed() * 5.0f);
             }
         }
