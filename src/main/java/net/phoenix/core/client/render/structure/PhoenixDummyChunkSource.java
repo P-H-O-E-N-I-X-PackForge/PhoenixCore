@@ -3,7 +3,7 @@ package net.phoenix.core.client.render.structure;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.chunk.LightChunk;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 

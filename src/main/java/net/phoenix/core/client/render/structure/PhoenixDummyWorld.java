@@ -269,10 +269,10 @@ public class PhoenixDummyWorld extends Level {
     public void levelEvent(@Nullable Player player, int type, BlockPos pos, int data) {}
 
     @Override
-    public void gameEvent(GameEvent event, Vec3 pos, GameEvent.Context ctx) {}
+    public void gameEvent(Holder<GameEvent> event, Vec3 pos, GameEvent.Context ctx) {}
 
     @Override
-    public void gameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {}
+    public void gameEvent(@Nullable Entity entity, Holder<GameEvent> event, BlockPos pos) {}
 
     @Override
     public void addParticle(ParticleOptions data, double x, double y, double z, double vx, double vy, double vz) {}
@@ -290,18 +290,16 @@ public class PhoenixDummyWorld extends Level {
                                          double vy, double vz) {}
 
     @Override
-    public int getFreeMapId() {
-        return 0;
-    }
-
-    @Override
     @Nullable
-    public MapItemSavedData getMapData(String name) {
+    public MapItemSavedData getMapData(net.minecraft.world.level.saveddata.maps.MapId id) {
         return null;
     }
 
     @Override
-    public void setMapData(String id, MapItemSavedData data) {}
+    public void setMapData(net.minecraft.world.level.saveddata.maps.MapId id, MapItemSavedData data) {}
+
+    @Override
+    public void setDayTimePerTick(float perTick) {}
 
     @Override
     public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {}

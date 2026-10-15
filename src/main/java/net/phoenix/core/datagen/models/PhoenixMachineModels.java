@@ -1,7 +1,7 @@
 package net.phoenix.core.datagen.models;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
+import com.gregtechceu.gtceu.api.registry.registrate.builder.MachineBuilder;
 import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
 
 import net.minecraft.resources.ResourceLocation;

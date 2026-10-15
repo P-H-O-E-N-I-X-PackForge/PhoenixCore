@@ -9,7 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.common.ForgeSpawnEggItem;
+import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,7 +33,7 @@ public final class PhoenixEntities {
                     .clientTrackingRange(10).build("teto_slime"));
 
     public static final DeferredHolder<Item, Item> TETO_SLIME_SPAWN_EGG = SPAWN_EGGS.register("teto_slime_spawn_egg",
-            () -> new ForgeSpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0, new Item.Properties()));
+            () -> new SpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0, new Item.Properties()));
 
     public static void init(IEventBus modEventBus) {
         ENTITY_TYPES.register(modEventBus);

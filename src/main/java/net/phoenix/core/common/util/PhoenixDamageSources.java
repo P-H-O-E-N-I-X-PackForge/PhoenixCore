@@ -1,7 +1,7 @@
 package net.phoenix.core.common.util;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,7 +15,7 @@ public class PhoenixDamageSources {
     public static final ResourceKey<DamageType> STERILIZED = ResourceKey.create(Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID, "sterilized"));
 
-    public static void bootstrap(BootstapContext<DamageType> context) {
+    public static void bootstrap(BootstrapContext<DamageType> context) {
         context.register(STERILIZED, new DamageType("sterilized", 0.1F));
     }
 
