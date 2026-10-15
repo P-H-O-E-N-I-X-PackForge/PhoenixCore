@@ -200,6 +200,12 @@ public class WorldgenApplier {
 
         @Nullable
         String biomeIdAt(int x, int z);
+
+        /** The block the ground of this column is made of when nothing has been built on it; null if unknown. */
+        @Nullable
+        default Block groundBlockAt(int x, int z) {
+            return null;
+        }
     }
 
     public static void applyWorldgenProfile(
@@ -337,15 +343,44 @@ public class WorldgenApplier {
             WorldgenProfile.TreeConfig tree = trees.get(random.nextInt(trees.size()));
             if (random.nextFloat() > tree.frequency) continue;
 
-            int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
-            BlockPos base = new BlockPos(x, y, z);
-            if (!level.ensureCanWrite(base) || !level.isEmptyBlock(base)) continue;
-            if (level.getBlockState(base.below()).isAir() || isAboveWater(level, base)) continue;
+            BlockPos base = groundPos(level, biomes, x, z);
+            if (base == null || !level.ensureCanWrite(base) || !level.isEmptyBlock(base)) continue;
+            if (isAboveWater(level, base) || underTree(level, base)) continue;
             placeTree(level, base, tree, random);
         }
 
         placeGroundCover(level, profile, biomes, random, minX, minZ, probe, true);
         placeGroundCover(level, profile, biomes, random, minX, minZ, probe, false);
+    }
+
+    /**
+     * The first free block above the natural ground of a column, or null if the top of the column is not natural ground. A
+     * tree raises the heightmap, so measuring from it puts the next tree on the last one's canopy: this ignores leaves,
+     * and then insists that what is underneath is what the ground here is made of, which rules out canopies, trunks,
+     * structures and landform rock alike.
+     */
+    @Nullable
+    private static BlockPos groundPos(WorldGenLevel level, @Nullable BiomeLookup biomes, int x, int z) {
+        int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        BlockPos pos = new BlockPos(x, y, z);
+        net.minecraft.world.level.block.state.BlockState below = level.getBlockState(pos.below());
+        if (below.isAir()) return null;
+        Block expected = biomes == null ? null : biomes.groundBlockAt(x, z);
+        if (expected != null && below.getBlock() != expected) return null;
+        return pos;
+    }
+
+    /** Whether there is a tree growing over this spot already: leaves or logs in the way of a new trunk. */
+    private static boolean underTree(WorldGenLevel level, BlockPos base) {
+        for (int dy = 0; dy <= 3; dy++) {
+            net.minecraft.world.level.block.state.BlockState s = level.getBlockState(base.above(dy));
+            if (s.is(net.minecraft.tags.BlockTags.LEAVES) || s.is(net.minecraft.tags.BlockTags.LOGS)) return true;
+        }
+        for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+            net.minecraft.world.level.block.state.BlockState s = level.getBlockState(base.relative(dir));
+            if (s.is(net.minecraft.tags.BlockTags.LOGS)) return true;
+        }
+        return false;
     }
 
     private static void placeGroundCover(WorldGenLevel level, WorldgenProfile.DecorationProfile profile,
@@ -366,9 +401,8 @@ public class WorldgenApplier {
                     names.get(random.nextInt(names.size())));
             if (state == null) continue;
 
-            int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
-            BlockPos pos = probe.set(x, y, z).immutable();
-            if (level.ensureCanWrite(pos) && level.isEmptyBlock(pos) && !isAboveWater(level, pos) &&
+            BlockPos pos = groundPos(level, biomes, x, z);
+            if (pos != null && level.ensureCanWrite(pos) && level.isEmptyBlock(pos) && !isAboveWater(level, pos) &&
                     state.canSurvive(level, pos)) {
                 level.setBlock(pos, state, 3);
             }

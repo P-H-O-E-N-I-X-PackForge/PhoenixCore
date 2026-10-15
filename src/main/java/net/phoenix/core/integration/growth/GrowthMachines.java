@@ -46,6 +46,7 @@ public class GrowthMachines {
                                                                                               String name,
                                                                                               java.util.function.Function<com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo, T> factory,
                                                                                               com.gregtechceu.gtceu.api.recipe.GTRecipeType recipeType,
+                                                                                              it.unimi.dsi.fastutil.ints.IntList minBounds,
                                                                                               it.unimi.dsi.fastutil.ints.IntList maxBounds) {
         return REGISTRATE
                 .multiblock(id, info -> factory.apply(info))
@@ -61,7 +62,7 @@ public class GrowthMachines {
                                 .or(Predicates.abilities(GROWTH_CONTROL_ABILITY).setMaxGlobalLimited(1))
                                 .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                                 .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)),
-                        maxBounds))
+                        minBounds, maxBounds))
                 .model(createWorkableCasingMachineModel(
                         PhoenixCore.id("block/casings/multiblock/machine_casing_invariant_naquadah_alloy"),
                         PhoenixCore.id("block/multiblock/tesla_tower")))
@@ -69,13 +70,16 @@ public class GrowthMachines {
     }
 
     public static final MultiblockMachineDefinition CRYSTAL_GARDEN = cubeGrower("crystal_garden", "Crystal Garden",
-            CrystalGardenMachine::new, PhoenixRecipeTypes.GROWTH_RECIPES, CrystalGardenMachine.MAX_BOUNDS);
+            CrystalGardenMachine::new, PhoenixRecipeTypes.GROWTH_RECIPES, CrystalGardenMachine.MIN_BOUNDS,
+            CrystalGardenMachine.MAX_BOUNDS);
 
     public static final MultiblockMachineDefinition BLOOMVINE_CORE = cubeGrower("bloomvine_core", "Bloomvine Core",
-            BloomvineCoreMachine::new, PhoenixRecipeTypes.VINE_GROWTH_RECIPES, BloomvineCoreMachine.MAX_BOUNDS);
+            BloomvineCoreMachine::new, PhoenixRecipeTypes.VINE_GROWTH_RECIPES, BloomvineCoreMachine.MIN_BOUNDS,
+            BloomvineCoreMachine.MAX_BOUNDS);
 
     public static final MultiblockMachineDefinition VERDANT_BLOOM = cubeGrower("verdant_bloom", "Verdant Bloom",
-            VerdantBloomMachine::new, PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES, VerdantBloomMachine.MAX_BOUNDS);
+            VerdantBloomMachine::new, PhoenixRecipeTypes.BOTANICAL_GROWTH_RECIPES, VerdantBloomMachine.MIN_BOUNDS,
+            VerdantBloomMachine.MAX_BOUNDS);
 
     public static void init() {
         BloomvineCoreMachine.registerTendrilShapes();

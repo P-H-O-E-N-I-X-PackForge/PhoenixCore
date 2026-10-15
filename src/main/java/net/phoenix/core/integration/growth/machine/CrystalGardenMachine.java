@@ -26,6 +26,7 @@ public class CrystalGardenMachine extends GrowthMultiblockMachine {
             GrowthStages.bounds(3, 1, 3, 3, 0, 5),
             GrowthStages.bounds(4, 1, 3, 3, 0, 6) };
 
+    public static final IntList MIN_BOUNDS = SHAPES[0];
     public static final IntList MAX_BOUNDS = SHAPES[SHAPES.length - 1];
 
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(CrystalGardenMachine::buildStages);

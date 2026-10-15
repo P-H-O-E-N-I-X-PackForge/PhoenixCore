@@ -25,6 +25,8 @@ public class BloomvineCoreMachine extends GrowthMultiblockMachine {
     private static final int MAX_MATURITY = 5;
     
     public static final IntList MAX_BOUNDS = GrowthStages.bounds(2, 0, 3, 3, 0, 6);
+    /** Bloomvine does not change shape as it matures, so its smallest shape is its largest. */
+    public static final IntList MIN_BOUNDS = MAX_BOUNDS;
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(BloomvineCoreMachine::buildMaturityTicks);
 
     private static List<GrowthStage> buildMaturityTicks() {

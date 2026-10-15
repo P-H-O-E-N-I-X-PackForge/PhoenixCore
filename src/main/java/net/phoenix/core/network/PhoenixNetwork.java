@@ -344,6 +344,9 @@ public class PhoenixNetwork {
         CHANNEL.registerMessage(id++, S2CAttuneResultPacket.class, S2CAttuneResultPacket::encode,
                 S2CAttuneResultPacket::new, S2CAttuneResultPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CPhysicsImpulsePacket.class, S2CPhysicsImpulsePacket::encode,
+                S2CPhysicsImpulsePacket::new, S2CPhysicsImpulsePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SOpenCalibrationPacket.class, C2SOpenCalibrationPacket::encode,
                 C2SOpenCalibrationPacket::new, C2SOpenCalibrationPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));

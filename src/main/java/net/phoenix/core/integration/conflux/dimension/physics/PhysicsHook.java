@@ -18,6 +18,10 @@ public class PhysicsHook {
         }
 
         event.getServer().getAllLevels().forEach(level -> {
+            if (level.getChunkSource()
+                    .getGenerator() instanceof net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator generator) {
+                generator.tickLandformPhysics(level);
+            }
             applyPhysicsToLevel(level);
         });
     }
@@ -56,7 +60,7 @@ public class PhysicsHook {
             .create(net.minecraft.core.registries.Registries.ENTITY_TYPE,
                     new net.minecraft.resources.ResourceLocation("phoenixcore", "ignores_conflux_physics"));
 
-    private static boolean exempt(Entity entity) {
+    public static boolean exempt(Entity entity) {
         if (entity.getType().is(IGNORES_PHYSICS)) return true;
         Entity vehicle = entity.getVehicle();
         return vehicle != null && vehicle.getType().is(IGNORES_PHYSICS);

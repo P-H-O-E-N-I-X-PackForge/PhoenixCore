@@ -30,17 +30,22 @@ public final class GrowthPatternHelper {
 
     private GrowthPatternHelper() {}
 
+    /**
+     * @param minBounds the smallest shape the machine can be (its first stage). The multiblock preview starts from these,
+     *                  so it shows the real starting structure instead of a lone controller.
+     * @param maxBounds the largest shape it can grow into
+     */
     public static IBlockPattern getPattern(MultiblockMachineDefinition definition, MultiPredicate shellPredicate,
-                                           IntList maxBounds) {
+                                           IntList minBounds, IntList maxBounds) {
         return ExpandableMultiblockPatternBuilder.start()
                 .boundsProvider(GrowthPatternHelper::boundsFor)
                 .constraintProvider(() -> List.of(
-                        IntIntPair.of(0, maxBounds.getInt(0)),
-                        IntIntPair.of(0, maxBounds.getInt(1)),
-                        IntIntPair.of(0, maxBounds.getInt(2)),
-                        IntIntPair.of(0, maxBounds.getInt(3)),
-                        IntIntPair.of(0, maxBounds.getInt(4)),
-                        IntIntPair.of(0, maxBounds.getInt(5))))
+                        IntIntPair.of(minBounds.getInt(0), maxBounds.getInt(0)),
+                        IntIntPair.of(minBounds.getInt(1), maxBounds.getInt(1)),
+                        IntIntPair.of(minBounds.getInt(2), maxBounds.getInt(2)),
+                        IntIntPair.of(minBounds.getInt(3), maxBounds.getInt(3)),
+                        IntIntPair.of(minBounds.getInt(4), maxBounds.getInt(4)),
+                        IntIntPair.of(minBounds.getInt(5), maxBounds.getInt(5))))
 
                 .where(CONTROLLER_KEY, Predicates.controller(Predicates.blocks(definition.get())))
                 .where(SHELL_KEY, shellPredicate)

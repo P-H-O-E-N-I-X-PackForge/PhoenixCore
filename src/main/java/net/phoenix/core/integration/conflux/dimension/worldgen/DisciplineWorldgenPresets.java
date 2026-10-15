@@ -125,7 +125,7 @@ public class DisciplineWorldgenPresets {
                                         "sculk_shriek", "Shrieker Cavern",
                                         0.1f, 0.9f,
                                         0x4B0082, 0x8B00FF, 0x2F0854,
-                                        "minecraft:sculk_shrieker", "minecraft:sculk_catalyst",
+                                        "minecraft:sculk", "minecraft:tuff",
                                         0.9f, Arrays.asList("sculk_shriek")),
                                 new WorldgenProfile.BiomeDefinition(
                                         "sculk_hollow", "Fungal Hollow",

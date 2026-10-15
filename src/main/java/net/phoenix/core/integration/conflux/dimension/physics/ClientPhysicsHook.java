@@ -24,6 +24,11 @@ public class ClientPhysicsHook {
             return;
         }
 
+        if (PhysicsRegistry.getInstance().getTotalGravityZones() == 0 &&
+                PhysicsRegistry.getInstance().getTotalPlatforms() == 0) {
+            return;
+        }
+
         PhysicsHook.applyPhysicsToEntity(mc.player, level);
 
         level.getEntitiesOfClass(Entity.class, mc.player.getBoundingBox().inflate(32))

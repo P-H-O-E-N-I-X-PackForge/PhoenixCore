@@ -16,25 +16,36 @@ public final class Landforms {
     
     private static final int SPAWN_CLEAR = 96;
 
-    private enum Kind {
+    enum Kind {
         VOLCANO,
         HOODOOS,
         KARST,
         
         PLATEAU,
         
-        SEA_STACKS
+        SEA_STACKS,
+        CENOTE,
+        FUNGUS,
+        RIBS,
+        SKY_ISLAND,
+        GEODE,
+        IMPACT,
+        PIT_MINE,
+        TOWERS,
+        OVERPASS,
+        COLUMNS,
+        GEYSER
     }
 
-    private record Palette(BlockState[] bands, int bandHeight, BlockState cap, BlockState capAlt) {}
+    record Palette(BlockState[] bands, int bandHeight, BlockState cap, BlockState capAlt) {}
 
-    private record Pillar(int x, int z, int radius, int top) {}
+    record Pillar(int x, int z, int radius, int top) {}
 
-    private static final int ACTIVE = 0;
-    private static final int DORMANT = 1;
-    private static final int EXTINCT = 2;
+    static final int ACTIVE = 0;
+    static final int DORMANT = 1;
+    static final int EXTINCT = 2;
 
-    private record Instance(Kind kind, int cx, int cz, int reach, long seed, int baseY, int height, int craterRadius,
+    record Instance(Kind kind, int cx, int cz, int reach, long seed, int baseY, int height, int craterRadius,
                             int craterDepth, double[] rivuletAngles, Pillar[] pillars, Palette palette, int state,
                             int variant) {}
 
@@ -80,6 +91,7 @@ public final class Landforms {
                     case VOLCANO -> volcano(chunk, inst, minX, minZ, minY, maxY);
                     case HOODOOS, KARST, SEA_STACKS -> pillars(chunk, inst, minX, minZ, minY, maxY);
                     case PLATEAU -> plateau(chunk, inst, minX, minZ, minY, maxY);
+                    default -> SignatureLandforms.apply(inst, chunk, minX, minZ, minY, maxY);
                 }
             }
         }
@@ -89,7 +101,7 @@ public final class Landforms {
         return ((long) cellX << 32) ^ (cellZ & 0xFFFFFFFFL);
     }
 
-    private static long mix(long a, long b, long c) {
+    static long mix(long a, long b, long c) {
         long h = a * 0x9E3779B97F4A7C15L ^ b * 0xC2B2AE3D27D4EB4FL ^ c * 0x165667B19E3779F9L;
         h ^= h >>> 32;
         h *= 0xD6E8FEB86659FD93L;
@@ -110,7 +122,11 @@ public final class Landforms {
 
         int centreGround = ground.applyAsInt(cx, cz);
         boolean wet = centreGround < seaLevel - 2;
-        if (wet && kind != Kind.VOLCANO) kind = Kind.SEA_STACKS;
+        if (wet && kind != Kind.VOLCANO && kind != Kind.SKY_ISLAND) kind = Kind.SEA_STACKS;
+
+        if (SignatureLandforms.handles(kind)) {
+            return SignatureLandforms.create(kind, disciplineId, cx, cz, rnd, instSeed, seaLevel, ground);
+        }
 
         if (kind == Kind.PLATEAU) {
             int radius = 18 + rnd.nextInt(15);
@@ -119,7 +135,9 @@ public final class Landforms {
             int height = 14 + rnd.nextInt(17);
             
             int pool = rnd.nextInt(3) == 0 ? 0 : 4 + rnd.nextInt(3);
-            return new Instance(Kind.PLATEAU, cx, cz, radius + 6, instSeed, base, height, pool, 0, null, null,
+            double[] fall = disciplineId.equals("phoenix") || disciplineId.equals("sealed_b") ?
+                    new double[] { rnd.nextDouble() * Math.PI * 2.0 } : null;
+            return new Instance(Kind.PLATEAU, cx, cz, radius + 6, instSeed, base, height, pool, 0, fall, null,
                     palette(Kind.HOODOOS), 0, 0);
         }
 
@@ -228,13 +246,15 @@ public final class Landforms {
         return switch (disciplineId) {
             case "phoenix" -> roll < 0.50f ? Kind.VOLCANO : roll < 0.65f ? Kind.HOODOOS :
                     roll < 0.80f ? Kind.PLATEAU : null;
-            case "sculk" -> roll < 0.30f ? Kind.KARST : roll < 0.40f ? Kind.HOODOOS :
-                    roll < 0.50f ? Kind.PLATEAU : null;
-            case "void" -> roll < 0.30f ? Kind.HOODOOS : roll < 0.45f ? Kind.PLATEAU : null;
-            case "sealed_a" -> roll < 0.25f ? Kind.HOODOOS : roll < 0.40f ? Kind.KARST :
-                    roll < 0.55f ? Kind.PLATEAU : null;
-            case "sealed_b" -> roll < 0.25f ? Kind.KARST : roll < 0.35f ? Kind.VOLCANO :
-                    roll < 0.45f ? Kind.PLATEAU : null;
+            case "sculk" -> roll < 0.15f ? Kind.KARST : roll < 0.20f ? Kind.HOODOOS :
+                    roll < 0.25f ? Kind.PLATEAU : roll < 0.37f ? Kind.CENOTE : roll < 0.45f ? Kind.FUNGUS :
+                            roll < 0.50f ? Kind.RIBS : null;
+            case "void" -> roll < 0.10f ? Kind.HOODOOS : roll < 0.15f ? Kind.PLATEAU :
+                    roll < 0.30f ? Kind.SKY_ISLAND : roll < 0.40f ? Kind.GEODE : roll < 0.45f ? Kind.IMPACT : null;
+            case "sealed_a" -> roll < 0.08f ? Kind.HOODOOS : roll < 0.15f ? Kind.KARST : roll < 0.20f ? Kind.PLATEAU :
+                    roll < 0.35f ? Kind.PIT_MINE : roll < 0.47f ? Kind.TOWERS : roll < 0.55f ? Kind.OVERPASS : null;
+            case "sealed_b" -> roll < 0.05f ? Kind.KARST : roll < 0.15f ? Kind.VOLCANO : roll < 0.20f ? Kind.PLATEAU :
+                    roll < 0.32f ? Kind.COLUMNS : roll < 0.40f ? Kind.GEYSER : roll < 0.45f ? Kind.RIBS : null;
             default -> null;
         };
     }
@@ -272,7 +292,7 @@ public final class Landforms {
     static final int CALDERA = 4;
     static final int FISSURE = 5;
 
-    private static double smooth(double t) {
+    static double smooth(double t) {
         t = Math.max(0.0, Math.min(1.0, t));
         return t * t * (3.0 - 2.0 * t);
     }
@@ -384,7 +404,7 @@ public final class Landforms {
         }
     }
 
-    private static int surfaceGround(ChunkAccess chunk, int x, int z, int minY, int maxY,
+    static int surfaceGround(ChunkAccess chunk, int x, int z, int minY, int maxY,
                                      net.minecraft.core.BlockPos.MutableBlockPos pos) {
         for (int y = maxY - 1; y >= minY; y--) {
             BlockState state = chunk.getBlockState(pos.set(x, y, z));
@@ -393,7 +413,7 @@ public final class Landforms {
         return minY;
     }
 
-    private static int hash2(long seed, int x, int z) {
+    static int hash2(long seed, int x, int z) {
         return (int) (mix(seed, x, z) >>> 33);
     }
 
@@ -526,6 +546,26 @@ public final class Landforms {
         }
     }
 
+    java.util.List<Instance> near(int x, int z, int margin, int seaLevel, IntBinaryOperator ground) {
+        java.util.List<Instance> out = new java.util.ArrayList<>(4);
+        if (!enabled()) return out;
+        int cellX = Math.floorDiv(x, CELL);
+        int cellZ = Math.floorDiv(z, CELL);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                int cx = cellX + dx;
+                int cz = cellZ + dz;
+                Optional<Instance> found = cache.computeIfAbsent(key(cx, cz),
+                        k -> Optional.ofNullable(create(cx, cz, seaLevel, ground)));
+                if (found.isPresent() && Math.hypot(x - found.get().cx(), z - found.get().cz()) <
+                        found.get().reach() + margin) {
+                    out.add(found.get());
+                }
+            }
+        }
+        return out;
+    }
+
     public boolean occupies(int x, int z, int margin, int seaLevel, IntBinaryOperator ground) {
         if (!enabled()) return false;
         int cellX = Math.floorDiv(x, CELL);
@@ -575,6 +615,15 @@ public final class Landforms {
                     chunk.setBlockState(pos.set(x, y, z), state, false);
                 }
                 
+                // a stream of lava runs from the pool and down the flank
+                if (inst.rivuletAngles() != null && inst.craterRadius() > 0 && columnTop > ground) {
+                    double a = inst.rivuletAngles()[0];
+                    double along = (x - inst.cx()) * Math.cos(a) + (z - inst.cz()) * Math.sin(a);
+                    double across = Math.abs(-(x - inst.cx()) * Math.sin(a) + (z - inst.cz()) * Math.cos(a));
+                    if (across <= 1.2 && along >= inst.craterRadius() && along <= edge + 6) {
+                        chunk.setBlockState(pos.set(x, columnTop, z), Blocks.LAVA.defaultBlockState(), false);
+                    }
+                }
                 if (inst.craterRadius() > 0 && d <= inst.craterRadius() && columnTop == top) {
                     chunk.setBlockState(pos.set(x, top, z), liquid, false);
                     chunk.setBlockState(pos.set(x, top - 1, z), palette.bands()[0], false);

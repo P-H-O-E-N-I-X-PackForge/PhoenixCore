@@ -76,7 +76,7 @@ public class ConfluxPiece extends StructurePiece {
                     Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState(), Blocks.DEEPSLATE_TILES.defaultBlockState(),
                     Blocks.POLISHED_DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE_TILE_SLAB.defaultBlockState(),
                     Blocks.SOUL_LANTERN.defaultBlockState(), Blocks.SCULK.defaultBlockState(),
-                    Blocks.IRON_BARS.defaultBlockState(), Blocks.SCULK_CATALYST.defaultBlockState(), soulLantern);
+                    Blocks.IRON_BARS.defaultBlockState(), Blocks.VERDANT_FROGLIGHT.defaultBlockState(), soulLantern);
             case "void" -> new Theme(Blocks.END_STONE_BRICKS.defaultBlockState(),
                     Blocks.PURPUR_BLOCK.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState(),
                     Blocks.PURPUR_PILLAR.defaultBlockState(), Blocks.PURPUR_SLAB.defaultBlockState(),

@@ -62,8 +62,16 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
     private final com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer orePlacer = new com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer();
 
-    private static final int PROVINCE_CELL_SIZE = 160;
-    private static final float PROVINCE_VEIN_CHANCE = 0.4f;
+    /** Layers of ragged bedrock at the bottom of the world, on top of the solid floor. */
+    private static final int BEDROCK_LAYERS = 5;
+    /** Caves this close to the floor hold lava. */
+    private static final int DEEP_LAVA_TOP = 9;
+    /** Stone is deepslate below DEEPSLATE_FULL, and a ragged mix of the two up to DEEPSLATE_TOP. */
+    private static final int DEEPSLATE_FULL = 0;
+    private static final int DEEPSLATE_TOP = 8;
+
+    private static final int PROVINCE_CELL_SIZE = 128;
+    private static final float PROVINCE_VEIN_CHANCE = 0.65f;
     private final Map<Long, ProvinceVeinInstance> provinceCellCache = new ConcurrentHashMap<>();
 
     private record ProvinceVeinInstance(BlockPos origin, int radius, long seed,
@@ -353,6 +361,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
         long t0 = System.nanoTime();
         shapeLandforms(chunk);
+        UndergroundBiomes.apply(chunk, disciplineId, biomeRegionNoise, seed, getMinY(), getMinY() + getGenDepth());
         placeStructures(level, chunk, structureManager);
         applyWorldgenFeatures(level, chunkPos.x, chunkPos.z);
         long t1 = System.nanoTime();
@@ -391,6 +400,20 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                 start.placeInChunk(level, structureManager, this, random, writable, chunkPos);
             }
         }
+    }
+
+    /** Applies the physics of the landforms near the players of this level: updrafts, low gravity, conveyors. */
+    public void tickLandformPhysics(net.minecraft.server.level.ServerLevel level) {
+        if (level.players().isEmpty() || !landforms.enabled()) return;
+        TerrainProfile profile = resolveTerrainProfile(level.getChunkSource().randomState());
+        int minY = getMinY();
+        int maxY = minY + getGenDepth();
+        LandformPhysics.tick(level, landforms, getSeaLevel(), (gx, gz) -> {
+            for (int y = maxY - 1; y >= minY; y--) {
+                if (profile.sampler().sample(gx, y, gz) > 0) return y + 1;
+            }
+            return minY;
+        });
     }
 
     public boolean landformNear(int x, int z, int margin, RandomState randomState) {
@@ -495,7 +518,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
 
                     pos.set(x, y, z);
                     BlockState current = chunk.getBlockState(pos);
-                    if (!current.is(ProvinceVeinTemplates.STONE_TAG)) continue;
+                    if (!current.is(ProvinceVeinTemplates.STONE_TAG) && !current.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) continue;
 
                     int cellX = Math.floorDiv(x, CLUMP_CELL);
                     int cellY = Math.floorDiv(y, CLUMP_CELL);
@@ -550,7 +573,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
             
             case "sculk" -> new GardenTheme(Blocks.SCULK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
                     Blocks.MOSS_CARPET.defaultBlockState(), Blocks.FLOWERING_AZALEA.defaultBlockState(),
-                    Blocks.SCULK_CATALYST.defaultBlockState(), 60, SHAPE_RING, 1.0, 0);
+                    Blocks.VERDANT_FROGLIGHT.defaultBlockState(), 60, SHAPE_RING, 1.0, 0);
             
             case "void" -> new GardenTheme(Blocks.END_STONE.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState(),
                     Blocks.CHORUS_FLOWER.defaultBlockState(), Blocks.CHORUS_PLANT.defaultBlockState(),
@@ -728,7 +751,11 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         RandomSource cellRandom = new XoroshiroRandomSource(
                 seed ^ ((long) cellX * 341873128712L) ^ ((long) cellZ * 132897987541L) ^ 0x50484F454E4958L);
 
-        if (cellRandom.nextFloat() >= PROVINCE_VEIN_CHANCE) return null;
+        // the four cells around the world origin always hold a vein, so there is ore within a few hundred blocks of where
+        // anyone starts, however the dice fall
+        boolean nearOrigin = cellX >= -1 && cellX <= 0 && cellZ >= -1 && cellZ <= 0;
+        float roll = cellRandom.nextFloat();
+        if (!nearOrigin && roll >= PROVINCE_VEIN_CHANCE) return null;
 
         int originX = cellX * PROVINCE_CELL_SIZE + cellRandom.nextInt(PROVINCE_CELL_SIZE);
         int originZ = cellZ * PROVINCE_CELL_SIZE + cellRandom.nextInt(PROVINCE_CELL_SIZE);
@@ -791,9 +818,27 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
                 for (int y = minY; y < maxY; y++) {
-                    if (profile.sampler().sample(x, y, z) > 0) {
-                        chunk.setBlockState(new BlockPos(x, y, z), Blocks.STONE.defaultBlockState(), false);
+                    BlockPos pos = new BlockPos(x, y, z);
+                    boolean solid = profile.sampler().sample(x, y, z) > 0;
+                    double roll = ((positionHash(seed ^ 0xDEE95L, x, y, z) >>> 24) & 0xFFFFFF) / (double) 0x1000000;
+
+                    // the floor of the world: solid bedrock at the very bottom, ragged for four layers above it
+                    if (y == minY || (solid && y < minY + BEDROCK_LAYERS && roll < (minY + BEDROCK_LAYERS - y) /
+                            (double) BEDROCK_LAYERS)) {
+                        chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState(), false);
+                        continue;
                     }
+                    if (!solid) {
+                        // a cave that reaches the deep floods with lava, as in the overworld
+                        if (y <= minY + DEEP_LAVA_TOP) {
+                            chunk.setBlockState(pos, Blocks.LAVA.defaultBlockState(), false);
+                        }
+                        continue;
+                    }
+                    // the deep layer: stone gives way to deepslate through a ragged band, as in the overworld
+                    boolean deepslate = y < DEEPSLATE_FULL || (y < DEEPSLATE_TOP &&
+                            roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
+                    chunk.setBlockState(pos, (deepslate ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState(), false);
                 }
 
                 int seaLevel = profile.seaLevel();
@@ -815,10 +860,21 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     public void applyWorldgenFeatures(WorldGenLevel level, int chunkX, int chunkZ) {
         SimplexNoise regionNoise = biomeRegionNoise;
         List<WorldgenProfile.BiomeDefinition> biomes = worldgenProfile.biomes.biomes;
-        WorldgenApplier.BiomeLookup lookup = regionNoise == null || biomes.isEmpty() ? null : (x, z) -> {
-            WorldgenProfile.BiomeDefinition def = groundBiome(biomes, regionNoise, x, z);
-            return def == null ? null : def.biomeId;
-        };
+        WorldgenApplier.BiomeLookup lookup = regionNoise == null || biomes.isEmpty() ? null :
+                new WorldgenApplier.BiomeLookup() {
+
+                    @Override
+                    public String biomeIdAt(int x, int z) {
+                        WorldgenProfile.BiomeDefinition def = groundBiome(biomes, regionNoise, x, z);
+                        return def == null ? null : def.biomeId;
+                    }
+
+                    @Override
+                    public net.minecraft.world.level.block.Block groundBlockAt(int x, int z) {
+                        WorldgenProfile.BiomeDefinition def = groundBiome(biomes, regionNoise, x, z);
+                        return def == null ? null : resolveBlockState(def.surfaceBlock, Blocks.STONE).getBlock();
+                    }
+                };
         WorldgenApplier.applyWorldgenProfile(level, worldgenProfile, null, chunkX, chunkZ, lookup);
 
         applySignatureFeatures(level, chunkX, chunkZ);

@@ -29,6 +29,7 @@ public class VerdantBloomMachine extends GrowthMultiblockMachine {
             GrowthStages.bounds(5, 1, 2, 2, 0, 4),
             GrowthStages.bounds(7, 1, 2, 2, 0, 4) };
 
+    public static final IntList MIN_BOUNDS = SHAPES[0];
     public static final IntList MAX_BOUNDS = SHAPES[SHAPES.length - 1];
 
     private static final java.util.function.Supplier<List<GrowthStage>> STAGES = com.google.common.base.Suppliers.memoize(VerdantBloomMachine::buildStages);

@@ -1,7 +1,9 @@
 package net.phoenix.core.integration.emi;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -71,6 +73,63 @@ public final class ContinuumEmi {
         });
     }
 
+    // ---- text that wraps. EMI panels are narrow, so every line is fitted to the panel and the panel grows to hold it.
+
+    private static final int PANEL_WIDTH = 176;
+    private static final int TEXT_WIDTH = PANEL_WIDTH - 12;
+    private static final int LINE = 10;
+
+    private enum Tone { TITLE, DIM, TEXT, WARN }
+
+    private record Line(Component text, Tone tone, boolean shadow) {}
+
+    private static Line title(String text) {
+        return new Line(Component.literal(text), Tone.TITLE, true);
+    }
+
+    private static Line dim(String text) {
+        return new Line(Component.literal(text), Tone.DIM, false);
+    }
+
+    private static Line text(String text) {
+        return new Line(Component.literal(text), Tone.TEXT, false);
+    }
+
+    private static Line warn(String text) {
+        return new Line(Component.literal(text), Tone.WARN, false);
+    }
+
+    private static List<FormattedCharSequence> wrap(Component text) {
+        var font = Minecraft.getInstance().font;
+        return font == null ? List.of(text.getVisualOrderText()) : font.split(text, TEXT_WIDTH);
+    }
+
+    /** How tall these lines are once wrapped. */
+    private static int measure(List<Line> lines) {
+        int total = 0;
+        for (Line line : lines) total += wrap(line.text()).size() * LINE + 1;
+        return total;
+    }
+
+    /** Draws the lines, wrapped to the panel, from y; returns the y below the last one. */
+    private static int draw(WidgetHolder widgets, List<Line> lines, int y) {
+        Palette p = palette();
+        for (Line line : lines) {
+            int color = switch (line.tone()) {
+                case TITLE -> p.title();
+                case DIM -> p.dim();
+                case TEXT -> p.text();
+                case WARN -> 0xFFFFD27A;
+            };
+            for (FormattedCharSequence row : wrap(line.text())) {
+                widgets.addText(row, 6, y, color, line.shadow());
+                y += LINE;
+            }
+            y += 1;
+        }
+        return y;
+    }
+
     private static ItemStack rocket(int tier) {
         ItemStack stack = new ItemStack(ContinuumRegistry.ROCKET.get());
         RocketStats.setTier(stack, tier);
@@ -82,11 +141,17 @@ public final class ContinuumEmi {
     private static class BodyRecipe extends BasicEmiRecipe {
 
         private final ContinuumBody body;
+        private final List<Line> head;
 
         BodyRecipe(ContinuumBody body) {
-            super(BODIES, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()), 168,
-                    62 + ((body.yields().size() + COLUMNS - 1) / COLUMNS) * 18);
+            this(body, headOf(body));
+        }
+
+        private BodyRecipe(ContinuumBody body, List<Line> head) {
+            super(BODIES, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_body/" + body.id().getPath()),
+                    PANEL_WIDTH, 8 + measure(head) + 6 + (((body.yields().size() + COLUMNS - 1) / COLUMNS) * 18) + 6);
             this.body = body;
+            this.head = head;
             this.inputs = List.of(EmiStack.of(ContinuumRegistry.PROBE.get()));
             this.outputs = body.yields().stream().map(y -> {
                 Item item = ForgeRegistries.ITEMS.getValue(y.item());
@@ -95,34 +160,36 @@ public final class ContinuumEmi {
             }).toList();
         }
 
+        private static List<Line> headOf(ContinuumBody body) {
+            var system = ContinuumData.system(body.system());
+            String where = system != null ? system.name() : body.system().getPath();
+            List<Line> lines = new java.util.ArrayList<>();
+            lines.add(title(body.name()));
+            lines.add(dim(body.type().label() + " in " + where + "  -  tier " + body.minTier()));
+            lines.add(text(String.format(Locale.ROOT, "%d min flight   hull %s", body.tripMinutes(),
+                    RocketStats.tierName(RocketStats.requiredTier(body)))));
+            if (body.transientInfo() != null) {
+                lines.add(warn(String.format(Locale.ROOT, "A passing comet: here for about %.1f h, now and then",
+                        body.transientInfo().durationMinutes() / 60.0)));
+            } else {
+                lines.add(dim("Extraction run, per probe"));
+            }
+            return lines;
+        }
+
         @Override
         public void addWidgets(WidgetHolder widgets) {
             background(widgets, width, height);
             Palette p = palette();
+            int y = draw(widgets, head, 5) + 4;
 
-            var system = ContinuumData.system(body.system());
-            String where = system != null ? system.name() : body.system().getPath();
-            widgets.addText(Component.literal(body.name()), 6, 5, p.title(), true);
-            widgets.addText(Component.literal(body.type().label() + " in " + where + "  -  tier " +
-                    body.minTier()), 6, 17, p.dim(), false);
-            widgets.addText(Component.literal(String.format(Locale.ROOT, "%d min flight   hull %s", body.tripMinutes(),
-                    RocketStats.tierName(RocketStats.requiredTier(body)))), 6, 28, p.text(), false);
-            if (body.transientInfo() != null) {
-                var t = body.transientInfo();
-                widgets.addText(Component.literal(String.format(Locale.ROOT,
-                        "A passing comet: here for about %.1f h, now and then", t.durationMinutes() / 60.0)), 6, 39,
-                        0xFFFFD27A, false);
-            } else {
-                widgets.addText(Component.literal("Extraction run, per probe"), 6, 39, p.dim(), false);
-            }
-
-            widgets.addSlot(inputs.get(0), 6, 50).drawBack(true);
-            widgets.addText(Component.literal("->"), 28, 55, p.dim(), false);
+            widgets.addSlot(inputs.get(0), 6, y).drawBack(true);
+            widgets.addText(Component.literal("->"), 28, y + 5, p.dim(), false);
             for (int i = 0; i < outputs.size(); i++) {
                 var yield = body.yields().get(i);
                 String range = yield.min() == yield.max() ? String.valueOf(yield.min()) :
                         yield.min() + "-" + yield.max();
-                widgets.addSlot(outputs.get(i), 44 + (i % COLUMNS) * 18, 50 + (i / COLUMNS) * 18)
+                widgets.addSlot(outputs.get(i), 44 + (i % COLUMNS) * 18, y + (i / COLUMNS) * 18)
                         .drawBack(true)
                         .appendTooltip(Component.literal(range + " per roll, " + Math.round(yield.chance() * 100) +
                                 "% of rolls"))
@@ -134,10 +201,21 @@ public final class ContinuumEmi {
     private static class HullRecipe extends BasicEmiRecipe {
 
         private final int tier;
+        private final List<Line> head;
+        private final List<Line> tail;
 
         HullRecipe(int tier) {
-            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier), 168, 62);
+            this(tier, List.of(title("Hull refit: " + RocketStats.tierName(tier))),
+                    List.of(dim("In the refit screen: sneak + use the rocket"),
+                            text("-5% trips, -10% wear, -12% failure, more module room")));
+        }
+
+        private HullRecipe(int tier, List<Line> head, List<Line> tail) {
+            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/hull_mk" + tier), PANEL_WIDTH,
+                    5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.tier = tier;
+            this.head = head;
+            this.tail = tail;
             Item kit = RocketRefit.refitKit(tier);
             this.inputs = List.of(EmiStack.of(rocket(tier - 1)), EmiStack.of(kit == null ? Items.BARRIER : kit));
             this.outputs = List.of(EmiStack.of(rocket(tier)));
@@ -147,25 +225,32 @@ public final class ContinuumEmi {
         public void addWidgets(WidgetHolder widgets) {
             background(widgets, width, height);
             Palette p = palette();
-            widgets.addText(Component.literal("Hull refit: " + RocketStats.tierName(tier)), 6, 5, p.title(), true);
-            widgets.addSlot(inputs.get(0), 6, 20).drawBack(true);
-            widgets.addText(Component.literal("+"), 27, 25, p.dim(), false);
-            widgets.addSlot(inputs.get(1), 36, 20).drawBack(true);
-            widgets.addText(Component.literal("->"), 58, 25, p.dim(), false);
-            widgets.addSlot(outputs.get(0), 76, 20).drawBack(true).recipeContext(this);
-            widgets.addText(Component.literal("In the refit screen: sneak + use the rocket"), 6, 42, p.dim(), false);
-            widgets.addText(Component.literal("-5% trips, -10% wear, -12% failure, more module room"), 6, 52,
-                    p.text(), false);
+            int y = draw(widgets, head, 5) + 4;
+            widgets.addSlot(inputs.get(0), 6, y).drawBack(true);
+            widgets.addText(Component.literal("+"), 27, y + 5, p.dim(), false);
+            widgets.addSlot(inputs.get(1), 36, y).drawBack(true);
+            widgets.addText(Component.literal("->"), 58, y + 5, p.dim(), false);
+            widgets.addSlot(outputs.get(0), 76, y).drawBack(true).recipeContext(this);
+            draw(widgets, tail, y + 18 + 6);
         }
     }
 
     private static class ModuleRecipe extends BasicEmiRecipe {
 
         private final String upgrade;
+        private final List<Line> head;
+        private final List<Line> tail;
 
         ModuleRecipe(String upgrade) {
-            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade), 168, 62);
+            this(upgrade, headOf(upgrade), tailOf(upgrade));
+        }
+
+        private ModuleRecipe(String upgrade, List<Line> head, List<Line> tail) {
+            super(REFIT, new ResourceLocation(PhoenixCore.MOD_ID, "/continuum_refit/module_" + upgrade), PANEL_WIDTH,
+                    5 + measure(head) + 4 + 18 + 6 + measure(tail) + 6);
             this.upgrade = upgrade;
+            this.head = head;
+            this.tail = tail;
             Item module = RocketRefit.module(upgrade);
             ItemStack fitted = rocket(RocketStats.MAX_TIER);
             RocketStats.setLevel(fitted, upgrade, 1);
@@ -174,26 +259,33 @@ public final class ContinuumEmi {
             this.outputs = List.of(EmiStack.of(fitted));
         }
 
+        private static List<Line> headOf(String upgrade) {
+            Item module = RocketRefit.module(upgrade);
+            return List.of(title("Fit " + (module == null ? upgrade : module.getDescription().getString())));
+        }
+
+        /** How many of the module each hull takes: a header, then one line per hull, instead of one long line. */
+        private static List<Line> tailOf(String upgrade) {
+            List<Line> lines = new java.util.ArrayList<>();
+            lines.add(dim("Most you can fit, by hull:"));
+            for (int tier = 1; tier <= RocketStats.MAX_TIER; tier++) {
+                int cap = RocketStats.upgradeCap(tier, upgrade);
+                lines.add(text(RocketStats.tierName(tier) + ":  " + (cap == 0 ? "not at this hull" : cap)));
+            }
+            return lines;
+        }
+
         @Override
         public void addWidgets(WidgetHolder widgets) {
             background(widgets, width, height);
             Palette p = palette();
-            Item module = RocketRefit.module(upgrade);
-            widgets.addText(Component.literal("Fit " + (module == null ? upgrade : module.getDescription().getString())),
-                    6, 5, p.title(), true);
-            widgets.addSlot(inputs.get(0), 6, 20).drawBack(true);
-            widgets.addText(Component.literal("+"), 27, 25, p.dim(), false);
-            widgets.addSlot(inputs.get(1), 36, 20).drawBack(true);
-            widgets.addText(Component.literal("->"), 58, 25, p.dim(), false);
-            widgets.addSlot(outputs.get(0), 76, 20).drawBack(true).recipeContext(this);
-
-            StringBuilder caps = new StringBuilder("Most by hull:  ");
-            for (int tier = 1; tier <= RocketStats.MAX_TIER; tier++) {
-                int cap = RocketStats.upgradeCap(tier, upgrade);
-                caps.append(RocketStats.tierName(tier)).append(' ').append(cap == 0 ? "-" : cap);
-                if (tier < RocketStats.MAX_TIER) caps.append("   ");
-            }
-            widgets.addText(Component.literal(caps.toString()), 6, 46, p.text(), false);
+            int y = draw(widgets, head, 5) + 4;
+            widgets.addSlot(inputs.get(0), 6, y).drawBack(true);
+            widgets.addText(Component.literal("+"), 27, y + 5, p.dim(), false);
+            widgets.addSlot(inputs.get(1), 36, y).drawBack(true);
+            widgets.addText(Component.literal("->"), 58, y + 5, p.dim(), false);
+            widgets.addSlot(outputs.get(0), 76, y).drawBack(true).recipeContext(this);
+            draw(widgets, tail, y + 18 + 6);
         }
     }
 }
