@@ -1,0 +1,62 @@
+{
+  "system": "phoenixcore:carousel",
+  "type": "moon",
+  "name": "Brass",
+  "description": "A moon of Calliope that rings when it is struck.",
+  "orbit": {
+    "radius_au": 0.007,
+    "period_days": 9,
+    "phase": 0.55
+  },
+  "radius": 0.35,
+  "gas_giant": false,
+  "axial_tilt": 5,
+  "spin_deg_per_sec": 8,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 99,
+    "scale": 4.2,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.0,
+    "low": "#5a4010",
+    "mid": "#b08a3a",
+    "high": "#f0d890",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_carousel_signal",
+    "surveyed_research": "phoenixcore:space_carousel_decode"
+  },
+  "trip_minutes": 112,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:copper_ingot",
+      "min": 3,
+      "max": 7,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 2,
+      "max": 6,
+      "chance": 0.6
+    }
+  ],
+  "parent": "phoenixcore:calliope",
+  "lore": {
+    "detected": "The landing instruments report a note when they touch down, and it is the same note every time.",
+    "surveyed": "Brass is one dense metal alloy all the way through, and it rings like a bell at the lowest tap."
+  },
+  "style": "chrome"
+}

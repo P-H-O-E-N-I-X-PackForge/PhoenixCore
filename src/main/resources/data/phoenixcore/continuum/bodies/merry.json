@@ -1,0 +1,75 @@
+{
+  "system": "phoenixcore:carousel",
+  "type": "planet",
+  "name": "Merry",
+  "description": "A gold gas giant with hurried bands.",
+  "orbit": {
+    "radius_au": 4.0,
+    "period_days": 1700,
+    "phase": 0.6
+  },
+  "radius": 5.0,
+  "gas_giant": true,
+  "axial_tilt": 6,
+  "spin_deg_per_sec": 15,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 412,
+    "scale": 5.5,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.8,
+    "low": "#c8902a",
+    "mid": "#f0d070",
+    "high": "#fff4c0",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ffe090",
+    "density": 0.55
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_carousel_signal",
+    "surveyed_research": "phoenixcore:space_carousel_decode"
+  },
+  "trip_minutes": 118,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:honeycomb",
+      "min": 3,
+      "max": 7,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 4,
+      "max": 10,
+      "chance": 0.7
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 3,
+      "max": 6,
+      "chance": 0.6
+    }
+  ],
+  "lore": {
+    "detected": "A golden planet whose bands run at a different speed to Calliope, and a little ahead of it.",
+    "surveyed": "Merry runs a lap faster than the planet inside it. The two have been out of step for as long as there have been records."
+  },
+  "style": "storm",
+  "rings": {
+    "inner": 1.45,
+    "outer": 2.3,
+    "color": "#f0dca0",
+    "color2": "#a07a30",
+    "tilt": -8,
+    "opacity": 0.8
+  }
+}

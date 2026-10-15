@@ -1,22 +1,29 @@
 package net.phoenix.core.integration.vocal_resonance.ingredient;
 
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
+import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.resources.ResourceLocation;
+import net.phoenix.core.integration.vocal_resonance.recipe.lookup.MapSoundIngredient;
 
-import org.apache.commons.lang3.mutable.MutableInt;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SoundRecipeCapability extends RecipeCapability<SoundIngredient> {
 
-    public final static SoundRecipeCapability CAP = new SoundRecipeCapability();
+    public static final SoundRecipeCapability CAP = new SoundRecipeCapability();
 
     protected SoundRecipeCapability() {
-        super("sound", 0x00FFFF, false, 1, SoundIngredient.Serializer.INSTANCE);
+        super(ResourceLocation.fromNamespaceAndPath("phoenixcore", "sound"), 0x00FFFF, false, 14,
+                SoundIngredient.Serializer.INSTANCE);
+    }
+
+    @Override
+    public SoundIngredient copyWithModifier(SoundIngredient content, ContentModifier modifier) {
+        return content.copy();
     }
 
     @Override
@@ -25,34 +32,12 @@ public class SoundRecipeCapability extends RecipeCapability<SoundIngredient> {
     }
 
     @Override
-    public void addXEIInfo(WidgetGroup group, int xOffset, GTRecipe recipe, List<Content> contents, boolean perTick,
-                           boolean isInput, MutableInt yOffset) {
-        for (var content : contents) {
-            SoundIngredient sound = of(content);
-            if (isInput) {
-                String namePrefix = sound.exactMatch() ? "§bRequired: §f" : "§3Suggested: §f";
-                String displayName = sound.soundName().isEmpty() ? "Any Sonic Wave" : sound.soundName();
-                group.addWidget(new LabelWidget(xOffset, yOffset.addAndGet(10), namePrefix + displayName));
+    public @Nullable List<AbstractMapIngredient> getDefaultMapIngredient(Object ingredient) {
+        List<AbstractMapIngredient> ingredients = new ObjectArrayList<>(1);
+        if (ingredient instanceof SoundIngredient s) {
 
-                if (sound.requiredBPM() > 0) {
-                    String tolStr = String.format("%.0f%%", (1.0f - sound.tolerance()) * 100);
-                    group.addWidget(new LabelWidget(xOffset, yOffset.addAndGet(10),
-                            "§6Tempo: §e" + sound.requiredBPM() + " BPM §8(Sync: " + tolStr + ")"));
-                }
-
-                if (sound.minBass() > 0) {
-                    group.addWidget(new LabelWidget(xOffset, yOffset.addAndGet(10),
-                            "§5Bass: §f≥" + String.format("%.2f", sound.minBass())));
-                }
-                if (sound.minMid() > 0) {
-                    group.addWidget(new LabelWidget(xOffset, yOffset.addAndGet(10),
-                            "§eMid: §f≥" + String.format("%.2f", sound.minMid())));
-                }
-                if (sound.minTreble() > 0) {
-                    group.addWidget(new LabelWidget(xOffset, yOffset.addAndGet(10),
-                            "§dTreble: §f≥" + String.format("%.2f", sound.minTreble())));
-                }
-            }
+            ingredients.add(new MapSoundIngredient(s));
         }
+        return ingredients;
     }
 }

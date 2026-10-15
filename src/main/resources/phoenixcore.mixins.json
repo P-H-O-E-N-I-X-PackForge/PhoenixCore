@@ -6,7 +6,6 @@
   "refmap": "mixins.phoenixcore.refmap.json",
   "mixins": [
     "accessor.AbilitiesAccessor",
-    "accessor.ColorSprayBehaviourAccessor",
     "accessor.GTOresAccessor",
     "accessor.MinecraftServerStorageAccessor",
     "accessor.RelayTileDisabledAccessor",
@@ -16,23 +15,33 @@
     "ae2.MixinCutterHook",
     "ars.DominionWandMixin",
     "emi.EmiApiMixin",
+    "gtceu.ConveyorCoverRateMixin",
     "gtceu.MetaMachineBlockEntityWandableMixin",
     "gtceu.MixinGTOres",
+    "gtceu.MultiblockResearchGateMixin",
+    "gtceu.PumpCoverRateMixin",
     "gtceu.WorkableMultiblockMachineMixin",
     "minecraft.ItemStackTooltipMixin",
     "minecraft.RecipeManagerMixin"
   ],
   "client": [
+    "MixinAbstractContainerScreen",
+    "MixinMachineModel",
+    "accessor.GameRendererAccessor",
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "emi.EmiFavoritesMixin",
     "emi.EmiScreenManagerAccessor",
     "emi.EmiScreenManagerMixin",
     "minecraft.ChannelMixin",
-    "minecraft.GameRendererMixin",
+    "minecraft.CreateWorldScreenMixin",
+    "minecraft.FeatureFlagsMixin",
     "minecraft.GuiGraphicsCountSuffixMixin",
+    "minecraft.LevelRendererMixin",
     "minecraft.MixinOggAudioStream",
-    "minecraft.SoundEngineMixin"
+    "minecraft.RenderTargetMixin",
+    "minecraft.SoundEngineMixin",
+    "modularui.OverlayStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

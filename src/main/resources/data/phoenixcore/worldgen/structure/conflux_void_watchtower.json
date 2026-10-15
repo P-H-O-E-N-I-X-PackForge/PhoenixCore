@@ -1,0 +1,9 @@
+{
+  "type": "phoenixcore:conflux_structure",
+  "biomes": "phoenixcore:void",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "kind": "watchtower",
+  "theme": "void"
+}

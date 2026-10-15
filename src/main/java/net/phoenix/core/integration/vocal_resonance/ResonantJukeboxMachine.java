@@ -1,70 +1,70 @@
 package net.phoenix.core.integration.vocal_resonance;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
-
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.PacketDistributor;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
+import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.C2SSelectSoundPacket;
 import net.phoenix.core.network.packet.S2CPlaySoundPacket;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
 
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widgets.TextWidget;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
-
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            ResonantJukeboxMachine.class, WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
+public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine implements IMuiMachine {
 
     private boolean hasDiscHatch = false;
     private boolean hasLibraryHatch = false;
     private boolean hasStreamHatch = false;
 
-    @Persisted
+    @SaveField
     @NotNull
-    private final NotifiableItemStackHandler discInventory = new NotifiableItemStackHandler(this, 1, IO.IN);
+
+    private final NotifiableItemStackHandler discInventory = attachTrait(
+            new NotifiableItemStackHandler(1, IO.IN, IO.NONE));
 
     @NotNull
-    private final NotifiableSoundHandler soundHandler = new NotifiableSoundHandler(this, IO.IN);
 
-    @Persisted
-    @DescSynced
+    private final NotifiableSoundHandler soundHandler = attachTrait(new NotifiableSoundHandler(this, IO.IN));
+
+    @SaveField
+    @SyncToClient
     public String selectedLibrarySound = "";
 
-    @Persisted
+    @SaveField
     private String lastPlayingStreamUrl = "";
     private String lastPlayingLibrarySound = "";
-    @Persisted
-    @DescSynced
+
+    @SaveField
+    @SyncToClient
     public String currentStreamUrl = "";
 
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public String streamTitle = "Ready...";
 
-    @Persisted
+    @SaveField
     public String searchTerm = "";
 
     private int totalSpeakerRange = 0;
@@ -72,81 +72,104 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
     private static final int BASE_RANGE = 16;
     private static final long MUSIC_ENERGY_DRAIN = 32L;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private int remainingSoundTicks = -1;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public float currentLiveBass = 0.0f;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public int currentLiveBPM = 0;
 
     private int lastKnownDuration = 0;
 
-    private final ConditionalSubscriptionHandler acousticTickHandler;
+    private TickableSubscription acousticSub;
 
-    public ResonantJukeboxMachine(IMachineBlockEntity holder) {
+    public ResonantJukeboxMachine(BlockEntityCreationInfo holder) {
         super(holder);
-
-        this.acousticTickHandler = new ConditionalSubscriptionHandler(this, this::acousticStateMachineTick,
-                this::isFormed);
     }
 
     @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
+    public void onLoad() {
+        super.onLoad();
+        if (!isRemote()) {
+            this.acousticSub = subscribeServerTick(this::acousticStateMachineTick);
+        }
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
-        var matchContext = getMultiblockState().getMatchContext();
+    public void onUnload() {
+        super.onUnload();
+        if (this.acousticSub != null) {
+            unsubscribe(this.acousticSub);
+            this.acousticSub = null;
+        }
+    }
+
+    @Override
+    public void formStructure(@NotNull String substructureName) {
+        super.formStructure(substructureName);
+
+        if (getLevel() == null || getLevel().isClientSide) return;
+
+        PatternState patternState = this.getPatternState(substructureName);
+        if (patternState == null || patternState.getCache() == null) return;
+
         this.hasDiscHatch = false;
         this.hasLibraryHatch = false;
         this.hasStreamHatch = false;
+        this.totalSpeakerRange = 0;
 
-        List<SoundHatchPartMachine> soundHatches = matchContext.get("SoundHatches");
-        if (soundHatches != null) {
-            for (SoundHatchPartMachine hatch : soundHatches) {
-                switch (hatch.getSoundType()) {
-                    case DISC -> this.hasDiscHatch = true;
-                    case LIBRARY -> this.hasLibraryHatch = true;
-                    case STREAM -> this.hasStreamHatch = true;
+        int totalSpeakerValue = 0;
+        float amplifierSum = 0.0f;
+        int speakerCount = 0;
+
+        for (var entry : patternState.getCache().long2ObjectEntrySet()) {
+            if (entry.getValue().getBlockState().getBlock() instanceof SpeakerBlock speaker) {
+                totalSpeakerValue += speaker.getSpeakerType().getRangeBonus();
+                amplifierSum += speaker.getSpeakerType().getResonanceAmplifier();
+                speakerCount++;
+            }
+
+            BlockEntity blockEntity = entry.getValue().getBlockEntity();
+
+            if (blockEntity instanceof SoundHatchPartMachine hatch) {
+                if (hatch.getSoundType() != null) {
+                    switch (hatch.getSoundType()) {
+                        case DISC -> this.hasDiscHatch = true;
+                        case LIBRARY -> this.hasLibraryHatch = true;
+                        case STREAM -> this.hasStreamHatch = true;
+                    }
                 }
             }
+
         }
 
-        this.hasLibraryHatch = true;
-        this.hasStreamHatch = true;
-        this.totalSpeakerRange = matchContext.getOrDefault("TotalSpeakerRange", 0);
-
-        this.resonancePower = matchContext.getOrDefault("ResonancePower", 100) / 100.0f;
-
+        this.totalSpeakerRange = totalSpeakerValue;
+        
+        this.resonancePower = speakerCount == 0 ? 1.0f : amplifierSum / speakerCount;
         this.lastPlayingStreamUrl = "";
         this.lastPlayingLibrarySound = "";
         this.resetAcousticData();
 
-        this.acousticTickHandler.updateSubscription();
-
-        WorldAcousticSensor.register(getPos(), getFinalRange());
+        WorldAcousticSensor.register(getBlockPos(), getFinalRange());
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void invalidateStructure(String substructureName) {
         killAllMachineAudio();
-        super.onStructureInvalid();
+        super.invalidateStructure(substructureName);
         this.lastPlayingStreamUrl = "";
         this.resetAcousticData();
 
-        this.acousticTickHandler.updateSubscription();
-        WorldAcousticSensor.unregister(getPos());
+        WorldAcousticSensor.unregister(getBlockPos());
     }
 
     public void acousticStateMachineTick() {
-        if (getLevel() == null || getLevel().isClientSide) return;
+        if (getLevel() == null || getLevel().isClientSide || !isFormed()) return;
 
         boolean hasActiveSelection = (!selectedLibrarySound.isEmpty() && currentStreamUrl.isEmpty()) ||
                 !currentStreamUrl.isEmpty();
@@ -161,7 +184,6 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
 
         var energyContainer = this.getEnergyContainer();
         if (energyContainer == null || energyContainer.getEnergyStored() < MUSIC_ENERGY_DRAIN) {
-
             killAllMachineAudio();
             return;
         }
@@ -182,7 +204,6 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
                 lastPlayingStreamUrl = currentStreamUrl;
             }
         } else {
-
             if (!lastPlayingStreamUrl.isEmpty()) {
                 killAllMachineAudio();
                 this.lastPlayingStreamUrl = "";
@@ -194,7 +215,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
                 playLibrarySound();
                 lastPlayingLibrarySound = selectedLibrarySound;
             }
-            this.markDirty();
+            this.markAsChanged();
         }
     }
 
@@ -203,24 +224,25 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
         if (level == null || level.isClientSide) return;
 
         PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getPos())),
-                new S2CPlaySoundPacket(getPos(), new ResourceLocation("minecraft", "empty"), 0.0f, 1.0f,
+                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
+                new S2CPlaySoundPacket(getBlockPos(), ResourceLocation.fromNamespaceAndPath("minecraft", "empty"), 0.0f,
+                        1.0f,
                         (float) getFinalRange()));
 
         this.lastPlayingLibrarySound = "";
         this.resetAcousticData();
-        this.markDirty();
+        this.markAsChanged();
     }
 
-    @Override
-    public boolean onWorking() {
-        return super.onWorking();
+    public void onLibrarySoundChosen(String soundLoc) {
+        if (getLevel() == null || getLevel().isClientSide || !isFormed() || !hasLibraryHatch) return;
+        HarmonicLockMachine.broadcast(getLevel(), getBlockPos(), getFinalRange(), soundLoc);
     }
 
     public void syncAndGeneralUpdate() {
         if (this.getLevel() != null && this.getLevel().isClientSide) {
-            PhoenixNetwork.CHANNEL.sendToServer(new C2SSelectSoundPacket(
-                    this.getPos(), this.selectedLibrarySound, this.currentStreamUrl));
+            PhoenixNetwork.CHANNEL.sendToServer(
+                    new C2SSelectSoundPacket(this.getBlockPos(), this.selectedLibrarySound, this.currentStreamUrl));
         }
     }
 
@@ -241,7 +263,7 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
         }
         this.currentLiveBass = bass;
         this.currentLiveBPM = bpm;
-        this.markDirty();
+        this.markAsChanged();
     }
 
     public void resetAcousticData() {
@@ -260,8 +282,8 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
         if (soundLoc == null) return;
 
         PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getPos())),
-                new S2CPlaySoundPacket(getPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
+                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
+                new S2CPlaySoundPacket(getBlockPos(), soundLoc, resonancePower, 1.0f, (float) getFinalRange()));
     }
 
     private void playStreamSound() {
@@ -269,55 +291,31 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine {
         if (level == null || level.isClientSide) return;
 
         PhoenixNetwork.CHANNEL.send(
-                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getPos())),
-                new S2CPlayStreamPacket(currentStreamUrl, getPos(), getFinalRange(), resonancePower));
+                PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(getBlockPos())),
+                new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
     }
 
     @Override
-    public Widget createUIWidget() {
-        WidgetGroup group = new WidgetGroup(0, 0, 180, 120);
-        group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 172, 80)
-                .setBackground(GuiTextures.DISPLAY)
-                .addWidget(new ComponentPanelWidget(4, 4, this::addDisplayText)));
-
-        TextTexture buttonText = new TextTexture("§b[ ACCESS CONSOLE ]");
-        IGuiTexture buttonVisual = new GuiTextureGroup(GuiTextures.BUTTON, buttonText);
-
-        group.addWidget(new ButtonWidget(4, 88, 172, 20, buttonVisual, (clickData) -> {
-            if (this.getLevel() != null && this.getLevel().isClientSide) {
-                openResonanceConsole();
-            }
-        }));
-        return group;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private void openResonanceConsole() {
-        net.minecraft.client.Minecraft.getInstance().setScreen(new ResonanceConsoleScreen(this));
-    }
-
-    @Override
-    public void addDisplayText(@NotNull List<Component> textList) {
-        super.addDisplayText(textList);
-        if (!isFormed()) return;
-        textList.add(Component.literal("§7-".repeat(15)));
-        textList.add(Component.literal("§bAcoustic Capabilities:"));
-        textList.add(Component.literal(getGateStatus("Physical Discs", hasDiscHatch)));
-        textList.add(Component.literal(getGateStatus("Sound Library", hasLibraryHatch)));
-        textList.add(Component.literal(getGateStatus("YT Streaming", hasStreamHatch)));
-        textList.add(Component.literal("§7Radius: §a" + getFinalRange() + "m §8(base " + BASE_RANGE + " + §7" +
-                totalSpeakerRange + "§8 speaker bonus)"));
-
-        boolean isAcousticallyActive = (!selectedLibrarySound.isEmpty() || !currentStreamUrl.isEmpty()) &&
-                isWorkingEnabled();
-        long activeDrain = isAcousticallyActive ? MUSIC_ENERGY_DRAIN : 0L;
-        textList.add(Component.literal("§7Usage: §e" + activeDrain + " EU/t"));
-
-        if (currentLiveBPM > 0) {
-            textList.add(Component.literal("§7BPM detected: §f" + currentLiveBPM));
-        } else {
-            textList.add(Component.literal("§7BPM detected: §8Awaiting Analysis..."));
-        }
+    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
+        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
+        if (!isFormed()) return widgets;
+        widgets.add(new TextWidget<>(Text.of(Component.literal("§bAcoustic Capabilities:"))));
+        widgets.add(
+                new TextWidget<>(Text.dynamic(() -> Component.literal(getGateStatus("Physical Discs", hasDiscHatch)))));
+        widgets.add(new TextWidget<>(
+                Text.dynamic(() -> Component.literal(getGateStatus("Sound Library", hasLibraryHatch)))));
+        widgets.add(
+                new TextWidget<>(Text.dynamic(() -> Component.literal(getGateStatus("YT Streaming", hasStreamHatch)))));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> Component.literal("§7Radius: §a" + getFinalRange() +
+                "m §8(base " + BASE_RANGE + " + §7" + totalSpeakerRange + "§8 speaker bonus)"))));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> {
+            boolean active = (!selectedLibrarySound.isEmpty() || !currentStreamUrl.isEmpty()) && isWorkingEnabled();
+            return Component.literal("§7Usage: §e" + (active ? MUSIC_ENERGY_DRAIN : 0L) + " EU/t");
+        })));
+        widgets.add(new TextWidget<>(
+                Text.dynamic(() -> currentLiveBPM > 0 ? Component.literal("§7BPM detected: §f" + currentLiveBPM) :
+                        Component.literal("§7BPM detected: §8Awaiting Analysis..."))));
+        return widgets;
     }
 
     private String getGateStatus(String name, boolean active) {

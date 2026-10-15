@@ -1,0 +1,48 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "The Conflux",
+  "description": "The Conflux world you have not chosen a path through yet.",
+  "discipline": "none",
+  "orbit": {
+    "radius_au": 1.35,
+    "period_days": 220,
+    "phase": 0.35
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 12,
+  "spin_deg_per_sec": 3.5,
+  "cloud_spin_deg_per_sec": 5,
+  "surface": {
+    "seed": 91,
+    "scale": 3.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.3,
+    "bump": 0.6,
+    "low": "#202838",
+    "mid": "#4c5f88",
+    "high": "#a8b8e0",
+    "ocean_deep": "#02121c",
+    "ocean_shallow": "#0f5a6a",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#8fb0ff",
+    "density": 0.5
+  },
+  "gate": {
+    "min_tier": "start",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 9,
+  "initial_stage": "surveyed",
+  "yields": [],
+  "lore": {
+    "detected": "A pale world close to home that does not quite appear on any chart, and has not picked a colour.",
+    "surveyed": "The Conflux waits. It will become whatever discipline you give yourself to, and until then it is only potential: a world with every future and no past."
+  }
+}

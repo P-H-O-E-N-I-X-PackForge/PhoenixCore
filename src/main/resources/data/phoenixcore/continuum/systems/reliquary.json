@@ -1,0 +1,17 @@
+{
+  "name": "Reliquary",
+  "description": "A white dwarf, the cold remains of a star, and the worlds it left behind.",
+  "galaxy": [
+    -1.0,
+    -1.6,
+    -9.5
+  ],
+  "star_color": "#e8f0ff",
+  "star_radius": 0.5,
+  "star_kind": "star",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_reliquary_signal",
+    "surveyed_research": "phoenixcore:space_reliquary_decode"
+  }
+}

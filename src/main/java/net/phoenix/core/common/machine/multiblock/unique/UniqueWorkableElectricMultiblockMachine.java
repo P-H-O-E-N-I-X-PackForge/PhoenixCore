@@ -1,11 +1,10 @@
 package net.phoenix.core.common.machine.multiblock.unique;
 
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -14,38 +13,33 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.phoenix.core.saveddata.UniqueMultiblockSavedData;
 
-import org.jetbrains.annotations.NotNull;
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widgets.TextWidget;
 
 import java.util.List;
 import java.util.UUID;
 
 public class UniqueWorkableElectricMultiblockMachine extends WorkableElectricMultiblockMachine {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            UniqueWorkableElectricMultiblockMachine.class,
-            WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
-    public UniqueWorkableElectricMultiblockMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+    public UniqueWorkableElectricMultiblockMachine(BlockEntityCreationInfo holder, Object... args) {
+        super(holder);
     }
 
-    @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Persisted
+    @SaveField
+    @SyncToClient
     public boolean isDuplicate = false;
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.formStructure(substructureName);
 
         if (getLevel() instanceof ServerLevel serverLevel) {
             UUID owner = getOwnerUUID();
             String multiblockId = getDefinition().getId().toString();
             String dimension = getLevel().dimension().location().toString();
-            BlockPos pos = getPos();
+            BlockPos pos = getBlockPos();
 
             UniqueMultiblockSavedData uniqueMultiblockMapping = UniqueMultiblockSavedData.getOrCreate(serverLevel);
 
@@ -54,14 +48,14 @@ public class UniqueWorkableElectricMultiblockMachine extends WorkableElectricMul
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.invalidateStructure(substructureName);
 
         if (getLevel() instanceof ServerLevel serverLevel) {
             UUID owner = getOwnerUUID();
             String multiblockId = getDefinition().getId().toString();
             String dimension = getLevel().dimension().location().toString();
-            BlockPos pos = getPos();
+            BlockPos pos = getBlockPos();
 
             UniqueMultiblockSavedData uniqueMultiblockMapping = UniqueMultiblockSavedData.getOrCreate(serverLevel);
 
@@ -100,14 +94,14 @@ public class UniqueWorkableElectricMultiblockMachine extends WorkableElectricMul
     }
 
     @Override
-    public void addDisplayText(@NotNull List<Component> textList) {
+    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
         if (this.isDuplicate) {
-            textList.add(Component.translatable("phoenixcore.multiblock.duplicate.1")
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_RED)));
-            textList.add(Component.translatable("phoenixcore.multiblock.duplicate.2")
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_RED)));
-        } else {
-            super.addDisplayText(textList);
+            return List.of(
+                    new TextWidget<>(Text.of(Component.translatable("phoenixcore.multiblock.duplicate.1")
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_RED)))),
+                    new TextWidget<>(Text.of(Component.translatable("phoenixcore.multiblock.duplicate.2")
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_RED)))));
         }
+        return super.getWidgetsForDisplay(syncManager);
     }
 }

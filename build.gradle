@@ -1,4 +1,5 @@
 import net.neoforged.moddevgradle.legacyforge.tasks.RemapJar
+
 plugins {
     id "idea"
     id "eclipse"
@@ -19,14 +20,15 @@ def generatedResources = file("src/generated")
 
 sourceSets {
     main.resources {
-        srcDir 'src/main/resources'
         srcDir 'src/generated/resources'
+        srcDir 'src/main/resources'
     }
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
+
     maven { // GTM maven
         name = 'GTCEu Maven'
         url = 'https://maven.gtceu.com'
@@ -34,7 +36,12 @@ repositories {
             includeGroup 'com.gregtechceu.gtceu'
             includeGroup 'appeng'
             includeGroup 'lu.kolja'
+            includeGroup 'brachy.modularui'
         }
+    }
+    maven {
+        name = "Repsy"
+        url = uri("https://repo.repsy.io/mvn/user75142941/phoenixsuite")
     }
 
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
@@ -46,47 +53,73 @@ repositories {
         name 'FirstDarkDev'
         url "https://maven.firstdarkdev.xyz/snapshots/"
     }
+
     maven { // latvian.dev Maven (KubeJS and Rhino)
         url = "https://maven.latvian.dev/releases"
     }
+
     maven { // Registrate
         url = "https://maven.tterrag.com/"
         content { // need to be specific here due to version overlaps
             includeGroup("com.tterrag.registrate")
         }
     }
+
     maven { // Patchouli, JEI
         name = "BlameJared"
         url = "https://maven.blamejared.com/"
     }
+
     maven {
         url = "https://maven.theillusivec4.top/"
     }
+
     maven { // Curse Forge File
         url "https://cursemaven.com/"
         content {
             includeGroup "curse.maven"
         }
     }
+
+    maven { // Modrinth, for dev-only tools that CurseMaven has no stable file id for
+        url "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+
     maven { // EMI
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
     }
+
     maven {
         url = "https://maven.architectury.dev"
     }
+
     maven {
         url = "https://thedarkcolour.github.io/KotlinForForge/"
     }
-    maven { // 'Curios'
-        url "https://maven.blamejared.com"
-    }
+
     maven { // Geckolib
-        url "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+        url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
     }
+
     maven {
         name = "ftbMavenReleases"
         url = uri("https://maven.ftb.dev/releases")
+    }
+
+    exclusiveContent { // Configuration
+        forRepositories(
+                maven { url = "https://repo.repsy.io/mvn/toma/public/" },
+                maven { url = "https://api.repsy.io/mvn/toma/public" }
+        )
+        filter { includeGroup("dev.toma.configuration") }
+    }
+
+    flatDir {
+        dir 'libs'
     }
 }
 
@@ -94,7 +127,6 @@ version = mod_version
 group = maven_group
 base { archivesName = archives_base_name }
 java { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17 }
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 legacyForge {
     version = project.minecraft_version + '-' + project.forge_version
@@ -106,18 +138,17 @@ legacyForge {
 
     runs {
         configureEach {
-            // Recommended logging data for a userdev environment
             systemProperty 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
             logLevel = org.slf4j.event.Level.DEBUG
             sourceSet = sourceSets.main
         }
+
         client {
             client()
             programArguments.addAll('--refresh-dependencies')
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
+
         client1 {
             client()
             sourceSet = sourceSets.main
@@ -125,6 +156,7 @@ legacyForge {
             programArgument '--username'
             programArgument 'Player1'
         }
+
         client2 {
             client()
             sourceSet = sourceSets.main
@@ -132,11 +164,13 @@ legacyForge {
             programArgument '--username'
             programArgument 'Player2'
         }
+
         server {
             server()
             systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
             programArguments.addAll('--nogui', '--world', 'world-extra')
         }
+
         data {
             data()
             programArguments.addAll('--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath())
@@ -151,8 +185,7 @@ legacyForge {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    archiveClassifier.set('slim')
+jar {
     manifest {
         attributes([
                 "MixinConfigs": "phoenixcore.mixins.json",
@@ -160,7 +193,6 @@ tasks.named('jar', Jar).configure {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-    finalizedBy 'reobfJar'
 }
 
 mixin {
@@ -186,34 +218,56 @@ dependencies {
     modImplementation("curse.maven:ex-pattern-provider-892005:7248944")
     modImplementation("curse.maven:glodium-957920:5226922")
     modImplementation("curse.maven:guideme-1173950:7127447")
-    modImplementation("curse.maven:phoenixs-chromatic-colors-1483210:7980147")
+    modImplementation("curse.maven:phoenixs-chromatic-colors-1483210:8494864")
+
+    modRuntimeOnly("curse.maven:fancymenu-367706:8652266")
+    modRuntimeOnly("curse.maven:konkrete-410295:5028413")
+    modRuntimeOnly("curse.maven:melody-938643:5109692")
+    modCompileOnly("curse.maven:konkrete-410295:5028413")
+    modCompileOnly("curse.maven:melody-938643:5109692")
+    modCompileOnly("curse.maven:fancymenu-367706:8652266")
 
     modRuntimeOnly("curse.maven:jade-324717:5390389")
+
+    // spark, the profiler: /spark profiler start|stop in the dev client or server (dev runtime only, never shipped)
+    modRuntimeOnly("maven.modrinth:spark:1.10.53-forge")
     modCompileOnly("curse.maven:jade-324717:5390389")
 
-    // Let JarJar natively handle your non-mod dependencies
+    // Pure Non-Mod Java Libraries added securely to runtime implementation & production build configurations
     implementation 'javazoom:jlayer:1.0.1'
-    jarJar('javazoom:jlayer:1.0.1')
+    jarJar('javazoom:jlayer:1.0.1') { transitive = false }
 
     implementation 'org.jcodec:jcodec:0.2.5'
-    jarJar('org.jcodec:jcodec:0.2.5')
+    jarJar('org.jcodec:jcodec:0.2.5') { transitive = false }
 
     // GregTech and dependencies
     modImplementation "software.bernie.geckolib:geckolib-neoforge-1.20.1:${geckolib_version}"
     modImplementation "top.theillusivec4.curios:curios-forge:${curios_version}"
     modImplementation "com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${ars_nouveau_version}"
-    modImplementation("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtceu_version}:slim") { transitive = false }
+    modImplementation "com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtceu_version}:slim"
     modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") { transitive = false }
+    modImplementation("brachy.modularui:modularui-mc1.20.1:3.3.1-SNAPSHOT") { transitive = false }
     modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
     modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
-    modImplementation("dev.toma.configuration:configuration-forge-${minecraft_version}:${configuration_version}")
+    modImplementation "curse.maven:configuration-444699:5840405"
     modRuntimeOnly("dev.architectury:architectury-forge:${architectury_version}")
     modCompileOnly("dev.ftb.mods:ftb-library-forge:${ftblibrary_version}")
     modCompileOnly("dev.ftb.mods:ftb-teams-forge:${ftbteams_version}")
+    modCompileOnly("net.phoenixvine.guilds:phoenix_guilds:1.6.4")
 
+    modCompileOnly("curse.maven:the-wings-of-fire-1419633:7413991")
+    modRuntimeOnly("curse.maven:the-wings-of-fire-1419633:7413991")
+
+    modRuntimeOnly("dev.ftb.mods:ftb-library-forge:${ftblibrary_version}")
+    modRuntimeOnly("dev.ftb.mods:ftb-teams-forge:${ftbteams_version}")
+    modRuntimeOnly("net.phoenixvine.guilds:phoenix_guilds:1.6.4")
     // lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
+
+    jarJar(modImplementation("net.phoenixvine.wiki:phoenix_wiki:0.5.5"))
 }
 
 configurations.configureEach {
@@ -230,9 +284,10 @@ tasks.named('processResources', ProcessResources).configure {
             "mod_name": mod_name,
             "mod_url": mod_url,
             "mod_author": mod_author,
-            "forge_version": forge_version.split("\\.")[0], // only specify major version of forge
+            "forge_version": forge_version.split("\\.")[0],
             "minecraft_version": minecraft_version,
             "gtceu_version": gtceu_version,
+            "gtceu_version_min": gtceu_version_min,
     ]
     inputs.properties(properties)
 
@@ -242,22 +297,40 @@ tasks.named('processResources', ProcessResources).configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.named('build') {
-    dependsOn("spotlessApply")
+tasks.named('jar', Jar).configure {
+    archiveClassifier.set('slim')
+    finalizedBy 'reobfJar'
+}
 
-    doLast {
-        def localPath = "C:/Users/conno/Desktop/PFT Core/Phoenix-Forge-Technologies/mods"
-
-        if (System.getProperty('os.name').toLowerCase().contains('windows') && file(localPath).exists()) {
-            copy {
-                from "build/libs"
-                into localPath
-                include "${archives_base_name}-${version}*.jar"
-                exclude "*-sources.jar", "*-javadoc.jar"
-            }
-            println "SUCCESS: Spotless applied and Jar moved to local mods folder!"
-        } else {
-            println "Build complete. Local copy skipped (Not Windows or directory missing)."
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
         }
     }
+    repositories {
+        maven {
+            name = "Repsy"
+            url = uri("https://repo.repsy.io/mvn/user75142941/phoenixsuite")
+            credentials {
+                username = project.findProperty("repsyUsername") ?: System.getenv("REPSY_USERNAME")
+                password = project.findProperty("repsyPassword") ?: System.getenv("REPSY_PASSWORD")
+            }
+        }
+    }
+}
+
+// ── Axiom sprite baker ────────────────────────────────────────────────────────
+tasks.register('exportAxiomSprites', JavaExec) {
+    group = 'phoenixcore'
+    description = 'Pre-bake Axiom Research Terminal background sprites to textures/gui/axiom/'
+    dependsOn compileJava
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'net.phoenix.core.integration.conflux.tools.AxiomSpriteExporter'
+    args = ["${projectDir}/src/main/resources/assets/phoenixcore/textures/gui/axiom"]
+}
+
+tasks.named('build') {
+    dependsOn("spotlessApply")
 }

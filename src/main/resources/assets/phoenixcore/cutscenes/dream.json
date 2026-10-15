@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "The stars here do not move the way stars should.",
+    "Every time I sleep, the sky is a little closer. Tonight I could almost touch it."
+  ],
+  "black_duration": 2.0,
+  "fade_in": 5.0,
+  "chars_per_second": 18,
+  "background": [
+    {
+      "type": "shader",
+      "shader": "phoenixcore:dream_nebula",
+      "time_scale": 0.6,
+      "fallback": "phoenixcore:void"
+    },
+    {
+      "type": "layered",
+      "resolution": 32,
+      "layers": [
+        { "type": "radial_gradient", "inner": "#00000000", "outer": "#90000000", "radius": 1.7 }
+      ]
+    }
+  ],
+  "music": {"sound": "minecraft:ambient.soul_sand_valley.loop", "volume": 1.0, "fade_in": 5.0}
+}

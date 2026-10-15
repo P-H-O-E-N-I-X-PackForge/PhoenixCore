@@ -1,0 +1,9 @@
+{
+  "flag": "space_propulsion",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_module_overdrive"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_module_overdrive"
+  ]
+}

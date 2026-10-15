@@ -8,9 +8,10 @@ public class BlazingCleanroom extends CleanroomType {
 
     public static final CleanroomType BLAZING_CLEANROOM = new CleanroomType(
             "blazing_cleanroom",
+            2,
             "gtceu.recipe.cleanroom_blazing.display_name");
 
-    public BlazingCleanroom(@NotNull String name, @NotNull String translationKey) {
-        super(name, translationKey);
+    public BlazingCleanroom(@NotNull String name, int tier, @NotNull String translationKey) {
+        super(name, tier, translationKey);
     }
 }

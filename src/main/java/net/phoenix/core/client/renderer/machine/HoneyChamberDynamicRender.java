@@ -1,7 +1,7 @@
 package net.phoenix.core.client.renderer.machine;
 
-import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -82,7 +82,8 @@ public class HoneyChamberDynamicRender extends
         float progress = (logic != null && logic.isWorking()) ? (float) logic.getProgressPercent() : 0f;
 
         stack.pushPose();
-        renderFluid(machine, stack, buffer, packedOverlay);
+
+        renderFluid(machine, stack, buffer, packedLight, packedOverlay);
 
         stack.translate(0.5, 0.5, 0.5);
 
@@ -97,7 +98,7 @@ public class HoneyChamberDynamicRender extends
     }
 
     private void renderFluid(HoneyCrystallizationChamberMachine machine, PoseStack stack, MultiBufferSource buffer,
-                             int packedOverlay) {
+                             int packedLight, int packedOverlay) {
         if (!ConfigHolder.INSTANCE.client.renderer.renderFluids) return;
         var offsets = machine.getFluidOffsets();
         if (offsets == null) return;
@@ -105,7 +106,7 @@ public class HoneyChamberDynamicRender extends
         var recipeLogic = machine.getRecipeLogic();
         if (recipeLogic == null || recipeLogic.getLastRecipe() == null) return;
 
-        if (machine.isActive()) {
+        if (recipeLogic.isActive()) {
             if (cachedFluid == null || machine.getOffsetTimer() % 20 == 0) {
                 cachedFluid = RenderUtil.getRecipeFluidToRender(recipeLogic.getLastRecipe());
             }
@@ -120,12 +121,20 @@ public class HoneyChamberDynamicRender extends
 
         for (RelativeDirection face : fluidFaces) {
             stack.pushPose();
-            var dir = face.getRelative(machine.getFrontFacing(), machine.getUpwardsFacing(), machine.isFlipped());
+
+            var dir = face.getRelativeFacing(machine.getFrontFacing(), machine.getUpwardsFacing(), machine.isFlipped());
 
             if (dir.getAxis() != Direction.Axis.Y) dir = dir.getOpposite();
 
-            fluidRenderer.drawPlane(dir, offsets, stack.last().pose(), consumer, cachedFluid,
-                    RenderUtil.FluidTextureType.STILL, packedOverlay, machine.getPos());
+            fluidRenderer.drawPlane(
+                    dir,
+                    offsets,
+                    stack,
+                    consumer,
+                    cachedFluid,
+                    RenderUtil.FluidTextureType.STILL,
+                    packedOverlay,
+                    packedLight);
             stack.popPose();
         }
     }
@@ -237,7 +246,7 @@ public class HoneyChamberDynamicRender extends
 
     @Override
     public @NotNull AABB getRenderBoundingBox(HoneyCrystallizationChamberMachine m) {
-        return new AABB(m.getPos()).inflate(FIELD_RADIUS + 5);
+        return new AABB(m.getBlockPos()).inflate(FIELD_RADIUS + 5);
     }
 
     private static class BeeParticle {

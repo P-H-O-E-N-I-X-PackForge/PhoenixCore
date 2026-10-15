@@ -1,0 +1,67 @@
+{
+  "system": "phoenixcore:vesper",
+  "type": "planet",
+  "name": "Ashfall",
+  "description": "A black volcanic world under a lid of cloud.",
+  "orbit": {
+    "radius_au": 1.2,
+    "period_days": 330,
+    "phase": 0.8
+  },
+  "radius": 1.25,
+  "gas_giant": false,
+  "axial_tilt": 20,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 6,
+  "surface": {
+    "seed": 311,
+    "scale": 2.4,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.8,
+    "bump": 1.1,
+    "low": "#0a0808",
+    "mid": "#2a2220",
+    "high": "#5a4a44",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff6a20",
+    "emissive_amount": 0.5
+  },
+  "atmosphere": {
+    "color": "#a08878",
+    "density": 0.9
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_vesper_signal",
+    "surveyed_research": "phoenixcore:space_vesper_decode"
+  },
+  "trip_minutes": 78,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:coal",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:obsidian",
+      "min": 2,
+      "max": 5,
+      "chance": 0.7
+    },
+    {
+      "item": "minecraft:blackstone",
+      "min": 4,
+      "max": 9,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "A planet under so much ash that the star is only a smudge, and the ground underneath glows red.",
+    "surveyed": "Ashfall has been erupting for longer than it has had a name. The ash never settles, and the lava finds its way up through every crack."
+  },
+  "style": "veins"
+}

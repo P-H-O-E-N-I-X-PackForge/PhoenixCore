@@ -1,7 +1,5 @@
 package net.phoenix.core.integration.jade.provider;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +22,13 @@ public class HighPressurePlasmaArcFurnaceProvider implements IBlockComponentProv
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         if (!config.get(UID)) return;
 
+        if (!(accessor.getBlockEntity() instanceof HighPressurePlasmaArcFurnaceMachine)) {
+            return;
+        }
+
         CompoundTag data = accessor.getServerData();
+        if (data == null || data.isEmpty()) return;
+
         Shield.ShieldTypes shieldType = null;
 
         if (data.contains("shieldKey")) {
@@ -76,8 +80,7 @@ public class HighPressurePlasmaArcFurnaceProvider implements IBlockComponentProv
 
     @Override
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
-        if (blockAccessor.getBlockEntity() instanceof MetaMachineBlockEntity meta_machine_be &&
-                meta_machine_be.getMetaMachine() instanceof HighPressurePlasmaArcFurnaceMachine machine &&
+        if (blockAccessor.getBlockEntity() instanceof HighPressurePlasmaArcFurnaceMachine machine &&
                 machine.isFormed()) {
 
             compoundTag.putInt("shieldKey", machine.getShieldType().key);

@@ -1,0 +1,83 @@
+{
+  "display_name": "The Phoenix",
+  "biome_palette": {
+    "stages": [
+      {
+        "stage": "initial",
+        "biomes": ["minecraft:plains", "minecraft:forest", "minecraft:desert"]
+      },
+      {
+        "stage": "thermal_recursion",
+        "biomes": ["minecraft:nether_wastes", "minecraft:crimson_forest", "minecraft:warped_forest"]
+      },
+      {
+        "stage": "molten_path",
+        "biomes": ["minecraft:soul_sand_valley", "minecraft:basalt_deltas", "minecraft:crimson_forest"]
+      },
+      {
+        "stage": "solar_recursion",
+        "biomes": ["minecraft:basalt_deltas", "minecraft:crimson_forest", "minecraft:nether_wastes"]
+      }
+    ],
+    "default_biomes": {
+      "plains": "minecraft:plains",
+      "forest": "minecraft:forest",
+      "desert": "minecraft:desert"
+    }
+  },
+  "structures": {
+    "texture_overrides": {
+      "stone": "minecraft:stone",
+      "deepslate": "minecraft:deepslate",
+      "netherrack": "minecraft:netherrack"
+    },
+    "particle_density": 1.2
+  },
+  "skybox": {
+    "sky_color": "#FF8C00",
+    "fog_color": "#FF6347",
+    "fog_density": 0.7,
+    "render_mode": "sunset"
+  },
+  "color_progression": [
+    {
+      "milestone": "initial",
+      "grass_color": "#7CB342",
+      "water_color": "#3D87CF",
+      "foliage_color": "#558B2F"
+    },
+    {
+      "milestone": "thermal_recursion",
+      "grass_color": "#8B4513",
+      "water_color": "#DC143C",
+      "foliage_color": "#CD853F"
+    },
+    {
+      "milestone": "molten_path",
+      "grass_color": "#A0522D",
+      "water_color": "#FF4500",
+      "foliage_color": "#FF6347"
+    },
+    {
+      "milestone": "solar_recursion",
+      "grass_color": "#DAA520",
+      "water_color": "#FFD700",
+      "foliage_color": "#FFA500"
+    }
+  ],
+
+  "gt_veins": {
+    "common_veins": [
+      "iron_vein",
+      "copper_vein",
+      "tin_vein",
+      "gold_vein"
+    ],
+    "rare_veins": [
+      "diamond_vein",
+      "emerald_vein",
+      "redstone_vein"
+    ],
+    "density": 1.0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "The Ember Veil",
+  "center": [
+    6.0,
+    0.5,
+    -4.0
+  ],
+  "radius": 5.5,
+  "color1": "#ff7a30",
+  "color2": "#b01850",
+  "density": 0.85,
+  "seed": 3,
+  "puffs": 5
+}

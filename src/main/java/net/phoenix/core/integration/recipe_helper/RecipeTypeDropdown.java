@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import java.util.List;
 
@@ -40,17 +41,18 @@ public class RecipeTypeDropdown extends AbstractWidget {
     @Override
     protected void renderWidget(GuiGraphics g, int mx, int my, float dt) {
         boolean hov = isHoveredOrFocused();
+        PhoenixTheme t = PhoenixTheme.current();
 
-        int bg = hov ? 0xFF2A1A3A : 0xFF1A0A2A;
+        int bg = hov ? (t.panel.getColor() & 0x00FFFFFF) | 0xFF000000 : (t.bg.getColor() & 0x00FFFFFF) | 0xFF000000;
         g.fill(getX(), getY(), getX() + width, getY() + height, bg);
-        drawBorder(g, getX(), getY(), getX() + width, getY() + height, 0xFF7A3A9A);
+        drawBorder(g, getX(), getY(), getX() + width, getY() + height, t.accent.getColor());
 
         String label = TYPES.get(selectedIdx);
         if (parent.getFont().width(label) > width - 14)
             label = parent.getFont().plainSubstrByWidth(label, width - 18) + "…";
-        g.drawString(parent.getFont(), label, getX() + 4, getY() + 3, 0xCC88FF, false);
+        g.drawString(parent.getFont(), label, getX() + 4, getY() + 3, t.text.getColor(), false);
 
-        g.drawString(parent.getFont(), "▼", getX() + width - 11, getY() + 3, 0x885599, false);
+        g.drawString(parent.getFont(), "▼", getX() + width - 11, getY() + 3, t.textDim.getColor(), false);
     }
 
     @Override
@@ -113,6 +115,12 @@ public class RecipeTypeDropdown extends AbstractWidget {
 
         private boolean searchFocused = true;
 
+        private int cPanel, cBorder, cHeader, cHeaderLine, cText, cSearchBg, cSearchBorder, cSearchText,
+                cRowSel, cRowHov, cTextSel, cTextHov, cTextDim, cScrollTrack, cScrollThumb, cFaint;
+
+        private float uiScale = 1f;
+        private int vw, vh;
+
         public RecipePickerOverlay(Screen parent, RecipeTypeDropdown owner) {
             super(Component.empty());
             this.parent = parent;
@@ -123,39 +131,81 @@ public class RecipeTypeDropdown extends AbstractWidget {
         @Override
         protected void init() {
             super.init();
+
+            float neededW = PANEL_W + 20f;
+            float neededH = PANEL_H + 20f;
+            uiScale = (width < neededW || height < neededH) ?
+                    Math.min(width / neededW, height / neededH) : 1f;
+            uiScale = Math.max(0.1f, uiScale);
+            vw = Math.round(width / uiScale);
+            vh = Math.round(height / uiScale);
+
+            refreshTheme();
             applyFilter();
 
             int selInFiltered = filtered.indexOf(TYPES.get(owner.getSelectedIdx()));
             if (selInFiltered >= 0) scrollOffset = Math.max(0, selInFiltered - visibleRows() / 2);
         }
 
+        private void refreshTheme() {
+            PhoenixTheme t = PhoenixTheme.current();
+            cPanel = (t.panel.getColor() & 0x00FFFFFF) | 0xFF000000;
+            cBorder = t.accent.getColor();
+            cHeader = t.header.getColor();
+            cHeaderLine = t.border.getColor();
+            cText = t.text.getColor();
+            cSearchBg = (t.bg.getColor() & 0x00FFFFFF) | 0xFF000000;
+            cSearchBorder = t.border.getColor();
+            cSearchText = t.text.getColor();
+            cRowSel = (t.accent.getColor() & 0x00FFFFFF) | 0x33000000;
+            cRowHov = (t.panel.getColor() & 0x00FFFFFF) | 0xFF000000;
+            cTextSel = t.accent.getColor();
+            cTextHov = t.text.getColor();
+            cTextDim = t.textDim.getColor();
+            cScrollTrack = (t.bg.getColor() & 0x00FFFFFF) | 0xFF000000;
+            cScrollThumb = t.border.getColor();
+            cFaint = t.textFaint.getColor();
+        }
+
+        private void enableScissorScaled(GuiGraphics g, int x1, int y1, int x2, int y2) {
+            g.enableScissor(Math.round(x1 * uiScale), Math.round(y1 * uiScale), Math.round(x2 * uiScale),
+                    Math.round(y2 * uiScale));
+        }
+
         @Override
-        public void render(GuiGraphics g, int mx, int my, float pt) {
+        public void render(GuiGraphics g, int rmx, int rmy, float pt) {
             g.fill(0, 0, this.width, this.height, 0xAA000000);
+            refreshTheme();
 
-            int px = (this.width - PANEL_W) / 2;
-            int py = (this.height - PANEL_H) / 2;
+            int mx = Math.round(rmx / uiScale);
+            int my = Math.round(rmy / uiScale);
 
-            g.fill(px, py, px + PANEL_W, py + PANEL_H, 0xFF0D000F);
-            drawBorder(g, px, py, px + PANEL_W, py + PANEL_H, 0xFF7A3A9A);
+            g.pose().pushPose();
+            g.pose().scale(uiScale, uiScale, 1f);
 
-            g.fill(px, py, px + PANEL_W, py + 14, 0xFF1A0A2A);
-            g.fill(px, py + 13, px + PANEL_W, py + 14, 0xFF5C2E7A);
-            g.drawString(font, "§5Select Recipe Type", px + 5, py + 3, 0xFFFFFF, false);
+            int px = (vw - PANEL_W) / 2;
+            int py = (vh - PANEL_H) / 2;
+
+            g.fill(px, py, px + PANEL_W, py + PANEL_H, cPanel);
+            drawBorder(g, px, py, px + PANEL_W, py + PANEL_H, cBorder);
+
+            g.fill(px, py, px + PANEL_W, py + 14, cHeader);
+            g.fill(px, py + 13, px + PANEL_W, py + 14, cHeaderLine);
+            g.drawString(font, "Select Recipe Type", px + 5, py + 3, cText, false);
 
             int searchY = py + 15;
-            g.fill(px + 4, searchY, px + PANEL_W - 4, searchY + 12, 0xFF120018);
-            drawBorder(g, px + 4, searchY, px + PANEL_W - 4, searchY + 12, 0xFF5C2E7A);
+            g.fill(px + 4, searchY, px + PANEL_W - 4, searchY + 12, cSearchBg);
+            drawBorder(g, px + 4, searchY, px + PANEL_W - 4, searchY + 12, cSearchBorder);
             String displaySearch = searchQuery.isEmpty() ? "§7Search…" :
                     searchQuery + (System.currentTimeMillis() % 1000 < 500 ? "§7|" : "");
-            g.drawString(font, displaySearch, px + 7, searchY + 2, 0xDDCCFF, false);
+            g.drawString(font, displaySearch, px + 7, searchY + 2, cSearchText, false);
 
             int listY = py + HEADER_H + LIST_PAD;
             int listH = PANEL_H - HEADER_H - LIST_PAD - 14;
             int listX = px + 2;
             int listW = PANEL_W - SCROLL_W - 4;
 
-            g.enableScissor(listX, listY, listX + listW, listY + listH);
+            enableScissorScaled(g, listX, listY, listX + listW, listY + listH);
 
             int vis = visibleRows();
             for (int i = 0; i < vis; i++) {
@@ -166,10 +216,10 @@ public class RecipeTypeDropdown extends AbstractWidget {
                 boolean sel = type.equals(TYPES.get(owner.getSelectedIdx()));
                 boolean hov = mx >= listX && mx < listX + listW && my >= ry && my < ry + ROW_H;
 
-                if (sel) g.fill(listX, ry, listX + listW, ry + ROW_H, 0xFF2A0A3A);
-                else if (hov) g.fill(listX, ry, listX + listW, ry + ROW_H, 0xFF1A0A28);
+                if (sel) g.fill(listX, ry, listX + listW, ry + ROW_H, cRowSel);
+                else if (hov) g.fill(listX, ry, listX + listW, ry + ROW_H, cRowHov);
 
-                int textCol = sel ? 0xCC88FF : (hov ? 0xDDBBFF : 0x998899);
+                int textCol = sel ? cTextSel : (hov ? cTextHov : cTextDim);
                 g.drawString(font, type, listX + 3, ry + 3, textCol, false);
             }
 
@@ -177,23 +227,27 @@ public class RecipeTypeDropdown extends AbstractWidget {
 
             renderScrollbar(g, px + PANEL_W - SCROLL_W - 2, listY, listH);
 
-            g.drawString(font, "§8[Esc] close", px + 4, py + PANEL_H - 10, 0x444444, false);
+            g.drawString(font, "§8[Esc] close", px + 4, py + PANEL_H - 10, cFaint, false);
+
+            g.pose().popPose();
         }
 
         private void renderScrollbar(GuiGraphics g, int x, int y, int h) {
             if (filtered.size() <= visibleRows()) return;
-            g.fill(x, y, x + SCROLL_W, y + h, 0xFF0D000D);
+            g.fill(x, y, x + SCROLL_W, y + h, cScrollTrack);
             float ratio = (float) visibleRows() / filtered.size();
             int thumbH = Math.max(8, (int) (h * ratio));
             int thumbY = y +
                     (int) ((h - thumbH) * ((float) scrollOffset / Math.max(1, filtered.size() - visibleRows())));
-            g.fill(x + 1, thumbY, x + SCROLL_W - 1, thumbY + thumbH, 0xFF5C2E7A);
+            g.fill(x + 1, thumbY, x + SCROLL_W - 1, thumbY + thumbH, cScrollThumb);
         }
 
         @Override
-        public boolean mouseClicked(double mx, double my, int btn) {
-            int px = (this.width - PANEL_W) / 2;
-            int py = (this.height - PANEL_H) / 2;
+        public boolean mouseClicked(double rmx, double rmy, int btn) {
+            double mx = rmx / uiScale;
+            double my = rmy / uiScale;
+            int px = (vw - PANEL_W) / 2;
+            int py = (vh - PANEL_H) / 2;
             int listY = py + HEADER_H + LIST_PAD;
             int listH = PANEL_H - HEADER_H - LIST_PAD - 14;
             int listX = px + 2;

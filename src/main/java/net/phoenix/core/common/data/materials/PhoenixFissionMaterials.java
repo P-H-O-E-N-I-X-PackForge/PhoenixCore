@@ -63,6 +63,7 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         BORON_CARBIDE = new Material.Builder(PhoenixCore.id("boron_carbide"))
+                .langValue("§5Boron Carbide")
                 .ingot()
                 .color(0x353630)
                 .iconSet(MaterialIconSet.DULL)
@@ -86,6 +87,7 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         NIOBIUM_MODIFIED_SILICON_CARBIDE = new Material.Builder(PhoenixCore.id("niobium_modified_silicon_carbide"))
+                .langValue("§5Niobium Modified Silicon Carbide")
                 .ingot()
                 .color(0x4A4B6B)
                 .secondaryColor(0x101021)
@@ -97,6 +99,7 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         CRYO_GRAPHITE_BINDING_SOLUTION = new Material.Builder(PhoenixCore.id("cryo_graphite_binding_solution"))
+                .langValue("Cryo-Graphite Binding Solution")
                 .fluid()
                 .color(0x507080)
                 .secondaryColor(0x7090A0)
@@ -104,6 +107,7 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         CRYO_ZIRCONIUM_BINDING_SOLUTION = new Material.Builder(PhoenixCore.id("cryo_zirconium_binding_solution"))
+                .langValue("Cryo-Zirconium Binding Solution")
                 .fluid()
                 .color(0x80B0CC)
                 .secondaryColor(0xA0D0E0)
@@ -151,6 +155,7 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         HOT_SODIUM_POTASSIUM = new Material.Builder(PhoenixCore.id("hot_sodium_potassium"))
+                .langValue("Hot Sodium-Potassium")
                 .fluid()
                 .color(0xFF4500)
                 .secondaryColor(0xFFD700)
@@ -189,12 +194,14 @@ public class PhoenixFissionMaterials {
                 .buildAndRegister();
 
         RHODIUM_PALLADIUM_SOLUTION = new Material.Builder(PhoenixCore.id("rhodium_palladium_solution"))
+                .langValue("Rhodium-Palladium Solution")
                 .fluid()
                 .color(0x9E9E9E)
                 .iconSet(MaterialIconSet.SHINY)
                 .buildAndRegister();
 
         TECHNETIUM_STRONTIUM_SOLUTION = new Material.Builder(PhoenixCore.id("technetium_strontium_solution"))
+                .langValue("Technetium-Strontium Solution")
                 .fluid()
                 .color(0x7CFC00)
                 .iconSet(MaterialIconSet.BRIGHT)
@@ -257,14 +264,17 @@ public class PhoenixFissionMaterials {
                 .iconSet(MaterialIconSet.RADIOACTIVE)
                 .buildAndRegister();
         URANIUM_233 = new Material.Builder(PhoenixCore.id("uranium_233"))
+                .langValue("Uranium-233")
                 .ingot().fluid().color(0x33FF33).secondaryColor(0x00CC00).element(PhoenixElements.URANIUM_233)
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
         URANIUM_236 = new Material.Builder(PhoenixCore.id("uranium_236"))
+                .langValue("Uranium-236")
                 .ingot().fluid().color(0x33CCFF).secondaryColor(0x0099EE).element(PhoenixElements.URANIUM_236)
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
         AMERICIUM_241 = new Material.Builder(PhoenixCore.id("americium_241"))
+                .langValue("Americium-241")
                 .ingot().color(0xCDC9C9).secondaryColor(0x8B8B7A).element(PhoenixElements.AMERICIUM_241)
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
@@ -286,14 +296,17 @@ public class PhoenixFissionMaterials {
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
         SPENT_URANIUM_233 = new Material.Builder(PhoenixCore.id("spent_uranium_233"))
+                .langValue("Spent Uranium-233")
                 .dust().ingot().color(0x503040).secondaryColor(0x705060).element(PhoenixElements.URANIUM_233)
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
         SPENT_URANIUM_235 = new Material.Builder(PhoenixCore.id("spent_uranium_235"))
+                .langValue("Spent Uranium-235")
                 .ingot().color(0x603030).secondaryColor(0x402020).element(GTElements.U235)
                 .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
 
         SPENT_URANIUM_235 = new Material.Builder(PhoenixCore.id("spent_uranium_236"))
+                .langValue("Spent Uranium-236")
                 .ingot()
                 .color(0x8B8878)
                 .secondaryColor(0x556B2F)
@@ -320,6 +333,7 @@ public class PhoenixFissionMaterials {
 
         EXTREMELY_MODIFIED_SPACE_GRADE_STEEL = new Material.Builder(
                 PhoenixCore.id("extremely_modified_space_grade_steel"))
+                .langValue("§cExtremely Modified Space Grade Steel")
                 .ingot()
                 .liquid(6500)
                 .color(0xad6161)

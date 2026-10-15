@@ -1,6 +1,5 @@
 package net.phoenix.core.common.data.worldgen;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.WorldGeneratorUtils;
@@ -8,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.GeneratedVeinMetadata;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OreIndicatorPlacer;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,7 +35,7 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
             .group(
                     ((Codec<Either<BlockState, Material>>) Codec.either(
                             BlockState.CODEC,
-                            GTCEuAPI.materialManager.codec())).fieldOf("block").forGetter(ext -> ext.block),
+                            GTRegistries.MATERIALS.codec())).fieldOf("block").forGetter(ext -> ext.block),
                     IntProvider.codec(1, 32).fieldOf("radius").forGetter(ext -> ext.radius),
                     FloatProvider.codec(0.0f, 2.0f).fieldOf("density").forGetter(ext -> ext.density),
                     SurfaceIndicatorGenerator.IndicatorPlacement.CODEC.fieldOf("placement")
@@ -105,7 +105,7 @@ public class CrystalRoseIndicatorGenerator extends IndicatorGenerator {
 
     private OreIndicatorPlacer createPlacer(WorldGenLevel level, List<BlockPos> positionsWithoutY,
                                             BlockState blockState) {
-        return (access) -> {
+        return (access, random) -> {
             for (BlockPos initialPos : positionsWithoutY) {
 
                 BlockPos pos = findTrueSurfacePos(level, initialPos);

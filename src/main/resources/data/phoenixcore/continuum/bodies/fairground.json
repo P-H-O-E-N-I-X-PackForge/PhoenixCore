@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:carousel",
+  "type": "planet",
+  "name": "Fairground",
+  "description": "A small bright world of striped plains.",
+  "orbit": {
+    "radius_au": 1.1,
+    "period_days": 380,
+    "phase": 0.35
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 10,
+  "spin_deg_per_sec": 8,
+  "cloud_spin_deg_per_sec": 10,
+  "surface": {
+    "seed": 433,
+    "scale": 3.2,
+    "ocean_level": 0.2,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.2,
+    "bump": 0.4,
+    "low": "#d04a6a",
+    "mid": "#f0c040",
+    "high": "#40c0f0",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#40a0e0",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ffd0f0",
+    "density": 0.5
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_carousel_signal",
+    "surveyed_research": "phoenixcore:space_carousel_decode"
+  },
+  "trip_minutes": 104,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:sugar",
+      "min": 5,
+      "max": 10,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:cocoa_beans",
+      "min": 3,
+      "max": 7,
+      "chance": 0.8
+    },
+    {
+      "item": "minecraft:firework_rocket",
+      "min": 1,
+      "max": 2,
+      "chance": 0.3
+    }
+  ],
+  "lore": {
+    "detected": "Stripes of red, yellow and blue, with edges that look painted on.",
+    "surveyed": "Fairground has bands of colour so regular that the first survey reported it as artificial. The second said the same."
+  }
+}

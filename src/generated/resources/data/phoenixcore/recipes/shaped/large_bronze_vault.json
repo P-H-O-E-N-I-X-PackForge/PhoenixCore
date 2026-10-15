@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "tag": "forge:plates/bronze"
+    },
+    "B": {
+      "tag": "gtceu:circuits/ulv"
+    },
+    "C": {
+      "tag": "forge:rods/iron"
+    },
+    "D": {
+      "item": "gtceu:bronze_crate"
+    },
+    "E": {
+      "tag": "forge:double_plates/iron"
+    }
+  },
+  "matchSize": false,
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "item": "phoenixcore:large_bronze_vault"
+  }
+}

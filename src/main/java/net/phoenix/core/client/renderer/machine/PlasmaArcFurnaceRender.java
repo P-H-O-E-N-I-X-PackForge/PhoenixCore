@@ -3,7 +3,7 @@ package net.phoenix.core.client.renderer.machine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
-import com.gregtechceu.gtceu.client.util.ModelUtils;
+import com.gregtechceu.gtceu.client.util.ModelEventHelper;
 
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -34,7 +34,6 @@ public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultib
             PlasmaArcFurnaceRender.CODEC);
 
     public static final ResourceLocation SPHERE_MODEL_RL = PhoenixCore.id("obj/blue_star");
-
     public static final ResourceLocation RINGS_MODEL_RL = PhoenixCore.id("obj/rings");
 
     private static BakedModel sphereModel;
@@ -46,9 +45,13 @@ public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultib
     private static final float RINGS_ROTATION_SPEED = 0.5F;
 
     private PlasmaArcFurnaceRender() {
-        ModelUtils.registerBakeEventListener(true, event -> {
-            sphereModel = event.getModels().get(SPHERE_MODEL_RL);
-            ringsModel = event.getModels().get(RINGS_MODEL_RL);
+        ModelEventHelper.registerBakeEventListener(true, (rl, bakedModel, rootModel, modelBakery) -> {
+            if (rl.equals(SPHERE_MODEL_RL)) {
+                sphereModel = bakedModel;
+            } else if (rl.equals(RINGS_MODEL_RL)) {
+                ringsModel = bakedModel;
+            }
+            return bakedModel;
         });
     }
 
@@ -134,6 +137,6 @@ public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultib
 
     @Override
     public AABB getRenderBoundingBox(WorkableElectricMultiblockMachine machine) {
-        return new AABB(machine.getPos()).inflate(getViewDistance());
+        return new AABB(machine.getBlockPos()).inflate(getViewDistance());
     }
 }

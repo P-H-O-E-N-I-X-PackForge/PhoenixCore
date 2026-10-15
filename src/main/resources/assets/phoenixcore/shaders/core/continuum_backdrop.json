@@ -1,0 +1,13 @@
+{
+  "vertex": "phoenixcore:continuum_backdrop",
+  "fragment": "phoenixcore:continuum_backdrop",
+  "attributes": ["Position"],
+  "uniforms": [
+    { "name": "Aspect",         "type": "float", "count": 1, "values": [1.0] },
+    { "name": "Yaw",            "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Time",           "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Octaves",        "type": "float", "count": 1, "values": [5.0] },
+    { "name": "PrimaryColor",   "type": "float", "count": 3, "values": [0.35, 0.18, 0.7] },
+    { "name": "SecondaryColor", "type": "float", "count": 3, "values": [0.1, 0.3, 0.8] }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "one_minus_srcalpha"
+  },
+  "vertex": "phoenixcore:void_galaxy",
+  "fragment": "phoenixcore:sealed_b_chaos",
+  "uniforms": [
+    { "name": "OutSize",        "type": "float",     "count": 2,  "values": [1.0, 1.0] },
+    { "name": "InvViewMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "InvProjMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "PrimaryColor",   "type": "float",     "count": 3,  "values": [1.0, 0.15, 0.85] },
+    { "name": "SecondaryColor", "type": "float",     "count": 3,  "values": [0.85, 0.85, 0.1] },
+    { "name": "Time",           "type": "float",     "count": 1,  "values": [0.0] }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:reliquary",
+  "type": "planet",
+  "name": "Sepulchre",
+  "description": "A grey world covered in the ruins of something large.",
+  "orbit": {
+    "radius_au": 0.8,
+    "period_days": 240,
+    "phase": 0.4
+  },
+  "radius": 1.1,
+  "gas_giant": false,
+  "axial_tilt": 5,
+  "spin_deg_per_sec": 2,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 521,
+    "scale": 2.8,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.3,
+    "low": "#2a2a2e",
+    "mid": "#6a6a72",
+    "high": "#b8b8c4",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#9090a0",
+    "density": 0.1
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_reliquary_signal",
+    "surveyed_research": "phoenixcore:space_reliquary_decode"
+  },
+  "trip_minutes": 138,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:bone",
+      "min": 5,
+      "max": 11,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:echo_shard",
+      "min": 1,
+      "max": 2,
+      "chance": 0.15
+    },
+    {
+      "item": "minecraft:netherite_scrap",
+      "min": 1,
+      "max": 1,
+      "chance": 0.08
+    }
+  ],
+  "lore": {
+    "detected": "Straight lines on a grey surface, in a pattern no weather makes.",
+    "surveyed": "Sepulchre is built over. The ruins go down further than the survey could measure, and every layer was made by someone who knew it would be buried."
+  }
+}

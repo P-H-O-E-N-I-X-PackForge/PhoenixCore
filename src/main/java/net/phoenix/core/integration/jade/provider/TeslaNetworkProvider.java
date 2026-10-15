@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.jade.provider;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -33,76 +32,69 @@ public class TeslaNetworkProvider implements IBlockComponentProvider, IServerDat
 
     @Override
     public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-        if (accessor.getBlockEntity() instanceof MetaMachineBlockEntity metaBE) {
-            UUID team = null;
-            BlockPos pos = accessor.getPosition();
-            long transferRate = 0;
-            int mode = -1;
+        MetaMachine machine = MetaMachine.getMachine(accessor.getLevel(), accessor.getPosition());
+        if (machine == null) return;
 
-            if (accessor.getLevel() instanceof ServerLevel sl) {
-                MinecraftServer server = sl.getServer();
-                ServerLevel overworld = server.getLevel(Level.OVERWORLD);
-                if (overworld == null) return;
+        BlockPos pos = accessor.getPosition();
+        UUID team = null;
+        long transferRate = 0;
+        int mode = -1;
 
-                TeslaTeamEnergyData data = TeslaTeamEnergyData.get(overworld);
-                MetaMachine machine = metaBE.getMetaMachine();
+        if (!(accessor.getLevel() instanceof ServerLevel sl)) return;
 
-                if (machine instanceof TeslaEnergyHatchPartMachine hatch) {
-                    team = hatch.getOwnerTeamUUID();
-                    if (team != null) {
-                        mode = hatch.isUplink() ? 0 : 1;
-                        transferRate = data.getOrCreate(team).machineDisplayFlow.getOrDefault(pos, 0L);
-                    }
-                } else if (machine instanceof TeslaTowerMachine tower) {
-                    team = tower.getOwnerUUID();
-                    mode = -1;
-                }
+        MinecraftServer server = sl.getServer();
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        if (overworld == null) return;
 
-                else {
-                    for (var entry : data.getNetworksView().entrySet()) {
-                        TeslaTeamEnergyData.TeamEnergy teamData = entry.getValue();
+        TeslaTeamEnergyData data = TeslaTeamEnergyData.get(overworld);
 
-                        if (teamData.soulLinkedMachines.contains(pos)) {
-                            team = entry.getKey();
-                            transferRate = teamData.machineDisplayFlow.getOrDefault(pos, 0L);
+        if (machine instanceof TeslaEnergyHatchPartMachine hatch) {
+            team = hatch.getOwnerTeamUUID();
+            if (team != null) {
+                mode = hatch.isUplink() ? 0 : 1;
+                transferRate = data.getOrCreate(team).machineDisplayFlow.getOrDefault(pos, 0L);
+            }
+        } else if (machine instanceof TeslaTowerMachine tower) {
+            team = tower.getOwnerUUID();
+            mode = -1;
+        } else {
 
-                            if (transferRate < 0) {
-                                mode = 3;
-                            } else {
-                                mode = 1;
-                            }
-                            break;
-                        } else if (teamData.activeChargers.contains(pos)) {
-                            team = entry.getKey();
-                            mode = 2;
-                            transferRate = teamData.machineDisplayFlow.getOrDefault(pos, 0L);
-                            break;
-                        }
-                    }
-                }
+            team = data.getOwnerTeam(pos);
+            if (team != null) {
+                TeslaTeamEnergyData.TeamEnergy teamData = data.getOrCreate(team);
+                transferRate = teamData.machineDisplayFlow.getOrDefault(pos, 0L);
 
-                if (team != null) {
-                    TeslaTeamEnergyData.TeamEnergy teamData = data.getOrCreate(team);
-                    tag.putUUID("TeslaTeam", team);
-                    tag.putString("TeamName", TeamUtils.getTeamName(team));
-                    tag.putString("Stored", FormattingUtil.formatNumbers(teamData.stored));
-                    tag.putString("Capacity", FormattingUtil.formatNumbers(teamData.capacity));
-                    tag.putLong("LocalTransfer", transferRate);
-                    tag.putInt("TransferMode", mode);
+                if (teamData.soulLinkedMachines.contains(pos)) {
+                    mode = transferRate < 0 ? 3 : 1;
+                } else if (teamData.activeChargers.contains(pos)) {
+                    mode = 2;
+                } else {
 
-                    int physicalHatches = 0;
-                    for (TeslaTeamEnergyData.HatchInfo hatch : data.getHatches(team)) {
-                        if (hatch.isSoulLinked) continue;
-                        if (Boolean.TRUE.equals(TeslaTeamEnergyData.isLivePhysicalHatch(server, hatch))) {
-                            physicalHatches++;
-                        }
-                    }
-                    int wiredMachines = teamData.soulLinkedMachines.size();
-                    int wirelessChargers = teamData.activeChargers.size();
-
-                    tag.putInt("TotalConnections", physicalHatches + wiredMachines + wirelessChargers);
+                    mode = 1;
                 }
             }
+        }
+
+        if (team != null) {
+            TeslaTeamEnergyData.TeamEnergy teamData = data.getOrCreate(team);
+            tag.putUUID("TeslaTeam", team);
+            tag.putString("TeamName", TeamUtils.getTeamName(team));
+            tag.putString("Stored", FormattingUtil.formatNumbers(teamData.stored));
+            tag.putString("Capacity", FormattingUtil.formatNumbers(teamData.capacity));
+            tag.putLong("LocalTransfer", transferRate);
+            tag.putInt("TransferMode", mode);
+
+            int physicalHatches = 0;
+            for (TeslaTeamEnergyData.HatchInfo hatch : data.getHatches(team)) {
+                if (hatch.isSoulLinked) continue;
+                if (Boolean.TRUE.equals(TeslaTeamEnergyData.isLivePhysicalHatch(server, hatch))) {
+                    physicalHatches++;
+                }
+            }
+            int wiredMachines = teamData.soulLinkedMachines.size();
+            int wirelessChargers = teamData.activeChargers.size();
+
+            tag.putInt("TotalConnections", physicalHatches + wiredMachines + wirelessChargers);
         }
     }
 

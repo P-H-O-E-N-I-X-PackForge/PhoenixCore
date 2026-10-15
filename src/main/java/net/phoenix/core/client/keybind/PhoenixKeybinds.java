@@ -51,6 +51,30 @@ public class PhoenixKeybinds {
             InputConstants.UNKNOWN.getValue(),
             "key.categories.phoenixcore");
 
+    public static final KeyMapping OPEN_ASTRAL_CODEX = new KeyMapping(
+            "key.phoenixcore.open_astral_codex",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_6,
+            "key.categories.phoenixcore");
+
+    public static final KeyMapping TOGGLE_DISCIPLINE_SKY = new KeyMapping(
+            "key.phoenixcore.toggle_discipline_sky",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_5,
+            "key.categories.phoenixcore");
+
+    public static final KeyMapping SHOW_SHADER_PROFILER = new KeyMapping(
+            "key.phoenixcore.show_shader_profiler",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_4,
+            "key.categories.phoenixcore");
+
+    public static final KeyMapping CINDER_ATLAS_RADIAL = new KeyMapping(
+            "key.phoenixcore.cinder_atlas_radial",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_1,
+            "key.categories.phoenixcore");
+
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(OPEN_WING_GUI);
@@ -60,5 +84,9 @@ public class PhoenixKeybinds {
         event.register(OPEN_RECIPE_BUILDER);
         event.register(SPRAY_CAN_MENU);
         event.register(OPEN_EMI_FAVORITE_PAGES);
+        event.register(OPEN_ASTRAL_CODEX);
+        event.register(TOGGLE_DISCIPLINE_SKY);
+        event.register(SHOW_SHADER_PROFILER);
+        event.register(CINDER_ATLAS_RADIAL);
     }
 }

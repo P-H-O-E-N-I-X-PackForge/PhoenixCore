@@ -2,14 +2,11 @@ package net.phoenix.core.integration.ars_nouveau.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapability;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
@@ -21,58 +18,58 @@ import java.util.List;
 
 public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<SourceIngredient> implements ISourceTile {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            NotifiableSourceContainer.class,
-            NotifiableRecipeHandlerTrait.MANAGED_FIELD_HOLDER);
-
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private long currentSource;
 
-    @Persisted
+    @SaveField
     private long maxSource;
 
-    @Persisted
+    @SaveField
     private int maxConsumption;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private int currentFlow;
 
-    @Persisted
+    @SaveField
     private long lastFlowUpdate;
 
-    @Persisted
+    @SaveField
     private GTRecipe lastRecipe;
 
     private final IO handlerIO;
 
-    public NotifiableSourceContainer(MetaMachine machine, IO io, int maxCapacity, int maxConsumption) {
-        super(machine);
+    public NotifiableSourceContainer(IO io, int maxCapacity, int maxConsumption) {
+        super();
         this.setMaxSource(maxCapacity);
         this.maxConsumption = maxConsumption;
         this.handlerIO = io;
     }
 
     public int getCurrentFlow() {
-        if (getMachine().getLevel() != null && !(getMachine() instanceof WorkableElectricMultiblockMachine)) {
-            long time = getMachine().getLevel().getGameTime();
+        if (getLevel() != null && !(getMachine() instanceof WorkableElectricMultiblockMachine)) {
+
+            long time = getLevel().getGameTime();
             if (time - lastFlowUpdate > 20) {
                 this.currentFlow = 0;
+                this.getSyncDataHolder().markClientSyncFieldDirty("currentFlow");
             }
         }
         return currentFlow;
     }
 
     public void updateFlow(int delta) {
-        if (getMachine().getLevel() != null) {
-            this.lastFlowUpdate = getMachine().getLevel().getGameTime();
+        if (getLevel() != null) {
+            this.lastFlowUpdate = getLevel().getGameTime();
         }
         this.currentFlow += delta;
+        this.getSyncDataHolder().markClientSyncFieldDirty("currentFlow");
     }
 
     public void resetFlow() {
         this.currentFlow = 0;
+        this.getSyncDataHolder().markClientSyncFieldDirty("currentFlow");
     }
 
     @Override
@@ -117,11 +114,12 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
             }
         }
 
-        return left.isEmpty() ? null : left;
+        return left;
     }
 
     @Override
-    public @NotNull List<Object> getContents() {
+    @SuppressWarnings("rawtypes")
+    public @NotNull List getContents() {
         return List.of(new SourceIngredient((int) currentSource));
     }
 
@@ -163,7 +161,7 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
     @Override
     public int setSource(int source) {
         this.currentSource = Math.min(source, maxSource);
-        notifyListeners();
+        this.getSyncDataHolder().markClientSyncFieldDirty("currentSource");
         return Math.toIntExact(this.currentSource);
     }
 
@@ -171,7 +169,7 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
     public int addSource(int amount) {
         int inserted = Math.toIntExact(Math.min(amount, maxSource - currentSource));
         currentSource += inserted;
-        notifyListeners();
+        this.getSyncDataHolder().markClientSyncFieldDirty("currentSource");
         return inserted;
     }
 
@@ -179,12 +177,7 @@ public class NotifiableSourceContainer extends NotifiableRecipeHandlerTrait<Sour
     public int removeSource(int amount) {
         int extracted = Math.toIntExact(Math.min(amount, currentSource));
         currentSource -= extracted;
-        notifyListeners();
+        this.getSyncDataHolder().markClientSyncFieldDirty("currentSource");
         return extracted;
-    }
-
-    @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 }

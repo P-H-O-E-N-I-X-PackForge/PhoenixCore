@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.common.event;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 
 import net.minecraft.core.BlockPos;
@@ -37,12 +36,8 @@ public final class SourceHatchJarTransferTick {
             if (!level.isLoaded(hatchPos)) continue;
 
             BlockEntity be = level.getBlockEntity(hatchPos);
-            if (!(be instanceof MetaMachineBlockEntity metaBE)) {
 
-                continue;
-            }
-
-            if (!(metaBE.getMetaMachine() instanceof SourceHatchPartMachine hatch)) continue;
+            if (!(be instanceof SourceHatchPartMachine hatch)) continue;
             if (!hatch.isWorkingEnabled()) continue;
 
             ISourceTile tank = hatch.getSource();
@@ -55,14 +50,15 @@ public final class SourceHatchJarTransferTick {
             if (rate <= 0) continue;
 
             if (hatch.getIo() == IO.IN) {
-                handleInbound(level, hatchPos, tank, radius, rate);
+                handleInbound(level, hatchPos, hatch, tank, radius, rate);
             } else {
-                handleOutbound(level, hatchPos, tank, radius, rate);
+                handleOutbound(level, hatchPos, hatch, tank, radius, rate);
             }
         }
     }
 
-    private static void handleInbound(ServerLevel level, BlockPos hatchPos, ISourceTile tank, int radius, int rate) {
+    private static void handleInbound(ServerLevel level, BlockPos hatchPos, SourceHatchPartMachine hatch,
+                                      ISourceTile tank, int radius, int rate) {
         if (!tank.canAcceptSource()) return;
 
         int remaining = Math.min(tank.getMaxSource() - tank.getSource(), rate);
@@ -82,14 +78,16 @@ public final class SourceHatchJarTransferTick {
                 jar.setChanged();
                 level.sendBlockUpdated(targetPos, jar.getBlockState(), jar.getBlockState(), 3);
 
+                hatch.markAsChanged();
+
                 ParticleUtil.spawnFollowProjectile(level, targetPos, hatchPos, jar.getColor());
                 remaining -= toMove;
-
             }
         }
     }
 
-    private static void handleOutbound(ServerLevel level, BlockPos hatchPos, ISourceTile tank, int radius, int rate) {
+    private static void handleOutbound(ServerLevel level, BlockPos hatchPos, SourceHatchPartMachine hatch,
+                                       ISourceTile tank, int radius, int rate) {
         int remaining = Math.min(tank.getSource(), rate);
         if (remaining <= 0) return;
 
@@ -108,9 +106,10 @@ public final class SourceHatchJarTransferTick {
                 jar.setChanged();
                 level.sendBlockUpdated(targetPos, jar.getBlockState(), jar.getBlockState(), 3);
 
+                hatch.markAsChanged();
+
                 ParticleUtil.spawnFollowProjectile(level, hatchPos, targetPos, jar.getColor());
                 remaining -= toMove;
-
             }
         }
     }

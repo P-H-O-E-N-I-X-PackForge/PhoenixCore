@@ -1,6 +1,7 @@
 package net.phoenix.core.configs;
 
 import net.phoenix.core.PhoenixCore;
+import net.phoenix.core.integration.gregvaults.common.blocks.CoreTier;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.Config;
@@ -23,71 +24,483 @@ public class PhoenixConfigs {
     public FeatureConfigs features = new FeatureConfigs();
 
     @Configurable
-    public CleanroomConfig cleanroom = new CleanroomConfig();
-
-    @Configurable
-    public SourceHatchConfig sourceHatch = new SourceHatchConfig();
-
-    @Configurable
-    public ColorConfig colors = new ColorConfig();
-
-    @Configurable
-    public FissionConfigs fission = new FissionConfigs();
-
-    @Configurable
     public static WingFlightConfigs wingFlight = new WingFlightConfigs();
 
     @Configurable
-    public FissionBlockStatsConfigs fissionStats = new FissionBlockStatsConfigs();
+    public SourceHatchConfig sourceHatch = new SourceHatchConfig();
+    @Configurable
+    public PhoenixConfigs.CoreValues coreValues = new PhoenixConfigs.CoreValues();
 
     @Configurable
-    public PhantasiaUIConfig phantasiaUI = new PhantasiaUIConfig();
+    public PhoenixConfigs.VaultValues vaultValues = new PhoenixConfigs.VaultValues();
 
-    public static class PhantasiaUIConfig {
+    @Configurable
+    public PhoenixConfigs.WirelessTerminal wirelessTerminal = new PhoenixConfigs.WirelessTerminal();
+
+    @Configurable
+    @Configurable.Comment("Whether buying a shop entry requires winning a quick timing minigame first.")
+    public boolean shopMinigameEnabled = true;
+
+    @Configurable
+    public ContinuumConfigs continuum = new ContinuumConfigs();
+
+    @Configurable
+    @Configurable.Comment({ "Compatibility with the Wings of Fire mod (phoenixes). Does nothing without it." })
+    public WingsOfFireConfigs wingsOfFire = new WingsOfFireConfigs();
+
+    public static class WingsOfFireConfigs {
 
         @Configurable
         @Configurable.Comment({
-                "LOOK_AT: Bar appears when looking at a placed controller.",
-                "HELD_ITEM: Bar appears when holding a controller in your hand.",
-                "PERSISTENT: Bar stays on screen for the last accessed machine."
+                "Stops phoenixes vanishing when their rider gets off. They stay where they are.",
+                "Default: true"
         })
-        public DisplayMode displayMode = DisplayMode.TOOLTIP_HOTBAR;
-
-        @Configurable
-        @Configurable.Comment("Ticks required to hold the key to open the menu (20 ticks = 1 second).")
-        public int activationTicks = 20;
+        public boolean persistentMounts = true;
 
         @Configurable
         @Configurable.Comment({
-                "Visual theme for the Phantasia scene viewer.",
-                "COBALT   - Default. Deep navy with sky-blue accents.",
-                "RAINBOW  - Hue-cycling accent on a neutral dark base.",
-                "AMETHYST - Soft purple with gold progress bars.",
-                "MINECRAFT - Classic vanilla inventory look (stone grey, gold accent)."
+                "Sneak + right-click your own phoenix with an empty hand to tell it to stay where it is (in the air",
+                "too), and again to let it follow you. It un-stays when you ride it. Default: true"
         })
-        public String theme = "COBALT";
+        public boolean stayCommand = true;
+    }
 
-        public enum DisplayMode {
-            TOOLTIP_ONLY,
-            JADE_ONLY,
-            HOTBAR_ONLY,
-            TOOLTIP_JADE,
-            TOOLTIP_HOTBAR
+    @Configurable
+    @Configurable.Comment({
+            "Mobs in the Conflux dimensions. What spawns where is data: data/<namespace>/conflux/spawns/*.json."
+    })
+    public ConfluxSpawnConfigs confluxSpawns = new ConfluxSpawnConfigs();
+
+    public static class ConfluxSpawnConfigs {
+
+        @Configurable
+        @Configurable.Comment({ "Whether the Conflux spawn lists are used at all. Default: true" })
+        public boolean enabled = true;
+
+        @Configurable
+        @Configurable.Comment({ "Ticks between spawn attempts near each player. Default: 400 (20 seconds)" })
+        @Configurable.Range(min = 20, max = 24000)
+        public int intervalTicks = 400;
+
+        @Configurable
+        @Configurable.Comment({ "Chance each attempt actually spawns something. Default: 0.5" })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double chance = 0.5;
+
+        @Configurable
+        @Configurable.Comment({
+                "Distance around a player, in blocks, within which a kind of mob counts toward its cap.",
+                "Default: 96"
+        })
+        @Configurable.Range(min = 16, max = 256)
+        public int countRadius = 96;
+    }
+
+    public static class ContinuumConfigs {
+
+        public enum RenderQuality {
+            LOW,
+            MEDIUM,
+            HIGH
+        }
+
+        public enum PlanetStyle {
+            SPHERE,
+            CUBE
+        }
+
+        public enum PdimChargeMode {
+            EVERY_VISIT,
+            FIRST_VISIT
+        }
+
+        @Configurable
+        @Configurable.Comment({
+                "What going to a personal dimension costs, taken from the player's inventory. The item here and",
+                "the count below are the default for every body; a body's definition can override them with a",
+                "\"pdim_cost\" entry. Creative players are never charged. Default: minecraft:ender_pearl"
+        })
+        public String pdimCostItem = "minecraft:ender_pearl";
+
+        @Configurable
+        @Configurable.Comment({
+                "How many of the cost item one trip costs. 0 makes personal dimensions free. Default: 2" })
+        @Configurable.Range(min = 0, max = 64)
+        public int pdimCostCount = 2;
+
+        @Configurable
+        @Configurable.Comment({
+                "EVERY_VISIT charges on every trip there (going back and forth costs each time). FIRST_VISIT charges",
+                "only when a dimension is first made. Leaving is always free. Default: EVERY_VISIT"
+        })
+        public PdimChargeMode pdimChargeMode = PdimChargeMode.EVERY_VISIT;
+
+        @Configurable
+        @Configurable.Comment({
+                "Visual quality of the Continuum space views (this client only). LOW uses far fewer mesh",
+                "triangles, fewer noise layers and a simpler backdrop, for weaker GPUs. Pressing Q on the map",
+                "changes it for that session without touching this setting.",
+                "Default: MEDIUM"
+        })
+        public RenderQuality renderQuality = RenderQuality.MEDIUM;
+
+        @Configurable
+        @Configurable.Comment({
+                "How planets and moons are drawn. SPHERE is the smooth shaded globe. CUBE draws every world as a",
+                "blocky cube whose surface is built from chunky square cells (8 / 12 / 16 per face at",
+                "LOW / MEDIUM / HIGH), for a more Minecraft look. Stars and black holes stay round.",
+                "Pressing C on the map flips it for that session.",
+                "Default: SPHERE"
+        })
+        public PlanetStyle planetStyle = PlanetStyle.SPHERE;
+
+        @Configurable
+        @Configurable.Comment({
+                "Scales every mission's real-time length. 1.0 = the trip times in the body definitions",
+                "(5 minutes for the nearest body up to 2 hours for the farthest). Lower it to test.",
+                "Default: 1.0"
+        })
+        @Configurable.DecimalRange(min = 0.001, max = 100.0)
+        public double tripTimeMultiplier = 1.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "The most trip time rocket upgrades can remove in total (0.5 = up to half).",
+                "Default: 0.5"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 0.9)
+        public double maxTripReduction = 0.5;
+
+        @Configurable
+        @Configurable.Comment({
+                "Rocket wear (0 = new, 1 = ruined) at or above which a rocket with a Hull Interlock upgrade",
+                "refuses to launch. Without the interlock a worn rocket launches anyway and may fail.",
+                "Default: 0.7"
+        })
+        @Configurable.DecimalRange(min = 0.1, max = 1.0)
+        public double interlockWearThreshold = 0.7;
+
+        @Configurable
+        @Configurable.Comment({ "Scales how much wear each mission puts on the rocket.", "Default: 1.0" })
+        @Configurable.DecimalRange(min = 0.0, max = 10.0)
+        public double wearMultiplier = 1.0;
+
+        @Configurable
+        @Configurable.Comment({ "Missions a team can have in flight (or waiting to be collected) at once.",
+                "Default: 8" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxMissionsPerTeam = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "Real minutes one outpost production cycle takes. Each probe at an outpost rolls the body's",
+                "yield table once per cycle.", "Default: 10"
+        })
+        @Configurable.DecimalRange(min = 0.05, max = 1440.0)
+        public double outpostCycleMinutes = 10.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "How many finished cycles an outpost stockpiles before it stops producing (144 cycles of",
+                "10 minutes is a day). A Haul mission empties it.", "Default: 144"
+        })
+        @Configurable.Range(min = 1, max = 100000)
+        public int outpostMaxStoredCycles = 144;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a successful survey turns up an anomaly: a surface cache of resources, a vein",
+                "signature that maps another deposit, or (rarely) ancient ruins with a large cache.",
+                "Default: 0.25"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double surveyAnomalyChance = 0.25;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a mission has a random event on the way (solar flare, micrometeoroids, a tailwind,",
+                "a derelict cache, a signal echo). At most one per mission, revealed when it lands. 0 turns events",
+                "off. Default: 0.3"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double missionEventChance = 0.3;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance, per finished production cycle, that something breaks an outpost. A broken outpost",
+                "stops producing (and stops costing upkeep) until a repair run fixes it; what it had already",
+                "stockpiled is kept. 0 turns incidents off. Default: 0.05 (about once per 3 hours of 10 min cycles)"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double outpostIncidentChance = 0.05;
+
+        @Configurable
+        @Configurable.Comment({
+                "Repair kits a repair run uses up (they are taken from the launching player's inventory).",
+                "Default: 1"
+        })
+        @Configurable.Range(min = 1, max = 16)
+        public int outpostRepairKits = 1;
+
+        @Configurable
+        @Configurable.Comment({
+                "Chance that a failed extraction, outpost deployment or haul leaves the rocket stranded and sends a",
+                "distress signal instead of bringing it home: it can only be recovered by a rescue run. 0 turns",
+                "stranding off. Default: 0.4"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double distressChance = 0.4;
+
+        @Configurable
+        @Configurable.Comment({
+                "How long, in real minutes, a distress signal lasts. If no rescue arrives in time the rocket is lost.",
+                "Default: 180"
+        })
+        @Configurable.Range(min = 5, max = 10080)
+        public int distressWindowMinutes = 180;
+
+        @Configurable
+        @Configurable.Comment({ "Repair kits a rescue run carries (and uses up). Default: 2" })
+        @Configurable.Range(min = 1, max = 16)
+        public int rescueKits = 2;
+
+        @Configurable
+        @Configurable.Comment({
+                "Extraction probes a station construction run carries and uses up. Each of a body's three station",
+                "levels costs this many. Default: 4"
+        })
+        @Configurable.Range(min = 1, max = 64)
+        public int stationProbesPerLevel = 4;
+
+        @Configurable
+        @Configurable.Comment({
+                "Most rockets that can be sent in one launch (extraction, deployment and rescue runs). Each rocket",
+                "is its own mission with its own rocket, probes and launch energy. Default: 8"
+        })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxRocketsPerLaunch = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "Whether a body's tier needs a matching rocket hull to work there: mid tier needs Mk II, late Mk III,",
+                "endgame Mk IV (surveys are exempt). Hulls are raised with Hull Refit Kits in the refit screen",
+                "(sneak + use a rocket). Default: true"
+        })
+        public boolean rocketTierGating = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Volume of the Continuum map's layered ambience (space bed, wind, stellar roar, black hole hum), 0 to 1.",
+                "0 turns it off. Default: 0.6"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0)
+        public double ambienceVolume = 0.6;
+
+        @Configurable
+        @Configurable.Comment({
+                "Whether outposts need power. If true, every production cycle costs upkeep drawn from the owning",
+                "team's Tesla Network; a cycle that cannot be paid for is lost, so an unpowered outpost idles.",
+                "Default: true"
+        })
+        public boolean outpostRequiresPower = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "EU one probe costs per production cycle. With the default 10 minute cycle, 500,000 EU is about",
+                "42 EU/t per probe (8 probes ~ 330 EU/t). 0 turns upkeep off. Default: 500000"
+        })
+        @Configurable.DecimalRange(min = 0.0, max = 1.0E12)
+        public double outpostUpkeepEUPerProbe = 500_000.0;
+
+        @Configurable
+        @Configurable.Comment({ "The most probes one outpost can hold.", "Default: 8" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxProbesPerOutpost = 8;
+
+        @Configurable
+        @Configurable.Comment({
+                "If true, missions can only be launched from a fully built Continuum Launch Complex. If false the plain",
+                "Continuum Launch Pad block also works (it ignores tier and power) - meant for testing and creative.",
+                "Default: true"
+        })
+        public boolean requireMultiblockPad = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Energy a launch draws from the Launch Complex's input hatches, in amp-ticks of the pad's own voltage",
+                "(20 = 1 amp for a second). A MV pad pays 128 * this in EU. An energy hatch only holds 16 times its",
+                "voltage, so a launch never asks for more than 90% of what the pad's hatches can store, whatever this",
+                "is set to. Default: 10"
+        })
+        @Configurable.Range(min = 0, max = 10000000)
+        public int launchEnergyAmpTicks = 10;
+
+        @Configurable
+        @Configurable.Comment({
+                "The pad tier (GT voltage tier: 1 = LV, 2 = MV, 3 = HV, 4 = EV, 5 = IV, 6 = LuV, 7 = ZPM, 8 = UV)",
+                "a body needs, by its gate.min_tier. Defaults: start MV, early HV, mid EV, late IV, endgame LuV."
+        })
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierStart = 2;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierEarly = 3;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierMid = 4;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierLate = 5;
+
+        @Configurable
+        @Configurable.Range(min = 0, max = 14)
+        public int padTierEndgame = 6;
+
+        @Configurable
+        @Configurable.Comment({ "The most extraction probes one mission can carry.", "Default: 16" })
+        @Configurable.Range(min = 1, max = 64)
+        public int maxProbesPerMission = 16;
+
+        @Configurable
+        @Configurable.Comment({ "How much wear one Repair Kit removes from a rocket (0.3 = 30%).", "Default: 0.3" })
+        @Configurable.DecimalRange(min = 0.01, max = 1.0)
+        public double repairKitWear = 0.3;
+
+        @Configurable
+        @Configurable.Comment({ "How close to a Launch Pad a player has to be to launch from it, in blocks.",
+                "Default: 12" })
+        @Configurable.Range(min = 2, max = 64)
+        public int launchRangeBlocks = 12;
+    }
+
+    public static class CoreValues {
+
+        @Configurable
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK I", "Default: 100" })
+        public int mk1SlotValue = 100;
+
+        @Configurable
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK II", "Default: 200" })
+        public int mk2SlotValue = 200;
+
+        @Configurable
+        @Configurable.Comment({ "The number of item slots added by the Vault Core MK III", "Default: 500" })
+        public int mk3SlotValue = 500;
+    }
+
+    public static class VaultValues {
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.BronzeVault bronzeVault = new PhoenixConfigs.VaultValues.BronzeVault();
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.SteelVault steelVault = new PhoenixConfigs.VaultValues.SteelVault();
+
+        @Configurable
+        public PhoenixConfigs.VaultValues.TitaniumVault titaniumVault = new PhoenixConfigs.VaultValues.TitaniumVault();
+
+        public static class BronzeVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Bronze Vault", "Default: 36" })
+            public int bronzeBaseSlots = 36;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large Bronze Vault", "Default: 2" })
+            public int bronzeInterfaceLimit = 2;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large  Vault", "Default: true" })
+            public boolean bronzeWireless = true;
+        }
+
+        public static class SteelVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Steel Vault", "Default: 72" })
+            public int steelBaseSlots = 72;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large  Vault", "Default: 4" })
+            public int steelInterfaceLimit = 4;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large Steel Vault",
+                    "Default: true" })
+            public boolean steelWireless = true;
+        }
+
+        public static class TitaniumVault {
+
+            @Configurable
+            @Configurable.Comment({ "Base number of item slots for the Large Titanium Vault", "Default: 108" })
+            public int titaniumBaseSlots = 108;
+
+            @Configurable
+            @Configurable.Comment({ "Maximum number of interfaces for the Large Titanium Vault", "Default: 8" })
+            public int titaniumInterfaceLimit = 8;
+
+            @Configurable
+            @Configurable.Comment({ "Whether wireless terminals can connect to the Large Titanium Vault",
+                    "Default: true" })
+            public boolean titaniumWireless = true;
         }
     }
 
-    public static class ColorConfig {
+    public static class WirelessTerminal {
+
+        @Configurable
+        @Configurable.Comment({ "Base distance in blocks that the wireless terminal can connect to a vault",
+                "Default: 64" })
+        public int connectionDistance = 64;
 
         @Configurable
         @Configurable.Comment({
-                "Add custom formatting codes here.",
-                "Format: 'char:hex' (e.g., 'z:BF00FF')",
-                "Note: The code is a single character, and hex should not include #"
-        })
-        public String[] customColors = new String[] {
-                "z:BF00FF",
-                "°:00F2FF",
-                "p:FF2100"
+                "Whether infinite range is enabled for the wireless terminal, also enables cross-dimension connection",
+                "If true, connectionDistance will be ignored entirely", "Default: false" })
+        public boolean infiniteRange = false;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the LV emitter", "Default: 1.5" })
+        public double lvEmitterBonus = 1.5;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the MV emitter", "Default: 2.0" })
+        public double mvEmitterBonus = 2.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the HV emitter", "Default: 2.5" })
+        public double hvEmitterBonus = 2.5;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the EV emitter", "Default: 3.0" })
+        public double evEmitterBonus = 3.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the IV emitter", "Default: 4.0" })
+        public double ivEmitterBonus = 4.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the LuV emitter", "Default: 5.0" })
+        public double luvEmitterBonus = 5.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the ZPM emitter", "Default: 6.0" })
+        public double zpmEmitterBonus = 6.0;
+
+        @Configurable
+        @Configurable.Comment({ "The range multiplier applied by the UV emitter", "Default: 8.0" })
+        public double uvEmitterBonus = 8.0;
+    }
+
+    public static int getSlotValue(CoreTier tier) {
+        return switch (tier) {
+            case MK1 -> INSTANCE.coreValues.mk1SlotValue;
+            case MK2 -> INSTANCE.coreValues.mk2SlotValue;
+            case MK3 -> INSTANCE.coreValues.mk3SlotValue;
         };
     }
 
@@ -130,9 +543,9 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "Max boost scale for powered elytra flight at maximum speed setting.",
                 "Scales further with poweredFlightEUt so higher drain = faster top speed.",
-                "Default: 0.09"
+                "Default: 0.16"
         })
-        public double poweredBoostMax = 0.09;
+        public double poweredBoostMax = 0.16;
 
         @Configurable
         @Configurable.Comment({
@@ -145,57 +558,62 @@ public class PhoenixConfigs {
         @Configurable.Comment({
                 "Max creative fly speed (at speed slider = 10).",
                 "Scales further with creativeFlightEUt so higher drain = faster top speed.",
-                "Default: 0.2"
+                "Default: 0.35"
         })
-        public double creativeSpeedMax = 0.20;
+        public double creativeSpeedMax = 0.35;
 
         @Configurable
         @Configurable.Comment({
-                "Min horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
-                "flight (at speed slider = 0). This is a direct velocity, not creativeSpeedMin/Max's",
-                "vanilla Abilities.flyingSpeed units - vanilla's own flight accumulates well beyond",
-                "that value tick over tick via friction, but free-strafing sets velocity directly with",
-                "no such buildup, so it needed its own, much larger-looking range to feel equivalent.",
-                "Default: 1.0"
+                "Horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing flight",
+                "at speed slider = 5 (the slider's \"normal\" midpoint, range 0-20, matching vanilla",
+                "creative-fly speed) - not creativeSpeedMin/Max's vanilla Abilities.flyingSpeed units,",
+                "since vanilla's own flight accumulates well beyond that raw value tick over tick via",
+                "friction, but free-strafing sets velocity directly with no such buildup, so it needs",
+                "its own, much larger-looking value to reach an equivalent actual speed. Scales",
+                "proportionally with the slider: 0 = stopped, 10 = 3.5x this, 20 = 7x this (raised from a",
+                "4x ceiling - it capped out well below what \"creative flight\" should feel like at max).",
+                "Default: 0.55 (matches vanilla creative-fly speed at slider = 5, the old flat default)"
         })
-        public double creativeFreeSpeedMin = 1.0;
+        public double creativeFreeSpeedBase = 0.55;
 
         @Configurable
         @Configurable.Comment({
-                "Max horizontal speed, in blocks/tick, for plain \"Creative\" mode's free-strafing",
-                "flight (at speed slider = 20). See creativeFreeSpeedMin.",
-                "Default: 8.0"
-        })
-        public double creativeFreeSpeedMax = 8.0;
-
-        @Configurable
-        @Configurable.Comment({
-                "Min speed clamp for powered flight (at drift slider = 0, tightest handling).",
+                "Min speed clamp for powered flight, at speed slider = 0 (the SPEED slider now drives",
+                "this cap - previously only the Drift slider affected it at all, so cranking Speed to max",
+                "got you to the same ceiling faster without ever actually raising it).",
                 "Default: 0.6"
         })
         public double poweredDriftMin = 0.6;
 
         @Configurable
         @Configurable.Comment({
-                "Max speed clamp for powered flight (at drift slider = 10, loosest/floatiest).",
-                "Default: 1.8"
+                "Max speed clamp for powered flight, at speed slider = 20. Drift then applies on top of",
+                "this as a loosening multiplier (up to +50% at drift slider = 10) - see poweredDriftMin.",
+                "Default: 4.0"
         })
-        public double poweredDriftMax = 1.8;
+        public double poweredDriftMax = 4.0;
 
         @Configurable
         @Configurable.Comment({
-                "Horizontal velocity retention per tick while airborne but not thrusting, at drift",
-                "slider = 0 (full inertia canceling). 0.0 = stop instantly, 1.0 = never decay.",
+                "Coasting half-life, in seconds, at drift slider = 0: velocity snaps to zero the instant",
+                "you stop thrusting (full inertia canceling) as long as this is left at 0 - kept",
+                "configurable only for consistency with coastHalfLifeMax, not meant to be changed.",
                 "Default: 0.0"
         })
-        public double coastRetentionMin = 0.0;
+        public double coastHalfLifeMin = 0.0;
 
         @Configurable
         @Configurable.Comment({
-                "See coastRetentionMin - the retention fraction at drift slider = 10.",
-                "Default: 1.0"
+                "Coasting half-life, in seconds, at drift slider = 9 (how long it takes to bleed off",
+                "half your speed while airborne and not thrusting). Drift slider = 10 is still a hard",
+                "special case with ZERO decay (matches real elytra exactly); slider 0-9 now scales this",
+                "half-life linearly instead of a raw per-tick retention fraction, because a linear",
+                "retention scale feels like instant death almost everywhere: even 0.7 retention/tick",
+                "(70% \"kept\", which sounds generous) compounds down to under 0.1% of your speed within",
+                "a single second, so nearly the entire slider used to feel identical to drift = 0.",
+                "Default: 8.0"
         })
-        public double coastRetentionMax = 1.0;
+        public double coastHalfLifeMax = 8.0;
 
         @Configurable
         @Configurable.Comment({
@@ -206,6 +624,36 @@ public class PhoenixConfigs {
                 "Default: 8.0"
         })
         public double poweredVerticalBase = 8.0;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min forward-accel boost for the leggings' sprint boost (at sprint-speed slider = 0).",
+                "The actual boost = sprintAccelMin + ((sprintSpeed/20) * (sprintAccelMax - sprintAccelMin))",
+                "Default: 0.03"
+        })
+        public double sprintAccelMin = 0.03;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max forward-accel boost for the leggings' sprint boost (at sprint-speed slider = 20).",
+                "Default: 0.25 (slider = 5, this system's default, works out to the old hardcoded 0.085)"
+        })
+        public double sprintAccelMax = 0.25;
+
+        @Configurable
+        @Configurable.Comment({
+                "Min upward-impulse strength for the boots' boosted jump (at jump-height slider = 0).",
+                "The actual impulse = jumpHeightMin + ((jumpHeight/20) * (jumpHeightMax - jumpHeightMin))",
+                "Default: 0.21"
+        })
+        public double jumpHeightMin = 0.21;
+
+        @Configurable
+        @Configurable.Comment({
+                "Max upward-impulse strength for the boots' boosted jump (at jump-height slider = 20).",
+                "Default: 0.65 (slider = 5, this system's default, works out to the old hardcoded 0.32)"
+        })
+        public double jumpHeightMax = 0.65;
     }
 
     public static class CleanroomConfig {
@@ -369,6 +817,11 @@ public class PhoenixConfigs {
         public double CoolantBoost2 = 1.2;
 
         @Configurable
+        @Configurable.Comment({ "Whether the Tech Suite's on-screen HUD (flight mode, tuning sliders, network",
+                "status, rebirth cooldown, energy bar) is drawn at all. Set to false to hide it entirely." })
+        public boolean techSuiteHUDEnabled = true;
+
+        @Configurable
         @Configurable.Comment({
                 "The connection mode for Tesla Towers.",
                 "TEAM_AUTO: All towers under a team/player share the same cloud automatically.",
@@ -382,351 +835,115 @@ public class PhoenixConfigs {
         }
     }
 
-    public static class FissionConfigs {
+    @Configurable
+    @Configurable.Comment({ "Config options for OmniPacks base values" })
+    public PhoenixConfigs.PackValueConfigs OmniPackBaseValues = new PhoenixConfigs.PackValueConfigs();
+    @Configurable
+    @Configurable.Comment({ "Config options for Upgrade Modules" })
+    public PhoenixConfigs.UpgradeConfigs ModuleValues = new PhoenixConfigs.UpgradeConfigs();
+
+    public static class PackValueConfigs {
 
         @Configurable
-        @Configurable.Comment("Enable the nuke block.")
-        public boolean nukeEnabled = true;
-
+        @Configurable.Comment({ "Basic OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.BasicPack basicPack = new PhoenixConfigs.PackValueConfigs.BasicPack();
         @Configurable
-        @Configurable.Comment("Cube radius in blocks. Total affected volume is (2r+1)^3.")
-        public int nukeCubeRadius = 16;
-
+        @Configurable.Comment({ "Advanced OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.AdvancedPack advancedPack = new PhoenixConfigs.PackValueConfigs.AdvancedPack();
         @Configurable
-        @Configurable.Comment("Hard cap to prevent insane values.")
-        public int nukeCubeRadiusCap = 48;
+        @Configurable.Comment({ "Elite OmniPack Base Values" })
+        public PhoenixConfigs.PackValueConfigs.ElitePack elitePack = new PhoenixConfigs.PackValueConfigs.ElitePack();
 
-        @Configurable
-        @Configurable.Comment("Fuse time in ticks (20 ticks = 1 second). TNT is 80.")
-        public int nukeFuseTicks = 120;
-
-        @Configurable
-        @Configurable.Comment("How many blocks to process per tick during cube wipe.")
-        public int nukeBatchPerTick = 4000;
-
-        @Configurable
-        @Configurable.Comment("Skip blocks that have a BlockEntity (machines/chests).")
-        public boolean nukeSkipBlockEntities = true;
-
-        @Configurable
-        @Configurable.Comment("Skip blocks in unloaded chunks (prevents chunk-forcing).")
-        public boolean nukeSkipUnloadedChunks = true;
-
-        @Configurable
-        @Configurable.Comment("If true, replace removed blocks with fire instead of air.")
-        public boolean nukeReplaceWithFire = false;
-
-        @Configurable
-        @Configurable.Comment("Flat heat added per tick while running (before rods/moderators/parallels).")
-        public double baseHeatPerTick = 0.0;
-
-        @Configurable
-        @Configurable.Comment("Max bonus percent from continuous running (power + breeder output). Example: 60 = up to +60%.")
-        public double burnBonusMaxPercent = 30.0;
-
-        @Configurable
-        @Configurable.Comment("Seconds of continuous running required to reach the max burn bonus. Example: 1200 = 20 minutes.")
-        public double burnBonusRampSeconds = 1200.0;
-
-        @Configurable
-        @Configurable.Comment("The maximum heat a reactor can hold before starting the meltdown timer.")
-        public double maxSafeHeat = 100000.0;
-
-        @Configurable
-        @Configurable.Comment("Minimum heat clamp.")
-        public double minHeat = 0.0;
-
-        @Configurable
-        @Configurable.Comment("Maximum heat clamp to prevent runaway numeric overflow (meltdown still happens).")
-        public double maxHeatClamp = 250000.0;
-
-        @Configurable
-        @Configurable.Comment("Does the reactor naturally lose heat when not running?")
-        public boolean passiveCooling = true;
-
-        @Configurable
-        @Configurable.Comment("Heat lost per tick when idling.")
-        public double idleHeatLoss = 1.0;
-
-        @Configurable
-        @Configurable.Comment("Base parallels added per fuel rod (before heat-based parallels).")
-        public int parallelsPerFuelRod = 1;
-
-        @Configurable
-        @Configurable.Comment("How much heat is required to add +1 to the recipe parallel multiplier.")
-        public double heatPerParallel = 10000.0;
-
-        @Configurable
-        @Configurable.Comment("Hard cap for parallels.")
-        public int maxParallels = 256;
-
-        @Configurable
-        @Configurable.Comment("How much EU/t is generated per unit of CURRENT heat (power scales with current heat).")
-        public double euPerHeatUnit = 1.0;
-
-        @Configurable
-        @Configurable.Comment("Optional cap on generated EU/t. Set <= 0 for no cap.")
-        public long maxGeneratedEUt = 0;
-
-        @Configurable
-        @Configurable.Comment("If true, fuel usage scales with parallels (recommended).")
-        public boolean fuelUsageScalesWithParallels = true;
-
-        @Configurable
-        @Configurable.Comment("If true, fuel usage scales with rod count (usually true).")
-        public boolean fuelUsageScalesWithRodCount = true;
-
-        @Configurable
-        @Configurable.Comment("If true, blanket usage/output is additive across ALL blankets. If false, only the primary blanket is processed.")
-        public boolean blanketUsageAdditive = true;
-
-        @Configurable
-        @Configurable.Comment("Clamp for total fuel discount percent from moderators.")
-        public int maxFuelDiscountPercent = 90;
-
-        @Configurable
-        @Configurable.Comment("Clamp for total EU boost percent from moderators.")
-        public int maxEUBoostPercent = 100;
-
-        @Configurable
-        @Configurable.Comment("If true, cooling only applies when coolant is present.")
-        public boolean coolingRequiresCoolant = true;
-
-        @Configurable
-        @Configurable.Comment("If true, coolant usage is additive across all coolers. If false, uses primary cooler only.")
-        public boolean coolantUsageAdditive = false;
-
-        @Configurable
-        @Configurable.Comment("Minimum EU/t produced while running (prevents 0). Set 0 to allow 0.")
-        public long minGeneratedEUt = 1024;
-
-        @Configurable
-        @Configurable.Comment("Exponent for heat->power curve. 1 = linear, >1 rewards high heat.")
-        public double powerCurveExponent = 2.0;
-
-        @Configurable
-        @Configurable.Comment("Heat fraction of maxSafeHeat where generation begins. 0.0 = always, 0.1 = starts at 10% of maxSafeHeat.")
-        public double powerStartFraction = 0.0;
-
-        @Configurable
-        public MeltdownConfigs meltdown = new MeltdownConfigs();
-
-        @Configurable
-        public ExplosionConfigs explosion = new ExplosionConfigs();
-
-        @Configurable
-        @Configurable.Comment("If true, all fuel rods in the multiblock must be the same tier.")
-        public boolean restrictFuelRodTier = true;
-
-        @Configurable
-        @Configurable.Comment("If true, all coolers in the multiblock must be the same tier.")
-        public boolean restrictCoolerTier = true;
-
-        @Configurable
-        @Configurable.Comment("If >= 0, all fuel rods must be exactly this tier. Set to -1 to disable.")
-        public int requiredFuelRodTier = -1;
-
-        @Configurable
-        @Configurable.Comment("If >= 0, all coolers must be exactly this tier. Set to -1 to disable.")
-        public int requiredCoolerTier = -1;
-    }
-
-    public static class MeltdownConfigs {
-
-        @Configurable
-        @Configurable.Comment("Base grace seconds when barely above safe heat.")
-        public double baseGraceSeconds = 60.0;
-
-        @Configurable
-        @Configurable.Comment("Minimum grace seconds when extremely above safe heat.")
-        public double minGraceSeconds = 15.0;
-
-        @Configurable
-        @Configurable.Comment("Severity multiplier: higher = faster meltdown when over safe heat.")
-        public double excessHeatSeverity = 1.0;
-
-        @Configurable
-        @Configurable.Comment("If true, falling back under safe heat clears the timer.")
-        public boolean clearTimerWhenSafe = true;
-    }
-
-    public static class FissionBlockStatsConfigs {
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Coolers")
-        public CoolerConfigs coolers = new CoolerConfigs();
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Moderators")
-        public ModeratorConfigs moderators = new ModeratorConfigs();
-
-        @Configurable
-        @Configurable.Comment("Configuration for Fission Fuel Rods")
-        public FuelRodConfigs fuelRods = new FuelRodConfigs();
-
-        public static class CoolerConfigs {
+        public static class BasicPack {
 
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the basic cooler.")
-            public int coolingPowerBasicCooler = 2;
+            @Configurable.Comment({ "Base number of slots for the Basic OmniPack", "Default: 27" })
+            public int basicPackItemSlots = 27;
+            @Configurable
+            @Configurable.Comment({ "Base fluid capacity for the Basic OmniPack in millibuckets", "Default: 32000" })
+            public int basicPackFluidStorage = 32_000;
+            @Configurable
+            @Configurable.Comment({ "Base EU capacity for the Basic OmniPack", "Default: 200000" })
+            public int basicPackEUStorage = 200_000;
+            @Configurable
+            @Configurable.Comment({ "Number of upgrade slots on the Basic OmniPack", "Default: 6" })
+            public int basicPackUpgradeSlots = 6;
         }
 
-        public static class ModeratorConfigs {
+        public static class AdvancedPack {
 
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the graphite moderator.")
-            public int euBoostGraphiteModerator = 2;
+            @Configurable.Comment({ "Base number of slots for the Advanced OmniPack", "Default: 45" })
+            public int advancedPackItemSlots = 45;
             @Configurable
-            @Configurable.Comment("Fuel Discount for the graphite moderator.")
-            public int fuelDiscountGraphiteModerator = 1;
+            @Configurable.Comment({ "Base fluid capacity for the Advanced OmniPack in millibuckets",
+                    "Default: 128000" })
+            public int advancedPackFluidStorage = 128_000;
             @Configurable
-            @Configurable.Comment("Tier for the graphite moderator.")
-            public int tierGraphiteModerator = 1;
+            @Configurable.Comment({ "Base EU capacity for the Advanced OmniPack", "Default: 1000000" })
+            public int advancedPackEUStorage = 1_000_000;
             @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the beryllium moderator.")
-            public int euBoostBerylliumModerator = 5;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the beryllium moderator.")
-            public int fuelDiscountBerylliumModerator = 2;
-            @Configurable
-            @Configurable.Comment("Tier for the beryllium moderator.")
-            public int tierBerylliumModerator = 2;
-            @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the heavy water moderator.")
-            public int euBoostHeavyWaterModerator = 12;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the heavy water moderator.")
-            public int fuelDiscountHeavyWaterModerator = 5;
-            @Configurable
-            @Configurable.Comment("Tier for the heay water moderator.")
-            public int tierHeavyWaterModerator = 3;
-            @Configurable
-            @Configurable.Comment("EU/t boost multiplier for the niobium sic moderator.")
-            public int euBoostNiobiumSicModerator = 30;
-            @Configurable
-            @Configurable.Comment("Fuel Discount for the niobium sic moderator.")
-            public int fuelDiscountNiobiumSicModerator = 10;
-            @Configurable
-            @Configurable.Comment("Tier for the niobium sic moderator.")
-            public int tierNiobiumSicModerator = 4;
+            @Configurable.Comment({ "Number of upgrade slots on the Advanced OmniPack", "Default: 10" })
+            public int advancedPackUpgradeSlots = 10;
         }
 
-        public static class FuelRodConfigs {
+        public static class ElitePack {
 
             @Configurable
-            @Configurable.Comment("Base heat production for the T1 fuel rod.")
-            public int heatProductionT1 = 50;
+            @Configurable.Comment({ "Base number of slots for the Elite OmniPack", "Default: 90" })
+            public int elitePackItemSlots = 90;
             @Configurable
-            @Configurable.Comment("Base heat production for the T2 fuel rod.")
-            public int heatProductionT2 = 150;
+            @Configurable.Comment({ "Base fluid capacity for the Elite OmniPack in millibuckets", "Default: 512000" })
+            public int elitePackFluidStorage = 512_000;
             @Configurable
-            @Configurable.Comment("Base heat production for the T3 fuel rod.")
-            public int heatProductionT3 = 500;
+            @Configurable.Comment({ "Base EU capacity for the Elite OmniPack", "Default: 200000000" })
+            public int elitePackEUStorage = 200_000_000;
             @Configurable
-            @Configurable.Comment("Base heat production for the T4 fuel rod.")
-            public int heatProductionT4 = 1200;
-            @Configurable
-            @Configurable.Comment("Base heat production for the Tt fuel rod.")
-            public int heatProductionT5 = 3000;
-
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T1 fuel rod.")
-            public int neutronBiasT1 = 0;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T2 fuel rod.")
-            public int neutronBiasT2 = 1;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T3 fuel rod.")
-            public int neutronBiasT3 = 5;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T4 fuel rod.")
-            public int neutronBiasT4 = 12;
-            @Configurable
-            @Configurable.Comment("NeutronBias for the T5 fuel rod.")
-            public int neutronBiasT5 = 30;
-
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T1 fuel rod.")
-            public int cycleDurationT1 = 2500;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T2 fuel rod.")
-            public int cycleDurationT2 = 3000;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T3 fuel rod.")
-            public int cycleDurationT3 = 3500;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T4 fuel rod.")
-            public int cycleDurationT4 = 4000;
-            @Configurable
-            @Configurable.Comment("Fuel cycle duration in ticks for the T5 fuel rod.")
-            public int cycleDurationT5 = 8000;
-
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T1 fuel rod.")
-            public int cycleAmountT1 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T2 fuel rod.")
-            public int cycleAmountT2 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T3 fuel rod.")
-            public int cycleAmountT3 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T4 fuel rod.")
-            public int cycleAmountT4 = 1;
-            @Configurable
-            @Configurable.Comment("Fuel amount used per cycle for the T5 fuel rod.")
-            public int cycleAmountT5 = 1;
-
-            @Configurable
-            @Configurable.Comment("Fuel used for the T1 fuel rod. (Registry name string)")
-            public String fuelUsedT1 = "phoenixcore:basic_fuel_rod";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T2 fuel rod. (Registry name string)")
-            public String fuelUsedT2 = "phoenixcore:basic_fuel_rod";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T3 fuel rod. (Registry name string)")
-            public String fuelUsedT3 = "phoenixcore:u235_fuel_pellet";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T4 fuel rod. (Registry name string)")
-            public String fuelUsedT4 = "phoenixcore:plutonium_241_fuel_pellet";
-            @Configurable
-            @Configurable.Comment("Fuel used for the T5 fuel rod. (Registry name string)")
-            public String fuelUsedT5 = "phoenixcore:u242_fuel_pellet";
-
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T1 fuel rod. (Registry name string)")
-            public String depletedGivenT1 = "phoenixcore:low_level_radioactive_waste";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T2 fuel rod. (Registry name string)")
-            public String depletedGivenT2 = "phoenixcore:low_level_radioactive_waste";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T3 fuel rod. (Registry name string)")
-            public String depletedGivenT3 = "phoenixcore:spent_uranium_235_nugget";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T4 fuel rod. (Registry name string)")
-            public String depletedGivenT4 = "phoenixcore:depleted_plutonium_241_nugget";
-            @Configurable
-            @Configurable.Comment("Depleted Fuel produced for the T5 fuel rod. (Registry name string)")
-            public String depletedGivenT5 = "phoenixcore:spent_uranium_242_nugget";
+            @Configurable.Comment({ "Number of upgrade slots on the Elite OmniPack", "Default: 16" })
+            public int elitePackUpgradeSlots = 16;
         }
     }
 
-    public static class ExplosionConfigs {
+    public static class UpgradeConfigs {
 
         @Configurable
-        @Configurable.Comment("If true, replaces blocks with air/fire. If false, uses standard GT explosion (drops items).")
-        public boolean destructiveExplosion = false;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module I")
+        public int itemModule1Bonus = 9;
         @Configurable
-        @Configurable.Comment("Explosion power scales with fuel rod count: power = base + rods * multiplier.")
-        public double explosionPowerPerFuelRod = 1.5;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module II")
+        public int itemModule2Bonus = 18;
         @Configurable
-        @Configurable.Comment("The base power of the meltdown explosion.")
-        public float baseExplosionPower = 2.0f;
-
+        @Configurable.Comment("Number of slots added by the Item Capacity Module III")
+        public int itemModule3Bonus = 27;
         @Configurable
-        @Configurable.Comment("Max radius used for destructive bypass block wiping.")
-        public int maxDestructiveRadius = 6;
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module I")
+        public double fluidModule1Bonus = 2.00;
+        @Configurable
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module II")
+        public double fluidModule2Bonus = 4.00;
+        @Configurable
+        @Configurable.Comment("Tank multiplier for the Fluid Capacity Module III")
+        public double fluidModule3Bonus = 8.00;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module I")
+        public double energyModule1Bonus = 1.25;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module II")
+        public double energyModule2Bonus = 1.50;
+        @Configurable
+        @Configurable.Comment("EU capacity multiplier for the Energy Capacity Module III")
+        public double energyModule3Bonus = 2.00;
+        @Configurable
+        @Configurable.Comment("EU per tick cost of the Jetpack Module I")
+        public int jetpackModule1EUCost = 90;
+        @Configurable
+        @Configurable.Comment("EU per tick cost of the Jetpack Module II")
+        public int jetpackModule2EUCost = 30;
+        @Configurable
+        @Configurable.Comment("Pickup radius in blocks of the Magnet Module I")
+        public int magnetModule1Radius = 5;
+        @Configurable
+        @Configurable.Comment("Pickup radius in blocks of the Magnet Module II")
+        public int magnetModule2Radius = 10;
     }
 }

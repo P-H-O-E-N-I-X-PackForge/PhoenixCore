@@ -1,12 +1,13 @@
 package net.phoenix.core.integration.emi;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -14,8 +15,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fml.ModList;
-import net.phoenix.core.integration.phoenix_fission.common.PhoenixFissionMachines;
-import net.phoenix.core.integration.phoenix_fission.common.data.block.*;
+import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
+import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackScreen;
+import net.phoenix.core.integration.gregvaults.client.screen.VaultScreen;
+import net.phoenix.core.integration.gregvaults.client.screen.VaultTerminalScreen;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 
 import dev.emi.emi.api.EmiDragDropHandler;
@@ -28,23 +31,26 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.FluidEmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.widget.Bounds;
+import dev.emi.emi.screen.EmiScreenBase;
 
 @EmiEntrypoint
 public class PhoenixEmiPlugin implements EmiPlugin {
 
-    public static final EmiStack COOLER_ICON = EmiStack.of(PhoenixFissionBlocks.COOLER_BASIC.asStack());
-
     public static final EmiRecipeCategory FISSION_FUEL = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_fuel"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_fuel"),
             EmiStack.of(ChemicalHelper.get(TagPrefix.ingot, GTMaterials.Uranium235)));
 
     public static final EmiRecipeCategory FISSION_COOLANT = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_coolant"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_coolant"),
             EmiStack.of(Items.WATER_BUCKET));
 
     public static final EmiRecipeCategory FISSION_BREEDING = new EmiRecipeCategory(
-            new ResourceLocation("phoenixcore", "fission_breeding"),
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_breeding"),
             EmiStack.of(Items.CAULDRON));
+
+    public static final EmiRecipeCategory ASTRAL_RITUAL = new EmiRecipeCategory(
+            ResourceLocation.fromNamespaceAndPath("phoenixcore", "astral_ritual"),
+            EmiStack.of(new ItemStack(net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL.get())));
 
     @Override
     public void register(EmiRegistry registry) {
@@ -54,69 +60,53 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         registry.addCategory(FISSION_COOLANT);
         registry.addCategory(FISSION_BREEDING);
 
-        for (FissionFuelRodBlock.FissionFuelRodTypes type : FissionFuelRodBlock.FissionFuelRodTypes.values()) {
-            registry.addRecipe(new FuelRodEmiRecipe(type));
-            registry.addRecipe(new FissionFuelInfoEmiRecipe(type));
-            EmiStack stack = FuelRodEmiRecipe.getEmiStackFromId("phoenixcore:" + type.getName());
-            if (!stack.isEmpty()) {
-                registry.addWorkstation(FISSION_FUEL, stack);
-                registry.addWorkstation(FISSION_BREEDING, stack);
-                if (fissionLoaded) {
-                    addFormulaAliases(registry, stack, "neutron bias", "heat curve", "base heat");
-                }
-            }
-        }
+        ContinuumEmi.register(registry);
+        GrowthEmi.register(registry);
 
-        for (FissionCoolerBlock.FissionCoolerTypes type : FissionCoolerBlock.FissionCoolerTypes.values()) {
-            registry.addRecipe(new CoolantEmiRecipe(type));
-            EmiStack stack = FuelRodEmiRecipe.getEmiStackFromId("phoenixcore:" + type.getName());
-            if (!stack.isEmpty()) {
-                registry.addWorkstation(FISSION_COOLANT, stack);
-            }
-        }
-
-        for (FissionBlanketBlock.BreederBlanketTypes type : FissionBlanketBlock.BreederBlanketTypes.values()) {
-            registry.addRecipe(new BreedingEmiRecipe(type));
-            registry.addRecipe(new BreederBlanketInfoEmiRecipe(type));
-            EmiStack stack = FuelRodEmiRecipe.getEmiStackFromId("phoenixcore:" + type.getName());
-            if (!stack.isEmpty()) {
-                registry.addWorkstation(FISSION_BREEDING, stack);
-                if (fissionLoaded) {
-                    addFormulaAliases(registry, stack, "breeding formula", "breeding ratio", "instability");
-                }
-            }
-        }
-
-        for (FissionModeratorBlock.FissionModeratorTypes type : FissionModeratorBlock.FissionModeratorTypes.values()) {
-            EmiStack stack = FuelRodEmiRecipe.getEmiStackFromId("phoenixcore:" + type.getName());
-            if (!stack.isEmpty()) {
-                registry.addWorkstation(FISSION_FUEL, stack);
-                registry.addWorkstation(FISSION_BREEDING, stack);
-            }
-        }
-
-        registry.addWorkstation(FISSION_FUEL,
-                EmiStack.of(PhoenixFissionMachines.HIGH_PERFORMANCE_BREEDER_REACTOR.asStack()));
-        registry.addWorkstation(FISSION_COOLANT,
-                EmiStack.of(PhoenixFissionMachines.HIGH_PERFORMANCE_BREEDER_REACTOR.asStack()));
-        registry.addWorkstation(FISSION_BREEDING,
-                EmiStack.of(PhoenixFissionMachines.HIGH_PERFORMANCE_BREEDER_REACTOR.asStack()));
-
-        registry.addWorkstation(FISSION_FUEL,
-                EmiStack.of(PhoenixFissionMachines.PRESSURIZED_FISSION_REACTOR.asStack()));
-        registry.addWorkstation(FISSION_COOLANT,
-                EmiStack.of(PhoenixFissionMachines.PRESSURIZED_FISSION_REACTOR.asStack()));
+        registry.addCategory(ASTRAL_RITUAL);
+        registerAstralRituals(registry);
 
         registry.addExclusionArea(RecipeBuilderScreen.class, (screen, consumer) -> consumer.accept(new Bounds(
                 screen.getGuiLeft(), screen.getGuiTop(),
                 screen.getXSize(), screen.getYSize())));
         registry.addDragDropHandler(RecipeBuilderScreen.class, new RecipeBuilderDragDrop());
 
+        registry.addExclusionArea(OmniPackScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+        registry.addExclusionArea(VaultScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+        registry.addExclusionArea(VaultTerminalScreen.class, (screen, consumer) -> {
+            Rect2i b = screen.getFullBoundsPx();
+            consumer.accept(new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight()));
+        });
+
+        EmiScreenBase.addScreenBoundsProvider(OmniPackScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
+        EmiScreenBase.addScreenBoundsProvider(VaultScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
+        EmiScreenBase.addScreenBoundsProvider(VaultTerminalScreen.class, screen -> {
+            Rect2i b = screen.getFullBoundsPx();
+            return new Bounds(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+        });
+
         registerMaterialFluidSearchAliases(registry);
     }
 
+    private static void registerAstralRituals(EmiRegistry registry) {
+        AstralRitualPedestalBlockEntity.RITUAL_TABLE
+                .forEach((catalyst, result) -> registry.addRecipe(new AstralRitualEmiRecipe(catalyst, result)));
+    }
+
     private static void registerMaterialFluidSearchAliases(EmiRegistry registry) {
-        for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
+        for (Material material : GTRegistries.MATERIALS) {
             if (!material.hasProperty(PropertyKey.FLUID)) continue;
 
             Fluid fluid = material.getFluid();

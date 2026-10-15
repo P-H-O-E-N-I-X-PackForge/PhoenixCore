@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "tag": "forge:plates/bronze"
+    },
+    "B": {
+      "tag": "forge:rods/long/bronze"
+    },
+    "C": {
+      "item": "gtceu:bronze_crate"
+    },
+    "h": {
+      "tag": "gtceu:tools/crafting_hammers"
+    },
+    "w": {
+      "tag": "gtceu:tools/crafting_wrenches"
+    }
+  },
+  "matchSize": false,
+  "pattern": [
+    "AhA",
+    "BCB",
+    "AwA"
+  ],
+  "result": {
+    "item": "phoenixcore:vault_core_mk1"
+  }
+}

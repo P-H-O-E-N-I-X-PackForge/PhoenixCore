@@ -3,8 +3,10 @@ package net.phoenix.core;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
-import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
+import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
+import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
+import com.gregtechceu.gtceu.api.data.worldgen.IWorldGenLayer;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -14,10 +16,8 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
 
-import com.lowdragmc.lowdraglib.Platform;
-
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.material.Fluid;
@@ -28,17 +28,16 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.phoenix.core.api.PhoenixSounds;
 import net.phoenix.core.api.recipe.lookup.MapShieldIngredient;
-import net.phoenix.core.axiom.AxiomRegistry;
-import net.phoenix.core.axiom.research.PlayerResearchCapability;
-import net.phoenix.core.axiom.research.ResearchTreeRegistry;
 import net.phoenix.core.client.PhoenixClient;
 import net.phoenix.core.client.keybind.PhoenixKeybinds;
 import net.phoenix.core.client.particle.PhoenixParticles;
@@ -51,15 +50,40 @@ import net.phoenix.core.common.data.worldgen.CrystalRoseIndicatorGenerator;
 import net.phoenix.core.common.machine.*;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.datagen.PhoenixDatagen;
 import net.phoenix.core.integration.ars_nouveau.api.recipe.lookup.MapSourceIngredient;
 import net.phoenix.core.integration.ars_nouveau.client.gui.SourceHatchMenu;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipeConditons.SoulCondition;
 import net.phoenix.core.integration.ars_nouveau.common.event.SourceHatchJarTransferTick;
+import net.phoenix.core.integration.astral.AstralBlocks;
+import net.phoenix.core.integration.astral.AstralItems;
+import net.phoenix.core.integration.astral.AstralMachines;
+import net.phoenix.core.integration.conflux.ConfluxRegistry;
+import net.phoenix.core.integration.conflux.multiblock.ConfluxMultiblockRegistry;
+import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
+import net.phoenix.core.integration.conflux.producer.ConfluxProducerMachines;
+import net.phoenix.core.integration.conflux.research.AxiomResearchCondition;
+import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
+import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
+import net.phoenix.core.integration.gregpacks.client.OmniPackCurioRenderer;
+import net.phoenix.core.integration.gregpacks.common.inventory.GregPacksMenus;
+import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackKeybind;
+import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackScreen;
+import net.phoenix.core.integration.gregpacks.common.item.GregPacksItems;
+import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlockEntities;
+import net.phoenix.core.integration.gregpacks.common.registry.GregPacksBlocks;
+import net.phoenix.core.integration.gregpacks.common.registry.GregPacksUpgrades;
+import net.phoenix.core.integration.gregpacks.datagen.GregPacksDataGenerators;
+import net.phoenix.core.integration.gregpacks.datagen.GregPacksDatagen;
+import net.phoenix.core.integration.gregpacks.network.GregPacksNetwork;
+import net.phoenix.core.integration.gregvaults.common.multiblock.VaultMachineDefinition;
+import net.phoenix.core.integration.gregvaults.common.recipe.VaultRecipes;
+import net.phoenix.core.integration.gregvaults.common.registry.VaultRegistry;
+import net.phoenix.core.integration.gregvaults.datagen.VaultDatagen;
+import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
+import net.phoenix.core.integration.growth.GrowthBlocks;
+import net.phoenix.core.integration.growth.GrowthMachines;
 import net.phoenix.core.integration.matter_manipulater.common.data.item.ManipulaterItems;
-import net.phoenix.core.integration.phoenix_fission.api.block.PhoenixFissionEntities;
-import net.phoenix.core.integration.phoenix_fission.common.PhoenixFissionMachines;
 import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.network.PhoenixNetwork;
@@ -67,8 +91,6 @@ import net.phoenix.core.network.PhoenixNetwork;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.*;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
@@ -80,10 +102,6 @@ public class PhoenixCore {
     public static final Logger LOGGER = LogManager.getLogger();
     public static GTRegistrate PHOENIX_REGISTRATE = GTRegistrate.create(MOD_ID);
 
-    public static final String PONDER_MOD_ID = "phoenixcore";
-    public static final Set<String> PONDER_NAMESPACES = new HashSet<>();
-    private static boolean ponderInitialized;
-
     public static RegistryEntry<CreativeModeTab> PHOENIX_CREATIVE_TAB = REGISTRATE
             .defaultCreativeTab(PhoenixCore.MOD_ID,
                     builder -> builder
@@ -91,55 +109,114 @@ public class PhoenixCore {
                                     REGISTRATE))
                             .title(REGISTRATE.addLang("itemGroup", PhoenixCore.id("creative_tab"),
                                     "PhoenixCore (CoreMod)"))
-                            .icon(PhoenixMachines.HIGH_YIELD_PHOTON_EMISSION_REGULATOR::asStack)
+                            .icon(() -> PhoenixMachines.HIGH_YIELD_PHOTON_EMISSION_REGULATOR.asStack())
                             .build())
             .register();
 
     public PhoenixCore() {
-        PhoenixCore.init();
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        PhoenixConfigs.init();
+        CrystalRoseIndicatorGenerator.register();
+        VaultDatagen.init();
+        GregPacksDatagen.init();
+        GregPacksUpgrades.init();
+
+        PHOENIX_REGISTRATE.registerEventListeners(modEventBus);
+
+        modEventBus.addListener(this::onRegisterBlocksAndItems);
         modEventBus.addListener(this::commonSetup);
 
         PhoenixParticles.init(modEventBus);
-        if (Platform.isClient()) {
+        net.phoenix.core.common.entity.PhoenixEntities.init(modEventBus);
+        net.phoenix.core.integration.conflux.structure.ConfluxStructures.init(modEventBus);
+        if (FMLLoader.getDist().isClient()) {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);
+            modEventBus.addListener(this::clientSetup);
+            modEventBus.addListener(OmniPackKeybind::register);
+            MinecraftForge.EVENT_BUS.register(OmniPackKeybind.class);
         }
 
         modEventBus.addGenericListener(RecipeConditionType.class, this::registerConditions);
         modEventBus.addGenericListener(GTRecipeType.class, this::registerRecipeTypes);
         modEventBus.addGenericListener(SoundEntry.class, this::registerSounds);
         modEventBus.addGenericListener(MachineDefinition.class, this::registerMachines);
+        modEventBus.addGenericListener(GTOreDefinition.class, this::registerOreVeins);
+        modEventBus.addGenericListener(IWorldGenLayer.class, this::registerWorldGenLayers);
+        modEventBus.addGenericListener(MaterialIconSet.class, this::registerMaterialIconSets);
 
         modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(this::addMaterialRegistries);
         modEventBus.addListener(this::addMaterials);
         modEventBus.addListener(this::modifyMaterials);
 
+        VaultRegistry.registerEventBus(modEventBus);
+        VaultRecipes.SERIALIZERS.register(modEventBus);
+        net.phoenix.core.common.item.cinder.CinderRecipes.SERIALIZERS.register(modEventBus);
+
+        GregPacksItems.init();
+        GregPacksBlocks.init();
+        GregPacksMenus.MENUS.register(modEventBus);
+        GregPacksBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        modEventBus.register(GregPacksDataGenerators.class);
+
         MENUS.register(modEventBus);
 
-        AxiomRegistry.register(modEventBus);
-        modEventBus.addListener(AxiomRegistry::registerCapabilities);
+        ConfluxRegistry.register(modEventBus);
+        modEventBus.addListener(ConfluxRegistry::registerCapabilities);
+        ConfluxNetwork.register();
+        net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
+        net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
+        net.phoenix.core.integration.conflux.dimension.EtherealSpawnGenerator.register();
+        net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator.register();
+        AstralBlocks.registerDeferred(modEventBus);
         modEventBus.addListener(PlayerResearchCapability::register);
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new SourceHatchJarTransferTick());
-        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, PlayerResearchCapability::onAttachCapabilities);
+        MinecraftForge.EVENT_BUS
+                .register(net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents.class);
+        MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.EtherealSpawnManager.class);
+        MinecraftForge.EVENT_BUS.register(net.phoenix.core.integration.conflux.dimension.PlayerSpawnHandler.class);
+        MinecraftForge.EVENT_BUS.addGenericListener(net.minecraft.world.entity.Entity.class,
+                PlayerResearchCapability::onAttachCapabilities);
         MinecraftForge.EVENT_BUS.addListener(PlayerResearchCapability::onPlayerClone);
         MinecraftForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
+        MinecraftForge.EVENT_BUS.addListener(
+                net.phoenix.core.integration.conflux.research.GatedRecipeRegistry::onAddReloadListeners);
+
+        GregPacksBlockEntities.init();
     }
 
-    public static void init() {
-        PhoenixConfigs.init();
-        REGISTRATE.registerRegistrate();
-        PhoenixFissionEntities.init();
+    private void onRegisterBlocksAndItems(net.minecraftforge.registries.RegisterEvent event) {
         PhoenixBlocks.init();
+        net.phoenix.core.common.block.cinema.CinemaBlocks.init();
+        net.phoenix.core.integration.continuum.ContinuumRegistry.init();
+        GrowthBlocks.init();
+        net.phoenix.core.integration.growth.GrowthItems.init();
+        AstralBlocks.init();
+        AstralItems.init();
         PhoenixItems.init();
         ManipulaterItems.init();
-        PhoenixMaterialFlags.init();
-        PhoenixDatagen.init();
-        CrystalRoseIndicatorGenerator.register();
+        net.phoenix.core.integration.drone.DroneItems.init();
+        net.phoenix.core.common.item.cinder.CinderItems.init();
+        net.phoenix.core.common.block.cinder.CinderBlocks.init();
+        net.phoenix.core.common.item.cinder.CinderRecipes.init();
+    }
+
+    private void clientSetup(final FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(GregPacksMenus.OMNIPACK_MENU.get(), OmniPackScreen::new));
+        registerCurioRenderers();
+    }
+
+    private void registerCurioRenderers() {
+        if (!net.minecraftforge.fml.ModList.get().isLoaded("curios")) return;
+        top.theillusivec4.curios.api.client.CuriosRendererRegistry.register(
+                GregPacksBlocks.BASIC_OMNIPACK_BLOCK.asItem(), () -> OmniPackCurioRenderer.INSTANCE);
+        top.theillusivec4.curios.api.client.CuriosRendererRegistry.register(
+                GregPacksBlocks.ADVANCED_OMNIPACK_BLOCK.asItem(), () -> OmniPackCurioRenderer.INSTANCE);
+        top.theillusivec4.curios.api.client.CuriosRendererRegistry.register(
+                GregPacksBlocks.ELITE_OMNIPACK_BLOCK.asItem(), () -> OmniPackCurioRenderer.INSTANCE);
     }
 
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES,
@@ -157,18 +234,29 @@ public class PhoenixCore {
         FluidInHatchCondition.TYPE = new RecipeConditionType<>(
                 FluidInHatchCondition::new,
                 FluidInHatchCondition.CODEC);
-        event.register("plasma_temp_condition", FluidInHatchCondition.TYPE);
+
+        event.register(PhoenixCore.id("plasma_temp_condition").toString(), FluidInHatchCondition.TYPE);
 
         SoulCondition.TYPE = new RecipeConditionType<>(
                 SoulCondition::new,
                 SoulCondition.CODEC);
-        event.register("soul_resonance", SoulCondition.TYPE);
+
+        event.register(PhoenixCore.id("soul_resonance").toString(), SoulCondition.TYPE);
+
+        AxiomResearchCondition.TYPE = new RecipeConditionType<>(
+                AxiomResearchCondition::new,
+                AxiomResearchCondition.CODEC);
+        event.register(AxiomResearchCondition.CONDITION_ID, AxiomResearchCondition.TYPE);
     }
 
     @SubscribeEvent
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             PhoenixNetwork.init();
+            VaultNetwork.init();
+            VaultRegistry.registerLinkables();
+            GregPacksNetwork.init();
+            net.phoenix.core.integration.ae2.CinderAtlasWirelessLink.register();
 
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(
@@ -182,8 +270,8 @@ public class PhoenixCore {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {}
 
-    private void addMaterialRegistries(MaterialRegistryEvent event) {
-        GTCEuAPI.materialManager.createRegistry(MOD_ID);
+    private void registerMaterialIconSets(GTCEuAPI.RegisterEvent<String, MaterialIconSet> event) {
+        PhoenixMaterialSet.init();
     }
 
     private void addMaterials(MaterialEvent event) {
@@ -193,6 +281,8 @@ public class PhoenixCore {
         PhoenixPolymerMaterials.register();
         PhoenixBeeMaterials.register();
         PhoenixFissionMaterials.register();
+        AstralMaterials.register();
+        PhoenixMaterialFlags.init();
     }
 
     private void modifyMaterials(PostMaterialEvent event) {
@@ -207,12 +297,26 @@ public class PhoenixCore {
         PhoenixSounds.init();
     }
 
+    private void registerOreVeins(GTCEuAPI.RegisterEvent<ResourceLocation, GTOreDefinition> event) {
+    }
+
+    private void registerWorldGenLayers(GTCEuAPI.RegisterEvent<ResourceLocation, IWorldGenLayer> event) {
+        net.phoenix.core.integration.conflux.dimension.worldgen.ConfluxWorldGenLayers.init();
+    }
+
     private void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
         PhoenixMachines.init();
-        PhoenixFissionMachines.init();
         PhoenixBeeMachines.init();
-        PhoenixResearchMachines.init();
         PhoenixTeslaMachines.init();
+        ConfluxProducerMachines.init();
+        ConfluxMultiblockRegistry.init();
+        GrowthMachines.init();
+        AstralMachines.init();
+        VaultRegistry.initMachines();
+        VaultMachineDefinition.init();
+        net.phoenix.core.common.machine.multiblock.cinder.CinderForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachines.init();
+        net.phoenix.core.integration.continuum.machine.ContinuumMachines.init();
     }
 
     public static ResourceLocation id(String path) {

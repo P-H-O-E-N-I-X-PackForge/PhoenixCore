@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "tag": "forge:plates/steel"
+    },
+    "B": {
+      "tag": "gtceu:circuits/lv"
+    },
+    "C": {
+      "tag": "forge:rods/iron"
+    },
+    "D": {
+      "item": "gtceu:steel_crate"
+    },
+    "E": {
+      "tag": "forge:double_plates/iron"
+    }
+  },
+  "matchSize": false,
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "item": "phoenixcore:large_steel_vault"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "flag": "space_hull",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_module_hull",
+    "gtceu:assembler/continuum_module_interlock"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_module_hull",
+    "phoenixcore:continuum_module_interlock"
+  ]
+}

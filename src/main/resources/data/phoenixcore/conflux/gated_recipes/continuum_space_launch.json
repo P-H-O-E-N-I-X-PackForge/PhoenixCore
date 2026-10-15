@@ -1,0 +1,9 @@
+{
+  "flag": "space_launch",
+  "recipe_ids": [
+    "gtceu:assembler/continuum_launch_complex"
+  ],
+  "output_items": [
+    "phoenixcore:continuum_launch_complex"
+  ]
+}

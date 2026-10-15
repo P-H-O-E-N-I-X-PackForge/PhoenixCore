@@ -91,6 +91,12 @@ public class PhoenixLangHandler {
         provider.add("jade.phoenixcore.source_tank_format", "Capacity %s / %s - %d%%");
         provider.add("config.jade.plugin_phoenixcore.source_tank_info", "Source Tank Info");
 
+        provider.add("block.phoenixcore.astral_ritual_pedestal", "§dAstral Ritual Pedestal");
+
+        provider.add("config.jade.plugin_phoenixcore.source_hatch_info", "Source Hatch Info");
+        provider.add("config.jade.plugin_phoenixcore.astral_thread_hatch_info", "Astral Thread Hatch Info");
+        provider.add("config.jade.plugin_phoenixcore.growth_machine_info", "Growth Machine Info");
+
         provider.add("key.categories.phoenixcore", "PhoenixCore");
         provider.add("key.phoenixcore.wing_flight_gui", "Wing Flight Settings");
         provider.add("key.phoenixcore.tesla_mode", "Enable Tesla Mode");
@@ -101,6 +107,8 @@ public class PhoenixLangHandler {
         provider.add("key.phoenixcore.recipe_builder", "Open Recipe Builder");
         provider.add("key.phoenixcore.spray_can_menu", "Open Spray Can Menu");
         provider.add("key.phoenixcore.open_emi_favorite_pages", "Open EMI pages settings.");
+        provider.add("key.phoenixcore.toggle_discipline_sky", "Toggle Discipline Sky Shaders (Debug)");
+        provider.add("key.phoenixcore.show_shader_profiler", "Show Shader Profiler HUD (Debug)");
 
         provider.add("creativetab.phoenix_creative_tab", "Phoenix Core");
         provider.add("fluid.phoenixcore.prismatic_paint", "Prismatic Paint");
@@ -126,6 +134,19 @@ public class PhoenixLangHandler {
                 "Note that not having a shield projected may result in nonsense values of integrity.",
                 "Usage:",
                 "  {shieldStability} -> shield integrity: (integrity, in percent)");
+
+        provider.add("phoenixcore.research.multiblock_locked",
+                "Research required: unlock this machine before it can form.");
+        provider.add("phoenixcore.condition.axiom_research", "Requires research: %s");
+        provider.add("phoenixcore.research.discipline.none", "No Discipline");
+        provider.add("phoenixcore.research.discipline.committed", "Committed");
+        provider.add("phoenixcore.research.discipline.can_switch", "Switch Discipline");
+        provider.add("phoenixcore.research.discipline.switch_cost", "Cost to abandon:");
+        provider.add("phoenixcore.research.discipline.locked", "You are permanently committed to your Discipline.");
+        provider.add("phoenixcore.research.discipline.abandon_success",
+                "Discipline abandoned. You may now choose a new path.");
+        provider.add("phoenixcore.research.discipline.abandon_failed",
+                "Cannot abandon Discipline: insufficient resources or already committed.");
     }
 
     public static void multiLang(RegistrateLangProvider provider, String key, String... values) {

@@ -1,0 +1,75 @@
+{
+  "system": "phoenixcore:carousel",
+  "type": "planet",
+  "name": "Calliope",
+  "description": "A pink gas giant with a tune in its storms.",
+  "orbit": {
+    "radius_au": 2.4,
+    "period_days": 900,
+    "phase": 0.1
+  },
+  "radius": 6.0,
+  "gas_giant": true,
+  "axial_tilt": 4,
+  "spin_deg_per_sec": 12,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 401,
+    "scale": 5.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#a04a8a",
+    "mid": "#f0a0d8",
+    "high": "#ffe8f4",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#ff9ad8",
+    "density": 0.6
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_carousel_signal",
+    "surveyed_research": "phoenixcore:space_carousel_decode"
+  },
+  "trip_minutes": 112,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:end_rod",
+      "min": 1,
+      "max": 3,
+      "chance": 0.4
+    },
+    {
+      "item": "minecraft:pink_dye",
+      "min": 4,
+      "max": 8,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "A huge pink planet whose storms ring at one pitch, so pure it is in the instruments.",
+    "surveyed": "Calliope sings. Its storm bands carry a steady note, and the note changes slowly as the bands move."
+  },
+  "style": "storm",
+  "rings": {
+    "inner": 1.5,
+    "outer": 2.6,
+    "color": "#f6c8e8",
+    "color2": "#a0688c",
+    "tilt": 12,
+    "opacity": 0.85
+  }
+}

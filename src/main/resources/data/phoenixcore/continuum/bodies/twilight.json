@@ -1,0 +1,61 @@
+{
+  "system": "phoenixcore:vesper",
+  "type": "moon",
+  "name": "Twilight",
+  "description": "A pale moon that sits on the line between day and night.",
+  "orbit": {
+    "radius_au": 0.005,
+    "period_days": 6,
+    "phase": 0.3
+  },
+  "radius": 0.3,
+  "gas_giant": false,
+  "axial_tilt": 4,
+  "spin_deg_per_sec": 9,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 77,
+    "scale": 4.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.0,
+    "low": "#3a3438",
+    "mid": "#7a7078",
+    "high": "#c8c0cc",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_vesper_signal",
+    "surveyed_research": "phoenixcore:space_vesper_decode"
+  },
+  "trip_minutes": 66,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:quartz",
+      "min": 3,
+      "max": 7,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 2,
+      "max": 4,
+      "chance": 0.5
+    }
+  ],
+  "parent": "phoenixcore:terminus",
+  "lore": {
+    "detected": "A pale moon that hangs exactly over the line where Terminus changes from day to night.",
+    "surveyed": "Twilight does not orbit so much as stay where it is. It is the one place in the system with a sunrise."
+  }
+}

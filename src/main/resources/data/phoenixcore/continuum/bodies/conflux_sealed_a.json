@@ -1,0 +1,61 @@
+{
+  "system": "phoenixcore:home",
+  "type": "planet",
+  "name": "Ironwake",
+  "description": "Your home Conflux world: terraces of neon and machinery.",
+  "discipline": "sealed_a",
+  "orbit": {
+    "radius_au": 1.35,
+    "period_days": 220,
+    "phase": 0.35
+  },
+  "radius": 1.0,
+  "gas_giant": false,
+  "axial_tilt": 12,
+  "spin_deg_per_sec": 3.5,
+  "cloud_spin_deg_per_sec": 5,
+  "surface": {
+    "seed": 87,
+    "scale": 3.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.4,
+    "low": "#2a1830",
+    "mid": "#7a3f78",
+    "high": "#d68ad2",
+    "ocean_deep": "#02121c",
+    "ocean_shallow": "#0f5a6a",
+    "emissive": "#ff4fd8",
+    "emissive_amount": 0.35
+  },
+  "atmosphere": {
+    "color": "#ff6ad8",
+    "density": 0.35
+  },
+  "gate": {
+    "min_tier": "start",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 9,
+  "initial_stage": "surveyed",
+  "yields": [
+    {
+      "item": "minecraft:iron_ingot",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:redstone",
+      "min": 6,
+      "max": 12,
+      "chance": 0.8
+    }
+  ],
+  "lore": {
+    "detected": "The Conflux world behind the first sealed door hums at a frequency that is not quite mains.",
+    "surveyed": "Ironwake never stops working. Its conveyors carry things that have not been made yet to places that have not been built, and everything on it is exactly on schedule."
+  }
+}

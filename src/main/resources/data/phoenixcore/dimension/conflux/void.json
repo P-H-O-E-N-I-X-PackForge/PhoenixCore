@@ -1,0 +1,12 @@
+{
+  "type": "phoenixcore:discipline",
+  "generator": {
+    "type": "phoenixcore:discipline",
+    "discipline_id": "void",
+    "seed": 77123489,
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "phoenixcore:void"
+    }
+  }
+}

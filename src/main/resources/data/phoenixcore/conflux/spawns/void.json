@@ -1,0 +1,17 @@
+{
+  "discipline": "void",
+  "spawns": [
+    {
+      "entity": "wings_of_fire:dark_phoenix",
+      "weight": 3,
+      "cap": 1,
+      "placement": "air"
+    },
+    {
+      "entity": "phoenixcore:teto_slime",
+      "weight": 4,
+      "cap": 4,
+      "placement": "ground"
+    }
+  ]
+}

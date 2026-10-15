@@ -1,0 +1,13 @@
+{
+  "vertex": "phoenixcore:continuum_sky",
+  "fragment": "phoenixcore:continuum_sky",
+  "attributes": ["Position"],
+  "uniforms": [
+    { "name": "InvViewMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "InvProjMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "Time",           "type": "float", "count": 1, "values": [0.0] },
+    { "name": "Octaves",        "type": "float", "count": 1, "values": [5.0] },
+    { "name": "PrimaryColor",   "type": "float", "count": 3, "values": [0.35, 0.18, 0.7] },
+    { "name": "SecondaryColor", "type": "float", "count": 3, "values": [0.1, 0.3, 0.8] }
+  ]
+}

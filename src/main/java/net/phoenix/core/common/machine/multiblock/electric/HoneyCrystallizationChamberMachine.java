@@ -1,22 +1,19 @@
 package net.phoenix.core.common.machine.multiblock.electric;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
+import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -25,8 +22,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widgets.TextWidget;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -38,17 +40,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblockMachine implements IFluidRenderMulti {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            HoneyCrystallizationChamberMachine.class,
-            WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
+public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblockMachine {
 
     @Getter
     @Setter
-    @DescSynced
-    @RequireRerender
-    private @NotNull Set<BlockPos> fluidBlockOffsets = new HashSet<>();
+    @SyncToClient
+    @RerenderOnChanged
+    private @NotNull Set<BlockPos> fluidOffsets = new HashSet<>();
 
     private static final FluidStack HONEY_STACK;
     static {
@@ -61,37 +60,29 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
         }
     }
 
-    public HoneyCrystallizationChamberMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+    public HoneyCrystallizationChamberMachine(BlockEntityCreationInfo holder) {
+        super(holder, new RecipeLogic());
     }
 
     @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
+    public void formStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.formStructure(substructureName);
+        this.fluidOffsets = saveOffsets();
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
-        fluidBlockOffsets = saveOffsets();
-        IFluidRenderMulti.super.onStructureFormed();
-    }
-
-    @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
-        IFluidRenderMulti.super.onStructureInvalid();
+    public void invalidateStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.invalidateStructure(substructureName);
+        this.fluidOffsets.clear();
     }
 
     @NotNull
-    @Override
     public Set<BlockPos> saveOffsets() {
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction up = RelativeDirection.UP.getRelativeFacing(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction back = getFrontFacing().getOpposite();
-        Direction right = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction right = RelativeDirection.RIGHT.getRelativeFacing(getFrontFacing(), getUpwardsFacing(), isFlipped());
 
-        BlockPos pos = getPos();
-
+        BlockPos pos = getBlockPos();
         Set<BlockPos> offsets = new HashSet<>();
 
         BlockPos startPos = pos
@@ -133,7 +124,7 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
                 new HoneyCrystallizationChamberMachine.PlasmaBoost("Nickel Plasma", 0.6, 0.9, 50, 10));
     }
 
-    @DescSynced
+    @SyncToClient
     private boolean isPlasmaBoosted = false;
 
     @Nullable
@@ -141,33 +132,40 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
 
     private int consumptionTimer = 0;
 
-    public HoneyCrystallizationChamberMachine(IMachineBlockEntity holder) {
-        super(holder);
-    }
-
-    private GTRecipe getPlasmaRecipe(HoneyCrystallizationChamberMachine.PlasmaBoost boost,
-                                     net.minecraft.world.level.material.Fluid fluid) {
-        return GTRecipeBuilder.ofRaw().inputFluids(new FluidStack(fluid, boost.consumeAmount())).buildRawRecipe();
+    public Set<BlockPos> getFluidOffsets() {
+        return this.fluidOffsets;
     }
 
     @Override
     public boolean onWorking() {
         if (this.consumptionTimer % (activeBoost == null ? 1 : activeBoost.ticksPerConsumption()) == 0) {
-
             isPlasmaBoosted = false;
             activeBoost = null;
 
-            for (var entry : PLASMA_BOOSTS.entrySet()) {
-                var fluid = entry.getKey();
-                var boost = entry.getValue();
-                var plasmaRecipe = getPlasmaRecipe(boost, fluid);
+            var fluidInputs = this.getCapabilitiesFlat(com.gregtechceu.gtceu.api.capability.recipe.IO.IN,
+                    com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability.CAP);
 
-                if (RecipeHelper.matchRecipe(this, plasmaRecipe).isSuccess() &&
-                        RecipeHelper.handleRecipeIO(this, plasmaRecipe, IO.IN, this.recipeLogic.getChanceCaches())
-                                .isSuccess()) {
-                    isPlasmaBoosted = true;
-                    activeBoost = boost;
-                    break;
+            if (fluidInputs != null && !fluidInputs.isEmpty()) {
+
+                if (fluidInputs.get(0) instanceof NotifiableFluidTank inputFluidHandler) {
+
+                    for (var entry : PLASMA_BOOSTS.entrySet()) {
+                        var fluid = entry.getKey();
+                        var boost = entry.getValue();
+                        FluidStack requiredStack = new FluidStack(fluid, boost.consumeAmount());
+
+                        if (inputFluidHandler
+                                .drain(requiredStack,
+                                        net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE)
+                                .getAmount() == boost.consumeAmount()) {
+
+                            inputFluidHandler.drain(requiredStack,
+                                    net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+                            isPlasmaBoosted = true;
+                            activeBoost = boost;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -197,19 +195,12 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
     }
 
     @Override
-    public void addDisplayText(List<Component> textList) {
-        super.addDisplayText(textList);
-        if (isFormed()) {
-            if (isPlasmaBoosted && activeBoost != null) {
-                textList.add(Component.literal("§b" + activeBoost.name + " Boost Active!§r"));
-                textList.add(Component.literal(" - " + (int) (activeBoost.durationMultiplier * 100) + "% duration"));
-                textList.add(Component.literal(" - " + (int) (activeBoost.eutMultiplier * 100) + "% EUt"));
-                textList.add(Component.literal(
-                        " - " + activeBoost.consumeAmount + " mB every " + activeBoost.ticksPerConsumption + " ticks"));
-            } else {
-                textList.add(Component.literal("§7No Plasma Catalyst§r"));
-            }
-        }
+    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
+        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
+        if (!isFormed()) return widgets;
+        widgets.add(new TextWidget<>(Text.dynamic(() -> isPlasmaBoosted ? Component.literal("§bPlasma Boost Active§r") :
+                Component.literal("§7No Plasma Catalyst§r"))));
+        return widgets;
     }
 
     public List<FluidStack> getRenderFluids() {

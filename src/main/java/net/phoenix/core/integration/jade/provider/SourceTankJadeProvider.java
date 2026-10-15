@@ -1,8 +1,5 @@
 package net.phoenix.core.integration.jade.provider;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -28,10 +25,7 @@ public class SourceTankJadeProvider implements IBlockComponentProvider, IServerD
 
     @Override
     public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-        if (!(accessor.getBlockEntity() instanceof MetaMachineBlockEntity metaBE)) return;
-        MetaMachine machine = metaBE.getMetaMachine();
-
-        if (machine instanceof SourceMultiblockTankMachine tank) {
+        if (accessor.getBlockEntity() instanceof SourceMultiblockTankMachine tank) {
             tag.putInt("TankStored", tank.getSourceTank().getSource());
             tag.putInt("TankCap", tank.getSourceTank().getMaxSource());
         }
@@ -40,7 +34,11 @@ public class SourceTankJadeProvider implements IBlockComponentProvider, IServerD
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         if (!config.get(UID)) return;
+
+        if (!(accessor.getBlockEntity() instanceof SourceMultiblockTankMachine)) return;
+
         CompoundTag data = accessor.getServerData();
+        if (data == null || data.isEmpty()) return;
 
         if (data.contains("TankStored") && data.contains("TankCap")) {
             int stored = data.getInt("TankStored");

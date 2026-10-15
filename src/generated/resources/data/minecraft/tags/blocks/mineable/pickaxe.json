@@ -1,5 +1,9 @@
 {
   "values": [
+    "phoenixcore:vault_core_mk1",
+    "phoenixcore:vault_core_mk2",
+    "phoenixcore:vault_core_mk3",
+    "phoenixcore:astral_rune_block",
     "phoenixcore:phoenix_enriched_tritanium_casing",
     "phoenixcore:phoenix_gaze_panel",
     "phoenixcore:true_phoenix_infused_casing",
@@ -21,6 +25,9 @@
     "phoenixcore:insanely_supercharged_tesla_casing",
     "phoenixcore:source_fiber_machine_casing",
     "phoenixcore:machine_casing_pristine_rhodium_plated_palladium",
-    "phoenixcore:machine_casing_invariant_naquadah_alloy"
+    "phoenixcore:machine_casing_invariant_naquadah_alloy",
+    "phoenixcore:growth_ward",
+    "phoenixcore:growth_shell",
+    "phoenixcore:growth_tendril"
   ]
 }

@@ -7,5 +7,197 @@
       }
     ],
     "subtitle": "phoenixcore.subtitle.microverse"
+  },
+  "ambient/phoenix/volcanic_rumble": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/phoenix/volcanic_rumble",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/phoenix/volcanic_wind": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/phoenix/volcanic_wind",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sculk/biolum_hum": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sculk/biolum_hum",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sculk/deep_cave": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sculk/deep_cave",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/void/cosmic_drone": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/void/cosmic_drone",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/void/ethereal_wind": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/void/ethereal_wind",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sealed_a/industrial": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sealed_a/industrial",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sealed_a/neon_hum": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sealed_a/neon_hum",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sealed_b/inverted_hum": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sealed_b/inverted_hum",
+        "type": "file"
+      }
+    ]
+  },
+  "ambient/sealed_b/reality_glitch": {
+    "sounds": [
+      {
+        "name": "phoenixcore:ambient/sealed_b/reality_glitch",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/phoenix/heat_shimmer": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/phoenix/heat_shimmer",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/phoenix/updraft_fade": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/phoenix/updraft_fade",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sculk/conveyor_activate": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sculk/conveyor_activate",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sculk/conveyor_loop": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sculk/conveyor_loop",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/void/zero_g_enter": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/void/zero_g_enter",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/void/spiral_ascend": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/void/spiral_ascend",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sealed_a/conveyor_whirr": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sealed_a/conveyor_whirr",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sealed_a/elevator_hum": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sealed_a/elevator_hum",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sealed_b/gravity_flip": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sealed_b/gravity_flip",
+        "type": "file"
+      }
+    ]
+  },
+  "effect/sealed_b/reality_crack": {
+    "sounds": [
+      {
+        "name": "phoenixcore:effect/sealed_b/reality_crack",
+        "type": "file"
+      }
+    ]
+  },
+  "cutscene/ethereal": {
+    "sounds": [
+      {
+        "name": "phoenixcore:cutscene/ethereal",
+        "type": "file"
+      }
+    ]
+  },
+  "cutscene/threshold": {
+    "sounds": [
+      {
+        "name": "phoenixcore:cutscene/threshold",
+        "type": "file"
+      }
+    ]
+  },
+  "cutscene/pyre": {
+    "sounds": [
+      {
+        "name": "phoenixcore:cutscene/pyre",
+        "type": "file"
+      }
+    ]
+  },
+  "cutscene/horizon": {
+    "sounds": [
+      {
+        "name": "phoenixcore:cutscene/horizon",
+        "type": "file"
+      }
+    ]
   }
 }

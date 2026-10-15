@@ -2,8 +2,7 @@ package net.phoenix.core.common.machine.trait;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.phoenix.core.api.capability.PhoenixRecipeCapabilities;
@@ -16,8 +15,8 @@ import java.util.List;
 
 public class NotifiableShieldContainer extends NotifiableRecipeHandlerTrait<ShieldTypes> {
 
-    public NotifiableShieldContainer(MetaMachine machine) {
-        super(machine);
+    public NotifiableShieldContainer() {
+        super();
     }
 
     public ShieldTypes getHeldShield() {
@@ -34,10 +33,13 @@ public class NotifiableShieldContainer extends NotifiableRecipeHandlerTrait<Shie
 
     @Override
     public List<ShieldTypes> handleRecipeInner(IO io, GTRecipe recipe, List<ShieldTypes> left, boolean simulate) {
+        if (left.isEmpty()) return left;
+
         ShieldTypes recipeShieldType = left.get(0);
 
         if (getHeldShield() == recipeShieldType) {
-            return null;
+
+            return List.of();
         }
         return left;
     }

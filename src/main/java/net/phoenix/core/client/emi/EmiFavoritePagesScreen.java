@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,13 +13,23 @@ import java.util.List;
 
 public class EmiFavoritePagesScreen extends Screen {
 
-    private static final int PANEL_WIDTH = 240;
+    private static final int PANEL_WIDTH = 260;
     private static final int PADDING = 14;
     private static final int ROW_HEIGHT = 22;
     private static final int TITLE_HEIGHT = 26;
+    private static final int ARROW_W = 16;
+    private static final int ICON_W = 20;
 
     private final @Nullable Screen parent;
     private EditBox newPageBox;
+
+    private @Nullable String renaming;
+    private EditBox renameBox;
+
+    private int cPanel, cBorderLight, cBorderDark, cTitleBar, cText;
+
+    private float uiScale = 1f;
+    private int vw, vh;
 
     public EmiFavoritePagesScreen(@Nullable Screen parent) {
         super(Component.literal("EMI Favorite Pages"));
@@ -31,22 +42,85 @@ public class EmiFavoritePagesScreen extends Screen {
 
     @Override
     protected void init() {
+        int panelHeight = (renaming != null ? renamePanelHeight() :
+                contentHeight(PhoenixFavoriteSets.getSetNames().size()) + PADDING * 2);
+        float neededW = PANEL_WIDTH + 20f;
+        float neededH = panelHeight + 20f;
+        uiScale = (width < neededW || height < neededH) ?
+                Math.min(width / neededW, height / neededH) : 1f;
+        uiScale = Math.max(0.1f, uiScale);
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
+
+        refreshTheme();
+
+        if (renaming != null) {
+            initRenameView();
+        } else {
+            initListView();
+        }
+    }
+
+    private void refreshTheme() {
+        PhoenixTheme t = PhoenixTheme.current();
+        cPanel = (t.panel.getColor() & 0x00FFFFFF) | 0xF0000000;
+        cBorderLight = t.accent.getColor();
+        cBorderDark = t.border.getColor();
+        cTitleBar = (t.header.getColor() & 0x00FFFFFF) | 0x30000000;
+        cText = t.text.getColor();
+    }
+
+    private void initListView() {
         List<String> pageNames = PhoenixFavoriteSets.getSetNames();
         String active = PhoenixFavoriteSets.getActiveSet();
 
         int panelHeight = contentHeight(pageNames.size()) + PADDING * 2;
-        int left = this.width / 2 - PANEL_WIDTH / 2;
-        int top = (this.height - panelHeight) / 2;
+        int left = vw / 2 - PANEL_WIDTH / 2;
+        int top = (vh - panelHeight) / 2;
         int contentWidth = PANEL_WIDTH - PADDING * 2;
 
         int y = top + PADDING + TITLE_HEIGHT;
 
-        for (String page : pageNames) {
-            String label = page.equals(active) ? "★ " + page : page;
+        for (int i = 0; i < pageNames.size(); i++) {
+            String page = pageNames.get(i);
+            boolean isActive = page.equals(active);
+            boolean canDelete = pageNames.size() > 1;
+
+            int x = left + PADDING;
+
+            int rowY = y;
+            addRenderableWidget(Button.builder(Component.literal("▲"), b -> {
+                PhoenixFavoriteSets.moveUp(page);
+                rebuild();
+            }).bounds(x, rowY, ARROW_W, 20).build()).active = i > 0;
+            x += ARROW_W + 2;
+
+            addRenderableWidget(Button.builder(Component.literal("▼"), b -> {
+                PhoenixFavoriteSets.moveDown(page);
+                rebuild();
+            }).bounds(x, rowY, ARROW_W, 20).build()).active = i < pageNames.size() - 1;
+            x += ARROW_W + 4;
+
+            int nameWidth = contentWidth - (x - (left + PADDING)) - ICON_W * 2 - 4;
+            String label = isActive ? "★ " + page : page;
             addRenderableWidget(Button.builder(Component.literal(label), b -> {
                 PhoenixFavoriteSets.switchTo(page);
                 onClose();
-            }).bounds(left + PADDING, y, contentWidth, 20).build());
+            }).bounds(x, rowY, nameWidth, 20).build());
+            x += nameWidth + 2;
+
+            addRenderableWidget(Button.builder(Component.literal("✎"), b -> {
+                renaming = page;
+                renameBox = null;
+                rebuild();
+            }).bounds(x, rowY, ICON_W, 20).build());
+            x += ICON_W + 2;
+
+            Button deleteBtn = addRenderableWidget(Button.builder(Component.literal("🗑"), b -> {
+                if (PhoenixFavoriteSets.deleteSet(page)) rebuild();
+            }).bounds(x, rowY, ICON_W, 20).build());
+            deleteBtn.active = canDelete;
+
             y += ROW_HEIGHT;
         }
 
@@ -70,35 +144,98 @@ public class EmiFavoritePagesScreen extends Screen {
         String scopeLabel = "Pages: " +
                 (scope == PhoenixFavoriteSets.Scope.GLOBAL ? "Shared across worlds" : "Private per world");
         addRenderableWidget(Button.builder(Component.literal(scopeLabel), b -> {
-            PhoenixFavoriteSets.setScope(scope == PhoenixFavoriteSets.Scope.GLOBAL ?
-                    PhoenixFavoriteSets.Scope.PER_WORLD : PhoenixFavoriteSets.Scope.GLOBAL);
-            if (this.minecraft != null) {
-                this.minecraft.setScreen(new EmiFavoritePagesScreen(parent));
-            }
+            PhoenixFavoriteSets
+                    .setScope(scope == PhoenixFavoriteSets.Scope.GLOBAL ? PhoenixFavoriteSets.Scope.PER_WORLD :
+                            PhoenixFavoriteSets.Scope.GLOBAL);
+            rebuild();
         }).bounds(left + PADDING, y, contentWidth, 20).build());
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+    private void initRenameView() {
+        int panelHeight = renamePanelHeight();
+        int left = vw / 2 - PANEL_WIDTH / 2;
+        int top = (vh - panelHeight) / 2;
+        int contentWidth = PANEL_WIDTH - PADDING * 2;
+        int y = top + PADDING + TITLE_HEIGHT;
 
-        int panelHeight = contentHeight(PhoenixFavoriteSets.getSetNames().size()) + PADDING * 2;
-        int left = this.width / 2 - PANEL_WIDTH / 2;
-        int top = (this.height - panelHeight) / 2;
+        renameBox = new EditBox(this.font, left + PADDING, y, contentWidth, 20, Component.literal("New name"));
+        renameBox.setMaxLength(32);
+        renameBox.setValue(renaming);
+        addRenderableWidget(renameBox);
+        y += ROW_HEIGHT + 8;
+
+        addRenderableWidget(Button.builder(Component.literal("Rename"), b -> {
+            String newName = renameBox.getValue().trim();
+            if (!newName.isEmpty()) {
+                PhoenixFavoriteSets.renameSet(renaming, newName);
+            }
+            renaming = null;
+            rebuild();
+        }).bounds(left + PADDING, y, contentWidth / 2 - 4, 20).build());
+
+        addRenderableWidget(Button.builder(Component.literal("Cancel"), b -> {
+            renaming = null;
+            rebuild();
+        }).bounds(left + PADDING + contentWidth / 2 + 4, y, contentWidth / 2 - 4, 20).build());
+    }
+
+    private int renamePanelHeight() {
+        return TITLE_HEIGHT + ROW_HEIGHT + 8 + ROW_HEIGHT + PADDING * 2;
+    }
+
+    private void rebuild() {
+        clearWidgets();
+        init();
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int rmx, int rmy, float partialTick) {
+        renderBackground(graphics);
+        refreshTheme();
+
+        int mouseX = Math.round(rmx / uiScale);
+        int mouseY = Math.round(rmy / uiScale);
+
+        graphics.pose().pushPose();
+        graphics.pose().scale(uiScale, uiScale, 1f);
+
+        boolean isRename = renaming != null;
+        int panelHeight = isRename ? renamePanelHeight() :
+                contentHeight(PhoenixFavoriteSets.getSetNames().size()) + PADDING * 2;
+        int left = vw / 2 - PANEL_WIDTH / 2;
+        int top = (vh - panelHeight) / 2;
         int right = left + PANEL_WIDTH;
         int bottom = top + panelHeight;
 
-        graphics.fill(left, top, right, bottom, 0xF0101014);
-        graphics.fill(left, top, right, top + 1, 0xFF6A6A6A);
-        graphics.fill(left, top, left + 1, bottom, 0xFF6A6A6A);
-        graphics.fill(left, bottom - 1, right, bottom, 0xFF262626);
-        graphics.fill(right - 1, top, right, bottom, 0xFF262626);
+        graphics.fill(left, top, right, bottom, cPanel);
+        graphics.fill(left, top, right, top + 1, cBorderLight);
+        graphics.fill(left, top, left + 1, bottom, cBorderLight);
+        graphics.fill(left, bottom - 1, right, bottom, cBorderDark);
+        graphics.fill(right - 1, top, right, bottom, cBorderDark);
 
-        graphics.fill(left + 1, top + 1, right - 1, top + TITLE_HEIGHT, 0x30FFFFFF);
+        graphics.fill(left + 1, top + 1, right - 1, top + TITLE_HEIGHT, cTitleBar);
 
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, top + (TITLE_HEIGHT - 8) / 2, 0xFFE8E8E8);
+        String title = isRename ? "Rename \"" + renaming + "\"" : "EMI Favorite Pages";
+        graphics.drawCenteredString(this.font, title, vw / 2, top + (TITLE_HEIGHT - 8) / 2, cText);
 
         super.render(graphics, mouseX, mouseY, partialTick);
+
+        graphics.pose().popPose();
+    }
+
+    @Override
+    public boolean mouseClicked(double rmx, double rmy, int button) {
+        return super.mouseClicked(rmx / uiScale, rmy / uiScale, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double rmx, double rmy, int button, double dragX, double dragY) {
+        return super.mouseDragged(rmx / uiScale, rmy / uiScale, button, dragX / uiScale, dragY / uiScale);
+    }
+
+    @Override
+    public boolean mouseReleased(double rmx, double rmy, int button) {
+        return super.mouseReleased(rmx / uiScale, rmy / uiScale, button);
     }
 
     @Override

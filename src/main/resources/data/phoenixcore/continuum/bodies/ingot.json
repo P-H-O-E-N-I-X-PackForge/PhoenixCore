@@ -1,0 +1,61 @@
+{
+  "system": "phoenixcore:trove",
+  "type": "moon",
+  "name": "Ingot",
+  "description": "A rough grey moon of Hoard, shaped like a block.",
+  "orbit": {
+    "radius_au": 0.006,
+    "period_days": 10,
+    "phase": 0.6
+  },
+  "radius": 0.3,
+  "gas_giant": false,
+  "axial_tilt": 5,
+  "spin_deg_per_sec": 7,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 81,
+    "scale": 4.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.1,
+    "low": "#3a3c40",
+    "mid": "#7a7e86",
+    "high": "#c0c4cc",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_trove_signal",
+    "surveyed_research": "phoenixcore:space_trove_decode"
+  },
+  "trip_minutes": 104,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:raw_iron",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "min": 2,
+      "max": 4,
+      "chance": 0.5
+    }
+  ],
+  "parent": "phoenixcore:hoard",
+  "lore": {
+    "detected": "A rough, slightly rectangular moon, dull grey and very dense.",
+    "surveyed": "Ingot is a lump of iron, flat on two sides. Nobody has found a reason for that."
+  }
+}

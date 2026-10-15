@@ -1,6 +1,6 @@
 package net.phoenix.core.client.renderer.machine;
 
-import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
@@ -106,7 +106,7 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
         float time = (machine.getOffsetTimer() + partialTick) * 0.02f;
 
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        Vec3 center = Vec3.atCenterOf(machine.getPos());
+        Vec3 center = Vec3.atCenterOf(machine.getBlockPos());
         double distSq = cam.distanceToSqr(center);
 
         int segments, crossSections;
@@ -326,6 +326,6 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
 
     @Override
     public @NotNull AABB getRenderBoundingBox(FusionReactorMachine m) {
-        return new AABB(m.getPos()).inflate(40);
+        return new AABB(m.getBlockPos()).inflate(40);
     }
 }

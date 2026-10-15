@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "tag": "forge:plates/titanium"
+    },
+    "B": {
+      "tag": "gtceu:circuits/hv"
+    },
+    "C": {
+      "tag": "forge:rods/stainless_steel"
+    },
+    "D": {
+      "item": "gtceu:titanium_crate"
+    },
+    "E": {
+      "tag": "forge:double_plates/stainless_steel"
+    }
+  },
+  "matchSize": false,
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "item": "phoenixcore:large_titanium_vault"
+  }
+}

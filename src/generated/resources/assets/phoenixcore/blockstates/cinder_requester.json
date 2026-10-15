@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "phoenixcore:block/machine/cinder_requester",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "phoenixcore:block/machine/cinder_requester",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/cinder_requester"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/cinder_requester",
+      "y": 180
+    },
+    "facing=up": {
+      "gtceu:z": 180,
+      "model": "phoenixcore:block/machine/cinder_requester",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/cinder_requester",
+      "y": 270
+    }
+  }
+}

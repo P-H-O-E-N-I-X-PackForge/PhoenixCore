@@ -1,7 +1,5 @@
 package net.phoenix.core.network.packet;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -39,8 +37,8 @@ public class C2SSelectSoundPacket {
             if (player == null) return;
 
             var level = player.level();
-            if (!(level.getBlockEntity(msg.pos) instanceof MetaMachineBlockEntity mbe)) return;
-            if (!(mbe.getMetaMachine() instanceof ResonantJukeboxMachine jukebox)) return;
+
+            if (!(level.getBlockEntity(msg.pos) instanceof ResonantJukeboxMachine jukebox)) return;
 
             if (msg.soundLoc.length() > 256 || msg.streamUrl.length() > 512) return;
 
@@ -48,10 +46,13 @@ public class C2SSelectSoundPacket {
                 jukebox.resetAcousticData();
             }
 
+            if (!msg.soundLoc.isEmpty() && msg.streamUrl.isEmpty()) jukebox.onLibrarySoundChosen(msg.soundLoc);
+
             jukebox.selectedLibrarySound = msg.soundLoc;
             jukebox.currentStreamUrl = msg.streamUrl;
 
-            mbe.setChanged();
+            jukebox.markAsChanged();
+
             var state = level.getBlockState(msg.pos);
             level.sendBlockUpdated(msg.pos, state, state, 3);
         });

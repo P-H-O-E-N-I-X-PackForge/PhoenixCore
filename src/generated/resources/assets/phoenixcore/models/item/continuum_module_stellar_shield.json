@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "phoenixcore:item/continuum_module_stellar_shield"
+  }
+}

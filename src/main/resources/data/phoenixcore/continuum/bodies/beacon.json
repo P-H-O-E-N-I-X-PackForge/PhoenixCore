@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:pharos",
+  "type": "black_hole",
+  "name": "Beacon",
+  "description": "The quasar itself. Observation only; nothing survives near it.",
+  "orbit": {
+    "radius_au": 0.0,
+    "period_days": 1,
+    "phase": 0.0
+  },
+  "radius": 1.5,
+  "gas_giant": false,
+  "axial_tilt": 0,
+  "spin_deg_per_sec": 0,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 1,
+    "scale": 1.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#000000",
+    "mid": "#050505",
+    "high": "#0a0a0a",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_pharos_signal",
+    "surveyed_research": "phoenixcore:space_pharos_survey"
+  },
+  "trip_minutes": 118,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:crying_obsidian",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:ender_eye",
+      "min": 1,
+      "max": 1,
+      "chance": 0.3
+    },
+    {
+      "item": "minecraft:nether_star",
+      "min": 1,
+      "max": 1,
+      "chance": 0.04
+    }
+  ],
+  "lore": {
+    "detected": "A lighthouse on the edge of the galaxy, and it is pointed at us.",
+    "surveyed": "Beacon is a quasar: a black hole eating so hard it outshines everything around it, with twin jets of light a hundred thousand years long. Whatever the sealed signals are, they were always meant to be seen from here."
+  }
+}

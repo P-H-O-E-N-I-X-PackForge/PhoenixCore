@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.network.PhoenixNetwork;
 import net.phoenix.core.network.packet.SelectColorPacket;
+import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,13 @@ public class ColorRadialMenuScreen extends Screen {
     private static final int RADIUS = 85;
     private static final int INNER_RADIUS = 20;
     private static final int ITEM_RADIUS = 60;
+    private static final int BTN_W = 110;
+    private static final int BTN_H = 20;
+
+    private int cAccent, cText, cBorder, cPanel;
+
+    private float uiScale = 1f;
+    private int vw, vh;
 
     public ColorRadialMenuScreen(InteractionHand hand) {
         super(Component.translatable("gui.phoenixcore.color_select.title"));
@@ -31,11 +39,38 @@ public class ColorRadialMenuScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+    protected void init() {
+        int neededSide = (RADIUS + 15 + BTN_H + 20) * 2;
+        uiScale = (width < neededSide || height < neededSide) ?
+                Math.min((float) width / neededSide, (float) height / neededSide) : 1f;
+        uiScale = Math.max(0.1f, uiScale);
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
 
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
+        refreshTheme();
+    }
+
+    private void refreshTheme() {
+        PhoenixTheme t = PhoenixTheme.current();
+        cAccent = t.accent.getColor();
+        cText = t.text.getColor();
+        cBorder = t.accent.getColor();
+        cPanel = (t.panel.getColor() & 0x00FFFFFF) | 0xAA000000;
+    }
+
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, int rmx, int rmy, float partialTicks) {
+        this.renderBackground(guiGraphics);
+        refreshTheme();
+
+        int mouseX = Math.round(rmx / uiScale);
+        int mouseY = Math.round(rmy / uiScale);
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(uiScale, uiScale, 1f);
+
+        int centerX = vw / 2;
+        int centerY = vh / 2;
 
         DyeColor[] colors = DyeColor.values();
         int numSegments = colors.length;
@@ -47,7 +82,7 @@ public class ColorRadialMenuScreen extends Screen {
 
         boolean hoveringSolvent = distToCenter < INNER_RADIUS;
 
-        int solventColor = hoveringSolvent ? 0xFFFF55 : 0xFFFFFF;
+        int solventColor = hoveringSolvent ? cAccent : cText;
         Component solventText = Component.translatable("behaviour.paintspray.solvent.short");
         guiGraphics.drawCenteredString(this.font, solventText, centerX, centerY - 4, solventColor);
 
@@ -82,30 +117,31 @@ public class ColorRadialMenuScreen extends Screen {
             guiGraphics.renderFakeItem(dyeStack, itemX, itemY);
         }
 
-        int btnW = 110;
-        int btnH = 20;
-        int buttonX = centerX - (btnW / 2);
+        int buttonX = centerX - (BTN_W / 2);
         int buttonY = centerY + RADIUS + 15;
-        boolean hoveringCustom = mouseX >= buttonX && mouseX <= buttonX + btnW && mouseY >= buttonY &&
-                mouseY <= buttonY + btnH;
+        boolean hoveringCustom = mouseX >= buttonX && mouseX <= buttonX + BTN_W && mouseY >= buttonY &&
+                mouseY <= buttonY + BTN_H;
 
-        guiGraphics.fill(buttonX, buttonY, buttonX + btnW, buttonY + btnH, hoveringCustom ? 0xAA333333 : 0xAA000000);
-        guiGraphics.renderOutline(buttonX, buttonY, btnW, btnH, 0xFF00FF00);
+        guiGraphics.fill(buttonX, buttonY, buttonX + BTN_W, buttonY + BTN_H,
+                hoveringCustom ? cPanel : (cPanel & 0x00FFFFFF) | 0x77000000);
+        guiGraphics.renderOutline(buttonX, buttonY, BTN_W, BTN_H, cBorder);
 
-        guiGraphics.drawCenteredString(this.font, "§bChromatic Effects", centerX, buttonY + 6, 0xFFFFFF);
+        guiGraphics.drawCenteredString(this.font, "Chromatic Effects", centerX, buttonY + 6, cText);
+
+        guiGraphics.pose().popPose();
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
+    public boolean mouseClicked(double rmx, double rmy, int button) {
+        double mouseX = rmx / uiScale;
+        double mouseY = rmy / uiScale;
+        int centerX = vw / 2;
+        int centerY = vh / 2;
 
-        int btnW = 110;
-        int btnH = 20;
-        int buttonX = centerX - (btnW / 2);
+        int buttonX = centerX - (BTN_W / 2);
         int buttonY = centerY + RADIUS + 15;
 
-        if (mouseX >= buttonX && mouseX <= buttonX + btnW && mouseY >= buttonY && mouseY <= buttonY + btnH) {
+        if (mouseX >= buttonX && mouseX <= buttonX + BTN_W && mouseY >= buttonY && mouseY <= buttonY + BTN_H) {
             if (this.minecraft != null) {
                 this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 this.minecraft.setScreen(new ChromaticEffectSelectScreen(this.hand));

@@ -1,0 +1,98 @@
+package net.phoenix.core.integration.vocal_resonance.puzzle;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+@Mod.EventBusSubscriber(modid = "phoenixcore")
+public final class AcousticData {
+
+    private static final Gson GSON = new Gson();
+
+    private static volatile Map<ResourceLocation, AcousticSoundEntry> sounds = Map.of();
+    private static volatile Map<ResourceLocation, AcousticPuzzle> puzzles = new TreeMap<>();
+    private static volatile Map<ResourceLocation, AcousticChart> charts = new TreeMap<>();
+
+    private AcousticData() {}
+
+    public static @Nullable AcousticSoundEntry sound(ResourceLocation id) {
+        return sounds.get(id);
+    }
+
+    public static @Nullable AcousticPuzzle puzzle(@Nullable ResourceLocation id) {
+        return id == null ? null : puzzles.get(id);
+    }
+
+    public static @Nullable AcousticPuzzle defaultPuzzle() {
+        return puzzles.values().stream().findFirst().orElse(null);
+    }
+
+    public static @Nullable AcousticChart defaultChart() {
+        return charts.values().stream().findFirst().orElse(null);
+    }
+
+    @SubscribeEvent
+    public static void onReload(AddReloadListenerEvent event) {
+        event.addListener(new SimpleJsonResourceReloadListener(GSON, "acoustic_sounds") {
+
+            @Override
+            protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager manager,
+                                 ProfilerFiller profiler) {
+                Map<ResourceLocation, AcousticSoundEntry> loaded = new TreeMap<>();
+                files.forEach((file, json) -> {
+                    try {
+                        AcousticSoundEntry entry = AcousticSoundEntry.fromJson((JsonObject) json);
+                        loaded.put(entry.sound(), entry);
+                    } catch (RuntimeException e) {
+                        System.err.println("Bad acoustic sound " + file + ": " + e);
+                    }
+                });
+                sounds = Map.copyOf(loaded);
+            }
+        });
+        event.addListener(new SimpleJsonResourceReloadListener(GSON, "acoustic_charts") {
+
+            @Override
+            protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager manager,
+                                 ProfilerFiller profiler) {
+                Map<ResourceLocation, AcousticChart> loaded = new TreeMap<>();
+                files.forEach((file, json) -> {
+                    try {
+                        loaded.put(file, AcousticChart.fromJson(file, (JsonObject) json));
+                    } catch (RuntimeException e) {
+                        System.err.println("Bad acoustic chart " + file + ": " + e);
+                    }
+                });
+                charts = loaded;
+            }
+        });
+        event.addListener(new SimpleJsonResourceReloadListener(GSON, "acoustic_puzzles") {
+
+            @Override
+            protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager manager,
+                                 ProfilerFiller profiler) {
+                Map<ResourceLocation, AcousticPuzzle> loaded = new TreeMap<>();
+                files.forEach((file, json) -> {
+                    try {
+                        loaded.put(file, AcousticPuzzle.fromJson(file, (JsonObject) json));
+                    } catch (RuntimeException e) {
+                        System.err.println("Bad acoustic puzzle " + file + ": " + e);
+                    }
+                });
+                puzzles = loaded;
+            }
+        });
+    }
+}

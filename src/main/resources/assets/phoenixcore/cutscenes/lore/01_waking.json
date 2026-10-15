@@ -1,0 +1,31 @@
+{
+  "pages": [
+    "Cold. Then light. Then the floor, which should not be here, because there is nothing under it.",
+    "I know how to stand. I know how to breathe. I do not know my name.",
+    "My hands know things my head does not. They keep reaching for tools that are not there.",
+    "A platform. The void around it. A quiet that feels... arranged. As if someone cleared this space for me.",
+    [
+      "Someone did. ",
+      {
+        "text": "I think it might have been me.",
+        "italic": true
+      }
+    ]
+  ],
+  "black_duration": 3.0,
+  "fade_in": 6.0,
+  "chars_per_second": 18,
+  "background": "phoenixcore:ethereal",
+  "sound": {
+    "id": "minecraft:block.amethyst_block.chime",
+    "volume": 0.08,
+    "pitch": 1.4,
+    "pitch_variance": 0.15,
+    "every_n_letters": 2
+  },
+  "music": {
+    "sound": "phoenixcore:cutscene/ethereal",
+    "volume": 0.9,
+    "fade_in": 6.0
+  }
+}

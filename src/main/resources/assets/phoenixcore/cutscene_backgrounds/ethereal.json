@@ -1,0 +1,34 @@
+{
+  "type": "layered",
+  "layers": [
+    {
+      "type": "linear_gradient",
+      "from": "#0B0E1A",
+      "to": "#1B1030",
+      "angle": 90
+    },
+    {
+      "type": "noise",
+      "color": "#7FA7FF",
+      "scale": 1.2,
+      "speed": 0.03,
+      "contrast": 1.2,
+      "opacity": 0.25,
+      "blend": "add"
+    },
+    {
+      "type": "sparkle",
+      "color": "#CFE3FF",
+      "density": 0.2,
+      "speed": 0.6,
+      "opacity": 0.35,
+      "blend": "add"
+    },
+    {
+      "type": "radial_gradient",
+      "inner": "#00000000",
+      "outer": "#B0000000",
+      "radius": 1.6
+    }
+  ]
+}

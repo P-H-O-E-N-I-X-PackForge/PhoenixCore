@@ -46,6 +46,9 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
 
     private Page currentPage = Page.GENERAL;
 
+    private float uiScale = 1f;
+    private int vw, vh;
+
     public RecipeBuilderScreen(RecipeBuilderMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
         this.imageWidth = GUI_W;
@@ -57,7 +60,18 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
 
     @Override
     protected void init() {
+        float neededW = GUI_W + 20f;
+        float neededH = GUI_H + 20f;
+        uiScale = (width < neededW || height < neededH) ?
+                Math.min(width / neededW, height / neededH) : 1f;
+        uiScale = Math.max(0.1f, uiScale);
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
+
         super.init();
+        this.leftPos = (vw - imageWidth) / 2;
+        this.topPos = (vh - imageHeight) / 2;
+
         int x = this.leftPos, y = this.topPos;
 
         int tw = 80;
@@ -128,8 +142,15 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
     }
 
     @Override
-    public void render(@NotNull GuiGraphics g, int mx, int my, float pt) {
+    public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
         renderBackground(g);
+
+        int mx = Math.round(rmx / uiScale);
+        int my = Math.round(rmy / uiScale);
+
+        g.pose().pushPose();
+        g.pose().scale(uiScale, uiScale, 1f);
+
         super.render(g, mx, my, pt);
         renderTooltip(g, mx, my);
         if (currentPage == Page.GENERAL) {
@@ -149,6 +170,8 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
             String badge = "§d" + conditions.size() + " condition" + (conditions.size() == 1 ? "" : "s");
             g.drawString(font, badge, leftPos + 246, topPos + 29, 0xFFFFFF, false);
         }
+
+        g.pose().popPose();
     }
 
     @Override
@@ -186,7 +209,8 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
+    public boolean mouseClicked(double rmx, double rmy, int btn) {
+        double mx = rmx / uiScale, my = rmy / uiScale;
         if (amountEditor.visible) return amountEditor.mouseClicked(mx, my, btn);
 
         if (my < topPos + RecipeBuilderMenu.INV_Y - 8) {
@@ -203,7 +227,13 @@ public class RecipeBuilderScreen extends AbstractContainerScreen<RecipeBuilderMe
     }
 
     @Override
-    public boolean mouseReleased(double mx, double my, int btn) {
+    public boolean mouseDragged(double rmx, double rmy, int btn, double dragX, double dragY) {
+        return super.mouseDragged(rmx / uiScale, rmy / uiScale, btn, dragX / uiScale, dragY / uiScale);
+    }
+
+    @Override
+    public boolean mouseReleased(double rmx, double rmy, int btn) {
+        double mx = rmx / uiScale, my = rmy / uiScale;
         if (my < topPos + RecipeBuilderMenu.INV_Y - 8) {
             if (itemInputPanel.mouseReleased(mx, my, btn)) return true;
             if (itemOutputPanel.mouseReleased(mx, my, btn)) return true;

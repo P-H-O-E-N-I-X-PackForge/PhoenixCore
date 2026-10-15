@@ -5,6 +5,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.phoenix.core.api.RecipeBlacklist;
+import net.phoenix.core.integration.conflux.research.RecipeGateApplier;
 
 import com.google.gson.JsonElement;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,5 +26,13 @@ public abstract class RecipeManagerMixin {
         RecipeBlacklist.load();
 
         map.entrySet().removeIf(entry -> RecipeBlacklist.shouldRemoveRaw(entry.getKey(), entry.getValue()));
+    }
+
+    @Inject(
+            method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
+            at = @At("TAIL"))
+    private void phoenix$onApplyTail(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager,
+                                     ProfilerFiller profiler, CallbackInfo ci) {
+        RecipeGateApplier.applyGates(((RecipeManager) (Object) this).getRecipes());
     }
 }

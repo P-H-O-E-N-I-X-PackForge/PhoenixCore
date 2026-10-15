@@ -1,0 +1,21 @@
+{
+  "discipline": "sculk",
+  "affinities": [
+    {
+      "system": "phoenixcore:thalassa",
+      "trip": 0.9,
+      "yield": 1.3,
+      "label": "The Sculk hear the blooms of Thalassa."
+    },
+    {
+      "type": "moon",
+      "yield": 1.1,
+      "label": "Sculk find life in small, cold places."
+    },
+    {
+      "system": "phoenixcore:vesper",
+      "yield": 1.2,
+      "label": "Sculk thrive in the long red dusk of Vesper."
+    }
+  ]
+}

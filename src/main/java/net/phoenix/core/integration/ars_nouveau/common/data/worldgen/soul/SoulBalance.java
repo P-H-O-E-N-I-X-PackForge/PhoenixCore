@@ -16,9 +16,9 @@ import java.util.Map;
 public class SoulBalance {
 
     private static final List<TagKey<Biome>> MAGICAL_BIOME_TAGS = List.of(
-            TagKey.create(Registries.BIOME, new ResourceLocation("forge", "is_magical")),
-            TagKey.create(Registries.BIOME, new ResourceLocation("minecraft", "is_forest")),
-            TagKey.create(Registries.BIOME, new ResourceLocation("minecraft", "is_jungle")));
+            TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("forge", "is_magical")),
+            TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("minecraft", "is_forest")),
+            TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("minecraft", "is_jungle")));
 
     public record SoulProfile(float minSoul, float maxSoul, float regenPerTick) {}
 

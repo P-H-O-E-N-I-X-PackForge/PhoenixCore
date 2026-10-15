@@ -1,20 +1,13 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.item;
 
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
+import com.gregtechceu.gtceu.api.mui.IItemUIHolder;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
-import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIContainer;
-import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -35,17 +28,30 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.phoenix.core.api.gui.PhoenixGuiTextures;
 import net.phoenix.core.integration.ars_nouveau.client.SoulMapWidget;
+import net.phoenix.core.integration.ars_nouveau.client.SoulVisionManager;
 import net.phoenix.core.saveddata.SoulSavedData;
 
+import brachy.modularui.factory.PlayerInventoryGuiData;
+import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.UISettings;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widgets.TextWidget;
+import brachy.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+public class SoulLensItem extends ComponentItem implements IItemUIHolder, IInteractionItem {
 
-public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInteractionItem {
+    private static final int UI_WIDTH = 220;
+    private static final int UI_HEIGHT = 200;
+
+    public static final int VISION_RADIUS = 8;
 
     public SoulLensItem(Properties properties) {
         super(properties);
@@ -74,61 +80,92 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
                                                            @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            HeldItemUIFactory.INSTANCE.openUI(new HeldItemUIFactory.HeldItemHolder(player, hand), serverPlayer);
+        if (player.isShiftKeyDown()) {
+            if (level.isClientSide) {
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SoulVisionManager.toggle(player));
+            }
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
         }
 
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return super.use(level, player, hand);
     }
 
     @Override
-    public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player player) {
-        ItemStack stack = holder.getHeld();
-        CompoundTag tag = stack.getOrCreateTag();
-
-        ModularUI ui = new ModularUI(220, 200, holder, player).background(PhoenixGuiTextures.TESLA_BACKGROUND);
-        ui.widget(new ImageWidget(0, 0, 220, 200, new ColorBorderTexture(2, 0xFF000000)));
-        ui.widget(new LabelWidget(50, 6, "Soul Field Topography").setTextColor(0x8F00FF));
-
-        WidgetGroup mapBorder = new WidgetGroup(48, 78, 114, 114);
-        mapBorder.setBackground(new ColorBorderTexture(2, 0xFF000000));
-
-        WidgetGroup mapGroup = new WidgetGroup(2, 2, 110, 110);
-        mapGroup.setBackground(GuiTextures.DISPLAY);
-        mapGroup.addWidget(new SoulMapWidget(4, 4, stack));
-
-        mapBorder.addWidget(mapGroup);
-        ui.widget(mapBorder);
-
-        WidgetGroup infoGroup = new WidgetGroup(160, 20, 85, 110);
-        String biomeName = tag.getString("BiomeName");
-        float current = tag.getFloat("CurrentSoul");
-        float max = tag.getFloat("MaxSoul");
-
-        infoGroup.addWidget(new LabelWidget(-155, 0,
-                "Target: §6" + (biomeName)));
-
-        infoGroup.addWidget(new LabelWidget(-155, 20, "Density: §d" + String.format("%.2fx", current)));
-        infoGroup.addWidget(new LabelWidget(-155, 40, "Status: " + getStatusString(current, max)));
-
-        ui.widget(infoGroup);
-        return ui;
+    public boolean shouldOpenUI() {
+        return true;
     }
 
-    private String getStatusString(float current, float max) {
-        if (max <= 0) return "§7Unknown";
+    @Override
+    public ModularPanel<?> buildUI(PlayerInventoryGuiData<?> guiData, PanelSyncManager panelSyncManager,
+                                   UISettings settings) {
+        Player player = guiData.getPlayer();
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        CompoundTag tag = stack.getOrCreateTag();
+
+        ModularPanel<?> panel = ModularPanel.defaultPanel("soul_lens", UI_WIDTH, UI_HEIGHT)
+                .background(PhoenixGuiTextures.TESLA_BACKGROUND);
+
+        TextWidget titleText = new TextWidget(Component.literal("Soul Field Topography")
+                .withStyle(Style.EMPTY.withColor(0x8F00FF)));
+        titleText.pos(50, 6);
+        panel.child(titleText);
+
+        Flow mapBox = Flow.col();
+        mapBox.pos(48, 78);
+        mapBox.size(114, 114);
+        mapBox.background(GTGuiTextures.DISPLAY);
+
+        SoulMapWidget mapWidget = new SoulMapWidget(stack);
+        mapWidget.pos(6, 6);
+        mapBox.child(mapWidget);
+
+        panel.child(mapBox);
+
+        TextWidget biomeLabel = new TextWidget(() -> Component.literal("Target: ")
+                .append(Component.literal(stack.getOrCreateTag().getString("BiomeName"))
+                        .withStyle(ChatFormatting.GOLD)));
+        biomeLabel.pos(160, 20);
+
+        TextWidget densityLabel = new TextWidget(() -> {
+            float current = stack.getOrCreateTag().getFloat("CurrentSoul");
+            return Component.literal("Density: ")
+                    .append(Component.literal(String.format("%.2fx", current))
+                            .withStyle(ChatFormatting.LIGHT_PURPLE));
+        });
+        densityLabel.pos(160, 40);
+
+        TextWidget statusLabel = new TextWidget(() -> {
+            float current = stack.getOrCreateTag().getFloat("CurrentSoul");
+            float max = stack.getOrCreateTag().getFloat("MaxSoul");
+            return Component.literal("Status: ").append(getStatusComponent(current, max));
+        });
+        statusLabel.pos(160, 60);
+
+        panel.child(biomeLabel);
+        panel.child(densityLabel);
+        panel.child(statusLabel);
+
+        return panel;
+    }
+
+    private Component getStatusComponent(float current, float max) {
+        if (max <= 0) {
+            return Component.literal("Unknown").withStyle(ChatFormatting.GRAY);
+        }
         float percentage = current / max;
-        if (percentage >= 0.90f) return "§aVibrant";
-        if (percentage >= 0.40f) return "§bStable";
-        return "§cDepleted";
+        if (percentage >= 0.90f) {
+            return Component.literal("Vibrant").withStyle(ChatFormatting.GREEN);
+        }
+        if (percentage >= 0.40f) {
+            return Component.literal("Stable").withStyle(ChatFormatting.AQUA);
+        }
+        return Component.literal("Depleted").withStyle(ChatFormatting.RED);
     }
 
     @Override
     public void inventoryTick(@NotNull ItemStack stack, Level level, @NotNull Entity entity, int slotId,
                               boolean isSelected) {
         if (level.isClientSide || !(entity instanceof ServerPlayer player)) return;
-
-        boolean isUIOpen = player.containerMenu instanceof ModularUIContainer;
 
         CompoundTag tag = stack.getOrCreateTag();
         SoulSavedData data = SoulSavedData.get((ServerLevel) level);
@@ -144,9 +181,12 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
                 .getKey(level.getBiome(entity.blockPosition()).value());
         if (biomeId != null) tag.putString("BiomeName", formatBiomeName(biomeId.getPath()));
 
+        tag.putInt("CenterChunkX", center.x);
+        tag.putInt("CenterChunkZ", center.z);
+
         ListTag mapList = new ListTag();
-        for (int x = -8; x <= 8; x++) {
-            for (int z = -8; z <= 8; z++) {
+        for (int x = -VISION_RADIUS; x <= VISION_RADIUS; x++) {
+            for (int z = -VISION_RADIUS; z <= VISION_RADIUS; z++) {
                 ChunkPos currentPos = new ChunkPos(center.x + x, center.z + z);
                 CompoundTag chunkTag = new CompoundTag();
                 chunkTag.putInt("relX", x);
@@ -156,6 +196,8 @@ public class SoulLensItem extends ComponentItem implements IItemUIFactory, IInte
             }
         }
         tag.put("MapData", mapList);
+
+        player.containerMenu.broadcastChanges();
     }
 
     private int getAnimatedColor(int color1, int color2, int duration) {

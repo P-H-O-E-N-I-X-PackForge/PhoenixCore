@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:orrery",
+  "type": "planet",
+  "name": "Gearwork",
+  "description": "A world machined into terraces, ticking faintly in the dark.",
+  "orbit": {
+    "radius_au": 0.9,
+    "period_days": 160,
+    "phase": 0.25
+  },
+  "radius": 1.1,
+  "gas_giant": false,
+  "axial_tilt": 4,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 41,
+    "scale": 4.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 1.4,
+    "low": "#2a1830",
+    "mid": "#7a3f78",
+    "high": "#d68ad2",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff4fd8",
+    "emissive_amount": 0.35
+  },
+  "atmosphere": {
+    "color": "#ff6ad8",
+    "density": 0.35
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_orrery_signal",
+    "surveyed_research": "phoenixcore:space_orrery_decode"
+  },
+  "trip_minutes": 115,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:copper_ingot",
+      "min": 6,
+      "max": 12,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:redstone",
+      "min": 8,
+      "max": 16,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:netherite_scrap",
+      "min": 1,
+      "max": 1,
+      "chance": 0.1
+    }
+  ],
+  "lore": {
+    "detected": "A signal behind a sealed door, answering in intervals. Each interval is exactly the length of the one before it, plus one.",
+    "surveyed": "Gearwork is machined into terraces and every terrace turns, very slowly, against its neighbour. The ticking is not mechanical. It is counting."
+  }
+}

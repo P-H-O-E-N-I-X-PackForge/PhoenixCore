@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.RecordItem;
 import net.phoenix.core.integration.vocal_vibrancy.VocalVibrancyClient;
+import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 public class ResonanceConsoleScreen extends Screen {
 
     private final ResonantJukeboxMachine machine;
+
+    private int cPanel, cText, cStatusBox, cAccent;
 
     private EditBox searchBox, urlBox;
     private final List<Button> registryButtons = new ArrayList<>();
@@ -38,7 +41,7 @@ public class ResonanceConsoleScreen extends Screen {
     protected void init() {
         super.init();
 
-        VocalVibrancyClient.startTracking(machine.getPos());
+        VocalVibrancyClient.startTracking(machine.getBlockPos());
 
         int panelWidth = this.width / 3;
         int center = this.width / 2;
@@ -74,6 +77,15 @@ public class ResonanceConsoleScreen extends Screen {
                 .pos(center - 100, this.height - 30).size(200, 20).build());
 
         updateFilteredSounds();
+        refreshTheme();
+    }
+
+    private void refreshTheme() {
+        PhoenixTheme t = PhoenixTheme.current();
+        cPanel = (t.panel.getColor() & 0x00FFFFFF) | 0x33000000;
+        cText = t.text.getColor();
+        cStatusBox = (t.bg.getColor() & 0x00FFFFFF) | 0xAA000000;
+        cAccent = t.accent.getColor();
     }
 
     @Override
@@ -91,7 +103,7 @@ public class ResonanceConsoleScreen extends Screen {
 
     @Override
     public void onClose() {
-        VocalVibrancyClient.stopTracking(machine.getPos());
+        VocalVibrancyClient.stopTracking(machine.getBlockPos());
         super.onClose();
     }
 
@@ -178,40 +190,41 @@ public class ResonanceConsoleScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(graphics);
+        refreshTheme();
         int third = this.width / 3;
 
-        graphics.fill(10, 25, third - 10, this.height - 40, 0x33000000);
-        graphics.fill(third + 5, 25, (third * 2) - 5, this.height - 40, 0x33000000);
-        graphics.fill((third * 2) + 10, 25, this.width - 10, this.height - 40, 0x33000000);
+        graphics.fill(10, 25, third - 10, this.height - 40, cPanel);
+        graphics.fill(third + 5, 25, (third * 2) - 5, this.height - 40, cPanel);
+        graphics.fill((third * 2) + 10, 25, this.width - 10, this.height - 40, cPanel);
 
-        graphics.drawCenteredString(font, "§bAUDIO REGISTRY", third / 2, 35, 0xFFFFFF);
-        graphics.drawCenteredString(font, "§6QUICK SELECT", this.width / 2, 35, 0xFFFFFF);
-        graphics.drawCenteredString(font, "§dREMOTE LINK", this.width - (third / 2), 35, 0xFFFFFF);
-        graphics.drawString(font, "§8Direct streams only.", (third * 2) + 20, 100, 0xFFFFFF);
+        graphics.drawCenteredString(font, "§bAUDIO REGISTRY", third / 2, 35, cText);
+        graphics.drawCenteredString(font, "§6QUICK SELECT", this.width / 2, 35, cText);
+        graphics.drawCenteredString(font, "§dREMOTE LINK", this.width - (third / 2), 35, cText);
+        graphics.drawString(font, "§8Direct streams only.", (third * 2) + 20, 100, cText);
 
         if (!filteredSounds.isEmpty()) {
             graphics.drawString(font,
                     "§8" + (scrollOffset + 1) + "-" + (scrollOffset + registryButtons.size()) +
                             " / " + filteredSounds.size(),
-                    20, this.height - 52, 0xFFFFFF);
+                    20, this.height - 52, cText);
         }
 
         int boxY = this.height - 95;
         int boxX = (third * 2) + 20;
-        graphics.fill(boxX, boxY, this.width - 20, boxY + 50, 0xAA000000);
+        graphics.fill(boxX, boxY, this.width - 20, boxY + 50, cStatusBox);
 
         if (!machine.currentStreamUrl.isEmpty()) {
             String displayUrl = machine.currentStreamUrl.length() > 34 ?
                     machine.currentStreamUrl.substring(0, 31) + "..." : machine.currentStreamUrl;
-            graphics.drawString(font, "§7Stream: §f" + displayUrl, boxX + 5, boxY + 5, 0xFFFFFF);
-            graphics.drawString(font, "§7" + machine.streamTitle, boxX + 5, boxY + 20, 0xFFFFFF);
+            graphics.drawString(font, "§7Stream: §f" + displayUrl, boxX + 5, boxY + 5, cText);
+            graphics.drawString(font, "§7" + machine.streamTitle, boxX + 5, boxY + 20, cText);
         } else if (!machine.selectedLibrarySound.isEmpty()) {
-            graphics.drawString(font, "§7Target: §f" + machine.selectedLibrarySound, boxX + 5, boxY + 5, 0xFFFFFF);
-            graphics.drawString(font, "§7Status: §aTRANSMITTING", boxX + 5, boxY + 20, 0xFFFFFF);
+            graphics.drawString(font, "§7Target: §f" + machine.selectedLibrarySound, boxX + 5, boxY + 5, cText);
+            graphics.drawString(font, "§7Status: §aTRANSMITTING", boxX + 5, boxY + 20, cText);
             int barWidth = (int) (60 * machine.currentLiveBass);
-            graphics.fill(boxX + 5, boxY + 35, boxX + 5 + barWidth, boxY + 40, 0xFF00FFFF);
+            graphics.fill(boxX + 5, boxY + 35, boxX + 5 + barWidth, boxY + 40, cAccent);
         } else {
-            graphics.drawString(font, "§8IDLE...", boxX + 5, boxY + 20, 0xFFFFFF);
+            graphics.drawString(font, "§8IDLE...", boxX + 5, boxY + 20, cText);
         }
 
         super.render(graphics, mouseX, mouseY, partialTick);

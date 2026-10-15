@@ -1,0 +1,66 @@
+{
+  "system": "phoenixcore:aurelian",
+  "type": "planet",
+  "name": "Steamreach",
+  "description": "A scalding ocean under a sky that is mostly cloud.",
+  "orbit": {
+    "radius_au": 1.4,
+    "period_days": 270,
+    "phase": 0.45
+  },
+  "radius": 1.15,
+  "gas_giant": false,
+  "axial_tilt": 25,
+  "spin_deg_per_sec": 4.0,
+  "cloud_spin_deg_per_sec": 14,
+  "surface": {
+    "seed": 318,
+    "scale": 2.6,
+    "ocean_level": 0.7,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.9,
+    "bump": 0.3,
+    "low": "#5a4a3a",
+    "mid": "#a08a6a",
+    "high": "#e0d0b0",
+    "ocean_deep": "#2a4a60",
+    "ocean_shallow": "#88b8c8",
+    "emissive": "#ffb070",
+    "emissive_amount": 0.15
+  },
+  "atmosphere": {
+    "color": "#f0e8d8",
+    "density": 1.0
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": "phoenixcore:space_aurelian_signals",
+    "surveyed_research": "phoenixcore:space_survey_steamreach"
+  },
+  "trip_minutes": 70,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:blaze_powder",
+      "min": 2,
+      "max": 5,
+      "chance": 0.8
+    },
+    {
+      "item": "minecraft:prismarine_shard",
+      "min": 2,
+      "max": 6,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:nautilus_shell",
+      "min": 1,
+      "max": 1,
+      "chance": 0.15
+    }
+  ],
+  "lore": {
+    "detected": "A white shroud, and under it a sea hot enough to hold the cloud up by itself.",
+    "surveyed": "Steamreach boils from the bottom. The sea and the sky trade places all day, and nothing that stands still on it lasts."
+  }
+}

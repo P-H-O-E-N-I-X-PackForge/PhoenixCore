@@ -52,6 +52,36 @@ public class ClientTickHandler {
             }
         }
 
+        while (PhoenixKeybinds.CINDER_ATLAS_RADIAL.consumeClick()) {
+            if (mc.screen != null) continue;
+            InteractionHand hand = mc.player.getMainHandItem()
+                    .getItem() instanceof net.phoenix.core.common.item.cinder.CinderAtlasItem ?
+                            InteractionHand.MAIN_HAND :
+                            mc.player.getOffhandItem()
+                                    .getItem() instanceof net.phoenix.core.common.item.cinder.CinderAtlasItem ?
+                                            InteractionHand.OFF_HAND : null;
+            if (hand != null) {
+                mc.setScreen(new net.phoenix.core.client.gui.cinder.CinderAtlasRadialScreen(hand));
+            }
+        }
+
+        while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
+            net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager = net.phoenix.core.integration.conflux.dimension.sky.SkyManager
+                    .getInstance();
+            manager.toggleSkyRendering();
+            mc.player.displayClientMessage(Component.literal(
+                    "[PhoenixCore] Discipline sky shaders: " + (manager.isSkyRenderingEnabled() ? "ON" : "OFF")), true);
+        }
+
+        while (PhoenixKeybinds.SHOW_SHADER_PROFILER.consumeClick()) {
+            net.phoenix.core.client.worldfx.ShaderProfiler.enabled = !net.phoenix.core.client.worldfx.ShaderProfiler.enabled;
+            if (!net.phoenix.core.client.worldfx.ShaderProfiler.enabled) {
+                net.phoenix.core.client.worldfx.ShaderProfiler.clear();
+            }
+            mc.player.displayClientMessage(Component.literal("[PhoenixCore] Shader profiler HUD: " +
+                    (net.phoenix.core.client.worldfx.ShaderProfiler.enabled ? "ON" : "OFF")), true);
+        }
+
         while (PhoenixKeybinds.OPEN_RECIPE_BUILDER.consumeClick()) {
             if (mc.screen == null) {
                 RecipeBuilderMenu menu = new RecipeBuilderMenu(0, mc.player.getInventory());
@@ -83,6 +113,12 @@ public class ClientTickHandler {
 
         while (PhoenixKeybinds.OPEN_EMI_FAVORITE_PAGES.consumeClick()) {
             mc.setScreen(new net.phoenix.core.client.emi.EmiFavoritePagesScreen(mc.screen));
+        }
+
+        while (PhoenixKeybinds.OPEN_ASTRAL_CODEX.consumeClick()) {
+            if (mc.screen == null) {
+                net.phoenix.core.integration.astral.client.AstralCodexScreen.open();
+            }
         }
     }
 

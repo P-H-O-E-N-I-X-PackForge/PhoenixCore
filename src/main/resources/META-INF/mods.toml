@@ -13,12 +13,12 @@ version = "${version}"
 displayName = "PhoenixCore"
 displayURL = "${mod_url}"
 # This will be displayed as your mod's logo in the Mods panel.
-# logoFile="icon.png" #optional
+logoFile="icon.png" #optional
 # Some more fluff displayed in the Mods panel. Feel free to issue your special thanks here!
 # credits="Thanks to Mojang for making this great game" #optional
 # Some more fluff displayed in the Mods panel. Plug your stuff here!
 authors="${mod_author}"
-description = '''This is the Core mod for phoenix_core'''
+description = '''This is the Core mod for Phoenix Forge Technologies'''
 
 [[dependencies.phoenixcore]]
 modId = "forge"
@@ -35,7 +35,7 @@ side = "BOTH"
 [[dependencies.phoenixcore]]
 modId = "gtceu"
 mandatory = true
-versionRange = "[${gtceu_version},)"
+versionRange = "[${gtceu_version_min},)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.phoenixcore]]
@@ -48,5 +48,11 @@ side = "BOTH"
 modId = "ars_nouveau"
 mandatory = true
 versionRange = "[0,)" # Or use a static range like "[4.0.0,)" depending on your gradle.properties variables
+ordering = "AFTER"
+side = "BOTH"
+[[dependencies.phoenixcore]]
+modId = "expatternprovider"
+mandatory = false   # Optional: only needed so our data override wins pack-priority over its broken loot table
+versionRange = "[0,)"
 ordering = "AFTER"
 side = "BOTH"

@@ -1,10 +1,12 @@
 package net.phoenix.core.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -17,13 +19,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.data.item.PhoenixItems;
+import net.phoenix.core.common.data.materials.AstralMaterials;
 import net.phoenix.core.common.data.materials.PhoenixBeeMaterials;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
 import net.phoenix.core.common.data.materials.PhoenixOres;
 import net.phoenix.core.common.machine.PhoenixMachines;
 import net.phoenix.core.integration.ars_nouveau.api.capability.SourceRecipeCapability;
 import net.phoenix.core.integration.ars_nouveau.common.data.recipe.custom.SourceIngredient;
-import net.phoenix.core.integration.ars_nouveau.common.data.recipeConditons.SoulCondition;
+import net.phoenix.core.integration.astral.api.capability.AstralThreadIngredient;
+import net.phoenix.core.integration.astral.api.capability.AstralThreadRecipeCapability;
 
 import java.util.function.Consumer;
 
@@ -43,6 +47,45 @@ import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials
 public class PhoenixMachineRecipes {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+        VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("steam"),
+                PhoenixMachines.STEAM_CENTRIFUGE.asStack(1),
+                "PGP", "PTP", "PGP",
+                'P', GTBlocks.CASING_BRONZE_BRICKS,
+                'G', new MaterialEntry(gear, Steel),
+                'T', new MaterialEntry(rotor, GTMaterials.Tin));
+
+        VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("steam2"),
+                PhoenixMachines.STEAM_ALLOY_SMELTER.asStack(1),
+                "PGP", "PTP", "PGP",
+                'P', GTBlocks.CASING_BRONZE_BRICKS,
+                'G', new MaterialEntry(gear, Bronze),
+                'T', GTMachines.STEAM_ALLOY_SMELTER.left().asStack());
+
+        PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward_hostile")
+                .inputItems(Items.GLOWSTONE_DUST, 4)
+                .duration(600)
+                .addData(net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachine.WARD_MODE_KEY,
+                        net.phoenix.core.common.machine.multiblock.ward.WardMode.HOSTILE.name())
+                .save(provider);
+        PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward_passive")
+                .inputItems(Items.WHEAT, 8)
+                .duration(600)
+                .addData(net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachine.WARD_MODE_KEY,
+                        net.phoenix.core.common.machine.multiblock.ward.WardMode.PASSIVE.name())
+                .save(provider);
+        PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward_neutral")
+                .inputItems(Items.GUNPOWDER, 4)
+                .duration(600)
+                .addData(net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachine.WARD_MODE_KEY,
+                        net.phoenix.core.common.machine.multiblock.ward.WardMode.NEUTRAL.name())
+                .save(provider);
+        PhoenixRecipeTypes.SANCTUM_WARD_RECIPES.recipeBuilder("sustain_sanctum_ward_all")
+                .inputItems(Items.ENDER_PEARL, 2)
+                .duration(600)
+                .addData(net.phoenix.core.common.machine.multiblock.ward.SanctumWardMachine.WARD_MODE_KEY,
+                        net.phoenix.core.common.machine.multiblock.ward.WardMode.ALL.name())
+                .save(provider);
+
         PhoenixRecipeTypes.PHOENIXWARE_FUSION_MK1.recipeBuilder("carbon_and_helium_3_to_oxygen_plasma")
                 .inputFluids(GTMaterials.Carbon.getFluid(16))
                 .inputItems(GTMachines.MIXER[LV])
@@ -159,6 +202,45 @@ public class PhoenixMachineRecipes {
                 .fusionStartEU(140_000_000)
                 .save(provider);
 
+        GrowthRecipes.init(provider);
+        net.phoenix.core.integration.astral.AstralRecipes.init(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread")
+                .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 4)
+                .output(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1000))
+                .EUt(VA[IV])
+                .duration(200)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread_source_bonus")
+                .inputItems(dust, AstralMaterials.ASTRAL_FILAMENT, 4)
+                .input(SourceRecipeCapability.CAP, new SourceIngredient(200))
+                .output(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1500))
+                .EUt(VA[IV])
+                .duration(100)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_thread_to_skein")
+                .input(AstralThreadRecipeCapability.CAP, new AstralThreadIngredient(1000))
+                .outputFluids(AstralMaterials.SKEIN.getFluid(144))
+                .EUt(VA[LuV])
+                .duration(300)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_skein_to_ensorcelled_weave_zpm")
+                .inputFluids(AstralMaterials.SKEIN.getFluid(4608))
+                .outputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(144))
+                .EUt(VA[ZPM])
+                .duration(1200)
+                .save(provider);
+
+        ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_skein_to_ensorcelled_weave_uv")
+                .inputFluids(AstralMaterials.SKEIN.getFluid(576))
+                .outputFluids(AstralMaterials.ENSORCELLED_WEAVE.getFluid(144))
+                .EUt(VA[UV])
+                .duration(300)
+                .save(provider);
+
         PhoenixRecipeTypes.HONEY_CHAMBER_RECIPES.recipeBuilder("mercury_and_magnesium_to_uranium_235_plasma")
                 .inputFluids(GTMaterials.Mercury.getFluid(125))
                 .inputFluids(GTMaterials.Magnesium.getFluid(16))
@@ -176,15 +258,6 @@ public class PhoenixMachineRecipes {
                 .outputItems(ELECTRONIC_CIRCUIT_MV)
                 .save(provider);
 
-        PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_imbued_titanium")
-                .inputItems(ingot, Titanium, 1)
-                .input(SourceRecipeCapability.CAP, new SourceIngredient(260))
-                .duration(160)
-                .EUt(GTValues.VA[GTValues.HV] / 3)
-                .outputItems(ingot, SOURCE_IMBUED_TITANIUM, 1)
-
-                .addCondition(new SoulCondition(false, 0.5f))
-                .save(provider);
         PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_gem")
                 .inputItems(gem, Amethyst, 1)
                 .input(SourceRecipeCapability.CAP, new SourceIngredient(150))
@@ -328,7 +401,8 @@ public class PhoenixMachineRecipes {
         ASSEMBLER_RECIPES.recipeBuilder("alchemical_imbuer")
                 .inputItems(SOURCE_GEM_BLOCK, 4)
                 .inputItems(pipeLargeFluid, StainlessSteel, 4)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ars_nouveau", "sourcestone")), 8)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
                 .inputItems(CASING_STAINLESS_CLEAN, 4)
                 .inputItems(CustomTags.HV_CIRCUITS, 2)
                 .outputItems(PhoenixMachines.ALCHEMICAL_IMBUER)
@@ -338,7 +412,8 @@ public class PhoenixMachineRecipes {
                 .save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("bio_aetheric_engine")
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ars_nouveau", "sourcestone")), 32)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 32)
                 .inputItems(SOURCE_GEM_BLOCK, 12)
                 .inputItems(pipeLargeFluid, SOURCE_IMBUED_TITANIUM, 2)
                 .inputItems(CustomTags.EV_CIRCUITS, 4)
@@ -354,7 +429,8 @@ public class PhoenixMachineRecipes {
         ASSEMBLER_RECIPES.recipeBuilder("source_reactor")
                 .inputItems(SOURCE_GEM_BLOCK, 8)
                 .inputItems(pipeNormalFluid, SOURCE_IMBUED_TITANIUM, 4)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ars_nouveau", "sourcestone")), 8)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ars_nouveau", "sourcestone")), 8)
                 .inputItems(CustomTags.EV_CIRCUITS, 2)
                 .inputItems(frameGt, SOURCE_IMBUED_TITANIUM, 1)
                 .inputItems(CASING_TITANIUM_STABLE, 2)
@@ -460,219 +536,146 @@ public class PhoenixMachineRecipes {
                 .duration(75)
                 .EUt(VA[HV])
                 .save(provider);
+
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_1k"))
                 .inputItems(CENTRAL_PROCESSING_UNIT)
                 .inputItems(plate, CertusQuartz)
                 .inputItems(CustomTags.LV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_1k")), 1)
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 1)
                 .duration(200).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_1k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_1k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_storage_cell_1k")), 1)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_1k")), 1)
                 .duration(100).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_1k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_1k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_1k")), 1)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_1k")), 1)
                 .duration(100).EUt(30).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_4k"))
                 .inputItems(RANDOM_ACCESS_MEMORY)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_1k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_1k")), 3)
                 .inputItems(CustomTags.MV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_4k")), 2)
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 2)
                 .duration(200).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_4k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_4k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_storage_cell_4k")), 2)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_4k")), 2)
                 .duration(100).EUt(30).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_4k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_4k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_4k")), 2)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_4k")), 2)
                 .duration(100).EUt(30).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_16k"))
                 .inputItems(ULTRA_LOW_POWER_INTEGRATED_CIRCUIT)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_4k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_4k")), 3)
                 .inputItems(CustomTags.HV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_16k")), 3)
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
                 .duration(200).EUt(120).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_16k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_16k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_storage_cell_16k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_16k")), 3)
                 .duration(100).EUt(120).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_16k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_16k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_16k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_16k")), 3)
                 .duration(100).EUt(120).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_64k"))
                 .inputItems(LOW_POWER_INTEGRATED_CIRCUIT)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_16k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_16k")), 3)
                 .inputItems(CustomTags.EV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_64k")), 4)
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 4)
                 .duration(200).EUt(480).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_64k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_64k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_storage_cell_64k")), 4)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_64k")), 4)
                 .duration(100).EUt(480).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_64k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_64k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_64k")), 4)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_64k")), 4)
                 .duration(100).EUt(480).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_cell_component_256k"))
                 .inputItems(QUBIT_CENTRAL_PROCESSING_UNIT)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_64k")), 3)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_64k")), 3)
                 .inputItems(CustomTags.IV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_256k")), 4)
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")), 4)
                 .duration(200).EUt(1920).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_item_storage_cell_256k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_256k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_storage_cell_256k")), 4)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_storage_cell_256k")), 4)
                 .duration(100).EUt(1920).save(provider);
 
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_fluid_storage_cell_256k"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_256k")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_storage_cell_256k")), 4)
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "cell_component_256k")))
+                .outputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "fluid_storage_cell_256k")), 4)
                 .duration(100).EUt(1920).save(provider);
 
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_1m"))
-                .inputItems(NAND_MEMORY_CHIP)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "cell_component_256k")), 3)
-                .inputItems(CustomTags.LuV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")), 5)
-                .duration(200).EUt(7680).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_item_storage_cell_1m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "item_storage_cell_1m")),
-                        5)
-                .duration(100).EUt(7680).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_fluid_storage_cell_1m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_1m")),
-                        5)
-                .duration(100).EUt(7680).save(provider);
-
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_4m"))
-                .inputItems(NOR_MEMORY_CHIP)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")), 3)
-                .inputItems(CustomTags.ZPM_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_4m")), 6)
-                .duration(200).EUt(30720).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_item_storage_cell_4m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_4m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "item_storage_cell_4m")),
-                        6)
-                .duration(100).EUt(30720).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_fluid_storage_cell_4m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_4m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_4m")),
-                        6)
-                .duration(100).EUt(30720).save(provider);
-
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_16m"))
-                .inputItems(ADVANCED_SYSTEM_ON_CHIP)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_4m")), 3)
-                .inputItems(CustomTags.UV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_16m")), 7)
-                .duration(200).EUt(122880).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_item_storage_cell_16m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_16m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "item_storage_cell_16m")),
-                        7)
-                .duration(100).EUt(122880).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_fluid_storage_cell_16m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_16m")))
-                .outputItems(
-                        ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_16m")), 7)
-                .duration(100).EUt(122880).save(provider);
-
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_64m"))
-                .inputItems(HIGHLY_ADVANCED_SOC)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_16m")), 3)
-                .inputItems(CustomTags.UHV_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_64m")), 8)
-                .duration(200).EUt(491520).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_item_storage_cell_64m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_64m")))
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "item_storage_cell_64m")),
-                        8)
-                .duration(100).EUt(491520).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_fluid_storage_cell_64m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_64m")))
-                .outputItems(
-                        ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_64m")), 8)
-                .duration(100).EUt(491520).save(provider);
-
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_cell_component_256m"))
-                .inputItems(HIGHLY_ADVANCED_SOC, 4)
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_64m")), 3)
-                .inputItems(CustomTags.UHV_CIRCUITS, 2)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_256m")),
-                        10)
-                .duration(200).EUt(1966080).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_item_storage_cell_256m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_256m")))
-                .outputItems(
-                        ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "item_storage_cell_256m")), 10)
-                .duration(100).EUt(1966080).save(provider);
-
-        CANNER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_fluid_storage_cell_256m"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "fluid_cell_housing")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_256m")))
-                .outputItems(
-                        ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "fluid_storage_cell_256m")),
-                        10)
-                .duration(100).EUt(1966080).save(provider);
-
-        ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("megacells_bulk_cell_component"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "cell_component_1m")))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "spatial_cell_component_2")))
-                .inputItems(CustomTags.ZPM_CIRCUITS)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("megacells", "bulk_cell_component")))
-                .duration(300).EUt(30720).save(provider);
-
         CANNER_RECIPES.recipeBuilder(PhoenixCore.id("ae2_view_cell"))
-                .inputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "item_cell_housing")))
+                .inputItems(ForgeRegistries.ITEMS
+                        .getValue(ResourceLocation.fromNamespaceAndPath("ae2", "item_cell_housing")))
                 .inputItems(gem, CertusQuartz)
-                .outputItems(ForgeRegistries.ITEMS.getValue(new ResourceLocation("ae2", "view_cell")))
+                .outputItems(ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("ae2", "view_cell")))
                 .duration(100).EUt(4).save(provider);
     }
 }

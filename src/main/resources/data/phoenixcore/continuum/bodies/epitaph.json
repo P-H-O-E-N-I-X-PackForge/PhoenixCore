@@ -1,0 +1,61 @@
+{
+  "system": "phoenixcore:reliquary",
+  "type": "moon",
+  "name": "Epitaph",
+  "description": "A pale moon with something written on it.",
+  "orbit": {
+    "radius_au": 0.005,
+    "period_days": 8,
+    "phase": 0.3
+  },
+  "radius": 0.3,
+  "gas_giant": false,
+  "axial_tilt": 4,
+  "spin_deg_per_sec": 6,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 66,
+    "scale": 4.4,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.8,
+    "low": "#7a7a80",
+    "mid": "#c8c8d0",
+    "high": "#f0f0f4",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "endgame",
+    "detected_research": "phoenixcore:space_reliquary_signal",
+    "surveyed_research": "phoenixcore:space_reliquary_decode"
+  },
+  "trip_minutes": 138,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:bone_meal",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:soul_sand",
+      "min": 2,
+      "max": 5,
+      "chance": 0.6
+    }
+  ],
+  "parent": "phoenixcore:sepulchre",
+  "lore": {
+    "detected": "A pale moon with fine lines across it that look, from far enough away, like writing.",
+    "surveyed": "Epitaph is covered in a script no one has read. It repeats a short line over and over, and every translation attempted has come out as the same word."
+  }
+}

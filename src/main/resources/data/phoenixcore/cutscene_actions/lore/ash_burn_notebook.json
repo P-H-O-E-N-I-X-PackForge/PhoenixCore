@@ -1,0 +1,9 @@
+{
+  "cutscene": "phoenixcore:lore/03_ash",
+  "exclusive_group": "ash_notebook",
+  "commands": [
+    "effect give @s minecraft:fire_resistance 120 0 true",
+    "tag @s add phoenixcore.burned_field_notes",
+    "playsound minecraft:item.firecharge.use master @s ~ ~ ~ 1 0.6"
+  ]
+}

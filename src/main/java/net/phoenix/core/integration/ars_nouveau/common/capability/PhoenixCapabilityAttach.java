@@ -1,6 +1,6 @@
 package net.phoenix.core.integration.ars_nouveau.common.capability;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -28,9 +28,9 @@ public final class PhoenixCapabilityAttach {
     @SubscribeEvent
     public static void attachCaps(AttachCapabilitiesEvent<BlockEntity> event) {
         BlockEntity be = event.getObject();
-        if (!(be instanceof MetaMachineBlockEntity gtBe)) return;
 
-        var machine = gtBe.getMetaMachine();
+        if (!(be instanceof MetaMachine machine)) return;
+
         if (!(machine instanceof SourceHatchPartMachine hatch)) return;
 
         PhoenixCore.LOGGER.info("[SourceHatchCap] Attaching to {} machine={}",

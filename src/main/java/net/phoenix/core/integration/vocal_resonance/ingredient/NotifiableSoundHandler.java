@@ -2,7 +2,7 @@ package net.phoenix.core.integration.vocal_resonance.ingredient;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
+import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.phoenix.core.integration.vocal_resonance.ResonantJukeboxMachine;
@@ -10,30 +10,36 @@ import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIngredient> {
 
     private final ResonantJukeboxMachine controller;
-    private final IO io;
+    private final IO handlerIO;
 
     public NotifiableSoundHandler(ResonantJukeboxMachine controller, IO io) {
-        super(controller);
+        super();
         this.controller = controller;
-        this.io = io;
+        this.handlerIO = io;
     }
 
     @Override
-    public List<SoundIngredient> handleRecipeInner(IO io, GTRecipe recipe,
-                                                   List<SoundIngredient> left,
-                                                   boolean simulate) {
-        if (!controller.isActive()) return left;
+    public IO getHandlerIO() {
+        return this.handlerIO;
+    }
 
-        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getPos());
+    @Override
+    public List<SoundIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<SoundIngredient> left,
+                                                   boolean simulate) {
+        if (io != this.handlerIO || !controller.isActive()) return left;
+
+        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getBlockPos());
         if (data == null) return left;
 
-        for (int i = 0; i < left.size(); i++) {
-            SoundIngredient req = left.get(i);
+        List<SoundIngredient> missingIngredients = new ArrayList<>();
+
+        for (SoundIngredient req : left) {
 
             boolean nameMatch = !req.exactMatch() || req.soundName().equals(controller.selectedLibrarySound);
 
@@ -44,25 +50,33 @@ public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIn
             boolean bpmMatch = req.requiredBPM() == 0 ||
                     Math.abs(req.requiredBPM() - data.bpm) <= (req.requiredBPM() * req.tolerance());
 
-            if (nameMatch && bassMatch && midMatch && trebleMatch && bpmMatch) {
-                left.remove(i);
-                break;
+            if (!(nameMatch && bassMatch && midMatch && trebleMatch && bpmMatch)) {
+                missingIngredients.add(req);
             }
         }
-        return left.isEmpty() ? null : left;
+
+        return missingIngredients;
     }
 
     @Override
-    public @NotNull List<Object> getContents() {
-        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getPos());
+    @SuppressWarnings("rawtypes")
+    public @NotNull List getContents() {
+        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getBlockPos());
         float bass = data != null ? data.bass : 0f;
-        return List.of(new SoundIngredient(controller.selectedLibrarySound, bass));
-    }
+        float mid = data != null ? data.mid : 0f;
+        float treble = data != null ? data.treble : 0f;
+        int bpm = data != null ? data.bpm : 0;
 
-    @Override
-    public double getTotalContentAmount() {
-        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getPos());
-        return (data != null && data.bpm > 0) ? 1.0 : 0.0;
+        String sound = controller.selectedLibrarySound != null ? controller.selectedLibrarySound : "";
+
+        return List.of(new SoundIngredient(
+                sound,
+                bass,
+                mid,
+                treble,
+                bpm,
+                !sound.isEmpty(),
+                0.2f));
     }
 
     @Override
@@ -71,7 +85,8 @@ public class NotifiableSoundHandler extends NotifiableRecipeHandlerTrait<SoundIn
     }
 
     @Override
-    public IO getHandlerIO() {
-        return this.io;
+    public double getTotalContentAmount() {
+        WorldAcousticSensor.SensorData data = WorldAcousticSensor.get(controller.getBlockPos());
+        return (data != null && (data.bpm > 0 || data.bass > 0f || data.mid > 0f || data.treble > 0f)) ? 1.0 : 0.0;
     }
 }

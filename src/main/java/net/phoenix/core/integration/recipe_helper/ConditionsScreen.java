@@ -92,6 +92,9 @@ public class ConditionsScreen extends Screen {
     private final List<ConditionEntry> conditions;
     private int pillScroll = 0;
 
+    private float uiScale = 1f;
+    private int vw, vh;
+
     public ConditionsScreen(Screen parent, List<ConditionEntry> conditions) {
         super(Component.empty());
         this.parent = parent;
@@ -101,6 +104,15 @@ public class ConditionsScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+
+        float neededW = PANEL_W + 20f;
+        float neededH = PANEL_H + 20f;
+        uiScale = (width < neededW || height < neededH) ?
+                Math.min(width / neededW, height / neededH) : 1f;
+        uiScale = Math.max(0.1f, uiScale);
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
+
         int px = panelX(), py = panelY();
 
         addRenderableWidget(Button.builder(
@@ -114,8 +126,15 @@ public class ConditionsScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics g, int mx, int my, float pt) {
+    public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
         renderBackground(g);
+
+        int mx = Math.round(rmx / uiScale);
+        int my = Math.round(rmy / uiScale);
+
+        g.pose().pushPose();
+        g.pose().scale(uiScale, uiScale, 1f);
+
         int px = panelX(), py = panelY();
 
         g.fill(px, py, px + PANEL_W, py + PANEL_H, 0xFF0D000F);
@@ -125,12 +144,19 @@ public class ConditionsScreen extends Screen {
         g.drawString(font, "§5Conditions", px + 128, py + 7, 0xFFFFFF, false);
 
         int listX = px + 2, listW = PANEL_W - SCROLL_W - 4;
-        g.enableScissor(listX, py + HDR_H + 1, listX + listW, py + PANEL_H - 1);
+        enableScissorScaled(g, listX, py + HDR_H + 1, listX + listW, py + PANEL_H - 1);
         renderPills(g, mx, my, listX, py + HDR_H, listW);
         g.disableScissor();
         renderScrollbar(g, px, py);
 
         super.render(g, mx, my, pt);
+
+        g.pose().popPose();
+    }
+
+    private void enableScissorScaled(GuiGraphics g, int x0, int y0, int x1, int y1) {
+        g.enableScissor(Math.round(x0 * uiScale), Math.round(y0 * uiScale), Math.round(x1 * uiScale),
+                Math.round(y1 * uiScale));
     }
 
     private void renderPills(GuiGraphics g, int mx, int my, int lx, int ly, int lw) {
@@ -162,9 +188,20 @@ public class ConditionsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
+    public boolean mouseClicked(double rmx, double rmy, int btn) {
+        double mx = rmx / uiScale, my = rmy / uiScale;
         if (handlePillClick(mx, my)) return true;
         return super.mouseClicked(mx, my, btn);
+    }
+
+    @Override
+    public boolean mouseDragged(double rmx, double rmy, int btn, double dragX, double dragY) {
+        return super.mouseDragged(rmx / uiScale, rmy / uiScale, btn, dragX / uiScale, dragY / uiScale);
+    }
+
+    @Override
+    public boolean mouseReleased(double rmx, double rmy, int btn) {
+        return super.mouseReleased(rmx / uiScale, rmy / uiScale, btn);
     }
 
     private boolean handlePillClick(double mx, double my) {
@@ -184,7 +221,7 @@ public class ConditionsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double delta) {
         int total = conditions.size() * (PILL_H + PILL_GAP);
         int view = PANEL_H - HDR_H - 4;
         pillScroll = clamp(pillScroll - (int) (delta * (PILL_H + PILL_GAP)), Math.max(0, total - view));
@@ -197,11 +234,11 @@ public class ConditionsScreen extends Screen {
     }
 
     private int panelX() {
-        return (this.width - PANEL_W) / 2;
+        return (vw - PANEL_W) / 2;
     }
 
     private int panelY() {
-        return (this.height - PANEL_H) / 2;
+        return (vh - PANEL_H) / 2;
     }
 
     private void drawBorder(GuiGraphics g, int x0, int y0, int x1, int y1, int col) {
@@ -241,6 +278,9 @@ public class ConditionsScreen extends Screen {
         private Button confirmBtn, cancelBtn, chooseTypeBtn;
         private int formX, formY, formH;
 
+        private float uiScale = 1f;
+        private int vw, vh;
+
         public ConditionFormOverlay(Screen parent, List<ConditionEntry> conditions) {
             super(Component.empty());
             this.parent = parent;
@@ -250,9 +290,18 @@ public class ConditionsScreen extends Screen {
         @Override
         protected void init() {
             super.init();
-            formX = (this.width - FORM_W) / 2;
+
+            float neededW = FORM_W + 20f;
+            float neededH = calcFormH() + 20f;
+            uiScale = (width < neededW || height < neededH) ?
+                    Math.min(width / neededW, height / neededH) : 1f;
+            uiScale = Math.max(0.1f, uiScale);
+            vw = Math.round(width / uiScale);
+            vh = Math.round(height / uiScale);
+
+            formX = (vw - FORM_W) / 2;
             formH = calcFormH();
-            formY = (this.height - formH) / 2;
+            formY = (vh - formH) / 2;
 
             chooseTypeBtn = addRenderableWidget(Button.builder(
                     Component.literal(formType.label + " ▼"),
@@ -298,7 +347,7 @@ public class ConditionsScreen extends Screen {
 
         private void rebuildForm() {
             formH = calcFormH();
-            formY = (this.height - formH) / 2;
+            formY = (vh - formH) / 2;
             chooseTypeBtn.setPosition(formX + FORM_PAD, formY + HDR_H + 4);
 
             int fields = formType.fieldLabels.length;
@@ -339,10 +388,16 @@ public class ConditionsScreen extends Screen {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics g, int mx, int my, float pt) {
+        public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
             parent.render(g, -1, -1, pt);
 
-            g.fill(0, 0, this.width, this.height, 0x88000000);
+            int mx = Math.round(rmx / uiScale);
+            int my = Math.round(rmy / uiScale);
+
+            g.pose().pushPose();
+            g.pose().scale(uiScale, uiScale, 1f);
+
+            g.fill(0, 0, vw, vh, 0x88000000);
 
             g.fill(formX, formY, formX + FORM_W, formY + formH, 0xFF0D000F);
             drawBorder(g, formX, formY, formX + FORM_W, formY + formH, 0xFF7A3A9A);
@@ -380,10 +435,13 @@ public class ConditionsScreen extends Screen {
             }
 
             super.render(g, mx, my, pt);
+
+            g.pose().popPose();
         }
 
         @Override
-        public boolean mouseClicked(double mx, double my, int btn) {
+        public boolean mouseClicked(double rmx, double rmy, int btn) {
+            double mx = rmx / uiScale, my = rmy / uiScale;
             int fields = formType.fieldLabels.length;
             for (int i = 0; i < fields; i++) {
                 if (!formType.isItemSlot(i)) continue;
@@ -403,7 +461,13 @@ public class ConditionsScreen extends Screen {
         }
 
         @Override
-        public boolean mouseReleased(double mx, double my, int btn) {
+        public boolean mouseDragged(double rmx, double rmy, int btn, double dragX, double dragY) {
+            return super.mouseDragged(rmx / uiScale, rmy / uiScale, btn, dragX / uiScale, dragY / uiScale);
+        }
+
+        @Override
+        public boolean mouseReleased(double rmx, double rmy, int btn) {
+            double mx = rmx / uiScale, my = rmy / uiScale;
             Minecraft mc = Minecraft.getInstance();
             ItemStack carried = mc.player != null ? mc.player.containerMenu.getCarried() : ItemStack.EMPTY;
             if (!carried.isEmpty()) {
@@ -460,6 +524,9 @@ public class ConditionsScreen extends Screen {
         private String searchQuery = "";
         private ConditionType[] filtered;
 
+        private float uiScale = 1f;
+        private int vw, vh;
+
         public ConditionTypePickerOverlay(ConditionFormOverlay formScreen) {
             super(Component.empty());
             this.formScreen = formScreen;
@@ -469,16 +536,37 @@ public class ConditionsScreen extends Screen {
         @Override
         protected void init() {
             super.init();
+
+            float neededW = PANEL_W + 20f;
+            float neededH = PANEL_H + 20f;
+            uiScale = (width < neededW || height < neededH) ?
+                    Math.min(width / neededW, height / neededH) : 1f;
+            uiScale = Math.max(0.1f, uiScale);
+            vw = Math.round(width / uiScale);
+            vh = Math.round(height / uiScale);
+
             applyFilter();
         }
 
-        @Override
-        public void render(@NotNull GuiGraphics g, int mx, int my, float pt) {
-            formScreen.render(g, -1, -1, pt);
-            g.fill(0, 0, this.width, this.height, 0x66000000);
+        private void enableScissorScaled(GuiGraphics g, int x0, int y0, int x1, int y1) {
+            g.enableScissor(Math.round(x0 * uiScale), Math.round(y0 * uiScale), Math.round(x1 * uiScale),
+                    Math.round(y1 * uiScale));
+        }
 
-            int px = (this.width - PANEL_W) / 2;
-            int py = (this.height - PANEL_H) / 2;
+        @Override
+        public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
+            formScreen.render(g, -1, -1, pt);
+
+            int mx = Math.round(rmx / uiScale);
+            int my = Math.round(rmy / uiScale);
+
+            g.pose().pushPose();
+            g.pose().scale(uiScale, uiScale, 1f);
+
+            g.fill(0, 0, vw, vh, 0x66000000);
+
+            int px = (vw - PANEL_W) / 2;
+            int py = (vh - PANEL_H) / 2;
 
             g.fill(px, py, px + PANEL_W, py + PANEL_H, 0xFF0D000F);
             drawBorder(g, px, py, px + PANEL_W, py + PANEL_H, 0xFF7A3A9A);
@@ -499,7 +587,7 @@ public class ConditionsScreen extends Screen {
             int listW = PANEL_W - SCROLL_W - 4;
             int vis = listH / ROW_H;
 
-            g.enableScissor(listX, listY, listX + listW, listY + listH);
+            enableScissorScaled(g, listX, listY, listX + listW, listY + listH);
             for (int i = 0; i < vis; i++) {
                 int idx = i + scrollOffset;
                 if (idx >= filtered.length) break;
@@ -523,11 +611,14 @@ public class ConditionsScreen extends Screen {
             }
 
             g.drawString(font, "§8[Esc] back", px + 4, py + PANEL_H - 10, 0x444444, false);
+
+            g.pose().popPose();
         }
 
         @Override
-        public boolean mouseClicked(double mx, double my, int btn) {
-            int px = (this.width - PANEL_W) / 2, py = (this.height - PANEL_H) / 2;
+        public boolean mouseClicked(double rmx, double rmy, int btn) {
+            double mx = rmx / uiScale, my = rmy / uiScale;
+            int px = (vw - PANEL_W) / 2, py = (vh - PANEL_H) / 2;
             int listY = py + HEADER_H, listH = PANEL_H - HEADER_H - 12;
             int listX = px + 2, listW = PANEL_W - SCROLL_W - 4;
             int vis = listH / ROW_H;
@@ -548,7 +639,17 @@ public class ConditionsScreen extends Screen {
         }
 
         @Override
-        public boolean mouseScrolled(double mx, double my, double delta) {
+        public boolean mouseDragged(double rmx, double rmy, int btn, double dragX, double dragY) {
+            return super.mouseDragged(rmx / uiScale, rmy / uiScale, btn, dragX / uiScale, dragY / uiScale);
+        }
+
+        @Override
+        public boolean mouseReleased(double rmx, double rmy, int btn) {
+            return super.mouseReleased(rmx / uiScale, rmy / uiScale, btn);
+        }
+
+        @Override
+        public boolean mouseScrolled(double rmx, double rmy, double delta) {
             int vis = (PANEL_H - HEADER_H - 12) / ROW_H;
             scrollOffset = Math.max(0, Math.min(Math.max(0, filtered.length - vis), scrollOffset - (int) delta));
             return true;

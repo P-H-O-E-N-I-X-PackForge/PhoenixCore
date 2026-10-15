@@ -1,0 +1,22 @@
+{
+  "discipline": "phoenix",
+  "affinities": [
+    {
+      "system": "phoenixcore:aurelian",
+      "trip": 0.9,
+      "wear": 0.8,
+      "yield": 1.25,
+      "label": "Phoenix are at home in the fires of Aurelian."
+    },
+    {
+      "type": "star",
+      "wear": 0.85,
+      "label": "Phoenix shrug off stellar heat."
+    },
+    {
+      "system": "phoenixcore:trove",
+      "yield": 1.15,
+      "label": "Phoenix are drawn to gold and what it burns for."
+    }
+  ]
+}

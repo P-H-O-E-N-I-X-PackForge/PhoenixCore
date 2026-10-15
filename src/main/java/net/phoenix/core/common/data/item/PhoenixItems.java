@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.component.ElectricStats;
+import com.gregtechceu.gtceu.common.item.behavior.CoverPlaceBehavior;
+import com.gregtechceu.gtceu.common.item.behavior.TooltipBehavior;
 import com.gregtechceu.gtceu.common.item.armor.GTArmorMaterials;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -14,6 +16,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.common.Tags;
+import net.phoenix.core.common.data.PhoenixCovers;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
 
@@ -28,6 +31,53 @@ public class PhoenixItems {
     static {
         REGISTRATE.creativeModeTab(() -> PHOENIX_CREATIVE_TAB);
     }
+
+    public static final ItemEntry<Item> ULV_ELECTRIC_MOTOR = REGISTRATE.item("ulv_electric_motor", Item::new)
+            .lang("ULV Electric Motor")
+            .register();
+    public static final ItemEntry<Item> ULV_ELECTRIC_PISTON = REGISTRATE.item("ulv_electric_piston", Item::new)
+            .lang("ULV Electric Piston")
+            .register();
+    public static final ItemEntry<ComponentItem> ULV_ELECTRIC_PUMP = REGISTRATE
+            .item("ulv_electric_pump", ComponentItem::create)
+            .lang("ULV Electric Pump")
+            .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_PUMP),
+                    new TooltipBehavior(lines -> {
+                        lines.add(Component.translatable("item.gtceu.electric.pump.tooltip"));
+                        lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
+                                PhoenixCovers.ULV_FLUID_PER_TICK));
+                    })))
+            .register();
+    public static final ItemEntry<ComponentItem> ULV_CONVEYOR_MODULE = REGISTRATE
+            .item("ulv_conveyor_module", ComponentItem::create)
+            .lang("ULV Conveyor Module")
+            .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_CONVEYOR),
+                    new TooltipBehavior(lines -> {
+                        lines.add(Component.translatable("item.gtceu.conveyor.module.tooltip"));
+                        lines.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",
+                                PhoenixCovers.ULV_ITEMS_PER_SECOND));
+                    })))
+            .register();
+    public static final ItemEntry<ComponentItem> ULV_FLUID_REGULATOR = REGISTRATE
+            .item("ulv_fluid_regulator", ComponentItem::create)
+            .lang("ULV Fluid Regulator")
+            .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_FLUID_REGULATOR),
+                    new TooltipBehavior(lines -> {
+                        lines.add(Component.translatable("item.gtceu.fluid.regulator.tooltip"));
+                        lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
+                                PhoenixCovers.ULV_FLUID_PER_TICK));
+                    })))
+            .register();
+    public static final ItemEntry<ComponentItem> ULV_ROBOT_ARM = REGISTRATE
+            .item("ulv_robot_arm", ComponentItem::create)
+            .lang("ULV Robot Arm")
+            .onRegister(c -> c.attachComponents(new CoverPlaceBehavior(PhoenixCovers.ULV_ROBOT_ARM),
+                    new TooltipBehavior(lines -> {
+                        lines.add(Component.translatable("item.gtceu.robot.arm.tooltip"));
+                        lines.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",
+                                PhoenixCovers.ULV_ITEMS_PER_SECOND));
+                    })))
+            .register();
 
     public static ItemEntry<ComponentItem> POWER_UNIT_LUV = REGISTRATE.item("luv_power_unit", ComponentItem::create)
             .lang("LuV Power Unit")
@@ -449,21 +499,6 @@ public class PhoenixItems {
                         "A stabilizing unit for ultra-high-voltage wireless power.\nIs this the peak of power? Or merely the beginning?");
             })
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/tesla_stabilizer/uhv_tesla_stabilizer")))
-            .register();
-
-    public static final ItemEntry<Item> GRAPHITE_PRESSED_CUPRONICKEL_FOIL = REGISTRATE
-            .item("graphite_pressed_cupronickel_foil", Item::new)
-            .lang("Graphite Pressed Cupronickel Foil")
-            .register();
-
-    public static final ItemEntry<Item> GRAPHITE_WELDED_CUPRONICKEL_FOIL = REGISTRATE
-            .item("graphite_welded_cupronickel_foil", Item::new)
-            .lang("Graphite Welded Cupronickel Foil")
-            .register();
-
-    public static final ItemEntry<Item> OXYGEN_FREE_GRAPHITE_WELDED_CUPRONICKEL_FOIL = REGISTRATE
-            .item("oxygen_free_graphite_welded_cupronickel_foil", Item::new)
-            .lang("Oxygen Free Graphite Welded Cupronickel Foil")
             .register();
 
     public static void init() {}

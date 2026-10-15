@@ -67,7 +67,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     private float charge = 0.0F;
     private static final byte RUNNING_TIMER = 10;
     private static final byte JUMPING_TIMER = 10;
-    private static final double LEGGING_ACCEL = 0.085D;
 
     @OnlyIn(Dist.CLIENT)
     protected ArmorUtils.ModularHUD HUD;
@@ -91,7 +90,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         if (item == null) return;
 
         CompoundTag data = itemStack.getOrCreateTag();
-        UUID teamID = net.phoenix.core.utils.TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
+        UUID teamID = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
         if (teamID == null) {
             teamID = player.getUUID();
         }
@@ -160,7 +159,17 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
         if (item.canUse(energyPerUse / 100) && sprinting && player.onGround()) {
 
-            float speedModifier = player.isInWater() ? 0.02F : (float) LEGGING_ACCEL;
+            float speedModifier;
+            if (player.isInWater()) {
+                speedModifier = 0.02F;
+            } else {
+
+                CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                int sprintSpeed = chestData.contains("SprintSpeed") ? chestData.getInt("SprintSpeed") : 5;
+                float percent = Math.max(0, Math.min(20, sprintSpeed)) / 20.0f;
+                PhoenixConfigs.WingFlightConfigs cfg = PhoenixConfigs.wingFlight;
+                speedModifier = (float) (cfg.sprintAccelMin + (percent * (cfg.sprintAccelMax - cfg.sprintAccelMin)));
+            }
 
             player.moveRelative(speedModifier, new Vec3(0, 0, 1));
 
@@ -184,6 +193,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         } else {
             disableFlight(player, data);
         }
+
+        handleLandingSlide(player, data);
 
         if (serverLevel != null) handleTeslaVisuals(player, serverLevel, data);
 
@@ -289,7 +300,15 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 if (delta.y >= 0.0D && this.charge > 0.0F && !player.isInWater()) {
                     if (player.getDeltaMovement().y > 0.05) {
                         if (this.charge == 1.0F) player.setDeltaMovement(delta.x * 3.6D, delta.y, delta.z * 3.6D);
-                        player.addDeltaMovement(new Vec3(0.0, this.charge * 0.32, 0.0));
+
+                        CompoundTag chestData = player.getItemBySlot(EquipmentSlot.CHEST).getOrCreateTag();
+                        int jumpHeight = chestData.contains("JumpHeight") ? chestData.getInt("JumpHeight") : 5;
+                        float jumpPercent = Math.max(0, Math.min(20, jumpHeight)) / 20.0f;
+                        PhoenixConfigs.WingFlightConfigs jumpCfg = PhoenixConfigs.wingFlight;
+                        double jumpImpulse = jumpCfg.jumpHeightMin +
+                                (jumpPercent * (jumpCfg.jumpHeightMax - jumpCfg.jumpHeightMin));
+
+                        player.addDeltaMovement(new Vec3(0.0, this.charge * jumpImpulse, 0.0));
                         this.charge *= 0.7F;
                     } else if (this.charge < 1.0F) {
                         this.charge = 0.0F;
@@ -377,6 +396,14 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                                  PhoenixConfigs.WingFlightConfigs cfg,
                                  float speedMult, float driftMult, float verticalScale,
                                  TeslaTeamEnergyData teslaData, UUID teamID) {
+        if (player.horizontalCollision) {
+
+            Vec3 stuck = player.getDeltaMovement();
+            player.setDeltaMovement(stuck.x * 0.4, Math.max(stuck.y, 0.45), stuck.z * 0.4);
+            player.hurtMarked = true;
+            return;
+        }
+
         Vec3 look = player.getLookAngle();
         Vec3 cur = player.getDeltaMovement();
 
@@ -385,22 +412,30 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         double sigmoid = sigmoidAcceleration(player.tickCount, 5.0, baseThrust, baseThrust * 0.3);
         double thrust = sigmoid * euScale;
 
-        double retention = getDriftRetention(cfg, driftMult);
-        double newX = cur.x * retention + look.x * thrust;
-        double newZ = cur.z * retention + look.z * thrust;
+        double newX = cur.x + look.x * thrust;
+        double newZ = cur.z + look.z * thrust;
 
         double climbMultiplier = cfg.poweredVerticalBase * verticalScale;
 
         double newY;
-        if (look.y > 0) {
-
+        if (look.y > 0.05) {
             newY = Math.max(cur.y, look.y * thrust * climbMultiplier);
+        } else if (look.y < -0.015) {
+
+            newY = Math.max(cur.y + look.y * thrust, -3.0);
         } else {
 
-            newY = cur.y + look.y * thrust;
+            newY = Math.max(cur.y, -0.05);
         }
 
-        double maxSpeed = cfg.poweredDriftMin + (driftMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
+        Vec3 preRealign = new Vec3(newX, newY, newZ);
+        Vec3 realigned = realignTowardLook(player, preRealign, 0.22);
+        newX = realigned.x;
+        newY = realigned.y;
+        newZ = realigned.z;
+
+        double speedCap = cfg.poweredDriftMin + (speedMult * (cfg.poweredDriftMax - cfg.poweredDriftMin));
+        double maxSpeed = speedCap * (1.0 + (driftMult * 0.5));
         double horizLen = Math.sqrt(newX * newX + newZ * newZ);
         if (horizLen > maxSpeed) {
             double scale = maxSpeed / horizLen;
@@ -412,7 +447,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         player.setDeltaMovement(newVel);
         player.fallDistance = 0;
-        player.hurtMarked = true;
 
         if (!world.isClientSide) {
             data.putBoolean("IsSonicFlight", true);
@@ -422,22 +456,92 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         }
     }
 
+    private Vec3 realignTowardLook(Player player, Vec3 velocity, double strength) {
+        double speed = velocity.length();
+        if (speed < 0.05) return velocity;
+
+        Vec3 lookDir = player.getLookAngle();
+        Vec3 blendedDir = velocity.scale(1.0 / speed).scale(1 - strength).add(lookDir.scale(strength));
+        double blendedLen = blendedDir.length();
+        if (blendedLen < 1.0E-4) return velocity;
+
+        return blendedDir.scale(speed / blendedLen);
+    }
+
     private static double getDriftRetention(PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
-        return cfg.coastRetentionMin + (driftMult * (cfg.coastRetentionMax - cfg.coastRetentionMin));
+        double halfLifeSeconds = cfg.coastHalfLifeMin + (driftMult * (cfg.coastHalfLifeMax - cfg.coastHalfLifeMin));
+        if (halfLifeSeconds <= 0.0) return 0.0;
+        return Math.pow(0.5, 1.0 / (halfLifeSeconds * 20.0));
     }
 
     private void applyCoastDamping(Player player, PhoenixConfigs.WingFlightConfigs cfg, float driftMult) {
+        if (player.horizontalCollision) {
+
+            Vec3 stuck = player.getDeltaMovement();
+            player.setDeltaMovement(stuck.x * 0.4, Math.max(stuck.y, 0.45), stuck.z * 0.4);
+            player.hurtMarked = true;
+            return;
+        }
+
+        if (driftMult >= 1.0f) return;
+
         double retention = getDriftRetention(cfg, driftMult);
         if (retention >= 1.0) return;
+
         Vec3 cur = player.getDeltaMovement();
-        player.setDeltaMovement(cur.x * retention, cur.y, cur.z * retention);
-        player.hurtMarked = true;
+        double newX = cur.x * retention;
+        double newZ = cur.z * retention;
+
+        Vec3 look = player.getLookAngle();
+        double newY;
+        if (look.y > 0.05) {
+
+            newY = cur.y;
+        } else if (look.y < -0.015) {
+
+            newY = Math.max(cur.y + look.y * 0.24, -3.0);
+        } else {
+            newY = Math.max(cur.y, -0.05);
+        }
+
+        Vec3 realigned = realignTowardLook(player, new Vec3(newX, newY, newZ), 0.16);
+        newX = realigned.x;
+        newY = realigned.y;
+        newZ = realigned.z;
+
+        player.setDeltaMovement(newX, newY, newZ);
     }
 
     private static double sigmoidAcceleration(double t, double peakTime,
                                               double peakAcceleration,
                                               double initialAcceleration) {
         return ((2 * peakAcceleration) / (1 + Math.exp(-t / peakTime)) - peakAcceleration) + initialAcceleration;
+    }
+
+    private boolean isReallyGrounded(Player player) {
+        return player.onGround() || (player.verticalCollision && player.getDeltaMovement().y <= 0.02);
+    }
+
+    private void handleLandingSlide(Player player, CompoundTag data) {
+        int cooldown = data.getInt("WingLandingCooldown");
+        if (cooldown > 0) data.putInt("WingLandingCooldown", cooldown - 1);
+
+        int slideTicks = data.getInt("WingLandingSlideTicks");
+        if (slideTicks <= 0) return;
+
+        Vec3 cur = player.getDeltaMovement();
+        slideTicks--;
+
+        double clampedY = Math.min(cur.y, 0);
+
+        if (slideTicks <= 0 || (Math.abs(cur.x) < 0.02 && Math.abs(cur.z) < 0.02)) {
+
+            player.setDeltaMovement(0, 0, 0);
+            data.putInt("WingLandingSlideTicks", 0);
+        } else {
+            player.setDeltaMovement(cur.x * 0.4, clampedY, cur.z * 0.4);
+            data.putInt("WingLandingSlideTicks", slideTicks);
+        }
     }
 
     private void handleElytraFlight(Player player, CompoundTag data, Level world,
@@ -451,19 +555,45 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             player.onUpdateAbilities();
         }
 
-        if (!player.onGround() && !player.isFallFlying() && world.isClientSide) {
-            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-
-            if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
-                player.startFallFlying();
+        if (!player.isFallFlying()) {
+            data.putBoolean("WasFallFlying", false);
+        } else {
+            if (!data.getBoolean("WasFallFlying")) {
+                data.putInt("WingFlightStartTick", player.tickCount);
             }
-        }
-
-        if (player.isFallFlying()) {
-            player.fallDistance = 0;
+            data.putBoolean("WasFallFlying", true);
 
             boolean isSneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
             boolean isPowered = "powered".equals(data.getString("FlightMode"));
+
+            boolean justLaunched = player.tickCount - data.getInt("WingFlightStartTick") < 5;
+
+            boolean grounded = isReallyGrounded(player);
+            int groundStreak = grounded ? data.getInt("WingGroundStreak") + 1 : 0;
+            data.putInt("WingGroundStreak", groundStreak);
+            boolean settledOnGround = groundStreak > 10;
+
+            if (player.onGround() && !justLaunched && settledOnGround) {
+
+                player.stopFallFlying();
+
+                if (player.getAbilities().flying) {
+                    player.getAbilities().flying = false;
+                    player.onUpdateAbilities();
+                }
+                data.putInt("WingGroundStreak", 0);
+                data.putBoolean("WasFallFlying", false);
+
+                if (isPowered) {
+                    data.putInt("WingLandingSlideTicks", 6);
+                    data.putInt("WingLandingCooldown", 10);
+                    player.setPos(player.getX(), player.getY() + 0.35, player.getZ());
+                }
+
+                if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
+                return;
+            }
+            player.fallDistance = 0;
 
             if (isPowered && isSneaking) {
                 long cost = (long) cfg.poweredFlightEUt;
@@ -493,8 +623,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                         double tx = player.getX() - look.x * 0.8;
                         double ty = player.getY() + 0.5;
                         double tz = player.getZ() - look.z * 0.8;
+
                         sl.sendParticles(ParticleTypes.FLAME, tx, ty, tz, 3, 0.15, 0.15, 0.15, 0.02);
-                        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, tx, ty, tz, 2, 0.1, 0.1, 0.1, 0.05);
                     }
                 } else {
                     applyCoastDamping(player, cfg, driftMult);
@@ -545,18 +675,57 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             return;
         }
 
-        if (flightMode.equals("creative+wings")) {
-            if (!player.getAbilities().flying && !player.isFallFlying() && !player.onGround() && world.isClientSide) {
-                net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        boolean keepFlyingOnLand = data.getBoolean("KeepFlyingOnLand");
+        if (keepFlyingOnLand && !player.isFallFlying() && !player.getAbilities().flying) {
+            player.getAbilities().flying = true;
+            player.onUpdateAbilities();
+        }
 
-                if (mc.options.keyJump.consumeClick() && player.getDeltaMovement().y < 0.0) {
-                    player.startFallFlying();
-                }
+        if (flightMode.equals("creative+wings")) {
+
+            if (!keepFlyingOnLand && player.getAbilities().flying && !player.isFallFlying() &&
+                    isReallyGrounded(player)) {
+                player.getAbilities().flying = false;
+                player.onUpdateAbilities();
             }
 
-            if (player.isFallFlying()) {
+            if (!player.isFallFlying()) {
+                data.putBoolean("WasFallFlying", false);
+            } else {
+
+                if (!data.getBoolean("WasFallFlying")) {
+                    data.putInt("WingFlightStartTick", player.tickCount);
+                }
+                data.putBoolean("WasFallFlying", true);
+
+                boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player);
+
+                boolean justLaunched = player.tickCount - data.getInt("WingFlightStartTick") < 5;
+
+                boolean grounded = isReallyGrounded(player);
+                int groundStreak = grounded ? data.getInt("WingGroundStreak") + 1 : 0;
+                data.putInt("WingGroundStreak", groundStreak);
+                boolean settledOnGround = groundStreak > 10;
+
+                if (player.onGround() && !justLaunched && settledOnGround) {
+
+                    player.stopFallFlying();
+
+                    if (!keepFlyingOnLand && player.getAbilities().flying) {
+                        player.getAbilities().flying = false;
+                        player.onUpdateAbilities();
+                    }
+                    data.putInt("WingGroundStreak", 0);
+                    data.putBoolean("WasFallFlying", false);
+                    data.putInt("WingLandingSlideTicks", 6);
+                    data.putInt("WingLandingCooldown", 10);
+
+                    player.setPos(player.getX(), player.getY() + 0.35, player.getZ());
+                    if (!world.isClientSide) data.putBoolean("IsSonicFlight", false);
+                    return;
+                }
+
                 player.fallDistance = 0;
-                boolean isSprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
 
                 if (isSprinting && canAfford) {
                     applyWingThrust(player, world, data, cfg, speedMult, driftMult, verticalScale, teslaData, teamID);
@@ -608,7 +777,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
         boolean down = player.isShiftKeyDown();
 
         float forwardAxis = (forward ? 1f : 0f) - (back ? 1f : 0f);
-        float strafeAxis = (right ? 1f : 0f) - (left ? 1f : 0f);
+
+        float strafeAxis = (left ? 1f : 0f) - (right ? 1f : 0f);
 
         float yawRad = player.getYRot() * ((float) Math.PI / 180F);
         float sinYaw = Mth.sin(yawRad);
@@ -622,8 +792,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
             dirZ /= dirLen;
         }
 
-        double horizSpeed = cfg.creativeFreeSpeedMin +
-                (speedMult * (cfg.creativeFreeSpeedMax - cfg.creativeFreeSpeedMin));
+        double speedScale = speedMult * 7.0;
+        double horizSpeed = cfg.creativeFreeSpeedBase * speedScale;
 
         double vertSpeed = horizSpeed * verticalScale;
         double retention = getDriftRetention(cfg, driftMult);
@@ -638,7 +808,6 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
 
         player.setDeltaMovement(newX, newY, newZ);
         player.fallDistance = 0;
-        player.hurtMarked = true;
     }
 
     private void consumeFlightEnergy(IElectricItem item, TeslaTeamEnergyData teslaData, UUID teamID,
@@ -770,6 +939,8 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
     @OnlyIn(Dist.CLIENT)
     @Override
     public void drawHUD(ItemStack item, GuiGraphics guiGraphics) {
+        if (!PhoenixConfigs.INSTANCE.features.techSuiteHUDEnabled) return;
+
         addCapacityHUD(item, this.HUD);
 
         Minecraft mc = Minecraft.getInstance();
@@ -1036,7 +1207,7 @@ public class PhoenixTechSuite extends ArmorLogicSuite implements IStepAssist, Ge
                 player.level() instanceof ServerLevel serverLevel) {
 
             TeslaTeamEnergyData data = TeslaTeamEnergyData.get(serverLevel);
-            UUID teamID = net.phoenix.core.utils.TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
+            UUID teamID = TeamUtils.getTeamIdOrPlayerFallback(player.getUUID());
 
             if (data.isOnline(teamID)) {
                 CompoundTag nbt = itemStack.getOrCreateTag();
