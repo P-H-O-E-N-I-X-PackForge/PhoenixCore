@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.phoenix_tesla_network.client.renderer.machine;
 
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -114,7 +116,7 @@ public class TeslaHighlightRenderer {
         float r = 0.74f, g = 0.0f, b = 1.0f, a = 1.0f;
         drawBox(stack, bufferbuilder, 0, 0, 0, 1, 1, 1, r, g, b, a);
 
-        tesselator.end();
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();

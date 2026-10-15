@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.render;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 
@@ -312,15 +314,14 @@ public final class SceneRenderer {
 
     private static VertexBuffer ringQuad() {
         if (ringQuad == null) {
-            BufferBuilder builder = new BufferBuilder(128);
-            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
             builder.addVertex(-1, 0, -1);
             builder.addVertex(-1, 0, 1);
             builder.addVertex(1, 0, 1);
             builder.addVertex(1, 0, -1);
             ringQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             ringQuad.bind();
-            ringQuad.upload(builder.end());
+            ringQuad.upload(builder.buildOrThrow());
             VertexBuffer.unbind();
         }
         return ringQuad;
@@ -330,15 +331,14 @@ public final class SceneRenderer {
 
     private static VertexBuffer holeQuad() {
         if (holeQuad == null) {
-            BufferBuilder builder = new BufferBuilder(128);
-            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(128), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
             builder.addVertex(-1, -1, 0);
             builder.addVertex(1, -1, 0);
             builder.addVertex(1, 1, 0);
             builder.addVertex(-1, 1, 0);
             holeQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             holeQuad.bind();
-            holeQuad.upload(builder.end());
+            holeQuad.upload(builder.buildOrThrow());
             VertexBuffer.unbind();
         }
         return holeQuad;
@@ -473,7 +473,7 @@ public final class SceneRenderer {
         bb.addVertex(1, -1, 0);
         bb.addVertex(1, 1, 0);
         bb.addVertex(-1, 1, 0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bb.buildOrThrow());
         backdrop.clear();
     }
 }

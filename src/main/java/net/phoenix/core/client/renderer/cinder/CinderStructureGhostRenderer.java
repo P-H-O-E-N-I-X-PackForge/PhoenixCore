@@ -6,7 +6,8 @@ import net.minecraft.CrashReport;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ChunkBufferBuilderPack;
+import net.minecraft.client.renderer.SectionBufferBuilderPack;
+import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -70,7 +71,7 @@ public class CinderStructureGhostRenderer {
     private boolean valid = true;
 
     private @Nullable RenderCompileTask lastRenderCompileTask;
-    private final ChunkBufferBuilderPack chunkBufferBuilders = new ChunkBufferBuilderPack();
+    private final SectionBufferBuilderPack chunkBufferBuilders = new SectionBufferBuilderPack();
     private final AtomicReference<CompileStatus> compileStatus = new AtomicReference<>();
     private final AtomicReference<RenderCompileResults> compiledRenderResult = new AtomicReference<>();
     private boolean dirty = true;
@@ -298,7 +299,8 @@ public class CinderStructureGhostRenderer {
             boolean tintValid = CinderStructureGhostRenderer.this.valid;
 
             var blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
-            ChunkBufferBuilderPack chunkBufferBuilders = CinderStructureGhostRenderer.this.chunkBufferBuilders;
+            SectionBufferBuilderPack chunkBufferBuilders = CinderStructureGhostRenderer.this.chunkBufferBuilders;
+            Map<RenderType, BufferBuilder> builders = new java.util.HashMap<>();
 
             RandomSource randomSource = RandomSource.create();
             PoseStack poseStack = new PoseStack();
@@ -334,10 +336,9 @@ public class CinderStructureGhostRenderer {
                     randomSource.setSeed(blockState.getSeed(pos));
 
                     for (RenderType renderType : model.getRenderTypes(blockState, randomSource, modelData)) {
-                        BufferBuilder builder = chunkBufferBuilders.builder(renderType);
-                        if (startedBuffers.add(renderType)) {
-                            builder.begin(renderType.mode(), renderType.format());
-                        }
+                        BufferBuilder builder = builders.computeIfAbsent(renderType,
+                                rt -> new BufferBuilder(chunkBufferBuilders.buffer(rt), rt.mode(), rt.format()));
+                        startedBuffers.add(renderType);
 
                         TintedVertexConsumer tinted = new TintedVertexConsumer(builder);
                         tinted.setTint(tintR, tintG, tintB);
@@ -352,25 +353,20 @@ public class CinderStructureGhostRenderer {
                 }
             }
 
-            if (startedBuffers.contains(RenderType.translucent())) {
-                BufferBuilder bufferBuilder = chunkBufferBuilders.builder(RenderType.translucent());
-                if (!bufferBuilder.isCurrentBatchEmpty()) {
-                    bufferBuilder.setQuadSorting(
-                            VertexSorting.byDistance((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z));
-                }
-            }
-
             for (RenderType renderType : startedBuffers) {
-                BufferBuilder.RenderedBuffer renderedBuffer = chunkBufferBuilders.builder(renderType)
-                        .endOrDiscardIfEmpty();
-                if (renderedBuffer != null) {
-                    compileResults.renderedLayers.put(renderType, renderedBuffer);
+                MeshData mesh = builders.get(renderType).build();
+                if (mesh != null) {
+                    if (renderType == RenderType.translucent()) {
+                        mesh.sortQuads(chunkBufferBuilders.buffer(renderType), VertexSorting
+                                .byDistance((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z));
+                    }
+                    compileResults.renderedLayers.put(renderType, mesh);
                 }
             }
             ModelBlockRenderer.clearCache();
 
             if (this.isCanceled.get()) {
-                compileResults.renderedLayers.values().forEach(BufferBuilder.RenderedBuffer::release);
+                compileResults.renderedLayers.values().forEach(MeshData::close);
                 return CompletableFuture.completedFuture(compileResults.withStatus(CompileStatus.CANCELED));
             }
 
@@ -394,7 +390,7 @@ public class CinderStructureGhostRenderer {
         }
 
         protected CompletableFuture<Void> uploadChunkLayer(RenderCompileResults results,
-                                                           BufferBuilder.RenderedBuffer builder,
+                                                           MeshData builder,
                                                            RenderType renderType) {
             return CompletableFuture.runAsync(() -> {
                 VertexBuffer buffer = results.getOrCreateChunkBuffers().get(renderType);
@@ -411,7 +407,7 @@ public class CinderStructureGhostRenderer {
 
         protected CompileStatus status = CompileStatus.COMPILING;
         protected final List<BlockEntity> blockEntities = new ArrayList<>();
-        protected final Map<RenderType, BufferBuilder.RenderedBuffer> renderedLayers = new Reference2ObjectArrayMap<>();
+        protected final Map<RenderType, MeshData> renderedLayers = new Reference2ObjectArrayMap<>();
         protected final Set<RenderType> hasBlocks = new ObjectArraySet<>(RenderType.chunkBufferLayers().size());
         private @Nullable Map<RenderType, VertexBuffer> chunkBuffers;
 

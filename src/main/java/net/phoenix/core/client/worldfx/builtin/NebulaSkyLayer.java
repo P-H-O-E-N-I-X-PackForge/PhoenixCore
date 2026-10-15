@@ -1,5 +1,7 @@
 package net.phoenix.core.client.worldfx.builtin;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
@@ -78,6 +80,6 @@ public class NebulaSkyLayer extends PhoenixSkyLayer {
         bb.addVertex(1, -1, 0);
         bb.addVertex(1, 1, 0);
         bb.addVertex(-1, 1, 0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bb.buildOrThrow());
     }
 }

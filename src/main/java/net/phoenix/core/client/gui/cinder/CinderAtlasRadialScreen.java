@@ -1,6 +1,8 @@
 package net.phoenix.core.client.gui.cinder;
 
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -221,7 +223,7 @@ public class CinderAtlasRadialScreen extends Screen {
             buffer.addVertex(matrix, cx + Mth.cos(rad) * outer, cy + Mth.sin(rad) * outer, 0).setColor(color);
             buffer.addVertex(matrix, cx + Mth.cos(rad) * inner, cy + Mth.sin(rad) * inner, 0).setColor(color);
         }
-        tesselator.end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private void drawArc(GuiGraphics graphics, int cx, int cy, int inner, int outer, float startAngle, float step,
@@ -235,7 +237,7 @@ public class CinderAtlasRadialScreen extends Screen {
             buffer.addVertex(matrix, cx + Mth.cos(a) * outer, cy + Mth.sin(a) * outer, 0).setColor(color);
             buffer.addVertex(matrix, cx + Mth.cos(a) * inner, cy + Mth.sin(a) * inner, 0).setColor(color);
         }
-        tesselator.end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private void drawGlowArc(GuiGraphics graphics, int cx, int cy, int inner, int outer, float startAngle,

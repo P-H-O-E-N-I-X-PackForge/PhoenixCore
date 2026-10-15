@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.pdim;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -105,7 +107,7 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
         bb.addVertex(1, -1, 0);
         bb.addVertex(1, 1, 0);
         bb.addVertex(-1, 1, 0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bb.buildOrThrow());
         sky.clear();
     }
 }

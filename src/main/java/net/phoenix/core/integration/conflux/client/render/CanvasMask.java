@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.client.render;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.renderer.GameRenderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -44,7 +46,7 @@ public final class CanvasMask {
             buf.addVertex(poly[i], poly[i + 1], 0);
         }
         buf.addVertex(poly[0], poly[1], 0);
-        tess.end();
+        BufferUploader.drawWithShader(buf.buildOrThrow());
     }
 
     public static void enableTest() {

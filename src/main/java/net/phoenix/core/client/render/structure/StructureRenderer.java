@@ -1,5 +1,7 @@
 package net.phoenix.core.client.render.structure;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.lowdragmc.lowdraglib.client.scene.WorldSceneRenderer;
 
 import net.minecraft.client.Camera;
@@ -564,20 +566,20 @@ public final class StructureRenderer {
         }
     }
 
-    private record BakedLayer(BufferBuilder.RenderedBuffer renderedBuffer) {}
+    private record BakedLayer(com.mojang.blaze3d.vertex.MeshData renderedBuffer) {}
 
     private BakedLayer bakeLayerToBuffer(BlockRenderDispatcher brd, RandomSource random, RenderType layer,
                                          List<BlockPos> solid, List<BlockPos> fluid) {
         int count = solid.size() + fluid.size();
         int sizeHint = Math.max(layer.bufferSize(), Math.min(count * 512, 64 * 1024 * 1024));
-        BufferBuilder bb = new BufferBuilder(sizeHint);
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+        BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(sizeHint), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
         PoseStack ps = new PoseStack();
         TintedVertexConsumer tinted = new TintedVertexConsumer(bb);
 
         for (BlockPos pos : solid) {
             if (Thread.interrupted()) {
-                bb.end().release();
+                var abandoned = bb.build();
+                if (abandoned != null) abandoned.close();
                 return null;
             }
             BlockState state = world.getBlockState(pos);
@@ -599,11 +601,11 @@ public final class StructureRenderer {
             tinted.resetTint();
         }
 
-        return new BakedLayer(bb.end());
+        return new BakedLayer(bb.build());
     }
 
     private void uploadToVBO(VertexBuffer vbo, BakedLayer bl) {
-        if (!vbo.isInvalid()) {
+        if (!vbo.isInvalid() && bl.renderedBuffer() != null) {
             vbo.bind();
             vbo.upload(bl.renderedBuffer());
             VertexBuffer.unbind();
@@ -612,11 +614,13 @@ public final class StructureRenderer {
 
     private void uploadEmptyVBO(VertexBuffer vbo, RenderType layer) {
         if (!vbo.isInvalid()) {
-            BufferBuilder bb = new BufferBuilder(layer.bufferSize());
-            bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
-            vbo.bind();
-            vbo.upload(bb.end());
-            VertexBuffer.unbind();
+            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            var mesh = bb.build();
+            if (mesh != null) {
+                vbo.bind();
+                vbo.upload(mesh);
+                VertexBuffer.unbind();
+            }
         }
     }
 
@@ -624,12 +628,11 @@ public final class StructureRenderer {
         pendingUploads.set(LAYER_COUNT);
         for (int i = 0; i < LAYER_COUNT; i++) {
             RenderType layer = LAYERS.get(i);
-            BufferBuilder bb = new BufferBuilder(layer.bufferSize());
-            bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
-            BufferBuilder.RenderedBuffer rb = bb.end();
+            BufferBuilder bb = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(layer.bufferSize()), VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            com.mojang.blaze3d.vertex.MeshData rb = bb.build();
             final int fi = i;
             RenderSystem.recordRenderCall(() -> {
-                if (!back[fi].isInvalid()) {
+                if (!back[fi].isInvalid() && rb != null) {
                     back[fi].bind();
                     back[fi].upload(rb);
                     VertexBuffer.unbind();

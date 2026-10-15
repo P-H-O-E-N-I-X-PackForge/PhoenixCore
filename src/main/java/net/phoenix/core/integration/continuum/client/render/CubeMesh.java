@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.continuum.client.render;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.renderer.ShaderInstance;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -27,8 +29,7 @@ public final class CubeMesh {
 
     private static VertexBuffer buffer() {
         if (buffer == null) {
-            BufferBuilder builder = new BufferBuilder(512);
-            builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
+            BufferBuilder builder = new BufferBuilder(new com.mojang.blaze3d.vertex.ByteBufferBuilder(512), VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
             for (float[] f : FACES) {
                 int[][] order = { { 0, 1, 2 }, { 0, 2, 3 } };
                 for (int[] tri : order) {
@@ -39,7 +40,7 @@ public final class CubeMesh {
             }
             buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
             buffer.bind();
-            buffer.upload(builder.end());
+            buffer.upload(builder.buildOrThrow());
             VertexBuffer.unbind();
         }
         return buffer;

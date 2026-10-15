@@ -1,5 +1,7 @@
 package net.phoenix.core.client.worldfx;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
@@ -184,7 +186,7 @@ public final class WorldFXManager {
         bb.addVertex(1, -1, 0);
         bb.addVertex(1, 1, 0);
         bb.addVertex(-1, 1, 0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bb.buildOrThrow());
         RenderSystem.enableDepthTest();
     }
 

@@ -18,12 +18,13 @@ public final class GlowRenderer {
     public static final class Batch {
 
         private final Matrix4f pose;
-        private final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        private final BufferBuilder builder;
         private boolean empty = true;
 
         private Batch(Matrix4f pose) {
             this.pose = pose;
-            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            this.builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS,
+                    DefaultVertexFormat.POSITION_TEX_COLOR);
         }
 
         public Batch glow(float x, float y, float radius, float r, float g, float b, float a) {
@@ -42,7 +43,7 @@ public final class GlowRenderer {
 
         public void draw() {
             if (empty || ContinuumShaders.GLOW == null) {
-                builder.end();
+                builder.build();
                 return;
             }
             RenderSystem.enableBlend();
@@ -59,12 +60,13 @@ public final class GlowRenderer {
     public static final class Lines {
 
         private final Matrix4f pose;
-        private final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        private final BufferBuilder builder;
         private boolean empty = true;
 
         private Lines(Matrix4f pose) {
             this.pose = pose;
-            builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+            this.builder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES,
+                    DefaultVertexFormat.POSITION_COLOR);
         }
 
         public Lines line(float x1, float y1, float x2, float y2, float r, float g, float b, float a) {
@@ -90,7 +92,7 @@ public final class GlowRenderer {
 
         public void draw(float width) {
             if (empty) {
-                builder.end();
+                builder.build();
                 return;
             }
             RenderSystem.enableBlend();

@@ -4,6 +4,8 @@ package net.phoenix.core.integration.ars_nouveau.client;
 
 
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.phoenix.core.util.StackNbt;
@@ -272,7 +274,7 @@ public final class SoulVisionManager {
         }
         debugGeometryChecked = true;
 
-        tesselator.end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.depthMask(true);

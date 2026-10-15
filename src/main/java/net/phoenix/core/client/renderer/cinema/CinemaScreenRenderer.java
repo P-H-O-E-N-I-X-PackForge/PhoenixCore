@@ -1,5 +1,7 @@
 package net.phoenix.core.client.renderer.cinema;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
@@ -76,7 +78,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         buffer.addVertex(matrix, halfSize, -halfSize, 0).setUv(u1, v1);
         buffer.addVertex(matrix, halfSize, halfSize, 0).setUv(u1, v0);
         buffer.addVertex(matrix, -halfSize, halfSize, 0).setUv(u0, v0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.defaultBlendFunc();

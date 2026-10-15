@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.matter_manipulater.api;
 
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -130,7 +132,7 @@ public class PhoenixRadialMenu extends Screen {
             buffer.addVertex(matrix, cx + Mth.cos(rad) * outer, cy + Mth.sin(rad) * outer, 0).setColor(color);
             buffer.addVertex(matrix, cx + Mth.cos(rad) * inner, cy + Mth.sin(rad) * inner, 0).setColor(color);
         }
-        tesselator.end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private void drawArc(GuiGraphics graphics, int cx, int cy, int inner, int outer, float startAngle, float step,
@@ -144,7 +146,7 @@ public class PhoenixRadialMenu extends Screen {
             buffer.addVertex(matrix, cx + Mth.cos(a) * outer, cy + Mth.sin(a) * outer, 0).setColor(color);
             buffer.addVertex(matrix, cx + Mth.cos(a) * inner, cy + Mth.sin(a) * inner, 0).setColor(color);
         }
-        tesselator.end();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private boolean isMouseInSector(int mx, int my, int cx, int cy, double angle, double step) {

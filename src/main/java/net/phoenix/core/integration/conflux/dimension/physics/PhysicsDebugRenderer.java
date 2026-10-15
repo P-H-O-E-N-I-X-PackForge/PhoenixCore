@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.physics;
 
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -178,7 +180,7 @@ public class PhysicsDebugRenderer {
                 lastZ = z;
             }
         }
-        tesselator.end();
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
     private static void renderBox(PoseStack poseStack, double width, double height, double depth,
@@ -194,7 +196,7 @@ public class PhysicsDebugRenderer {
 
         LevelRenderer.renderLineBox(poseStack, builder, box, r, g, b, alpha);
 
-        tesselator.end();
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
     private static void renderArrow(PoseStack poseStack, double x, double y, double z, float r, float g, float b) {
@@ -204,7 +206,7 @@ public class PhysicsDebugRenderer {
         Matrix4f matrix = poseStack.last().pose();
         addLine(builder, matrix, 0, 0, 0, x, y, z, r, g, b, 1.0f);
 
-        tesselator.end();
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
     private static void addLine(VertexConsumer consumer, Matrix4f matrix, double x1, double y1, double z1,

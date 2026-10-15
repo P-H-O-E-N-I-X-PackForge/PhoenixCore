@@ -1,5 +1,7 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
+
+import com.mojang.blaze3d.vertex.BufferUploader;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -295,7 +297,7 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
         bb.addVertex(1, -1, 0);
         bb.addVertex(1, 1, 0);
         bb.addVertex(-1, 1, 0);
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bb.buildOrThrow());
     }
 
     @Override
