@@ -302,10 +302,38 @@ public class PhoenixDummyWorld extends Level {
     public void setDayTimePerTick(float perTick) {}
 
     @Override
+    public float getDayTimePerTick() {
+        return 1.0f;
+    }
+
+    @Override
+    public void setDayTimeFraction(float fraction) {}
+
+    @Override
+    public net.minecraft.world.level.saveddata.maps.MapId getFreeMapId() {
+        return new net.minecraft.world.level.saveddata.maps.MapId(0);
+    }
+
+    @Override
+    public float getDayTimeFraction() {
+        return 0.0f;
+    }
+
+    @Override
     public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {}
 
     @Override
     public String gatherChunkSourceStats() {
         return "";
+    }
+
+    @Override
+    public net.minecraft.world.TickRateManager tickRateManager() {
+        return new net.minecraft.world.TickRateManager();
+    }
+
+    @Override
+    public net.minecraft.world.item.alchemy.PotionBrewing potionBrewing() {
+        return net.minecraft.world.item.alchemy.PotionBrewing.EMPTY;
     }
 }

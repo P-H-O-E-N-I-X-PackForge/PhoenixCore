@@ -93,7 +93,6 @@ public class PhoenixTrackedDummyWorld extends PhoenixDummyWorld {
         return created;
     }
 
-    @Override
     @Nullable
     public BlockEntity getExistingBlockEntity(@Nonnull BlockPos pos) {
         return getBlockEntity(pos);

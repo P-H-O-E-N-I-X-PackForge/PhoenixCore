@@ -240,11 +240,6 @@ public class OmniPackBlockEntity extends BlockEntity implements MenuProvider {
         fluid = tag.contains("Fluid") ? StackNbt.loadFluid(tag.getCompound("Fluid")) : FluidStack.EMPTY;
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos()).inflate(1.0);
-    }
-
     public FluidStack getFluid() {
         return this.fluid != null ? this.fluid : FluidStack.EMPTY;
     }

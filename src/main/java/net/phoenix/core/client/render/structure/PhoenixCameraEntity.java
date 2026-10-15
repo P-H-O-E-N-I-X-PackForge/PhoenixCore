@@ -14,13 +14,13 @@ public final class PhoenixCameraEntity extends Entity {
     }
 
     @Override
-    public float getEyeHeight(net.minecraft.world.entity.Pose pose,
-                              net.minecraft.world.entity.EntityDimensions dimensions) {
-        return 0f;
+    public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+        // the camera sits exactly on the entity, so there is no eye offset
+        return net.minecraft.world.entity.EntityDimensions.fixed(0.1f, 0.1f).withEyeHeight(0f);
     }
 
     @Override
-    protected void defineSynchedData() {}
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {}
 
     @Override
     protected void readAdditionalSaveData(@Nonnull CompoundTag tag) {}

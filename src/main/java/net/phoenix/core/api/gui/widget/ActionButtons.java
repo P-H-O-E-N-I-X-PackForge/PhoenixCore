@@ -29,7 +29,7 @@ public final class ActionButtons {
     }
 
     public static ButtonWidget<?> payload(PanelSyncManager syncManager, String actionKey, ServerAction onServer,
-                                          Consumer<RegistryFriendlyByteBuf> clientPayload, IDrawable overlay,
+                                          brachy.modularui.api.IPacketWriter<? super RegistryFriendlyByteBuf> clientPayload, IDrawable overlay,
                                           RichTooltip tooltip) {
         syncManager.registerServerSyncedAction(actionKey, onServer::run);
         return new ButtonWidget<>()
