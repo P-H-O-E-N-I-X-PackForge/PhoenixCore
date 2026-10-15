@@ -37,7 +37,7 @@ public final class CutsceneBackgrounds {
     private static final Codec<CutsceneBackground.Data> TYPED_CODEC = Codec.STRING.validate(
             type -> TYPES.containsKey(type) ? DataResult.success(type) :
                     DataResult.error(() -> "Unknown cutscene background type '" + type + "', known: " + TYPES.keySet()))
-            .dispatch("type", CutsceneBackground.Data::type, type -> TYPES.get(type).codec());
+            .dispatch("type", CutsceneBackground.Data::type, type -> TYPES.get(type));
 
     public static final Codec<CutsceneBackground.Data> CODEC = Codec.lazyInitialized(() -> Codec.either(
             ResourceLocation.CODEC,

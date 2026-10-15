@@ -96,7 +96,7 @@ public class AstralWandItem extends Item {
             return;
         }
         BlockPos pos = BlockPos.of(StackNbt.getTag(stack).getLong(CHANNEL_TAG));
-        int ticks = getUseDuration(stack) - remaining;
+        int ticks = getUseDuration(stack, entity) - remaining;
         if (!(level.getBlockEntity(pos) instanceof AstralRitualPedestalBlockEntity pedestal) ||
                 player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 36) {
             StackNbt.getTag(stack).remove(CHANNEL_TAG);

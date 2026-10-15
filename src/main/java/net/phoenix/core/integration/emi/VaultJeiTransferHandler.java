@@ -62,7 +62,7 @@ public class VaultJeiTransferHandler<T extends AbstractVaultMenu>
                     .ifPresent(stack -> template[idx] = stack.copy());
         }
 
-        ResourceLocation recipeId = recipe instanceof Recipe<?> r ? r.getId() : null;
+        ResourceLocation recipeId = recipe instanceof net.minecraft.world.item.crafting.RecipeHolder<?> h ? h.id() : null;
         PacketDistributor.sendToServer(new CPacketFillCraftingGrid(recipeId, template));
         return null;
     }

@@ -30,7 +30,7 @@ public final class BackgroundEffects {
     public static final MapCodec<BackgroundEffect.Data> MAP_CODEC = Codec.STRING.validate(
             type -> TYPES.containsKey(type) ? DataResult.success(type) :
                     DataResult.error(() -> "Unknown background effect '" + type + "', known: " + TYPES.keySet()))
-            .dispatchMap("type", BackgroundEffect.Data::type, type -> TYPES.get(type).codec());
+            .dispatchMap("type", BackgroundEffect.Data::type, type -> TYPES.get(type));
 
     public static void register(String type, MapCodec<? extends BackgroundEffect.Data> codec) {
         TYPES.put(type, codec);

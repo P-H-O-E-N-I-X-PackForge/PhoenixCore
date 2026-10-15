@@ -1,5 +1,7 @@
 package net.phoenix.core.api.gui.widget;
 
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 
 import brachy.modularui.api.drawable.IDrawable;
@@ -27,7 +29,7 @@ public final class ActionButtons {
     }
 
     public static ButtonWidget<?> payload(PanelSyncManager syncManager, String actionKey, ServerAction onServer,
-                                          Consumer<FriendlyByteBuf> clientPayload, IDrawable overlay,
+                                          Consumer<RegistryFriendlyByteBuf> clientPayload, IDrawable overlay,
                                           RichTooltip tooltip) {
         syncManager.registerServerSyncedAction(actionKey, onServer::run);
         return new ButtonWidget<>()

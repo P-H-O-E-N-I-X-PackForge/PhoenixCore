@@ -113,12 +113,12 @@ public class VaultOverlayRender extends DynamicRender<VaultMachine, VaultOverlay
 
         List<BakedQuad> quads = overlayModel.getQuads(null, null, random, ModelData.EMPTY, RenderType.cutout());
         for (BakedQuad quad : quads) {
-            consumer.putBulkData(pose, quad, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, packedOverlay);
+            consumer.putBulkData(pose, quad, 1f, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, packedOverlay);
         }
         for (Direction side : Direction.values()) {
             quads = overlayModel.getQuads(null, side, random, ModelData.EMPTY, RenderType.cutout());
             for (BakedQuad quad : quads) {
-                consumer.putBulkData(pose, quad, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, packedOverlay);
+                consumer.putBulkData(pose, quad, 1f, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, packedOverlay);
             }
         }
 

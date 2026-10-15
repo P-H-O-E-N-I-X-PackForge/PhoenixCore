@@ -46,15 +46,10 @@ public abstract class EmiApiMixin {
     private static EmiIngredient gto$getBucketFluid(EmiIngredient stack) {
         if (stack instanceof EmiStack emiStack) {
             Fluid fluid = Fluids.EMPTY;
-            if (emiStack.getKey() instanceof BucketItem bucketItem) {
-                fluid = bucketItem.getFluid();
-            } else if (emiStack.getKey() instanceof ComponentItem && emiStack.hasNbt()) {
-                CompoundTag nbt = emiStack.getNbt();
-                if (nbt.contains("Fluid", Tag.TAG_COMPOUND)) {
-                    var fluidTag = nbt.getCompound("Fluid");
-                    var fluidName = fluidTag.getString("FluidName");
-                    fluid = gto$getFluid(fluidName);
-                }
+            if (emiStack.getKey() instanceof net.minecraft.world.item.Item) {
+                // covers buckets and GregTech fluid containers alike, through the fluid handler capability
+                var contained = net.neoforged.neoforge.fluids.FluidUtil.getFluidContained(emiStack.getItemStack());
+                if (contained.isPresent()) fluid = contained.get().getFluid();
             }
 
             if (fluid == Fluids.EMPTY || gto$isLiquidConcrete(fluid)) {

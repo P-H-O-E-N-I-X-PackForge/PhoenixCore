@@ -472,7 +472,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     private final class TendrilStore implements INBTSerializable<Tag> {
 
         @Override
-        public Tag serializeNBT() {
+        public Tag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
             ListTag list = new ListTag();
             for (TendrilInstance tendril : activeTendrils) {
                 CompoundTag tag = new CompoundTag();
@@ -489,7 +489,7 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         }
 
         @Override
-        public void deserializeNBT(Tag nbt) {
+        public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, Tag nbt) {
             activeTendrils.clear();
             placedTendrils.clear();
             ListTag list = new ListTag();

@@ -547,7 +547,7 @@ public class PhoenixTeslaMachines {
                                                                     GTRegistrate registrate,
                                                                     String name,
                                                                     BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> machineFactory,
-                                                                    BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineDefinition> definitionBuilder,
+                                                                    BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineEntry<MachineDefinition>> definitionBuilder,
                                                                     int... tiers) {
         @SuppressWarnings("unchecked")
         MachineEntry<MachineDefinition>[] definitions = new MachineEntry[GTValues.TIER_COUNT];

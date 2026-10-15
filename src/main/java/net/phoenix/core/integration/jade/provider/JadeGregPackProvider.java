@@ -81,8 +81,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
                         ratio,
                         Component.literal(label),
                         helper.progressStyle().color(0xFFEEE600, 0xFFEEE600).textColor(-1),
-                        net.minecraft.Util.make(snownee.jade.api.ui.BoxStyle.getNestedBox(),
-                                style -> style.borderColor = 0xFF555555),
+                        snownee.jade.api.ui.BoxStyle.getNestedBox(),
                         true));
             }
         }
