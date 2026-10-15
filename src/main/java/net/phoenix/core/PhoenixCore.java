@@ -180,8 +180,7 @@ public class PhoenixCore {
         modEventBus.addListener(net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability::register);
         net.phoenix.core.integration.conflux.dimension.ConfluxDimensionRegistry.register(modEventBus);
         net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes.register(modEventBus);
-        net.phoenix.core.integration.conflux.dimension.EtherealSpawnGenerator.register();
-        net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator.register();
+        net.phoenix.core.integration.conflux.dimension.ConfluxGenerators.register(modEventBus);
         AstralBlocks.registerDeferred(modEventBus);
         PhoenixAttachments.register(modEventBus);
         net.phoenix.core.common.item.PhoenixItemCaps.register(modEventBus);

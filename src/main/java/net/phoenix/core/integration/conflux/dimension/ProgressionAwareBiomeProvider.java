@@ -5,7 +5,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -34,7 +34,8 @@ public class ProgressionAwareBiomeProvider extends BiomeSource {
     }
 
     @Override
-    protected Codec<? extends BiomeSource> codec() {
+    protected MapCodec<? extends BiomeSource> codec() {
+        // built in code per world and never serialised through a registered codec
         return null;
     }
 

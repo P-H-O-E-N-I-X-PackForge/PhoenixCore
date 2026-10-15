@@ -22,6 +22,7 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 import net.phoenix.core.PhoenixCore;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.concurrent.CompletableFuture;
@@ -33,20 +34,16 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     private static final int SHRINE_RADIUS = 10;
     private static final int[][] PILLAR_OFFSETS = { { -8, -8 }, { 8, -8 }, { -8, 8 }, { 8, 8 } };
 
-    public static final Codec<EtherealSpawnGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<EtherealSpawnGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource))
             .apply(instance, instance.stable(EtherealSpawnGenerator::new)));
-
-    public static void register() {
-        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, PhoenixCore.id("ethereal_spawn"), CODEC);
-    }
 
     public EtherealSpawnGenerator(BiomeSource biomeSource) {
         super(biomeSource);
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
 
@@ -62,8 +59,9 @@ public class EtherealSpawnGenerator extends ChunkGenerator {
     public void spawnOriginalMobs(WorldGenRegion worldGenRegion) {}
 
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState,
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState,
                                                         StructureManager structureManager, ChunkAccess chunk) {
+        Executor executor = net.minecraft.Util.backgroundExecutor();
         return CompletableFuture.supplyAsync(() -> {
             ChunkPos chunkPos = chunk.getPos();
             int minX = chunkPos.getMinBlockX();

@@ -34,6 +34,7 @@ import net.phoenix.core.common.worldgen.TerrainProfile;
 import net.phoenix.core.integration.conflux.dimension.worldgen.*;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +47,7 @@ import java.util.concurrent.Executor;
 
 public class DisciplineChunkGenerator extends ChunkGenerator {
 
-    public static final Codec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<DisciplineChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
             Codec.STRING.fieldOf("discipline_id").forGetter(gen -> gen.disciplineId),
             Codec.LONG.fieldOf("seed").forGetter(gen -> gen.seed))
@@ -103,10 +104,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     private static final double ACCENT_FREQUENCY = 0.03;
     private static final double ACCENT_THRESHOLD = 0.55;
     private volatile SimplexNoise biomeRegionNoise;
-
-    public static void register() {
-        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, PhoenixCore.id("discipline"), CODEC);
-    }
 
     public DisciplineChunkGenerator(BiomeSource biomeSource, String disciplineId, long seed) {
         super(biomeSource);
@@ -253,7 +250,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
 
@@ -588,7 +585,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     Blocks.NETHER_SPROUTS.defaultBlockState(), Blocks.SHROOMLIGHT.defaultBlockState(), 45,
                     SHAPE_ROUND, 1.0, 0);
             default -> new GardenTheme(Blocks.MOSS_BLOCK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
-                    Blocks.GRASS.defaultBlockState(), Blocks.GRASS.defaultBlockState(),
+                    Blocks.SHORT_GRASS.defaultBlockState(), Blocks.SHORT_GRASS.defaultBlockState(),
                     Blocks.MOSS_BLOCK.defaultBlockState(), 1000, SHAPE_ROUND, 1.0, 0);
         };
     }
@@ -795,8 +792,9 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState,
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState,
                                                         StructureManager structureManager, ChunkAccess chunk) {
+        Executor executor = net.minecraft.Util.backgroundExecutor();
         return CompletableFuture.supplyAsync(() -> {
             long profileStart = System.nanoTime();
             try {
