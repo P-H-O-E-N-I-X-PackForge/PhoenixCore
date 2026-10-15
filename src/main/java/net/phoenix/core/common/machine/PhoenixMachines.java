@@ -2,6 +2,10 @@ package net.phoenix.core.common.machine;
 
 
 
+
+
+import com.gregtechceu.gtceu.api.machine.MachineInstanceFactory;
+import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.gregtechceu.gtceu.GTCEu;
@@ -102,9 +106,9 @@ public class PhoenixMachines {
 
     public static final String OVERLAY_PLASMA_HATCH_TEX = "overlay_plasma_hatch_input";
     public static final String OVERLAY_PLASMA_HATCH_HALF_PX_TEX = "overlay_plasma_hatch_half_px_out";
-    public static MultiblockMachineDefinition DANCE = null;
-    public static MachineDefinition BLAZING_CLEANING_MAINTENANCE_HATCH = null;
-    public static MachineDefinition HIGH_YIELD_PHOTON_EMISSION_REGULATOR = null;
+    public static MachineEntry<MultiblockMachineDefinition> DANCE = null;
+    public static MachineEntry<MachineDefinition> BLAZING_CLEANING_MAINTENANCE_HATCH = null;
+    public static MachineEntry<MachineDefinition> HIGH_YIELD_PHOTON_EMISSION_REGULATOR = null;
 
     static {
         REGISTRATE.creativeModeTab(() -> PhoenixCore.PHOENIX_CREATIVE_TAB);
@@ -134,12 +138,12 @@ public class PhoenixMachines {
     }
     String technicallyTrue = "false";
 
-    public static MultiblockMachineDefinition registerMultiblockSourceTank(GTRegistrate registrate, String name,
+    public static MachineEntry<MultiblockMachineDefinition> registerMultiblockSourceTank(GTRegistrate registrate, String name,
                                                                            String displayName, int capacity,
                                                                            int maxConsumption,
                                                                            Supplier<? extends Block> casing,
-                                                                           BiConsumer<MultiblockMachineBuilder<?, ?, ?>, ResourceLocation> rendererSetup) {
-        MultiblockMachineBuilder<?, ?, ?> builder = registrate
+                                                                           BiConsumer<MultiblockMachineBuilder<?>, ResourceLocation> rendererSetup) {
+        MultiblockMachineBuilder<?> builder = registrate
                 .multiblock(name, holder -> new SourceMultiblockTankMachine(holder, capacity, maxConsumption))
                 .langValue(displayName)
                 .tooltips(
@@ -166,7 +170,7 @@ public class PhoenixMachines {
         return builder.register();
     }
 
-    public static final MultiblockMachineDefinition REFINED_MULTIBLOCK_SOURCE_TANK = registerMultiblockSourceTank(
+    public static final MachineEntry<MultiblockMachineDefinition> REFINED_MULTIBLOCK_SOURCE_TANK = registerMultiblockSourceTank(
             REGISTRATE,
             "refined_multiblock_source_tank",
             "Refined Multiblock Source Tank",
@@ -208,16 +212,16 @@ public class PhoenixMachines {
     public static final PartAbility SOUND_LIBRARY = new PartAbility("sound_library");
     public static final PartAbility SOUND_STREAM = new PartAbility("sound_stream");
 
-    public static final MachineDefinition[] DISC_HATCH = registerSoundHatch(
+    public static final MachineEntry<MachineDefinition>[] DISC_HATCH = registerSoundHatch(
             "disc_hatch", "Disc Reader Hatch", SoundHatchPartMachine.SoundHatchType.DISC, SOUND_DISC);
 
-    public static final MachineDefinition[] LIBRARY_HATCH = registerSoundHatch(
+    public static final MachineEntry<MachineDefinition>[] LIBRARY_HATCH = registerSoundHatch(
             "library_hatch", "Sound Library Hatch", SoundHatchPartMachine.SoundHatchType.LIBRARY, SOUND_LIBRARY);
 
-    public static final MachineDefinition[] STREAM_HATCH = registerSoundHatch(
+    public static final MachineEntry<MachineDefinition>[] STREAM_HATCH = registerSoundHatch(
             "stream_hatch", "Web Stream Hatch", SoundHatchPartMachine.SoundHatchType.STREAM, SOUND_STREAM);
 
-    private static MachineDefinition[] registerSoundHatch(String name, String displayName,
+    private static MachineEntry<MachineDefinition>[] registerSoundHatch(String name, String displayName,
                                                           SoundHatchPartMachine.SoundHatchType type,
                                                           PartAbility ability) {
         return registerTieredMachines(name,
@@ -231,14 +235,14 @@ public class PhoenixMachines {
                 ELECTRIC_TIERS);
     }
 
-    public static final MachineDefinition[] SOURCE_IMPORT_HATCH = registerSourceHatch(
+    public static final MachineEntry<MachineDefinition>[] SOURCE_IMPORT_HATCH = registerSourceHatch(
             "source_input_hatch", "Source Input Hatch",
             IO.IN, ELECTRIC_TIERS, SOURCE_INPUT);
-    public static final MachineDefinition[] SOURCE_EXPORT_HATCH = registerSourceHatch(
+    public static final MachineEntry<MachineDefinition>[] SOURCE_EXPORT_HATCH = registerSourceHatch(
             "source_output_hatch", "Source Output Hatch",
             IO.OUT, ELECTRIC_TIERS, SOURCE_OUTPUT);
 
-    private static MachineDefinition[] registerSourceHatch(String name, String displayName, IO io,
+    private static MachineEntry<MachineDefinition>[] registerSourceHatch(String name, String displayName, IO io,
                                                            int[] tiers, PartAbility... abilities) {
         return registerTieredMachines(name,
 
@@ -265,12 +269,12 @@ public class PhoenixMachines {
                 tiers);
     }
 
-    public final static MachineDefinition[] PLASMA_INPUT_HATCH = registerPlasmaHatches(
+    public final static MachineEntry<MachineDefinition>[] PLASMA_INPUT_HATCH = registerPlasmaHatches(
             "plasma_input_hatch", "Plasma Input Hatch", "fluid_hatch.import",
             IN, PlasmaHatchPartMachine.INITIAL_TANK_CAPACITY_1X, 1, new int[] { 7, 8, 9 },
             PhoenixPartAbility.PLASMA_INPUT);
 
-    public static MachineDefinition[] registerPlasmaHatches(String name, String displayName, String tooltip,
+    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(String name, String displayName, String tooltip,
                                                             IO io, int initialCapacity, int slots,
                                                             int[] tiers, PartAbility... abilities) {
         return registerPlasmaHatches(GTRegistration.REGISTRATE, name, displayName, tooltip, io, initialCapacity, slots,
@@ -278,7 +282,7 @@ public class PhoenixMachines {
                 abilities);
     }
 
-    public static MachineDefinition[] registerPlasmaHatches(GTRegistrate registrate, String name, String displayName,
+    public static MachineEntry<MachineDefinition>[] registerPlasmaHatches(GTRegistrate registrate, String name, String displayName,
                                                             String tooltip,
                                                             IO io, int initialCapacity, int slots,
                                                             int[] tiers, PartAbility... abilities) {
@@ -317,109 +321,55 @@ public class PhoenixMachines {
                 tiers);
     }
 
-    public static MachineDefinition[] registerTieredMachines(String name,
-                                                             BiFunction<BlockEntityCreationInfo, Integer, MetaMachine> factory,
-                                                             BiFunction<Integer, MachineBuilder<MachineDefinition, ?, ?>, MachineDefinition> builder,
-                                                             int... tiers) {
-        MachineDefinition[] definitions = new MachineDefinition[GTValues.TIER_COUNT];
-        for (int tier : tiers) {
-            var register = REGISTRATE
-                    .machine(GTValues.VN[tier].toLowerCase(Locale.ROOT) + "_" + name,
-                            holder -> factory.apply(holder, tier))
-                    .tier(tier);
-            definitions[tier] = builder.apply(tier, register);
-        }
-        return definitions;
+    public static MachineEntry<MachineDefinition>[] registerTieredMachines(String name,
+                                                                           MachineInstanceFactory.Tiered<? extends MetaMachine> factory,
+                                                                           BiFunction<Integer, MachineBuilder<MachineDefinition, MetaMachine, ?>, MachineEntry<MachineDefinition>> builder,
+                                                                           int... tiers) {
+        return GTMachineUtils.registerTieredMachines(REGISTRATE, name,
+                (MachineInstanceFactory.Tiered<MetaMachine>) factory::buildMachine, builder, tiers);
     }
 
-    public static MachineDefinition registerDrum(Material material, int capacity, String lang) {
-        return registerDrum(PhoenixRegistration.REGISTRATE, material, capacity, lang);
+    public static MachineEntry<MachineDefinition> registerDrum(Material material, int capacity, String lang) {
+        return GTMachineUtils.registerDrum(PhoenixRegistration.REGISTRATE, material, capacity, lang);
     }
 
-    public static MachineDefinition registerDrum(GTRegistrate registrate, Material material, int capacity,
-                                                 String lang) {
-        boolean wooden = material.hasProperty(PropertyKey.WOOD);
-        var definition = registrate
-                .machine(material.getName() + "_drum",
-                        holder -> new DrumMachine(holder, material, capacity))
-                .langValue(lang)
-                .rotationState(RotationState.NONE)
-                .simpleModel(GTCEu.id("block/machine/template/drum/" + (wooden ? "wooden" : "metal") + "_drum"))
-                .tooltipBuilder((stack, list) -> {
-                    TANK_TOOLTIPS.accept(stack, list);
-                    if (material.hasProperty(PropertyKey.FLUID_PIPE)) {
-                        FluidPipeProperties pipeprops = material.getProperty(PropertyKey.FLUID_PIPE);
-                        pipeprops.appendTooltips(list, false, true);
-                    }
-                })
-                .tooltips(Component.translatable("gtceu.machine.quantum_tank.tooltip"),
-                        Component.translatable("gtceu.universal.tooltip.fluid_storage_capacity",
-                                FormattingUtil.formatNumbers(capacity)))
-                .paintingColor(wooden ? 0xFFFFFF : material.getMaterialRGB())
-                .itemColor((s, i) -> wooden ? 0xFFFFFF : material.getMaterialRGB())
-                .register();
-        DRUM_CAPACITY.put(definition, capacity);
-        return definition;
+    public static MachineEntry<MachineDefinition> registerCrate(Material material, int capacity, String lang) {
+        return GTMachineUtils.registerCrate(PhoenixRegistration.REGISTRATE, material, capacity, 9, lang);
     }
 
-    public static MachineDefinition registerCrate(Material material, int capacity, String lang) {
-        return registerCrate(PhoenixRegistration.REGISTRATE, material, capacity, lang);
-    }
-
-    public static MachineDefinition registerCrate(GTRegistrate registrate, Material material, int capacity,
-                                                  String lang) {
-        final boolean wooden = material.hasProperty(PropertyKey.WOOD);
-        final int rowLength = 9;
-
-        return registrate.machine(material.getName() + "_crate",
-                holder -> new CrateMachine(holder, material, capacity, rowLength))
-                .langValue(lang)
-                .rotationState(RotationState.NONE)
-                .tooltips(Component.translatable("gtceu.universal.tooltip.item_storage_capacity", capacity))
-                .modelProperty(GTMachineModelProperties.IS_TAPED, false)
-                .model(GTMachineModels.createCrateModel(wooden))
-
-                .itemColor((itemStack, tintIndex) -> {
-                    if (wooden) return 0xFFFFFF;
-
-                    return tintIndex == 1 ? material.getMaterialRGB() : 0xFFFFFF;
-                })
-                .register();
-    }
-
-    public static MachineDefinition AURUM_STEEL_DRUM = registerDrum(AURUM_STEEL,
+    public static MachineEntry<MachineDefinition> AURUM_STEEL_DRUM = registerDrum(AURUM_STEEL,
             (80 * FluidType.BUCKET_VOLUME),
             "Aurum Steel Drum");
-    public static MachineDefinition ALUMINFROST_DRUM = registerDrum(ALUMINFROST,
+    public static MachineEntry<MachineDefinition> ALUMINFROST_DRUM = registerDrum(ALUMINFROST,
             (160 * FluidType.BUCKET_VOLUME),
             "Aluminfrost Drum");
-    public static MachineDefinition FROST_REINFORCED_STAINED_STEEL_DRUM = registerDrum(FROST_REINFORCED_STAINED_STEEL,
+    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_DRUM = registerDrum(FROST_REINFORCED_STAINED_STEEL,
             (350 * FluidType.BUCKET_VOLUME),
             "Frost Reinforced Stained Steel Drum");
-    public static MachineDefinition SOURCE_IMBUED_TITANIUM_DRUM = registerDrum(SOURCE_IMBUED_TITANIUM,
+    public static MachineEntry<MachineDefinition> SOURCE_IMBUED_TITANIUM_DRUM = registerDrum(SOURCE_IMBUED_TITANIUM,
             (750 * FluidType.BUCKET_VOLUME),
             "Source Imbued Titanium Drum");
-    public static MachineDefinition VOID_TOUCHED_TUNGSTEN_STEEL_DRUM = registerDrum(VOID_TOUCHED_TUNGSTEN_STEEL,
+    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_DRUM = registerDrum(VOID_TOUCHED_TUNGSTEN_STEEL,
             (1300 * FluidType.BUCKET_VOLUME),
             "Void Touched Tungsten Steel Drum");
-    public static MachineDefinition RESONANT_RHODIUM_ALLOY_DRUM = registerDrum(RESONANT_RHODIUM_ALLOY,
+    public static MachineEntry<MachineDefinition> RESONANT_RHODIUM_ALLOY_DRUM = registerDrum(RESONANT_RHODIUM_ALLOY,
             (2300 * FluidType.BUCKET_VOLUME),
             "Resonant Rhodium Alloy Drum");
 
-    public static MachineDefinition AURUM_STEEL_CRATE = registerCrate(AURUM_STEEL, 90,
+    public static MachineEntry<MachineDefinition> AURUM_STEEL_CRATE = registerCrate(AURUM_STEEL, 90,
             "Aurum Steel Crate");
-    public static MachineDefinition ALUMINFROST_CRATE = registerCrate(ALUMINFROST, 100,
+    public static MachineEntry<MachineDefinition> ALUMINFROST_CRATE = registerCrate(ALUMINFROST, 100,
             "Aluminfrost Crate");
-    public static MachineDefinition FROST_REINFORCED_STAINED_STEEL_CRATE = registerCrate(FROST_REINFORCED_STAINED_STEEL,
+    public static MachineEntry<MachineDefinition> FROST_REINFORCED_STAINED_STEEL_CRATE = registerCrate(FROST_REINFORCED_STAINED_STEEL,
             116,
             "Frost Reinforced Stained Steel Crate");
-    public static MachineDefinition SOURCE_IMBUED_TITANIUM_CRATE = registerCrate(
+    public static MachineEntry<MachineDefinition> SOURCE_IMBUED_TITANIUM_CRATE = registerCrate(
             SOURCE_IMBUED_TITANIUM, 140,
             "Source Imbued Titanium Crate");
-    public static MachineDefinition VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(VOID_TOUCHED_TUNGSTEN_STEEL,
+    public static MachineEntry<MachineDefinition> VOID_TOUCHED_TUNGSTEN_STEEL_CRATE = registerCrate(VOID_TOUCHED_TUNGSTEN_STEEL,
             160,
             "Void Touched Tungsten Steel Crate");
-    public static MachineDefinition RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
+    public static MachineEntry<MachineDefinition> RESONANT_RHODIUM_ALLOY_CRATE = registerCrate(RESONANT_RHODIUM_ALLOY, 200,
             "Resonant Rhodium Alloy Crate");
 
     public static MachineEntry<MachineDefinition> SHIELD_INTEGRITY_SENSOR_HATCH = REGISTRATE
@@ -504,7 +454,7 @@ public class PhoenixMachines {
                             .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
                             .or(Predicates.abilities(PartAbility.EXPORT_FLUIDS))
                             .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS))
-                            .or(Predicates.blocks(GTMachines.ENERGY_INPUT_HATCH[GTValues.UHV].get())
+                            .or(Predicates.blocks(GTMachines.ENERGY_INPUT_HATCH[GTValues.UHV].getBlock())
                                     .setMaxGlobalLimited(4))
                             .or(Predicates.controller(definition)))
 

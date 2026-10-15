@@ -33,7 +33,7 @@ public final class SourceTankMachines {
 
     private SourceTankMachines() {}
 
-    public static final MultiblockMachineDefinition SOURCE_TANK_T1 = register("source_tank_t1", "Source Tank Mk I",
+    public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T1 = register("source_tank_t1", "Source Tank Mk I",
             5_000_000, 100, SourceTankMachines::patternT1);
     public static final MachineEntry<MultiblockMachineDefinition> SOURCE_TANK_T2 = register("source_tank_t2", "Source Tank Mk II",
             50_000_000, 1_000, SourceTankMachines::patternT2);
