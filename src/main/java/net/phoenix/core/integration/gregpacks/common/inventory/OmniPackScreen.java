@@ -122,7 +122,7 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
     @Override
     public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
         recomputeScale();
-        renderBackground(g);
+        renderBackground(g, 0, 0, 0f);
         refreshTheme();
 
         int mx = Math.round(rmx / uiScale);

@@ -123,7 +123,7 @@ public class WingFlightScreen extends Screen {
 
     @Override
     public void render(GuiGraphics gfx, int rmx, int rmy, float partialTick) {
-        renderBackground(gfx);
+        renderBackground(gfx, 0, 0, 0f);
 
         int mouseX = Math.round(rmx / uiScale);
         int mouseY = Math.round(rmy / uiScale);

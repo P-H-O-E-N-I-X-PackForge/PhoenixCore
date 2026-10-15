@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.common.event;
 
 
+
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 
@@ -23,8 +25,8 @@ import java.util.Set;
 public final class SourceHatchJarTransferTick {
 
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level)) return;
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
         if (level.getGameTime() % 20L != 0L) return;
 
         Set<BlockPos> hatches = SourceHatchTracker.get(level.dimension());

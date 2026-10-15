@@ -456,7 +456,7 @@ public class TerrainPreviewScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
-        return super.mouseScrolled(rmx / uiScale, rmy / uiScale, delta);
+        return super.mouseScrolled(rmx / uiScale, rmy / uiScale, 0.0, delta);
     }
 
     @Override

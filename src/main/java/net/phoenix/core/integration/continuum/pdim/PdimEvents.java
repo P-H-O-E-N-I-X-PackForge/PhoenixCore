@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.continuum.pdim;
 
 
+
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,8 +19,8 @@ public final class PdimEvents {
     private PdimEvents() {}
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) return;
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(player.level() instanceof ServerLevel level) || !PdimDimensions.isPersonal(level.dimension())) return;
 
         if (player.getY() < level.getMinBuildHeight() - 16) {

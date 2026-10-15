@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.shaders;
 
 
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -17,11 +19,7 @@ public class ShaderIntegration {
     private static long lastShaderUpdate = 0;
 
     @SubscribeEvent
-    public static void onClientTick(net.neoforged.neoforge.event.TickEvent.ClientTickEvent event) {
-        if (event.phase == net.neoforged.neoforge.event.TickEvent.Phase.END) {
-            return;
-        }
-
+    public static void onClientTick(ClientTickEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         Level level = mc.level;

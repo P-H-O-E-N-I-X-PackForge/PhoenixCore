@@ -507,7 +507,7 @@ public class ResearchTreeEditorScreen extends Screen {
             panY = (float) ((my - TOOLBAR_H) - f * ((my - TOOLBAR_H) - panY));
             return true;
         }
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, 0.0, delta);
     }
 
     @Override

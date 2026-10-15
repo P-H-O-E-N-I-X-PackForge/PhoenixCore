@@ -186,12 +186,12 @@ public class ResonanceConsoleScreen extends Screen {
             updateFilteredSounds();
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, 0.0, delta);
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, 0, 0, 0f);
         refreshTheme();
         int third = this.width / 3;
 

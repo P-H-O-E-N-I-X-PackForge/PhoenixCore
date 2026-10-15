@@ -91,7 +91,7 @@ public class FluidSlotPanel extends AbstractWidget {
                 return true;
             }
         }
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, 0.0, delta);
     }
 
     public boolean acceptFluid(String fluidId, int amount, double mx, double my) {

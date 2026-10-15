@@ -580,7 +580,7 @@ public class PhoenixShopScreen extends Screen {
             clampScroll(visibleEntries().size(), py, panelW, panelH);
             return true;
         }
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, 0.0, delta);
     }
 
     @Override

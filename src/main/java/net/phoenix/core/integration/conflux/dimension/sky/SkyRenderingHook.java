@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.conflux.dimension.sky;
 
 
+
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
@@ -16,11 +18,7 @@ public class SkyRenderingHook {
     private static Level lastLevel = null;
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            return;
-        }
-
+    public static void onClientTick(ClientTickEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
 

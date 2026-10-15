@@ -130,7 +130,7 @@ public class ConditionsScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics g, int rmx, int rmy, float pt) {
-        renderBackground(g);
+        renderBackground(g, 0, 0, 0f);
 
         int mx = Math.round(rmx / uiScale);
         int my = Math.round(rmy / uiScale);

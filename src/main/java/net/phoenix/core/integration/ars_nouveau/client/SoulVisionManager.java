@@ -2,6 +2,10 @@ package net.phoenix.core.integration.ars_nouveau.client;
 
 
 
+
+
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.phoenix.core.util.StackNbt;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
@@ -123,8 +127,8 @@ public final class SoulVisionManager {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !active) return;
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (!active) return;
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
@@ -314,7 +318,7 @@ public final class SoulVisionManager {
     }
 
     @SubscribeEvent
-    public static void onRenderGuiOverlay(RenderGuiOverlayEvent.Post event) {
+    public static void onRenderGuiOverlay(RenderGuiEvent.Post event) {
         if (!active) return;
         GuiGraphics graphics = event.getGuiGraphics();
         graphics.fill(20, 20, 220, 220, 0xFFFF0000);

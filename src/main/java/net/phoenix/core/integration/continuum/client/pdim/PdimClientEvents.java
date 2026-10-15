@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.continuum.client.pdim;
 
 
+
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -17,9 +19,9 @@ public final class PdimClientEvents {
     private PdimClientEvents() {}
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START || !event.side.isClient()) return;
-        Player player = event.player;
+    public static void onPlayerTick(PlayerTickEvent.Pre event) {
+        if (!event.getEntity().level().isClientSide) return;
+        Player player = event.getEntity();
         if (player != Minecraft.getInstance().player) return;
         if (!PdimDimensions.isPersonal(player.level().dimension())) return;
 

@@ -246,7 +246,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
     @Override
     public void render(GuiGraphics g, int rmx, int rmy, float pt) {
         recomputeScale();
-        renderBackground(g);
+        renderBackground(g, 0, 0, 0f);
 
         PhoenixTheme t = PhoenixTheme.current();
         cSbTrack = t.panel.getColor();

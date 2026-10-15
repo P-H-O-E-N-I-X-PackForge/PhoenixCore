@@ -52,7 +52,7 @@ public class SourceHatchScreen extends AbstractContainerScreen<SourceHatchMenu> 
 
     @Override
     public void render(GuiGraphics gg, int mouseX, int mouseY, float partialTick) {
-        renderBackground(gg);
+        renderBackground(gg, 0, 0, 0f);
         super.render(gg, mouseX, mouseY, partialTick);
 
         int cur = menu.getCurrent();

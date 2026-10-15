@@ -395,7 +395,7 @@ public class ItemPickerScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
-        if (awaitingQuantity) return super.mouseScrolled(mx, my, delta);
+        if (awaitingQuantity) return super.mouseScrolled(mx, my, 0.0, delta);
         int maxRow = Math.max(0, (displayItems.size() - 1) / SLOTS_PER_ROW);
         int visibleRows = (gridBottom(0) - gridTop(0)) / SLOT_SIZE;
         int maxScrollRow = Math.max(0, maxRow - visibleRows + 1);

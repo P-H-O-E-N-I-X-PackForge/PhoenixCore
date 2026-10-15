@@ -62,7 +62,7 @@ public class ColorRadialMenuScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int rmx, int rmy, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, 0, 0, 0f);
         refreshTheme();
 
         int mouseX = Math.round(rmx / uiScale);

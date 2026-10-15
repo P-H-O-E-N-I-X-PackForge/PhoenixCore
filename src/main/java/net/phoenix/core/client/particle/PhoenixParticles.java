@@ -14,7 +14,7 @@ public class PhoenixParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister
             .create(BuiltInRegistries.PARTICLE_TYPE, PhoenixCore.MOD_ID);
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> TESLA_SPARK = PARTICLES.register("tesla_spark",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> TESLA_SPARK = PARTICLES.register("tesla_spark",
             () -> new SimpleParticleType(false));
 
     public static void init(IEventBus modBus) {

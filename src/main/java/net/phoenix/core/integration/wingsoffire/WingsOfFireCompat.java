@@ -1,6 +1,8 @@
 package net.phoenix.core.integration.wingsoffire;
 
 
+
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -61,7 +63,7 @@ public final class WingsOfFireCompat {
     }
 
     @SubscribeEvent
-    public static void onTick(LivingEvent.LivingTickEvent event) {
+    public static void onTick(EntityTickEvent.Post event) {
         Entity entity = event.getEntity();
         if (entity.level().isClientSide || !isPhoenix(entity)) return;
         var cfg = PhoenixConfigs.INSTANCE.wingsOfFire;

@@ -190,7 +190,7 @@ public class EmiFavoritePagesScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int rmx, int rmy, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, 0, 0, 0f);
         refreshTheme();
 
         int mouseX = Math.round(rmx / uiScale);

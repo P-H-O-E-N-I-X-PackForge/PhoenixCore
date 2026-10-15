@@ -13,49 +13,49 @@ public class DimensionParticleTypes {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister
             .create(BuiltInRegistries.PARTICLE_TYPE, "phoenixcore");
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> VOLCANIC_ASH = PARTICLE_TYPES.register("volcanic_ash",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> VOLCANIC_ASH = PARTICLE_TYPES.register("volcanic_ash",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> HEAT_SHIMMER = PARTICLE_TYPES.register("heat_shimmer",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> HEAT_SHIMMER = PARTICLE_TYPES.register("heat_shimmer",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> LAVA_SPARK = PARTICLE_TYPES.register("lava_spark",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> LAVA_SPARK = PARTICLE_TYPES.register("lava_spark",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> SCULK_SPORE = PARTICLE_TYPES.register("sculk_spore",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SCULK_SPORE = PARTICLE_TYPES.register("sculk_spore",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> BIOLUM_GLOW = PARTICLE_TYPES.register("biolum_glow",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BIOLUM_GLOW = PARTICLE_TYPES.register("biolum_glow",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> SCULK_TENDRIL = PARTICLE_TYPES.register("sculk_tendril",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SCULK_TENDRIL = PARTICLE_TYPES.register("sculk_tendril",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> COSMIC_DUST = PARTICLE_TYPES.register("cosmic_dust",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COSMIC_DUST = PARTICLE_TYPES.register("cosmic_dust",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> VOID_SHIMMER = PARTICLE_TYPES.register("void_shimmer",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> VOID_SHIMMER = PARTICLE_TYPES.register("void_shimmer",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> STAR_SPARKLE = PARTICLE_TYPES.register("star_sparkle",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR_SPARKLE = PARTICLE_TYPES.register("star_sparkle",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> NEON_SPARK = PARTICLE_TYPES.register("neon_spark",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> NEON_SPARK = PARTICLE_TYPES.register("neon_spark",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> INDUSTRIAL_SMOKE = PARTICLE_TYPES
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> INDUSTRIAL_SMOKE = PARTICLE_TYPES
             .register("industrial_smoke", () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> ENERGY_BOLT = PARTICLE_TYPES.register("energy_bolt",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> ENERGY_BOLT = PARTICLE_TYPES.register("energy_bolt",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> GLITCH_EFFECT = PARTICLE_TYPES.register("glitch_effect",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GLITCH_EFFECT = PARTICLE_TYPES.register("glitch_effect",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> REALITY_TEAR = PARTICLE_TYPES.register("reality_tear",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> REALITY_TEAR = PARTICLE_TYPES.register("reality_tear",
             () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<SimpleParticleType, SimpleParticleType> INVERTED_GLOW = PARTICLE_TYPES.register("inverted_glow",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> INVERTED_GLOW = PARTICLE_TYPES.register("inverted_glow",
             () -> new SimpleParticleType(false));
 
     public static void register(IEventBus modEventBus) {
