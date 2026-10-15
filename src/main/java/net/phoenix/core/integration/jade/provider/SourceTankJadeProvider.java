@@ -56,13 +56,13 @@ public class SourceTankJadeProvider implements IBlockComponentProvider, IServerD
                     fmt(cap),
                     (int) (pct * 100));
 
-            tooltip.add(tooltip.getElementHelper().progress(
+            tooltip.add(snownee.jade.api.ui.IElementHelper.get().progress(
                     pct,
                     barText,
-                    tooltip.getElementHelper().progressStyle()
+                    snownee.jade.api.ui.IElementHelper.get().progressStyle()
                             .color(barColor, barColor)
                             .textColor(0xFFFFFFFF),
-                    BoxStyle.DEFAULT,
+                    BoxStyle.getNestedBox(),
                     true));
         }
     }

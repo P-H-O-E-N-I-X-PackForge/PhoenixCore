@@ -8,10 +8,8 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
-import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
-import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.integration.jade.GTElementHelper;
 
 import net.minecraft.ChatFormatting;
@@ -40,7 +38,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.util.FluidTextHelper;
 
 import java.util.ArrayList;
@@ -79,32 +77,28 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
     }
 
     private void captureOutputs(CompoundTag tag, GTRecipe recipe, HolderLookup.Provider registries) {
-        int tier = RecipeHelper.getPreOCRecipeEuTier(recipe);
         int runs = recipe.getTotalRuns();
 
         ListTag itemTags = new ListTag();
         for (var out : recipe.getOutputContents(ItemRecipeCapability.CAP)) {
             CompoundTag itemTag = new CompoundTag();
+            ItemStack stack;
             if (out.content() instanceof IntProviderIngredient provider) {
-                IntProviderIngredient chanced = provider;
-                if (out.chance() < out.maxChance()) {
-                    double countD = (double) runs * out.chance() / out.maxChance();
-                    chanced = (IntProviderIngredient) ItemRecipeCapability.CAP.copyWithModifier(provider,
-                            ContentModifier.multiplier(countD));
-                }
-                itemTag = (CompoundTag) JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, chanced.toJson());
+                ItemStack[] inner = provider.getInner().getItems();
+                if (inner.length == 0 || inner[0].isEmpty()) continue;
+                stack = inner[0].copy();
+                itemTag.putInt("Min", provider.getCountProvider().getMinValue());
+                itemTag.putInt("Max", provider.getCountProvider().getMaxValue());
             } else {
                 ItemStack[] stacks = ItemRecipeCapability.CAP.of(out.content()).getItems();
                 if (stacks.length == 0 || stacks[0].isEmpty()) continue;
-
-                itemTag = new CompoundTag();
-                StackNbt.saveInto(stacks[0], itemTag);
-
+                stack = stacks[0].copy();
                 if (out.chance() < out.maxChance()) {
-                    double countD = (double) stacks[0].getCount() * runs * out.chance() / out.maxChance();
-                    itemTag.putInt("Count", Math.max(1, (int) Math.round(countD)));
+                    double countD = (double) stack.getCount() * runs * out.chance() / out.maxChance();
+                    stack.setCount(Math.max(1, (int) Math.round(countD)));
                 }
             }
+            itemTag.put("Stack", StackNbt.saveStack(stack));
             itemTags.add(itemTag);
         }
         if (!itemTags.isEmpty()) tag.put("OutputItems", itemTags);
@@ -112,23 +106,23 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
         ListTag fluidTags = new ListTag();
         for (var out : recipe.getOutputContents(FluidRecipeCapability.CAP)) {
             CompoundTag fluidTag = new CompoundTag();
+            FluidStack stack;
             if (out.content() instanceof IntProviderFluidIngredient provider) {
-                IntProviderFluidIngredient chanced = provider;
-                if (out.chance() < out.maxChance()) {
-                    double countD = (double) runs * out.chance() / out.maxChance();
-                    chanced = (IntProviderFluidIngredient) FluidRecipeCapability.CAP.copyWithModifier(provider,
-                            ContentModifier.multiplier(countD));
-                }
-                fluidTag = chanced.toNBT();
+                FluidStack[] inner = provider.getInner().getStacks();
+                if (inner.length == 0 || inner[0].isEmpty()) continue;
+                stack = inner[0].copy();
+                fluidTag.putInt("Min", provider.getCountProvider().getMinValue());
+                fluidTag.putInt("Max", provider.getCountProvider().getMaxValue());
             } else {
-                FluidStack[] stacks = FluidRecipeCapability.CAP.of(out.content()).getStacks();
+                FluidStack[] stacks = FluidRecipeCapability.CAP.of(out.content()).getFluids();
                 if (stacks.length == 0 || stacks[0].isEmpty()) continue;
-                StackNbt.saveFluidInto(stacks[0], fluidTag);
+                stack = stacks[0].copy();
                 if (out.chance() < out.maxChance()) {
-                    double amountD = (double) stacks[0].getAmount() * runs * out.chance() / out.maxChance();
-                    fluidTag.putInt("Amount", Math.max(1, (int) Math.round(amountD)));
+                    double amountD = (double) stack.getAmount() * runs * out.chance() / out.maxChance();
+                    stack.setAmount(Math.max(1, (int) Math.round(amountD)));
                 }
             }
+            fluidTag.put("Stack", StackNbt.saveFluid(stack));
             fluidTags.add(fluidTag);
         }
         if (!fluidTags.isEmpty()) tag.put("OutputFluids", fluidTags);
@@ -142,8 +136,7 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
         ListTag threadsNbt = data.getList("ActiveThreads", Tag.TAG_COMPOUND);
         if (threadsNbt.isEmpty()) return;
 
-        IElementHelper helper = tooltip.getElementHelper();
-        HolderLookup.Provider registries = accessor.getLevel().registryAccess();
+        IElementHelper helper = IElementHelper.get();
 
         for (int i = 0; i < threadsNbt.size(); i++) {
             CompoundTag tag = threadsNbt.getCompound(i);
@@ -153,13 +146,13 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
             String timerText = formatTicks(tag.getLong("CurrentTick")) + " / " + formatTicks(tag.getLong("MaxTick"));
             Component timerComponent = Component.literal(timerText).withStyle(ChatFormatting.WHITE);
 
-            IProgressStyle style = helper.progressStyle().color(0xFF4A90D9, 0xFF1A3A5C);
+            ProgressStyle style = helper.progressStyle().color(0xFF4A90D9, 0xFF1A3A5C);
 
             tooltip.add(helper.progress(
                     tag.getFloat("Progress"),
                     timerComponent,
                     style,
-                    snownee.jade.api.ui.BoxStyle.DEFAULT,
+                    snownee.jade.api.ui.BoxStyle.getNestedBox(),
                     true));
 
             boolean hasItems = tag.contains("OutputItems");
@@ -170,78 +163,45 @@ public class ThreadedRecipeOutputProvider implements IBlockComponentProvider, IS
             }
 
             if (hasItems) {
-                List<Ingredient> items = new ArrayList<>();
                 for (Tag it : tag.getList("OutputItems", Tag.TAG_COMPOUND)) {
                     CompoundTag ct = (CompoundTag) it;
-                    if (ct.contains("count_provider") || ct.contains("ingredient")) {
-                        items.add(IntProviderIngredient.SERIALIZER.parse(
-                                (JsonObject) NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, ct)));
+                    ItemStack stack = StackNbt.loadStack(ct.getCompound("Stack"));
+                    if (stack.isEmpty()) continue;
+                    MutableComponent text = CommonComponents.space();
+                    if (ct.contains("Min")) {
+                        text.append(Component.translatable("gtceu.gui.content.range", String.valueOf(ct.getInt("Min")),
+                                String.valueOf(ct.getInt("Max"))));
                     } else {
-
-                        ItemStack stack = StackNbt.loadStack(ct);
-                        if (!stack.isEmpty()) items.add(SizedIngredient.create(stack));
+                        text.append(String.valueOf(stack.getCount()));
                     }
+                    stack.setCount(1);
+                    text.append(Component.translatable("gtceu.gui.content.times_item",
+                            stack.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
+                    tooltip.add(helper.smallItem(stack));
+                    tooltip.append(text);
                 }
-                addItemTooltips(tooltip, helper, items);
             }
 
             if (hasFluids) {
-                List<FluidIngredient> fluids = new ArrayList<>();
                 for (Tag ft : tag.getList("OutputFluids", Tag.TAG_COMPOUND)) {
                     CompoundTag ct = (CompoundTag) ft;
-                    if (ct.contains("count_provider")) {
-                        fluids.add(IntProviderFluidIngredient.fromNBT(ct));
+                    FluidStack stack = StackNbt.loadFluid(ct.getCompound("Stack"));
+                    if (stack.isEmpty()) continue;
+                    MutableComponent text = CommonComponents.space();
+                    if (ct.contains("Min")) {
+                        text.append(Component.translatable("gtceu.gui.content.range",
+                                FluidTextHelper.getUnicodeMillibuckets(ct.getInt("Min"), true),
+                                FluidTextHelper.getUnicodeMillibuckets(ct.getInt("Max"), true)));
                     } else {
-                        FluidStack stack = StackNbt.loadFluid(ct);
-                        if (!stack.isEmpty()) fluids.add(FluidIngredient.of(stack));
+                        text.append(FluidTextHelper.getUnicodeMillibuckets(stack.getAmount(), true));
                     }
+                    text.append(CommonComponents.space())
+                            .append(ComponentUtils.wrapInSquareBrackets(stack.getHoverName()))
+                            .withStyle(ChatFormatting.WHITE);
+                    tooltip.add(GTElementHelper.smallFluid(JadeFluidObject.of(stack.getFluid(), stack.getAmount())));
+                    tooltip.append(text);
                 }
-                addFluidTooltips(tooltip, fluids);
             }
-        }
-    }
-
-    private void addItemTooltips(ITooltip tooltip, IElementHelper helper, List<Ingredient> items) {
-        for (Ingredient ing : items) {
-            if (ing == null || ing.isEmpty()) continue;
-            ItemStack stack;
-            MutableComponent text = CommonComponents.space();
-            if (ing instanceof IntProviderIngredient provider) {
-                stack = provider.getInner().getItems()[0];
-                text.append(Component.translatable("gtceu.gui.content.range",
-                        String.valueOf(provider.getCountProvider().getMinValue()),
-                        String.valueOf(provider.getCountProvider().getMaxValue())));
-            } else {
-                stack = ing.getItems()[0].copy();
-                text.append(String.valueOf(stack.getCount()));
-                stack.setCount(1);
-            }
-            text.append(Component.translatable("gtceu.gui.content.times_item",
-                    stack.getDisplayName().copy().withStyle(ChatFormatting.WHITE)));
-            tooltip.add(helper.smallItem(stack));
-            tooltip.append(text);
-        }
-    }
-
-    private void addFluidTooltips(ITooltip tooltip, List<FluidIngredient> fluids) {
-        for (FluidIngredient ing : fluids) {
-            if (ing == null || ing.isEmpty()) continue;
-            FluidStack stack;
-            MutableComponent text = CommonComponents.space();
-            if (ing instanceof IntProviderFluidIngredient provider) {
-                stack = provider.getInner().getStacks()[0];
-                text.append(Component.translatable("gtceu.gui.content.range",
-                        FluidTextHelper.getUnicodeMillibuckets(provider.getCountProvider().getMinValue(), true),
-                        FluidTextHelper.getUnicodeMillibuckets(provider.getCountProvider().getMaxValue(), true)));
-            } else {
-                stack = ing.getStacks()[0];
-                text.append(FluidTextHelper.getUnicodeMillibuckets(stack.getAmount(), true));
-            }
-            text.append(CommonComponents.space())
-                    .append(ComponentUtils.wrapInSquareBrackets(stack.getDisplayName()))
-                    .withStyle(ChatFormatting.WHITE);
-            tooltip.add(GTElementHelper.smallFluid(JadeFluidObject.of(stack.getFluid(), stack.getAmount())));
-            tooltip.append(text);
         }
     }
 

@@ -45,7 +45,7 @@ public class SourceHatchProvider implements IBlockComponentProvider, IServerData
 
         float pct = Math.min(1f, stored / (float) cap);
 
-        var helper = tooltip.getElementHelper();
+        var helper = snownee.jade.api.ui.IElementHelper.get();
 
         tooltip.add(
                 helper.progress(
@@ -54,7 +54,7 @@ public class SourceHatchProvider implements IBlockComponentProvider, IServerData
                         helper.progressStyle()
                                 .color(0x8F00FF, 0x8F00FF)
                                 .textColor(0xFFFFFFFF),
-                        BoxStyle.DEFAULT,
+                        BoxStyle.getNestedBox(),
                         true));
     }
 

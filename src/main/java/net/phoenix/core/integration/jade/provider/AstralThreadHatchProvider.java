@@ -41,7 +41,7 @@ public class AstralThreadHatchProvider implements IBlockComponentProvider, IServ
 
         float pct = Math.min(1f, stored / (float) cap);
 
-        var helper = tooltip.getElementHelper();
+        var helper = snownee.jade.api.ui.IElementHelper.get();
 
         tooltip.add(
                 helper.progress(
@@ -50,7 +50,7 @@ public class AstralThreadHatchProvider implements IBlockComponentProvider, IServ
                         helper.progressStyle()
                                 .color(0xFFB07CFF, 0xFF5C2FB0)
                                 .textColor(0xFFFFFFFF),
-                        BoxStyle.DEFAULT,
+                        BoxStyle.getNestedBox(),
                         true));
     }
 

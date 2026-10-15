@@ -68,7 +68,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         CompoundTag serverData = accessor.getServerData();
-        IElementHelper helper = tooltip.getElementHelper();
+        IElementHelper helper = snownee.jade.api.ui.IElementHelper.get();
 
         if (serverData.contains(KEY_ENERGY)) {
             CompoundTag tag = serverData.getCompound(KEY_ENERGY);
@@ -81,7 +81,7 @@ public class JadeGregPackProvider implements IBlockComponentProvider, IServerDat
                         ratio,
                         Component.literal(label),
                         helper.progressStyle().color(0xFFEEE600, 0xFFEEE600).textColor(-1),
-                        net.minecraft.Util.make(snownee.jade.api.ui.BoxStyle.DEFAULT,
+                        net.minecraft.Util.make(snownee.jade.api.ui.BoxStyle.getNestedBox(),
                                 style -> style.borderColor = 0xFF555555),
                         true));
             }

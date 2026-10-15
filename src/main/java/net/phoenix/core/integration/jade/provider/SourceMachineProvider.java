@@ -127,11 +127,11 @@ public class SourceMachineProvider implements IBlockComponentProvider, IServerDa
             int cap = data.getInt(KEY_CAP);
             if (cap > 0) {
                 float pct = Math.min(1f, (float) stored / cap);
-                tooltip.add(tooltip.getElementHelper().progress(
+                tooltip.add(snownee.jade.api.ui.IElementHelper.get().progress(
                         pct,
                         Component.literal(stored + " / " + cap),
-                        tooltip.getElementHelper().progressStyle().color(0x8F00FF, 0x8F00FF).textColor(0xFFFFFFFF),
-                        BoxStyle.DEFAULT,
+                        snownee.jade.api.ui.IElementHelper.get().progressStyle().color(0x8F00FF, 0x8F00FF).textColor(0xFFFFFFFF),
+                        BoxStyle.getNestedBox(),
                         true));
             }
         }
