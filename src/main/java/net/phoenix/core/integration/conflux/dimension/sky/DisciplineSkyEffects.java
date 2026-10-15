@@ -39,8 +39,10 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
     }
 
     @Override
-    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera,
+    public boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera,
                              Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.mulPose(modelViewMatrix);
         if (isFoggy) return true;
 
         SkyManager manager = SkyManager.getInstance();
@@ -302,7 +304,8 @@ public class DisciplineSkyEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
-                                double camX, double camY, double camZ, Matrix4f projectionMatrix) {
+                                double camX, double camY, double camZ, Matrix4f modelViewMatrix,
+                                Matrix4f projectionMatrix) {
         return true;
     }
 }

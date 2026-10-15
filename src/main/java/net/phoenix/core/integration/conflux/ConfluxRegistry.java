@@ -33,7 +33,7 @@ public final class ConfluxRegistry {
     private static final DeferredRegister<BlockEntityType<?>> BES = DeferredRegister
             .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PhoenixCore.MOD_ID);
 
-    public static final Map<ConfluxDataType, DeferredHolder<ConfluxPipeBlock, ConfluxPipeBlock>> PIPES = new EnumMap<>(
+    public static final Map<ConfluxDataType, DeferredHolder<Block, ConfluxPipeBlock>> PIPES = new EnumMap<>(
             ConfluxDataType.class);
     public static final Map<ConfluxDataType, DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfluxPipeBlockEntity>>> PIPE_BES = new EnumMap<>(
             ConfluxDataType.class);

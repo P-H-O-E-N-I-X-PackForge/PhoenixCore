@@ -86,7 +86,7 @@ public class PhoenixBeeRecipeGenerator {
 
         if (mat == null && !id.isEmpty()) {
             String cap = id.substring(0, 1).toUpperCase() + id.substring(1);
-            mat = GTRegistries.MATERIALS.get(cap);
+            mat = net.phoenix.core.util.Mats.byName(cap);
         }
         return mat;
     }

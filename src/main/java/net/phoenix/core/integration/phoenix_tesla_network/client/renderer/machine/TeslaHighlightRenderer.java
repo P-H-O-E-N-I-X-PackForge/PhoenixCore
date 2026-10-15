@@ -59,13 +59,11 @@ public class TeslaHighlightRenderer {
             RenderType.CompositeState.builder()
                     .setLineState(new ShardAccessor.LineState(3.0D))
                     .setLayeringState(new RenderStateShard.LayeringStateShard("view_offset_z_layering", () -> {
-                        PoseStack posestack = RenderSystem.getModelViewStack();
-                        posestack.pushPose();
+                        org.joml.Matrix4fStack posestack = RenderSystem.getModelViewStack();
+                        posestack.pushMatrix();
                         posestack.scale(0.99975F, 0.99975F, 0.99975F);
-                        RenderSystem.applyModelViewMatrix();
                     }, () -> {
                         RenderSystem.getModelViewStack().popMatrix();
-                        RenderSystem.applyModelViewMatrix();
                     }))
                     .setTransparencyState(
                             new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {

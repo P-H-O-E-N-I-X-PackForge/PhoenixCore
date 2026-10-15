@@ -149,7 +149,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         tag.putString("Background", background.name());
         ListTag linesTag = new ListTag();
         for (Component line : lines) {
-            linesTag.add(StringTag.valueOf(Component.Serializer.toJson(line)));
+            linesTag.add(StringTag.valueOf(Component.Serializer.toJson(line, net.phoenix.core.util.NbtRegistries.PROVIDER)));
         }
         tag.put("Lines", linesTag);
     }
@@ -178,7 +178,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         if (tag.contains("Lines", Tag.TAG_LIST)) {
             ListTag linesTag = tag.getList("Lines", Tag.TAG_STRING);
             for (int i = 0; i < linesTag.size(); i++) {
-                Component parsed = Component.Serializer.fromJson(linesTag.getString(i));
+                Component parsed = Component.Serializer.fromJson(linesTag.getString(i), net.phoenix.core.util.NbtRegistries.PROVIDER);
                 lines.add(parsed != null ? parsed : Component.empty());
             }
         }
@@ -187,7 +187,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
-        saveAdditional(tag);
+        saveAdditional(tag, registries);
         return tag;
     }
 

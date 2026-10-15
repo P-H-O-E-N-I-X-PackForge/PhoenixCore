@@ -152,7 +152,7 @@ public class CinderConstructionBlockEntity extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
-        saveAdditional(tag);
+        saveAdditional(tag, registries);
         return tag;
     }
 

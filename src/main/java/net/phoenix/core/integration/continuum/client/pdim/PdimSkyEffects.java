@@ -42,8 +42,10 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
     }
 
     @Override
-    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera,
+    public boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera,
                              Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.mulPose(modelViewMatrix);
         ResourceLocation id = PdimDimensions.bodyOf(level.dimension());
         ContinuumBody body = id == null ? null : ContinuumData.body(id);
         ContinuumSystem system = body == null ? null : ContinuumData.system(body.system());

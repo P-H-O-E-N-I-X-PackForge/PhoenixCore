@@ -63,7 +63,7 @@ public class DroneWandItem extends Item {
             return InteractionResult.CONSUME;
         }
 
-        BlockPos dronePos = NbtUtils.readBlockPos(tag.getCompound(TAG_DRONE_POS));
+        BlockPos dronePos = NbtUtils.readBlockPos(tag, TAG_DRONE_POS).orElse(BlockPos.ZERO);
         if (!(MetaMachine.getMachine(level, dronePos) instanceof DroneControllerMachine drone) || !drone.isFormed()) {
             player.displayClientMessage(
                     Component.literal("Bound drone is missing or unformed.").withStyle(ChatFormatting.RED), true);

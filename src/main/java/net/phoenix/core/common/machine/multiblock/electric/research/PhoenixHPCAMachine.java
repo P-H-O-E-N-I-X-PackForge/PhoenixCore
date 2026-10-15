@@ -635,7 +635,7 @@ public class PhoenixHPCAMachine extends WorkableElectricMultiblockMachine
             if (machine instanceof HPCAComponentPartMachine componentPartMachine) {
                 ItemStack stack = componentPartMachine.getDefinition().asStack();
                 RichTooltip tooltip = new RichTooltip();
-                stack.getTooltipLines((Player) null, TooltipFlag.NORMAL).forEach(tooltip::addLine);
+                stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.EMPTY, null, TooltipFlag.NORMAL).forEach(tooltip::addLine);
                 return tooltip;
             }
             return new RichTooltip();

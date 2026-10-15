@@ -89,7 +89,7 @@ public class FluidInHatchCondition extends RecipeCondition<FluidInHatchCondition
         Fluid fluid = getFluid();
         if (fluid != null) {
             Material material = PhoenixMaterialRegistry.getMaterial(fluid);
-            String localizedName = material != null ? I18n.get(material.getDefaultTranslation()) :
+            String localizedName = material != null ? material.getLocalizedName().getString() :
                     ResourceLocation.parse(fluidString).getPath().replace('_', ' ');
 
             if (material == null) {

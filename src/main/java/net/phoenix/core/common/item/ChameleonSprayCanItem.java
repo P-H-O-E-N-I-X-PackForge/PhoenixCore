@@ -114,7 +114,7 @@ public class ChameleonSprayCanItem extends Item {
                     }).orElse(false);
 
                     if (success) {
-                        bucketPickup.pickupBlock(level, pos, state);
+                        bucketPickup.pickupBlock(player, level, pos, state);
                         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BUCKET_FILL,
                                 SoundSource.PLAYERS, 1.0F, 1.0F);
                         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());

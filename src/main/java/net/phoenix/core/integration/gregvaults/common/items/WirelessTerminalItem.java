@@ -150,7 +150,7 @@ public class WirelessTerminalItem extends Item {
     }
 
     public static void unlink(ItemStack stack) {
-        stack.removeTagKey(TAG_LINKED_POS);
+        StackNbt.removeTagKey(stack, TAG_LINKED_POS);
     }
 
     public static boolean isLinked(ItemStack stack) {

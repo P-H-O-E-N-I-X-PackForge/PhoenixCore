@@ -70,7 +70,7 @@ public class OmniPackTickHandler {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        Player player = event.player;
+        Player player = event.getEntity();
         Level level = player.level();
         if (level.isClientSide) return;
 
@@ -143,7 +143,7 @@ public class OmniPackTickHandler {
             FoodProperties props = food.getItem().getFoodProperties(food, player);
             if (props == null) continue;
 
-            player.getFoodData().eat(food.getItem(), food);
+            player.getFoodData().eat(props);
             food.shrink(1);
             if (food.isEmpty()) packInv.setItem(i, ItemStack.EMPTY);
             packInv.saveToItem(packStack);

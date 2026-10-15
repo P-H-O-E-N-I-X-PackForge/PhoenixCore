@@ -78,17 +78,15 @@ public final class InGameSpriteExporter {
                 new Matrix4f().ortho(0f, w, h, 0f, -1000f, 1000f),
                 VertexSorting.ORTHOGRAPHIC_Z);
         var mv = RenderSystem.getModelViewStack();
-        mv.pushPose();
-        mv.setIdentity();
-        RenderSystem.applyModelViewMatrix();
+        mv.pushMatrix();
+        mv.identity();
 
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
         GuiGraphics gg = new GuiGraphics(mc, buf);
         b.renderFrame(gg, frame, t, w, h);
         gg.flush();
 
-        mv.popPose();
-        RenderSystem.applyModelViewMatrix();
+        mv.popMatrix();
         mc.getMainRenderTarget().bindWrite(true);
 
         RenderSystem.bindTexture(fbo.getColorTextureId());

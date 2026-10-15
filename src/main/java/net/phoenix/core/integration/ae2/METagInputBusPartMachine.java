@@ -286,10 +286,10 @@ public class METagInputBusPartMachine extends MEBusPartMachine implements IDataS
         if (!isRemote()) {
             CompoundTag tag = new CompoundTag();
             tag.put("METagInputBus", writeConfigToTag());
-            dataStick.setTag(tag);
+            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
 
             String displayName = whitelistExpr.isBlank() ? "Empty Tag Bus" : "Tag Bus: " + whitelistExpr;
-            dataStick.setHoverName(Component.literal("ME Tag Input Bus Configuration Data")
+            dataStick.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("ME Tag Input Bus Configuration Data")
                     .withStyle(style -> style.withItalic(true)));
 
             player.sendSystemMessage(Component.literal("Settings Copied: " + whitelistExpr));

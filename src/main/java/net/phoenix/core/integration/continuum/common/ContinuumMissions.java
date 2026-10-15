@@ -536,7 +536,7 @@ public final class ContinuumMissions {
         totals.forEach((item, total) -> {
             int left = total;
             while (left > 0) {
-                int size = Math.min(left, item.getMaxStackSize());
+                int size = Math.min(left, item.getDefaultMaxStackSize());
                 stacks.add(new ItemStack(item, size));
                 left -= size;
             }

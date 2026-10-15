@@ -316,7 +316,7 @@ public abstract class AbstractVaultScreen<T extends AbstractVaultMenu>
         net.minecraft.world.item.ItemStack display = agg.displayStack.copy();
         display.setCount(1);
         List<Component> lines = display.getTooltipLines(
-                minecraft.player,
+                net.minecraft.world.item.Item.TooltipContext.of(minecraft.level), minecraft.player,
                 minecraft.options.advancedItemTooltips ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED :
                         net.minecraft.world.item.TooltipFlag.Default.NORMAL);
         lines.add(1, Component.literal(

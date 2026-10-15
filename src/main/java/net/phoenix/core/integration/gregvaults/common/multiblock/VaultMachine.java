@@ -408,16 +408,22 @@ public class VaultMachine extends MultiblockControllerMachine {
     }
 
     @Override
-    public void saveToItem(CompoundTag tag, boolean isPickBlock) {
-        super.saveToItem(tag, isPickBlock);
+    public void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        CompoundTag tag = new CompoundTag();
         serializeItemsToTag(tag);
+        components.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                net.minecraft.world.item.component.CustomData.of(tag));
     }
 
     @Override
-    public void loadFromItem(CompoundTag tag) {
-        super.loadFromItem(tag);
-        itemHandler = createHandler(Math.max(totalSlots, 0));
-        deserializeItemsFromTag(tag);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        var data = componentInput.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (data != null) {
+            itemHandler = createHandler(Math.max(totalSlots, 0));
+            deserializeItemsFromTag(data.copyTag());
+        }
     }
 
     @Override

@@ -20,8 +20,8 @@ public class LaunchPadBlock extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                                BlockHitResult hit) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new S2COpenMapPacket(pos));
         }
