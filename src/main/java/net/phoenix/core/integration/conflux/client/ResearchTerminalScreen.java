@@ -563,8 +563,9 @@ public class ResearchTerminalScreen extends Screen {
         int[] wb = wikiButtonBounds();
         boolean wikiHover = mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3];
         g.fill(wb[0], wb[1], wb[2], wb[3], wikiHover ? 0xFF2A2A4A : ConfluxTheme.HEADER);
+        g.renderOutline(wb[0], wb[1], wb[2] - wb[0], wb[3] - wb[1], wikiHover ? accent() : ConfluxTheme.BORDER);
         g.drawCenteredString(font, "?", (wb[0] + wb[2]) / 2, wb[1] + (wb[3] - wb[1] - 8) / 2,
-                wikiHover ? ConfluxTheme.TEXT : ConfluxTheme.DIM);
+                wikiHover ? ConfluxTheme.TEXT : accent());
     }
 
     private static String plain(net.minecraft.util.FormattedCharSequence seq) {
