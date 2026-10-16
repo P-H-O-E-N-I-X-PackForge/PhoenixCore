@@ -104,7 +104,7 @@ public class ResearchTerminalScreen extends Screen {
         String keep = searchBox == null ? "" : searchBox.getValue();
         searchBox = new EditBox(font, 8, 38, sideOpenW() - 16, 14, Component.literal("Search"));
         searchBox.setMaxLength(40);
-        searchBox.setHint(Component.literal("\u00a78Search research  ( / )"));
+        searchBox.setHint(Component.empty());
         searchBox.setBordered(true);
         searchBox.setValue(keep);
         searchBox.setResponder(v -> sidebarScroll = 0);
@@ -261,6 +261,14 @@ public class ResearchTerminalScreen extends Screen {
         renderTopBar(g, mx, my);
         renderBottomBar(g);
         super.render(g, mx, my, pt);
+        if (sidebarOpen && searchBox != null && !searchBox.isFocused() && mx >= searchBox.getX() &&
+                mx < searchBox.getX() + searchBox.getWidth() && my >= searchBox.getY() &&
+                my < searchBox.getY() + searchBox.getHeight()) {
+            g.pose().pushPose();
+            g.pose().translate(0, 0, 400);
+            g.renderTooltip(font, Component.literal("Search research  ( / or Ctrl+F )"), mx, my);
+            g.pose().popPose();
+        }
 
         g.pose().popPose();
 
@@ -704,7 +712,11 @@ public class ResearchTerminalScreen extends Screen {
         int bodyH = Math.min(bodyMax, contentH);
         cardMax = Math.max(0, contentH - bodyH);
         cardScroll = Math.min(cardScroll, cardMax);
-        int total = 18 + 8 + bodyH + 8 + 22;
+        // the count and the ready marker share a line when they fit, otherwise the marker drops to its own
+        String count = p[0] + "/" + p[1] + " researched";
+        String ready = "\u25cf ready";
+        boolean split = p[2] == 1 && font.width(count + "  " + ready) > cardW() - 20;
+        int total = 18 + 8 + bodyH + 8 + 14 + (split ? 10 : 0) + 6;
         g.fill(x, y, x + cardW(), y + total, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
         g.renderOutline(x, y, cardW(), total, (acc & 0xFFFFFF) | 0xAA000000);
         g.fillGradient(x + 1, y + 1, x + cardW() - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
@@ -726,8 +738,16 @@ public class ResearchTerminalScreen extends Screen {
         g.fill(x + 10, py, x + cardW() - 10, py + 4, 0xFF111122);
         int filled = p[1] == 0 ? 0 : (int) ((cardW() - 20) * (p[0] / (float) p[1]));
         g.fill(x + 10, py, x + 10 + filled, py + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : acc);
-        String line = p[0] + " of " + p[1] + " researched" + (p[2] == 1 ? "  \u00a7a\u25cf ready" : "");
-        g.drawString(font, "\u00a77" + line, x + 10, py + 8, ConfluxTheme.TEXT, false);
+        int textW = cardW() - 20;
+        g.drawString(font, "\u00a77" + font.plainSubstrByWidth(count, textW), x + 10, py + 8, ConfluxTheme.TEXT, false);
+        if (p[2] == 1) {
+            if (split) {
+                g.drawString(font, "\u00a7a" + ready, x + 10, py + 18, ConfluxTheme.TEXT, false);
+            } else {
+                g.drawString(font, "\u00a7a" + ready, x + 10 + textW - font.width(ready), py + 8, ConfluxTheme.TEXT,
+                        false);
+            }
+        }
         cardRect = new int[] { x, y, x + cardW(), y + total };
     }
 
