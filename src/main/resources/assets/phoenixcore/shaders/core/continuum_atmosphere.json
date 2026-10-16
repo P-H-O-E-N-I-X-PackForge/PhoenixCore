@@ -2,7 +2,9 @@
   "blend": {
     "func": "add",
     "srcrgb": "srcalpha",
-    "dstrgb": "one"
+    "dstrgb": "one",
+    "srcalpha": "0",
+    "dstalpha": "1"
   },
   "vertex": "phoenixcore:continuum_planet",
   "fragment": "phoenixcore:continuum_atmosphere",

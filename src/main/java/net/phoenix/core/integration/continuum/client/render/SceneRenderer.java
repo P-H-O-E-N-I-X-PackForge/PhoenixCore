@@ -55,11 +55,19 @@ public final class SceneRenderer {
     private static void blendAtmosphere() {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
-                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
-                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ZERO);
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ZERO,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE);
     }
 
     public static void end() {
+        // the scene is shown through a vanilla texture shader that throws away pixels with low alpha, and several passes
+        // write their own alpha; pin the whole target's alpha to 1 so nothing in it can be discarded
+        if (current != null) {
+            RenderSystem.colorMask(false, false, false, true);
+            RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.clear(16384, Minecraft.ON_OSX);
+            RenderSystem.colorMask(true, true, true, true);
+        }
         if (previous != null) previous.bindWrite(true);
         previous = null;
         current = null;
