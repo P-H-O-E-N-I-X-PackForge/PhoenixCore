@@ -665,7 +665,11 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().popPose();
     }
 
-    private static final int CARD_W = 168;
+    /** The overview card tracks the window: a bit over a seventh of its width, within readable bounds. */
+    private int cardW() {
+        return Math.max(112, Math.min(176, Math.round(width * 0.15f)));
+    }
+
     private boolean cardOpen = true;
     private float cardScroll = 0;
     private int cardMax = 0;
@@ -682,49 +686,49 @@ public class ResearchTerminalScreen extends Screen {
         // absolute coordinates: the rich text renderer clips against them and misjudges a translated pose
         int x = Math.round(canvasLeft() * uiScale) + 8, y = Math.round(canvasTop() * uiScale) + 8;
         int acc = accent();
-        boolean headerHover = lx >= x && lx < x + CARD_W && my >= y && my < y + 18;
+        boolean headerHover = lx >= x && lx < x + cardW() && my >= y && my < y + 18;
 
         if (!cardOpen) {
-            g.fill(x, y, x + CARD_W, y + 18, 0xD00B0B18);
-            g.renderOutline(x, y, CARD_W, 18, headerHover ? acc : ConfluxTheme.BORDER);
-            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, CARD_W - 70), x + 6, y + 5, ConfluxTheme.TEXT, false);
+            g.fill(x, y, x + cardW(), y + 18, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
+            g.renderOutline(x, y, cardW(), 18, headerHover ? acc : ConfluxTheme.BORDER);
+            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, cardW() - 70), x + 6, y + 5, ConfluxTheme.TEXT, false);
             String c = p[0] + "/" + p[1];
-            g.drawString(font, "\u00a78" + c, x + CARD_W - 6 - font.width(c), y + 5, ConfluxTheme.DIM, false);
-            cardRect = new int[] { x, y, x + CARD_W, y + 18 };
+            g.drawString(font, "\u00a78" + c, x + cardW() - 6 - font.width(c), y + 5, ConfluxTheme.DIM, false);
+            cardRect = new int[] { x, y, x + cardW(), y + 18 };
             return;
         }
 
-        int bodyMax = 44;
+        int bodyMax = Math.max(26, Math.min(56, Math.round(height * 0.06f)));
         List<RichBlock> blocks = cardBlocksFor(tree.description);
-        int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, CARD_W - 20, new java.util.HashSet<>());
+        int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, cardW() - 20, new java.util.HashSet<>());
         int bodyH = Math.min(bodyMax, contentH);
         cardMax = Math.max(0, contentH - bodyH);
         cardScroll = Math.min(cardScroll, cardMax);
         int total = 18 + 8 + bodyH + 8 + 22;
-        g.fill(x, y, x + CARD_W, y + total, 0xD00B0B18);
-        g.renderOutline(x, y, CARD_W, total, (acc & 0xFFFFFF) | 0xAA000000);
-        g.fillGradient(x + 1, y + 1, x + CARD_W - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
-        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, CARD_W - 20), x + 6, y + 5, ConfluxTheme.TEXT, false);
+        g.fill(x, y, x + cardW(), y + total, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
+        g.renderOutline(x, y, cardW(), total, (acc & 0xFFFFFF) | 0xAA000000);
+        g.fillGradient(x + 1, y + 1, x + cardW() - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
+        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, cardW() - 20), x + 6, y + 5, ConfluxTheme.TEXT, false);
 
         int by = y + 22;
-        g.enableScissor(x + 1, by, x + CARD_W - 1, by + bodyH);
-        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, CARD_W - 20, (int) cardScroll, by, by + bodyH, acc,
+        g.enableScissor(x + 1, by, x + cardW() - 1, by + bodyH);
+        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, cardW() - 20, (int) cardScroll, by, by + bodyH, acc,
                 new java.util.HashSet<>());
         g.disableScissor();
         if (cardMax > 0) {
             int th = Math.max(10, bodyH * bodyH / (bodyH + cardMax));
             int ty = by + (int) ((bodyH - th) * (cardScroll / cardMax));
-            g.fill(x + CARD_W - 4, by, x + CARD_W - 2, by + bodyH, 0xFF111122);
-            g.fill(x + CARD_W - 4, ty, x + CARD_W - 2, ty + th, acc);
+            g.fill(x + cardW() - 4, by, x + cardW() - 2, by + bodyH, 0xFF111122);
+            g.fill(x + cardW() - 4, ty, x + cardW() - 2, ty + th, acc);
         }
 
         int py = by + bodyH + 6;
-        g.fill(x + 10, py, x + CARD_W - 10, py + 4, 0xFF111122);
-        int filled = p[1] == 0 ? 0 : (int) ((CARD_W - 20) * (p[0] / (float) p[1]));
+        g.fill(x + 10, py, x + cardW() - 10, py + 4, 0xFF111122);
+        int filled = p[1] == 0 ? 0 : (int) ((cardW() - 20) * (p[0] / (float) p[1]));
         g.fill(x + 10, py, x + 10 + filled, py + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : acc);
         String line = p[0] + " of " + p[1] + " researched" + (p[2] == 1 ? "  \u00a7a\u25cf ready" : "");
         g.drawString(font, "\u00a77" + line, x + 10, py + 8, ConfluxTheme.TEXT, false);
-        cardRect = new int[] { x, y, x + CARD_W, y + total };
+        cardRect = new int[] { x, y, x + cardW(), y + total };
     }
 
     private List<RichBlock> cardBlocksFor(String text) {
