@@ -48,7 +48,8 @@ public class TeslaHatchRecipes {
                                               ItemStack baseHatch, ItemStack outputBaseHatch) {
         FluidStack fluid = getFluidForTier(tier);
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
-        if (fluid.isEmpty() || stabilizer.isEmpty()) return;
+        if (fluid.isEmpty() || stabilizer.isEmpty() || missing("tesla hatch", tier, getQuadCableForTier(tier),
+                getDensePlateForTier(tier))) return;
 
         GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_2a_" + VN[tier].toLowerCase())
                 .inputItems(baseHatch)
@@ -74,7 +75,7 @@ public class TeslaHatchRecipes {
                                                         ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
         ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();
-        if (researchStack.isEmpty()) return;
+        if (researchStack.isEmpty() || missing("tesla hatch", tier, getQuadCableForTier(tier))) return;
 
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_input_hatch_2a_scanner_" + VN[tier].toLowerCase())
                 .inputItems(baseHatch)
@@ -106,7 +107,7 @@ public class TeslaHatchRecipes {
                                                         ItemStack baseHatch, ItemStack outputBaseHatch) {
         ItemStack researchStack = PhoenixTeslaMachines.TESLA_INPUT_2A[tier - 1].asStack();
         ItemStack outputResearchStack = PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier - 1].asStack();
-        if (researchStack.isEmpty()) return;
+        if (researchStack.isEmpty() || missing("tesla hatch", tier, getQuadCableForTier(tier))) return;
 
         GTRecipeTypes.ASSEMBLY_LINE_RECIPES.recipeBuilder("tesla_input_hatch_2a_station_" + VN[tier].toLowerCase())
                 .inputItems(baseHatch)
@@ -132,6 +133,18 @@ public class TeslaHatchRecipes {
                 .duration(600).EUt(V[tier])
                 .stationResearch(b -> b.researchStack(outputResearchStack).CWUt(8))
                 .save(provider);
+    }
+
+    /** True (and logged once per tier) when a required material form does not exist for the tier, so no recipe is built. */
+    private static boolean missing(String what, int tier, ItemStack... parts) {
+        for (ItemStack part : parts) {
+            if (part.isEmpty()) {
+                net.phoenix.core.PhoenixCore.LOGGER.warn("Skipping {} recipes for tier {}: an ingredient is empty", what,
+                        tier);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static ItemStack getCoilForTier(int tier) {
