@@ -177,6 +177,7 @@ public class PhoenixClient {
         SpriteCaptureRegistry.register(new AxiomPhoenixBaker());
         SpriteCaptureRegistry.register(new AxiomSculkBaker());
         SpriteCaptureRegistry.register(new AxiomSealedBaker());
+        event.enqueueWork(SuiteButtons::register);
     }
 
     @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
