@@ -106,7 +106,7 @@ public class ResearchTerminalScreen extends Screen {
         addRenderableWidget(searchBox);
 
         rebuildTrees();
-        
+
         if (!panCentred) {
             resetPan();
             panCentred = true;
@@ -174,7 +174,7 @@ public class ResearchTerminalScreen extends Screen {
     private void toggleSidebar() {
         int before = canvasLeft();
         sidebarOpen = !sidebarOpen;
-        
+
         panX += before - canvasLeft();
         if (searchBox != null) {
             searchBox.visible = sidebarOpen;
@@ -252,7 +252,7 @@ public class ResearchTerminalScreen extends Screen {
         g.fill(0, 0, vw, vh, ConfluxTheme.BG);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
-        
+
         g.flush();
         renderSidebar(g, mx, my);
         renderTopBar(g, mx, my);
@@ -694,7 +694,7 @@ public class ResearchTerminalScreen extends Screen {
         if (trees.isEmpty()) return;
         ResearchTree tree = trees.get(activeTreeIdx);
         int[] p = progress(tree);
-        
+
         int x = Math.round(canvasLeft() * uiScale) + 8, y = Math.round(canvasTop() * uiScale) + 8;
         int acc = accent();
         boolean headerHover = lx >= x && lx < x + cardW() && my >= y && my < y + 18;
@@ -716,7 +716,7 @@ public class ResearchTerminalScreen extends Screen {
         int bodyH = Math.min(bodyMax, contentH);
         cardMax = Math.max(0, contentH - bodyH);
         cardScroll = Math.min(cardScroll, cardMax);
-        
+
         String count = p[0] + "/" + p[1] + " researched";
         String ready = "\u25cf ready";
         boolean split = p[2] == 1 && font.width(count + "  " + ready) > cardW() - 20;
@@ -845,7 +845,7 @@ public class ResearchTerminalScreen extends Screen {
 
             String amt = formatAmount(stored);
             Component label = type.displayComponent();
-            
+
             if (font.width(label) + font.width(amt) + 8 > barW) {
                 String name = label.getString();
                 label = Component.literal(name.substring(0, Math.min(3, name.length()))).withStyle(label.getStyle());

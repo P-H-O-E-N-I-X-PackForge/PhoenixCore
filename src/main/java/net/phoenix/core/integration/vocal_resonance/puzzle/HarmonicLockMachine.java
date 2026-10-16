@@ -86,7 +86,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private @Nullable UUID runner;
     private long runStart;
     private boolean[] judged = new boolean[0];
-    
+
     private boolean[] holding = new boolean[0];
     private boolean[] holdPerfect = new boolean[0];
     private int perfects;
@@ -195,7 +195,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         judged[best] = true;
         boolean perfect = bestDelta <= runDifficulty.perfectMs();
         if (beats.get(best).isHold()) {
-            
+
             holding[best] = true;
             holdPerfect[best] = perfect;
             return;
@@ -232,7 +232,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         AcousticChart current = chart;
         Level level = getLevel();
         if (current == null || level == null) return;
-        
+
         for (int i = 0; i < current.beats().size(); i++) {
             if (!holding[i]) continue;
             holding[i] = false;

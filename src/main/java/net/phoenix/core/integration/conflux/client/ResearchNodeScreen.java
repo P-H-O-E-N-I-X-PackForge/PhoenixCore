@@ -644,7 +644,7 @@ public class ResearchNodeScreen extends Screen {
     @Override
     public boolean mouseClicked(double mx, double my, int btn) {
         if (btn == 0) {
-            
+
             for (int i = buttons.size() - 1; i >= 0; i--) {
                 Btn b = buttons.get(i);
                 if (b.hit(mx, my)) {

@@ -15,7 +15,6 @@ public final class AttuneClient {
     private AttuneClient() {}
 
     public static void openDifficulty(BlockPos pos, int tuneLevel) {
-
         Minecraft mc = Minecraft.getInstance();
         mc.tell(() -> mc.tell(() -> mc.setScreen(new AttuneDifficultyScreen(pos, tuneLevel))));
     }

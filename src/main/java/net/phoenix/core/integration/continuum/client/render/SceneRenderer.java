@@ -59,7 +59,6 @@ public final class SceneRenderer {
     }
 
     public static void end() {
-
         if (current != null) {
             RenderSystem.colorMask(false, false, false, true);
             RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);

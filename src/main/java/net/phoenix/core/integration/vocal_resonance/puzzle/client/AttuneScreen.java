@@ -162,7 +162,7 @@ public class AttuneScreen extends Screen {
         }
         boolean isPerfect = bestDelta <= difficulty.perfectMs();
         if (beats.get(best).isHold()) {
-            
+
             judged[best] = 4;
             holdPerfect[best] = isPerfect;
             lastSustain[lane] = Util.getMillis();
@@ -269,7 +269,7 @@ public class AttuneScreen extends Screen {
             if (judged[i] != 4) continue;
             AcousticChart.Beat beat = beats.get(i);
             if (now >= tailMs(beat)) {
-                
+
                 PacketDistributor.sendToServer(new C2SAttunePressPacket(pos, beat.lane(), now, true));
                 finishHold(i);
                 say(holdPerfect[i] ? "PERFECT" : "GOOD", holdPerfect[i] ? 0xFF7AFFB0 : 0xFFFFE066);

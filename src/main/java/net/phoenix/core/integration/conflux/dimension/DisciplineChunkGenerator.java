@@ -887,7 +887,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     }
 
                     if (state == lava) {
-                        
+
                         chunk.setBlockState(pos.set(x, y, z), state, false);
                     } else {
                         sections[chunk.getSectionIndex(y)].setBlockState(x & 15, y & 15, z & 15, state, false);
