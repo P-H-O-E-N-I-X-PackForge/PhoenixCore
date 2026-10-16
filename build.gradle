@@ -207,6 +207,8 @@ dependencies {
     compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
     // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
     implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
+    // Local build of PhoenixChronicles-1.21.1 so the dev client has quests; rebuild it and copy the jar into libs/
+    runtimeOnly files("libs/phoenix_chronicles-neoforge-10.0.0.jar")
     implementation "maven.modrinth:extended-ae:1.21-2.2.35-neoforge"
     implementation "maven.modrinth:glodium:1.21-2.2-neoforge"
 
