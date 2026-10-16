@@ -8,19 +8,10 @@ import net.phoenix.core.integration.conflux.research.WorldResearchData;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Stable entry point for the rest of the suite (Chronicles, Archives, Phantasia, Guilds...) to read and write a
- * team's Conflux progression without depending on its internals. Every method resolves the player's team the same way
- * the research terminal does, so callers never deal with team ids.
- */
 public final class ConfluxApi {
 
     private ConfluxApi() {}
 
-    /**
-     * Set by Phoenix Archive once it is ported: called with the player and the entry id when research with an
-     * {@code archive} unlock completes.
-     */
     public static volatile java.util.function.BiConsumer<ServerPlayer, String> archiveUnlocker;
 
     public static boolean hasFlag(ServerPlayer player, String flag) {
@@ -31,7 +22,6 @@ public final class ConfluxApi {
         return data(player).isUnlocked(ResearchTeamHelper.getTeamId(player), nodeId);
     }
 
-    /** The discipline the player's team chose, or null if none yet. */
     public static @Nullable String discipline(ServerPlayer player) {
         return data(player).getDiscipline(ResearchTeamHelper.getTeamId(player));
     }
@@ -43,7 +33,8 @@ public final class ConfluxApi {
 
     public static void grantUnlock(ServerPlayer player, ResourceLocation nodeId) {
         var team = ResearchTeamHelper.getTeamId(player);
-        var before = net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.snapshot(player.server, team);
+        var before = net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.snapshot(player.server,
+                team);
         data(player).grantUnlock(team, nodeId);
         net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.announce(player.server, team, before);
         ConfluxNetwork.syncResearchToPlayer(player);

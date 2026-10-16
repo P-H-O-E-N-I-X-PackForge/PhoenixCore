@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResonanceConsoleScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final ResonantJukeboxMachine machine;
 

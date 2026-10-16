@@ -88,7 +88,8 @@ public class CustomComponetRecipes {
     private static void processStationTeslaStabilizerRecipe(@NotNull RecipeOutput provider, int tier) {
         if (getFrameForTier(tier).isEmpty() || getLongRodForTier(tier).isEmpty() || getPlateForTier(tier).isEmpty() ||
                 getFoilForTier(tier).isEmpty() || getQuadCableForTier(tier).isEmpty()) {
-            net.phoenix.core.PhoenixCore.LOGGER.warn("Skipping tesla stabilizer station recipe for tier {}: an ingredient is empty",
+            net.phoenix.core.PhoenixCore.LOGGER.warn(
+                    "Skipping tesla stabilizer station recipe for tier {}: an ingredient is empty",
                     tier);
             return;
         }

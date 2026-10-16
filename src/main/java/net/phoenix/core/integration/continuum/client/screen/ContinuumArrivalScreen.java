@@ -33,9 +33,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class ContinuumArrivalScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final float SECONDS = 9.0f;
     private static final float CARD_AT = 0.78f;

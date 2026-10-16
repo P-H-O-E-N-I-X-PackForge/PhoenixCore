@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Everything a node gives, worked out for display: the item rewards, the recipes and machines it opens (looked up from
- * the gated-recipe rules its flags satisfy), the research it leads to, and the plain-text leftovers.
- */
 @OnlyIn(Dist.CLIENT)
 public record NodeYield(List<ItemStack> rewards, List<ItemStack> recipeItems, List<String> recipeLines,
                         List<ItemStack> machines, List<String> otherLines, List<ResearchNode> leadsTo) {
@@ -56,7 +52,8 @@ public record NodeYield(List<ItemStack> rewards, List<ItemStack> recipeItems, Li
                             recipeLines.add(pretty(gate.recipeType().getPath()) + " recipes, " +
                                     gate.minTier().toUpperCase(Locale.ROOT) + " and up");
                         }
-                        for (ResourceLocation id : rule.recipeIds()) recipeLines.add("Recipe: " + pretty(lastSegment(id)));
+                        for (ResourceLocation id : rule.recipeIds())
+                            recipeLines.add("Recipe: " + pretty(lastSegment(id)));
                     }
                     if (showFlags && !gates) other.add("§b⚑ " + u.value());
                 }
@@ -73,14 +70,14 @@ public record NodeYield(List<ItemStack> rewards, List<ItemStack> recipeItems, Li
             }
         }
 
-        // research that charts the Continuum: bodies and systems whose stage this node raises
         for (var body : net.phoenix.core.integration.continuum.data.ContinuumData.allBodies()) {
             if (node.id.equals(body.surveyedResearch())) other.add("§b◎ Surveys " + body.name());
             else if (node.id.equals(body.detectedResearch())) other.add("§e◎ Detects " + body.name());
         }
         for (var system : net.phoenix.core.integration.continuum.data.ContinuumData.systems()) {
             if (node.id.equals(system.surveyedResearch())) other.add("§b◎ Surveys the " + system.name() + " system");
-            else if (node.id.equals(system.detectedResearch())) other.add("§e◎ Detects the " + system.name() + " system");
+            else if (node.id.equals(system.detectedResearch()))
+                other.add("§e◎ Detects the " + system.name() + " system");
         }
 
         List<ResearchNode> leads = new ArrayList<>();

@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContinuumHistoryScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int ROW = 14;
 

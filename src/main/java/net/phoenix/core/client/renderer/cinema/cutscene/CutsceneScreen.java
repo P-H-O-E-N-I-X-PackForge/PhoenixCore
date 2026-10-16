@@ -40,9 +40,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CutsceneScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final float PAGE_FADE_OUT = 0.4f;
     private static final float LETTER_FADE_IN = 0.15f;

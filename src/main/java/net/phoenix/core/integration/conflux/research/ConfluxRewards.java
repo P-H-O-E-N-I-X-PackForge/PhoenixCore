@@ -14,22 +14,14 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Hands out the {@code item} unlocks of a research node. The value is an item the way a command writes one, with an
- * optional count: {@code namespace:item}, {@code namespace:item*4}, or with data components,
- * {@code minecraft:diamond_sword[minecraft:enchantments={levels:{"minecraft:sharpness":5}}]*1}. Anything that does not
- * fit in the inventory is dropped at the player's feet.
- */
 public final class ConfluxRewards {
 
     private ConfluxRewards() {}
 
-    /** Plain {@code id*count} only; components need a registry lookup, see {@link #parse(String, HolderLookup.Provider)}. */
     public static ItemStack parse(String value) {
         return parse(value, null);
     }
 
-    /** Parses an {@code item} unlock value into a stack, or EMPTY if it does not name a real item. */
     public static ItemStack parse(String value, @Nullable HolderLookup.Provider registries) {
         String v = value.trim();
         int count = 1;

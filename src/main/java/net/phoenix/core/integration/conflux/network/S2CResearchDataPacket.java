@@ -9,10 +9,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.integration.conflux.client.ClientResearchCache;
 
-/**
- * One research tree or gated-recipe rule, as the JSON the server loaded it from. Remote clients never read the datapack,
- * so without this they have no trees to draw and no rules to describe. {@code RESET} clears the client's copy first.
- */
 public class S2CResearchDataPacket implements CustomPacketPayload {
 
     public static final byte RESET = 0;

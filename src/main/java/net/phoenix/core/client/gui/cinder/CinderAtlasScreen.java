@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class CinderAtlasScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int PANEL_W = 460;
     private static final int PANEL_H = 420;

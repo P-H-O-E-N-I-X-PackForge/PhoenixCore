@@ -11,7 +11,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.network.C2SResearchUnlockPacket;
-import net.phoenix.core.integration.conflux.research.ConfluxRewards;
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTree;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
@@ -32,10 +31,6 @@ import java.util.Set;
 
 import static net.phoenix.core.integration.conflux.client.ConfluxTheme.*;
 
-/**
- * The viewer a research node opens in. Compact it is a card floating over the live terminal; fullscreen it splits into
- * a record (the lore), the requirements and the yield. The choice is remembered between nodes.
- */
 @OnlyIn(Dist.CLIENT)
 public class ResearchNodeScreen extends Screen {
 
@@ -104,7 +99,6 @@ public class ResearchNodeScreen extends Screen {
         minecraft.setScreen(parent);
     }
 
-    // ------------------------------------------------------------------ state
     private void refreshState() {
         Set<ResourceLocation> done = ClientResearchCache.unlocked;
         unlocked = ClientResearchCache.isUnlocked(node.id);
@@ -144,7 +138,6 @@ public class ResearchNodeScreen extends Screen {
         return node.lore;
     }
 
-    // ------------------------------------------------------------------ rendering
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         ConfluxTheme.refresh();
@@ -160,8 +153,7 @@ public class ResearchNodeScreen extends Screen {
         } else {
             parent.render(g, -10000, -10000, pt);
             g.flush();
-            // the terminal's node icons are drawn at raised depth, so the overlay has to sit above them or they show
-            // through the dim and the card
+
             g.pose().pushPose();
             g.pose().translate(0, 0, 600);
             g.fill(0, 0, width, height, 0xB0000008);
@@ -170,7 +162,6 @@ public class ResearchNodeScreen extends Screen {
             g.pose().popPose();
         }
 
-        // text is batched; without a flush it is drawn after the popup's fill and shows through it
         g.flush();
         g.pose().pushPose();
         g.pose().translate(0, 0, 1000);
@@ -209,13 +200,11 @@ public class ResearchNodeScreen extends Screen {
                 "Available") : "Locked";
     }
 
-    /** Header band: node icon in a diamond frame, title, tree, status and the window buttons. */
     private void renderHeader(GuiGraphics g, int x, int y, int w, int mx, int my) {
         int acc = accent();
         g.fillGradient(x, y, x + w, y + 36, withAlpha(acc, 0x40), withAlpha(acc, 0x00));
         g.fill(x, y + 35, x + w, y + 36, withAlpha(acc, 0x99));
 
-        // frame around the icon; a node that can be researched right now breathes
         int ix = x + 10, iy = y + 8;
         float pulse = canResearch ? 0.5f + 0.5f * (float) Math.sin(net.minecraft.Util.getMillis() / 380.0) : 0f;
         if (canResearch) {
@@ -269,7 +258,8 @@ public class ResearchNodeScreen extends Screen {
         boolean pinHov = mx >= sx && mx < sx + 14 && my >= y + 6 && my < y + 20;
         g.fill(sx, y + 6, sx + 14, y + 20, pinHov ? 0x33FFFFFF : 0x11FFFFFF);
         g.drawCenteredString(font, pinned ? "\u2605" : "\u2606", sx + 7, y + 9, pinned ? 0xFFFFDD55 : DIM);
-        button(sx, y + 6, sx + 14, y + 20, () -> ConfluxPins.toggle(node.id), pinned ? "Unpin" : "Pin to the sidebar", mx,
+        button(sx, y + 6, sx + 14, y + 20, () -> ConfluxPins.toggle(node.id), pinned ? "Unpin" : "Pin to the sidebar",
+                mx,
                 my);
     }
 
@@ -381,7 +371,8 @@ public class ResearchNodeScreen extends Screen {
                 boolean hov = visible && mx >= x && mx < x + w && my >= y - 1 && my < y + 9;
                 if (hov) g.fill(x, y - 1, x + w, y + 9, 0x22FFFFFF);
                 String name = visible ? n.title : "???";
-                g.drawString(font, font.plainSubstrByWidth((done ? "\u00a7a\u2714 " : "\u00a78\u25e6 ") + name, w - 6), x + 4,
+                g.drawString(font, font.plainSubstrByWidth((done ? "\u00a7a\u2714 " : "\u00a78\u25e6 ") + name, w - 6),
+                        x + 4,
                         y, visible ? TEXT : DIM, false);
                 if (visible) button(x, y - 1, x + w, y + 9, () -> openNode(n), null, mx, my);
             }
@@ -390,7 +381,6 @@ public class ResearchNodeScreen extends Screen {
         return y + 4;
     }
 
-    /** Everything this node gives. With a null graphics context it only measures, so the card can size itself. */
     private int drawYield(@Nullable GuiGraphics g, int x, int y, int w, int mx, int my, boolean compact) {
         NodeYield yd = cachedYield;
         if (yd == null || yd.isEmpty()) return y;
@@ -480,7 +470,8 @@ public class ResearchNodeScreen extends Screen {
         int costH = node.cost.isEmpty() || lockedOut ? 0 : 14 + node.cost.size() * 14 + 2;
         int prereqH = 0;
         if (!unlocked && !lockedOut) {
-            int rows = node.prerequisites.size() + (node.prerequisitesAny.isEmpty() ? 0 : 1 + node.prerequisitesAny.size());
+            int rows = node.prerequisites.size() +
+                    (node.prerequisitesAny.isEmpty() ? 0 : 1 + node.prerequisitesAny.size());
             prereqH = rows == 0 ? 0 : 11 + rows * 10 + 4;
         }
         int yieldH = drawYield(null, 0, 0, inner, 0, 0, true);
@@ -494,7 +485,8 @@ public class ResearchNodeScreen extends Screen {
         cardY = (height - cardH) / 2;
 
         int acc = accent();
-        int borderA = canResearch ? (int) (0x55 + 0x55 * (0.5f + 0.5f * Math.sin(net.minecraft.Util.getMillis() / 380.0))) :
+        int borderA = canResearch ?
+                (int) (0x55 + 0x55 * (0.5f + 0.5f * Math.sin(net.minecraft.Util.getMillis() / 380.0))) :
                 0x66;
         g.fill(cardX - 1, cardY - 1, cardX + cardW + 1, cardY + cardH + 1, withAlpha(acc, borderA));
         g.fill(cardX, cardY, cardX + cardW, cardY + cardH, PANEL);
@@ -585,7 +577,6 @@ public class ResearchNodeScreen extends Screen {
         g.drawString(font, "§8[F] shrink   [R] research   [Esc] close", margin + 2, fy + 5, DIM, false);
     }
 
-    // ------------------------------------------------------------------ connections popup
     private List<ResearchNode> unlockedChildren() {
         List<ResearchNode> out = new ArrayList<>();
         for (ResearchNode n : tree.getNodes()) {
@@ -596,8 +587,10 @@ public class ResearchNodeScreen extends Screen {
 
     private void renderConnections(GuiGraphics g, int mx, int my) {
         List<ResearchNode> requires = new ArrayList<>();
-        for (ResourceLocation id : node.prerequisites) ResearchTreeRegistry.INSTANCE.getNode(id).ifPresent(requires::add);
-        for (ResourceLocation id : node.prerequisitesAny) ResearchTreeRegistry.INSTANCE.getNode(id).ifPresent(requires::add);
+        for (ResourceLocation id : node.prerequisites)
+            ResearchTreeRegistry.INSTANCE.getNode(id).ifPresent(requires::add);
+        for (ResourceLocation id : node.prerequisitesAny)
+            ResearchTreeRegistry.INSTANCE.getNode(id).ifPresent(requires::add);
         List<ResearchNode> unlocks = unlockedChildren();
 
         int rowH = 12;
@@ -620,7 +613,8 @@ public class ResearchNodeScreen extends Screen {
         connectionRows(g, px, y, w, "Unlocks", unlocks, mx, my);
     }
 
-    private int connectionRows(GuiGraphics g, int px, int y, int w, String label, List<ResearchNode> list, int mx, int my) {
+    private int connectionRows(GuiGraphics g, int px, int y, int w, String label, List<ResearchNode> list, int mx,
+                               int my) {
         if (list.isEmpty()) return y;
         g.drawString(font, "§8" + label + ":", px + 8, y, TEXT, false);
         y += 12;
@@ -647,11 +641,10 @@ public class ResearchNodeScreen extends Screen {
         }
     }
 
-    // ------------------------------------------------------------------ input
     @Override
     public boolean mouseClicked(double mx, double my, int btn) {
         if (btn == 0) {
-            // popup rows sit on top, so they are tested first (they were added last)
+            
             for (int i = buttons.size() - 1; i >= 0; i--) {
                 Btn b = buttons.get(i);
                 if (b.hit(mx, my)) {

@@ -20,9 +20,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.NotNull;
 
 public class ColorRadialMenuScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final InteractionHand hand;
     private static final int RADIUS = 85;

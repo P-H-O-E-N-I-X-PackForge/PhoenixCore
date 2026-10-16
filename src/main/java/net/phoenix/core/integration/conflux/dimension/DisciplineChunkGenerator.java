@@ -817,9 +817,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int minY = getMinY();
         int maxY = minY + getGenDepth();
 
-        // Stone goes straight into the chunk sections, and the heightmaps are primed once at the end the way vanilla
-        // does it. Going through ChunkAccess.setBlockState for every one of the ~100k blocks in a chunk (with a fresh
-        // BlockPos each) was most of the cost of generating one.
         net.minecraft.world.level.block.state.BlockState stone = Blocks.STONE.defaultBlockState();
         net.minecraft.world.level.block.state.BlockState deepslateState = Blocks.DEEPSLATE.defaultBlockState();
         net.minecraft.world.level.block.state.BlockState bedrock = Blocks.BEDROCK.defaultBlockState();
@@ -830,9 +827,6 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int seaLevel = profile.seaLevel();
         long rollSeed = seed ^ 0xDEE95L;
 
-        // The density field is sampled on a 4-block lattice and interpolated between, the way vanilla does (it uses
-        // 4x8x4). The noise varies over tens of blocks, so the interpolated surface matches the per-block one to
-        // within a block while costing about 1/40th of the samples.
         final int cell = 4;
         int cellsY = (maxY - minY + cell - 1) / cell;
         int gridY = cellsY + 1;
@@ -884,7 +878,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                             state = bedrock;
                         } else {
                             boolean deepslate = y < DEEPSLATE_FULL ||
-                                    (y < DEEPSLATE_TOP && roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
+                                    (y < DEEPSLATE_TOP &&
+                                            roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
                             state = deepslate ? deepslateState : stone;
                         }
                     } else {
@@ -892,7 +887,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     }
 
                     if (state == lava) {
-                        // lava gives off light, which the chunk has to be told about
+                        
                         chunk.setBlockState(pos.set(x, y, z), state, false);
                     } else {
                         sections[chunk.getSectionIndex(y)].setBlockState(x & 15, y & 15, z & 15, state, false);

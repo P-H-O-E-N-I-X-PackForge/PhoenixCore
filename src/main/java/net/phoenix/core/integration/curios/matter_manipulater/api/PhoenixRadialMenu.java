@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhoenixRadialMenu extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final int radius = 100;
     private final int innerRadius = 35;

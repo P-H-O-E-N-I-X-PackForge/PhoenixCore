@@ -12,9 +12,9 @@ import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class DisciplinePickerScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int CARD_W = 210;
     private static final int CARD_H = 280;

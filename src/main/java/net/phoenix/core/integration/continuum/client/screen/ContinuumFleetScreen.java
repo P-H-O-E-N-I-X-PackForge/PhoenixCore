@@ -28,9 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ContinuumFleetScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int ROW = 30;
 

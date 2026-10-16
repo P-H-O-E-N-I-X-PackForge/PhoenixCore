@@ -50,7 +50,6 @@ public class GatedRecipeRegistry extends SimpleJsonResourceReloadListener {
         return java.util.Collections.unmodifiableMap(raw);
     }
 
-    /** Client side of the definition sync. Rules are display-only on a client; recipes are gated on the server. */
     public void clientReset() {
         rules = List.of();
         raw.clear();

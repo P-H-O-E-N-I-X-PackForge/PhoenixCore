@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CinemaTypingScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final BlockPos pos;
     private final int lineIndex;

@@ -86,7 +86,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private @Nullable UUID runner;
     private long runStart;
     private boolean[] judged = new boolean[0];
-    // hold notes: head hit and waiting for the key to be released at the tail, and whether the head was perfect
+    
     private boolean[] holding = new boolean[0];
     private boolean[] holdPerfect = new boolean[0];
     private int perfects;
@@ -164,8 +164,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         minOffset = Integer.MAX_VALUE;
         attuneState = ATTUNING;
         markAsChanged();
-        // the machine's own menu is still open on the server. If it is left open, a later close or validity check
-        // sends the client a close-container packet, which shuts the minigame the instant it opens.
+
         player.closeContainer();
         PacketDistributor.sendToPlayer(player, new S2CAttuneStartPacket(getBlockPos(), runDifficulty.level(), picked));
     }
@@ -196,7 +195,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         judged[best] = true;
         boolean perfect = bestDelta <= runDifficulty.perfectMs();
         if (beats.get(best).isHold()) {
-            // only scores once the key is let go at the tail
+            
             holding[best] = true;
             holdPerfect[best] = perfect;
             return;
@@ -233,7 +232,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         AcousticChart current = chart;
         Level level = getLevel();
         if (current == null || level == null) return;
-        // a hold still down when the run ends was held to the tail
+        
         for (int i = 0; i < current.beats().size(); i++) {
             if (!holding[i]) continue;
             holding[i] = false;
@@ -372,8 +371,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
         List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
         if (!isFormed()) return widgets;
-        // the machine's own fields are not reliably mirrored into an open screen, so the display reads dedicated
-        // sync values instead (this is what left the text stuck on "dormant" after a pass)
+
         IntSyncValue attuneSv = syncManager.getOrCreateSyncHandler("lock_attune", IntSyncValue.class,
                 () -> new IntSyncValue(() -> attuneState));
         IntSyncValue gradeSv = syncManager.getOrCreateSyncHandler("lock_grade", IntSyncValue.class,
@@ -386,8 +384,10 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
                 () -> new IntSyncValue(() -> state));
         widgets.add(new TextWidget<>(Text.dynamic(() -> switch (attuneSv.getIntValue()) {
             case ATTUNING -> Component.literal("§7Lock: §eattuning... §7(play the rhythm game)");
-            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" + AttuneDifficulty.fromLevel(levelSv.getIntValue()).label() +
-                    ", " + (gradeSv.getIntValue() >= 2 ? "perfect" : gradeSv.getIntValue() == 1 ? "good" : "passed") + ")");
+            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" +
+                    AttuneDifficulty.fromLevel(levelSv.getIntValue()).label() +
+                    ", " + (gradeSv.getIntValue() >= 2 ? "perfect" : gradeSv.getIntValue() == 1 ? "good" : "passed") +
+                    ")");
             default -> Component.literal("§7Lock: §cdormant §7- attune it to wake the puzzle");
         })));
         widgets.add(new ButtonWidget<>()

@@ -12,7 +12,6 @@ import java.util.List;
 
 public record AcousticChart(ResourceLocation id, int bpm, List<Integer> laneNotes, List<Beat> beats) {
 
-    /** len is how many ticks the key must be held after the hit; 0 is a plain tap. */
     public record Beat(int tick, int lane, int len) {
 
         public Beat(int tick, int lane) {
@@ -42,7 +41,8 @@ public record AcousticChart(ResourceLocation id, int bpm, List<Integer> laneNote
             JsonArray pair = element.getAsJsonArray();
             int lane = pair.get(1).getAsInt();
             if (lane < 0 || lane >= lanes.size()) throw new IllegalArgumentException("beat lane out of range");
-            beats.add(new Beat(pair.get(0).getAsInt(), lane, pair.size() > 2 ? Math.max(0, pair.get(2).getAsInt()) : 0));
+            beats.add(
+                    new Beat(pair.get(0).getAsInt(), lane, pair.size() > 2 ? Math.max(0, pair.get(2).getAsInt()) : 0));
         }
         beats.sort(Comparator.comparingInt(Beat::tick));
         return new AcousticChart(id, bpm, List.copyOf(lanes), List.copyOf(beats));

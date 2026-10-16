@@ -16,9 +16,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class CalibrationScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final BlockPos pos;
     private final StarChart.Kind kind;

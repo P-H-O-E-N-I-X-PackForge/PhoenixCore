@@ -32,12 +32,12 @@ public class PlayerSpawnHandler {
             return;
         }
 
-        // only a brand-new player is sent to the spawn dimension; anyone who has picked a discipline, or has been
-        // there before, logs in where they logged out
         CompoundTag persistentData = serverPlayer.getPersistentData();
         boolean chosen = net.phoenix.core.integration.conflux.research.WorldResearchData
                 .get(serverPlayer.serverLevel())
-                .getDiscipline(net.phoenix.core.integration.conflux.research.ResearchTeamHelper.getTeamId(serverPlayer)) != null;
+                .getDiscipline(
+                        net.phoenix.core.integration.conflux.research.ResearchTeamHelper.getTeamId(serverPlayer)) !=
+                null;
         if (!chosen && !persistentData.getBoolean("phoenixcore_visited_ethereal")) {
 
             EtherealSpawnManager.teleportToEtherealSpawn(serverPlayer);

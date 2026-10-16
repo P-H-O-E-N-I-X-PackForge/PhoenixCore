@@ -21,11 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Tells a team when their research has just detected or surveyed something. A body's stage follows from the research a
- * team has unlocked, so there is no event to hook: take a snapshot before an unlock, another after, and announce whatever
- * moved up.
- */
 public final class ContinuumDiscoveryNotifier {
 
     private ContinuumDiscoveryNotifier() {}
@@ -67,7 +62,8 @@ public final class ContinuumDiscoveryNotifier {
         if (surveyed.isEmpty() && detected.isEmpty() && systems.isEmpty()) return;
 
         List<ServerPlayer> players = new ArrayList<>();
-        for (ServerPlayer p : server.getPlayerList().getPlayers()) if (TeamUtils.isPlayerOnTeam(p, team)) players.add(p);
+        for (ServerPlayer p : server.getPlayerList().getPlayers())
+            if (TeamUtils.isPlayerOnTeam(p, team)) players.add(p);
         if (players.isEmpty()) return;
 
         List<Component> lines = new ArrayList<>();
@@ -94,7 +90,8 @@ public final class ContinuumDiscoveryNotifier {
             p.connection.send(new ClientboundSetTitlesAnimationPacket(10, 50, 20));
             p.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));
             p.connection.send(new ClientboundSetTitleTextPacket(title));
-            p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f,
+            p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS,
+                    0.8f,
                     survey ? 1.2f : 1.0f);
         }
     }

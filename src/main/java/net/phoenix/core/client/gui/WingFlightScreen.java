@@ -19,9 +19,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class WingFlightScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private String flightMode;
     private int flightSpeed;

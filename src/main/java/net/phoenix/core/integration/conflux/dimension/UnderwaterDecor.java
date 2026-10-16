@@ -15,11 +15,6 @@ import net.minecraft.world.level.levelgen.synth.SimplexNoise;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Gives the sea floor something besides a slab of stone: patches of clay, gravel, sand and mud, kelp forests, seagrass
- * meadows, coral gardens and sea pickles, with a different palette per discipline. Everything stays inside the chunk so
- * it needs no neighbours.
- */
 final class UnderwaterDecor {
 
     private UnderwaterDecor() {}

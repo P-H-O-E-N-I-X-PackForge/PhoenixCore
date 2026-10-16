@@ -56,9 +56,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ContinuumMapScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private enum Level {
         GALAXY,

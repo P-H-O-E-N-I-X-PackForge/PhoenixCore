@@ -2,6 +2,7 @@ package net.phoenix.core.integration.conflux.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -9,23 +10,17 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
-import net.minecraft.client.gui.components.EditBox;
-import net.phoenixvine.wiki.PhoenixWikiAPI;
-import net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen;
 import net.phoenix.core.integration.conflux.client.render.*;
 import net.phoenix.core.integration.conflux.client.render.discipline.DisciplineRendererRegistry;
-import net.phoenix.core.integration.conflux.network.C2SResearchUnlockPacket;
 import net.phoenix.core.integration.conflux.research.ResearchNode;
 import net.phoenix.core.integration.conflux.research.ResearchTree;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
-
-import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.integration.conflux.research.ConfluxRewards;
+import net.phoenixvine.wiki.PhoenixWikiAPI;
 import net.phoenixvine.wiki.client.rich.RichBlock;
-import net.phoenixvine.wiki.client.rich.RichSpan;
 import net.phoenixvine.wiki.client.rich.WikiMarkdownParser;
 import net.phoenixvine.wiki.client.rich.WikiRichTextRenderer;
+import net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Nullable;
@@ -37,14 +32,13 @@ import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class ResearchTerminalScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int TAB_H = 36;
     private static final int BOTTOM_H = 48;
     private static final int NODE_R = 22;
-
 
     @Nullable
     private final ResearchTerminalBlockEntity terminal;
@@ -112,7 +106,7 @@ public class ResearchTerminalScreen extends Screen {
         addRenderableWidget(searchBox);
 
         rebuildTrees();
-        // init runs again whenever the screen is reopened (closing a node viewer does), so only the first one centres
+        
         if (!panCentred) {
             resetPan();
             panCentred = true;
@@ -165,7 +159,6 @@ public class ResearchTerminalScreen extends Screen {
     private boolean sidebarOpen = true;
     private static final int RAIL_W = 18;
 
-    /** Scales with the window: about a sixth of the width, never huge, never too narrow to read. */
     private int sideOpenW() {
         return Math.max(104, Math.min(150, Math.round(vw * 0.17f)));
     }
@@ -181,7 +174,7 @@ public class ResearchTerminalScreen extends Screen {
     private void toggleSidebar() {
         int before = canvasLeft();
         sidebarOpen = !sidebarOpen;
-        // keep the tree where it is on screen while the canvas grows or shrinks around it
+        
         panX += before - canvasLeft();
         if (searchBox != null) {
             searchBox.visible = sidebarOpen;
@@ -192,7 +185,6 @@ public class ResearchTerminalScreen extends Screen {
     private int canvasLeft() {
         return sideW();
     }
-
 
     private int canvasH() {
         return vh - TAB_H - BOTTOM_H;
@@ -260,7 +252,7 @@ public class ResearchTerminalScreen extends Screen {
         g.fill(0, 0, vw, vh, ConfluxTheme.BG);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
-        // drawn after the post-process chain so the shader never tints or shows through the chrome
+        
         g.flush();
         renderSidebar(g, mx, my);
         renderTopBar(g, mx, my);
@@ -277,7 +269,6 @@ public class ResearchTerminalScreen extends Screen {
 
         g.pose().popPose();
 
-        // the rich text renderer clips in raw pixels, so the card is laid out outside the scaled pose
         g.flush();
         renderTreeCard(g, rmx, rmy);
         g.flush();
@@ -326,7 +317,8 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private List<SideRow> sideRows() {
-        List<String> order = new ArrayList<>(List.of("Foundations", "Discipline", "Dispensations", "Chronicle", "Space"));
+        List<String> order = new ArrayList<>(
+                List.of("Foundations", "Discipline", "Dispensations", "Chronicle", "Space"));
         for (ResearchTree t : trees) if (!order.contains(t.group)) order.add(t.group);
         List<SideRow> rows = new ArrayList<>();
         List<SideRow> pinned = new ArrayList<>();
@@ -355,14 +347,14 @@ public class ResearchTerminalScreen extends Screen {
         return rows;
     }
 
-    /** {done, total, anyAvailable} for a tree. */
     private int[] progress(ResearchTree tree) {
         int done = 0, total = 0, avail = 0;
         for (ResearchNode n : tree.getNodes()) {
             total++;
             if (ClientResearchCache.isUnlocked(n.id)) done++;
             else if (!ClientResearchCache.isLockedOut(n.id) && n.isVisible(ClientResearchCache.unlocked) &&
-                    n.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut)) avail = 1;
+                    n.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut))
+                avail = 1;
         }
         return new int[] { done, total, avail };
     }
@@ -388,7 +380,8 @@ public class ResearchTerminalScreen extends Screen {
                 if (n.hidden && !done) continue;
                 if (!n.isVisible(unlockedSet)) continue;
                 if (readyOnly && (done || ClientResearchCache.isLockedOut(n.id) ||
-                        !n.canUnlock(unlockedSet, ClientResearchCache.lockedOut))) continue;
+                        !n.canUnlock(unlockedSet, ClientResearchCache.lockedOut)))
+                    continue;
                 if (!q.isEmpty() && !(n.title + " " + n.lore + " " + tree.title).toLowerCase().contains(q)) continue;
                 out.add(new Hit(i, n, costsAffordable(n), done));
             }
@@ -417,7 +410,8 @@ public class ResearchTerminalScreen extends Screen {
         int[] tb = toggleBounds();
         boolean hov = mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3];
         g.fill(tb[0], tb[1], tb[2], tb[3], hov ? 0x33FFFFFF : 0x14FFFFFF);
-        g.drawCenteredString(font, sidebarOpen ? "\u25c0" : "\u25b6", (tb[0] + tb[2]) / 2, tb[1] + 3, hov ? ConfluxTheme.TEXT : accent());
+        g.drawCenteredString(font, sidebarOpen ? "\u25c0" : "\u25b6", (tb[0] + tb[2]) / 2, tb[1] + 3,
+                hov ? ConfluxTheme.TEXT : accent());
     }
 
     private void renderSidebar(GuiGraphics g, int mx, int my) {
@@ -437,7 +431,8 @@ public class ResearchTerminalScreen extends Screen {
         g.fillGradient(0, 0, sideOpenW() - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
         g.drawString(font, "\u00a7lAXIOM", 10, 7, ConfluxTheme.TEXT, false);
         String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
-        g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, ConfluxTheme.DIM, false);
+        g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, ConfluxTheme.DIM,
+                false);
         g.fill(8, 33, sideOpenW() - 8, 34, ConfluxTheme.BORDER);
         renderToggle(g, mx, my);
 
@@ -459,7 +454,8 @@ public class ResearchTerminalScreen extends Screen {
             List<Hit> hits = hits();
             if (hits.isEmpty()) g.drawString(font, "\u00a78No matches.", 12, y + 6, ConfluxTheme.DIM, false);
             for (Hit hit : hits) {
-                boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                        my < Math.min(bot, y + ROW_H);
                 boolean current = selected != null && selected.id.equals(hit.node().id);
                 if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
                 else if (hover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
@@ -481,7 +477,8 @@ public class ResearchTerminalScreen extends Screen {
                 continue;
             }
             if (row.pinNode() != null) {
-                boolean pinHover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean pinHover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                        my < Math.min(bot, y + ROW_H);
                 boolean current = selected != null && selected.id.equals(row.pinNode().id);
                 if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
                 else if (pinHover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
@@ -489,14 +486,16 @@ public class ResearchTerminalScreen extends Screen {
                 g.drawString(font, "\u00a7e\u2605", 10, y + 4, TEXT_PIN, false);
                 g.drawString(font, font.plainSubstrByWidth(row.pinNode().title, sideOpenW() - 38), 22, y + 4,
                         done ? 0xFF88BBFF : ConfluxTheme.TEXT, false);
-                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, sideOpenW() - 38), 22,
+                g.drawString(font,
+                        "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, sideOpenW() - 38), 22,
                         y + 15, ConfluxTheme.DIM, false);
                 y += ROW_H;
                 continue;
             }
             ResearchTree tree = trees.get(row.treeIdx());
             boolean active = row.treeIdx() == activeTreeIdx;
-            boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H) &&
+            boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                    my < Math.min(bot, y + ROW_H) &&
                     my >= y && my < y + ROW_H;
             if (active) {
                 g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
@@ -558,10 +557,12 @@ public class ResearchTerminalScreen extends Screen {
             int avail = tb[0] - (cl + 10) - 8;
             g.drawString(font, font.plainSubstrByWidth(tree.title, avail), cl + 10, 4, ConfluxTheme.TEXT, false);
             String desc = tree.description.replaceAll("[*_`#>]", "").replace('\n', ' ');
-            List<net.minecraft.util.FormattedCharSequence> lines = font.split(Component.literal(desc), Math.max(40, avail));
+            List<net.minecraft.util.FormattedCharSequence> lines = font.split(Component.literal(desc),
+                    Math.max(40, avail));
             for (int i = 0; i < Math.min(2, lines.size()); i++) {
                 if (i == 1 && lines.size() > 2) {
-                    g.drawString(font, font.plainSubstrByWidth(plain(lines.get(1)), avail - font.width("...")) + "...", cl + 10,
+                    g.drawString(font, font.plainSubstrByWidth(plain(lines.get(1)), avail - font.width("...")) + "...",
+                            cl + 10,
                             14 + i * 10, ConfluxTheme.DIM, false);
                 } else {
                     g.drawString(font, lines.get(i), cl + 10, 14 + i * 10, ConfluxTheme.DIM, false);
@@ -576,7 +577,8 @@ public class ResearchTerminalScreen extends Screen {
 
         boolean allHover = terminal != null && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3];
         g.fill(ab[0], ab[1], ab[2], ab[3], terminal == null ? ConfluxTheme.HEADER : allHover ? 0xFF1A3A1A : 0xFF112211);
-        g.renderOutline(ab[0], ab[1], ab[2] - ab[0], ab[3] - ab[1], terminal == null ? ConfluxTheme.BORDER : 0xFF338833);
+        g.renderOutline(ab[0], ab[1], ab[2] - ab[0], ab[3] - ab[1],
+                terminal == null ? ConfluxTheme.BORDER : 0xFF338833);
         g.drawCenteredString(font, "Research All", (ab[0] + ab[2]) / 2, ab[1] + (ab[3] - ab[1] - 8) / 2,
                 terminal == null ? ConfluxTheme.DIM : 0xFF88EE88);
 
@@ -644,8 +646,6 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().translate(panX, ct + panY, 0);
         g.pose().scale(zoom, zoom, 1);
 
-        // zoomed far out, one-pixel strokes and 16px icons shimmer as they are resampled, so the tree switches to a
-        // plain overview with strokes that never get thinner than a device pixel
         float deviceScale = zoom * uiScale * (float) guiScale;
         boolean overview = deviceScale < 0.8f;
         if (overview) {
@@ -678,7 +678,6 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().popPose();
     }
 
-    /** The overview card tracks the window: a bit over a seventh of its width, within readable bounds. */
     private int cardW() {
         return Math.max(112, Math.min(176, Math.round(width * 0.15f)));
     }
@@ -690,13 +689,12 @@ public class ResearchTerminalScreen extends Screen {
     private String cardSource = null;
     private List<RichBlock> cardBlocks = List.of();
 
-    /** Overview of the active tree floating over the canvas corner: description, progress, what is ready. */
     private void renderTreeCard(GuiGraphics g, int lx, int my) {
         cardRect = new int[4];
         if (trees.isEmpty()) return;
         ResearchTree tree = trees.get(activeTreeIdx);
         int[] p = progress(tree);
-        // absolute coordinates: the rich text renderer clips against them and misjudges a translated pose
+        
         int x = Math.round(canvasLeft() * uiScale) + 8, y = Math.round(canvasTop() * uiScale) + 8;
         int acc = accent();
         boolean headerHover = lx >= x && lx < x + cardW() && my >= y && my < y + 18;
@@ -704,7 +702,8 @@ public class ResearchTerminalScreen extends Screen {
         if (!cardOpen) {
             g.fill(x, y, x + cardW(), y + 18, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
             g.renderOutline(x, y, cardW(), 18, headerHover ? acc : ConfluxTheme.BORDER);
-            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, cardW() - 70), x + 6, y + 5, ConfluxTheme.TEXT, false);
+            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, cardW() - 70), x + 6, y + 5,
+                    ConfluxTheme.TEXT, false);
             String c = p[0] + "/" + p[1];
             g.drawString(font, "\u00a78" + c, x + cardW() - 6 - font.width(c), y + 5, ConfluxTheme.DIM, false);
             cardRect = new int[] { x, y, x + cardW(), y + 18 };
@@ -717,7 +716,7 @@ public class ResearchTerminalScreen extends Screen {
         int bodyH = Math.min(bodyMax, contentH);
         cardMax = Math.max(0, contentH - bodyH);
         cardScroll = Math.min(cardScroll, cardMax);
-        // the count and the ready marker share a line when they fit, otherwise the marker drops to its own
+        
         String count = p[0] + "/" + p[1] + " researched";
         String ready = "\u25cf ready";
         boolean split = p[2] == 1 && font.width(count + "  " + ready) > cardW() - 20;
@@ -725,11 +724,13 @@ public class ResearchTerminalScreen extends Screen {
         g.fill(x, y, x + cardW(), y + total, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
         g.renderOutline(x, y, cardW(), total, (acc & 0xFFFFFF) | 0xAA000000);
         g.fillGradient(x + 1, y + 1, x + cardW() - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
-        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, cardW() - 20), x + 6, y + 5, ConfluxTheme.TEXT, false);
+        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, cardW() - 20), x + 6, y + 5,
+                ConfluxTheme.TEXT, false);
 
         int by = y + 22;
         g.enableScissor(x + 1, by, x + cardW() - 1, by + bodyH);
-        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, cardW() - 20, (int) cardScroll, by, by + bodyH, acc,
+        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, cardW() - 20, (int) cardScroll, by, by + bodyH,
+                acc,
                 new java.util.HashSet<>());
         g.disableScissor();
         if (cardMax > 0) {
@@ -844,7 +845,7 @@ public class ResearchTerminalScreen extends Screen {
 
             String amt = formatAmount(stored);
             Component label = type.displayComponent();
-            // a narrow slot gives up the full name before it lets the number touch it
+            
             if (font.width(label) + font.width(amt) + 8 > barW) {
                 String name = label.getString();
                 label = Component.literal(name.substring(0, Math.min(3, name.length()))).withStyle(label.getStyle());
@@ -1021,7 +1022,8 @@ public class ResearchTerminalScreen extends Screen {
             searchBox.keyPressed(kc, sc, mod);
             return true;
         }
-        if (searchBox != null && (kc == GLFW.GLFW_KEY_SLASH || (kc == GLFW.GLFW_KEY_F && (mod & GLFW.GLFW_MOD_CONTROL) != 0))) {
+        if (searchBox != null &&
+                (kc == GLFW.GLFW_KEY_SLASH || (kc == GLFW.GLFW_KEY_F && (mod & GLFW.GLFW_MOD_CONTROL) != 0))) {
             setFocused(searchBox);
             searchBox.setFocused(true);
             skipChar = kc == GLFW.GLFW_KEY_SLASH;

@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ConditionsScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     public enum ConditionType {
 
@@ -261,9 +261,9 @@ public class ConditionsScreen extends Screen {
     }
 
     public static class ConditionFormOverlay extends Screen {
-    @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+
+        @Override
+        public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
         private static final int FORM_W = 284;
         private static final int FORM_PAD = 8;
@@ -518,9 +518,9 @@ public class ConditionsScreen extends Screen {
     }
 
     public static class ConditionTypePickerOverlay extends Screen {
-    @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+
+        @Override
+        public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
         private static final int PANEL_W = 240;
         private static final int PANEL_H = 200;

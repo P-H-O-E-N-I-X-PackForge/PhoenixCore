@@ -17,9 +17,9 @@ import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class AstralCodexScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private int[] palette;
     private int cText, cDim, cBorder, cBorderDim, cBg1, cBg2, cPanel1, cPanel2;

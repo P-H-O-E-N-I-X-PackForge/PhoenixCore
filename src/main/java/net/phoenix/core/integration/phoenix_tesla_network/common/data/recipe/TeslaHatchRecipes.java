@@ -49,7 +49,8 @@ public class TeslaHatchRecipes {
         FluidStack fluid = getFluidForTier(tier);
         ItemStack stabilizer = getTeslaStabilizerForTier(tier);
         if (fluid.isEmpty() || stabilizer.isEmpty() || missing("tesla hatch", tier, getQuadCableForTier(tier),
-                getDensePlateForTier(tier))) return;
+                getDensePlateForTier(tier)))
+            return;
 
         GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_2a_" + VN[tier].toLowerCase())
                 .inputItems(baseHatch)
@@ -135,11 +136,11 @@ public class TeslaHatchRecipes {
                 .save(provider);
     }
 
-    /** True (and logged once per tier) when a required material form does not exist for the tier, so no recipe is built. */
     private static boolean missing(String what, int tier, ItemStack... parts) {
         for (ItemStack part : parts) {
             if (part.isEmpty()) {
-                net.phoenix.core.PhoenixCore.LOGGER.warn("Skipping {} recipes for tier {}: an ingredient is empty", what,
+                net.phoenix.core.PhoenixCore.LOGGER.warn("Skipping {} recipes for tier {}: an ingredient is empty",
+                        what,
                         tier);
                 return true;
             }

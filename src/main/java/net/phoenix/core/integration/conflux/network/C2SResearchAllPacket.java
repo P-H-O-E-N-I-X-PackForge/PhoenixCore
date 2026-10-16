@@ -17,11 +17,6 @@ import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity
 
 import java.util.UUID;
 
-/**
- * Researches everything in one tree that the team can currently unlock and afford, repeating until nothing more
- * opens up. Commitment nodes are left alone: they lock the team into a discipline and send it to its dimension, so
- * that choice has to be made on purpose.
- */
 public class C2SResearchAllPacket implements CustomPacketPayload {
 
     public static final Type<C2SResearchAllPacket> TYPE = new Type<>(
@@ -50,7 +45,8 @@ public class C2SResearchAllPacket implements CustomPacketPayload {
 
     public static void handle(C2SResearchAllPacket pkt, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            if (!(ctx.player() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) return;
+            if (!(ctx.player() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level))
+                return;
             if (!(level.getBlockEntity(pkt.terminalPos) instanceof ResearchTerminalBlockEntity terminal)) return;
             if (player.distanceToSqr(pkt.terminalPos.getX() + 0.5, pkt.terminalPos.getY() + 0.5,
                     pkt.terminalPos.getZ() + 0.5) > 64)

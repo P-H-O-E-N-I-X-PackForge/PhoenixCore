@@ -58,7 +58,8 @@ public final class RecipeGateApplier {
     private static boolean alreadyGated(GTRecipe recipe, String flag, String only, String except) {
         for (var condition : recipe.conditions) {
             if (condition instanceof AxiomResearchCondition axiom && flag.equals(axiom.getFlag()) &&
-                    only.equals(axiom.getOnly()) && except.equals(axiom.getExcept())) return true;
+                    only.equals(axiom.getOnly()) && except.equals(axiom.getExcept()))
+                return true;
         }
         return false;
     }

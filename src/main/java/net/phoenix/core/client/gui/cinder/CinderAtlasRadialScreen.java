@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CinderAtlasRadialScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int RADIUS = 90;
     private static final int INNER_RADIUS = 30;

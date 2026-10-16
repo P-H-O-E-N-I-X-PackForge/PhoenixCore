@@ -27,9 +27,9 @@ import java.util.stream.IntStream;
 
 @OnlyIn(Dist.CLIENT)
 public class TerrainPreviewScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final double PREVIEW_FRAC = 0.65;
     private static final int PANEL_PAD = 8;

@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class ContinuumPdimScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int W = 300;
     private static final int H = 206;

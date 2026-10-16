@@ -7,13 +7,11 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.MapIngredientTypeManager;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -205,7 +203,7 @@ public class PhoenixCore {
         NeoForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(CrystalRoseVeinHook::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(
-              GatedRecipeRegistry::onAddReloadListeners);
+                GatedRecipeRegistry::onAddReloadListeners);
 
         GregPacksBlockEntities.init();
     }

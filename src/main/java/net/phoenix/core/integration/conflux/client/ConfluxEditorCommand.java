@@ -42,7 +42,8 @@ public final class ConfluxEditorCommand {
                         }))
                 .then(literal("wiki")
                         .executes(ctx -> {
-                            net.phoenixvine.wiki.PhoenixWikiAPI.open(null, ConfluxTheme.MOD_ID, "wiki", ConfluxTheme.wikiTheme());
+                            net.phoenixvine.wiki.PhoenixWikiAPI.open(null, ConfluxTheme.MOD_ID, "wiki",
+                                    ConfluxTheme.wikiTheme());
                             return 1;
                         })));
 

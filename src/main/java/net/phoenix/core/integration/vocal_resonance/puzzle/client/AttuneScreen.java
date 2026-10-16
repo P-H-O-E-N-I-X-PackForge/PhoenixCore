@@ -22,9 +22,9 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class AttuneScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int[] KEYS = { GLFW.GLFW_KEY_D, GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_J, GLFW.GLFW_KEY_K,
             GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_L, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_SEMICOLON };
@@ -43,7 +43,6 @@ public class AttuneScreen extends Screen {
     private final List<Integer> laneNotes;
     private final List<AcousticChart.Beat> beats;
 
-    // 0 waiting, 1 good, 2 perfect, 3 missed, 4 hold in progress
     private final byte[] judged;
     private final boolean[] holdPerfect;
     private final long[] lastSustain;
@@ -163,7 +162,7 @@ public class AttuneScreen extends Screen {
         }
         boolean isPerfect = bestDelta <= difficulty.perfectMs();
         if (beats.get(best).isHold()) {
-            // scores when the key is let go at the tail; until then the head just rings
+            
             judged[best] = 4;
             holdPerfect[best] = isPerfect;
             lastSustain[lane] = Util.getMillis();
@@ -235,7 +234,6 @@ public class AttuneScreen extends Screen {
         if (text.equals("MISS")) timing = "";
     }
 
-    // a different voice per lane so the keys are told apart by timbre as well as pitch
     private static java.util.List<java.util.function.Supplier<net.minecraft.sounds.SoundEvent>> voices() {
         return java.util.List.of(SoundEvents.NOTE_BLOCK_HARP::value, SoundEvents.NOTE_BLOCK_BELL::value,
                 SoundEvents.NOTE_BLOCK_FLUTE::value, SoundEvents.NOTE_BLOCK_CHIME::value,
@@ -271,7 +269,7 @@ public class AttuneScreen extends Screen {
             if (judged[i] != 4) continue;
             AcousticChart.Beat beat = beats.get(i);
             if (now >= tailMs(beat)) {
-                // held all the way through
+                
                 PacketDistributor.sendToServer(new C2SAttunePressPacket(pos, beat.lane(), now, true));
                 finishHold(i);
                 say(holdPerfect[i] ? "PERFECT" : "GOOD", holdPerfect[i] ? 0xFF7AFFB0 : 0xFFFFE066);

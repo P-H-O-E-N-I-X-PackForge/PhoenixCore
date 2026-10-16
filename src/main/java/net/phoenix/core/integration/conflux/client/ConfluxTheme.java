@@ -12,11 +12,6 @@ import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Colours for the terminal, the node viewer and the wiki. The surface colours follow the shared Phoenix theme (so the
- * theme editor restyles Conflux along with the rest of the suite); the accent follows the player's discipline while the
- * default theme is active, and the theme's own accent otherwise. Call {@link #refresh()} once per frame.
- */
 @OnlyIn(Dist.CLIENT)
 public final class ConfluxTheme {
 
@@ -58,7 +53,6 @@ public final class ConfluxTheme {
         PANEL_DEEP = darken(PANEL, 0.8f);
     }
 
-    /** The shared theme in the shape the Phoenix Wiki screens take. */
     public static WikiTheme wikiTheme() {
         refresh();
         PhoenixTheme t = PhoenixTheme.current(MOD_ID);

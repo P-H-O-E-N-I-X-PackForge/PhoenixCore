@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContinuumArchiveScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final Screen parent;
     private final List<Object[]> rows = new ArrayList<>();

@@ -31,7 +31,6 @@ public class ResearchTreeRegistry extends SimpleJsonResourceReloadListener {
 
     private final Set<String> gatedRecipeTags = new LinkedHashSet<>();
 
-    /** The source JSON of every loaded tree, kept so it can be sent to clients that never read the datapack. */
     private final Map<ResourceLocation, String> raw = new LinkedHashMap<>();
 
     private ResearchTreeRegistry() {
@@ -77,7 +76,6 @@ public class ResearchTreeRegistry extends SimpleJsonResourceReloadListener {
         return Collections.unmodifiableMap(raw);
     }
 
-    /** Client side of the definition sync: a remote client rebuilds the registry from what the server sent. */
     public void clientReset() {
         trees.clear();
         raw.clear();

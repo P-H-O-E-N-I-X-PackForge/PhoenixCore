@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/** Research nodes the player has starred. Purely a client convenience, stored next to the other client configs. */
 @OnlyIn(Dist.CLIENT)
 public final class ConfluxPins {
 
@@ -27,7 +26,8 @@ public final class ConfluxPins {
     private static boolean loaded;
 
     private static Path file() {
-        return Minecraft.getInstance().gameDirectory.toPath().resolve("config").resolve("phoenixcore_conflux_pins.json");
+        return Minecraft.getInstance().gameDirectory.toPath().resolve("config")
+                .resolve("phoenixcore_conflux_pins.json");
     }
 
     private static void load() {

@@ -9,7 +9,6 @@ import net.phoenix.core.PhoenixCore;
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ConfluxPlayerEvents {
 
-    /** Fires on join and again after every datapack reload, which is exactly when the definitions can have changed. */
     @SubscribeEvent
     public static void onDatapackSync(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
         event.getRelevantPlayers().forEach(ConfluxNetwork::sendDefinitions);

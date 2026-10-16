@@ -31,9 +31,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class ContinuumTransitScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final float START_DISTANCE = 70.0f;
     private static final float END_DISTANCE = 3.9f;

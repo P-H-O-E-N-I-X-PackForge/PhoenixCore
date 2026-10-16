@@ -14,10 +14,6 @@ public class EtherealSpawnClientEvents {
 
     private static boolean pickerShown = false;
 
-    /**
-     * Polled from the client tick: a world join opens no screen, so waiting on a screen-init event never fires
-     * and the picker never appeared.
-     */
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();

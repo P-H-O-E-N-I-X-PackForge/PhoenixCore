@@ -24,11 +24,9 @@ public class ResearchTree {
 
     public final Map<ConfluxDataType, Long> switchCost;
 
-    /** When set, only teams that chose this discipline see or can research this tree. */
     @Nullable
     public String requiresDiscipline;
 
-    /** Heading the terminal sidebar files this tree under. */
     public String group = "Research";
 
     private final Map<ResourceLocation, ResearchNode> nodes = new LinkedHashMap<>();

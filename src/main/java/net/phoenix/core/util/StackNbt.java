@@ -11,11 +11,6 @@ public final class StackNbt {
 
     private StackNbt() {}
 
-    /**
-     * A tag that writes through to the stack, like the 1.20 getOrCreateTag. CustomData is immutable and copies on the
-     * way in and out, so mutating a copy silently dropped every edit; here a fresh CustomData (never shared with
-     * another stack) is installed and its own backing tag is handed out.
-     */
     public static CompoundTag getOrCreateTag(ItemStack stack) {
         CompoundTag copy = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (stack.isEmpty()) return copy;

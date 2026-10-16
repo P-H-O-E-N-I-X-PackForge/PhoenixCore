@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
-
 import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
 
 import net.minecraft.ChatFormatting;
@@ -46,11 +45,9 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     @Getter
     private @NotNull String flag = "";
 
-    /** Comma separated disciplines the restriction applies to; empty means all. */
     @Getter
     private @NotNull String only = "";
 
-    /** Comma separated disciplines the restriction does not apply to. */
     @Getter
     private @NotNull String except = "";
 
@@ -92,8 +89,7 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
 
         UUID teamId = ResearchTeamHelper.getTeamId(nearestPlayer);
         WorldResearchData data = WorldResearchData.get(level);
-        // "only"/"except" scope who the restriction applies to; outside that scope the recipe is unrestricted.
-        // Inside it the flag is required, and with no flag the recipe is simply closed to that discipline.
+
         String discipline = data.getDiscipline(teamId);
         boolean inScope = (only.isEmpty() || listed(only, discipline)) && !listed(except, discipline);
         if (!inScope) return true;
@@ -109,10 +105,6 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
         return Component.literal("Research: " + researchName(flag));
     }
 
-    /**
-     * The recipe viewer draws a condition as one unwrapped line in a fixed-width widget, so the line itself stays short
-     * ("Required Research", coloured and underlined to read as hoverable) and the detail moves into a tooltip.
-     */
     @Override
     public RecipeUIModifier modifyUI() {
         return (recipe, widget) -> {

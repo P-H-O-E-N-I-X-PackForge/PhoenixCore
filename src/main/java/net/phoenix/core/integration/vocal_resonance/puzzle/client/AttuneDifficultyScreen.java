@@ -12,9 +12,9 @@ import net.phoenix.core.network.packet.C2SAttuneStartPacket;
 
 @OnlyIn(Dist.CLIENT)
 public class AttuneDifficultyScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int ROW_H = 40;
     private static final int ROW_W = 320;

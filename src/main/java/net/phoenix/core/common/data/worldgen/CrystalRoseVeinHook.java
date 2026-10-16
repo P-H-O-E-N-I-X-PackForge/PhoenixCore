@@ -53,7 +53,7 @@ public class CrystalRoseVeinHook extends ContextAwareReloadListener implements P
             try {
                 processVein(holder.value(), dummyRandom);
             } catch (Exception e) {
-                
+
                 PhoenixAPI.LOGGER.error("CrystalRoseVeinHook failed for vein '{}'", holder.key().location(), e);
             }
         }
@@ -64,10 +64,8 @@ public class CrystalRoseVeinHook extends ContextAwareReloadListener implements P
         Material primaryMat = findPrimaryMaterial(def, dummyRandom);
         if (primaryMat == null) return;
 
-        SurfaceIndicatorGenerator.IndicatorPlacement placement =
-                def.layer() == WorldGenLayers.NETHERRACK
-                        ? SurfaceIndicatorGenerator.IndicatorPlacement.BELOW
-                        : SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE;
+        SurfaceIndicatorGenerator.IndicatorPlacement placement = def.layer() == WorldGenLayers.NETHERRACK ?
+                SurfaceIndicatorGenerator.IndicatorPlacement.BELOW : SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE;
 
         var rose = new CrystalRoseIndicatorGenerator()
                 .state(getCrystalRoseState(primaryMat))
@@ -79,7 +77,6 @@ public class CrystalRoseVeinHook extends ContextAwareReloadListener implements P
     }
 
     private static Material findPrimaryMaterial(GTOreDefinition def, RandomSource dummyRandom) {
-        
         for (var ig : def.indicatorGenerators()) {
             if (ig instanceof SurfaceIndicatorGenerator sig) {
                 var blockEither = sig.block();
@@ -125,7 +122,7 @@ public class CrystalRoseVeinHook extends ContextAwareReloadListener implements P
             current.add(indicator);
             return;
         } catch (UnsupportedOperationException ignored) {
-            
+
         }
 
         try {

@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class EmiFavoritePagesScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int PANEL_WIDTH = 260;
     private static final int PADDING = 14;

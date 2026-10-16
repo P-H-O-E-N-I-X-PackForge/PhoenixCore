@@ -112,11 +112,6 @@ public final class LandformPhysics {
         }
     }
 
-    /**
-     * Whether the entity stands on one of these blocks. Half blocks need care: stepping up onto a slab leaves a player's
-     * feet inside it for a moment, and walking down off one flickers the ground flag, so the surface is read at a few
-     * heights and a near-zero vertical speed counts as grounded.
-     */
     private static boolean standingOn(ServerLevel level, Entity e, Block... blocks) {
         boolean grounded = e.onGround() || Math.abs(e.getDeltaMovement().y) < 0.08;
         if (!grounded) return false;

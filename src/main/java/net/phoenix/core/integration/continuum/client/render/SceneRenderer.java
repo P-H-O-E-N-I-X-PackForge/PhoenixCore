@@ -42,26 +42,24 @@ public final class SceneRenderer {
         RenderSystem.disableBlend();
     }
 
-    // Each shader below was authored against a specific blend function, and nothing stops a later pass (the GUI, the
-    // composite, another shader sharing the same cached BlendMode) leaving a different one bound, which turns the
-    // premultiplied glow/nebula output into dark discs. Set them explicitly before drawing.
     private static void blendPremultiplied() {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
-                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
                 com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     }
 
     private static void blendAtmosphere() {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
-                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ZERO,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ZERO,
                 com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE);
     }
 
     public static void end() {
-        // the scene is shown through a vanilla texture shader that throws away pixels with low alpha, and several passes
-        // write their own alpha; pin the whole target's alpha to 1 so nothing in it can be discarded
+
         if (current != null) {
             RenderSystem.colorMask(false, false, false, true);
             RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);

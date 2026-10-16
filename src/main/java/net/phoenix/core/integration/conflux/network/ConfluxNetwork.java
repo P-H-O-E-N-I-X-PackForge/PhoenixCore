@@ -42,7 +42,6 @@ public final class ConfluxNetwork {
                 (msg, ctx) -> msg.handle(ctx));
     }
 
-    /** Sends every research tree and recipe-gate rule, so a remote client can draw and describe them. */
     public static void sendDefinitions(ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, S2CResearchDataPacket.reset());
         ResearchTreeRegistry.INSTANCE.rawJson().forEach((id, json) -> PacketDistributor.sendToPlayer(player,

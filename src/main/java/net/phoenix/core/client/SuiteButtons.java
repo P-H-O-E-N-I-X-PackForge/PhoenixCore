@@ -8,14 +8,12 @@ import net.phoenix.core.integration.conflux.client.ResearchTerminalScreen;
 import net.phoenix.core.integration.continuum.client.screen.ContinuumMapScreen;
 import net.phoenixvine.wiki.client.suite.SuiteHudBar;
 
-/** The Conflux and Continuum buttons on Phoenix Wiki's suite bar. Both open their screens as a read-only view. */
+import static net.phoenixvine.wiki.client.suite.SuiteHudBar.PRIORITY_CONFLUX;
+import static net.phoenixvine.wiki.client.suite.SuiteHudBar.PRIORITY_CONTINUUM;
+
 public final class SuiteButtons {
 
     private SuiteButtons() {}
-
-    /** Follow the suite's own ordering; Phoenix Wiki leaves 80 and 90 free after Phantasia. */
-    private static final int PRIORITY_CONFLUX = 80;
-    private static final int PRIORITY_CONTINUUM = 90;
 
     public static void register() {
         Minecraft mc = Minecraft.getInstance();

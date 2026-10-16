@@ -24,9 +24,9 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 public class ContinuumTestScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final int FRAME = 0xFF7a5cff;
 

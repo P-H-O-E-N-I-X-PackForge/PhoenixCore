@@ -35,9 +35,9 @@ import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class PhoenixShopScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private static final String[] REWARD_TYPES = { ItemShopReward.TYPE, CommandShopReward.TYPE,
             ResearchUnlockShopReward.TYPE, ThreadShopReward.TYPE };

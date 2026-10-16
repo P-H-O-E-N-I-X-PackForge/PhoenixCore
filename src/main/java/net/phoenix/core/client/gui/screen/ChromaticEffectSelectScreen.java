@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChromaticEffectSelectScreen extends Screen {
+
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-    }
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
 
     private final InteractionHand hand;
     private final List<Character> availableCodes = new ArrayList<>();
