@@ -259,11 +259,8 @@ public class ResearchTerminalScreen extends Screen {
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
         g.flush();
-        g.pose().pushPose();
-        g.pose().translate(canvasLeft(), 0, 0);
-        renderTreeCard(g, mx - canvasLeft(), my);
+        renderTreeCard(g, mx, my);
         g.flush();
-        g.pose().popPose();
         renderBottomBar(g);
         super.render(g, mx, my, pt);
 
@@ -648,7 +645,8 @@ public class ResearchTerminalScreen extends Screen {
         if (trees.isEmpty()) return;
         ResearchTree tree = trees.get(activeTreeIdx);
         int[] p = progress(tree);
-        int x = 8, y = canvasTop() + 8;
+        // absolute coordinates: the rich text renderer clips against them and misjudges a translated pose
+        int x = canvasLeft() + 8, y = canvasTop() + 8;
         int acc = accent();
         boolean headerHover = lx >= x && lx < x + CARD_W && my >= y && my < y + 18;
 
@@ -853,7 +851,7 @@ public class ResearchTerminalScreen extends Screen {
             return true;
         }
 
-        if (cardRect[2] > 0 && mx - cl >= cardRect[0] && mx - cl < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
+        if (cardRect[2] > 0 && mx >= cardRect[0] && mx < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
             if (my < cardRect[1] + 18) cardOpen = !cardOpen;
             return true;
         }
@@ -919,8 +917,8 @@ public class ResearchTerminalScreen extends Screen {
             sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
             return true;
         }
-        if (cardOpen && cardMax > 0 && cardRect[2] > 0 && mx - canvasLeft() >= cardRect[0] &&
-                mx - canvasLeft() < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
+        if (cardOpen && cardMax > 0 && cardRect[2] > 0 && mx >= cardRect[0] &&
+                mx < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
             cardScroll = (float) Math.max(0, Math.min(cardMax, cardScroll - delta * 14));
             return true;
         }

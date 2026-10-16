@@ -603,7 +603,7 @@ public class ResearchNodeScreen extends Screen {
         int px = fullscreen ? width - w - 8 : Math.min(width - w - 4, cardX + cardW - w);
         int py = fullscreen ? 40 : cardY + 38;
 
-        g.fill(px, py, px + w, py + h, 0xF00A0A12);
+        g.fill(px, py, px + w, py + h, 0xFF0A0A12);
         g.renderOutline(px, py, w, h, accent());
         int y = py + 6;
         if (rows == 0) {
