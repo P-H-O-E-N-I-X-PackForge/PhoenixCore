@@ -278,7 +278,10 @@ void main() {
     float terminator = smoothstep(-0.08, 0.22, dot(geoNormal, sun));
     float light = max(dot(normalView, sun), 0.0) * terminator;
 
-    vec3 color = albedo * (0.025 + light * 1.15);
+    // the night side keeps a faint glow and a cool rim, so a body seen against its own shadow still reads as a
+    // sphere instead of a flat black disc
+    float rim = pow(1.0 - max(dot(geoNormal, viewDir), 0.0), 2.5);
+    vec3 color = albedo * (0.07 + light * 1.15) + albedo * vec3(0.55, 0.65, 1.0) * rim * 0.22 * (1.0 - clamp(light, 0.0, 1.0));
 
     vec3 reflected = reflect(-sun, normalView);
     color += vec3(1.0, 0.95, 0.85) * pow(max(dot(reflected, viewDir), 0.0), 60.0) * water * terminator * 0.9;
