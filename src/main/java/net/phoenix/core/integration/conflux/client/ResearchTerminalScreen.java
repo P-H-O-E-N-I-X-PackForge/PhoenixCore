@@ -50,6 +50,7 @@ public class ResearchTerminalScreen extends Screen {
     private final ResearchTerminalBlockEntity terminal;
 
     private float panX = 0, panY = 0;
+    private boolean panCentred = false;
     private static final int ROW_H = 30;
     private static final int TEXT_PIN = 0xFFFFDD55;
     private static final int GROUP_H = 16;
@@ -111,7 +112,11 @@ public class ResearchTerminalScreen extends Screen {
         addRenderableWidget(searchBox);
 
         rebuildTrees();
-        resetPan();
+        // init runs again whenever the screen is reopened (closing a node viewer does), so only the first one centres
+        if (!panCentred) {
+            resetPan();
+            panCentred = true;
+        }
         lastFrameNanos = -1;
 
         syncRenderer();
