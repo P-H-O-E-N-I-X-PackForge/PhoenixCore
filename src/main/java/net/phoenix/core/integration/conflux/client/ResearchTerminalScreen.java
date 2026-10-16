@@ -46,6 +46,7 @@ public class ResearchTerminalScreen extends Screen {
     private final ResearchTerminalBlockEntity terminal;
 
     private float panX = 0, panY = 0;
+    private static final float MIN_ZOOM = 0.08f;
     private float zoom = 1.0f;
     private boolean dragging = false;
     private double lastDragX, lastDragY;
@@ -250,11 +251,23 @@ public class ResearchTerminalScreen extends Screen {
             tabX += tw + 1;
         }
 
+        int[] ab = researchAllBounds();
+        boolean allHover = terminal != null && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3];
+        g.fill(ab[0], ab[1], ab[2], ab[3], terminal == null ? C_HEADER : allHover ? 0xFF1A3A1A : 0xFF112211);
+        g.renderOutline(ab[0], ab[1], ab[2] - ab[0], ab[3] - ab[1], terminal == null ? C_BORDER : 0xFF338833);
+        g.drawCenteredString(font, "Research All", (ab[0] + ab[2]) / 2, ab[1] + (ab[3] - ab[1] - 8) / 2,
+                terminal == null ? C_DIM : 0xFF88EE88);
+
         int[] wb = wikiButtonBounds();
         boolean wikiHover = mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3];
         g.fill(wb[0], wb[1], wb[2], wb[3], wikiHover ? 0xFF2A2A4A : C_HEADER);
         g.drawCenteredString(font, "?", (wb[0] + wb[2]) / 2, wb[1] + (TAB_H - 2 - 8) / 2,
                 wikiHover ? C_TEXT : C_DIM);
+    }
+
+    private int[] researchAllBounds() {
+        int w = font.width("Research All") + 12;
+        return new int[] { canvasW() - 22 - w, 2, canvasW() - 22, TAB_H - 2 };
     }
 
     private int[] wikiButtonBounds() {
@@ -288,24 +301,70 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().translate(panX, ct + panY, 0);
         g.pose().scale(zoom, zoom, 1);
 
-        activeRenderer.renderEdges(g, ctx);
-        activeRenderer.renderNodes(g, ctx);
+        // zoomed far out, one-pixel strokes and 16px icons shimmer as they are resampled, so the tree switches to a
+        // plain overview with strokes that never get thinner than a device pixel
+        float deviceScale = zoom * uiScale * (float) guiScale;
+        boolean overview = deviceScale < 0.8f;
+        if (overview) {
+            renderOverview(g, ctx, deviceScale);
+        } else {
+            activeRenderer.renderEdges(g, ctx);
+            activeRenderer.renderNodes(g, ctx);
 
-        for (ResearchNode node : ctx.tree().getNodes()) {
-            if (!node.isVisible(ctx.unlocked())) continue;
-            float[] pos = activeRenderer.nodePos(node, ctx);
-            drawNodeLabel(g, node, (int) pos[0], (int) pos[1], ctx);
+            for (ResearchNode node : ctx.tree().getNodes()) {
+                if (!node.isVisible(ctx.unlocked())) continue;
+                float[] pos = activeRenderer.nodePos(node, ctx);
+                drawNodeLabel(g, node, (int) pos[0], (int) pos[1], ctx);
+            }
         }
 
         g.pose().popPose();
 
-        g.pose().pushPose();
-        g.pose().translate(panX, ct + panY, 0);
-        g.pose().scale(zoom, zoom, 1);
-        activeRenderer.renderForeground(g, ctx);
-        g.pose().popPose();
+        if (!overview) {
+            g.pose().pushPose();
+            g.pose().translate(panX, ct + panY, 0);
+            g.pose().scale(zoom, zoom, 1);
+            activeRenderer.renderForeground(g, ctx);
+            g.pose().popPose();
+        }
 
         RenderSystem.disableScissor();
+    }
+
+    private void renderOverview(GuiGraphics g, RenderContext ctx, float deviceScale) {
+        int line = Math.max(2, (int) Math.ceil(1.6f / deviceScale));
+        int half = Math.max(NODE_R / 2, (int) Math.ceil(3.0f / deviceScale));
+
+        for (ResearchNode node : ctx.tree().getNodes()) {
+            if (!node.isVisible(ctx.unlocked())) continue;
+            float[] dst = activeRenderer.nodePos(node, ctx);
+            for (ResourceLocation prereqId : node.prerequisites) {
+                var prereq = ctx.tree().getNode(prereqId).orElse(null);
+                if (prereq == null || !prereq.isVisible(ctx.unlocked())) continue;
+                float[] src = activeRenderer.nodePos(prereq, ctx);
+                int lineColor = ctx.isUnlocked(prereqId) ? 0xFF4A6FA8 : 0xFF2E3550;
+                int x1 = Math.round(src[0]), y1 = Math.round(src[1]);
+                int x2 = Math.round(dst[0]), y2 = Math.round(dst[1]);
+                int midY = (y1 + y2) / 2;
+                int h = line / 2;
+                g.fill(x1 - h, Math.min(y1, midY), x1 - h + line, Math.max(y1, midY) + line, lineColor);
+                g.fill(Math.min(x1, x2), midY - h, Math.max(x1, x2) + line, midY - h + line, lineColor);
+                g.fill(x2 - h, Math.min(midY, y2), x2 - h + line, Math.max(midY, y2) + line, lineColor);
+            }
+        }
+
+        for (ResearchNode node : ctx.tree().getNodes()) {
+            if (!node.isVisible(ctx.unlocked())) continue;
+            float[] pos = activeRenderer.nodePos(node, ctx);
+            boolean unlocked = ctx.isUnlocked(node.id);
+            boolean lockedOut = ctx.isLockedOut(node.id);
+            boolean mystery = node.hidden && !unlocked;
+            int color = lockedOut ? 0xFF8A3030 : mystery ? 0xFF555566 : unlocked ? 0xFF5A9AE0 :
+                    ctx.isAvailable(node) ? 0xFF66CC66 : 0xFF3A4560;
+            if (ctx.isSelected(node)) color = 0xFFFFFFFF;
+            int cx = Math.round(pos[0]), cy = Math.round(pos[1]);
+            g.fill(cx - half, cy - half, cx + half, cy + half, color);
+        }
     }
 
     private void drawNodeLabel(GuiGraphics g, ResearchNode node, int cx, int cy, RenderContext ctx) {
@@ -532,6 +591,14 @@ public class ResearchTerminalScreen extends Screen {
                 return true;
             }
 
+            int[] ab = researchAllBounds();
+            if (terminal != null && !trees.isEmpty() && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3]) {
+                ConfluxNetwork.CHANNEL.sendToServer(
+                        new net.phoenix.core.integration.conflux.network.C2SResearchAllPacket(
+                                trees.get(activeTreeIdx).id, terminal.getBlockPos()));
+                return true;
+            }
+
             int tabX = 4;
             for (int i = 0; i < trees.size(); i++) {
                 int tw = font.width(trees.get(i).title) + 20;
@@ -616,7 +683,7 @@ public class ResearchTerminalScreen extends Screen {
         double my = rmy / uiScale;
         if (mx < canvasW() && my >= canvasTop()) {
             float oldZoom = zoom;
-            zoom = Math.max(0.4f, Math.min(2.5f, zoom + (float) (delta * 0.1f)));
+            zoom = Math.max(MIN_ZOOM, Math.min(2.5f, zoom * (float) Math.pow(1.15, delta)));
             float factor = zoom / oldZoom;
             panX = (float) (mx - factor * (mx - panX));
             panY = (float) (my - canvasTop() - factor * (my - canvasTop() - panY));

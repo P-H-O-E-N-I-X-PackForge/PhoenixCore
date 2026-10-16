@@ -30,6 +30,12 @@ public final class ConfluxNetwork {
                 C2SResearchUnlockPacket::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        CHANNEL.registerMessage(id++, C2SResearchAllPacket.class,
+                C2SResearchAllPacket::encode,
+                C2SResearchAllPacket::decode,
+                C2SResearchAllPacket::handle,
+                java.util.Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
         CHANNEL.registerMessage(id++, C2SAbandonDisciplinePacket.class,
                 C2SAbandonDisciplinePacket::encode,
                 C2SAbandonDisciplinePacket::decode,
