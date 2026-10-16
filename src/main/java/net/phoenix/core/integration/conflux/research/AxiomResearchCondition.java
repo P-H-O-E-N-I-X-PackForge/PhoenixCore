@@ -100,7 +100,24 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
         if (flag.isEmpty()) {
             return Component.literal(!only.isEmpty() ? "Unavailable to: " + only : "Only for: " + except);
         }
-        return Component.translatable("phoenixcore.condition.axiom_research", flag);
+        // EMI draws these as one unwrapped line inside a fixed-width recipe widget, so keep it short: the title of the
+        // research that grants the flag rather than "Requires research: <raw flag>"
+        return Component.literal("Research: " + researchName(flag));
+    }
+
+    private static String researchName(String flag) {
+        for (ResearchNode node : ResearchTreeRegistry.INSTANCE.getAllNodes()) {
+            for (ResearchUnlock unlock : node.unlocks) {
+                if ("flag".equals(unlock.type()) && flag.equals(unlock.value())) return node.title;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String part : flag.split("_")) {
+            if (part.isEmpty()) continue;
+            if (sb.length() > 0) sb.append(' ');
+            sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
+        }
+        return sb.toString();
     }
 
     @Override
