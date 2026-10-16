@@ -20,6 +20,9 @@ public final class ConfluxNetwork {
         registrar.playToServer(C2SAbandonDisciplinePacket.TYPE, C2SAbandonDisciplinePacket.STREAM_CODEC,
                 C2SAbandonDisciplinePacket::handle);
 
+        registrar.playToServer(C2SResearchAllPacket.TYPE, C2SResearchAllPacket.STREAM_CODEC,
+                C2SResearchAllPacket::handle);
+
         registrar.playToServer(C2SChooseDisciplinePacket.TYPE, C2SChooseDisciplinePacket.STREAM_CODEC,
                 C2SChooseDisciplinePacket::handle);
 

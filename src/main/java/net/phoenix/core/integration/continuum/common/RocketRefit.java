@@ -76,8 +76,25 @@ public final class RocketRefit {
     }
 
     public static @Nullable String apply(ServerPlayer player, Action action, String key) {
+        InteractionHand hand = player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ContinuumRocketItem ?
+                InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         ItemStack rocket = heldRocket(player);
         if (rocket.isEmpty()) return "Hold a Continuum Rocket to refit it.";
+
+        // work on a copy and put it back, so the inventory registers the change and sends it to the client
+        ItemStack original = rocket;
+        rocket = original.copy();
+        String error = applyTo(player, action, key, rocket);
+        if (error == null) {
+            player.setItemInHand(hand, rocket);
+            player.getInventory().setChanged();
+            player.inventoryMenu.broadcastChanges();
+            player.containerMenu.broadcastChanges();
+        }
+        return error;
+    }
+
+    private static @Nullable String applyTo(ServerPlayer player, Action action, String key, ItemStack rocket) {
 
         switch (action) {
             case TIER_UP -> {
