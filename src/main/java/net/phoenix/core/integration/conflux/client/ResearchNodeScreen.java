@@ -167,6 +167,7 @@ public class ResearchNodeScreen extends Screen {
     // ------------------------------------------------------------------ rendering
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
+        ConfluxTheme.refresh();
         refreshState();
         buttons.clear();
         hoveredStack = ItemStack.EMPTY;

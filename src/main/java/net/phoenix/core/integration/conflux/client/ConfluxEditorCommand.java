@@ -42,7 +42,7 @@ public final class ConfluxEditorCommand {
                         }))
                 .then(literal("wiki")
                         .executes(ctx -> {
-                            Minecraft.getInstance().setScreen(new ConfluxWikiScreen(null));
+                            net.phoenixvine.wiki.PhoenixWikiAPI.open(null, ConfluxTheme.MOD_ID, "wiki", ConfluxTheme.wikiTheme());
                             return 1;
                         })));
 
