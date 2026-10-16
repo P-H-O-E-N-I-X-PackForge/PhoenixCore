@@ -42,7 +42,6 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private static final int TAB_H = 36;
-    private static final int SIDEBAR_W = 150;
     private static final int BOTTOM_H = 48;
     private static final int NODE_R = 22;
 
@@ -94,7 +93,7 @@ public class ResearchTerminalScreen extends Screen {
 
     @Override
     protected void init() {
-        float neededW = SIDEBAR_W + MIN_CANVAS_W;
+        float neededW = sideOpenW() + MIN_CANVAS_W;
         float neededH = TAB_H + BOTTOM_H + MIN_CANVAS_H;
         uiScale = (width < neededW || height < neededH) ?
                 Math.min(width / neededW, height / neededH) : 1f;
@@ -103,7 +102,7 @@ public class ResearchTerminalScreen extends Screen {
         vh = Math.round(height / uiScale);
 
         String keep = searchBox == null ? "" : searchBox.getValue();
-        searchBox = new EditBox(font, 8, 38, SIDEBAR_W - 16, 14, Component.literal("Search"));
+        searchBox = new EditBox(font, 8, 38, sideOpenW() - 16, 14, Component.literal("Search"));
         searchBox.setMaxLength(40);
         searchBox.setHint(Component.literal("\u00a78Search research  ( / )"));
         searchBox.setBordered(true);
@@ -161,12 +160,17 @@ public class ResearchTerminalScreen extends Screen {
     private boolean sidebarOpen = true;
     private static final int RAIL_W = 18;
 
+    /** Scales with the window: about a sixth of the width, never huge, never too narrow to read. */
+    private int sideOpenW() {
+        return Math.max(104, Math.min(150, Math.round(vw * 0.17f)));
+    }
+
     private int sideW() {
-        return sidebarOpen ? SIDEBAR_W : RAIL_W;
+        return sidebarOpen ? sideOpenW() : RAIL_W;
     }
 
     private int[] toggleBounds() {
-        return sidebarOpen ? new int[] { SIDEBAR_W - 19, 5, SIDEBAR_W - 6, 18 } : new int[] { 3, 5, 15, 18 };
+        return sidebarOpen ? new int[] { sideOpenW() - 19, 5, sideOpenW() - 6, 18 } : new int[] { 3, 5, 15, 18 };
     }
 
     private void toggleSidebar() {
@@ -249,10 +253,12 @@ public class ResearchTerminalScreen extends Screen {
         activeRenderer.tick(dt, ctx);
 
         g.fill(0, 0, vw, vh, ConfluxTheme.BG);
-        renderSidebar(g, mx, my);
-        renderTopBar(g, mx, my);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
+        // drawn after the post-process chain so the shader never tints or shows through the chrome
+        g.flush();
+        renderSidebar(g, mx, my);
+        renderTopBar(g, mx, my);
         renderBottomBar(g);
         super.render(g, mx, my, pt);
 
@@ -385,7 +391,7 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private int[] chipBounds(int which) {
-        int w = (SIDEBAR_W - 22) / 2;
+        int w = (sideOpenW() - 22) / 2;
         int x = 8 + which * (w + 6);
         return new int[] { x, 55, x + w, 67 };
     }
@@ -411,14 +417,15 @@ public class ResearchTerminalScreen extends Screen {
             renderToggle(g, mx, my);
             return;
         }
-        g.fill(0, 0, SIDEBAR_W, h, ConfluxTheme.PANEL);
-        g.fill(SIDEBAR_W - 1, 0, SIDEBAR_W, h, ConfluxTheme.BORDER);
+        g.fill(0, 0, sideOpenW(), h, 0xFF000000);
+        g.fill(0, 0, sideOpenW(), h, ConfluxTheme.PANEL);
+        g.fill(sideOpenW() - 1, 0, sideOpenW(), h, ConfluxTheme.BORDER);
 
-        g.fillGradient(0, 0, SIDEBAR_W - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
+        g.fillGradient(0, 0, sideOpenW() - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
         g.drawString(font, "\u00a7lAXIOM", 10, 7, ConfluxTheme.TEXT, false);
         String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
         g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, ConfluxTheme.DIM, false);
-        g.fill(8, 33, SIDEBAR_W - 8, 34, ConfluxTheme.BORDER);
+        g.fill(8, 33, sideOpenW() - 8, 34, ConfluxTheme.BORDER);
         renderToggle(g, mx, my);
 
         for (int c = 0; c < 2; c++) {
@@ -432,21 +439,21 @@ public class ResearchTerminalScreen extends Screen {
         }
 
         int top = sideListTop(), bot = sideListBottom();
-        g.enableScissor(0, top, SIDEBAR_W - 1, bot);
+        g.enableScissor(0, top, sideOpenW() - 1, bot);
         int y = top - sidebarScroll;
         int start = y;
         if (resultsMode()) {
             List<Hit> hits = hits();
             if (hits.isEmpty()) g.drawString(font, "\u00a78No matches.", 12, y + 6, ConfluxTheme.DIM, false);
             for (Hit hit : hits) {
-                boolean hover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
                 boolean current = selected != null && selected.id.equals(hit.node().id);
-                if (current) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
-                else if (hover) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+                if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (hover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
                 int col = hit.done() ? 0xFF88BBFF : hit.affordable() ? 0xFF88EE88 : ConfluxTheme.TEXT;
-                g.drawString(font, font.plainSubstrByWidth(hit.node().title, SIDEBAR_W - 26), 12, y + 4, col, false);
+                g.drawString(font, font.plainSubstrByWidth(hit.node().title, sideOpenW() - 26), 12, y + 4, col, false);
                 g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(hit.treeIdx()).title,
-                        SIDEBAR_W - 26), 12, y + 15, ConfluxTheme.DIM, false);
+                        sideOpenW() - 26), 12, y + 15, ConfluxTheme.DIM, false);
                 y += ROW_H;
             }
             sidebarMax = Math.max(0, (y - start) - (bot - top));
@@ -461,40 +468,40 @@ public class ResearchTerminalScreen extends Screen {
                 continue;
             }
             if (row.pinNode() != null) {
-                boolean pinHover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean pinHover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
                 boolean current = selected != null && selected.id.equals(row.pinNode().id);
-                if (current) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
-                else if (pinHover) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+                if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (pinHover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
                 boolean done = ClientResearchCache.isUnlocked(row.pinNode().id);
                 g.drawString(font, "\u00a7e\u2605", 10, y + 4, TEXT_PIN, false);
-                g.drawString(font, font.plainSubstrByWidth(row.pinNode().title, SIDEBAR_W - 38), 22, y + 4,
+                g.drawString(font, font.plainSubstrByWidth(row.pinNode().title, sideOpenW() - 38), 22, y + 4,
                         done ? 0xFF88BBFF : ConfluxTheme.TEXT, false);
-                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, SIDEBAR_W - 38), 22,
+                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, sideOpenW() - 38), 22,
                         y + 15, ConfluxTheme.DIM, false);
                 y += ROW_H;
                 continue;
             }
             ResearchTree tree = trees.get(row.treeIdx());
             boolean active = row.treeIdx() == activeTreeIdx;
-            boolean hover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H) &&
+            boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H) &&
                     my >= y && my < y + ROW_H;
             if (active) {
-                g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
+                g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
                 g.fill(4, y, 6, y + ROW_H - 2, accent());
             } else if (hover) {
-                g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+                g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
             }
             int[] p = progress(tree);
-            String title = font.plainSubstrByWidth(tree.title, SIDEBAR_W - 38);
+            String title = font.plainSubstrByWidth(tree.title, sideOpenW() - 38);
             g.drawString(font, title, 12, y + 4, active ? ConfluxTheme.TEXT : hover ? 0xFF9999BB : 0xFF8888AA, false);
-            if (p[2] == 1) g.drawString(font, "\u00a7a\u25cf", SIDEBAR_W - 16, y + 4, ConfluxTheme.TEXT, false);
+            if (p[2] == 1) g.drawString(font, "\u00a7a\u25cf", sideOpenW() - 16, y + 4, ConfluxTheme.TEXT, false);
 
-            int barX = 12, barW = SIDEBAR_W - 56, barY = y + 17;
+            int barX = 12, barW = sideOpenW() - 56, barY = y + 17;
             g.fill(barX, barY, barX + barW, barY + 3, 0xFF111122);
             int filled = p[1] == 0 ? 0 : (int) (barW * (p[0] / (float) p[1]));
             g.fill(barX, barY, barX + filled, barY + 3, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : accent());
             String count = p[0] + "/" + p[1];
-            g.drawString(font, "\u00a78" + count, SIDEBAR_W - 8 - font.width(count), y + 13, ConfluxTheme.DIM, false);
+            g.drawString(font, "\u00a78" + count, sideOpenW() - 8 - font.width(count), y + 13, ConfluxTheme.DIM, false);
             y += ROW_H;
         }
         sidebarMax = Math.max(0, (y - start) - (bot - top));
@@ -503,7 +510,7 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private Hit hitRowAt(double mx, double my) {
-        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return null;
+        if (mx < 0 || mx >= sideOpenW() - 1 || my < sideListTop() || my >= sideListBottom()) return null;
         int y = sideListTop() - sidebarScroll;
         for (Hit hit : hits()) {
             if (my >= y && my < y + ROW_H) return hit;
@@ -513,7 +520,7 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private SideRow rowAt(double mx, double my) {
-        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return null;
+        if (mx < 0 || mx >= sideOpenW() - 1 || my < sideListTop() || my >= sideListBottom()) return null;
         int y = sideListTop() - sidebarScroll;
         for (SideRow row : sideRows()) {
             if (row.header() != null) {

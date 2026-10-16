@@ -46,10 +46,10 @@ public final class ConfluxTheme {
         PhoenixTheme t = PhoenixTheme.current(MOD_ID);
         themed = !"DARK".equalsIgnoreCase(PhoenixTheme.getActiveName(MOD_ID));
         if (t == null) return;
-        BG = t.bg.getColor();
-        PANEL = t.panel.getColor();
-        HEADER = t.header.getColor();
-        BORDER = t.border.getColor();
+        BG = t.bg.getColor() | 0xFF000000;
+        PANEL = t.panel.getColor() | 0xFF000000;
+        HEADER = t.header.getColor() | 0xFF000000;
+        BORDER = t.border.getColor() | 0xFF000000;
         BASE_ACCENT = t.accent.getColor();
         TEXT = t.text.getColor();
         DIM = t.textDim.getColor();
