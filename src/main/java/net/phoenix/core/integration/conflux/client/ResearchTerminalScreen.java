@@ -9,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
+import net.minecraft.client.gui.components.EditBox;
 import net.phoenix.core.integration.conflux.client.render.*;
 import net.phoenix.core.integration.conflux.client.render.discipline.DisciplineRendererRegistry;
 import net.phoenix.core.integration.conflux.network.C2SResearchUnlockPacket;
@@ -59,6 +60,12 @@ public class ResearchTerminalScreen extends Screen {
     private float panX = 0, panY = 0;
     private static final int ROW_H = 30;
     private static final int GROUP_H = 16;
+    private EditBox searchBox;
+    private boolean readyOnly = false;
+    private boolean skipChar = false;
+    private ResearchNode pendingFocus = null;
+    private int[] archiveBtn = null;
+    private String archiveBtnId = null;
     private int sidebarScroll = 0;
     private int sidebarMax = 0;
     private float detailScroll = 0;
@@ -108,6 +115,15 @@ public class ResearchTerminalScreen extends Screen {
         vw = Math.round(width / uiScale);
         vh = Math.round(height / uiScale);
 
+        String keep = searchBox == null ? "" : searchBox.getValue();
+        searchBox = new EditBox(font, 8, 38, SIDEBAR_W - 16, 14, Component.literal("Search"));
+        searchBox.setMaxLength(40);
+        searchBox.setHint(Component.literal("\u00a78Search research  ( / )"));
+        searchBox.setBordered(true);
+        searchBox.setValue(keep);
+        searchBox.setResponder(v -> sidebarScroll = 0);
+        addRenderableWidget(searchBox);
+
         rebuildTrees();
         resetPan();
         lastFrameNanos = -1;
@@ -149,6 +165,18 @@ public class ResearchTerminalScreen extends Screen {
 
     private int canvasW() {
         return vw - SIDEBAR_W - DETAIL_W;
+    }
+
+    private int accent() {
+        String d = ClientResearchCache.getDisciplineInfo().disciplineId();
+        if (d == null) return C_ACCENT;
+        return switch (d) {
+            case "phoenix" -> 0xFFFF8A3D;
+            case "sculk" -> 0xFF2FC4B0;
+            case "void" -> 0xFF9B6BFF;
+            case "sealed_a", "sealed_b" -> 0xFFC8B070;
+            default -> C_ACCENT;
+        };
     }
 
     private int canvasLeft() {
@@ -211,6 +239,13 @@ public class ResearchTerminalScreen extends Screen {
             super.render(g, mx, my, pt);
             g.pose().popPose();
             return;
+        }
+
+        if (pendingFocus != null) {
+            float[] fp = activeRenderer.nodePos(pendingFocus, ctx);
+            panX = canvasW() / 2f - fp[0] * zoom;
+            panY = canvasH() / 2f - fp[1] * zoom;
+            pendingFocus = null;
         }
 
         activeRenderer.tick(dt, ctx);
@@ -295,7 +330,46 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private int sideListTop() {
-        return 40;
+        return 72;
+    }
+
+    private boolean resultsMode() {
+        return readyOnly || (searchBox != null && !searchBox.getValue().isBlank());
+    }
+
+    private record Hit(int treeIdx, ResearchNode node, boolean affordable, boolean done) {}
+
+    private List<Hit> hits() {
+        String q = searchBox == null ? "" : searchBox.getValue().trim().toLowerCase();
+        Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
+        List<Hit> out = new ArrayList<>();
+        for (int i = 0; i < trees.size(); i++) {
+            ResearchTree tree = trees.get(i);
+            for (ResearchNode n : tree.getNodes()) {
+                boolean done = ClientResearchCache.isUnlocked(n.id);
+                if (n.hidden && !done) continue;
+                if (!n.isVisible(unlockedSet)) continue;
+                if (readyOnly && (done || ClientResearchCache.isLockedOut(n.id) ||
+                        !n.canUnlock(unlockedSet, ClientResearchCache.lockedOut))) continue;
+                if (!q.isEmpty() && !(n.title + " " + n.lore + " " + tree.title).toLowerCase().contains(q)) continue;
+                out.add(new Hit(i, n, costsAffordable(n), done));
+            }
+        }
+        out.sort((a, b) -> Boolean.compare(b.affordable(), a.affordable()));
+        return out.size() > 150 ? out.subList(0, 150) : out;
+    }
+
+    private void focusHit(Hit hit) {
+        activeTreeIdx = hit.treeIdx();
+        selected = hit.node();
+        pendingFocus = hit.node();
+        detailScroll = 0;
+    }
+
+    private int[] chipBounds(int which) {
+        int w = (SIDEBAR_W - 22) / 2;
+        int x = 8 + which * (w + 6);
+        return new int[] { x, 55, x + w, 67 };
     }
 
     private int sideListBottom() {
@@ -307,15 +381,45 @@ public class ResearchTerminalScreen extends Screen {
         g.fill(0, 0, SIDEBAR_W, h, C_PANEL);
         g.fill(SIDEBAR_W - 1, 0, SIDEBAR_W, h, C_BORDER);
 
+        g.fillGradient(0, 0, SIDEBAR_W - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
         g.drawString(font, "\u00a7lAXIOM", 10, 7, C_TEXT, false);
         String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
         g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, C_DIM, false);
         g.fill(8, 33, SIDEBAR_W - 8, 34, C_BORDER);
 
+        for (int c = 0; c < 2; c++) {
+            int[] cb = chipBounds(c);
+            boolean on = (c == 1) == readyOnly;
+            boolean hv = mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3];
+            g.fill(cb[0], cb[1], cb[2], cb[3], on ? (accent() & 0xFFFFFF) | 0x55000000 : hv ? 0xFF14142A : 0xFF0C0C18);
+            g.renderOutline(cb[0], cb[1], cb[2] - cb[0], cb[3] - cb[1], on ? accent() : C_BORDER);
+            g.drawCenteredString(font, c == 0 ? "All" : "\u00a7a\u25cf\u00a7r Ready", (cb[0] + cb[2]) / 2, cb[1] + 2,
+                    on ? C_TEXT : C_DIM);
+        }
+
         int top = sideListTop(), bot = sideListBottom();
         g.enableScissor(0, top, SIDEBAR_W - 1, bot);
         int y = top - sidebarScroll;
         int start = y;
+        if (resultsMode()) {
+            List<Hit> hits = hits();
+            if (hits.isEmpty()) g.drawString(font, "\u00a78No matches.", 12, y + 6, C_DIM, false);
+            for (Hit hit : hits) {
+                boolean hover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean current = selected != null && selected.id.equals(hit.node().id);
+                if (current) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (hover) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+                int col = hit.done() ? 0xFF88BBFF : hit.affordable() ? 0xFF88EE88 : C_TEXT;
+                g.drawString(font, font.plainSubstrByWidth(hit.node().title, SIDEBAR_W - 26), 12, y + 4, col, false);
+                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(hit.treeIdx()).title,
+                        SIDEBAR_W - 26), 12, y + 15, C_DIM, false);
+                y += ROW_H;
+            }
+            sidebarMax = Math.max(0, (y - start) - (bot - top));
+            sidebarScroll = Math.min(sidebarScroll, sidebarMax);
+            g.disableScissor();
+            return;
+        }
         for (SideRow row : sideRows()) {
             if (row.header() != null) {
                 g.drawString(font, "\u00a78" + row.header().toUpperCase(), 10, y + 5, C_DIM, false);
@@ -328,7 +432,7 @@ public class ResearchTerminalScreen extends Screen {
                     my >= y && my < y + ROW_H;
             if (active) {
                 g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
-                g.fill(4, y, 6, y + ROW_H - 2, C_ACCENT);
+                g.fill(4, y, 6, y + ROW_H - 2, accent());
             } else if (hover) {
                 g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
             }
@@ -340,7 +444,7 @@ public class ResearchTerminalScreen extends Screen {
             int barX = 12, barW = SIDEBAR_W - 56, barY = y + 17;
             g.fill(barX, barY, barX + barW, barY + 3, 0xFF111122);
             int filled = p[1] == 0 ? 0 : (int) (barW * (p[0] / (float) p[1]));
-            g.fill(barX, barY, barX + filled, barY + 3, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : C_ACCENT);
+            g.fill(barX, barY, barX + filled, barY + 3, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : accent());
             String count = p[0] + "/" + p[1];
             g.drawString(font, "\u00a78" + count, SIDEBAR_W - 8 - font.width(count), y + 13, C_DIM, false);
             y += ROW_H;
@@ -348,6 +452,16 @@ public class ResearchTerminalScreen extends Screen {
         sidebarMax = Math.max(0, (y - start) - (bot - top));
         sidebarScroll = Math.min(sidebarScroll, sidebarMax);
         g.disableScissor();
+    }
+
+    private Hit hitRowAt(double mx, double my) {
+        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return null;
+        int y = sideListTop() - sidebarScroll;
+        for (Hit hit : hits()) {
+            if (my >= y && my < y + ROW_H) return hit;
+            y += ROW_H;
+        }
+        return null;
     }
 
     private int treeRowAt(double mx, double my) {
@@ -367,7 +481,7 @@ public class ResearchTerminalScreen extends Screen {
     private void renderTopBar(GuiGraphics g, int mx, int my) {
         int cl = canvasLeft(), cw = canvasW();
         g.fill(cl, 0, cl + cw, TAB_H, C_HEADER);
-        g.fill(cl, TAB_H - 1, cl + cw, TAB_H, C_BORDER);
+        g.fill(cl, TAB_H - 1, cl + cw, TAB_H, (accent() & 0xFFFFFF) | 0x88000000);
 
         int[] ab = researchAllBounds();
         if (!trees.isEmpty()) {
@@ -593,7 +707,7 @@ public class ResearchTerminalScreen extends Screen {
             List<RichBlock> blocks = markdown(selected.lore);
             int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
             richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot,
-                    C_ACCENT, mdExpanded);
+                    accent(), mdExpanded);
             y += h + 8;
         }
 
@@ -683,6 +797,7 @@ public class ResearchTerminalScreen extends Screen {
                     case "multiblock" -> "\u00a76\u2b21 ";
                     case "recipe_tag" -> "\u00a7d\u2697 ";
                     case "item" -> null;
+                    case "archive" -> "\u00a7e\u2756 Lore: ";
                     default -> "\u00a77\u2022 ";
                 };
                 if (prefix == null) continue;
@@ -690,6 +805,23 @@ public class ResearchTerminalScreen extends Screen {
                     g.drawString(font, line, x + 4, y, C_TEXT, false);
                     y += 11;
                 }
+            }
+        }
+
+        archiveBtn = null;
+        archiveBtnId = null;
+        if (unlocked && ArchiveLinks.opener != null) {
+            for (var unlock : selected.unlocks) {
+                if (!"archive".equals(unlock.type())) continue;
+                y += 4;
+                archiveBtn = new int[] { x, y, x + 90, y + 14 };
+                archiveBtnId = unlock.value();
+                boolean hv = mx >= x && mx < x + 90 && my >= y && my < y + 14;
+                g.fill(x, y, x + 90, y + 14, hv ? 0xFF2A2A4A : 0xFF14142A);
+                g.renderOutline(x, y, 90, 14, accent());
+                g.drawCenteredString(font, "Read lore", x + 45, y + 3, C_TEXT);
+                y += 18;
+                break;
             }
         }
 
@@ -744,7 +876,7 @@ public class ResearchTerminalScreen extends Screen {
 
         List<RichBlock> blocks = markdown(tree.description);
         int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
-        richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot, C_ACCENT,
+        richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot, accent(),
                 mdExpanded);
         y += h + 10;
 
@@ -754,7 +886,7 @@ public class ResearchTerminalScreen extends Screen {
         y += 12;
         g.fill(x, y, x + maxW, y + 4, 0xFF111122);
         int filled = p[1] == 0 ? 0 : (int) (maxW * (p[0] / (float) p[1]));
-        g.fill(x, y, x + filled, y + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : C_ACCENT);
+        g.fill(x, y, x + filled, y + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : accent());
         y += 14;
         g.drawString(font, "\u00a78Select a node for details.", x, y, C_DIM, false);
         y += 12;
@@ -773,7 +905,7 @@ public class ResearchTerminalScreen extends Screen {
         int thumbH = Math.max(14, viewH * viewH / total);
         int thumbY = top + (int) ((viewH - thumbH) * (scroll / max));
         g.fill(x, top, x + 2, top + viewH, 0xFF111122);
-        g.fill(x, thumbY, x + 2, thumbY + thumbH, C_ACCENT);
+        g.fill(x, thumbY, x + 2, thumbY + thumbH, accent());
     }
 
     private void drawRegionTooltips(GuiGraphics g, int mx, int my, ItemStack hoveredReward) {
@@ -862,6 +994,19 @@ public class ResearchTerminalScreen extends Screen {
         }
 
         if (mx < SIDEBAR_W) {
+            for (int c = 0; c < 2; c++) {
+                int[] cb = chipBounds(c);
+                if (mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3]) {
+                    readyOnly = c == 1;
+                    sidebarScroll = 0;
+                    return true;
+                }
+            }
+            if (resultsMode()) {
+                Hit hit = hitRowAt(mx, my);
+                if (hit != null) focusHit(hit);
+                return true;
+            }
             int row = treeRowAt(mx, my);
             if (row >= 0 && row != activeTreeIdx) {
                 activeTreeIdx = row;
@@ -880,6 +1025,11 @@ public class ResearchTerminalScreen extends Screen {
             int btnW = DETAIL_W - 20;
             if (my >= btnY && my < btnY + btnH && mx >= btnX && mx < btnX + btnW) {
                 tryResearch();
+                return true;
+            }
+            if (archiveBtn != null && ArchiveLinks.opener != null && mx >= archiveBtn[0] && mx < archiveBtn[2] &&
+                    my >= archiveBtn[1] && my < archiveBtn[3] && my >= 38 && my < btnY - 6) {
+                ArchiveLinks.opener.accept(this, archiveBtnId);
                 return true;
             }
         }
@@ -963,6 +1113,21 @@ public class ResearchTerminalScreen extends Screen {
 
     @Override
     public boolean keyPressed(int kc, int sc, int mod) {
+        if (searchBox != null && searchBox.isFocused()) {
+            if (kc == GLFW.GLFW_KEY_ESCAPE) {
+                if (!searchBox.getValue().isEmpty()) searchBox.setValue("");
+                else searchBox.setFocused(false);
+                return true;
+            }
+            searchBox.keyPressed(kc, sc, mod);
+            return true;
+        }
+        if (searchBox != null && (kc == GLFW.GLFW_KEY_SLASH || (kc == GLFW.GLFW_KEY_F && (mod & GLFW.GLFW_MOD_CONTROL) != 0))) {
+            setFocused(searchBox);
+            searchBox.setFocused(true);
+            skipChar = kc == GLFW.GLFW_KEY_SLASH;
+            return true;
+        }
         if (kc == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
             return true;
@@ -985,6 +1150,15 @@ public class ResearchTerminalScreen extends Screen {
             return true;
         }
         return super.keyPressed(kc, sc, mod);
+    }
+
+    @Override
+    public boolean charTyped(char c, int mods) {
+        if (skipChar) {
+            skipChar = false;
+            return true;
+        }
+        return super.charTyped(c, mods);
     }
 
     private void tryResearch() {

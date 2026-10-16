@@ -33,6 +33,11 @@ public final class ConfluxRewards {
 
     public static void give(ServerPlayer player, ResearchNode node) {
         for (ResearchUnlock unlock : node.unlocks) {
+            if ("archive".equals(unlock.type())) {
+                var unlocker = net.phoenix.core.api.ConfluxApi.archiveUnlocker;
+                if (unlocker != null) unlocker.accept(player, unlock.value());
+                continue;
+            }
             if (!"item".equals(unlock.type())) continue;
 
             String value = unlock.value();

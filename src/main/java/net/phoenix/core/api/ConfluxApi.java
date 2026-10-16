@@ -17,6 +17,12 @@ public final class ConfluxApi {
 
     private ConfluxApi() {}
 
+    /**
+     * Set by Phoenix Archive once it is ported: called with the player and the entry id when research with an
+     * {@code archive} unlock completes.
+     */
+    public static volatile java.util.function.BiConsumer<ServerPlayer, String> archiveUnlocker;
+
     public static boolean hasFlag(ServerPlayer player, String flag) {
         return data(player).hasFlag(ResearchTeamHelper.getTeamId(player), flag);
     }
