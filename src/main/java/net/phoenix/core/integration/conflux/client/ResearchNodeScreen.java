@@ -178,15 +178,19 @@ public class ResearchNodeScreen extends Screen {
             renderFull(g, mx, my);
         } else {
             parent.render(g, -10000, -10000, pt);
+            g.flush();
             // the terminal's node icons are drawn at raised depth, so the overlay has to sit above them or they show
             // through the dim and the card
             g.pose().pushPose();
             g.pose().translate(0, 0, 600);
             g.fill(0, 0, width, height, 0xB0000008);
             renderCompact(g, mx, my);
+            g.flush();
             g.pose().popPose();
         }
 
+        // text is batched; without a flush it is drawn after the popup's fill and shows through it
+        g.flush();
         g.pose().pushPose();
         g.pose().translate(0, 0, 1000);
         if (connectionsOpen) renderConnections(g, mx, my);
@@ -541,7 +545,7 @@ public class ResearchNodeScreen extends Screen {
         int sy = y;
         y = drawPrereqs(g, mxp + 8, y, midW - 16);
         y = drawCosts(g, mxp + 8, y, midW - 16, true);
-        if (!node.exclusionGroup.isEmpty() && !unlocked) {
+        if (node.exclusionGroup != null && !node.exclusionGroup.isEmpty() && !unlocked) {
             g.drawString(font, "§6⚠ Choosing this seals sibling paths.", mxp + 8, y, TEXT, false);
             y += 12;
         }

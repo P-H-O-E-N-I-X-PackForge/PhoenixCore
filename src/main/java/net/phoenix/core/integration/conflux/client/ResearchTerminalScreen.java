@@ -157,15 +157,37 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private int canvasW() {
-        return vw - SIDEBAR_W;
+        return vw - sideW();
     }
 
     private int accent() {
         return ConfluxTheme.accent();
     }
 
+    private boolean sidebarOpen = true;
+    private static final int RAIL_W = 18;
+
+    private int sideW() {
+        return sidebarOpen ? SIDEBAR_W : RAIL_W;
+    }
+
+    private int[] toggleBounds() {
+        return sidebarOpen ? new int[] { SIDEBAR_W - 19, 5, SIDEBAR_W - 6, 18 } : new int[] { 3, 5, 15, 18 };
+    }
+
+    private void toggleSidebar() {
+        int before = canvasLeft();
+        sidebarOpen = !sidebarOpen;
+        // keep the tree where it is on screen while the canvas grows or shrinks around it
+        panX += before - canvasLeft();
+        if (searchBox != null) {
+            searchBox.visible = sidebarOpen;
+            if (!sidebarOpen) searchBox.setFocused(false);
+        }
+    }
+
     private int canvasLeft() {
-        return SIDEBAR_W;
+        return sideW();
     }
 
 
@@ -236,6 +258,12 @@ public class ResearchTerminalScreen extends Screen {
         renderTopBar(g, mx, my);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
+        g.flush();
+        g.pose().pushPose();
+        g.pose().translate(canvasLeft(), 0, 0);
+        renderTreeCard(g, mx - canvasLeft(), my);
+        g.flush();
+        g.pose().popPose();
         renderBottomBar(g);
         super.render(g, mx, my, pt);
 
@@ -372,8 +400,23 @@ public class ResearchTerminalScreen extends Screen {
         return bottomTop() - 4;
     }
 
+    private void renderToggle(GuiGraphics g, int mx, int my) {
+        int[] tb = toggleBounds();
+        boolean hov = mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3];
+        g.fill(tb[0], tb[1], tb[2], tb[3], hov ? 0x33FFFFFF : 0x14FFFFFF);
+        g.drawCenteredString(font, sidebarOpen ? "\u25c0" : "\u25b6", (tb[0] + tb[2]) / 2, tb[1] + 3, hov ? C_TEXT : accent());
+    }
+
     private void renderSidebar(GuiGraphics g, int mx, int my) {
         int h = bottomTop();
+        if (searchBox != null) searchBox.visible = sidebarOpen;
+        if (!sidebarOpen) {
+            g.fill(0, 0, RAIL_W, h, C_PANEL);
+            g.fill(RAIL_W - 1, 0, RAIL_W, h, C_BORDER);
+            g.fillGradient(0, 0, RAIL_W - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
+            renderToggle(g, mx, my);
+            return;
+        }
         g.fill(0, 0, SIDEBAR_W, h, C_PANEL);
         g.fill(SIDEBAR_W - 1, 0, SIDEBAR_W, h, C_BORDER);
 
@@ -382,6 +425,7 @@ public class ResearchTerminalScreen extends Screen {
         String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
         g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, C_DIM, false);
         g.fill(8, 33, SIDEBAR_W - 8, 34, C_BORDER);
+        renderToggle(g, mx, my);
 
         for (int c = 0; c < 2; c++) {
             int[] cb = chipBounds(c);
@@ -586,7 +630,6 @@ public class ResearchTerminalScreen extends Screen {
             g.pose().popPose();
         }
 
-        renderTreeCard(g, mx - cl, my);
         RenderSystem.disableScissor();
         g.pose().popPose();
     }
@@ -777,7 +820,13 @@ public class ResearchTerminalScreen extends Screen {
             return false;
         }
 
-        if (mx < SIDEBAR_W) {
+        int[] tb = toggleBounds();
+        if (mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3]) {
+            toggleSidebar();
+            return true;
+        }
+        if (mx < sideW()) {
+            if (!sidebarOpen) return true;
             for (int c = 0; c < 2; c++) {
                 int[] cb = chipBounds(c);
                 if (mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3]) {
@@ -865,7 +914,8 @@ public class ResearchTerminalScreen extends Screen {
     public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         double mx = rmx / uiScale;
         double my = rmy / uiScale;
-        if (mx < SIDEBAR_W) {
+        if (mx < sideW()) {
+            if (!sidebarOpen) return true;
             sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
             return true;
         }
@@ -905,6 +955,10 @@ public class ResearchTerminalScreen extends Screen {
         }
         if (kc == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_TAB) {
+            toggleSidebar();
             return true;
         }
         float step = 30f / zoom;
