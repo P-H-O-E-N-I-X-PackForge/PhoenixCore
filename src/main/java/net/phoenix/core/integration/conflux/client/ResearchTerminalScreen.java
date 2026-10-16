@@ -591,7 +591,7 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().popPose();
     }
 
-    private static final int CARD_W = 236;
+    private static final int CARD_W = 168;
     private boolean cardOpen = true;
     private float cardScroll = 0;
     private int cardMax = 0;
@@ -619,7 +619,7 @@ public class ResearchTerminalScreen extends Screen {
             return;
         }
 
-        int bodyMax = 96;
+        int bodyMax = 44;
         List<RichBlock> blocks = cardBlocksFor(tree.description);
         int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, CARD_W - 20, new java.util.HashSet<>());
         int bodyH = Math.min(bodyMax, contentH);

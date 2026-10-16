@@ -178,12 +178,17 @@ public class ResearchNodeScreen extends Screen {
             renderFull(g, mx, my);
         } else {
             parent.render(g, -10000, -10000, pt);
+            // the terminal's node icons are drawn at raised depth, so the overlay has to sit above them or they show
+            // through the dim and the card
+            g.pose().pushPose();
+            g.pose().translate(0, 0, 600);
             g.fill(0, 0, width, height, 0xB0000008);
             renderCompact(g, mx, my);
+            g.pose().popPose();
         }
 
         g.pose().pushPose();
-        g.pose().translate(0, 0, 400);
+        g.pose().translate(0, 0, 1000);
         if (connectionsOpen) renderConnections(g, mx, my);
         if (!hoveredStack.isEmpty()) {
             g.renderTooltip(font, hoveredStack, mx, my);
