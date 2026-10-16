@@ -31,6 +31,9 @@ public class ResearchTreeRegistry extends SimpleJsonResourceReloadListener {
 
     private final Set<String> gatedRecipeTags = new LinkedHashSet<>();
 
+    /** The source JSON of every loaded tree, kept so it can be sent to clients that never read the datapack. */
+    private final Map<ResourceLocation, String> raw = new LinkedHashMap<>();
+
     private ResearchTreeRegistry() {
         super(GSON, "conflux/research");
     }
@@ -38,18 +41,23 @@ public class ResearchTreeRegistry extends SimpleJsonResourceReloadListener {
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> data, ResourceManager mgr, ProfilerFiller profiler) {
         trees.clear();
-        gatedMultiblocks.clear();
-        gatedRecipeTags.clear();
+        raw.clear();
 
         data.forEach((id, element) -> {
             JsonObject json = element.getAsJsonObject();
             try {
                 trees.put(id, ResearchTree.fromJson(id, json));
+                raw.put(id, json.toString());
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load Axiom research tree: " + id, e);
             }
         });
+        rebuildDerived();
+    }
 
+    private void rebuildDerived() {
+        gatedMultiblocks.clear();
+        gatedRecipeTags.clear();
         for (ResearchTree tree : trees.values()) {
             for (ResearchNode node : tree.getNodes()) {
                 for (ResearchUnlock unlock : node.unlocks) {
@@ -62,6 +70,27 @@ public class ResearchTreeRegistry extends SimpleJsonResourceReloadListener {
                     }
                 }
             }
+        }
+    }
+
+    public Map<ResourceLocation, String> rawJson() {
+        return Collections.unmodifiableMap(raw);
+    }
+
+    /** Client side of the definition sync: a remote client rebuilds the registry from what the server sent. */
+    public void clientReset() {
+        trees.clear();
+        raw.clear();
+        rebuildDerived();
+    }
+
+    public void clientAdd(ResourceLocation id, String json) {
+        try {
+            trees.put(id, ResearchTree.fromJson(id, com.google.gson.JsonParser.parseString(json).getAsJsonObject()));
+            raw.put(id, json);
+            rebuildDerived();
+        } catch (RuntimeException e) {
+            net.phoenix.core.PhoenixCore.LOGGER.error("[Conflux] Could not read synced research tree {}", id, e);
         }
     }
 

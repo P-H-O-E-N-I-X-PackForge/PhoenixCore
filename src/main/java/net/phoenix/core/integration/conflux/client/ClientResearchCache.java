@@ -63,6 +63,25 @@ public final class ClientResearchCache {
         return lockedOut.contains(id);
     }
 
+    /**
+     * A definition from the server. On an integrated server the client already shares the server's registries, so there
+     * is nothing to replace and replacing them would only churn data both sides are using.
+     */
+    public static void acceptDefinition(byte kind, ResourceLocation id, String json) {
+        if (net.minecraft.client.Minecraft.getInstance().isLocalServer()) return;
+        var trees = net.phoenix.core.integration.conflux.research.ResearchTreeRegistry.INSTANCE;
+        var rules = net.phoenix.core.integration.conflux.research.GatedRecipeRegistry.INSTANCE;
+        switch (kind) {
+            case net.phoenix.core.integration.conflux.network.S2CResearchDataPacket.RESET -> {
+                trees.clientReset();
+                rules.clientReset();
+            }
+            case net.phoenix.core.integration.conflux.network.S2CResearchDataPacket.TREE -> trees.clientAdd(id, json);
+            case net.phoenix.core.integration.conflux.network.S2CResearchDataPacket.RULE -> rules.clientAdd(id, json);
+            default -> {}
+        }
+    }
+
     public static DisciplineInfo getDisciplineInfo() {
         if (disciplineId == null) return DisciplineInfo.NONE;
         return new DisciplineInfo(disciplineId, disciplineTitle, disciplineCommitted, switchCost);

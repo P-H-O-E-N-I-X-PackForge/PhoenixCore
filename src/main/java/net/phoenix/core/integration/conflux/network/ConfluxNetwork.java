@@ -29,6 +29,9 @@ public final class ConfluxNetwork {
         registrar.playToClient(S2CResearchSyncPacket.TYPE, S2CResearchSyncPacket.STREAM_CODEC,
                 S2CResearchSyncPacket::handle);
 
+        registrar.playToClient(S2CResearchDataPacket.TYPE, S2CResearchDataPacket.STREAM_CODEC,
+                S2CResearchDataPacket::handle);
+
         registrar.playToServer(net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.TYPE,
                 net.phoenix.core.integration.conflux.dimension.network.C2SDimensionTeleportPacket.STREAM_CODEC,
                 (msg, ctx) -> msg.handle(ctx));
@@ -37,6 +40,16 @@ public final class ConfluxNetwork {
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.TYPE,
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.STREAM_CODEC,
                 (msg, ctx) -> msg.handle(ctx));
+    }
+
+    /** Sends every research tree and recipe-gate rule, so a remote client can draw and describe them. */
+    public static void sendDefinitions(ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, S2CResearchDataPacket.reset());
+        ResearchTreeRegistry.INSTANCE.rawJson().forEach((id, json) -> PacketDistributor.sendToPlayer(player,
+                new S2CResearchDataPacket(S2CResearchDataPacket.TREE, id, json)));
+        net.phoenix.core.integration.conflux.research.GatedRecipeRegistry.INSTANCE.rawJson()
+                .forEach((id, json) -> PacketDistributor.sendToPlayer(player,
+                        new S2CResearchDataPacket(S2CResearchDataPacket.RULE, id, json)));
     }
 
     public static void syncResearchToPlayer(ServerPlayer player) {
