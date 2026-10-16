@@ -229,6 +229,10 @@
         {
           "type": "item",
           "value": "minecraft:netherite_ingot*2"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:netherite_sword[minecraft:enchantments={levels:{\"minecraft:fire_aspect\":2,\"minecraft:sharpness\":4}}]"
         }
       ]
     },

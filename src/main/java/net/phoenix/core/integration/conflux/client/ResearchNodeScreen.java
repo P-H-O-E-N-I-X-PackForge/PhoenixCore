@@ -71,6 +71,11 @@ public class ResearchNodeScreen extends Screen {
     private int cardX, cardY, cardW, cardH;
 
     private boolean unlocked, lockedOut, mystery, available, canResearch;
+    private NodeYield cachedYield;
+    private boolean yieldFor;
+    private float yieldScroll = 0;
+    private int yieldMax = 0;
+    private int[] yieldRect = new int[4];
 
     public ResearchNodeScreen(Screen parent, ResearchTree tree, ResearchNode node,
                               @Nullable ResearchTerminalBlockEntity terminal) {
@@ -107,6 +112,11 @@ public class ResearchNodeScreen extends Screen {
         mystery = node.hidden && !unlocked;
         available = !unlocked && !lockedOut && node.canUnlock(done, ClientResearchCache.lockedOut);
         canResearch = available && affordable();
+        if (cachedYield == null || yieldFor != unlocked) {
+            yieldFor = unlocked;
+            cachedYield = mystery || lockedOut ? new NodeYield(List.of(), List.of(), List.of(), List.of(), List.of(),
+                    List.of()) : NodeYield.of(node, unlocked);
+        }
     }
 
     private boolean affordable() {
@@ -132,36 +142,6 @@ public class ResearchNodeScreen extends Screen {
         if (lockedOut) return "*This path has been sealed by a prior choice.*";
         if (mystery) return node.hint.isEmpty() ? "*Nothing is known about this yet.*" : "*" + node.hint + "*";
         return node.lore;
-    }
-
-    private List<ItemStack> rewards() {
-        List<ItemStack> out = new ArrayList<>();
-        if (mystery || lockedOut) return out;
-        for (ResearchUnlock u : node.unlocks) {
-            if (!"item".equals(u.type())) continue;
-            ItemStack s = ConfluxRewards.parse(u.value());
-            if (!s.isEmpty()) out.add(s);
-        }
-        return out;
-    }
-
-    private List<ResearchUnlock> otherUnlocks() {
-        List<ResearchUnlock> out = new ArrayList<>();
-        if (mystery || lockedOut) return out;
-        for (ResearchUnlock u : node.unlocks) if (!"item".equals(u.type())) out.add(u);
-        return out;
-    }
-
-    private String unlockLine(ResearchUnlock u) {
-        String prefix = switch (u.type()) {
-            case "flag" -> "§b⚑ ";
-            case "multiblock" -> "§6⬡ ";
-            case "recipe_tag" -> "§d⚗ ";
-            case "archive" -> "§e❖ Lore: ";
-            case "world_stage" -> "§a▲ Stage: ";
-            default -> "§7• ";
-        };
-        return prefix + u.value();
     }
 
     // ------------------------------------------------------------------ rendering
@@ -342,49 +322,85 @@ public class ResearchNodeScreen extends Screen {
         return y + 10;
     }
 
-    private int rewardRows(int w) {
-        int per = Math.max(1, w / 20);
-        return (rewards().size() + per - 1) / per;
-    }
-
-    private int drawRewards(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        List<ItemStack> rewards = rewards();
-        if (rewards.isEmpty()) return y;
-        g.drawString(font, unlocked ? "§aRewards (claimed)" : "§aRewards", x, y, TEXT, false);
+    private int iconSection(@Nullable GuiGraphics g, int x, int y, int w, int mx, int my, String label,
+                            List<ItemStack> stacks, int outline) {
+        if (stacks.isEmpty()) return y;
+        if (g != null) g.drawString(font, label, x, y, TEXT, false);
         y += 12;
         int ix = 0;
-        for (ItemStack stack : rewards) {
+        for (ItemStack stack : stacks) {
             if (ix + 18 > w) {
                 ix = 0;
                 y += 20;
             }
             int ox = x + ix;
-            g.fill(ox - 1, y - 1, ox + 17, y + 17, 0xFF141428);
-            g.renderOutline(ox - 1, y - 1, 18, 18, unlocked ? 0xFF336633 : BORDER);
-            g.renderItem(stack, ox, y);
-            g.renderItemDecorations(font, stack, ox, y);
-            if (mx >= ox - 1 && mx < ox + 17 && my >= y - 1 && my < y + 17) hoveredStack = stack;
+            if (g != null) {
+                g.fill(ox - 1, y - 1, ox + 17, y + 17, 0xFF141428);
+                g.renderOutline(ox - 1, y - 1, 18, 18, outline);
+                g.renderItem(stack, ox, y);
+                g.renderItemDecorations(font, stack, ox, y);
+                if (mx >= ox - 1 && mx < ox + 17 && my >= y - 1 && my < y + 17) hoveredStack = stack;
+            }
             ix += 20;
         }
-        return y + 22;
+        return y + 24;
     }
 
-    private int drawUnlocks(GuiGraphics g, int x, int y, int w, int limit) {
-        List<ResearchUnlock> list = otherUnlocks();
-        if (list.isEmpty() || !unlocked) return y;
-        g.drawString(font, "§eUnlocked", x, y, TEXT, false);
+    private int textSection(@Nullable GuiGraphics g, int x, int y, int w, String label, List<String> lines, int limit) {
+        if (lines.isEmpty()) return y;
+        if (g != null) g.drawString(font, label, x, y, TEXT, false);
         y += 12;
         int shown = 0;
-        for (ResearchUnlock u : list) {
+        for (String line : lines) {
             if (shown++ >= limit) {
-                g.drawString(font, "§8+" + (list.size() - limit) + " more", x + 4, y, TEXT, false);
+                if (g != null) g.drawString(font, "\u00a78+" + (lines.size() - limit) + " more", x + 4, y, TEXT, false);
                 y += 10;
                 break;
             }
-            g.drawString(font, font.plainSubstrByWidth(unlockLine(u), w - 6), x + 4, y, TEXT, false);
+            if (g != null) g.drawString(font, font.plainSubstrByWidth(line, w - 6), x + 4, y, TEXT, false);
             y += 10;
         }
         return y + 4;
+    }
+
+    private int leadsSection(@Nullable GuiGraphics g, int x, int y, int w, int mx, int my, int limit) {
+        List<ResearchNode> leads = cachedYield.leadsTo();
+        if (leads.isEmpty()) return y;
+        if (g != null) g.drawString(font, "\u00a7bLeads to", x, y, TEXT, false);
+        y += 12;
+        int shown = 0;
+        for (ResearchNode n : leads) {
+            if (shown++ >= limit) {
+                if (g != null) g.drawString(font, "\u00a78+" + (leads.size() - limit) + " more", x + 4, y, TEXT, false);
+                y += 10;
+                break;
+            }
+            boolean done = ClientResearchCache.isUnlocked(n.id);
+            boolean visible = !n.hidden || done;
+            if (g != null) {
+                boolean hov = visible && mx >= x && mx < x + w && my >= y - 1 && my < y + 9;
+                if (hov) g.fill(x, y - 1, x + w, y + 9, 0x22FFFFFF);
+                String name = visible ? n.title : "???";
+                g.drawString(font, font.plainSubstrByWidth((done ? "\u00a7a\u2714 " : "\u00a78\u25e6 ") + name, w - 6), x + 4,
+                        y, visible ? TEXT : DIM, false);
+                if (visible) button(x, y - 1, x + w, y + 9, () -> openNode(n), null, mx, my);
+            }
+            y += 10;
+        }
+        return y + 4;
+    }
+
+    /** Everything this node gives. With a null graphics context it only measures, so the card can size itself. */
+    private int drawYield(@Nullable GuiGraphics g, int x, int y, int w, int mx, int my, boolean compact) {
+        NodeYield yd = cachedYield;
+        if (yd == null || yd.isEmpty()) return y;
+        y = iconSection(g, x, y, w, mx, my, unlocked ? "\u00a7aRewards (claimed)" : "\u00a7aRewards", yd.rewards(),
+                unlocked ? 0xFF336633 : BORDER);
+        y = iconSection(g, x, y, w, mx, my, "\u00a7dUnlocks crafting", yd.recipeItems(), withAlpha(0xDD66FF, 0xAA));
+        y = textSection(g, x, y, w, "\u00a7dRecipes", yd.recipeLines(), compact ? 3 : 99);
+        y = iconSection(g, x, y, w, mx, my, "\u00a76Unlocks machines", yd.machines(), withAlpha(0xFFAA33, 0xAA));
+        y = textSection(g, x, y, w, "\u00a7eAlso", yd.otherLines(), compact ? 2 : 99);
+        return leadsSection(g, x, y, w, mx, my, compact ? 3 : 99);
     }
 
     private void drawLore(GuiGraphics g, int x, int y, int w, int h, boolean compact) {
@@ -467,12 +483,10 @@ public class ResearchNodeScreen extends Screen {
             int rows = node.prerequisites.size() + (node.prerequisitesAny.isEmpty() ? 0 : 1 + node.prerequisitesAny.size());
             prereqH = rows == 0 ? 0 : 11 + rows * 10 + 4;
         }
-        int rewardH = rewards().isEmpty() ? 0 : 12 + rewardRows(inner) * 20 + 2;
-        int unlockCount = otherUnlocks().size();
-        int unlockH = unlocked && unlockCount > 0 ? 12 + Math.min(unlockCount, 3) * 10 + (unlockCount > 3 ? 10 : 0) + 4 : 0;
+        int yieldH = drawYield(null, 0, 0, inner, 0, 0, true);
 
         int maxCardH = height - 30;
-        int fixed = headerH + footerH + costH + prereqH + rewardH + unlockH + 12;
+        int fixed = headerH + footerH + costH + prereqH + yieldH + (yieldH > 0 ? 4 : 0) + 12;
         int loreFull = measureCompactBody(inner);
         int loreView = Math.max(30, Math.min(loreFull, maxCardH - fixed));
         cardH = fixed + loreView;
@@ -499,13 +513,9 @@ public class ResearchNodeScreen extends Screen {
             g.fill(x, y - 3, x + inner, y - 2, BORDER);
             y = drawCosts(g, x, y, inner, false);
         }
-        if (rewardH > 0) {
+        if (yieldH > 0) {
             g.fill(x, y - 3, x + inner, y - 2, BORDER);
-            y = drawRewards(g, x, y, inner, mx, my);
-        }
-        if (unlockH > 0) {
-            g.fill(x, y - 3, x + inner, y - 2, BORDER);
-            drawUnlocks(g, x, y, inner, 3);
+            y = drawYield(g, x, y + 2, inner, mx, my, true);
         }
 
         int fy = cardY + cardH - footerH + 6;
@@ -556,23 +566,18 @@ public class ResearchNodeScreen extends Screen {
 
         int rx = mxp + midW + margin;
         panel(g, rx, top, rightW, h, "Yield");
+        yieldRect = new int[] { rx, top, rx + rightW, bottom };
         g.enableScissor(rx + 1, top + 15, rx + rightW - 1, bottom - 1);
-        int ry = top + 22;
-        ry = drawRewards(g, rx + 8, ry, rightW - 16, mx, my);
-        List<ResearchUnlock> list = otherUnlocks();
-        if (!list.isEmpty()) {
-            g.drawString(font, unlocked ? "§eUnlocked" : "§eUnlocks on completion", rx + 8, ry, TEXT, false);
+        int ry0 = top + 22 - (int) yieldScroll;
+        int ry = drawYield(g, rx + 8, ry0, rightW - 16, mx, my, false);
+        if (cachedYield == null || cachedYield.isEmpty()) {
+            g.drawString(font, "\u00a78Nothing is known about the yield.", rx + 8, ry, TEXT, false);
             ry += 12;
-            for (ResearchUnlock u : list) {
-                String line = mystery ? "???" : unlockLine(u);
-                g.drawString(font, font.plainSubstrByWidth(line, rightW - 22), rx + 12, ry, TEXT, false);
-                ry += 10;
-            }
-        }
-        if (rewards().isEmpty() && list.isEmpty()) {
-            g.drawString(font, "§8Nothing is known about the yield.", rx + 8, ry, TEXT, false);
         }
         g.disableScissor();
+        yieldMax = Math.max(0, (ry - ry0) + 8 - (h - 26));
+        yieldScroll = Math.min(yieldScroll, yieldMax);
+        if (yieldMax > 0) scrollbar(g, rx + rightW - 4, top + 15, h - 17, yieldScroll, yieldMax);
 
         int fy = height - footerH + 6;
         drawResearchButton(g, width / 2 - 110, fy, 220, 18, mx, my);
@@ -670,6 +675,10 @@ public class ResearchNodeScreen extends Screen {
     public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         if (inside(loreRect, mx, my)) {
             loreScroll = (float) Math.max(0, Math.min(loreMax, loreScroll - delta * 18));
+            return true;
+        }
+        if (fullscreen && inside(yieldRect, mx, my)) {
+            yieldScroll = (float) Math.max(0, Math.min(yieldMax, yieldScroll - delta * 18));
             return true;
         }
         if (fullscreen && inside(sideRect, mx, my)) {
