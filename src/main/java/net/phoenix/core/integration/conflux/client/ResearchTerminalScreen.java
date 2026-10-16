@@ -42,7 +42,6 @@ public class ResearchTerminalScreen extends Screen {
     private static final int TAB_H = 24;
     private static final int SIDEBAR_W = 150;
     private static final int BOTTOM_H = 48;
-    private static final int DETAIL_W = 250;
     private static final int NODE_R = 22;
 
     private static final int C_BG = 0xFF07070F;
@@ -64,16 +63,9 @@ public class ResearchTerminalScreen extends Screen {
     private boolean readyOnly = false;
     private boolean skipChar = false;
     private ResearchNode pendingFocus = null;
-    private int[] archiveBtn = null;
-    private String archiveBtnId = null;
     private int sidebarScroll = 0;
     private int sidebarMax = 0;
-    private float detailScroll = 0;
-    private int detailMax = 0;
-    private List<RichSpan.Region> richRegions = List.of();
-    private String mdSource = null;
-    private List<RichBlock> mdBlocks = List.of();
-    private final Set<String> mdExpanded = new java.util.HashSet<>();
+
     private static final float MIN_ZOOM = 0.08f;
     private float zoom = 1.0f;
     private boolean dragging = false;
@@ -107,7 +99,7 @@ public class ResearchTerminalScreen extends Screen {
 
     @Override
     protected void init() {
-        float neededW = SIDEBAR_W + DETAIL_W + MIN_CANVAS_W;
+        float neededW = SIDEBAR_W + MIN_CANVAS_W;
         float neededH = TAB_H + BOTTOM_H + MIN_CANVAS_H;
         uiScale = (width < neededW || height < neededH) ?
                 Math.min(width / neededW, height / neededH) : 1f;
@@ -164,28 +156,17 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private int canvasW() {
-        return vw - SIDEBAR_W - DETAIL_W;
+        return vw - SIDEBAR_W;
     }
 
     private int accent() {
-        String d = ClientResearchCache.getDisciplineInfo().disciplineId();
-        if (d == null) return C_ACCENT;
-        return switch (d) {
-            case "phoenix" -> 0xFFFF8A3D;
-            case "sculk" -> 0xFF2FC4B0;
-            case "void" -> 0xFF9B6BFF;
-            case "sealed_a", "sealed_b" -> 0xFFC8B070;
-            default -> C_ACCENT;
-        };
+        return ConfluxTheme.accent();
     }
 
     private int canvasLeft() {
         return SIDEBAR_W;
     }
 
-    private int detailLeft() {
-        return vw - DETAIL_W;
-    }
 
     private int canvasH() {
         return vh - TAB_H - BOTTOM_H;
@@ -234,7 +215,6 @@ public class ResearchTerminalScreen extends Screen {
             g.fill(0, 0, vw, vh, C_BG);
             renderSidebar(g, mx, my);
             renderTopBar(g, mx, my);
-            renderDetailPanel(g, mx, my);
             renderBottomBar(g);
             super.render(g, mx, my, pt);
             g.pose().popPose();
@@ -255,7 +235,6 @@ public class ResearchTerminalScreen extends Screen {
         renderTopBar(g, mx, my);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
-        renderDetailPanel(g, mx, my);
         renderBottomBar(g);
         super.render(g, mx, my, pt);
 
@@ -363,7 +342,6 @@ public class ResearchTerminalScreen extends Screen {
         activeTreeIdx = hit.treeIdx();
         selected = hit.node();
         pendingFocus = hit.node();
-        detailScroll = 0;
     }
 
     private int[] chipBounds(int which) {
@@ -631,305 +609,6 @@ public class ResearchTerminalScreen extends Screen {
                 unlocked ? C_TEXT : available ? 0xFF88CC88 : C_DIM, false);
     }
 
-    private List<RichBlock> markdown(String text) {
-        if (!text.equals(mdSource)) {
-            mdSource = text;
-            mdBlocks = text.isEmpty() ? List.of() : WikiMarkdownParser.parse(text, false, true);
-        }
-        return mdBlocks;
-    }
-
-    private void drawRule(GuiGraphics g, int px, int y) {
-        g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
-    }
-
-    private void renderDetailPanel(GuiGraphics g, int mx, int my) {
-        int px = detailLeft();
-        int pTop = 0;
-        int pBot = bottomTop();
-        int btnH = 18;
-        int btnY = pBot - btnH - 10;
-        int regionBot = btnY - 6;
-        richRegions = List.of();
-
-        g.fill(px, pTop, vw, pBot, C_PANEL);
-        g.fill(px, pTop, px + 1, pBot, C_BORDER);
-
-        if (selected == null) {
-            renderTreeIntro(g, px, pTop, regionBot, mx, my);
-            return;
-        }
-
-        Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
-        boolean unlocked = ClientResearchCache.isUnlocked(selected.id);
-        boolean lockedOut = ClientResearchCache.isLockedOut(selected.id);
-        boolean isMystery = selected.hidden && !unlocked;
-        boolean available = !unlocked && !lockedOut && selected.canUnlock(unlockedSet, ClientResearchCache.lockedOut);
-        boolean canResearch = available && costsAffordable(selected);
-
-        int x = px + 12;
-        int maxW = DETAIL_W - 30;
-
-        String titleStr = isMystery ? "???" : selected.title;
-        int titleColor = unlocked ? 0xFF88BBFF : available ? 0xFF88EE88 : lockedOut ? 0xFF884444 : C_TEXT;
-        g.drawString(font, font.plainSubstrByWidth(titleStr, DETAIL_W - 24 - (selected.isCommitmentNode ? 64 : 0)), x,
-                pTop + 10, titleColor, false);
-        if (selected.isCommitmentNode) {
-            String badge = "\u00a76\u25c6 Commitment";
-            g.drawString(font, badge, vw - font.width(badge) - 10, pTop + 10, C_TEXT, false);
-        }
-        String status = unlocked ? "\u00a79Researched" : lockedOut ? "\u00a74Sealed" : available ?
-                (canResearch ? "\u00a7aReady to research" : "\u00a7eAvailable") : "\u00a78Locked";
-        g.drawString(font, status, x, pTop + 21, C_TEXT, false);
-        drawRule(g, px, pTop + 33);
-
-        int regionTop = pTop + 38;
-        ItemStack hoveredReward = ItemStack.EMPTY;
-        g.enableScissor(px + 1, regionTop, vw, regionBot);
-        int y = regionTop - (int) detailScroll;
-        int startY = y;
-
-        if (lockedOut) {
-            for (String line : wrapText("\u00a78This path has been sealed by a prior choice.", maxW)) {
-                g.drawString(font, line, x, y, C_TEXT, false);
-                y += 11;
-            }
-            y += 4;
-        } else if (isMystery) {
-            if (!selected.hint.isEmpty()) {
-                for (String line : wrapText("\u00a7o\u00a77" + selected.hint, maxW)) {
-                    g.drawString(font, line, x, y, C_TEXT, false);
-                    y += 11;
-                }
-                y += 4;
-            }
-        } else if (!selected.lore.isEmpty()) {
-            List<RichBlock> blocks = markdown(selected.lore);
-            int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
-            richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot,
-                    accent(), mdExpanded);
-            y += h + 8;
-        }
-
-        if (!selected.prerequisitesAny.isEmpty() && !unlocked && !lockedOut) {
-            drawRule(g, px, y);
-            y += 6;
-            g.drawString(font, "\u00a77Unlock via any of:", x, y, C_DIM, false);
-            y += 11;
-            for (ResourceLocation anyId : selected.prerequisitesAny) {
-                boolean met = unlockedSet.contains(anyId);
-                String label = met ? "\u00a7a\u2714 " : "\u00a78\u25e6 ";
-                String name = ResearchTreeRegistry.INSTANCE.getNode(anyId).map(n -> n.title).orElse(anyId.getPath());
-                g.drawString(font, label + name, x + 6, y, C_TEXT, false);
-                y += 10;
-            }
-            y += 4;
-        }
-
-        if (!selected.cost.isEmpty() && !lockedOut) {
-            drawRule(g, px, y);
-            y += 7;
-            g.drawString(font, "\u00a7eCost", x, y, C_TEXT, false);
-            y += 12;
-
-            for (var entry : selected.cost.entrySet()) {
-                ConfluxDataType type = entry.getKey();
-                long cost = entry.getValue();
-                long have = terminal != null ? ClientResearchCache.dataStored(type) : 0L;
-                boolean met = have >= cost;
-
-                g.drawString(font, type.displayComponent(), x + 4, y, C_TEXT, false);
-                String amtStr = formatAmount(have) + " / " + formatAmount(cost);
-                g.drawString(font, (met ? "\u00a7a" : "\u00a7c") + amtStr, x + maxW - font.width(amtStr), y, C_TEXT,
-                        false);
-
-                y += 11;
-                g.fill(x, y, x + maxW, y + 3, 0xFF111122);
-                int filled = (int) (maxW * Math.min(have / (float) cost, 1f));
-                g.fill(x, y, x + filled, y + 3, met ? 0xFF33AA33 : 0xFF993333);
-                y += 7;
-            }
-            y += 6;
-        }
-
-        List<ItemStack> rewards = new ArrayList<>();
-        if (!isMystery && !lockedOut) {
-            for (var unlock : selected.unlocks) {
-                if (!"item".equals(unlock.type())) continue;
-                ItemStack stack = ConfluxRewards.parse(unlock.value());
-                if (!stack.isEmpty()) rewards.add(stack);
-            }
-        }
-        if (!rewards.isEmpty()) {
-            drawRule(g, px, y);
-            y += 7;
-            g.drawString(font, unlocked ? "\u00a7aRewards (claimed)" : "\u00a7aRewards", x, y, C_TEXT, false);
-            y += 12;
-            int ix = 0;
-            for (ItemStack stack : rewards) {
-                if (ix + 18 > maxW) {
-                    ix = 0;
-                    y += 20;
-                }
-                int ox = x + ix;
-                g.fill(ox - 1, y - 1, ox + 17, y + 17, 0xFF141428);
-                g.renderOutline(ox - 1, y - 1, 18, 18, unlocked ? 0xFF336633 : C_BORDER);
-                g.renderItem(stack, ox, y);
-                g.renderItemDecorations(font, stack, ox, y);
-                if (mx >= ox - 1 && mx < ox + 17 && my >= y - 1 && my < y + 17 && my >= regionTop && my < regionBot) {
-                    hoveredReward = stack;
-                }
-                ix += 20;
-            }
-            y += 24;
-        }
-
-        boolean otherUnlocks = false;
-        for (var unlock : selected.unlocks) if (!"item".equals(unlock.type())) otherUnlocks = true;
-        if (otherUnlocks && unlocked) {
-            drawRule(g, px, y);
-            y += 7;
-            g.drawString(font, "\u00a7eUnlocks", x, y, C_TEXT, false);
-            y += 12;
-            for (var unlock : selected.unlocks) {
-                String prefix = switch (unlock.type()) {
-                    case "flag" -> "\u00a7b\u2691 ";
-                    case "multiblock" -> "\u00a76\u2b21 ";
-                    case "recipe_tag" -> "\u00a7d\u2697 ";
-                    case "item" -> null;
-                    case "archive" -> "\u00a7e\u2756 Lore: ";
-                    default -> "\u00a77\u2022 ";
-                };
-                if (prefix == null) continue;
-                for (String line : wrapText(prefix + unlock.value(), maxW - 8)) {
-                    g.drawString(font, line, x + 4, y, C_TEXT, false);
-                    y += 11;
-                }
-            }
-        }
-
-        archiveBtn = null;
-        archiveBtnId = null;
-        if (unlocked && ArchiveLinks.opener != null) {
-            for (var unlock : selected.unlocks) {
-                if (!"archive".equals(unlock.type())) continue;
-                y += 4;
-                archiveBtn = new int[] { x, y, x + 90, y + 14 };
-                archiveBtnId = unlock.value();
-                boolean hv = mx >= x && mx < x + 90 && my >= y && my < y + 14;
-                g.fill(x, y, x + 90, y + 14, hv ? 0xFF2A2A4A : 0xFF14142A);
-                g.renderOutline(x, y, 90, 14, accent());
-                g.drawCenteredString(font, "Read lore", x + 45, y + 3, C_TEXT);
-                y += 18;
-                break;
-            }
-        }
-
-        int viewH = regionBot - regionTop;
-        detailMax = Math.max(0, (y - startY) + 4 - viewH);
-        detailScroll = Math.min(detailScroll, detailMax);
-        g.disableScissor();
-        drawScrollbar(g, vw - 5, regionTop, viewH, detailScroll, detailMax);
-
-        int btnX = px + 10;
-        int btnW = DETAIL_W - 20;
-        if (unlocked) {
-            g.fill(btnX, btnY, btnX + btnW, btnY + btnH, 0xFF0A1A0A);
-            g.renderOutline(btnX, btnY, btnW, btnH, 0xFF336633);
-            g.drawCenteredString(font, "\u00a7a\u2714 Already Researched", px + DETAIL_W / 2, btnY + 5, C_TEXT);
-        } else if (lockedOut) {
-            g.fill(btnX, btnY, btnX + btnW, btnY + btnH, 0xFF1A0808);
-            g.renderOutline(btnX, btnY, btnW, btnH, 0xFF662222);
-            g.drawCenteredString(font, "\u00a7c\u2718 Path Locked", px + DETAIL_W / 2, btnY + 5, C_TEXT);
-        } else {
-            boolean hov = mx >= btnX && mx < btnX + btnW && my >= btnY && my < btnY + btnH;
-            int btnBg = canResearch ? (hov ? 0xFF1A3A1A : 0xFF112211) : 0xFF1A1020;
-            int btnBrd = canResearch ? (hov ? 0xFF55CC55 : 0xFF338833) : 0xFF443344;
-            g.fill(btnX, btnY, btnX + btnW, btnY + btnH, btnBg);
-            g.renderOutline(btnX, btnY, btnW, btnH, btnBrd);
-            String lbl = terminal == null ? "\u00a77No Terminal Connected" : isMystery ? "\u00a77Unknown Research" :
-                    canResearch ? "\u00a7aResearch" : !available ? "\u00a77Prerequisites Missing" :
-                            "\u00a77Insufficient Data";
-            g.drawCenteredString(font, lbl, px + DETAIL_W / 2, btnY + 5, C_TEXT);
-        }
-
-        drawRegionTooltips(g, mx, my, hoveredReward);
-    }
-
-    private void renderTreeIntro(GuiGraphics g, int px, int pTop, int regionBot, int mx, int my) {
-        if (trees.isEmpty()) {
-            g.drawCenteredString(font, "§7No research trees loaded.", px + DETAIL_W / 2, pTop + 60, C_DIM);
-            return;
-        }
-        ResearchTree tree = trees.get(activeTreeIdx);
-        int[] p = progress(tree);
-        int x = px + 12;
-        int maxW = DETAIL_W - 30;
-        g.drawString(font, font.plainSubstrByWidth(tree.title, DETAIL_W - 24), x, pTop + 10, C_TEXT, false);
-        g.drawString(font, "\u00a78" + tree.group, x, pTop + 21, C_DIM, false);
-        drawRule(g, px, pTop + 33);
-
-        int regionTop = pTop + 38;
-        g.enableScissor(px + 1, regionTop, vw, regionBot);
-        int y = regionTop - (int) detailScroll;
-        int startY = y;
-
-        List<RichBlock> blocks = markdown(tree.description);
-        int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
-        richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot, accent(),
-                mdExpanded);
-        y += h + 10;
-
-        drawRule(g, px, y);
-        y += 8;
-        g.drawString(font, "\u00a7e" + p[0] + " of " + p[1] + " researched", x, y, C_TEXT, false);
-        y += 12;
-        g.fill(x, y, x + maxW, y + 4, 0xFF111122);
-        int filled = p[1] == 0 ? 0 : (int) (maxW * (p[0] / (float) p[1]));
-        g.fill(x, y, x + filled, y + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : accent());
-        y += 14;
-        g.drawString(font, "\u00a78Select a node for details.", x, y, C_DIM, false);
-        y += 12;
-
-        int viewH = regionBot - regionTop;
-        detailMax = Math.max(0, (y - startY) + 4 - viewH);
-        detailScroll = Math.min(detailScroll, detailMax);
-        g.disableScissor();
-        drawScrollbar(g, vw - 5, regionTop, viewH, detailScroll, detailMax);
-        drawRegionTooltips(g, mx, my, ItemStack.EMPTY);
-    }
-
-    private void drawScrollbar(GuiGraphics g, int x, int top, int viewH, float scroll, int max) {
-        if (max <= 0) return;
-        int total = viewH + max;
-        int thumbH = Math.max(14, viewH * viewH / total);
-        int thumbY = top + (int) ((viewH - thumbH) * (scroll / max));
-        g.fill(x, top, x + 2, top + viewH, 0xFF111122);
-        g.fill(x, thumbY, x + 2, thumbY + thumbH, accent());
-    }
-
-    private void drawRegionTooltips(GuiGraphics g, int mx, int my, ItemStack hoveredReward) {
-        if (!hoveredReward.isEmpty()) {
-            g.renderTooltip(font, hoveredReward, mx, my);
-            return;
-        }
-        for (RichSpan.Region r : richRegions) {
-            if (!r.contains(mx, my)) continue;
-            if (r.span() instanceof RichSpan.Tip t) {
-                g.pose().pushPose();
-                g.pose().translate(0f, 0f, 500f);
-                g.renderTooltip(font, font.split(Component.literal(t.tooltip()), 240), mx, my);
-                g.pose().popPose();
-                break;
-            }
-            if (r.span() instanceof RichSpan.ItemIcon icon) {
-                var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(icon.itemId());
-                if (item != null) g.renderTooltip(font, new ItemStack(item).getHoverName(), mx, my);
-                break;
-            }
-        }
-    }
-
     private void renderBottomBar(GuiGraphics g) {
         int y0 = bottomTop();
         g.fill(0, y0, vw, vh, C_HEADER);
@@ -1011,27 +690,9 @@ public class ResearchTerminalScreen extends Screen {
             if (row >= 0 && row != activeTreeIdx) {
                 activeTreeIdx = row;
                 selected = null;
-                detailScroll = 0;
                 resetPan();
             }
             return true;
-        }
-
-        if (mx >= detailLeft()) {
-            int pBot = bottomTop();
-            int btnH = 18;
-            int btnY = pBot - btnH - 10;
-            int btnX = detailLeft() + 10;
-            int btnW = DETAIL_W - 20;
-            if (my >= btnY && my < btnY + btnH && mx >= btnX && mx < btnX + btnW) {
-                tryResearch();
-                return true;
-            }
-            if (archiveBtn != null && ArchiveLinks.opener != null && mx >= archiveBtn[0] && mx < archiveBtn[2] &&
-                    my >= archiveBtn[1] && my < archiveBtn[3] && my >= 38 && my < btnY - 6) {
-                ArchiveLinks.opener.accept(this, archiveBtnId);
-                return true;
-            }
         }
 
         if (mx >= cl && mx < cl + cw && my >= ct && my < ct + ch && !trees.isEmpty()) {
@@ -1051,8 +712,8 @@ public class ResearchTerminalScreen extends Screen {
                 }
             }
             if (hit != null) {
-                selected = (selected != null && selected.id.equals(hit.id)) ? null : hit;
-                detailScroll = 0;
+                selected = hit;
+                Minecraft.getInstance().setScreen(new ResearchNodeScreen(this, tree, hit, terminal));
             } else {
                 selected = null;
                 if (btn == 0) {
@@ -1093,10 +754,6 @@ public class ResearchTerminalScreen extends Screen {
         double my = rmy / uiScale;
         if (mx < SIDEBAR_W) {
             sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
-            return true;
-        }
-        if (mx >= detailLeft()) {
-            detailScroll = (float) Math.max(0, Math.min(detailMax, detailScroll - delta * 20));
             return true;
         }
         if (mx >= canvasLeft() && mx < canvasLeft() + canvasW() && my >= canvasTop()) {
@@ -1159,15 +816,6 @@ public class ResearchTerminalScreen extends Screen {
             return true;
         }
         return super.charTyped(c, mods);
-    }
-
-    private void tryResearch() {
-        if (selected == null || terminal == null) return;
-        if (selected.hidden && !selected.isVisible(ClientResearchCache.unlocked)) return;
-        if (!costsAffordable(selected)) return;
-        if (!selected.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut)) return;
-        PacketDistributor.sendToServer(
-                new C2SResearchUnlockPacket(selected.id, terminal.getBlockPos()));
     }
 
     private boolean costsAffordable(ResearchNode node) {
