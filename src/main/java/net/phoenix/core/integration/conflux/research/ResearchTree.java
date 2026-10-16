@@ -24,6 +24,10 @@ public class ResearchTree {
 
     public final Map<ConfluxDataType, Long> switchCost;
 
+    /** When set, only teams that chose this discipline see or can research this tree. */
+    @Nullable
+    public String requiresDiscipline;
+
     private final Map<ResourceLocation, ResearchNode> nodes = new LinkedHashMap<>();
 
     public ResearchTree(ResourceLocation id, String title, String description,
@@ -66,11 +70,18 @@ public class ResearchTree {
                 .map(e -> ResearchNode.fromJson(e.getAsJsonObject()))
                 .toList() : List.of();
 
-        return new ResearchTree(id, title, description, discipline, switchCost, nodes);
+        ResearchTree tree = new ResearchTree(id, title, description, discipline, switchCost, nodes);
+        if (obj.has("requires_discipline")) tree.requiresDiscipline = obj.get("requires_discipline").getAsString();
+        return tree;
     }
 
     public Optional<ResearchNode> getCommitmentNode() {
         return nodes.values().stream().filter(n -> n.isCommitmentNode).findFirst();
+    }
+
+    public boolean isVisibleTo(@Nullable String chosenDiscipline) {
+        if (requiresDiscipline != null) return requiresDiscipline.equals(chosenDiscipline);
+        return chosenDiscipline == null || discipline == null || chosenDiscipline.equals(discipline);
     }
 
     public boolean isDisciplineTree() {

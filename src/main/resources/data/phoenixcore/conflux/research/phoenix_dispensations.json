@@ -1,0 +1,200 @@
+{
+  "title": "Pyric Dispensations",
+  "description": "The Phoenix does not forbid. It simply burns what it was not asked to keep. Each dispensation is a concession the flame agrees to make - for a price.",
+  "requires_discipline": "phoenix",
+  "switch_cost": {
+    "energetic": 20000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:px_dx_root",
+      "title": "The Terms of Fire",
+      "lore": "You were told the fire would be generous. It is - but generosity is a kind of leash, and the flame has noted every vessel you own.",
+      "icon": "minecraft:blaze_powder",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "energetic": 300
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_dx_terms"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:blaze_rod*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_contain",
+      "title": "Contained Reaction",
+      "lore": "Volatile reactants reach the Phoenix's attention and are spent before you can bottle them. Teach the vessel to hold its breath.",
+      "icon": "minecraft:glass_bottle",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_root"
+      ],
+      "cost": {
+        "energetic": 900,
+        "material": 500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_contained_reactions"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_cold",
+      "title": "Cold Work",
+      "lore": "Fermentation is slow, wet, patient. The Phoenix has none of those. Carve out a corner of the hall where ash cannot reach.",
+      "icon": "minecraft:water_bucket",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_root"
+      ],
+      "cost": {
+        "energetic": 700,
+        "biological": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cold_work"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:experience_bottle*8"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_slag",
+      "title": "Slag Tithe",
+      "lore": "Pay the flame its share of every melt and it will stop eating the rest.",
+      "icon": "minecraft:magma_cream",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_root"
+      ],
+      "cost": {
+        "energetic": 1000,
+        "material": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_slag_tithe"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:magma_cream*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_ember_ledger",
+      "title": "Ember Ledger",
+      "lore": "A record of what the fire took and what it returned. The ledger balances only if you stop counting the ashes as loss.",
+      "icon": "minecraft:writable_book",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_contain",
+        "phoenixcore:px_dx_cold"
+      ],
+      "cost": {
+        "energetic": 2500,
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_ember_ledger"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_second_hearth",
+      "title": "Second Hearth",
+      "lore": "A hearth that is not the first. The Phoenix permits one rival fire if you keep it very small.",
+      "icon": "minecraft:campfire",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_cold",
+        "phoenixcore:px_dx_slag"
+      ],
+      "cost": {
+        "energetic": 3000,
+        "material": 1500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_second_hearth"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:blaze_rod*8"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:ghast_tear*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_dx_pact",
+      "title": "Pact of Ashes",
+      "lore": "Sign in cinders. What you promise is not what you will do, but what you will become when asked.",
+      "icon": "minecraft:totem_of_undying",
+      "position": [
+        0,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:px_dx_ember_ledger",
+        "phoenixcore:px_dx_second_hearth"
+      ],
+      "cost": {
+        "energetic": 8000,
+        "arcane": 2500,
+        "material": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_pact_of_ashes"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:totem_of_undying"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_repair_kit*4"
+        }
+      ]
+    }
+  ]
+}

@@ -26,8 +26,10 @@ public final class RecipeGateApplier {
             recipe.id = holder.id();
 
             for (GatedRecipeRule rule : rules) {
-                if (matches(recipe, rule) && !alreadyGated(recipe, rule.flag())) {
-                    addCondition(recipe, AxiomResearchCondition.of(rule.flag()));
+                String only = String.join(",", rule.onlyDisciplines());
+                String except = String.join(",", rule.exceptDisciplines());
+                if (matches(recipe, rule) && !alreadyGated(recipe, rule.flag(), only, except)) {
+                    addCondition(recipe, AxiomResearchCondition.of(rule.flag(), only, except));
                     gated++;
                 }
             }
@@ -53,9 +55,10 @@ public final class RecipeGateApplier {
         }
     }
 
-    private static boolean alreadyGated(GTRecipe recipe, String flag) {
+    private static boolean alreadyGated(GTRecipe recipe, String flag, String only, String except) {
         for (var condition : recipe.conditions) {
-            if (condition instanceof AxiomResearchCondition axiom && flag.equals(axiom.getFlag())) return true;
+            if (condition instanceof AxiomResearchCondition axiom && flag.equals(axiom.getFlag()) &&
+                    only.equals(axiom.getOnly()) && except.equals(axiom.getExcept())) return true;
         }
         return false;
     }

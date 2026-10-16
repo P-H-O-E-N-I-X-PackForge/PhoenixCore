@@ -6,6 +6,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
@@ -116,7 +117,16 @@ public class WorldResearchData extends SavedData {
     public boolean tryUnlock(UUID team, ResearchNode node,
                              ResearchTerminalBlockEntity terminal,
                              ResearchTreeRegistry registry) {
+        return tryUnlock(team, node, terminal, registry, null);
+    }
+
+    public boolean tryUnlock(UUID team, ResearchNode node,
+                             ResearchTerminalBlockEntity terminal,
+                             ResearchTreeRegistry registry, @Nullable ServerPlayer player) {
         if (!node.canUnlock(getUnlocked(team), getLockedOut(team))) return false;
+        for (ResearchTree tree : registry.getAllTrees()) {
+            if (tree.getNode(node.id).isPresent() && !tree.isVisibleTo(getDiscipline(team))) return false;
+        }
         if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
                 !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
                         .trySpend(team, node.cost)) {
@@ -124,6 +134,7 @@ public class WorldResearchData extends SavedData {
         }
 
         applyUnlock(team, node, registry, terminal.getLevel() instanceof ServerLevel sl ? sl : null);
+        if (player != null) ConfluxRewards.give(player, node);
         setDirty();
         return true;
     }

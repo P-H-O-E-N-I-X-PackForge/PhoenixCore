@@ -1,0 +1,143 @@
+{
+  "title": "The Second Seal",
+  "description": "What the first lock holds out, the second holds in.",
+  "requires_discipline": "sealed_b",
+  "switch_cost": {
+    "arcane": 500000,
+    "biological": 500000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sb_cx_root",
+      "title": "The Hush",
+      "lore": "The seal has no surface. You cannot find where it begins, only where you stop.",
+      "icon": "minecraft:sculk",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_commitment"
+      ],
+      "cost": {
+        "arcane": 200000,
+        "biological": 200000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_cx_root"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:sculk*32"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_cx_pulse",
+      "title": "Pulse Under Stone",
+      "lore": "Something is keeping time. It is not keeping it for you.",
+      "icon": "minecraft:redstone_block",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_cx_root"
+      ],
+      "cost": {
+        "arcane": 500000,
+        "biological": 300000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_cx_pulse"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_cx_wake",
+      "title": "What Wakes",
+      "lore": "Not a threat. A courtesy. It will let you know when to leave.",
+      "icon": "minecraft:bell",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_cx_pulse"
+      ],
+      "cost": {
+        "arcane": 900000,
+        "biological": 600000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_cx_wake"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:totem_of_undying*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_cx_lull",
+      "title": "The Long Lull",
+      "lore": "The kindest thing a seal can do is be dull.",
+      "icon": "minecraft:white_bed",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_cx_pulse"
+      ],
+      "cost": {
+        "arcane": 900000,
+        "biological": 600000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_cx_lull"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_cx_open",
+      "title": "What the Seal Keeps",
+      "lore": "You will not be told. You will be trusted not to ask.",
+      "icon": "minecraft:nether_star",
+      "position": [
+        0,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_cx_wake",
+        "phoenixcore:sb_cx_lull"
+      ],
+      "cost": {
+        "arcane": 2000000,
+        "biological": 1500000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_cx_open"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star*4"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_golden_apple*4"
+        }
+      ]
+    }
+  ]
+}

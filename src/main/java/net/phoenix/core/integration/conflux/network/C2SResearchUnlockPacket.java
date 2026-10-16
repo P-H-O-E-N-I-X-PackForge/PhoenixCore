@@ -64,7 +64,7 @@ public class C2SResearchUnlockPacket implements CustomPacketPayload {
             WorldResearchData researchData = WorldResearchData.get(level);
             String disciplineBefore = researchData.getDiscipline(teamId);
 
-            boolean success = researchData.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE);
+            boolean success = researchData.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE, player);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
 

@@ -1,0 +1,12 @@
+{
+  "flag": "sk_sterile_assembly",
+  "only_disciplines": [
+    "sculk"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:circuit_assembler",
+      "min_tier": "hv"
+    }
+  ]
+}

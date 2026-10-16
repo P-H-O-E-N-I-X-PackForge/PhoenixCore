@@ -1,0 +1,140 @@
+{
+  "title": "The First Lock",
+  "description": "Everything behind it is accounted for. The Lock is the only entry in the ledger that is not.",
+  "requires_discipline": "sealed_a",
+  "switch_cost": {
+    "arcane": 500000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sa_cx_root",
+      "title": "The Keyhole",
+      "lore": "It is shaped like nothing you have carried.",
+      "icon": "minecraft:tripwire_hook",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_commitment"
+      ],
+      "cost": {
+        "arcane": 200000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_cx_root"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:iron_ingot*32"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_cx_tumbler_a",
+      "title": "First Tumbler",
+      "lore": "It turns once for every attempt, and counts them.",
+      "icon": "minecraft:chain",
+      "position": [
+        -1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_cx_root"
+      ],
+      "cost": {
+        "arcane": 400000,
+        "computational": 100000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_cx_tumbler_a"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_cx_tumbler_b",
+      "title": "Second Tumbler",
+      "lore": "It does not turn. It waits to see what the first did.",
+      "icon": "minecraft:iron_bars",
+      "position": [
+        1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_cx_root"
+      ],
+      "cost": {
+        "arcane": 400000,
+        "computational": 100000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_cx_tumbler_b"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_cx_ward",
+      "title": "Ward of Refusal",
+      "lore": "A polite no, repeated with infinite patience.",
+      "icon": "minecraft:shield",
+      "position": [
+        0,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_cx_tumbler_a",
+        "phoenixcore:sa_cx_tumbler_b"
+      ],
+      "cost": {
+        "arcane": 800000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_cx_ward"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:totem_of_undying*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_cx_open",
+      "title": "What the Lock Wants",
+      "lore": "Not to be opened. To be understood.",
+      "icon": "minecraft:nether_star",
+      "position": [
+        0,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_cx_ward"
+      ],
+      "cost": {
+        "arcane": 2000000,
+        "computational": 1000000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_cx_open"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star*4"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_golden_apple*4"
+        }
+      ]
+    }
+  ]
+}

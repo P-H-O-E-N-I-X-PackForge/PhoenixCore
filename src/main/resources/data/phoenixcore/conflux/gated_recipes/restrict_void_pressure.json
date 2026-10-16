@@ -1,0 +1,16 @@
+{
+  "flag": "vd_settled_mass",
+  "only_disciplines": [
+    "void"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:compressor",
+      "min_tier": "hv"
+    },
+    {
+      "type": "gtceu:forge_hammer",
+      "min_tier": "hv"
+    }
+  ]
+}

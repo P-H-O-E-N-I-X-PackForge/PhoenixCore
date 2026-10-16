@@ -1,0 +1,196 @@
+{
+  "title": "Geometric Concessions",
+  "description": "Space in the Void is a rumour that mostly holds. These concessions are the places where you agreed not to ask it to hold too hard.",
+  "requires_discipline": "void",
+  "switch_cost": {
+    "arcane": 20000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:vd_dx_root",
+      "title": "Terms of Measure",
+      "lore": "A ruler laid down in the void measures itself. Agree with it.",
+      "icon": "minecraft:spyglass",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "arcane": 300
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_dx_terms"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:ender_pearl*8"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_geometry",
+      "title": "Stable Geometry",
+      "lore": "An assembler requires that its parts stay where they were put. The Void treats this as a suggestion.",
+      "icon": "minecraft:iron_block",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_root"
+      ],
+      "cost": {
+        "arcane": 900,
+        "computational": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_stable_geometry"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_mass",
+      "title": "Settled Mass",
+      "lore": "Pressure means something only if the thing pressed is certain it exists.",
+      "icon": "minecraft:anvil",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_root"
+      ],
+      "cost": {
+        "arcane": 800,
+        "material": 700
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_settled_mass"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:obsidian*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_clock",
+      "title": "A Single Clock",
+      "lore": "More than one clock is an argument. Pick one and defend it.",
+      "icon": "minecraft:clock",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_root"
+      ],
+      "cost": {
+        "arcane": 1000,
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_single_clock"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_tether",
+      "title": "Tethered Origin",
+      "lore": "Declare a point that does not move. Everything else will agree to be relative.",
+      "icon": "minecraft:lodestone",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_geometry",
+        "phoenixcore:vd_dx_mass"
+      ],
+      "cost": {
+        "arcane": 2500,
+        "computational": 1500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_tethered_origin"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:lodestone*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_parallel",
+      "title": "Parallel Permission",
+      "lore": "Run two processes in the same space and it will let you, provided neither looks at the other.",
+      "icon": "minecraft:comparator",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_mass",
+        "phoenixcore:vd_dx_clock"
+      ],
+      "cost": {
+        "arcane": 2500,
+        "computational": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_parallel_permission"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:ender_eye*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_dx_accord",
+      "title": "The Flat Accord",
+      "lore": "For one moment, everything is exactly where it is. It is the most expensive moment you will buy.",
+      "icon": "minecraft:end_crystal",
+      "position": [
+        0,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_dx_tether",
+        "phoenixcore:vd_dx_parallel"
+      ],
+      "cost": {
+        "arcane": 8000,
+        "computational": 4000,
+        "material": 2500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_flat_accord"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:end_crystal*2"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_repair_kit*4"
+        }
+      ]
+    }
+  ]
+}

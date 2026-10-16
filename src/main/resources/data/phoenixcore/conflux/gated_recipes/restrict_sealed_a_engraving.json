@@ -1,0 +1,12 @@
+{
+  "flag": "sa_etched_concession",
+  "only_disciplines": [
+    "sealed_a"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:laser_engraver",
+      "min_tier": "ev"
+    }
+  ]
+}

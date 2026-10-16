@@ -104,7 +104,7 @@ public class ResearchTerminalScreen extends Screen {
 
         List<ResearchTree> visible = new ArrayList<>();
         for (ResearchTree tree : ResearchTreeRegistry.INSTANCE.getAllTrees()) {
-            if (chosen != null && tree.isDisciplineTree() && !chosen.equals(tree.discipline)) continue;
+            if (!tree.isVisibleTo(chosen)) continue;
             visible.add(tree);
         }
         trees = visible;
@@ -507,6 +507,7 @@ public class ResearchTerminalScreen extends Screen {
                     case "flag" -> "§b⚑ ";
                     case "multiblock" -> "§6⬡ ";
                     case "recipe_tag" -> "§d⚗ ";
+                    case "item" -> "§a✦ Reward: ";
                     default -> "§7• ";
                 };
                 for (String line : wrapText(prefix + unlock.value(), maxW - 8)) {

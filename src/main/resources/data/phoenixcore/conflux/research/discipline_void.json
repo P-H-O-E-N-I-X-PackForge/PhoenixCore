@@ -58,7 +58,7 @@
       "lore": "Mass bends light. Meaning bends space. You are learning to speak in curves.",
       "icon": "minecraft:dragon_egg",
       "position": [-1, 2],
-      "prerequisites": ["phoenixcore:vd_near_a", "phoenixcore:vd_null_topology"],
+      "prerequisites": ["phoenixcore:vd_near_a", "phoenixcore:vd_near_b"],
       "cost": { "arcane": 3000, "computational": 1500 },
       "unlocks": [
         { "type": "flag", "value": "vd_gravity_semantics" },
@@ -71,7 +71,7 @@
       "lore": "Everything you see is slightly off. Not broken — deliberately skewed. Something on the other side prefers you to look this way.",
       "icon": "minecraft:chorus_fruit",
       "position": [0, 2],
-      "prerequisites": ["phoenixcore:vd_null_topology", "phoenixcore:vd_near_c"],
+      "prerequisites": ["phoenixcore:vd_near_b", "phoenixcore:vd_near_c"],
       "cost": { "computational": 2500, "arcane": 1000 },
       "unlocks": [
         { "type": "flag", "value": "vd_wrong_angle" }

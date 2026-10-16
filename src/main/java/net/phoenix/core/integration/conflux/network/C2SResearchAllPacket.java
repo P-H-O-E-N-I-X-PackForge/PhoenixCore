@@ -69,7 +69,7 @@ public class C2SResearchAllPacket implements CustomPacketPayload {
                     if (node.isCommitmentNode) continue;
                     if (data.getUnlocked(teamId).contains(node.id)) continue;
                     if (node.hidden && !node.isVisible(data.getUnlocked(teamId))) continue;
-                    if (data.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE)) {
+                    if (data.tryUnlock(teamId, node, terminal, ResearchTreeRegistry.INSTANCE, player)) {
                         progressed = true;
                         unlockedCount++;
                         net.phoenix.core.integration.conflux.dimension.ConfluxProgressionEvents

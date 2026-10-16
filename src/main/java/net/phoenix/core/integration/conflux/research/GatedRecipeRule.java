@@ -11,10 +11,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 
 public record GatedRecipeRule(String flag, List<ResourceLocation> recipeIds, List<TypeTierGate> recipeTypes,
-                              List<ResourceLocation> outputItems, List<TagKey<Item>> outputTags) {
+                              List<ResourceLocation> outputItems, List<TagKey<Item>> outputTags,
+                              List<String> onlyDisciplines, List<String> exceptDisciplines) {
 
     public static final Codec<GatedRecipeRule> CODEC = RecordCodecBuilder.create(i -> i.group(
-            Codec.STRING.fieldOf("flag").forGetter(GatedRecipeRule::flag),
+            Codec.STRING.optionalFieldOf("flag", "").forGetter(GatedRecipeRule::flag),
             ResourceLocation.CODEC.listOf().optionalFieldOf("recipe_ids", List.of())
                     .forGetter(GatedRecipeRule::recipeIds),
             TypeTierGate.CODEC.listOf().optionalFieldOf("recipe_types", List.of())
@@ -22,7 +23,11 @@ public record GatedRecipeRule(String flag, List<ResourceLocation> recipeIds, Lis
             ResourceLocation.CODEC.listOf().optionalFieldOf("output_items", List.of())
                     .forGetter(GatedRecipeRule::outputItems),
             TagKey.codec(Registries.ITEM).listOf().optionalFieldOf("output_tags", List.of())
-                    .forGetter(GatedRecipeRule::outputTags))
+                    .forGetter(GatedRecipeRule::outputTags),
+            Codec.STRING.listOf().optionalFieldOf("only_disciplines", List.of())
+                    .forGetter(GatedRecipeRule::onlyDisciplines),
+            Codec.STRING.listOf().optionalFieldOf("except_disciplines", List.of())
+                    .forGetter(GatedRecipeRule::exceptDisciplines))
             .apply(i, GatedRecipeRule::new));
 
     public record TypeTierGate(ResourceLocation recipeType, String minTier) {

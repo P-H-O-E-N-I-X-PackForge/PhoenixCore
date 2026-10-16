@@ -29,6 +29,8 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     public static final MapCodec<AxiomResearchCondition> CODEC = RecordCodecBuilder
             .mapCodec(instance -> RecipeCondition.isReverse(instance)
                     .and(Codec.STRING.fieldOf("flag").forGetter(AxiomResearchCondition::getFlag))
+                    .and(Codec.STRING.optionalFieldOf("only", "").forGetter(AxiomResearchCondition::getOnly))
+                    .and(Codec.STRING.optionalFieldOf("except", "").forGetter(AxiomResearchCondition::getExcept))
                     .apply(instance, AxiomResearchCondition::new));
 
     public static com.tterrag.registrate.util.entry.RegistryEntry<RecipeConditionType<?>, RecipeConditionType<AxiomResearchCondition>> TYPE;
@@ -38,13 +40,34 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     @Getter
     private @NotNull String flag = "";
 
-    public AxiomResearchCondition(boolean isReverse, @NotNull String flag) {
+    /** Comma separated disciplines the restriction applies to; empty means all. */
+    @Getter
+    private @NotNull String only = "";
+
+    /** Comma separated disciplines the restriction does not apply to. */
+    @Getter
+    private @NotNull String except = "";
+
+    public AxiomResearchCondition(boolean isReverse, @NotNull String flag, @NotNull String only,
+                                  @NotNull String except) {
         super(isReverse);
         this.flag = flag;
+        this.only = only;
+        this.except = except;
     }
 
     public static AxiomResearchCondition of(String flag) {
-        return new AxiomResearchCondition(false, flag);
+        return new AxiomResearchCondition(false, flag, "", "");
+    }
+
+    public static AxiomResearchCondition of(String flag, String only, String except) {
+        return new AxiomResearchCondition(false, flag, only, except);
+    }
+
+    private static boolean listed(String csv, String discipline) {
+        if (discipline == null) return false;
+        for (String entry : csv.split(",")) if (entry.trim().equals(discipline)) return true;
+        return false;
     }
 
     @Override
@@ -62,12 +85,21 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
         if (nearestPlayer == null) return false;
 
         UUID teamId = ResearchTeamHelper.getTeamId(nearestPlayer);
-        return WorldResearchData.get(level).hasFlag(teamId, flag);
+        WorldResearchData data = WorldResearchData.get(level);
+        // "only"/"except" scope who the restriction applies to; outside that scope the recipe is unrestricted.
+        // Inside it the flag is required, and with no flag the recipe is simply closed to that discipline.
+        String discipline = data.getDiscipline(teamId);
+        boolean inScope = (only.isEmpty() || listed(only, discipline)) && !listed(except, discipline);
+        if (!inScope) return true;
+        return !flag.isEmpty() && data.hasFlag(teamId, flag);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public Component getTooltips() {
+        if (flag.isEmpty()) {
+            return Component.literal(!only.isEmpty() ? "Unavailable to: " + only : "Only for: " + except);
+        }
         return Component.translatable("phoenixcore.condition.axiom_research", flag);
     }
 

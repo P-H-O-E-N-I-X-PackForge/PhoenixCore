@@ -1,0 +1,354 @@
+{
+  "title": "The Ashen Codex",
+  "description": "Written by every Phoenix that ever burned out and began again. Each page is a life, and each life wrote its mistake in the margin so that the next would not need to.",
+  "requires_discipline": "phoenix",
+  "switch_cost": {
+    "energetic": 100000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:px_cx_root",
+      "title": "First Page, Singed",
+      "lore": "The binding is warm. It has always been warm. You will stop noticing, which is how it begins.",
+      "icon": "minecraft:book",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [
+        "phoenixcore:px_commitment"
+      ],
+      "cost": {
+        "energetic": 4000,
+        "arcane": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_root"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_book"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_kindling",
+      "title": "Kindling Theory",
+      "lore": "Everything that burns was first persuaded. Learn the arguments.",
+      "icon": "minecraft:stick",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_root"
+      ],
+      "cost": {
+        "energetic": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_kindling"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_draft",
+      "title": "The Draft",
+      "lore": "Fire needs a way out. The only unforgivable architecture is the sealed one.",
+      "icon": "minecraft:hopper",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_root"
+      ],
+      "cost": {
+        "energetic": 5000,
+        "material": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_draft"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_slagwright",
+      "title": "Slagwright",
+      "lore": "Waste is only metal that has not been told its purpose.",
+      "icon": "minecraft:iron_block",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_root"
+      ],
+      "cost": {
+        "material": 6000,
+        "energetic": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_slagwright"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:netherite_scrap*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_lung",
+      "title": "Bellows Lung",
+      "lore": "The apparatus breathes in rhythm with the operator. Disagree with it and it will remind you.",
+      "icon": "minecraft:piston",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_kindling",
+        "phoenixcore:px_cx_draft"
+      ],
+      "cost": {
+        "energetic": 9000,
+        "computational": 2500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_lung"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_crucible_song",
+      "title": "Crucible Song",
+      "lore": "A tone, held at the right temperature, loosens things that should not loosen.",
+      "icon": "minecraft:note_block",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_draft",
+        "phoenixcore:px_cx_slagwright"
+      ],
+      "cost": {
+        "energetic": 9000,
+        "material": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_crucible_song"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_cinderlight",
+      "title": "Cinderlight",
+      "lore": "The last glow before the dark is the brightest. Harvest it with permission.",
+      "icon": "minecraft:glowstone",
+      "position": [
+        -3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_lung"
+      ],
+      "cost": {
+        "energetic": 14000,
+        "arcane": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_cinderlight"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:glowstone*32"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_ashfall",
+      "title": "Ashfall Cartography",
+      "lore": "A map made of what was left. Follow it downwind.",
+      "icon": "minecraft:filled_map",
+      "position": [
+        -1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_lung",
+        "phoenixcore:px_cx_crucible_song"
+      ],
+      "cost": {
+        "energetic": 14000,
+        "computational": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_ashfall"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_wyrmbone",
+      "title": "Wyrmbone Frame",
+      "lore": "The Phoenix built on the bones of something larger. The frame still remembers being alive.",
+      "icon": "minecraft:bone_block",
+      "position": [
+        1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_crucible_song"
+      ],
+      "cost": {
+        "material": 14000,
+        "energetic": 10000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_wyrmbone"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:netherite_ingot*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_sunseed",
+      "title": "Sunseed",
+      "lore": "A spark that has not decided yet. Keep it from deciding.",
+      "icon": "minecraft:fire_charge",
+      "position": [
+        3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_slagwright",
+        "phoenixcore:px_cx_crucible_song"
+      ],
+      "cost": {
+        "energetic": 20000,
+        "arcane": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_sunseed"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_inferno_rite",
+      "title": "Inferno Rite",
+      "lore": "Not a ceremony. A decision, made in the shape of one.",
+      "icon": "minecraft:lava_bucket",
+      "position": [
+        -2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_cinderlight",
+        "phoenixcore:px_cx_ashfall"
+      ],
+      "cost": {
+        "energetic": 30000,
+        "material": 12000,
+        "arcane": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_inferno"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_ouroboric",
+      "title": "Ouroboric Furnace",
+      "lore": "It consumes its own exhaust, and then its own consumption.",
+      "icon": "minecraft:blast_furnace",
+      "position": [
+        2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_wyrmbone",
+        "phoenixcore:px_cx_sunseed"
+      ],
+      "cost": {
+        "energetic": 36000,
+        "computational": 14000,
+        "material": 14000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_ouroboric"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_hull_refit_mk2*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:px_cx_dawn",
+      "title": "The Dawn That Was Owed",
+      "lore": "Every Phoenix owed the world one sunrise. This one is yours, and it is late.",
+      "icon": "minecraft:beacon",
+      "position": [
+        0,
+        5
+      ],
+      "prerequisites": [
+        "phoenixcore:px_cx_inferno_rite",
+        "phoenixcore:px_cx_ouroboric"
+      ],
+      "cost": {
+        "energetic": 80000,
+        "arcane": 20000,
+        "material": 30000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "px_cx_dawn"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:beacon"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_golden_apple*2"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star*2"
+        }
+      ]
+    }
+  ]
+}

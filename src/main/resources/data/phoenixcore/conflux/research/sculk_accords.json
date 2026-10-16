@@ -1,0 +1,196 @@
+{
+  "title": "Symbiotic Accords",
+  "description": "The network tolerates a machine the way a body tolerates a splinter: for a while, and with growing resentment. These accords are the terms of the truce.",
+  "requires_discipline": "sculk",
+  "switch_cost": {
+    "biological": 20000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sk_dx_root",
+      "title": "The Quiet Terms",
+      "lore": "Silence is the first agreement. Everything else is a footnote to it.",
+      "icon": "minecraft:sculk_sensor",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "biological": 300
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_dx_terms"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:sculk*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_heat",
+      "title": "Heat Tolerance",
+      "lore": "The Sculk does not like furnaces. It does not forbid them. It listens to them, sourly.",
+      "icon": "minecraft:furnace",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_root"
+      ],
+      "cost": {
+        "biological": 900,
+        "material": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_heat_tolerance"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_sterile",
+      "title": "Sterile Assembly",
+      "lore": "Every spore that lands on a circuit is a small opinion. Keep the room clean of opinions.",
+      "icon": "minecraft:glass",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_root"
+      ],
+      "cost": {
+        "biological": 800,
+        "computational": 700
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_sterile_assembly"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:glow_ink_sac*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_quiet_wire",
+      "title": "Quiet Wire",
+      "lore": "Current is a kind of noise. Learn to run it where the network does not hear.",
+      "icon": "minecraft:lightning_rod",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_root"
+      ],
+      "cost": {
+        "biological": 1000,
+        "computational": 900
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_quiet_wire"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_mulch",
+      "title": "Mulch Exchange",
+      "lore": "Offer the network what it already wants. It will overlook what you keep.",
+      "icon": "minecraft:moss_block",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_heat",
+        "phoenixcore:sk_dx_sterile"
+      ],
+      "cost": {
+        "biological": 2500,
+        "material": 1200
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_mulch_exchange"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:moss_block*32"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_lullaby",
+      "title": "Lullaby Protocol",
+      "lore": "A tone you play at dusk so that the catalysts sleep through the night shift.",
+      "icon": "minecraft:jukebox",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_sterile",
+        "phoenixcore:sk_dx_quiet_wire"
+      ],
+      "cost": {
+        "biological": 2500,
+        "computational": 1800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_lullaby"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:echo_shard*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_dx_treaty",
+      "title": "Treaty of Roots",
+      "lore": "Written by something with no hands, signed by something with no name. Binding anyway.",
+      "icon": "minecraft:sculk_catalyst",
+      "position": [
+        0,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_dx_mulch",
+        "phoenixcore:sk_dx_lullaby"
+      ],
+      "cost": {
+        "biological": 8000,
+        "computational": 3000,
+        "material": 2500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_treaty_of_roots"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:sculk_catalyst*2"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_repair_kit*4"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,356 @@
+{
+  "title": "The Unlit Atlas",
+  "description": "Maps of places that were never lit, drawn by people who never saw them, and correct anyway.",
+  "requires_discipline": "void",
+  "switch_cost": {
+    "arcane": 100000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:vd_cx_root",
+      "title": "Frontispiece, Blank",
+      "lore": "The first page is a map of the room you are standing in, minus you.",
+      "icon": "minecraft:map",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_commitment"
+      ],
+      "cost": {
+        "arcane": 4000,
+        "computational": 1500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_root"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:map*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_bearings",
+      "title": "False Bearings",
+      "lore": "North is wherever you are not. Navigate by what you are not.",
+      "icon": "minecraft:compass",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_root"
+      ],
+      "cost": {
+        "arcane": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_bearings"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_umbra",
+      "title": "Umbral Survey",
+      "lore": "Measure the shadow, subtract the object, and what remains is the coast.",
+      "icon": "minecraft:black_dye",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_root"
+      ],
+      "cost": {
+        "arcane": 4500,
+        "computational": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_umbra"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_chart",
+      "title": "Chartless Waters",
+      "lore": "The ocean on this page has no edges, only a legend that says \"yes.\"",
+      "icon": "minecraft:nautilus_shell",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_root"
+      ],
+      "cost": {
+        "arcane": 6000,
+        "material": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_chart"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nautilus_shell*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_lens",
+      "title": "Occluded Lens",
+      "lore": "A telescope that works by being pointed away.",
+      "icon": "minecraft:spyglass",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_bearings",
+        "phoenixcore:vd_cx_umbra"
+      ],
+      "cost": {
+        "arcane": 9000,
+        "computational": 5500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_lens"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_trig",
+      "title": "Wrong-Angle Trigonometry",
+      "lore": "Triangles whose angles sum to what the room would like them to.",
+      "icon": "minecraft:stick",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_umbra",
+        "phoenixcore:vd_cx_chart"
+      ],
+      "cost": {
+        "computational": 9000,
+        "arcane": 4000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_trig"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_blackwater",
+      "title": "Blackwater Atlas",
+      "lore": "Pages that are damp. The map is not the territory; it is the tide.",
+      "icon": "minecraft:ink_sac",
+      "position": [
+        -3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_lens"
+      ],
+      "cost": {
+        "arcane": 14000,
+        "material": 7000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_blackwater"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:heart_of_the_sea"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_hollow",
+      "title": "Hollow Latitude",
+      "lore": "A line of latitude that runs through the interior of things.",
+      "icon": "minecraft:chorus_fruit",
+      "position": [
+        -1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_lens",
+        "phoenixcore:vd_cx_trig"
+      ],
+      "cost": {
+        "arcane": 16000,
+        "computational": 8000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_hollow"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_corner",
+      "title": "Corner of the Map",
+      "lore": "The fold where the world was folded. It is slightly thinner here.",
+      "icon": "minecraft:paper",
+      "position": [
+        1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_trig"
+      ],
+      "cost": {
+        "computational": 14000,
+        "arcane": 12000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_corner"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:shulker_shell*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_parallax_eye",
+      "title": "Parallax Eye",
+      "lore": "See the same thing from two places at once. Do not look for the third.",
+      "icon": "minecraft:ender_eye",
+      "position": [
+        3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_chart",
+        "phoenixcore:vd_cx_trig"
+      ],
+      "cost": {
+        "arcane": 20000,
+        "computational": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_parallax"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:ender_eye*8"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_vantage",
+      "title": "Vantage of the Unseen",
+      "lore": "A hill from which everything is visible except the hill.",
+      "icon": "minecraft:end_rod",
+      "position": [
+        -2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_blackwater",
+        "phoenixcore:vd_cx_hollow"
+      ],
+      "cost": {
+        "arcane": 30000,
+        "material": 12000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_vantage"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_meridian",
+      "title": "The Null Meridian",
+      "lore": "A line you can cross without having been on either side.",
+      "icon": "minecraft:ender_chest",
+      "position": [
+        2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_corner",
+        "phoenixcore:vd_cx_parallax_eye"
+      ],
+      "cost": {
+        "arcane": 36000,
+        "computational": 18000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_meridian"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_hull_refit_mk2*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:vd_cx_final_sheet",
+      "title": "Final Sheet, Unlit",
+      "lore": "Fold it and the atlas folds with it. Everywhere you have been is now one place, and it is dark, and it is yours.",
+      "icon": "minecraft:end_portal_frame",
+      "position": [
+        0,
+        5
+      ],
+      "prerequisites": [
+        "phoenixcore:vd_cx_vantage",
+        "phoenixcore:vd_cx_meridian"
+      ],
+      "cost": {
+        "arcane": 80000,
+        "computational": 30000,
+        "material": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "vd_cx_final"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:dragon_egg"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star*2"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_golden_apple*2"
+        }
+      ]
+    }
+  ]
+}

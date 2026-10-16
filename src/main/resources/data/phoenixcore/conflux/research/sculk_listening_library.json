@@ -1,0 +1,357 @@
+{
+  "title": "The Listening Library",
+  "description": "The network does not store memory as text. It stores it as the shape a room takes after something has happened in it. You are being taught to read rooms.",
+  "requires_discipline": "sculk",
+  "switch_cost": {
+    "biological": 100000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sk_cx_root",
+      "title": "Reading Room",
+      "lore": "A chair, facing nothing. When you sit, the nothing sits with you.",
+      "icon": "minecraft:lectern",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_commitment"
+      ],
+      "cost": {
+        "biological": 4000,
+        "computational": 1000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_root"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:book*4"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_residue",
+      "title": "Residue Cataloguing",
+      "lore": "A footstep is a sentence. A fall is a paragraph. A death is an entire volume.",
+      "icon": "minecraft:bone",
+      "position": [
+        -2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_root"
+      ],
+      "cost": {
+        "biological": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_residue"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_timbre",
+      "title": "Timbre of the Deep",
+      "lore": "Every dark has a voice. Learn which one you are standing in.",
+      "icon": "minecraft:amethyst_shard",
+      "position": [
+        0,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_root"
+      ],
+      "cost": {
+        "biological": 4500,
+        "computational": 2500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_timbre"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_shriek",
+      "title": "Shrieker Grammar",
+      "lore": "The scream is not alarm. It is punctuation.",
+      "icon": "minecraft:sculk_shrieker",
+      "position": [
+        2,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_root"
+      ],
+      "cost": {
+        "biological": 6000,
+        "arcane": 1500
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_shriek"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:sculk_shrieker*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_index",
+      "title": "The Index of Absences",
+      "lore": "What is missing is catalogued with greater care than what is present.",
+      "icon": "minecraft:writable_book",
+      "position": [
+        -1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_residue",
+        "phoenixcore:sk_cx_timbre"
+      ],
+      "cost": {
+        "biological": 9000,
+        "computational": 5000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_index"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_marginalia",
+      "title": "Marginalia",
+      "lore": "Notes in the hand of readers who came before. Some are warnings. Some are only sums.",
+      "icon": "minecraft:feather",
+      "position": [
+        1,
+        2
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_timbre",
+        "phoenixcore:sk_cx_shriek"
+      ],
+      "cost": {
+        "biological": 9000,
+        "arcane": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_marginalia"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_deepwell",
+      "title": "Deepwell Stacks",
+      "lore": "Shelves that extend downward. The oldest volumes are closest to something that is still listening.",
+      "icon": "minecraft:deepslate_bricks",
+      "position": [
+        -3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_index"
+      ],
+      "cost": {
+        "biological": 14000,
+        "material": 8000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_deepwell"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:reinforced_deepslate*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_choir",
+      "title": "Choir of Tendrils",
+      "lore": "A thousand small hands, keeping time.",
+      "icon": "minecraft:sculk_vein",
+      "position": [
+        -1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_index",
+        "phoenixcore:sk_cx_marginalia"
+      ],
+      "cost": {
+        "biological": 16000,
+        "computational": 8000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_choir"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_remembrance",
+      "title": "Remembrance Engine",
+      "lore": "A machine that does not compute. It only recalls, with increasing confidence.",
+      "icon": "minecraft:recovery_compass",
+      "position": [
+        1,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_marginalia"
+      ],
+      "cost": {
+        "computational": 14000,
+        "biological": 12000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_remembrance"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:recovery_compass*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_warden_rite",
+      "title": "Warden Rite",
+      "lore": "You do not defeat what listens. You become something it forgets to hear.",
+      "icon": "minecraft:echo_shard",
+      "position": [
+        3,
+        3
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_shriek",
+        "phoenixcore:sk_cx_marginalia"
+      ],
+      "cost": {
+        "biological": 20000,
+        "arcane": 6000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_warden"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:echo_shard*8"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_ossuary",
+      "title": "Ossuary Archive",
+      "lore": "The library's foundation, which you have been reading from the whole time.",
+      "icon": "minecraft:bone_block",
+      "position": [
+        -2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_deepwell",
+        "phoenixcore:sk_cx_choir"
+      ],
+      "cost": {
+        "biological": 30000,
+        "material": 12000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_ossuary"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_lastword",
+      "title": "The Last Word",
+      "lore": "Whatever you say here is kept. Choose it with the care of someone who will be quoted forever.",
+      "icon": "minecraft:enchanted_book",
+      "position": [
+        2,
+        4
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_remembrance",
+        "phoenixcore:sk_cx_warden_rite"
+      ],
+      "cost": {
+        "biological": 36000,
+        "computational": 18000,
+        "arcane": 8000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_lastword"
+        },
+        {
+          "type": "item",
+          "value": "phoenixcore:continuum_hull_refit_mk2*2"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sk_cx_epilogue",
+      "title": "Epilogue, Unwritten",
+      "lore": "The Library finishes where you do. It would like you to take your time.",
+      "icon": "minecraft:sculk_catalyst",
+      "position": [
+        0,
+        5
+      ],
+      "prerequisites": [
+        "phoenixcore:sk_cx_ossuary",
+        "phoenixcore:sk_cx_lastword"
+      ],
+      "cost": {
+        "biological": 80000,
+        "computational": 30000,
+        "arcane": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sk_cx_epilogue"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:sculk_catalyst*4"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:enchanted_golden_apple*2"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:nether_star*2"
+        }
+      ]
+    }
+  ]
+}

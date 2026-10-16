@@ -1,0 +1,86 @@
+{
+  "title": "Terms of the Second Seal",
+  "description": "The second seal is quieter than the first. It has had longer to think about what it is keeping.",
+  "requires_discipline": "sealed_b",
+  "switch_cost": {
+    "arcane": 100000,
+    "biological": 100000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sb_dx_root",
+      "title": "Seal, Barely Audible",
+      "lore": "You hear it through the floor, in the register where you stop being able to tell your pulse from it.",
+      "icon": "minecraft:sculk_sensor",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "arcane": 20000,
+        "biological": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_dx_terms"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:glow_ink_sac*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_dx_vigil",
+      "title": "Vigil Clause",
+      "lore": "The seal permits a watcher. It does not permit a sleeper.",
+      "icon": "minecraft:lantern",
+      "position": [
+        -1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_dx_root"
+      ],
+      "cost": {
+        "arcane": 60000,
+        "biological": 40000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_vigil_clause"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sb_dx_breath",
+      "title": "Slow Breath",
+      "lore": "Keep to the seal's own tempo and nothing underneath will notice you have been moving.",
+      "icon": "minecraft:clock",
+      "position": [
+        1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sb_dx_root"
+      ],
+      "cost": {
+        "arcane": 60000,
+        "biological": 40000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sb_slow_breath"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:echo_shard*2"
+        }
+      ]
+    }
+  ]
+}

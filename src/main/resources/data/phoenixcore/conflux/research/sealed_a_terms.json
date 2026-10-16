@@ -1,0 +1,84 @@
+{
+  "title": "Terms of the First Lock",
+  "description": "The lock does not open. The lock is a conversation, and you have not yet learned its first word.",
+  "requires_discipline": "sealed_a",
+  "switch_cost": {
+    "arcane": 100000
+  },
+  "nodes": [
+    {
+      "id": "phoenixcore:sa_dx_root",
+      "title": "Seal, Read Aloud",
+      "lore": "The words are on the door. They change when you are not looking directly at them.",
+      "icon": "minecraft:iron_door",
+      "position": [
+        0,
+        0
+      ],
+      "prerequisites": [],
+      "cost": {
+        "arcane": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_dx_terms"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:iron_ingot*16"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_dx_precision",
+      "title": "Etched Concession",
+      "lore": "Fine work is permitted behind the seal, once the seal has been persuaded you are not looking.",
+      "icon": "minecraft:amethyst_block",
+      "position": [
+        -1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_dx_root"
+      ],
+      "cost": {
+        "arcane": 60000,
+        "computational": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_etched_concession"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:sa_dx_witness",
+      "title": "Witness Clause",
+      "lore": "Someone must watch. It need not be you.",
+      "icon": "minecraft:ender_eye",
+      "position": [
+        1,
+        1
+      ],
+      "prerequisites": [
+        "phoenixcore:sa_dx_root"
+      ],
+      "cost": {
+        "arcane": 60000,
+        "computational": 20000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "sa_witness_clause"
+        },
+        {
+          "type": "item",
+          "value": "minecraft:ender_eye*4"
+        }
+      ]
+    }
+  ]
+}
