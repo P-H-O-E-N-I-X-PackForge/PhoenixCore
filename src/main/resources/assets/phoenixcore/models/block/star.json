@@ -1,6 +1,6 @@
 {
   "flip_v": true,
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "model": "phoenixcore:models/obj/star.obj",
   "textures": {
     "texture0": "phoenixcore:block/obj/star_layer",

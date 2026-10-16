@@ -1,6 +1,6 @@
 {
   "parent": "block/block",
-  "loader": "forge:composite",
+  "loader": "neoforge:composite",
   "textures": {
     "particle": "phoenixcore:block/material_sets/dull/honeycomb_block"
   },

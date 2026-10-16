@@ -1,5 +1,5 @@
 {
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "flip_v": true,
   "model": "phoenixcore:models/obj/rings.obj",
   "textures": {
