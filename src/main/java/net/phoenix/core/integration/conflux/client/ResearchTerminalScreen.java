@@ -58,6 +58,7 @@ public class ResearchTerminalScreen extends Screen {
 
     private float panX = 0, panY = 0;
     private static final int ROW_H = 30;
+    private static final int TEXT_PIN = 0xFFFFDD55;
     private static final int GROUP_H = 16;
     private EditBox searchBox;
     private boolean readyOnly = false;
@@ -276,12 +277,29 @@ public class ResearchTerminalScreen extends Screen {
                 cmx, cmy, canvasW(), canvasH(), clock, intensity);
     }
 
-    private record SideRow(String header, int treeIdx) {}
+    private record SideRow(String header, int treeIdx, ResearchNode pinNode) {
+
+        SideRow(String header, int treeIdx) {
+            this(header, treeIdx, null);
+        }
+    }
 
     private List<SideRow> sideRows() {
         List<String> order = new ArrayList<>(List.of("Foundations", "Discipline", "Dispensations", "Chronicle", "Space"));
         for (ResearchTree t : trees) if (!order.contains(t.group)) order.add(t.group);
         List<SideRow> rows = new ArrayList<>();
+        List<SideRow> pinned = new ArrayList<>();
+        for (int i = 0; i < trees.size(); i++) {
+            for (ResearchNode n : trees.get(i).getNodes()) {
+                if (!ConfluxPins.isPinned(n.id)) continue;
+                if (n.hidden && !ClientResearchCache.isUnlocked(n.id)) continue;
+                pinned.add(new SideRow(null, i, n));
+            }
+        }
+        if (!pinned.isEmpty()) {
+            rows.add(new SideRow("Pinned", -1));
+            rows.addAll(pinned);
+        }
         for (String group : order) {
             boolean any = false;
             for (int i = 0; i < trees.size(); i++) {
@@ -404,6 +422,20 @@ public class ResearchTerminalScreen extends Screen {
                 y += GROUP_H;
                 continue;
             }
+            if (row.pinNode() != null) {
+                boolean pinHover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H);
+                boolean current = selected != null && selected.id.equals(row.pinNode().id);
+                if (current) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (pinHover) g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+                boolean done = ClientResearchCache.isUnlocked(row.pinNode().id);
+                g.drawString(font, "\u00a7e\u2605", 10, y + 4, TEXT_PIN, false);
+                g.drawString(font, font.plainSubstrByWidth(row.pinNode().title, SIDEBAR_W - 38), 22, y + 4,
+                        done ? 0xFF88BBFF : C_TEXT, false);
+                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, SIDEBAR_W - 38), 22,
+                        y + 15, C_DIM, false);
+                y += ROW_H;
+                continue;
+            }
             ResearchTree tree = trees.get(row.treeIdx());
             boolean active = row.treeIdx() == activeTreeIdx;
             boolean hover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H) &&
@@ -442,18 +474,18 @@ public class ResearchTerminalScreen extends Screen {
         return null;
     }
 
-    private int treeRowAt(double mx, double my) {
-        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return -1;
+    private SideRow rowAt(double mx, double my) {
+        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return null;
         int y = sideListTop() - sidebarScroll;
         for (SideRow row : sideRows()) {
             if (row.header() != null) {
                 y += GROUP_H;
                 continue;
             }
-            if (my >= y && my < y + ROW_H) return row.treeIdx();
+            if (my >= y && my < y + ROW_H) return row;
             y += ROW_H;
         }
-        return -1;
+        return null;
     }
 
     private void renderTopBar(GuiGraphics g, int mx, int my) {
@@ -538,6 +570,9 @@ public class ResearchTerminalScreen extends Screen {
                 if (!node.isVisible(ctx.unlocked())) continue;
                 float[] pos = activeRenderer.nodePos(node, ctx);
                 drawNodeLabel(g, node, (int) pos[0], (int) pos[1], ctx);
+                if (ConfluxPins.isPinned(node.id)) {
+                    g.drawCenteredString(font, "\u00a7e\u2605", (int) pos[0], (int) pos[1] - NODE_R - 12, TEXT_PIN);
+                }
             }
         }
 
@@ -551,8 +586,78 @@ public class ResearchTerminalScreen extends Screen {
             g.pose().popPose();
         }
 
+        renderTreeCard(g, mx - cl, my);
         RenderSystem.disableScissor();
         g.pose().popPose();
+    }
+
+    private static final int CARD_W = 236;
+    private boolean cardOpen = true;
+    private float cardScroll = 0;
+    private int cardMax = 0;
+    private int[] cardRect = new int[4];
+    private String cardSource = null;
+    private List<RichBlock> cardBlocks = List.of();
+
+    /** Overview of the active tree floating over the canvas corner: description, progress, what is ready. */
+    private void renderTreeCard(GuiGraphics g, int lx, int my) {
+        cardRect = new int[4];
+        if (trees.isEmpty()) return;
+        ResearchTree tree = trees.get(activeTreeIdx);
+        int[] p = progress(tree);
+        int x = 8, y = canvasTop() + 8;
+        int acc = accent();
+        boolean headerHover = lx >= x && lx < x + CARD_W && my >= y && my < y + 18;
+
+        if (!cardOpen) {
+            g.fill(x, y, x + CARD_W, y + 18, 0xD00B0B18);
+            g.renderOutline(x, y, CARD_W, 18, headerHover ? acc : C_BORDER);
+            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, CARD_W - 70), x + 6, y + 5, C_TEXT, false);
+            String c = p[0] + "/" + p[1];
+            g.drawString(font, "\u00a78" + c, x + CARD_W - 6 - font.width(c), y + 5, C_DIM, false);
+            cardRect = new int[] { x, y, x + CARD_W, y + 18 };
+            return;
+        }
+
+        int bodyMax = 96;
+        List<RichBlock> blocks = cardBlocksFor(tree.description);
+        int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, CARD_W - 20, new java.util.HashSet<>());
+        int bodyH = Math.min(bodyMax, contentH);
+        cardMax = Math.max(0, contentH - bodyH);
+        cardScroll = Math.min(cardScroll, cardMax);
+        int total = 18 + 8 + bodyH + 8 + 22;
+        g.fill(x, y, x + CARD_W, y + total, 0xD00B0B18);
+        g.renderOutline(x, y, CARD_W, total, (acc & 0xFFFFFF) | 0xAA000000);
+        g.fillGradient(x + 1, y + 1, x + CARD_W - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
+        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, CARD_W - 20), x + 6, y + 5, C_TEXT, false);
+
+        int by = y + 22;
+        g.enableScissor(x + 1, by, x + CARD_W - 1, by + bodyH);
+        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, CARD_W - 20, (int) cardScroll, by, by + bodyH, acc,
+                new java.util.HashSet<>());
+        g.disableScissor();
+        if (cardMax > 0) {
+            int th = Math.max(10, bodyH * bodyH / (bodyH + cardMax));
+            int ty = by + (int) ((bodyH - th) * (cardScroll / cardMax));
+            g.fill(x + CARD_W - 4, by, x + CARD_W - 2, by + bodyH, 0xFF111122);
+            g.fill(x + CARD_W - 4, ty, x + CARD_W - 2, ty + th, acc);
+        }
+
+        int py = by + bodyH + 6;
+        g.fill(x + 10, py, x + CARD_W - 10, py + 4, 0xFF111122);
+        int filled = p[1] == 0 ? 0 : (int) ((CARD_W - 20) * (p[0] / (float) p[1]));
+        g.fill(x + 10, py, x + 10 + filled, py + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : acc);
+        String line = p[0] + " of " + p[1] + " researched" + (p[2] == 1 ? "  \u00a7a\u25cf ready" : "");
+        g.drawString(font, "\u00a77" + line, x + 10, py + 8, C_TEXT, false);
+        cardRect = new int[] { x, y, x + CARD_W, y + total };
+    }
+
+    private List<RichBlock> cardBlocksFor(String text) {
+        if (!text.equals(cardSource)) {
+            cardSource = text;
+            cardBlocks = text.isEmpty() ? List.of() : WikiMarkdownParser.parse(text, false, true);
+        }
+        return cardBlocks;
     }
 
     private void renderOverview(GuiGraphics g, RenderContext ctx, float deviceScale) {
@@ -686,15 +791,23 @@ public class ResearchTerminalScreen extends Screen {
                 if (hit != null) focusHit(hit);
                 return true;
             }
-            int row = treeRowAt(mx, my);
-            if (row >= 0 && row != activeTreeIdx) {
-                activeTreeIdx = row;
+            SideRow row = rowAt(mx, my);
+            if (row == null) return true;
+            if (row.pinNode() != null) {
+                focusHit(new Hit(row.treeIdx(), row.pinNode(), false, false));
+            } else if (row.treeIdx() != activeTreeIdx) {
+                activeTreeIdx = row.treeIdx();
+                cardScroll = 0;
                 selected = null;
                 resetPan();
             }
             return true;
         }
 
+        if (cardRect[2] > 0 && mx - cl >= cardRect[0] && mx - cl < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
+            if (my < cardRect[1] + 18) cardOpen = !cardOpen;
+            return true;
+        }
         if (mx >= cl && mx < cl + cw && my >= ct && my < ct + ch && !trees.isEmpty()) {
             ResearchTree tree = trees.get(activeTreeIdx);
             Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
@@ -754,6 +867,11 @@ public class ResearchTerminalScreen extends Screen {
         double my = rmy / uiScale;
         if (mx < SIDEBAR_W) {
             sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
+            return true;
+        }
+        if (cardOpen && cardMax > 0 && cardRect[2] > 0 && mx - canvasLeft() >= cardRect[0] &&
+                mx - canvasLeft() < cardRect[2] && my >= cardRect[1] && my < cardRect[3]) {
+            cardScroll = (float) Math.max(0, Math.min(cardMax, cardScroll - delta * 14));
             return true;
         }
         if (mx >= canvasLeft() && mx < canvasLeft() + canvasW() && my >= canvasTop()) {

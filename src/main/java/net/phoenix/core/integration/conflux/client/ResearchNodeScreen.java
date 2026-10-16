@@ -225,10 +225,16 @@ public class ResearchNodeScreen extends Screen {
         g.fillGradient(x, y, x + w, y + 36, withAlpha(acc, 0x40), withAlpha(acc, 0x00));
         g.fill(x, y + 35, x + w, y + 36, withAlpha(acc, 0x99));
 
-        // diamond frame around the icon
+        // frame around the icon; a node that can be researched right now breathes
         int ix = x + 10, iy = y + 8;
+        float pulse = canResearch ? 0.5f + 0.5f * (float) Math.sin(net.minecraft.Util.getMillis() / 380.0) : 0f;
+        if (canResearch) {
+            int glow = (int) (28 + 60 * pulse);
+            g.fill(ix - 6, iy - 6, ix + 22, iy + 22, withAlpha(statusColor(), glow));
+        }
         g.fill(ix - 3, iy - 3, ix + 19, iy + 19, withAlpha(acc, 0x30));
-        g.renderOutline(ix - 3, iy - 3, 22, 22, statusColor());
+        g.renderOutline(ix - 3, iy - 3, 22, 22, canResearch ? withAlpha(statusColor(), (int) (150 + 105 * pulse)) :
+                statusColor());
         if (mystery) {
             g.drawCenteredString(font, "?", ix + 8, iy + 4, TEXT);
         } else {
@@ -236,7 +242,7 @@ public class ResearchNodeScreen extends Screen {
         }
 
         int tx = x + 38;
-        int right = x + w - (fullscreen ? 78 : 64);
+        int right = x + w - 94;
         String title = mystery ? "???" : node.title;
         g.drawString(font, font.plainSubstrByWidth(title, right - tx), tx, y + 8, TEXT, false);
         g.drawString(font, font.plainSubstrByWidth("§8" + tree.title + "  ·  " + statusText(), right - tx), tx,
@@ -267,6 +273,14 @@ public class ResearchNodeScreen extends Screen {
         g.fill(cx, y + 6, cx + 14, y + 20, conHov || connectionsOpen ? 0x33FFFFFF : 0x11FFFFFF);
         g.drawCenteredString(font, "≡", cx + 7, y + 9, conHov || connectionsOpen ? 0xFF55CCFF : DIM);
         button(cx, y + 6, cx + 14, y + 20, () -> connectionsOpen = !connectionsOpen, "Requires / unlocks", mx, my);
+
+        int sx = cx - 18;
+        boolean pinned = ConfluxPins.isPinned(node.id);
+        boolean pinHov = mx >= sx && mx < sx + 14 && my >= y + 6 && my < y + 20;
+        g.fill(sx, y + 6, sx + 14, y + 20, pinHov ? 0x33FFFFFF : 0x11FFFFFF);
+        g.drawCenteredString(font, pinned ? "\u2605" : "\u2606", sx + 7, y + 9, pinned ? 0xFFFFDD55 : DIM);
+        button(sx, y + 6, sx + 14, y + 20, () -> ConfluxPins.toggle(node.id), pinned ? "Unpin" : "Pin to the sidebar", mx,
+                my);
     }
 
     private int drawCosts(GuiGraphics g, int x, int y, int w, boolean big) {
@@ -456,7 +470,9 @@ public class ResearchNodeScreen extends Screen {
         cardY = (height - cardH) / 2;
 
         int acc = accent();
-        g.fill(cardX - 1, cardY - 1, cardX + cardW + 1, cardY + cardH + 1, withAlpha(acc, 0x66));
+        int borderA = canResearch ? (int) (0x55 + 0x55 * (0.5f + 0.5f * Math.sin(net.minecraft.Util.getMillis() / 380.0))) :
+                0x66;
+        g.fill(cardX - 1, cardY - 1, cardX + cardW + 1, cardY + cardH + 1, withAlpha(acc, borderA));
         g.fill(cardX, cardY, cardX + cardW, cardY + cardH, PANEL);
         renderHeader(g, cardX, cardY, cardW, mx, my);
 
