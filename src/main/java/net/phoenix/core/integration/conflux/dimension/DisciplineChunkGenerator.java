@@ -815,44 +815,61 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int minY = getMinY();
         int maxY = minY + getGenDepth();
 
+        // Stone goes straight into the chunk sections, and the heightmaps are primed once at the end the way vanilla
+        // does it. Going through ChunkAccess.setBlockState for every one of the ~100k blocks in a chunk (with a fresh
+        // BlockPos each) was most of the cost of generating one.
+        net.minecraft.world.level.block.state.BlockState stone = Blocks.STONE.defaultBlockState();
+        net.minecraft.world.level.block.state.BlockState deepslateState = Blocks.DEEPSLATE.defaultBlockState();
+        net.minecraft.world.level.block.state.BlockState bedrock = Blocks.BEDROCK.defaultBlockState();
+        net.minecraft.world.level.block.state.BlockState lava = Blocks.LAVA.defaultBlockState();
+        net.minecraft.world.level.block.state.BlockState water = Blocks.WATER.defaultBlockState();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
+        int seaLevel = profile.seaLevel();
+        long rollSeed = seed ^ 0xDEE95L;
+
         for (int x = minX; x < minX + 16; x++) {
             for (int z = minZ; z < minZ + 16; z++) {
-                for (int y = minY; y < maxY; y++) {
-                    BlockPos pos = new BlockPos(x, y, z);
-                    boolean solid = profile.sampler().sample(x, y, z) > 0;
-                    double roll = ((positionHash(seed ^ 0xDEE95L, x, y, z) >>> 24) & 0xFFFFFF) / (double) 0x1000000;
-
-                    if (y == minY || (solid && y < minY + BEDROCK_LAYERS && roll < (minY + BEDROCK_LAYERS - y) /
-                            (double) BEDROCK_LAYERS)) {
-                        chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState(), false);
-                        continue;
-                    }
-                    if (!solid) {
-
-                        if (y <= minY + DEEP_LAVA_TOP) {
-                            chunk.setBlockState(pos, Blocks.LAVA.defaultBlockState(), false);
-                        }
-                        continue;
-                    }
-
-                    boolean deepslate = y < DEEPSLATE_FULL || (y < DEEPSLATE_TOP &&
-                            roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
-                    chunk.setBlockState(pos, (deepslate ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState(), false);
-                }
-
-                int seaLevel = profile.seaLevel();
                 int ground = minY - 1;
-                for (int y = maxY - 1; y >= minY; y--) {
-                    if (!chunk.getBlockState(new BlockPos(x, y, z)).isAir()) {
-                        ground = y;
-                        break;
+                for (int y = minY; y < maxY; y++) {
+                    boolean solid = profile.sampler().sample(x, y, z) > 0;
+                    net.minecraft.world.level.block.state.BlockState state;
+
+                    if (y == minY) {
+                        state = bedrock;
+                    } else if (!solid) {
+                        if (y > minY + DEEP_LAVA_TOP) continue;
+                        state = lava;
+                    } else if (y < minY + BEDROCK_LAYERS || y < DEEPSLATE_TOP) {
+                        double roll = ((positionHash(rollSeed, x, y, z) >>> 24) & 0xFFFFFF) / (double) 0x1000000;
+                        if (y < minY + BEDROCK_LAYERS && roll < (minY + BEDROCK_LAYERS - y) / (double) BEDROCK_LAYERS) {
+                            state = bedrock;
+                        } else {
+                            boolean deepslate = y < DEEPSLATE_FULL ||
+                                    (y < DEEPSLATE_TOP && roll < (DEEPSLATE_TOP - y) / (double) (DEEPSLATE_TOP - DEEPSLATE_FULL));
+                            state = deepslate ? deepslateState : stone;
+                        }
+                    } else {
+                        state = stone;
                     }
+
+                    if (state == lava) {
+                        // lava gives off light, which the chunk has to be told about
+                        chunk.setBlockState(pos.set(x, y, z), state, false);
+                    } else {
+                        sections[chunk.getSectionIndex(y)].setBlockState(x & 15, y & 15, z & 15, state, false);
+                    }
+                    ground = y;
                 }
+
                 for (int y = Math.min(seaLevel, maxY - 1); y > ground; y--) {
-                    chunk.setBlockState(new BlockPos(x, y, z), Blocks.WATER.defaultBlockState(), false);
+                    sections[chunk.getSectionIndex(y)].setBlockState(x & 15, y & 15, z & 15, water, false);
                 }
             }
         }
+        net.minecraft.world.level.levelgen.Heightmap.primeHeightmaps(chunk, java.util.EnumSet.of(
+                net.minecraft.world.level.levelgen.Heightmap.Types.OCEAN_FLOOR_WG,
+                net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG));
         return chunk;
     }
 

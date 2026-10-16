@@ -158,6 +158,9 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         minOffset = Integer.MAX_VALUE;
         attuneState = ATTUNING;
         markAsChanged();
+        // the machine's own menu is still open on the server. If it is left open, a later close or validity check
+        // sends the client a close-container packet, which shuts the minigame the instant it opens.
+        player.closeContainer();
         PacketDistributor.sendToPlayer(player, new S2CAttuneStartPacket(getBlockPos(), runDifficulty.level(), picked));
     }
 

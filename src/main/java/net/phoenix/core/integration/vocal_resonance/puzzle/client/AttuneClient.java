@@ -15,7 +15,10 @@ public final class AttuneClient {
     private AttuneClient() {}
 
     public static void openDifficulty(BlockPos pos, int tuneLevel) {
-        Minecraft.getInstance().setScreen(new AttuneDifficultyScreen(pos, tuneLevel));
+        // Opened from a button on the machine's own screen, which closes itself as the click finishes and would take
+        // this one with it. Waiting two ticks lets that happen first.
+        Minecraft mc = Minecraft.getInstance();
+        mc.tell(() -> mc.tell(() -> mc.setScreen(new AttuneDifficultyScreen(pos, tuneLevel))));
     }
 
     public static void open(BlockPos pos, int difficultyLevel, int bpm, List<Integer> laneNotes,
