@@ -73,6 +73,16 @@ public record NodeYield(List<ItemStack> rewards, List<ItemStack> recipeItems, Li
             }
         }
 
+        // research that charts the Continuum: bodies and systems whose stage this node raises
+        for (var body : net.phoenix.core.integration.continuum.data.ContinuumData.allBodies()) {
+            if (node.id.equals(body.surveyedResearch())) other.add("§b◎ Surveys " + body.name());
+            else if (node.id.equals(body.detectedResearch())) other.add("§e◎ Detects " + body.name());
+        }
+        for (var system : net.phoenix.core.integration.continuum.data.ContinuumData.systems()) {
+            if (node.id.equals(system.surveyedResearch())) other.add("§b◎ Surveys the " + system.name() + " system");
+            else if (node.id.equals(system.detectedResearch())) other.add("§e◎ Detects the " + system.name() + " system");
+        }
+
         List<ResearchNode> leads = new ArrayList<>();
         for (ResearchNode n : ResearchTreeRegistry.INSTANCE.getAllNodes()) {
             if (n.prerequisites.contains(node.id) || n.prerequisitesAny.contains(node.id)) leads.add(n);

@@ -42,7 +42,10 @@ public final class ConfluxApi {
     }
 
     public static void grantUnlock(ServerPlayer player, ResourceLocation nodeId) {
-        data(player).grantUnlock(ResearchTeamHelper.getTeamId(player), nodeId);
+        var team = ResearchTeamHelper.getTeamId(player);
+        var before = net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.snapshot(player.server, team);
+        data(player).grantUnlock(team, nodeId);
+        net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.announce(player.server, team, before);
         ConfluxNetwork.syncResearchToPlayer(player);
     }
 
