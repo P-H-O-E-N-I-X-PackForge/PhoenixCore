@@ -28,6 +28,9 @@ public class ResearchTree {
     @Nullable
     public String requiresDiscipline;
 
+    /** Heading the terminal sidebar files this tree under. */
+    public String group = "Research";
+
     private final Map<ResourceLocation, ResearchNode> nodes = new LinkedHashMap<>();
 
     public ResearchTree(ResourceLocation id, String title, String description,
@@ -72,6 +75,8 @@ public class ResearchTree {
 
         ResearchTree tree = new ResearchTree(id, title, description, discipline, switchCost, nodes);
         if (obj.has("requires_discipline")) tree.requiresDiscipline = obj.get("requires_discipline").getAsString();
+        if (obj.has("group")) tree.group = obj.get("group").getAsString();
+        else if (discipline != null) tree.group = "Discipline";
         return tree;
     }
 

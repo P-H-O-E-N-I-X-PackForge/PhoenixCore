@@ -2,6 +2,7 @@
   "title": "Pyric Dispensations",
   "description": "The Phoenix does not forbid. It simply burns what it was not asked to keep. Each dispensation is a concession the flame agrees to make - for a price.",
   "requires_discipline": "phoenix",
+  "group": "Dispensations",
   "switch_cost": {
     "energetic": 20000
   },

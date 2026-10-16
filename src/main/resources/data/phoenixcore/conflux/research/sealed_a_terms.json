@@ -2,6 +2,7 @@
   "title": "Terms of the First Lock",
   "description": "The lock does not open. The lock is a conversation, and you have not yet learned its first word.",
   "requires_discipline": "sealed_a",
+  "group": "Dispensations",
   "switch_cost": {
     "arcane": 100000
   },

@@ -2,6 +2,7 @@
   "title": "Terms of the Second Seal",
   "description": "The second seal is quieter than the first. It has had longer to think about what it is keeping.",
   "requires_discipline": "sealed_b",
+  "group": "Dispensations",
   "switch_cost": {
     "arcane": 100000,
     "biological": 100000

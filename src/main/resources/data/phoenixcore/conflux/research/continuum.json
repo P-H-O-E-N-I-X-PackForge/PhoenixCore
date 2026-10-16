@@ -1,6 +1,7 @@
 {
   "title": "Deep Space",
   "description": "Rocketry, survey and the signals beyond the home system. Gates the Continuum map and its recipes.",
+  "group": "Space",
   "nodes": [
     {
       "id": "phoenixcore:space_root",

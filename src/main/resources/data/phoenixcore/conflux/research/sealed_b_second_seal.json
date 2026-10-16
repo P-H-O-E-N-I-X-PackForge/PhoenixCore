@@ -2,6 +2,7 @@
   "title": "The Second Seal",
   "description": "What the first lock holds out, the second holds in.",
   "requires_discipline": "sealed_b",
+  "group": "Chronicle",
   "switch_cost": {
     "arcane": 500000,
     "biological": 500000

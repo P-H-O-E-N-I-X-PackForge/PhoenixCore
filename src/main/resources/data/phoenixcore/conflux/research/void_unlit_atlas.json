@@ -2,6 +2,7 @@
   "title": "The Unlit Atlas",
   "description": "Maps of places that were never lit, drawn by people who never saw them, and correct anyway.",
   "requires_discipline": "void",
+  "group": "Chronicle",
   "switch_cost": {
     "arcane": 100000
   },

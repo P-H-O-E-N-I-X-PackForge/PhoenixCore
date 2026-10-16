@@ -2,6 +2,7 @@
   "title": "Symbiotic Accords",
   "description": "The network tolerates a machine the way a body tolerates a splinter: for a while, and with growing resentment. These accords are the terms of the truce.",
   "requires_discipline": "sculk",
+  "group": "Dispensations",
   "switch_cost": {
     "biological": 20000
   },

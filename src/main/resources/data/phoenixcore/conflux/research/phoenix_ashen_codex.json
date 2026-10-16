@@ -2,6 +2,7 @@
   "title": "The Ashen Codex",
   "description": "Written by every Phoenix that ever burned out and began again. Each page is a life, and each life wrote its mistake in the margin so that the next would not need to.",
   "requires_discipline": "phoenix",
+  "group": "Chronicle",
   "switch_cost": {
     "energetic": 100000
   },

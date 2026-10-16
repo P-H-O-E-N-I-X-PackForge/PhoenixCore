@@ -17,6 +17,13 @@ import net.phoenix.core.integration.conflux.research.ResearchTree;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
 
+import net.minecraft.world.item.ItemStack;
+import net.phoenix.core.integration.conflux.research.ConfluxRewards;
+import net.phoenixvine.wiki.client.rich.RichBlock;
+import net.phoenixvine.wiki.client.rich.RichSpan;
+import net.phoenixvine.wiki.client.rich.WikiMarkdownParser;
+import net.phoenixvine.wiki.client.rich.WikiRichTextRenderer;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -31,9 +38,10 @@ public class ResearchTerminalScreen extends Screen {
     public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
-    private static final int TAB_H = 20;
+    private static final int TAB_H = 24;
+    private static final int SIDEBAR_W = 150;
     private static final int BOTTOM_H = 48;
-    private static final int DETAIL_W = 224;
+    private static final int DETAIL_W = 250;
     private static final int NODE_R = 22;
 
     private static final int C_BG = 0xFF07070F;
@@ -49,6 +57,16 @@ public class ResearchTerminalScreen extends Screen {
     private final ResearchTerminalBlockEntity terminal;
 
     private float panX = 0, panY = 0;
+    private static final int ROW_H = 30;
+    private static final int GROUP_H = 16;
+    private int sidebarScroll = 0;
+    private int sidebarMax = 0;
+    private float detailScroll = 0;
+    private int detailMax = 0;
+    private List<RichSpan.Region> richRegions = List.of();
+    private String mdSource = null;
+    private List<RichBlock> mdBlocks = List.of();
+    private final Set<String> mdExpanded = new java.util.HashSet<>();
     private static final float MIN_ZOOM = 0.08f;
     private float zoom = 1.0f;
     private boolean dragging = false;
@@ -82,7 +100,7 @@ public class ResearchTerminalScreen extends Screen {
 
     @Override
     protected void init() {
-        float neededW = DETAIL_W + MIN_CANVAS_W;
+        float neededW = SIDEBAR_W + DETAIL_W + MIN_CANVAS_W;
         float neededH = TAB_H + BOTTOM_H + MIN_CANVAS_H;
         uiScale = (width < neededW || height < neededH) ?
                 Math.min(width / neededW, height / neededH) : 1f;
@@ -130,6 +148,14 @@ public class ResearchTerminalScreen extends Screen {
     }
 
     private int canvasW() {
+        return vw - SIDEBAR_W - DETAIL_W;
+    }
+
+    private int canvasLeft() {
+        return SIDEBAR_W;
+    }
+
+    private int detailLeft() {
         return vw - DETAIL_W;
     }
 
@@ -170,15 +196,16 @@ public class ResearchTerminalScreen extends Screen {
         g.pose().pushPose();
         g.pose().scale(uiScale, uiScale, 1f);
 
-        int cw = canvasW(), ct = canvasTop();
-        boolean hoveringCanvas = mx >= 0 && mx < cw && my >= ct && my < ct + canvasH();
+        int cw = canvasW(), ct = canvasTop(), cl = canvasLeft();
+        boolean hoveringCanvas = mx >= cl && mx < cl + cw && my >= ct && my < ct + canvasH();
         if (hoveringCanvas) intensity.onHover();
         else intensity.onHoverEnd();
 
         RenderContext ctx = buildContext(mx, my);
         if (ctx == null) {
             g.fill(0, 0, vw, vh, C_BG);
-            renderTabBar(g, mx, my);
+            renderSidebar(g, mx, my);
+            renderTopBar(g, mx, my);
             renderDetailPanel(g, mx, my);
             renderBottomBar(g);
             super.render(g, mx, my, pt);
@@ -189,7 +216,8 @@ public class ResearchTerminalScreen extends Screen {
         activeRenderer.tick(dt, ctx);
 
         g.fill(0, 0, vw, vh, C_BG);
-        renderTabBar(g, mx, my);
+        renderSidebar(g, mx, my);
+        renderTopBar(g, mx, my);
         renderCanvas(g, mx, my, ctx);
         AxiomShaderManager.applyPostChain();
         renderDetailPanel(g, mx, my);
@@ -228,33 +256,128 @@ public class ResearchTerminalScreen extends Screen {
         Set<ResourceLocation> unlocked = ClientResearchCache.unlocked;
         Set<ResourceLocation> lockedOut = ClientResearchCache.lockedOut;
         int ct = canvasTop();
-        float cmx = (float) ((mx - panX) / zoom);
+        float cmx = (float) ((mx - canvasLeft() - panX) / zoom);
         float cmy = (float) ((my - ct - panY) / zoom);
         return new RenderContext(tree, unlocked, lockedOut, selected,
                 cmx, cmy, canvasW(), canvasH(), clock, intensity);
     }
 
-    private void renderTabBar(GuiGraphics g, int mx, int my) {
-        g.fill(0, 0, canvasW(), TAB_H, C_HEADER);
-        g.fill(0, TAB_H - 1, canvasW(), TAB_H, C_BORDER);
+    private record SideRow(String header, int treeIdx) {}
 
-        int tabX = 4;
-        for (int i = 0; i < trees.size(); i++) {
-            ResearchTree tree = trees.get(i);
-            int tw = font.width(tree.title) + 20;
-            boolean active = (i == activeTreeIdx);
-            boolean hover = mx >= tabX && mx < tabX + tw && my >= 0 && my < TAB_H;
-
-            g.fill(tabX, 1, tabX + tw, TAB_H, active ? C_PANEL : hover ? 0xFF111120 : C_HEADER);
-            if (active) g.fill(tabX, TAB_H - 2, tabX + tw, TAB_H, C_ACCENT);
-            g.fill(tabX + tw, 2, tabX + tw + 1, TAB_H - 2, C_BORDER);
-
-            int textColor = active ? C_TEXT : hover ? 0xFF9999BB : C_DIM;
-            g.drawString(font, tree.title, tabX + 10, (TAB_H - 8) / 2, textColor, false);
-            tabX += tw + 1;
+    private List<SideRow> sideRows() {
+        List<String> order = new ArrayList<>(List.of("Foundations", "Discipline", "Dispensations", "Chronicle", "Space"));
+        for (ResearchTree t : trees) if (!order.contains(t.group)) order.add(t.group);
+        List<SideRow> rows = new ArrayList<>();
+        for (String group : order) {
+            boolean any = false;
+            for (int i = 0; i < trees.size(); i++) {
+                if (!trees.get(i).group.equals(group)) continue;
+                if (!any) {
+                    rows.add(new SideRow(group, -1));
+                    any = true;
+                }
+                rows.add(new SideRow(null, i));
+            }
         }
+        return rows;
+    }
+
+    /** {done, total, anyAvailable} for a tree. */
+    private int[] progress(ResearchTree tree) {
+        int done = 0, total = 0, avail = 0;
+        for (ResearchNode n : tree.getNodes()) {
+            total++;
+            if (ClientResearchCache.isUnlocked(n.id)) done++;
+            else if (!ClientResearchCache.isLockedOut(n.id) && n.isVisible(ClientResearchCache.unlocked) &&
+                    n.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut)) avail = 1;
+        }
+        return new int[] { done, total, avail };
+    }
+
+    private int sideListTop() {
+        return 40;
+    }
+
+    private int sideListBottom() {
+        return bottomTop() - 4;
+    }
+
+    private void renderSidebar(GuiGraphics g, int mx, int my) {
+        int h = bottomTop();
+        g.fill(0, 0, SIDEBAR_W, h, C_PANEL);
+        g.fill(SIDEBAR_W - 1, 0, SIDEBAR_W, h, C_BORDER);
+
+        g.drawString(font, "\u00a7lAXIOM", 10, 7, C_TEXT, false);
+        String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
+        g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, C_DIM, false);
+        g.fill(8, 33, SIDEBAR_W - 8, 34, C_BORDER);
+
+        int top = sideListTop(), bot = sideListBottom();
+        g.enableScissor(0, top, SIDEBAR_W - 1, bot);
+        int y = top - sidebarScroll;
+        int start = y;
+        for (SideRow row : sideRows()) {
+            if (row.header() != null) {
+                g.drawString(font, "\u00a78" + row.header().toUpperCase(), 10, y + 5, C_DIM, false);
+                y += GROUP_H;
+                continue;
+            }
+            ResearchTree tree = trees.get(row.treeIdx());
+            boolean active = row.treeIdx() == activeTreeIdx;
+            boolean hover = mx >= 0 && mx < SIDEBAR_W - 1 && my >= Math.max(top, y) && my < Math.min(bot, y + ROW_H) &&
+                    my >= y && my < y + ROW_H;
+            if (active) {
+                g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF16162C);
+                g.fill(4, y, 6, y + ROW_H - 2, C_ACCENT);
+            } else if (hover) {
+                g.fill(4, y, SIDEBAR_W - 5, y + ROW_H - 2, 0xFF11111F);
+            }
+            int[] p = progress(tree);
+            String title = font.plainSubstrByWidth(tree.title, SIDEBAR_W - 38);
+            g.drawString(font, title, 12, y + 4, active ? C_TEXT : hover ? 0xFF9999BB : 0xFF8888AA, false);
+            if (p[2] == 1) g.drawString(font, "\u00a7a\u25cf", SIDEBAR_W - 16, y + 4, C_TEXT, false);
+
+            int barX = 12, barW = SIDEBAR_W - 56, barY = y + 17;
+            g.fill(barX, barY, barX + barW, barY + 3, 0xFF111122);
+            int filled = p[1] == 0 ? 0 : (int) (barW * (p[0] / (float) p[1]));
+            g.fill(barX, barY, barX + filled, barY + 3, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : C_ACCENT);
+            String count = p[0] + "/" + p[1];
+            g.drawString(font, "\u00a78" + count, SIDEBAR_W - 8 - font.width(count), y + 13, C_DIM, false);
+            y += ROW_H;
+        }
+        sidebarMax = Math.max(0, (y - start) - (bot - top));
+        sidebarScroll = Math.min(sidebarScroll, sidebarMax);
+        g.disableScissor();
+    }
+
+    private int treeRowAt(double mx, double my) {
+        if (mx < 0 || mx >= SIDEBAR_W - 1 || my < sideListTop() || my >= sideListBottom()) return -1;
+        int y = sideListTop() - sidebarScroll;
+        for (SideRow row : sideRows()) {
+            if (row.header() != null) {
+                y += GROUP_H;
+                continue;
+            }
+            if (my >= y && my < y + ROW_H) return row.treeIdx();
+            y += ROW_H;
+        }
+        return -1;
+    }
+
+    private void renderTopBar(GuiGraphics g, int mx, int my) {
+        int cl = canvasLeft(), cw = canvasW();
+        g.fill(cl, 0, cl + cw, TAB_H, C_HEADER);
+        g.fill(cl, TAB_H - 1, cl + cw, TAB_H, C_BORDER);
 
         int[] ab = researchAllBounds();
+        if (!trees.isEmpty()) {
+            ResearchTree tree = trees.get(activeTreeIdx);
+            int avail = ab[0] - (cl + 10) - 8;
+            g.drawString(font, font.plainSubstrByWidth(tree.title, avail), cl + 10, 3, C_TEXT, false);
+            String desc = tree.description.replaceAll("[*_`#>]", "").replace('\n', ' ');
+            g.drawString(font, font.plainSubstrByWidth(desc, avail), cl + 10, 13, C_DIM, false);
+        }
+
         boolean allHover = terminal != null && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3];
         g.fill(ab[0], ab[1], ab[2], ab[3], terminal == null ? C_HEADER : allHover ? 0xFF1A3A1A : 0xFF112211);
         g.renderOutline(ab[0], ab[1], ab[2] - ab[0], ab[3] - ab[1], terminal == null ? C_BORDER : 0xFF338833);
@@ -264,33 +387,38 @@ public class ResearchTerminalScreen extends Screen {
         int[] wb = wikiButtonBounds();
         boolean wikiHover = mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3];
         g.fill(wb[0], wb[1], wb[2], wb[3], wikiHover ? 0xFF2A2A4A : C_HEADER);
-        g.drawCenteredString(font, "?", (wb[0] + wb[2]) / 2, wb[1] + (TAB_H - 2 - 8) / 2,
+        g.drawCenteredString(font, "?", (wb[0] + wb[2]) / 2, wb[1] + (wb[3] - wb[1] - 8) / 2,
                 wikiHover ? C_TEXT : C_DIM);
     }
 
     private int[] researchAllBounds() {
         int w = font.width("Research All") + 12;
-        return new int[] { canvasW() - 22 - w, 2, canvasW() - 22, TAB_H - 2 };
+        int right = canvasLeft() + canvasW() - 22;
+        return new int[] { right - w, 3, right, TAB_H - 3 };
     }
 
     private int[] wikiButtonBounds() {
-        return new int[] { canvasW() - 18, 2, canvasW() - 2, TAB_H - 2 };
+        int right = canvasLeft() + canvasW();
+        return new int[] { right - 18, 3, right - 2, TAB_H - 3 };
     }
 
     private void renderCanvas(GuiGraphics g, int mx, int my, RenderContext ctx) {
-        int cw = canvasW(), ch = canvasH(), ct = canvasTop();
+        int cw = canvasW(), ch = canvasH(), ct = canvasTop(), cl = canvasLeft();
+        g.pose().pushPose();
+        g.pose().translate(cl, 0, 0);
         g.fill(0, ct, cw, ct + ch, C_CANVAS);
         g.fill(cw - 1, ct, cw, ct + ch, C_BORDER);
 
         if (trees.isEmpty()) {
-            g.drawCenteredString(font, "§7No research trees loaded.", cw / 2, ct + ch / 2 - 4, C_TEXT);
+            g.drawCenteredString(font, "\u00a77No research trees loaded.", cw / 2, ct + ch / 2 - 4, C_TEXT);
+            g.pose().popPose();
             return;
         }
 
         double guiScale = minecraft.getWindow().getGuiScale();
-        double realCt = ct * uiScale, realCh = ch * uiScale, realCw = cw * uiScale;
+        double realCt = ct * uiScale, realCh = ch * uiScale, realCw = cw * uiScale, realCl = cl * uiScale;
         RenderSystem.enableScissor(
-                0,
+                (int) (realCl * guiScale),
                 (int) ((height - realCt - realCh) * guiScale),
                 (int) (realCw * guiScale),
                 (int) (realCh * guiScale));
@@ -332,6 +460,7 @@ public class ResearchTerminalScreen extends Screen {
         }
 
         RenderSystem.disableScissor();
+        g.pose().popPose();
     }
 
     private void renderOverview(GuiGraphics g, RenderContext ctx, float deviceScale) {
@@ -388,18 +517,32 @@ public class ResearchTerminalScreen extends Screen {
                 unlocked ? C_TEXT : available ? 0xFF88CC88 : C_DIM, false);
     }
 
+    private List<RichBlock> markdown(String text) {
+        if (!text.equals(mdSource)) {
+            mdSource = text;
+            mdBlocks = text.isEmpty() ? List.of() : WikiMarkdownParser.parse(text, false, true);
+        }
+        return mdBlocks;
+    }
+
+    private void drawRule(GuiGraphics g, int px, int y) {
+        g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
+    }
+
     private void renderDetailPanel(GuiGraphics g, int mx, int my) {
-        int px = canvasW();
+        int px = detailLeft();
         int pTop = 0;
         int pBot = bottomTop();
-        int ph = pBot - pTop;
+        int btnH = 18;
+        int btnY = pBot - btnH - 10;
+        int regionBot = btnY - 6;
+        richRegions = List.of();
 
         g.fill(px, pTop, vw, pBot, C_PANEL);
         g.fill(px, pTop, px + 1, pBot, C_BORDER);
 
         if (selected == null) {
-            g.drawCenteredString(font, "§7Select a node to view details",
-                    px + DETAIL_W / 2, pTop + ph / 2 - 4, C_DIM);
+            renderTreeIntro(g, px, pTop, regionBot, mx, my);
             return;
         }
 
@@ -411,68 +554,68 @@ public class ResearchTerminalScreen extends Screen {
         boolean canResearch = available && costsAffordable(selected);
 
         int x = px + 12;
-        int y = pTop + 14;
-        int maxW = DETAIL_W - 24;
+        int maxW = DETAIL_W - 30;
 
         String titleStr = isMystery ? "???" : selected.title;
         int titleColor = unlocked ? 0xFF88BBFF : available ? 0xFF88EE88 : lockedOut ? 0xFF884444 : C_TEXT;
-        g.drawString(font, titleStr, x, y, titleColor, false);
-
+        g.drawString(font, font.plainSubstrByWidth(titleStr, DETAIL_W - 24 - (selected.isCommitmentNode ? 64 : 0)), x,
+                pTop + 10, titleColor, false);
         if (selected.isCommitmentNode) {
-            String badge = "§6◆ Commitment";
-            g.drawString(font, badge, vw - font.width(badge) - 10, y, C_TEXT, false);
+            String badge = "\u00a76\u25c6 Commitment";
+            g.drawString(font, badge, vw - font.width(badge) - 10, pTop + 10, C_TEXT, false);
         }
-        y += 13;
+        String status = unlocked ? "\u00a79Researched" : lockedOut ? "\u00a74Sealed" : available ?
+                (canResearch ? "\u00a7aReady to research" : "\u00a7eAvailable") : "\u00a78Locked";
+        g.drawString(font, status, x, pTop + 21, C_TEXT, false);
+        drawRule(g, px, pTop + 33);
 
-        g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
-        y += 7;
+        int regionTop = pTop + 38;
+        ItemStack hoveredReward = ItemStack.EMPTY;
+        g.enableScissor(px + 1, regionTop, vw, regionBot);
+        int y = regionTop - (int) detailScroll;
+        int startY = y;
 
         if (lockedOut) {
-            for (String line : wrapText("§8This path has been sealed by a prior choice.", maxW)) {
+            for (String line : wrapText("\u00a78This path has been sealed by a prior choice.", maxW)) {
                 g.drawString(font, line, x, y, C_TEXT, false);
                 y += 11;
             }
             y += 4;
-        } else if (isMystery && !selected.hint.isEmpty()) {
-
-            for (String line : wrapText("§o§7" + selected.hint, maxW)) {
-                g.drawString(font, line, x, y, C_TEXT, false);
-                y += 11;
+        } else if (isMystery) {
+            if (!selected.hint.isEmpty()) {
+                for (String line : wrapText("\u00a7o\u00a77" + selected.hint, maxW)) {
+                    g.drawString(font, line, x, y, C_TEXT, false);
+                    y += 11;
+                }
+                y += 4;
             }
-            y += 4;
         } else if (!selected.lore.isEmpty()) {
-
-            for (String line : wrapText("§7" + selected.lore, maxW)) {
-                g.drawString(font, line, x, y, C_TEXT, false);
-                y += 11;
-            }
-            y += 6;
+            List<RichBlock> blocks = markdown(selected.lore);
+            int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
+            richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot,
+                    C_ACCENT, mdExpanded);
+            y += h + 8;
         }
 
         if (!selected.prerequisitesAny.isEmpty() && !unlocked && !lockedOut) {
-            g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
+            drawRule(g, px, y);
             y += 6;
-            g.drawString(font, "§7Unlock via any of:", x, y, C_DIM, false);
+            g.drawString(font, "\u00a77Unlock via any of:", x, y, C_DIM, false);
             y += 11;
             for (ResourceLocation anyId : selected.prerequisitesAny) {
                 boolean met = unlockedSet.contains(anyId);
-                String label = met ? "§a✔ " : "§8◦ ";
-
-                final int currentY = y;
-
-                ResearchTreeRegistry.INSTANCE.getNode(anyId).ifPresentOrElse(
-                        n -> g.drawString(font, label + n.title, x + 6, currentY, C_TEXT, false),
-                        () -> g.drawString(font, label + anyId.getPath(), x + 6, currentY, C_TEXT, false));
-
+                String label = met ? "\u00a7a\u2714 " : "\u00a78\u25e6 ";
+                String name = ResearchTreeRegistry.INSTANCE.getNode(anyId).map(n -> n.title).orElse(anyId.getPath());
+                g.drawString(font, label + name, x + 6, y, C_TEXT, false);
                 y += 10;
             }
             y += 4;
         }
 
         if (!selected.cost.isEmpty() && !lockedOut) {
-            g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
+            drawRule(g, px, y);
             y += 7;
-            g.drawString(font, "§eCost", x, y, C_TEXT, false);
+            g.drawString(font, "\u00a7eCost", x, y, C_TEXT, false);
             y += 12;
 
             for (var entry : selected.cost.entrySet()) {
@@ -482,34 +625,67 @@ public class ResearchTerminalScreen extends Screen {
                 boolean met = have >= cost;
 
                 g.drawString(font, type.displayComponent(), x + 4, y, C_TEXT, false);
-
                 String amtStr = formatAmount(have) + " / " + formatAmount(cost);
-                int amtW = font.width(amtStr);
-                g.drawString(font, (met ? "§a" : "§c") + amtStr, vw - 10 - amtW, y, C_TEXT, false);
+                g.drawString(font, (met ? "\u00a7a" : "\u00a7c") + amtStr, x + maxW - font.width(amtStr), y, C_TEXT,
+                        false);
 
                 y += 11;
-                int barW = maxW;
-                g.fill(x, y, x + barW, y + 3, 0xFF111122);
-                int filled = (int) (barW * Math.min(have / (float) cost, 1f));
+                g.fill(x, y, x + maxW, y + 3, 0xFF111122);
+                int filled = (int) (maxW * Math.min(have / (float) cost, 1f));
                 g.fill(x, y, x + filled, y + 3, met ? 0xFF33AA33 : 0xFF993333);
                 y += 7;
             }
             y += 6;
         }
 
-        if (!selected.unlocks.isEmpty() && unlocked) {
-            g.fill(px + 8, y, vw - 8, y + 1, C_BORDER);
+        List<ItemStack> rewards = new ArrayList<>();
+        if (!isMystery && !lockedOut) {
+            for (var unlock : selected.unlocks) {
+                if (!"item".equals(unlock.type())) continue;
+                ItemStack stack = ConfluxRewards.parse(unlock.value());
+                if (!stack.isEmpty()) rewards.add(stack);
+            }
+        }
+        if (!rewards.isEmpty()) {
+            drawRule(g, px, y);
             y += 7;
-            g.drawString(font, "§eUnlocks", x, y, C_TEXT, false);
+            g.drawString(font, unlocked ? "\u00a7aRewards (claimed)" : "\u00a7aRewards", x, y, C_TEXT, false);
+            y += 12;
+            int ix = 0;
+            for (ItemStack stack : rewards) {
+                if (ix + 18 > maxW) {
+                    ix = 0;
+                    y += 20;
+                }
+                int ox = x + ix;
+                g.fill(ox - 1, y - 1, ox + 17, y + 17, 0xFF141428);
+                g.renderOutline(ox - 1, y - 1, 18, 18, unlocked ? 0xFF336633 : C_BORDER);
+                g.renderItem(stack, ox, y);
+                g.renderItemDecorations(font, stack, ox, y);
+                if (mx >= ox - 1 && mx < ox + 17 && my >= y - 1 && my < y + 17 && my >= regionTop && my < regionBot) {
+                    hoveredReward = stack;
+                }
+                ix += 20;
+            }
+            y += 24;
+        }
+
+        boolean otherUnlocks = false;
+        for (var unlock : selected.unlocks) if (!"item".equals(unlock.type())) otherUnlocks = true;
+        if (otherUnlocks && unlocked) {
+            drawRule(g, px, y);
+            y += 7;
+            g.drawString(font, "\u00a7eUnlocks", x, y, C_TEXT, false);
             y += 12;
             for (var unlock : selected.unlocks) {
                 String prefix = switch (unlock.type()) {
-                    case "flag" -> "§b⚑ ";
-                    case "multiblock" -> "§6⬡ ";
-                    case "recipe_tag" -> "§d⚗ ";
-                    case "item" -> "§a✦ Reward: ";
-                    default -> "§7• ";
+                    case "flag" -> "\u00a7b\u2691 ";
+                    case "multiblock" -> "\u00a76\u2b21 ";
+                    case "recipe_tag" -> "\u00a7d\u2697 ";
+                    case "item" -> null;
+                    default -> "\u00a77\u2022 ";
                 };
+                if (prefix == null) continue;
                 for (String line : wrapText(prefix + unlock.value(), maxW - 8)) {
                     g.drawString(font, line, x + 4, y, C_TEXT, false);
                     y += 11;
@@ -517,28 +693,108 @@ public class ResearchTerminalScreen extends Screen {
             }
         }
 
-        int btnH = 18;
-        int btnY = pBot - btnH - 10;
+        int viewH = regionBot - regionTop;
+        detailMax = Math.max(0, (y - startY) + 4 - viewH);
+        detailScroll = Math.min(detailScroll, detailMax);
+        g.disableScissor();
+        drawScrollbar(g, vw - 5, regionTop, viewH, detailScroll, detailMax);
+
         int btnX = px + 10;
         int btnW = DETAIL_W - 20;
-
         if (unlocked) {
             g.fill(btnX, btnY, btnX + btnW, btnY + btnH, 0xFF0A1A0A);
             g.renderOutline(btnX, btnY, btnW, btnH, 0xFF336633);
-            g.drawCenteredString(font, "§a✔ Already Researched", px + DETAIL_W / 2, btnY + 5, C_TEXT);
+            g.drawCenteredString(font, "\u00a7a\u2714 Already Researched", px + DETAIL_W / 2, btnY + 5, C_TEXT);
         } else if (lockedOut) {
             g.fill(btnX, btnY, btnX + btnW, btnY + btnH, 0xFF1A0808);
             g.renderOutline(btnX, btnY, btnW, btnH, 0xFF662222);
-            g.drawCenteredString(font, "§c✘ Path Locked", px + DETAIL_W / 2, btnY + 5, C_TEXT);
+            g.drawCenteredString(font, "\u00a7c\u2718 Path Locked", px + DETAIL_W / 2, btnY + 5, C_TEXT);
         } else {
             boolean hov = mx >= btnX && mx < btnX + btnW && my >= btnY && my < btnY + btnH;
             int btnBg = canResearch ? (hov ? 0xFF1A3A1A : 0xFF112211) : 0xFF1A1020;
             int btnBrd = canResearch ? (hov ? 0xFF55CC55 : 0xFF338833) : 0xFF443344;
             g.fill(btnX, btnY, btnX + btnW, btnY + btnH, btnBg);
             g.renderOutline(btnX, btnY, btnW, btnH, btnBrd);
-            String lbl = terminal == null ? "§7No Terminal Connected" : isMystery ? "§7Unknown Research" :
-                    canResearch ? "§aResearch" : !available ? "§7Prerequisites Missing" : "§7Insufficient Data";
+            String lbl = terminal == null ? "\u00a77No Terminal Connected" : isMystery ? "\u00a77Unknown Research" :
+                    canResearch ? "\u00a7aResearch" : !available ? "\u00a77Prerequisites Missing" :
+                            "\u00a77Insufficient Data";
             g.drawCenteredString(font, lbl, px + DETAIL_W / 2, btnY + 5, C_TEXT);
+        }
+
+        drawRegionTooltips(g, mx, my, hoveredReward);
+    }
+
+    private void renderTreeIntro(GuiGraphics g, int px, int pTop, int regionBot, int mx, int my) {
+        if (trees.isEmpty()) {
+            g.drawCenteredString(font, "§7No research trees loaded.", px + DETAIL_W / 2, pTop + 60, C_DIM);
+            return;
+        }
+        ResearchTree tree = trees.get(activeTreeIdx);
+        int[] p = progress(tree);
+        int x = px + 12;
+        int maxW = DETAIL_W - 30;
+        g.drawString(font, font.plainSubstrByWidth(tree.title, DETAIL_W - 24), x, pTop + 10, C_TEXT, false);
+        g.drawString(font, "\u00a78" + tree.group, x, pTop + 21, C_DIM, false);
+        drawRule(g, px, pTop + 33);
+
+        int regionTop = pTop + 38;
+        g.enableScissor(px + 1, regionTop, vw, regionBot);
+        int y = regionTop - (int) detailScroll;
+        int startY = y;
+
+        List<RichBlock> blocks = markdown(tree.description);
+        int h = WikiRichTextRenderer.measureBlocksHeight(font, blocks, maxW, mdExpanded);
+        richRegions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, maxW, 0, regionTop, regionBot, C_ACCENT,
+                mdExpanded);
+        y += h + 10;
+
+        drawRule(g, px, y);
+        y += 8;
+        g.drawString(font, "\u00a7e" + p[0] + " of " + p[1] + " researched", x, y, C_TEXT, false);
+        y += 12;
+        g.fill(x, y, x + maxW, y + 4, 0xFF111122);
+        int filled = p[1] == 0 ? 0 : (int) (maxW * (p[0] / (float) p[1]));
+        g.fill(x, y, x + filled, y + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : C_ACCENT);
+        y += 14;
+        g.drawString(font, "\u00a78Select a node for details.", x, y, C_DIM, false);
+        y += 12;
+
+        int viewH = regionBot - regionTop;
+        detailMax = Math.max(0, (y - startY) + 4 - viewH);
+        detailScroll = Math.min(detailScroll, detailMax);
+        g.disableScissor();
+        drawScrollbar(g, vw - 5, regionTop, viewH, detailScroll, detailMax);
+        drawRegionTooltips(g, mx, my, ItemStack.EMPTY);
+    }
+
+    private void drawScrollbar(GuiGraphics g, int x, int top, int viewH, float scroll, int max) {
+        if (max <= 0) return;
+        int total = viewH + max;
+        int thumbH = Math.max(14, viewH * viewH / total);
+        int thumbY = top + (int) ((viewH - thumbH) * (scroll / max));
+        g.fill(x, top, x + 2, top + viewH, 0xFF111122);
+        g.fill(x, thumbY, x + 2, thumbY + thumbH, C_ACCENT);
+    }
+
+    private void drawRegionTooltips(GuiGraphics g, int mx, int my, ItemStack hoveredReward) {
+        if (!hoveredReward.isEmpty()) {
+            g.renderTooltip(font, hoveredReward, mx, my);
+            return;
+        }
+        for (RichSpan.Region r : richRegions) {
+            if (!r.contains(mx, my)) continue;
+            if (r.span() instanceof RichSpan.Tip t) {
+                g.pose().pushPose();
+                g.pose().translate(0f, 0f, 500f);
+                g.renderTooltip(font, font.split(Component.literal(t.tooltip()), 240), mx, my);
+                g.pose().popPose();
+                break;
+            }
+            if (r.span() instanceof RichSpan.ItemIcon icon) {
+                var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(icon.itemId());
+                if (item != null) g.renderTooltip(font, new ItemStack(item).getHoverName(), mx, my);
+                break;
+            }
         }
     }
 
@@ -553,7 +809,7 @@ public class ResearchTerminalScreen extends Screen {
         if (available.isEmpty()) return;
 
         int padding = 10;
-        int totalW = canvasW() - padding * 2;
+        int totalW = vw - padding * 2;
         int slotW = totalW / available.size();
         int barH = 6;
         int x = padding;
@@ -586,9 +842,9 @@ public class ResearchTerminalScreen extends Screen {
         double my = rmy / uiScale;
         if (super.mouseClicked(mx, my, btn)) return true;
 
-        int cw = canvasW(), ct = canvasTop(), ch = canvasH();
+        int cw = canvasW(), ct = canvasTop(), ch = canvasH(), cl = canvasLeft();
 
-        if (my < TAB_H) {
+        if (my < TAB_H && mx >= cl && mx < cl + cw) {
             int[] wb = wikiButtonBounds();
             if (mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3]) {
                 Minecraft.getInstance().setScreen(new ConfluxWikiScreen(this));
@@ -602,26 +858,25 @@ public class ResearchTerminalScreen extends Screen {
                                 trees.get(activeTreeIdx).id, terminal.getBlockPos()));
                 return true;
             }
-
-            int tabX = 4;
-            for (int i = 0; i < trees.size(); i++) {
-                int tw = font.width(trees.get(i).title) + 20;
-                if (mx >= tabX && mx < tabX + tw) {
-                    activeTreeIdx = i;
-                    selected = null;
-                    resetPan();
-                    return true;
-                }
-                tabX += tw + 1;
-            }
             return false;
         }
 
-        if (mx >= cw) {
+        if (mx < SIDEBAR_W) {
+            int row = treeRowAt(mx, my);
+            if (row >= 0 && row != activeTreeIdx) {
+                activeTreeIdx = row;
+                selected = null;
+                detailScroll = 0;
+                resetPan();
+            }
+            return true;
+        }
+
+        if (mx >= detailLeft()) {
             int pBot = bottomTop();
             int btnH = 18;
             int btnY = pBot - btnH - 10;
-            int btnX = cw + 10;
+            int btnX = detailLeft() + 10;
             int btnW = DETAIL_W - 20;
             if (my >= btnY && my < btnY + btnH && mx >= btnX && mx < btnX + btnW) {
                 tryResearch();
@@ -629,10 +884,10 @@ public class ResearchTerminalScreen extends Screen {
             }
         }
 
-        if (mx < cw && my >= ct && my < ct + ch && !trees.isEmpty()) {
+        if (mx >= cl && mx < cl + cw && my >= ct && my < ct + ch && !trees.isEmpty()) {
             ResearchTree tree = trees.get(activeTreeIdx);
             Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
-            float cx = (float) ((mx - panX) / zoom);
+            float cx = (float) ((mx - cl - panX) / zoom);
             float cy = (float) ((my - ct - panY) / zoom);
             RenderContext ctx = buildContext((int) mx, (int) my);
             ResearchNode hit = null;
@@ -647,6 +902,7 @@ public class ResearchTerminalScreen extends Screen {
             }
             if (hit != null) {
                 selected = (selected != null && selected.id.equals(hit.id)) ? null : hit;
+                detailScroll = 0;
             } else {
                 selected = null;
                 if (btn == 0) {
@@ -685,11 +941,20 @@ public class ResearchTerminalScreen extends Screen {
     public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         double mx = rmx / uiScale;
         double my = rmy / uiScale;
-        if (mx < canvasW() && my >= canvasTop()) {
+        if (mx < SIDEBAR_W) {
+            sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
+            return true;
+        }
+        if (mx >= detailLeft()) {
+            detailScroll = (float) Math.max(0, Math.min(detailMax, detailScroll - delta * 20));
+            return true;
+        }
+        if (mx >= canvasLeft() && mx < canvasLeft() + canvasW() && my >= canvasTop()) {
             float oldZoom = zoom;
             zoom = Math.max(MIN_ZOOM, Math.min(2.5f, zoom * (float) Math.pow(1.15, delta)));
             float factor = zoom / oldZoom;
-            panX = (float) (mx - factor * (mx - panX));
+            double lx = mx - canvasLeft();
+            panX = (float) (lx - factor * (lx - panX));
             panY = (float) (my - canvasTop() - factor * (my - canvasTop() - panY));
             return true;
         }
@@ -763,7 +1028,7 @@ public class ResearchTerminalScreen extends Screen {
             if (nodePosScreen.size() >= 8) break;
             float[] cp = activeRenderer.nodePos(node, sCtx);
 
-            float sx = (panX + cp[0] * zoom) * uiScale;
+            float sx = (canvasLeft() + panX + cp[0] * zoom) * uiScale;
             float sy = (ct + panY + cp[1] * zoom) * uiScale;
             nodePosScreen.add(new float[] { sx, sy });
             float str = (heatStrAll != null && nodeIdx < heatStrAll.length) ? heatStrAll[nodeIdx] : 1f;
@@ -787,7 +1052,7 @@ public class ResearchTerminalScreen extends Screen {
             float[] origCanvas = activeRenderer.rippleOriginsCanvas();
             ripAge = activeRenderer.rippleAges();
             for (int i = 0; i < Math.min(ripCount, 4); i++) {
-                ripOrig[i * 2] = (panX + origCanvas[i * 2] * zoom) * uiScale;
+                ripOrig[i * 2] = (canvasLeft() + panX + origCanvas[i * 2] * zoom) * uiScale;
                 ripOrig[i * 2 + 1] = (ct + panY + origCanvas[i * 2 + 1] * zoom) * uiScale;
             }
         }

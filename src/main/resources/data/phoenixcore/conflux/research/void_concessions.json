@@ -2,6 +2,7 @@
   "title": "Geometric Concessions",
   "description": "Space in the Void is a rumour that mostly holds. These concessions are the places where you agreed not to ask it to hold too hard.",
   "requires_discipline": "void",
+  "group": "Dispensations",
   "switch_cost": {
     "arcane": 20000
   },

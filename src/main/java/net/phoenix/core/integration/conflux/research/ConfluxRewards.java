@@ -16,6 +16,21 @@ public final class ConfluxRewards {
 
     private ConfluxRewards() {}
 
+    /** Parses an {@code item} unlock value into a stack, or EMPTY if it does not name a real item. */
+    public static ItemStack parse(String value) {
+        int count = 1;
+        int star = value.indexOf('*');
+        if (star >= 0) {
+            try {
+                count = Math.max(1, Integer.parseInt(value.substring(star + 1).trim()));
+            } catch (NumberFormatException ignored) {}
+            value = value.substring(0, star);
+        }
+        ResourceLocation id = ResourceLocation.tryParse(value.trim());
+        Item item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        return item == null ? ItemStack.EMPTY : new ItemStack(item, count);
+    }
+
     public static void give(ServerPlayer player, ResearchNode node) {
         for (ResearchUnlock unlock : node.unlocks) {
             if (!"item".equals(unlock.type())) continue;

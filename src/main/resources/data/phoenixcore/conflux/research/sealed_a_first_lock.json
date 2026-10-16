@@ -2,6 +2,7 @@
   "title": "The First Lock",
   "description": "Everything behind it is accounted for. The Lock is the only entry in the ledger that is not.",
   "requires_discipline": "sealed_a",
+  "group": "Chronicle",
   "switch_cost": {
     "arcane": 500000
   },

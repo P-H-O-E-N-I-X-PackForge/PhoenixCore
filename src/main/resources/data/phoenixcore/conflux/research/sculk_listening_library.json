@@ -2,6 +2,7 @@
   "title": "The Listening Library",
   "description": "The network does not store memory as text. It stores it as the shape a room takes after something has happened in it. You are being taught to read rooms.",
   "requires_discipline": "sculk",
+  "group": "Chronicle",
   "switch_cost": {
     "biological": 100000
   },
