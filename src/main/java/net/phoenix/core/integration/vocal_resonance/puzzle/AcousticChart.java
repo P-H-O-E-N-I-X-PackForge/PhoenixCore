@@ -12,7 +12,21 @@ import java.util.List;
 
 public record AcousticChart(ResourceLocation id, int bpm, List<Integer> laneNotes, List<Beat> beats) {
 
-    public record Beat(int tick, int lane) {}
+    /** len is how many ticks the key must be held after the hit; 0 is a plain tap. */
+    public record Beat(int tick, int lane, int len) {
+
+        public Beat(int tick, int lane) {
+            this(tick, lane, 0);
+        }
+
+        public boolean isHold() {
+            return len > 0;
+        }
+
+        public int endTick() {
+            return tick + len;
+        }
+    }
 
     public static final int MS_PER_TICK = 50;
 
@@ -28,13 +42,15 @@ public record AcousticChart(ResourceLocation id, int bpm, List<Integer> laneNote
             JsonArray pair = element.getAsJsonArray();
             int lane = pair.get(1).getAsInt();
             if (lane < 0 || lane >= lanes.size()) throw new IllegalArgumentException("beat lane out of range");
-            beats.add(new Beat(pair.get(0).getAsInt(), lane));
+            beats.add(new Beat(pair.get(0).getAsInt(), lane, pair.size() > 2 ? Math.max(0, pair.get(2).getAsInt()) : 0));
         }
         beats.sort(Comparator.comparingInt(Beat::tick));
         return new AcousticChart(id, bpm, List.copyOf(lanes), List.copyOf(beats));
     }
 
     public int lastBeatTick() {
-        return beats.isEmpty() ? 0 : beats.get(beats.size() - 1).tick();
+        int last = 0;
+        for (Beat beat : beats) last = Math.max(last, beat.endTick());
+        return last;
     }
 }

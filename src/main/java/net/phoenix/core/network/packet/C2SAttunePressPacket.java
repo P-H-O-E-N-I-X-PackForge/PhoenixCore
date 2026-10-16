@@ -24,23 +24,31 @@ public class C2SAttunePressPacket implements CustomPacketPayload {
     private final BlockPos pos;
     private final int lane;
     private final int elapsedMs;
+    private final boolean release;
 
     public C2SAttunePressPacket(BlockPos pos, int lane, int elapsedMs) {
+        this(pos, lane, elapsedMs, false);
+    }
+
+    public C2SAttunePressPacket(BlockPos pos, int lane, int elapsedMs, boolean release) {
         this.pos = pos;
         this.lane = lane;
         this.elapsedMs = elapsedMs;
+        this.release = release;
     }
 
     public C2SAttunePressPacket(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.lane = buf.readByte();
         this.elapsedMs = buf.readVarInt();
+        this.release = buf.readBoolean();
     }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeByte(lane);
         buf.writeVarInt(elapsedMs);
+        buf.writeBoolean(release);
     }
 
     public static void handle(C2SAttunePressPacket msg, IPayloadContext ctx) {
@@ -48,7 +56,8 @@ public class C2SAttunePressPacket implements CustomPacketPayload {
             var player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
             if (player.level().getBlockEntity(msg.pos) instanceof HarmonicLockMachine lock) {
-                lock.attunePress(player, msg.lane, msg.elapsedMs);
+                if (msg.release) lock.attuneRelease(player, msg.lane, msg.elapsedMs);
+                else lock.attunePress(player, msg.lane, msg.elapsedMs);
             }
         });
     }

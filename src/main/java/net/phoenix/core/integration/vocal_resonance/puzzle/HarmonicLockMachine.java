@@ -86,6 +86,9 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private @Nullable UUID runner;
     private long runStart;
     private boolean[] judged = new boolean[0];
+    // hold notes: head hit and waiting for the key to be released at the tail, and whether the head was perfect
+    private boolean[] holding = new boolean[0];
+    private boolean[] holdPerfect = new boolean[0];
     private int perfects;
     private int goods;
     private int minOffset = Integer.MAX_VALUE;
@@ -154,6 +157,8 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
 
         runStart = level.getGameTime() + AttuneDifficulty.LEAD_MS / AcousticChart.MS_PER_TICK;
         judged = new boolean[picked.beats().size()];
+        holding = new boolean[picked.beats().size()];
+        holdPerfect = new boolean[picked.beats().size()];
         perfects = 0;
         goods = 0;
         minOffset = Integer.MAX_VALUE;
@@ -189,8 +194,33 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         }
         if (best < 0 || bestDelta > runDifficulty.goodMs()) return;
         judged[best] = true;
-        if (bestDelta <= runDifficulty.perfectMs()) perfects++;
+        boolean perfect = bestDelta <= runDifficulty.perfectMs();
+        if (beats.get(best).isHold()) {
+            // only scores once the key is let go at the tail
+            holding[best] = true;
+            holdPerfect[best] = perfect;
+            return;
+        }
+        if (perfect) perfects++;
         else goods++;
+    }
+
+    public void attuneRelease(ServerPlayer player, int lane, int elapsedMs) {
+        AcousticChart current = chart;
+        Level level = getLevel();
+        if (attuneState != ATTUNING || current == null || level == null || !player.getUUID().equals(runner)) return;
+
+        List<AcousticChart.Beat> beats = current.beats();
+        for (int i = 0; i < beats.size(); i++) {
+            if (!holding[i] || beats.get(i).lane() != lane) continue;
+            holding[i] = false;
+            int tail = runDifficulty.beatMs(beats.get(i).endTick());
+            if (elapsedMs >= tail - runDifficulty.goodMs()) {
+                if (holdPerfect[i]) perfects++;
+                else goods++;
+            }
+            return;
+        }
     }
 
     private void runTick() {
@@ -203,6 +233,13 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         AcousticChart current = chart;
         Level level = getLevel();
         if (current == null || level == null) return;
+        // a hold still down when the run ends was held to the tail
+        for (int i = 0; i < current.beats().size(); i++) {
+            if (!holding[i]) continue;
+            holding[i] = false;
+            if (holdPerfect[i]) perfects++;
+            else goods++;
+        }
         int total = current.beats().size();
         double accuracy = (perfects + goods * 0.6) / Math.max(1, total);
         boolean passed = accuracy >= runDifficulty.pass();

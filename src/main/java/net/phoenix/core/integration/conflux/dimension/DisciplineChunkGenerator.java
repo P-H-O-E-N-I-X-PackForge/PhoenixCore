@@ -360,6 +360,8 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         long t0 = System.nanoTime();
         shapeLandforms(chunk);
         UndergroundBiomes.apply(chunk, disciplineId, biomeRegionNoise, seed, getMinY(), getMinY() + getGenDepth());
+        UnderwaterDecor.apply(chunk, disciplineId, biomeRegionNoise, seed, getMinY(), getMinY() + getGenDepth(),
+                getSeaLevel());
         placeStructures(level, chunk, structureManager);
         applyWorldgenFeatures(level, chunkPos.x, chunkPos.z);
         long t1 = System.nanoTime();

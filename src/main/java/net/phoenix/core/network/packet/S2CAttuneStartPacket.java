@@ -49,7 +49,7 @@ public class S2CAttuneStartPacket implements CustomPacketPayload {
         for (int i = 0; i < lanes; i++) laneNotes.add(buf.readVarInt());
         int count = buf.readVarInt();
         this.beats = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) beats.add(new AcousticChart.Beat(buf.readVarInt(), buf.readByte()));
+        for (int i = 0; i < count; i++) beats.add(new AcousticChart.Beat(buf.readVarInt(), buf.readByte(), buf.readVarInt()));
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -62,6 +62,7 @@ public class S2CAttuneStartPacket implements CustomPacketPayload {
         for (AcousticChart.Beat beat : beats) {
             buf.writeVarInt(beat.tick());
             buf.writeByte(beat.lane());
+            buf.writeVarInt(beat.len());
         }
     }
 
