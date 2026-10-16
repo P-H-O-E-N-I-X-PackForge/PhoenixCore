@@ -24,6 +24,7 @@ import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.UISettings;
+import brachy.modularui.value.sync.IntSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.ButtonWidget;
@@ -325,35 +326,52 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         mainWidget.child(column);
     }
 
+    private static AcousticStateMachine.State stateOf(int ordinal) {
+        AcousticStateMachine.State[] values = AcousticStateMachine.State.values();
+        return values[Math.max(0, Math.min(ordinal, values.length - 1))];
+    }
+
     @Override
     public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
         List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
         if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.dynamic(() -> switch (attuneState) {
+        // the machine's own fields are not reliably mirrored into an open screen, so the display reads dedicated
+        // sync values instead (this is what left the text stuck on "dormant" after a pass)
+        IntSyncValue attuneSv = syncManager.getOrCreateSyncHandler("lock_attune", IntSyncValue.class,
+                () -> new IntSyncValue(() -> attuneState));
+        IntSyncValue gradeSv = syncManager.getOrCreateSyncHandler("lock_grade", IntSyncValue.class,
+                () -> new IntSyncValue(() -> attuneGrade));
+        IntSyncValue levelSv = syncManager.getOrCreateSyncHandler("lock_level", IntSyncValue.class,
+                () -> new IntSyncValue(() -> tuneLevel));
+        IntSyncValue stepSv = syncManager.getOrCreateSyncHandler("lock_step", IntSyncValue.class,
+                () -> new IntSyncValue(() -> step));
+        IntSyncValue stateSv = syncManager.getOrCreateSyncHandler("lock_state", IntSyncValue.class,
+                () -> new IntSyncValue(() -> state));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> switch (attuneSv.getIntValue()) {
             case ATTUNING -> Component.literal("§7Lock: §eattuning... §7(play the rhythm game)");
-            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" + AttuneDifficulty.fromLevel(tuneLevel).label() +
-                    ", " + (attuneGrade >= 2 ? "perfect" : attuneGrade == 1 ? "good" : "passed") + ")");
+            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" + AttuneDifficulty.fromLevel(levelSv.getIntValue()).label() +
+                    ", " + (gradeSv.getIntValue() >= 2 ? "perfect" : gradeSv.getIntValue() == 1 ? "good" : "passed") + ")");
             default -> Component.literal("§7Lock: §cdormant §7- attune it to wake the puzzle");
         })));
         widgets.add(new ButtonWidget<>()
                 .overlay(new ItemDrawable(new ItemStack(Items.NOTE_BLOCK)).asIcon().size(16))
                 .tooltip(new RichTooltip().addLine(Text.of(Component
-                        .literal(tuneLevel == 0 ? "Attune the lock: a rhythm game (keys D F J K)" :
+                        .literal(levelSv.getIntValue() == 0 ? "Attune the lock: a rhythm game (keys D F J K)" :
                                 "Retune the lock for a harder level and bigger boosts"))))
                 .onMousePressed((context, button) -> {
                     net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient
                             .openDifficulty(getBlockPos(), tuneLevel);
                     return true;
                 }));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> tuneLevel == 0 ? Component.empty() :
-                Component.literal("§7Forgives §f" + Math.max(0, tuneLevel - 1) + " §7wrong note" +
-                        (tuneLevel == 2 ? "" : "s") + " in a row."))));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> levelSv.getIntValue() == 0 ? Component.empty() :
+                Component.literal("§7Forgives §f" + Math.max(0, levelSv.getIntValue() - 1) + " §7wrong note" +
+                        (levelSv.getIntValue() == 2 ? "" : "s") + " in a row."))));
         widgets.add(new TextWidget<>(Text.dynamic(() -> {
             AcousticPuzzle puzzle = getPuzzle();
-            if (attuneState != ATTUNED) return Component.literal("§7Puzzle: §8asleep");
+            if (attuneSv.getIntValue() != ATTUNED) return Component.literal("§7Puzzle: §8asleep");
             if (puzzle == null) return Component.literal("§7Puzzle: §8none loaded");
-            String progress = step + "/" + puzzle.steps().size();
-            return Component.literal("§7Puzzle: " + switch (getPuzzleState()) {
+            String progress = stepSv.getIntValue() + "/" + puzzle.steps().size();
+            return Component.literal("§7Puzzle: " + switch (stateOf(stateSv.getIntValue())) {
                 case IDLE -> "§8waiting §7(" + progress + ")";
                 case LISTENING -> "§elistening §7(" + progress + ")";
                 case SOLVED -> "§aSOLVED";
@@ -362,7 +380,7 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         })));
         widgets.add(new TextWidget<>(Text.dynamic(() -> {
             AcousticPuzzle puzzle = getPuzzle();
-            if (attuneState != ATTUNED || puzzle == null) return Component.empty();
+            if (attuneSv.getIntValue() != ATTUNED || puzzle == null) return Component.empty();
             return Component.literal("§7Opens with: §f" + hint(puzzle));
         })));
         widgets.add(new TextWidget<>(Text.dynamic(() -> Component

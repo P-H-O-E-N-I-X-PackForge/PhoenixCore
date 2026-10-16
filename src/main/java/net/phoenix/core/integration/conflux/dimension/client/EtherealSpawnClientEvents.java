@@ -1,11 +1,11 @@
 package net.phoenix.core.integration.conflux.dimension.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.PauseScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.phoenix.core.integration.conflux.client.DisciplinePickerScreen;
 import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
 
@@ -14,31 +14,30 @@ public class EtherealSpawnClientEvents {
 
     private static boolean pickerShown = false;
 
+    /**
+     * Polled from the client tick: a world join opens no screen, so waiting on a screen-init event never fires
+     * and the picker never appeared.
+     */
     @SubscribeEvent
-    public static void onScreenOpen(ScreenEvent.Init.Pre event) {
+    public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null) {
+        if (mc.level == null || mc.player == null || !isInEtherealSpawn(mc)) {
+            pickerShown = false;
             return;
         }
-
-        if (!isInEtherealSpawn(mc)) {
-            return;
-        }
-
-        if (event.getScreen() instanceof PauseScreen && !(event.getScreen() instanceof DisciplinePickerScreen)) {
-            event.setCanceled(true);
-        }
-
-        if (!pickerShown) {
+        if (!pickerShown && mc.screen == null) {
             pickerShown = true;
             mc.setScreen(new DisciplinePickerScreen());
         }
     }
 
-    private static boolean isInEtherealSpawn(Minecraft mc) {
-        if (mc.level == null) return false;
+    @SubscribeEvent
+    public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        pickerShown = false;
+    }
 
-        return mc.level.dimension().equals(EtherealSpawnDimension.DIMENSION_KEY);
+    private static boolean isInEtherealSpawn(Minecraft mc) {
+        return mc.level != null && mc.level.dimension().equals(EtherealSpawnDimension.DIMENSION_KEY);
     }
 
     public static void resetPickerShown() {

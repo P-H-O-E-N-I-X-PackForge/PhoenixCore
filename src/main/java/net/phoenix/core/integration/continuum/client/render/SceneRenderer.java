@@ -42,6 +42,23 @@ public final class SceneRenderer {
         RenderSystem.disableBlend();
     }
 
+    // Each shader below was authored against a specific blend function, and nothing stops a later pass (the GUI, the
+    // composite, another shader sharing the same cached BlendMode) leaving a different one bound, which turns the
+    // premultiplied glow/nebula output into dark discs. Set them explicitly before drawing.
+    private static void blendPremultiplied() {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    }
+
+    private static void blendAtmosphere() {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ZERO);
+    }
+
     public static void end() {
         if (previous != null) previous.bindWrite(true);
         previous = null;
@@ -107,11 +124,12 @@ public final class SceneRenderer {
             setColor(shell, "AtmoColor", params.atmoColor());
             shell.safeGetUniform("AtmoDensity").set(params.atmoDensity());
 
-            RenderSystem.enableBlend();
+            blendAtmosphere();
             RenderSystem.depthMask(false);
             mesh.draw(shell, new Matrix4f(modelView).scale(ATMOSPHERE_SCALE), projection);
             RenderSystem.depthMask(true);
             RenderSystem.disableBlend();
+            RenderSystem.defaultBlendFunc();
         }
 
         if (!cube && params.ring() != null && ContinuumShaders.RING != null) {
@@ -220,6 +238,7 @@ public final class SceneRenderer {
         shader.safeGetUniform("Time").set(time());
         shader.safeGetUniform("Octaves").set((float) Math.min(5,
                 net.phoenix.core.integration.continuum.client.ContinuumVisuals.quality().octaves));
+        blendPremultiplied();
         VertexBuffer quad = holeQuad();
         quad.bind();
         for (Nebula nebula : nebulas) {
@@ -287,6 +306,7 @@ public final class SceneRenderer {
         shader.safeGetUniform("Density").set(nebula.density() * (0.35f + 0.45f * strength));
         setColor(shader, "Color1", nebula.color1());
         setColor(shader, "Color2", nebula.color2());
+        blendPremultiplied();
         VertexBuffer quad = holeQuad();
         quad.bind();
         for (int i = 0; i < 3; i++) {
@@ -392,6 +412,7 @@ public final class SceneRenderer {
         low.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         low.clear(Minecraft.ON_OSX);
         low.bindWrite(true);
+        blendPremultiplied();
         VertexBuffer quad = holeQuad();
         quad.bind();
         quad.drawWithShader(modelView, projection, shader);

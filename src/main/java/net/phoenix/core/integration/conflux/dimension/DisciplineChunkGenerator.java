@@ -828,11 +828,47 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         int seaLevel = profile.seaLevel();
         long rollSeed = seed ^ 0xDEE95L;
 
+        // The density field is sampled on a 4-block lattice and interpolated between, the way vanilla does (it uses
+        // 4x8x4). The noise varies over tens of blocks, so the interpolated surface matches the per-block one to
+        // within a block while costing about 1/40th of the samples.
+        final int cell = 4;
+        int cellsY = (maxY - minY + cell - 1) / cell;
+        int gridY = cellsY + 1;
+        double[] grid = new double[5 * 5 * gridY];
+        for (int gx = 0; gx < 5; gx++) {
+            for (int gz = 0; gz < 5; gz++) {
+                int base = (gx * 5 + gz) * gridY;
+                for (int gy = 0; gy < gridY; gy++) {
+                    grid[base + gy] = profile.sampler().sample(minX + gx * cell, Math.min(minY + gy * cell, maxY - 1),
+                            minZ + gz * cell);
+                }
+            }
+        }
+
         for (int x = minX; x < minX + 16; x++) {
+            double fx = (x - minX) / (double) cell;
+            int cx = (int) fx;
+            fx -= cx;
             for (int z = minZ; z < minZ + 16; z++) {
+                double fz = (z - minZ) / (double) cell;
+                int cz = (int) fz;
+                fz -= cz;
+                int b00 = (cx * 5 + cz) * gridY;
+                int b01 = (cx * 5 + cz + 1) * gridY;
+                int b10 = ((cx + 1) * 5 + cz) * gridY;
+                int b11 = ((cx + 1) * 5 + cz + 1) * gridY;
                 int ground = minY - 1;
                 for (int y = minY; y < maxY; y++) {
-                    boolean solid = profile.sampler().sample(x, y, z) > 0;
+                    int gy = (y - minY) / cell;
+                    double fy = (y - minY) / (double) cell - gy;
+                    int g1 = Math.min(gy + 1, gridY - 1);
+                    double d00 = grid[b00 + gy] + (grid[b00 + g1] - grid[b00 + gy]) * fy;
+                    double d01 = grid[b01 + gy] + (grid[b01 + g1] - grid[b01 + gy]) * fy;
+                    double d10 = grid[b10 + gy] + (grid[b10 + g1] - grid[b10 + gy]) * fy;
+                    double d11 = grid[b11 + gy] + (grid[b11 + g1] - grid[b11 + gy]) * fy;
+                    double d0 = d00 + (d01 - d00) * fz;
+                    double d1 = d10 + (d11 - d10) * fz;
+                    boolean solid = d0 + (d1 - d0) * fx > 0;
                     net.minecraft.world.level.block.state.BlockState state;
 
                     if (y == minY) {

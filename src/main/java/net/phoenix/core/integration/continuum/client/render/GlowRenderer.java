@@ -46,10 +46,17 @@ public final class GlowRenderer {
                 builder.build();
                 return;
             }
+            // the glow shader outputs (rgb * a, a) for an additive blend; under the GUI's alpha blend it darkens
+            // whatever is behind it instead, which showed as a black disc around every body
             RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                    com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE,
+                    com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                    com.mojang.blaze3d.platform.GlStateManager.DestFactor.ZERO);
             RenderSystem.disableDepthTest();
             RenderSystem.setShader(() -> ContinuumShaders.GLOW);
             BufferUploader.drawWithShader(builder.buildOrThrow());
+            RenderSystem.defaultBlendFunc();
         }
     }
 
