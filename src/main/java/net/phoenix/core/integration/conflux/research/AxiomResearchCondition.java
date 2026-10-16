@@ -6,12 +6,18 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
+import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.screen.RichTooltip;
+import brachy.modularui.widgets.TextWidget;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -100,9 +106,42 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
         if (flag.isEmpty()) {
             return Component.literal(!only.isEmpty() ? "Unavailable to: " + only : "Only for: " + except);
         }
-        // EMI draws these as one unwrapped line inside a fixed-width recipe widget, so keep it short: the title of the
-        // research that grants the flag rather than "Requires research: <raw flag>"
         return Component.literal("Research: " + researchName(flag));
+    }
+
+    /**
+     * The recipe viewer draws a condition as one unwrapped line in a fixed-width widget, so the line itself stays short
+     * ("Required Research", coloured and underlined to read as hoverable) and the detail moves into a tooltip.
+     */
+    @Override
+    public RecipeUIModifier modifyUI() {
+        return (recipe, widget) -> {
+            if (flag.isEmpty()) {
+                widget.textComponents.child(new TextWidget<>(Text.of(getTooltips())));
+                return;
+            }
+            RichTooltip tip = new RichTooltip();
+            tip.addLine(Text.of(Component.literal("§bResearch: §f" + researchName(flag))));
+            String tree = treeName(flag);
+            if (tree != null) tip.addLine(Text.of(Component.literal("§7Found in: §f" + tree)));
+            if (!only.isEmpty()) tip.addLine(Text.of(Component.literal("§7Restricts: §f" + only)));
+            if (!except.isEmpty()) tip.addLine(Text.of(Component.literal("§7Not required by: §f" + except)));
+            tip.addLine(Text.of(Component.literal("§8Research it at a Conflux terminal.")));
+            widget.textComponents.child(new TextWidget<>(Text.of(
+                    Component.literal("Required Research").withStyle(ChatFormatting.AQUA, ChatFormatting.UNDERLINE)))
+                    .tooltip(tip));
+        };
+    }
+
+    private static @org.jetbrains.annotations.Nullable String treeName(String flag) {
+        for (ResearchTree tree : ResearchTreeRegistry.INSTANCE.getAllTrees()) {
+            for (ResearchNode node : tree.getNodes()) {
+                for (ResearchUnlock unlock : node.unlocks) {
+                    if ("flag".equals(unlock.type()) && flag.equals(unlock.value())) return tree.title;
+                }
+            }
+        }
+        return null;
     }
 
     private static String researchName(String flag) {
