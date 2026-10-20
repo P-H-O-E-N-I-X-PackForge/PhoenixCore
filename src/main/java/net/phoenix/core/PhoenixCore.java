@@ -77,8 +77,6 @@ import net.phoenix.core.integration.conflux.research.AxiomResearchCondition;
 import net.phoenix.core.integration.conflux.research.GatedRecipeRegistry;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.conflux.structure.ConfluxStructures;
-import net.phoenix.core.integration.continuum.ContinuumRegistry;
-import net.phoenix.core.integration.continuum.machine.ContinuumMachines;
 import net.phoenix.core.integration.drone.DroneItems;
 import net.phoenix.core.integration.gregpacks.client.OmniPackCurioRenderer;
 import net.phoenix.core.integration.gregpacks.common.fluid.GregPacksCapabilityHandler;
@@ -211,7 +209,6 @@ public class PhoenixCore {
     private void onRegisterBlocksAndItems() {
         PhoenixBlocks.init();
         CinemaBlocks.init();
-        ContinuumRegistry.init();
         GrowthBlocks.init();
         GrowthItems.init();
         AstralBlocks.init();
@@ -337,7 +334,6 @@ public class PhoenixCore {
         VaultMachineDefinition.init();
         CinderForgeMachines.init();
         SanctumWardMachines.init();
-        ContinuumMachines.init();
     }
 
     public static ResourceLocation id(String path) {

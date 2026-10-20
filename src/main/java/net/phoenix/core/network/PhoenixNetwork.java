@@ -1,7 +1,6 @@
 package net.phoenix.core.network;
 
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.phoenix.core.integration.continuum.network.*;
 import net.phoenix.core.network.packet.*;
 import net.phoenix.core.shop.network.C2SAddShopEntryPacket;
 import net.phoenix.core.shop.network.C2SBuyShopEntryPacket;
@@ -110,50 +109,10 @@ public class PhoenixNetwork {
 
         registrar.playToServer(C2SCutsceneRequestPacket.TYPE, C2SCutsceneRequestPacket.STREAM_CODEC,
                 C2SCutsceneRequestPacket::handle);
-        registerContinuum(registrar);
+        registerResonanceAndPhysics(registrar);
     }
 
-    private static void registerContinuum(PayloadRegistrar registrar) {
-        registrar.playToClient(S2CContinuumDataPacket.TYPE, S2CContinuumDataPacket.STREAM_CODEC,
-                S2CContinuumDataPacket::handle);
-        registrar.playToClient(S2CContinuumStatePacket.TYPE, S2CContinuumStatePacket.STREAM_CODEC,
-                S2CContinuumStatePacket::handle);
-        registrar.playToClient(S2COpenMapPacket.TYPE, S2COpenMapPacket.STREAM_CODEC, S2COpenMapPacket::handle);
-        registrar.playToClient(S2CMissionLaunchedPacket.TYPE, S2CMissionLaunchedPacket.STREAM_CODEC,
-                S2CMissionLaunchedPacket::handle);
-        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CPadStockPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.S2CPadStockPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.S2CPadStockPacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SRequestPadStockPacket::handle);
-        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.TYPE,
-                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.S2CPdimStatePacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SPdimPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SPdimPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SPdimPacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SConfluxTravelPacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SCollectAllPacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SRequestHistoryPacket::handle);
-        registrar.playToClient(net.phoenix.core.integration.continuum.network.S2CHistoryPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.S2CHistoryPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.S2CHistoryPacket::handle);
-        registrar.playToServer(net.phoenix.core.integration.continuum.network.C2SRefitPacket.TYPE,
-                net.phoenix.core.integration.continuum.network.C2SRefitPacket.STREAM_CODEC,
-                net.phoenix.core.integration.continuum.network.C2SRefitPacket::handle);
-        registrar.playToServer(C2SRequestStatePacket.TYPE, C2SRequestStatePacket.STREAM_CODEC,
-                C2SRequestStatePacket::handle);
-        registrar.playToServer(C2SLaunchMissionPacket.TYPE, C2SLaunchMissionPacket.STREAM_CODEC,
-                C2SLaunchMissionPacket::handle);
-        registrar.playToServer(C2SCollectMissionPacket.TYPE, C2SCollectMissionPacket.STREAM_CODEC,
-                C2SCollectMissionPacket::handle);
+    private static void registerResonanceAndPhysics(PayloadRegistrar registrar) {
         registrar.playToServer(C2SAttuneStartPacket.TYPE, C2SAttuneStartPacket.STREAM_CODEC,
                 C2SAttuneStartPacket::handle);
         registrar.playToServer(C2SAttunePressPacket.TYPE, C2SAttunePressPacket.STREAM_CODEC,
