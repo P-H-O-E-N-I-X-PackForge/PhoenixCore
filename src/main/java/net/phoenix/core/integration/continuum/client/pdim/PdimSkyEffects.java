@@ -30,6 +30,7 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
         super(Float.NaN, false, SkyType.NONE, false, false);
     }
 
+    /** The horizon colour of the sky as last drawn, so distant fog fades into it; null until the first frame. */
     private static volatile Vec3 horizonFog = null;
 
     @Override
@@ -65,15 +66,12 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
             RenderSystem.enableDepthTest();
             RenderSystem.depthMask(true);
 
-            boolean isHoleSystem = system != null && system.hasHole();
-            boolean isStarOrHoleBody = body.type() == ContinuumBody.Type.STAR ||
-                    body.type() == ContinuumBody.Type.BLACK_HOLE;
-
-            // The moving object crossing the sky (Sun, Wolf-Rayet, Pulsar, or Black Hole)
-            if ((sample.hasSun() || isHoleSystem) && system != null && sample.sunDir().y > -0.12f) {
+            // the star crossing the sky: it rises, climbs, sets, and is not there at night. Around a black hole (or a
+            // binary pair) the "sun" is the hole itself, drawn with its own accretion disk.
+            if (sample.hasSun() && system != null && sample.sunDir().y > -0.12f) {
                 Vector3f sunPos = new Vector3f(sample.sunDir()).mul(98.0f);
-                if (isHoleSystem) {
-                    SceneRenderer.drawHole(system, view, projectionMatrix, sunPos, 8.0f, ContinuumVisuals.quality(),
+                if (system.hasHole()) {
+                    SceneRenderer.drawHole(system, view, projectionMatrix, sunPos, 4.5f, ContinuumVisuals.quality(),
                             true);
                 } else {
                     SceneRenderer.drawSystemStar(system, system.starColor(), view, projectionMatrix, sunPos, 6.0f,
@@ -84,21 +82,34 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
                 RenderSystem.depthMask(true);
             }
 
-            // Only draw the static central body if we are NOT currently rendering it as the moving sky object above
-            // (i.e., if you are standing on an orbiting planet, the central body crosses the sky; if you are standing
-            // on the star/black hole itself, it stays static).
-            if (isStarOrHoleBody) {
-                Vector3f position = new Vector3f(52.0f, 30.0f, -76.0f);
-                boolean quasar = system != null && system.isQuasar();
-                float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? (quasar ? 8.5f : 9.0f) : 16.0f;
+            Vector3f position = new Vector3f(52.0f, 30.0f, -76.0f);
+            boolean centralBody = body.type() == ContinuumBody.Type.STAR ||
+                    body.type() == ContinuumBody.Type.BLACK_HOLE;
+            boolean quasar = system != null && system.isQuasar();
+            // skybox holes are drawn larger than on the map screen; a quasar's jets already span the sky, so it grows less
+            float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? (quasar ? 8.5f : 9.0f) :
+                    centralBody ? 16.0f : 22.0f;
 
-                if (!SceneRenderer.drawCentralBody(body, view, projectionMatrix, position, radius,
-                        ContinuumVisuals.quality(), true)) {
-                    var params = body.params();
-                    SceneRenderer.drawPlanet(params, view, projectionMatrix, position, radius,
-                            new Vector3f(-300.0f, 220.0f, 260.0f), time * params.spinDegPerSec() * 0.5f,
-                            time * params.cloudSpinDegPerSec() * 0.5f, ContinuumVisuals.quality(), true);
+            if (!SceneRenderer.drawCentralBody(body, view, projectionMatrix, position, radius,
+                    ContinuumVisuals.quality(), true)) {
+                // On a planet the sky shows the planet itself, as before. On a moon you are standing on it, so the sky
+                // shows its host planet instead: held fixed (a moon keeps one face to its planet), sized by the
+                // planet's radius, and lit by wherever the star is, so it waxes and wanes as the day turns.
+                ContinuumBody orbBody = body;
+                float orbRadius = radius;
+                Vector3f light = new Vector3f(-300.0f, 220.0f, 260.0f);
+                if (body.isMoon() && body.parent() != null) {
+                    ContinuumBody host = ContinuumData.body(body.parent());
+                    if (host != null) {
+                        orbBody = host;
+                        orbRadius = Math.max(22.0f, Math.min(42.0f, 20.0f + 4.0f * (float) Math.sqrt(host.radius())));
+                        if (sample.hasSun()) light = new Vector3f(sample.sunDir()).mul(400.0f);
+                    }
                 }
+                var params = orbBody.params();
+                SceneRenderer.drawPlanet(params, view, projectionMatrix, position, orbRadius, light,
+                        time * params.spinDegPerSec() * 0.5f, time * params.cloudSpinDegPerSec() * 0.5f,
+                        ContinuumVisuals.quality(), true);
             }
         }
 

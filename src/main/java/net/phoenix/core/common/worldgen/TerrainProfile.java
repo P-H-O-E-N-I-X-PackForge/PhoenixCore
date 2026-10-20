@@ -37,6 +37,7 @@ public record TerrainProfile(
         private int maxY = 320;
         private int seaLevel = 63;
         private double baseY = 64;
+        private double flatThreshold = Double.NaN;
         private double amplitude = 80;
         private double frequency = 0.004;
         private int octaves = 5;
@@ -75,6 +76,23 @@ public record TerrainProfile(
         public Builder seaLevel(int y) {
             this.seaLevel = y;
             return this;
+        }
+
+        /**
+         * Roughly the share of the world (0..1) that is flat. Only the ridged style uses it, and the mapping from share to
+         * noise threshold is an estimate, so nudge it by eye.
+         */
+        public Builder flatShare(double share) {
+            this.flatThreshold = 0.5 + 0.17 * Math.sqrt(2.0) * inverseErf(2.0 * share - 1.0);
+            return this;
+        }
+
+        private static double inverseErf(double x) {
+            // Winitzki's approximation, good to about 1e-3, which is plenty for a threshold chosen by eye
+            double a = 0.147;
+            double ln = Math.log(1.0 - x * x);
+            double t = 2.0 / (Math.PI * a) + ln / 2.0;
+            return Math.signum(x) * Math.sqrt(Math.sqrt(t * t - ln / a) - t);
         }
 
         public Builder baseY(double y) {
@@ -142,7 +160,7 @@ public record TerrainProfile(
             TerrainSampler terrain = switch (style) {
                 case VOLUMETRIC -> PhoenixTerrainNoise.volumetric(seed, baseY, amplitude, frequency, frequency * 2,
                         octaves);
-                case RIDGED -> PhoenixTerrainNoise.ridged(seed, baseY, amplitude, frequency, octaves);
+                case RIDGED -> PhoenixTerrainNoise.ridged(seed, baseY, amplitude, frequency, octaves, flatThreshold);
                 case WARPED -> PhoenixTerrainNoise.warped(seed, baseY, amplitude, frequency, octaves, warpStrength);
                 case TERRACED -> PhoenixTerrainNoise.terraced(seed, baseY, amplitude, frequency, octaves, terraceStep);
                 case HEIGHTMAP -> PhoenixTerrainNoise.heightmap(seed, baseY, amplitude, frequency, octaves);

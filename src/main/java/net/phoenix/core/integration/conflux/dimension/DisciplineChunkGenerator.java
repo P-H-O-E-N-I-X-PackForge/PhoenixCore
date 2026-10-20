@@ -197,7 +197,14 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         WorldgenProfile.BiomeDefinition chosen = pick.best();
 
         if (pick.second() != null && pick.margin() < BIOME_BLEND_BAND) {
-            int dither = (int) ((seed * 31 + x * 73428767L + z * 912931L) >>> 7) & 1023;
+            // a linear mix of x and z shows as diagonal lines across the whole blend band; scramble it properly
+            long hh = seed ^ (x * 0x9E3779B97F4A7C15L) ^ (z * 0xC2B2AE3D27D4EB4FL);
+            hh ^= hh >>> 33;
+            hh *= 0xFF51AFD7ED558CCDL;
+            hh ^= hh >>> 33;
+            hh *= 0xC4CEB9FE1A85EC53L;
+            hh ^= hh >>> 33;
+            int dither = (int) (hh & 1023);
             if (dither / 1023.0 < 0.5 * (1.0 - pick.margin() / BIOME_BLEND_BAND)) chosen = pick.second();
         } else if (biomes.size() > 2) {
             double patch = regionNoise.getValue(x * ACCENT_FREQUENCY + 3000.0, 0, z * ACCENT_FREQUENCY + 7000.0);
@@ -215,6 +222,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
                     .seed(seed)
                     .baseY(72).amplitude(100).frequency(0.004).octaves(6)
                     .style(TerrainProfile.Style.RIDGED)
+                    .flatShare(0.40)
                     .seaLevel(28)
                     .caves(true).build();
 

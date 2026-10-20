@@ -109,11 +109,50 @@ public final class Landforms {
         return h;
     }
 
+    /** Volcanoes are 60 to 115 blocks in radius, so two whose centres are closer than this would merge into a lump. */
+    private static final int VOLCANO_GAP = 260;
+
+    private final java.util.concurrent.ConcurrentHashMap<Long, Boolean> volcanoSurvival = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** Where this cell's volcano would stand, or null if the cell does not roll one. Mirrors the first rolls of create. */
+    private int[] volcanoCentre(int cellX, int cellZ) {
+        RandomSource rnd = RandomSource.create(mix(seed, cellX, cellZ));
+        if (pick(rnd.nextFloat()) != Kind.VOLCANO) return null;
+        int cx = cellX * CELL + 40 + rnd.nextInt(CELL - 80);
+        int cz = cellZ * CELL + 40 + rnd.nextInt(CELL - 80);
+        if (Math.abs(cx) < SPAWN_CLEAR && Math.abs(cz) < SPAWN_CLEAR) return null;
+        return new int[] { cx, cz };
+    }
+
+    /**
+     * A volcano is dropped when an earlier cell's surviving volcano stands within VOLCANO_GAP of it. "Earlier" is a
+     * fixed order on cells, so every chunk that asks gets the same answer.
+     */
+    private boolean volcanoSurvives(int cellX, int cellZ) {
+        long k = key(cellX, cellZ);
+        Boolean known = volcanoSurvival.get(k);
+        if (known != null) return known;
+        int[] me = volcanoCentre(cellX, cellZ);
+        boolean ok = me != null;
+        for (int dx = -2; ok && dx <= 2; dx++) {
+            for (int dz = -2; ok && dz <= 2; dz++) {
+                int nx = cellX + dx, nz = cellZ + dz;
+                if (nx > cellX || (nx == cellX && nz >= cellZ)) continue;
+                int[] other = volcanoCentre(nx, nz);
+                if (other == null || !volcanoSurvives(nx, nz)) continue;
+                if (Math.hypot(me[0] - other[0], me[1] - other[1]) < VOLCANO_GAP) ok = false;
+            }
+        }
+        volcanoSurvival.put(k, ok);
+        return ok;
+    }
+
     private Instance create(int cellX, int cellZ, int seaLevel, IntBinaryOperator ground) {
         RandomSource rnd = RandomSource.create(mix(seed, cellX, cellZ));
         float roll = rnd.nextFloat();
         Kind kind = pick(roll);
         if (kind == null) return null;
+        if (kind == Kind.VOLCANO && !volcanoSurvives(cellX, cellZ)) return null;
 
         int cx = cellX * CELL + 40 + rnd.nextInt(CELL - 80);
         int cz = cellZ * CELL + 40 + rnd.nextInt(CELL - 80);
@@ -244,8 +283,8 @@ public final class Landforms {
 
     private Kind pick(float roll) {
         return switch (disciplineId) {
-            case "phoenix" -> roll < 0.50f ? Kind.VOLCANO : roll < 0.65f ? Kind.HOODOOS :
-                    roll < 0.80f ? Kind.PLATEAU : null;
+            case "phoenix" -> roll < 0.20f ? Kind.VOLCANO : roll < 0.38f ? Kind.HOODOOS :
+                    roll < 0.60f ? Kind.PLATEAU : null;
             case "sculk" -> roll < 0.15f ? Kind.KARST : roll < 0.20f ? Kind.HOODOOS :
                     roll < 0.25f ? Kind.PLATEAU : roll < 0.37f ? Kind.CENOTE : roll < 0.45f ? Kind.FUNGUS :
                             roll < 0.50f ? Kind.RIBS : null;

@@ -108,6 +108,11 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     @Override
     public RecipeUIModifier modifyUI() {
         return (recipe, widget) -> {
+            // a restriction scoped to other disciplines is not this player's business; do not show it as a lock
+            String mine = net.phoenix.core.integration.conflux.client.ClientResearchCache.getDisciplineInfo()
+                    .disciplineId();
+            if (!only.isEmpty() && mine != null && !listed(only, mine)) return;
+            if (!except.isEmpty() && listed(except, mine)) return;
             if (flag.isEmpty()) {
                 widget.textComponents.child(new TextWidget<>(Text.of(getTooltips())));
                 return;

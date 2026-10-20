@@ -17,8 +17,22 @@ public final class PhoenixTerrainNoise {
     private static final double SPAWN_MIN_FACTOR = 0.08;
 
     private static double regionFactor(SimplexNoise regionNoise, double x, double z) {
+        return regionFactor(regionNoise, x, z, Double.NaN);
+    }
+
+    /**
+     * flatThreshold is where on the 0..1 region noise the land stops being flat; NaN keeps the plain linear ramp. The
+     * noise sits mostly near the middle, so a threshold a little under 0.5 leaves about two fifths of the world on the
+     * flat side and the rest hilly.
+     */
+    private static double regionFactor(SimplexNoise regionNoise, double x, double z, double flatThreshold) {
         double n = regionNoise.getValue(x * REGION_FREQUENCY, 0, z * REGION_FREQUENCY);
-        double base = REGION_MIN_FACTOR + (1.0 - REGION_MIN_FACTOR) * (n * 0.5 + 0.5);
+        double u = n * 0.5 + 0.5;
+        if (!Double.isNaN(flatThreshold)) {
+            double t = Math.max(0.0, Math.min(1.0, (u - (flatThreshold - 0.10)) / 0.20));
+            u = t * t * (3.0 - 2.0 * t);
+        }
+        double base = REGION_MIN_FACTOR + (1.0 - REGION_MIN_FACTOR) * u;
 
         double dist = Math.sqrt(x * x + z * z);
         double spawnBlend = Math.max(0.0, Math.min(1.0, (dist - SPAWN_CALM_RADIUS) / SPAWN_TRANSITION_RADIUS));
@@ -61,6 +75,11 @@ public final class PhoenixTerrainNoise {
     }
 
     public static TerrainSampler ridged(long seed, double baseY, double amplitude, double frequency, int octaves) {
+        return ridged(seed, baseY, amplitude, frequency, octaves, Double.NaN);
+    }
+
+    public static TerrainSampler ridged(long seed, double baseY, double amplitude, double frequency, int octaves,
+                                        double flatThreshold) {
         SimplexNoise noise = makeNoise(seed);
         SimplexNoise regionNoise = makeNoise(seed ^ REGION_SEED_OFFSET);
         ThreadLocal<double[]> cache = ThreadLocal.withInitial(PhoenixTerrainNoise::columnCache);
@@ -70,7 +89,7 @@ public final class PhoenixTerrainNoise {
             if (c[0] == x && c[1] == z) {
                 height = c[2];
             } else {
-                double amp = amplitude * regionFactor(regionNoise, x, z);
+                double amp = amplitude * regionFactor(regionNoise, x, z, flatThreshold);
                 height = baseY + amp * ridgedFbm(noise, x, z, octaves, frequency);
                 c[0] = x;
                 c[1] = z;
