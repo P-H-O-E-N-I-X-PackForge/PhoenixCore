@@ -30,7 +30,7 @@ public final class ContinuumShaders {
     public static ShaderInstance PLANETARY;
     public static ShaderInstance PROTOSTAR;
     public static ShaderInstance GALAXY;
-    /** A copy of the backdrop used only if BACKDROP failed to load, so the map never has a blank sky. */
+
     public static ShaderInstance STARFIELD;
 
     public static void onRegisterShaders(RegisterShadersEvent event) {

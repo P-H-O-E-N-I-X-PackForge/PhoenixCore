@@ -30,7 +30,6 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
         super(Float.NaN, false, SkyType.NONE, false, false);
     }
 
-    /** The horizon colour of the sky as last drawn, so distant fog fades into it; null until the first frame. */
     private static volatile Vec3 horizonFog = null;
 
     @Override
@@ -66,30 +65,40 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
             RenderSystem.enableDepthTest();
             RenderSystem.depthMask(true);
 
-            // the star crossing the sky: it rises, climbs, sets, and is not there at night
-            if (sample.hasSun() && system != null && sample.sunDir().y > -0.12f) {
+            boolean isHoleSystem = system != null && system.hasHole();
+            boolean isStarOrHoleBody = body.type() == ContinuumBody.Type.STAR ||
+                    body.type() == ContinuumBody.Type.BLACK_HOLE;
+
+            // The moving object crossing the sky (Sun, Wolf-Rayet, Pulsar, or Black Hole)
+            if ((sample.hasSun() || isHoleSystem) && system != null && sample.sunDir().y > -0.12f) {
                 Vector3f sunPos = new Vector3f(sample.sunDir()).mul(98.0f);
-                SceneRenderer.drawSystemStar(system, system.starColor(), view, projectionMatrix, sunPos, 6.0f,
-                        ContinuumVisuals.quality(), true);
+                if (isHoleSystem) {
+                    SceneRenderer.drawHole(system, view, projectionMatrix, sunPos, 8.0f, ContinuumVisuals.quality(),
+                            true);
+                } else {
+                    SceneRenderer.drawSystemStar(system, system.starColor(), view, projectionMatrix, sunPos, 6.0f,
+                            ContinuumVisuals.quality(), true);
+                }
                 RenderSystem.enableCull();
                 RenderSystem.enableDepthTest();
                 RenderSystem.depthMask(true);
             }
 
-            Vector3f position = new Vector3f(52.0f, 30.0f, -76.0f);
-            boolean centralBody = body.type() == ContinuumBody.Type.STAR ||
-                    body.type() == ContinuumBody.Type.BLACK_HOLE;
-            boolean quasar = system != null && system.isQuasar();
-            // skybox holes are drawn larger than on the map screen; a quasar's jets already span the sky, so it grows less
-            float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? (quasar ? 8.5f : 9.0f) :
-                    centralBody ? 16.0f : 22.0f;
+            // Only draw the static central body if we are NOT currently rendering it as the moving sky object above
+            // (i.e., if you are standing on an orbiting planet, the central body crosses the sky; if you are standing
+            // on the star/black hole itself, it stays static).
+            if (isStarOrHoleBody) {
+                Vector3f position = new Vector3f(52.0f, 30.0f, -76.0f);
+                boolean quasar = system != null && system.isQuasar();
+                float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? (quasar ? 8.5f : 9.0f) : 16.0f;
 
-            if (!SceneRenderer.drawCentralBody(body, view, projectionMatrix, position, radius,
-                    ContinuumVisuals.quality(), true)) {
-                var params = body.params();
-                SceneRenderer.drawPlanet(params, view, projectionMatrix, position, radius,
-                        new Vector3f(-300.0f, 220.0f, 260.0f), time * params.spinDegPerSec() * 0.5f,
-                        time * params.cloudSpinDegPerSec() * 0.5f, ContinuumVisuals.quality(), true);
+                if (!SceneRenderer.drawCentralBody(body, view, projectionMatrix, position, radius,
+                        ContinuumVisuals.quality(), true)) {
+                    var params = body.params();
+                    SceneRenderer.drawPlanet(params, view, projectionMatrix, position, radius,
+                            new Vector3f(-300.0f, 220.0f, 260.0f), time * params.spinDegPerSec() * 0.5f,
+                            time * params.cloudSpinDegPerSec() * 0.5f, ContinuumVisuals.quality(), true);
+                }
             }
         }
 

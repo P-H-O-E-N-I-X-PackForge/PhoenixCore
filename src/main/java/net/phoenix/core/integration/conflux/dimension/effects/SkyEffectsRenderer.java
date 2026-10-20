@@ -13,8 +13,6 @@ public abstract class SkyEffectsRenderer {
 
     public static class PhoenixSkyRenderer extends SkyEffectsRenderer {
 
-
-
         @Override
         public void update(Level level) {
             this.level = level;

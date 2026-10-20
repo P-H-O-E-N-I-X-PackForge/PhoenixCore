@@ -27,14 +27,10 @@ public class DisciplinePickerScreen extends Screen {
     private static final int CARD_H = 280;
     private static final float CARD_SPACING = CARD_W + 40f;
 
-    /**
-     * Virtual layout size. The whole screen is scaled down uniformly so that
-     * at least this much virtual space fits inside the real window.
-     */
     private static final float MIN_VIRTUAL_W = 760f;
     private static final float MIN_VIRTUAL_H = 500f;
 
-    private static final float FLIP_DURATION = 0.45f; // seconds
+    private static final float FLIP_DURATION = 0.45f;
     private static final long DOUBLE_CLICK_MS = 350L;
     private static final double DOUBLE_CLICK_DIST = 8.0;
 
@@ -42,22 +38,16 @@ public class DisciplinePickerScreen extends Screen {
     private static final int FACE_FRONT = 0;
     private static final int FACE_BACK = 1;
 
-    /**
-     * @param loreLines   shown on the front of the card (scrollable). Lines starting with "# " are
-     *                    accent-coloured headers, an empty string adds a gap, everything else is
-     *                    word-wrapped automatically. Add as much as you like, the card scrolls.
-     * @param detailLines shown on the back of the card (scrollable), same format as loreLines
-     */
     private record DisciplineCard(
-            String id,
-            String name,
-            String tagline,
-            String[] loreLines,
-            String[] detailLines,
-            int accentColor,
-            int glowColor,
-            int bgColor,
-            boolean sealed) {}
+                                  String id,
+                                  String name,
+                                  String tagline,
+                                  String[] loreLines,
+                                  String[] detailLines,
+                                  int accentColor,
+                                  int glowColor,
+                                  int bgColor,
+                                  boolean sealed) {}
 
     private static final DisciplineCard[] CARDS = {
             new DisciplineCard(
@@ -100,7 +90,7 @@ public class DisciplinePickerScreen extends Screen {
                             "Some forget there was ever",
                             "a before."
                     },
-                    // TODO: replace with the real mechanics
+
                     new String[] {
                             "# Playstyle",
                             "Aggressive and cyclical. Power surges as you burn through resources, then resets.",
@@ -154,7 +144,7 @@ public class DisciplinePickerScreen extends Screen {
                             "including what you hoped",
                             "it would forget."
                     },
-                    // TODO: replace with the real mechanics
+
                     new String[] {
                             "# Playstyle",
                             "Patient and connected. You grow by linking nodes into something larger than yourself.",
@@ -207,7 +197,7 @@ public class DisciplinePickerScreen extends Screen {
                             "of hunger. It is hunger",
                             "that has learned to wait."
                     },
-                    // TODO: replace with the real mechanics
+
                     new String[] {
                             "# Playstyle",
                             "Spatial and deliberate. You bend distance and depth to your advantage.",
@@ -309,12 +299,10 @@ public class DisciplinePickerScreen extends Screen {
                     true),
     };
 
-    /** One wrapped line of scrollable card text. {@code y} is relative to the top of the content. */
     private record Line(FormattedCharSequence text, int rgb, int alpha, boolean center, int y, int width) {}
 
     private record Block(List<Line> lines, int height) {}
 
-    /** blocks[face][cardIndex], rebuilt in init() so wrapping always matches the current font. */
     private final Block[][] blocks = new Block[2][CARDS.length];
 
     private final MotionClock clock = new MotionClock();
@@ -326,11 +314,9 @@ public class DisciplinePickerScreen extends Screen {
     private float arcVelocity = 0f;
     private float introAnim = 0f;
 
-    // "Jump to card" focus animation
     private boolean focusing = false;
     private float arcTarget = 0f;
 
-    // Double click tracking
     private int lastClickIdx = -1;
     private long lastClickTime = 0L;
     private double lastClickX, lastClickY;
@@ -339,11 +325,10 @@ public class DisciplinePickerScreen extends Screen {
     private final float[] cardGlow = new float[CARDS.length];
     private final float[] cardLift = new float[CARDS.length];
     private final float[] cardReveal = new float[CARDS.length];
-    /** Linear 0..1 flip progress (eased at draw time). */
+
     private final float[] flipProg = new float[CARDS.length];
     private final boolean[] flipTarget = new boolean[CARDS.length];
 
-    /** Per-face, per-card text scroll: scrollTarget is where we want to be, scrollPos is the smoothed value. */
     private final float[][] scrollTarget = new float[2][CARDS.length];
     private final float[][] scrollPos = new float[2][CARDS.length];
 
@@ -367,7 +352,6 @@ public class DisciplinePickerScreen extends Screen {
 
     @Override
     protected void init() {
-        // NOTE: arcOffset is intentionally NOT reset here, init() runs on every window resize.
         float neededW = Math.max(MIN_VIRTUAL_W, CONFIRM_W + 40f);
         float neededH = Math.max(MIN_VIRTUAL_H, CONFIRM_H + 40f);
         uiScale = Math.min(1f, Math.min(width / neededW, height / neededH));
@@ -378,10 +362,6 @@ public class DisciplinePickerScreen extends Screen {
         buildBlocks();
     }
 
-    // ------------------------------------------------------------------
-    // Scrollable content layout
-    // ------------------------------------------------------------------
-
     private void buildBlocks() {
         for (int i = 0; i < CARDS.length; i++) {
             DisciplineCard c = CARDS[i];
@@ -390,10 +370,6 @@ public class DisciplinePickerScreen extends Screen {
         }
     }
 
-    /**
-     * Wraps text at a fixed width (based on the smallest card scale) so the layout never reflows
-     * while a card is scaling up or down.
-     */
     private Block buildBlock(String[] src, boolean center, int accent, int bodyRgb, int bodyAlpha) {
         List<Line> out = new ArrayList<>();
         int wrapW = (int) (CARD_W * 0.88f) - 28;
@@ -416,11 +392,10 @@ public class DisciplinePickerScreen extends Screen {
         return new Block(out, y + 8);
     }
 
-    /** @return {top, bottom} of the scrollable text region of a card. */
     private static int[] contentRegion(int y0, int y1, float sc) {
         int stripeH = Math.max(2, (int) (4 * sc));
-        int top = y0 + stripeH + (int) (12 * sc) + 33; // below name / subtitle / divider
-        int bottom = y1 - (int) (36 * sc); // above the button row
+        int top = y0 + stripeH + (int) (12 * sc) + 33;
+        int bottom = y1 - (int) (36 * sc);
         return new int[] { top, bottom };
     }
 
@@ -439,10 +414,6 @@ public class DisciplinePickerScreen extends Screen {
         float max = maxScroll(idx, face, easeOutExpo(introAnim));
         scrollTarget[face][idx] = Mth.clamp(scrollTarget[face][idx] + amount, 0f, max);
     }
-
-    // ------------------------------------------------------------------
-    // Animation (driven from render() only, so it is never double-stepped)
-    // ------------------------------------------------------------------
 
     private void animate() {
         long now = System.nanoTime();
@@ -477,11 +448,9 @@ public class DisciplinePickerScreen extends Screen {
             cardGlow[i] = lerp(cardGlow[i], targetGlow, dt * 6f);
             cardLift[i] = lerp(cardLift[i], targetLift, dt * 7f);
 
-            // Constant-speed progress; the easing happens when drawing so the flip feels smooth
             float dir = flipTarget[i] ? 1f : -1f;
             flipProg[i] = Mth.clamp(flipProg[i] + dir * dt / FLIP_DURATION, 0f, 1f);
 
-            // Text scroll: keep targets in range (the region size changes with card scale), then ease
             for (int face = 0; face < 2; face++) {
                 float max = maxScroll(i, face, ease);
                 scrollTarget[face][i] = Mth.clamp(scrollTarget[face][i], 0f, max);
@@ -496,7 +465,6 @@ public class DisciplinePickerScreen extends Screen {
         confirmAlpha = lerp(confirmAlpha, targetConfirm, dt * 7f);
     }
 
-    /** Large enough that any card, including the first/last, can be centred. */
     private float maxArcOffset() {
         return CARD_SPACING * (CARDS.length - 1) / 2f + 40f;
     }
@@ -512,7 +480,6 @@ public class DisciplinePickerScreen extends Screen {
         }
     }
 
-    /** Smoothly slide the arc so card {@code i} sits in the middle of the screen. */
     private void focusOn(int i) {
         float totalW = CARD_SPACING * CARDS.length;
         arcTarget = totalW / 2f - CARD_SPACING * i - CARD_SPACING / 2f;
@@ -523,13 +490,9 @@ public class DisciplinePickerScreen extends Screen {
 
     private void flipCard(int i) {
         flipTarget[i] = !flipTarget[i];
-        selectedIdx = i; // keeps the card large enough for the back text
+        selectedIdx = i;
         focusOn(i);
     }
-
-    // ------------------------------------------------------------------
-    // Rendering
-    // ------------------------------------------------------------------
 
     @Override
     public void render(GuiGraphics g, int rmx, int rmy, float pt) {
@@ -616,8 +579,6 @@ public class DisciplinePickerScreen extends Screen {
         boolean hov = (idx == hoveredIdx);
         boolean sel = (idx == selectedIdx);
 
-        // Flip: eased rotation about the vertical axis. The card narrows to a sliver at 90 degrees,
-        // swaps faces there, then widens again. A little vertical squash + hop sells the depth.
         float prog = easeInOutCubic(flipProg[idx]);
         float angle = prog * (float) Math.PI;
         float s = (float) Math.sin(angle);
@@ -674,7 +635,6 @@ public class DisciplinePickerScreen extends Screen {
             renderChooseButton(g, card, x0, y0, x1, y1, sc, sel, mx, my);
         }
 
-        // Shade the card while it is turned away from the viewer
         if (s > 0.02f) {
             g.fill(x0, y0, x1, y1, col((int) (150 * s), 0x000000));
         }
@@ -682,7 +642,6 @@ public class DisciplinePickerScreen extends Screen {
         g.pose().popPose();
     }
 
-    /** Fixed header (name, subtitle, divider) followed by the scrollable text region. */
     private void renderCardFace(GuiGraphics g, DisciplineCard card, int idx, boolean back,
                                 int x0, int y0, int x1, int y1, float sc, int cx, int stripeH) {
         int textY = y0 + stripeH + (int) (12 * sc);
@@ -713,7 +672,7 @@ public class DisciplinePickerScreen extends Screen {
 
         for (Line line : block.lines) {
             int ly = top + line.y - Math.round(scroll);
-            // Lines fade out as they approach the top/bottom edge instead of popping
+
             float fTop = Mth.clamp((ly - top + 9) / fade, 0f, 1f);
             float fBot = Mth.clamp((bottom - ly) / fade, 0f, 1f);
             float f = Math.min(fTop, fBot);
@@ -726,7 +685,6 @@ public class DisciplinePickerScreen extends Screen {
             g.drawString(font, line.text, x, ly, col(alpha, line.rgb), false);
         }
 
-        // Scrollbar, only when there is something to scroll
         if (block.height > regionH) {
             float maxScroll = block.height - regionH;
             int trackX = x1 - 6;
@@ -805,10 +763,6 @@ public class DisciplinePickerScreen extends Screen {
         g.drawCenteredString(font, "Go Back", cax + cbw / 2, ty + 8, 0xFFCC4444);
     }
 
-    // ------------------------------------------------------------------
-    // Input
-    // ------------------------------------------------------------------
-
     @Override
     public boolean mouseClicked(double rmx, double rmy, int btn) {
         double mx = rmx / uiScale;
@@ -840,14 +794,10 @@ public class DisciplinePickerScreen extends Screen {
 
         if (btn != 0 && btn != 1) return super.mouseClicked(mx, my, btn);
 
-        // Double left click: the card slides to the centre after the first click, so detect the
-        // double click by time + cursor position rather than by what is under the cursor now.
         if (btn == 0) {
             long now = System.currentTimeMillis();
-            boolean isDouble = lastClickIdx >= 0
-                    && now - lastClickTime <= DOUBLE_CLICK_MS
-                    && Math.abs(rmx - lastClickX) <= DOUBLE_CLICK_DIST
-                    && Math.abs(rmy - lastClickY) <= DOUBLE_CLICK_DIST;
+            boolean isDouble = lastClickIdx >= 0 && now - lastClickTime <= DOUBLE_CLICK_MS &&
+                    Math.abs(rmx - lastClickX) <= DOUBLE_CLICK_DIST && Math.abs(rmy - lastClickY) <= DOUBLE_CLICK_DIST;
             if (isDouble) {
                 selectedIdx = lastClickIdx;
                 confirming = true;
@@ -875,7 +825,6 @@ public class DisciplinePickerScreen extends Screen {
                     return true;
                 }
 
-                // Single click: select and jump the card to the centre
                 selectedIdx = i;
                 focusOn(i);
                 lastClickIdx = i;
@@ -919,7 +868,6 @@ public class DisciplinePickerScreen extends Screen {
             return true;
         }
 
-        // Scroll the text of the hovered card (or the selected one)
         int textTarget = hoveredIdx >= 0 ? hoveredIdx : selectedIdx;
         if (textTarget >= 0) {
             if (kc == GLFW.GLFW_KEY_DOWN || kc == GLFW.GLFW_KEY_S) {
@@ -954,10 +902,6 @@ public class DisciplinePickerScreen extends Screen {
         return super.keyPressed(kc, sc2, mod);
     }
 
-    /**
-     * Wheel over a card scrolls that card's text. If the card has nothing to scroll, the cursor is
-     * not over a card, or Shift is held, the wheel scrolls the card arc instead.
-     */
     @Override
     public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
         if (confirming) return true;
@@ -990,7 +934,7 @@ public class DisciplinePickerScreen extends Screen {
             focusing = false;
             arcOffset += (float) (dragX / uiScale) * 1.5f;
             clampArc();
-            lastClickIdx = -1; // a drag is not part of a double click
+            lastClickIdx = -1;
             return true;
         }
         return super.mouseDragged(rmx / uiScale, rmy / uiScale, btn, dragX / uiScale, dragY / uiScale);
@@ -1027,10 +971,6 @@ public class DisciplinePickerScreen extends Screen {
         onClose();
     }
 
-    // ------------------------------------------------------------------
-    // Layout helpers
-    // ------------------------------------------------------------------
-
     private float[] cardScreenPos(int i) {
         int n = CARDS.length;
         float totalW = CARD_SPACING * n;
@@ -1041,7 +981,6 @@ public class DisciplinePickerScreen extends Screen {
         return new float[] { baseX, arcY };
     }
 
-    /** @return {x0, y0, x1, y1} of the card in virtual (pre-uiScale) coordinates. */
     private int[] cardBounds(int i, float ease) {
         float[] pos = cardScreenPos(i);
         float sc = cardScale[i] * ease;
@@ -1052,7 +991,6 @@ public class DisciplinePickerScreen extends Screen {
         return new int[] { cx - hw, cy - hh, cx + hw, cy + hh };
     }
 
-    /** @return {x0, x1, y, height} of the "Choose" button. */
     private static int[] buttonRect(int x0, int y0, int x1, int y1, float sc) {
         int btnH = Math.max(14, (int) (20 * sc));
         int btnY = y1 - btnH - (int) (8 * sc);
@@ -1060,19 +998,10 @@ public class DisciplinePickerScreen extends Screen {
         return new int[] { x0 + pad, x1 - pad, btnY, btnH };
     }
 
-    // ------------------------------------------------------------------
-    // Misc helpers
-    // ------------------------------------------------------------------
-
-    /** Builds an ARGB colour with a clamped alpha. */
     private static int col(int alpha, int rgb) {
         return (Mth.clamp(alpha, 0, 255) << 24) | (rgb & 0x00FFFFFF);
     }
 
-    /**
-     * Draws text with the given alpha. Skipped for near-zero alpha, because vanilla's font renderer
-     * treats alpha 0-3 as fully opaque, which makes text pop in at full brightness.
-     */
     private void drawText(GuiGraphics g, String s, int x, int y, int alpha, int rgb, boolean shadow) {
         if (alpha < 4) return;
         g.drawString(font, s, x, y, col(alpha, rgb), shadow);

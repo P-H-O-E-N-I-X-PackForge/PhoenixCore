@@ -1,10 +1,10 @@
 package net.phoenix.core.integration.continuum.client.render;
 
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -172,7 +172,6 @@ public final class SceneRenderer {
         }
     }
 
-    /** Star look: 0 ordinary, 1 red giant, 2 brown dwarf, 3 rapid rotator (see ContinuumSystem#starStyle). */
     public static final int STYLE_RED_GIANT = 1;
     public static final int STYLE_BROWN_DWARF = 2;
     public static final int STYLE_RAPID_ROTATOR = 3;
@@ -187,9 +186,9 @@ public final class SceneRenderer {
         if (!ContinuumShaders.ready()) return;
 
         boolean cube = net.phoenix.core.integration.continuum.client.ContinuumVisuals.cube();
-        // a black hole's cube stays well inside the blocky shadow the billboard draws, so no corner pokes out
+
         float bodyScale = !cube ? radius : blackHole ? radius * 0.5f : radius * 0.82f;
-        // a rapid rotator is flattened at his poles; the cube keeps its shape
+
         float flatten = (!cube && !blackHole && style == STYLE_RAPID_ROTATOR) ? 0.84f : 1.0f;
         Matrix4f modelView = new Matrix4f(view).translate(worldPos).scale(bodyScale, bodyScale * flatten, bodyScale);
 
@@ -217,7 +216,7 @@ public final class SceneRenderer {
     }
 
     private static float[] rgbFloats(int rgb) {
-        return new float[] {((rgb >> 16) & 0xFF) / 255.0f, ((rgb >> 8) & 0xFF) / 255.0f, (rgb & 0xFF) / 255.0f};
+        return new float[] { ((rgb >> 16) & 0xFF) / 255.0f, ((rgb >> 8) & 0xFF) / 255.0f, (rgb & 0xFF) / 255.0f };
     }
 
     public static void drawHole(net.phoenix.core.integration.continuum.data.ContinuumSystem system, Matrix4f view,
@@ -233,12 +232,6 @@ public final class SceneRenderer {
         drawBlackHole(view, projection, worldPos, radius, system != null && system.isQuasar(), sky, style);
     }
 
-    /**
-     * Two black holes orbiting their common centre, inside a wide glowing disk of gas with a cleared cavity. Each hole
-     * gets a small disk of its own (a big one would be torn off by the other), the smaller hole is lighter and orbits
-     * further out, and they swap in front of each other as they go round. The pair orbits in the XZ plane, like
-     * everything else in a system.
-     */
     private static void drawBinaryHole(net.phoenix.core.integration.continuum.data.ContinuumSystem.HoleStyle style,
                                        Matrix4f view, Matrix4f projection, Vector3f worldPos, float radius,
                                        PlanetRenderer.Quality quality, boolean sky) {
@@ -252,7 +245,7 @@ public final class SceneRenderer {
         float r2 = radius * (float) Math.sqrt(q);
 
         int tint = style.hotColor() >= 0 ? style.hotColor() : 0xb45cff;
-        drawDiskFx(tint, 6.0f, 1.45f, 3.4f, new float[] {2.1f, 2.7f, 0.0f, 0.0f}, view, projection, worldPos, sep,
+        drawDiskFx(tint, 6.0f, 1.45f, 3.4f, new float[] { 2.1f, 2.7f, 0.0f, 0.0f }, view, projection, worldPos, sep,
                 quality, sky);
 
         float ownSize1 = Math.max(0.25f, Math.min(1.0f, 0.42f * style.separation() / 5.6f));
@@ -260,7 +253,8 @@ public final class SceneRenderer {
         var s1 = style.withDisk(ownSize1, Math.max(1.0f, style.diskIntensity()));
         var s2 = style.withDisk(ownSize2, Math.max(1.0f, style.diskIntensity()));
 
-        boolean firstIsFarther = view.transformPosition(new Vector3f(p1)).z < view.transformPosition(new Vector3f(p2)).z;
+        boolean firstIsFarther = view.transformPosition(new Vector3f(p1)).z <
+                view.transformPosition(new Vector3f(p2)).z;
         for (int pass = 0; pass < 2; pass++) {
             boolean first = (pass == 0) == firstIsFarther;
             Vector3f p = first ? p1 : p2;
@@ -278,12 +272,13 @@ public final class SceneRenderer {
             Vector3f nW = skyDiskWorldNormal(worldPos);
             if (nW != null) {
                 org.joml.Matrix3f axes = skyAxes(worldPos);
-                normal = new Vector3f(nW.dot(axes.getColumn(0, new Vector3f())), nW.dot(axes.getColumn(1, new Vector3f())),
+                normal = new Vector3f(nW.dot(axes.getColumn(0, new Vector3f())),
+                        nW.dot(axes.getColumn(1, new Vector3f())),
                         nW.dot(axes.getColumn(2, new Vector3f())));
             }
         }
         final Vector3f diskNormal = normal;
-        final float[] g = gaps != null && gaps.length >= 4 ? gaps : new float[] {3.4f, 5.1f, 7.3f, 0.0f};
+        final float[] g = gaps != null && gaps.length >= 4 ? gaps : new float[] { 3.4f, 5.1f, 7.3f, 0.0f };
         drawStarFx(ContinuumShaders.PROTOSTAR, rgb, extent, view, projection, worldPos, unit, quality, sky, s -> {
             s.safeGetUniform("DiskNormal").set(diskNormal.x, diskNormal.y, diskNormal.z);
             s.safeGetUniform("Gaps").set(g[0], g[1], g[2], g[3]);
@@ -315,8 +310,8 @@ public final class SceneRenderer {
         int r = (rgb >> 16) & 0xFF;
         int g = (rgb >> 8) & 0xFF;
         int b = rgb & 0xFF;
-        int hot = ((r + (int) ((255 - r) * whiten)) << 16) | ((g + (int) ((255 - g) * whiten)) << 8)
-                | (b + (int) ((255 - b) * whiten));
+        int hot = ((r + (int) ((255 - r) * whiten)) << 16) | ((g + (int) ((255 - g) * whiten)) << 8) |
+                (b + (int) ((255 - b) * whiten));
         drawStar(hot, false, view, projection, worldPos, radius, quality);
     }
 
@@ -386,7 +381,8 @@ public final class SceneRenderer {
         return 2.6f + 3.0f * (float) Math.sqrt(au);
     }
 
-    private static float[] orbitGaps(net.phoenix.core.integration.continuum.data.ContinuumSystem system, float starRadius) {
+    private static float[] orbitGaps(net.phoenix.core.integration.continuum.data.ContinuumSystem system,
+                                     float starRadius) {
         java.util.List<Float> radii = new java.util.ArrayList<>();
         for (var b : net.phoenix.core.integration.continuum.data.ContinuumData.bodiesOf(system.id())) {
             if (b.isMoon() || b.isCentral() || b.transientInfo() != null) continue;
@@ -423,14 +419,15 @@ public final class SceneRenderer {
             case HIGH -> 4;
         };
         boolean cube = net.phoenix.core.integration.continuum.client.ContinuumVisuals.cube();
-        float cells = cube ? net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) * 1.5f : 0.0f;
+        float cells = cube ? net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) * 1.5f :
+                0.0f;
         float detail = switch (quality) {
             case LOW -> 2.0f;
             case MEDIUM -> 3.0f;
             case HIGH -> 4.0f;
         };
         Vector3f centralDir = new Vector3f(52.0f, 30.0f, -76.0f).normalize();
-        float[][] armPalette = {{0.60f, 0.78f, 1.00f}, {1.00f, 0.72f, 0.52f}, {0.78f, 0.66f, 1.00f}};
+        float[][] armPalette = { { 0.60f, 0.78f, 1.00f }, { 1.00f, 0.72f, 0.52f }, { 0.78f, 0.66f, 1.00f } };
 
         java.util.Random rng = new java.util.Random(seed * 0x9E3779B97F4A7C15L + 0x2545F4914F6CDD1DL);
 
@@ -488,7 +485,6 @@ public final class SceneRenderer {
         return drawCentralBody(body, view, projection, worldPos, radius, quality, false);
     }
 
-    /** @param sky true when drawn as part of a skybox: the hole's disk is then anchored to the world, not the camera */
     public static boolean drawCentralBody(net.phoenix.core.integration.continuum.data.ContinuumBody body, Matrix4f view,
                                           Matrix4f projection, Vector3f worldPos, float radius,
                                           PlanetRenderer.Quality quality, boolean sky) {
@@ -635,7 +631,7 @@ public final class SceneRenderer {
             ringQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             ringQuad.bind();
             ringQuad.upload(builder.buildOrThrow());
-            unbindBuffers(); // Changed from unbindBuffers()
+            unbindBuffers();
         }
         return ringQuad;
     }
@@ -651,7 +647,7 @@ public final class SceneRenderer {
             holeQuad = new VertexBuffer(VertexBuffer.Usage.STATIC);
             holeQuad.bind();
             holeQuad.upload(builder.buildOrThrow());
-            unbindBuffers(); // Changed from unbindBuffers()
+            unbindBuffers();
         }
         return holeQuad;
     }
@@ -702,9 +698,8 @@ public final class SceneRenderer {
         return normal;
     }
 
-    /** How far the skybox black hole's disk is tilted from face-on: 0 = straight down the axis, 90 = edge-on. */
     public static float SKY_INCLINATION_DEG = 45.0f;
-    /** Rolls the disk's tilt direction round the line of sight, so the apparent disk isn't perfectly level. */
+
     public static float SKY_LEAN_DEG = 15.0f;
 
     public static void drawBlackHole(Matrix4f view, Matrix4f projection, Vector3f worldPos, float radius,
@@ -718,22 +713,16 @@ public final class SceneRenderer {
                 net.phoenix.core.integration.continuum.data.ContinuumSystem.HoleStyle.DEFAULT);
     }
 
-    /**
-     * A black hole with an accretion disk shaped by {@code style}: its size, brightness, how much debris it is
-     * swallowing, how far it is tipped towards the viewer and its colours. HoleStyle.DEFAULT is the usual look.
-     */
     public static void drawBlackHole(Matrix4f view, Matrix4f projection, Vector3f worldPos, float radius,
                                      boolean quasar, boolean sky,
                                      net.phoenix.core.integration.continuum.data.ContinuumSystem.HoleStyle style) {
         ShaderInstance shader = ContinuumShaders.BLACKHOLE;
         if (shader == null) return;
 
-        // the quad has to be big enough to hold the disk and any debris streams reaching past it
         float diskOuter = (quasar ? 9.0f : 5.6f) * style.diskSize();
         float reach = diskOuter * (1.0f + 0.35f * style.feeding());
         float extent = Math.max(quasar ? 18.0f : 7.0f, reach / 0.78f);
 
-        // tilt: 0 = edge-on, 1 = face-on; the long-standing default (0.075) is the old nearly edge-on look
         double tiltRad = Math.toRadians(90.0 * Math.max(0.0f, Math.min(1.0f, style.tilt())));
         Vector3f normal = view.transformDirection(
                 new Vector3f(0.10f, (float) Math.cos(tiltRad), (float) Math.sin(tiltRad)).normalize());
@@ -747,8 +736,8 @@ public final class SceneRenderer {
         shader.safeGetUniform("DiskIntensity").set(style.diskIntensity());
         shader.safeGetUniform("Feeding").set(style.feeding());
         shader.safeGetUniform("Beaming").set(0.75f);
-        float[] hot = quasar ? new float[] {0.85f, 0.95f, 1.0f} : new float[] {1.0f, 0.86f, 0.6f};
-        float[] cool = quasar ? new float[] {0.25f, 0.5f, 1.0f} : new float[] {0.95f, 0.32f, 0.08f};
+        float[] hot = quasar ? new float[] { 0.85f, 0.95f, 1.0f } : new float[] { 1.0f, 0.86f, 0.6f };
+        float[] cool = quasar ? new float[] { 0.25f, 0.5f, 1.0f } : new float[] { 0.95f, 0.32f, 0.08f };
         if (style.hotColor() >= 0) hot = rgbFloats(style.hotColor());
         if (style.coolColor() >= 0) cool = rgbFloats(style.coolColor());
         shader.safeGetUniform("HotColor").set(hot[0], hot[1], hot[2]);
@@ -765,7 +754,9 @@ public final class SceneRenderer {
         });
         shader.safeGetUniform("Voxel").set(net.phoenix.core.integration.continuum.client.ContinuumVisuals.cube() ?
                 net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) / 1.64f : 0.0f);
-        shader.safeGetUniform("Lensing").set(quality == net.phoenix.core.integration.continuum.client.render.PlanetRenderer.Quality.LOW ? 0.0f : 1.0f);
+        shader.safeGetUniform("Lensing")
+                .set(quality == net.phoenix.core.integration.continuum.client.render.PlanetRenderer.Quality.LOW ? 0.0f :
+                        1.0f);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -843,11 +834,6 @@ public final class SceneRenderer {
         RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
     }
 
-    /**
-     * A few spiral galaxies hung in the map's backdrop, in screen space behind everything else. They drift sideways
-     * with the camera's yaw (a little slower than the stars, for depth) and wrap round, so there is always something
-     * out there. Additive; skipped if the galaxy shader did not load.
-     */
     private static void drawBackdropGalaxies(float width, float height, float yawDeg) {
         ShaderInstance g = ContinuumShaders.GALAXY;
         if (g == null) return;
@@ -858,17 +844,18 @@ public final class SceneRenderer {
             case HIGH -> 4;
         };
         boolean cube = net.phoenix.core.integration.continuum.client.ContinuumVisuals.cube();
-        float cells = cube ? net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) * 1.5f : 0.0f;
+        float cells = cube ? net.phoenix.core.integration.continuum.client.ContinuumVisuals.cubeCells(quality) * 1.5f :
+                0.0f;
         float detail = switch (quality) {
             case LOW -> 2.0f;
             case MEDIUM -> 3.0f;
             case HIGH -> 4.0f;
         };
         float[][] spec = {
-                {-0.62f, 0.38f, 0.17f, 0.45f, 0.5f, 0.31f, 1.0f, 0.60f, 0.78f, 1.00f},
-                {0.58f, -0.30f, 0.22f, 0.80f, -0.9f, 0.64f, 0.7f, 1.00f, 0.72f, 0.52f},
-                {0.18f, 0.55f, 0.12f, 0.28f, 2.2f, 0.17f, 1.3f, 0.78f, 0.66f, 1.00f},
-                {-0.35f, -0.52f, 0.14f, 0.62f, 1.4f, 0.88f, 0.9f, 0.60f, 0.78f, 1.00f},
+                { -0.62f, 0.38f, 0.17f, 0.45f, 0.5f, 0.31f, 1.0f, 0.60f, 0.78f, 1.00f },
+                { 0.58f, -0.30f, 0.22f, 0.80f, -0.9f, 0.64f, 0.7f, 1.00f, 0.72f, 0.52f },
+                { 0.18f, 0.55f, 0.12f, 0.28f, 2.2f, 0.17f, 1.3f, 0.78f, 0.66f, 1.00f },
+                { -0.35f, -0.52f, 0.14f, 0.62f, 1.4f, 0.88f, 0.9f, 0.60f, 0.78f, 1.00f },
         };
         float aspect = width / height;
         double yawShift = Math.toRadians(yawDeg * 0.15f);
@@ -913,8 +900,8 @@ public final class SceneRenderer {
             if (!warnedBackdrop) {
                 warnedBackdrop = true;
                 org.apache.logging.log4j.LogManager.getLogger().error(
-                        "[PhoenixCore/Continuum] continuum_backdrop did not load; using the built-in star field. "
-                                + "Look earlier in the log for 'Failed to register shader'.");
+                        "[PhoenixCore/Continuum] continuum_backdrop did not load; using the built-in star field. " +
+                                "Look earlier in the log for 'Failed to register shader'.");
             }
             backdrop = ContinuumShaders.STARFIELD;
             if (backdrop == null) return;
@@ -933,7 +920,6 @@ public final class SceneRenderer {
         backdrop.safeGetUniform("PrimaryColor").set(0.42f, 0.2f, 0.85f);
         backdrop.safeGetUniform("SecondaryColor").set(0.1f, 0.35f, 0.9f);
 
-        // Drawn through the shared quad, like the nebulas, rather than the immediate-mode uploader.
         VertexBuffer quad = holeQuad();
         quad.bind();
         quad.drawWithShader(new Matrix4f(), new Matrix4f(), backdrop);
