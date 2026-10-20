@@ -68,9 +68,6 @@ public class C2SResearchUnlockPacket implements CustomPacketPayload {
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
 
-                net.phoenix.core.integration.continuum.common.ContinuumServerEvents
-                        .sendStateToTeam(player.server, teamId);
-
                 String disciplineAfter = researchData.getDiscipline(teamId);
                 if (disciplineAfter != null && !disciplineAfter.equals(disciplineBefore)) {
                     net.phoenix.core.integration.conflux.dimension.ConfluxDimensionFactory

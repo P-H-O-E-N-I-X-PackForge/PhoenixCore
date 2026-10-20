@@ -142,8 +142,8 @@ public class WorldResearchData extends SavedData {
     private void applyUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry,
                              @Nullable ServerLevel level) {
         var server = level != null ? level.getServer() : null;
-        var discoveriesBefore = server != null ?
-                net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.snapshot(server, team) : null;
+        var eventContext = server != null ?
+                net.phoenix.core.api.event.ConfluxEvents.preResearch(server, team, node.id) : null;
         teamSet(unlocked, team).add(node.id);
 
         registry.getAllTrees().stream()
@@ -179,9 +179,8 @@ public class WorldResearchData extends SavedData {
                     .forEach(n -> teamSet(lockedOut, team).add(n.id));
         }
 
-        if (discoveriesBefore != null) {
-            net.phoenix.core.integration.continuum.common.ContinuumDiscoveryNotifier.announce(server, team,
-                    discoveriesBefore);
+        if (eventContext != null) {
+            net.phoenix.core.api.event.ConfluxEvents.postResearch(server, team, node.id, eventContext);
         }
     }
 

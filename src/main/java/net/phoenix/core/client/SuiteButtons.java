@@ -18,6 +18,9 @@ public final class SuiteButtons {
     public static void register() {
         Minecraft mc = Minecraft.getInstance();
 
+        net.phoenix.core.api.client.ConfluxNodeNotes
+                .register(net.phoenix.core.integration.continuum.client.ContinuumNodeNotes::notes);
+
         SuiteHudBar.register(
                 PhoenixCore.MOD_ID + "_conflux",
                 PRIORITY_CONFLUX,

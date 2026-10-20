@@ -15,7 +15,6 @@ import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
 import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
 import net.phoenix.core.integration.conflux.research.WorldResearchData;
 import net.phoenix.core.integration.conflux.terminal.ConfluxDataStore;
-import net.phoenix.core.integration.continuum.common.ContinuumServerEvents;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
@@ -141,6 +140,6 @@ public final class ConfluxDevCommands {
 
     private static void refresh(ServerPlayer player, UUID team) {
         ConfluxNetwork.syncResearchToPlayer(player);
-        ContinuumServerEvents.sendStateToTeam(player.server, team);
+        net.phoenix.core.api.event.ConfluxEvents.teamChanged(player.server, team);
     }
 }

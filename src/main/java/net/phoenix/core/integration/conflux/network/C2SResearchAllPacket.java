@@ -77,8 +77,6 @@ public class C2SResearchAllPacket implements CustomPacketPayload {
 
             if (unlockedCount > 0) {
                 ConfluxNetwork.syncResearchToPlayer(player);
-                net.phoenix.core.integration.continuum.common.ContinuumServerEvents
-                        .sendStateToTeam(player.server, teamId);
                 player.sendSystemMessage(net.minecraft.network.chat.Component
                         .literal("Researched " + unlockedCount + " node" + (unlockedCount == 1 ? "" : "s") + "."));
             } else {

@@ -58,8 +58,7 @@ public class C2SAbandonDisciplinePacket implements CustomPacketPayload {
                     ResearchTreeRegistry.INSTANCE);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
-                net.phoenix.core.integration.continuum.common.ContinuumServerEvents.sendStateToTeam(player.server,
-                        teamId);
+                net.phoenix.core.api.event.ConfluxEvents.teamChanged(player.server, teamId);
             }
         });
     }

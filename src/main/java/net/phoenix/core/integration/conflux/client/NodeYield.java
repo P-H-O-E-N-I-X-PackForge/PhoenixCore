@@ -70,15 +70,7 @@ public record NodeYield(List<ItemStack> rewards, List<ItemStack> recipeItems, Li
             }
         }
 
-        for (var body : net.phoenix.core.integration.continuum.data.ContinuumData.allBodies()) {
-            if (node.id.equals(body.surveyedResearch())) other.add("§b◎ Surveys " + body.name());
-            else if (node.id.equals(body.detectedResearch())) other.add("§e◎ Detects " + body.name());
-        }
-        for (var system : net.phoenix.core.integration.continuum.data.ContinuumData.systems()) {
-            if (node.id.equals(system.surveyedResearch())) other.add("§b◎ Surveys the " + system.name() + " system");
-            else if (node.id.equals(system.detectedResearch()))
-                other.add("§e◎ Detects the " + system.name() + " system");
-        }
+        other.addAll(net.phoenix.core.api.client.ConfluxNodeNotes.notesFor(node));
 
         List<ResearchNode> leads = new ArrayList<>();
         for (ResearchNode n : ResearchTreeRegistry.INSTANCE.getAllNodes()) {

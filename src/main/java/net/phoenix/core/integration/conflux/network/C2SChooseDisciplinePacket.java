@@ -54,7 +54,7 @@ public class C2SChooseDisciplinePacket implements CustomPacketPayload {
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
 
-                net.phoenix.core.integration.continuum.common.ContinuumServerEvents.sendStateToTeam(player.server,
+                net.phoenix.core.api.event.ConfluxEvents.teamChanged(player.server,
                         teamId);
             }
         });
