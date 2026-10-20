@@ -9,5 +9,13 @@
   "star_color": "#ff8a30",
   "star_radius": 1.1,
   "star_kind": "black_hole",
+  "hole": {
+    "disk_size": 1.5,
+    "disk_intensity": 5.5,
+    "feeding": 4.0,
+    "tilt": 0.3,
+    "hot_color": "#ffb45a",
+    "cool_color": "#e0360a"
+  },
   "initial_stage": "unknown"
 }

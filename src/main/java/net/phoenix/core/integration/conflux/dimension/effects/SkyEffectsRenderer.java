@@ -13,8 +13,7 @@ public abstract class SkyEffectsRenderer {
 
     public static class PhoenixSkyRenderer extends SkyEffectsRenderer {
 
-        private static final int NUM_VOLCANOES = 3;
-        private static final float VOLCANO_HEIGHT = 200f;
+
 
         @Override
         public void update(Level level) {

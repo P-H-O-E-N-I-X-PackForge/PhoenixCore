@@ -1,0 +1,23 @@
+{
+  "name": "Duet",
+  "description": "Two black holes in a slow violet waltz, and the worlds that keep time with them.",
+  "galaxy": [
+    5.5,
+    -1.4,
+    -7.5
+  ],
+  "star_color": "#b45cff",
+  "star_radius": 0.85,
+  "star_kind": "binary_black_hole",
+  "hole": {
+    "disk_intensity": 1.5,
+    "feeding": 0.5,
+    "tilt": 0.3,
+    "separation": 4.6,
+    "mass_ratio": 0.22,
+    "period_seconds": 26,
+    "hot_color": "#e8b8ff",
+    "cool_color": "#8a2be2"
+  },
+  "initial_stage": "unknown"
+}

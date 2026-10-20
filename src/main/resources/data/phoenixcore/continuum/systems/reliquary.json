@@ -8,7 +8,7 @@
   ],
   "star_color": "#e8f0ff",
   "star_radius": 0.5,
-  "star_kind": "star",
+  "star_kind": "planetary_nebula",
   "initial_stage": "unknown",
   "gate": {
     "detected_research": "phoenixcore:space_reliquary_signal",

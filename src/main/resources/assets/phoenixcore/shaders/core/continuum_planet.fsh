@@ -140,9 +140,41 @@ void main() {
 
     // star / black hole body: self-lit granulation, darker toward the limb, no surface lighting
     if (Kind > 1.5) {
-        float granule = fbm(dir * 6.0 + vec3(Time * 0.05, Seed, 0.0), 5);
+        // Style (stars only): 0 ordinary, 1 red giant, 2 brown dwarf, 3 rapid rotator
         float facing = pow(max(dot(geoNormal, viewDir), 0.0), 0.45);
-        vec3 body = PalMid * (0.75 + 0.6 * granule);
+        vec3 body;
+        if (Style > 0.5 && Style < 1.5) {
+            // red giant: a few enormous convection cells that swell and fade independently, dark lanes between them,
+            // and heavy limb darkening so the edge looks soft and ragged
+            vec3 cellId;
+            vec3 warped = dir * 2.3 + vec3(Seed * 3.1) + 0.55 * (vec3(fbm(dir * 3.0 + vec3(Time * 0.01, 0.0, 0.0), 3), fbm(dir * 3.0 + vec3(5.2, Time * 0.01, 1.3), 3), fbm(dir * 3.0 + vec3(2.7, 8.1, Time * 0.01), 3)) - 0.5);
+            vec2 v = voronoi(warped, cellId);
+            float ch = hash(cellId * 1.7 + vec3(Seed));
+            float pulse = 0.78 + 0.22 * sin(Time * 0.12 + ch * 6.2831);
+            float lane = smoothstep(0.0, 0.42, v.y - v.x);
+            float fine = fbm(dir * 9.0 + vec3(Time * 0.03, Seed, 0.0), 3);
+            body = PalMid * (0.4 + 0.9 * ch) * pulse * (0.62 + 0.38 * lane) * (0.8 + 0.4 * fine);
+            facing = pow(max(dot(geoNormal, viewDir), 0.0), 0.9);
+        } else if (Style > 1.5 && Style < 2.5) {
+            // brown dwarf: dim, banded by latitude with turbulent edges, and a few hot patches glowing through
+            float a = Time * 0.04;
+            vec3 d = vec3(cos(a) * dir.x - sin(a) * dir.z, dir.y, sin(a) * dir.x + cos(a) * dir.z);
+            float warp = fbm(d * 3.0 + vec3(Seed, 0.0, Time * 0.02), 3);
+            float band = 0.5 + 0.5 * sin(d.y * 16.0 + warp * 5.0);
+            float hot = smoothstep(0.62, 0.8, fbm(d * vec3(2.6, 1.3, 2.6) + vec3(0.0, Seed * 5.0, 0.0), 4));
+            body = PalMid * (0.22 + 0.42 * band) + PalMid * 1.6 * hot * 0.55;
+        } else if (Style > 2.5) {
+            // rapid rotator: gravity darkening (hot, bluer poles; cooler, redder equator) and fast latitude streaks
+            float a = Time * 0.35;
+            vec3 d = vec3(cos(a) * dir.x - sin(a) * dir.z, dir.y, sin(a) * dir.x + cos(a) * dir.z);
+            float pole = pow(abs(dir.y), 1.5);
+            float streak = fbm(vec3(d.x * 1.5, d.y * 9.0, d.z * 1.5) + vec3(Seed), 4);
+            vec3 tint = mix(vec3(1.0, 0.68, 0.45), vec3(0.8, 0.94, 1.3), pole);
+            body = PalMid * mix(0.6, 1.5, pole) * tint * (0.78 + 0.55 * streak);
+        } else {
+            float granule = fbm(dir * 6.0 + vec3(Time * 0.05, Seed, 0.0), 5);
+            body = PalMid * (0.75 + 0.6 * granule);
+        }
         if (cube) body *= cellJitter * cellEdge;
         fragColor = vec4(mix(PalLow, body, facing), 1.0);
         return;

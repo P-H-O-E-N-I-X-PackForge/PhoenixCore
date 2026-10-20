@@ -30,9 +30,13 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
         super(Float.NaN, false, SkyType.NONE, false, false);
     }
 
+    /** The horizon colour of the sky as last drawn, so distant fog fades into it; null until the first frame. */
+    private static volatile Vec3 horizonFog = null;
+
     @Override
     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float brightness) {
-        return fogColor;
+        Vec3 fog = horizonFog;
+        return fog != null ? fog : fogColor;
     }
 
     @Override
@@ -51,20 +55,37 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
         Matrix4f view = new Matrix4f(poseStack.last().pose());
         float time = (float) (System.currentTimeMillis() % 10000000L) / 1000.0f;
 
-        drawNebula(view, projectionMatrix, time, body, system);
+        PdimSkyModel.Sample sample = PdimSkyModel.sample(level, partialTick, body, system);
+        float[] fog = sample.horizonNow();
+        horizonFog = new Vec3(fog[0], fog[1], fog[2]);
+
+        drawNebula(view, projectionMatrix, time, body, system, sample);
 
         if (body != null && ContinuumShaders.ready()) {
             RenderSystem.enableCull();
             RenderSystem.enableDepthTest();
             RenderSystem.depthMask(true);
 
+            // the star crossing the sky: it rises, climbs, sets, and is not there at night
+            if (sample.hasSun() && system != null && sample.sunDir().y > -0.12f) {
+                Vector3f sunPos = new Vector3f(sample.sunDir()).mul(98.0f);
+                SceneRenderer.drawSystemStar(system, system.starColor(), view, projectionMatrix, sunPos, 6.0f,
+                        ContinuumVisuals.quality(), true);
+                RenderSystem.enableCull();
+                RenderSystem.enableDepthTest();
+                RenderSystem.depthMask(true);
+            }
+
             Vector3f position = new Vector3f(52.0f, 30.0f, -76.0f);
             boolean centralBody = body.type() == ContinuumBody.Type.STAR ||
                     body.type() == ContinuumBody.Type.BLACK_HOLE;
-            float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? 7.0f : centralBody ? 16.0f : 22.0f;
+            boolean quasar = system != null && system.isQuasar();
+            // skybox holes are drawn larger than on the map screen; a quasar's jets already span the sky, so it grows less
+            float radius = body.type() == ContinuumBody.Type.BLACK_HOLE ? (quasar ? 8.5f : 9.0f) :
+                    centralBody ? 16.0f : 22.0f;
 
             if (!SceneRenderer.drawCentralBody(body, view, projectionMatrix, position, radius,
-                    ContinuumVisuals.quality())) {
+                    ContinuumVisuals.quality(), true)) {
                 var params = body.params();
                 SceneRenderer.drawPlanet(params, view, projectionMatrix, position, radius,
                         new Vector3f(-300.0f, 220.0f, 260.0f), time * params.spinDegPerSec() * 0.5f,
@@ -80,7 +101,7 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
     }
 
     private static void drawNebula(Matrix4f view, Matrix4f projection, float time, ContinuumBody body,
-                                   ContinuumSystem system) {
+                                   ContinuumSystem system, PdimSkyModel.Sample sample) {
         ShaderInstance sky = ContinuumShaders.SKY;
         if (sky == null) return;
 
@@ -101,6 +122,13 @@ public class PdimSkyEffects extends DimensionSpecialEffects {
                 ((primary >> 8) & 0xFF) / 255.0f * 0.9f, (primary & 0xFF) / 255.0f * 0.9f);
         sky.safeGetUniform("SecondaryColor").set(((secondary >> 16) & 0xFF) / 255.0f * 0.7f,
                 ((secondary >> 8) & 0xFF) / 255.0f * 0.7f, (secondary & 0xFF) / 255.0f * 0.7f);
+
+        sky.safeGetUniform("SunDir").set(sample.sunDir().x, sample.sunDir().y, sample.sunDir().z);
+        sky.safeGetUniform("Atmo").set(sample.atmo());
+        sky.safeGetUniform("ZenithColor").set(sample.zenith()[0], sample.zenith()[1], sample.zenith()[2]);
+        sky.safeGetUniform("HorizonColor").set(sample.horizon()[0], sample.horizon()[1], sample.horizon()[2]);
+        sky.safeGetUniform("DuskColor").set(sample.dusk()[0], sample.dusk()[1], sample.dusk()[2]);
+        sky.safeGetUniform("SunColor").set(sample.sunColor()[0], sample.sunColor()[1], sample.sunColor()[2]);
 
         sky.apply();
         BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);

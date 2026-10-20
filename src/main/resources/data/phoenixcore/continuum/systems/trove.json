@@ -8,7 +8,7 @@
   ],
   "star_color": "#ffd860",
   "star_radius": 1.0,
-  "star_kind": "star",
+  "star_kind": "protostar",
   "initial_stage": "unknown",
   "gate": {
     "detected_research": "phoenixcore:space_trove_signal",

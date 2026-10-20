@@ -1,5 +1,6 @@
 package net.phoenix.core.integration.conflux.dimension;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +51,7 @@ public class DisciplineProgressionDataTest {
         progressionData.unlockWorldStage(testTeamId, "molten_path");
 
         CompoundTag tag = new CompoundTag();
-        progressionData.save(tag);
+        progressionData.save(tag, HolderLookup.Provider.create(Stream.empty()));
 
         assertTrue(tag.contains("progressions", Tag.TAG_LIST));
 
@@ -67,7 +69,7 @@ public class DisciplineProgressionDataTest {
         progressionData.unlockWorldStage(testTeamId, "sculk_resonance");
 
         CompoundTag tag = new CompoundTag();
-        progressionData.save(tag);
+        progressionData.save(tag, HolderLookup.Provider.create(Stream.empty()));
 
         DisciplineProgressionData loadedData = DisciplineProgressionData.load(tag);
 

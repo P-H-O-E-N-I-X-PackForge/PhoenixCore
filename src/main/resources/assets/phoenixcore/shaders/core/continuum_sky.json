@@ -1,13 +1,149 @@
 {
   "vertex": "phoenixcore:continuum_sky",
   "fragment": "phoenixcore:continuum_sky",
-  "attributes": ["Position"],
+  "attributes": [
+    "Position"
+  ],
   "uniforms": [
-    { "name": "InvViewMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
-    { "name": "InvProjMat",     "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
-    { "name": "Time",           "type": "float", "count": 1, "values": [0.0] },
-    { "name": "Octaves",        "type": "float", "count": 1, "values": [5.0] },
-    { "name": "PrimaryColor",   "type": "float", "count": 3, "values": [0.35, 0.18, 0.7] },
-    { "name": "SecondaryColor", "type": "float", "count": 3, "values": [0.1, 0.3, 0.8] }
+    {
+      "name": "InvViewMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "InvProjMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Time",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "Octaves",
+      "type": "float",
+      "count": 1,
+      "values": [
+        5.0
+      ]
+    },
+    {
+      "name": "PrimaryColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0.35,
+        0.18,
+        0.7
+      ]
+    },
+    {
+      "name": "SecondaryColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0.1,
+        0.3,
+        0.8
+      ]
+    },
+    {
+      "name": "SunDir",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Atmo",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ZenithColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0.2,
+        0.3,
+        0.7
+      ]
+    },
+    {
+      "name": "HorizonColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0.6,
+        0.7,
+        0.9
+      ]
+    },
+    {
+      "name": "DuskColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        1.0,
+        0.45,
+        0.2
+      ]
+    },
+    {
+      "name": "SunColor",
+      "type": "float",
+      "count": 3,
+      "values": [
+        1.0,
+        0.9,
+        0.7
+      ]
+    }
   ]
 }

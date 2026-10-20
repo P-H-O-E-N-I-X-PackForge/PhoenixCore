@@ -342,10 +342,10 @@ public class ContinuumMapScreen extends Screen {
         ContinuumBody central = centralBody(sys);
         boolean centralIsStar = central != null && central.type() == ContinuumBody.Type.STAR;
         if ((central == null && !sys.hasHole()) || centralIsStar) {
-            SceneRenderer.drawStar(sys.starColor(), false, view, projection, sun, sys.starRadius(), quality());
+            SceneRenderer.drawSystemStar(sys, sys.starColor(), view, projection, sun, sys.starRadius(), quality(),
+                    false);
         } else {
-            SceneRenderer.drawStar(0, true, view, projection, sun, sys.starRadius(), quality());
-            SceneRenderer.drawBlackHole(view, projection, sun, sys.starRadius(), sys.isQuasar());
+            SceneRenderer.drawHole(sys, view, projection, sun, sys.starRadius(), quality(), false);
         }
 
         for (ContinuumBody b : ContinuumData.bodiesOf(sys.id())) {

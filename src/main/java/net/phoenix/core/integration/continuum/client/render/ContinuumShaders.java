@@ -25,6 +25,13 @@ public final class ContinuumShaders {
     public static ShaderInstance SKY;
     public static ShaderInstance RING;
     public static ShaderInstance NEBULA;
+    public static ShaderInstance WOLFRAYET;
+    public static ShaderInstance PULSAR;
+    public static ShaderInstance PLANETARY;
+    public static ShaderInstance PROTOSTAR;
+    public static ShaderInstance GALAXY;
+    /** A copy of the backdrop used only if BACKDROP failed to load, so the map never has a blank sky. */
+    public static ShaderInstance STARFIELD;
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         register(event, "phoenixcore:continuum_planet", DefaultVertexFormat.POSITION, s -> PLANET = s);
@@ -35,6 +42,12 @@ public final class ContinuumShaders {
         register(event, "phoenixcore:continuum_sky", DefaultVertexFormat.POSITION, s -> SKY = s);
         register(event, "phoenixcore:continuum_ring", DefaultVertexFormat.POSITION, s -> RING = s);
         register(event, "phoenixcore:continuum_nebula", DefaultVertexFormat.POSITION, s -> NEBULA = s);
+        register(event, "phoenixcore:continuum_wolfrayet", DefaultVertexFormat.POSITION, s -> WOLFRAYET = s);
+        register(event, "phoenixcore:continuum_pulsar", DefaultVertexFormat.POSITION, s -> PULSAR = s);
+        register(event, "phoenixcore:continuum_planetary", DefaultVertexFormat.POSITION, s -> PLANETARY = s);
+        register(event, "phoenixcore:continuum_protostar", DefaultVertexFormat.POSITION, s -> PROTOSTAR = s);
+        register(event, "phoenixcore:continuum_galaxy", DefaultVertexFormat.POSITION, s -> GALAXY = s);
+        register(event, "phoenixcore:continuum_starfield", DefaultVertexFormat.POSITION, s -> STARFIELD = s);
     }
 
     private static void register(RegisterShadersEvent event, String name, VertexFormat format,

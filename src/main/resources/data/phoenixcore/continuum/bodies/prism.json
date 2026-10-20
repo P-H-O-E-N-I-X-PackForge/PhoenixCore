@@ -2,7 +2,7 @@
   "system": "phoenixcore:kaleid",
   "type": "star",
   "name": "Prism",
-  "description": "A yellow star that will not hold a single colour.",
+  "description": "A blue-white Wolf-Rayet star that will not hold a single colour.",
   "orbit": {
     "radius_au": 0.0,
     "period_days": 1,
@@ -60,7 +60,7 @@
     }
   ],
   "lore": {
-    "detected": "A yellow star that will not hold one colour for two observations running.",
+    "detected": "A Wolf-Rayet star that will not hold one colour for two observations running.",
     "surveyed": "Prism shifts through its spectrum from one survey to the next. No two reports have agreed on what colour it is, and every one of them was right."
   }
 }

@@ -6,9 +6,9 @@
     -1.0,
     4.0
   ],
-  "star_color": "#e6e620",
+  "star_color": "#9fc8ff",
   "star_radius": 1.0,
-  "star_kind": "star",
+  "star_kind": "wolf_rayet",
   "initial_stage": "unknown",
   "gate": {
     "detected_research": "phoenixcore:space_kaleid_signal",

@@ -117,7 +117,22 @@ public final class ContinuumData {
                 DiscoveryStage.parse(GsonHelper.getAsString(json, "initial_stage", "unknown"),
                         DiscoveryStage.UNKNOWN),
                 optionalId(gate, "detected_research"),
-                optionalId(gate, "surveyed_research"));
+                optionalId(gate, "surveyed_research"),
+                parseHole(GsonHelper.getAsJsonObject(json, "hole", new JsonObject())));
+    }
+
+    private static ContinuumSystem.HoleStyle parseHole(JsonObject hole) {
+        ContinuumSystem.HoleStyle d = ContinuumSystem.HoleStyle.DEFAULT;
+        return new ContinuumSystem.HoleStyle(
+                Math.max(0.2f, GsonHelper.getAsFloat(hole, "disk_size", d.diskSize())),
+                Math.max(0.0f, GsonHelper.getAsFloat(hole, "disk_intensity", d.diskIntensity())),
+                Math.max(0.0f, Math.min(1.0f, GsonHelper.getAsFloat(hole, "feeding", d.feeding()))),
+                Math.max(0.0f, Math.min(1.0f, GsonHelper.getAsFloat(hole, "tilt", d.tilt()))),
+                color(hole, "hot_color", -1),
+                color(hole, "cool_color", -1),
+                Math.max(2.2f, GsonHelper.getAsFloat(hole, "separation", d.separation())),
+                Math.max(0.1f, Math.min(1.0f, GsonHelper.getAsFloat(hole, "mass_ratio", d.massRatio()))),
+                Math.max(2.0f, GsonHelper.getAsFloat(hole, "period_seconds", d.periodSeconds())));
     }
 
     public static ContinuumBody parseBody(ResourceLocation id, JsonObject json) {

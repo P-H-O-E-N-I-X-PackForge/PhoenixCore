@@ -8,7 +8,7 @@
   ],
   "star_color": "#cfe0ff",
   "star_radius": 1.1,
-  "star_kind": "star",
+  "star_kind": "rapid_rotator",
   "initial_stage": "unknown",
   "gate": {
     "detected_research": "phoenixcore:space_carousel_signal",

@@ -7,8 +7,8 @@
     -5.5
   ],
   "star_color": "#ff4fd8",
-  "star_radius": 1.0,
-  "star_kind": "star",
+  "star_radius": 0.55,
+  "star_kind": "pulsar",
   "initial_stage": "unknown",
   "gate": {
     "detected_research": "phoenixcore:space_orrery_signal",
