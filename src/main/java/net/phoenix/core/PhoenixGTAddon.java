@@ -30,6 +30,7 @@ public class PhoenixGTAddon implements IGTAddon {
         PhoenixFissionMachineRecipes.init(provider);
         PhoenixToolRecipes.init(provider);
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);
+        net.phoenix.core.integration.tesla.TeslaRecipes.init(provider);
         CrystalRoseAssemblerGenerator.generateCrystalRoseRecipes(provider);
         net.phoenix.core.common.data.recipe.generated.UlvCoverRecipes.init(provider);
         SourceHatchRecipes.init(provider);
