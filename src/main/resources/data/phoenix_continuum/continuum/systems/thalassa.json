@@ -1,11 +1,7 @@
 {
   "name": "Thalassa",
   "description": "A teal star over bioluminescent worlds.",
-  "galaxy": [
-    1.5,
-    1.2,
-    6.0
-  ],
+  "galaxy": [2.2, 1.8, 9.0],
   "star_color": "#35e0c0",
   "star_radius": 0.9,
   "star_kind": "star",

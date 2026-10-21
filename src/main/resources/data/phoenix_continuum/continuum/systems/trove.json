@@ -1,11 +1,7 @@
 {
   "name": "Trove",
   "description": "A golden star and the worlds it hoards.",
-  "galaxy": [
-    4.0,
-    -0.4,
-    9.5
-  ],
+  "galaxy": [6.0, -0.6, 14.2],
   "star_color": "#ffd860",
   "star_radius": 1.0,
   "star_kind": "protostar",

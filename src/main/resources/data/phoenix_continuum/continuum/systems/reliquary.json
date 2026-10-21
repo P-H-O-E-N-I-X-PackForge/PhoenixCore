@@ -1,11 +1,7 @@
 {
   "name": "Reliquary",
   "description": "A white dwarf, the cold remains of a star, and the worlds it left behind.",
-  "galaxy": [
-    -1.0,
-    -1.6,
-    -9.5
-  ],
+  "galaxy": [-1.5, -2.4, -14.2],
   "star_color": "#e8f0ff",
   "star_radius": 0.5,
   "star_kind": "planetary_nebula",

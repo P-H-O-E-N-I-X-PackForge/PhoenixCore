@@ -1,11 +1,7 @@
 {
   "name": "Orrery",
   "description": "A signal behind a sealed door. Not yet understood.",
-  "galaxy": [
-    -3.0,
-    0.4,
-    -5.5
-  ],
+  "galaxy": [-4.5, 0.6, -8.2],
   "star_color": "#ff4fd8",
   "star_radius": 0.55,
   "star_kind": "pulsar",

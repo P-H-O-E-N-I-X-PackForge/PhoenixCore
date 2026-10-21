@@ -1,11 +1,7 @@
 {
   "name": "Tenebrae",
   "description": "A black hole and the cold rocks that fell into orbit around it.",
-  "galaxy": [
-    -5.0,
-    -0.8,
-    3.2
-  ],
+  "galaxy": [-7.5, -1.2, 4.8],
   "star_color": "#ff8a30",
   "star_radius": 1.1,
   "star_kind": "black_hole",

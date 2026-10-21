@@ -1,11 +1,7 @@
 {
   "name": "Vesper",
   "description": "A dim red dwarf, and worlds that learned to live in its long evening.",
-  "galaxy": [
-    9.5,
-    0.8,
-    -3.5
-  ],
+  "galaxy": [14.2, 1.2, -5.2],
   "star_color": "#ff5a3c",
   "star_radius": 0.8,
   "star_kind": "star",

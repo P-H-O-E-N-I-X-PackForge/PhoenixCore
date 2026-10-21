@@ -1,11 +1,7 @@
 {
   "name": "Pharos",
   "description": "A quasar: a black hole feeding so hard it outshines its galaxy, with jets that sweep the dark.",
-  "galaxy": [
-    -9.5,
-    1.8,
-    -7.5
-  ],
+  "galaxy": [-14.2, 2.7, -11.2],
   "star_color": "#9fd0ff",
   "star_radius": 1.6,
   "star_kind": "quasar",
