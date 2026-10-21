@@ -41,7 +41,6 @@ public class PhoenixConfigs {
     @Configurable.Comment("Whether buying a shop entry requires winning a quick timing minigame first.")
     public boolean shopMinigameEnabled = true;
 
-
     @Configurable
     @Configurable.Comment({ "Compatibility with the Wings of Fire mod (phoenixes). Does nothing without it." })
     public WingsOfFireConfigs wingsOfFire = new WingsOfFireConfigs();
@@ -69,6 +68,51 @@ public class PhoenixConfigs {
     })
     public ConfluxSpawnConfigs confluxSpawns = new ConfluxSpawnConfigs();
 
+    @Configurable
+    @Configurable.Comment({
+            "Link between Conflux and the Solaris map (only used when Solaris is installed)."
+    })
+    public ConfluxSolarisConfigs confluxSolaris = new ConfluxSolarisConfigs();
+
+    public static class ConfluxSolarisConfigs {
+
+        @Configurable
+        @Configurable.Comment({ "Whether the Solaris link is used at all. Default: true" })
+        public boolean enabled = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Gate Solaris map features inside the Conflux dimensions behind research: the basic map needs a",
+                "chosen discipline, and the underground map, globe view and mob display need that discipline's",
+                "commitment node. Default: false",
+                "Off by default so it never changes an existing world. Either way the gate ids",
+                "conflux:discipline, conflux:discipline/<id>, conflux:core/<id> and conflux:node/<node id> can be",
+                "used from Solaris's own progressionGates server config."
+        })
+        public boolean gateMapFeatures = false;
+
+        @Configurable
+        @Configurable.Comment({
+                "Pin the Conflux landforms (volcanoes, geysers, cenotes, floating islands...) a research team has",
+                "found onto the Solaris map. Default: true"
+        })
+        public boolean landformMarkers = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "How far past a landform's edge, in blocks, you have to be to discover it. Default: 48"
+        })
+        @Configurable.Range(min = 0, max = 512)
+        public int discoverMargin = 48;
+
+        @Configurable
+        @Configurable.Comment({
+                "Tint the Solaris map with the accent colour of your Conflux discipline, and give each Conflux",
+                "dimension its own fog of war. Client side. Default: true"
+        })
+        public boolean disciplineSkin = true;
+    }
+
     public static class ConfluxSpawnConfigs {
 
         @Configurable
@@ -93,7 +137,6 @@ public class PhoenixConfigs {
         @Configurable.Range(min = 16, max = 256)
         public int countRadius = 96;
     }
-
 
     public static class CoreValues {
 

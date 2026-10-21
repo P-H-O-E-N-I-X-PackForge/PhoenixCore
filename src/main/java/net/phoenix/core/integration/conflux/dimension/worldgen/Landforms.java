@@ -114,7 +114,9 @@ public final class Landforms {
 
     private final java.util.concurrent.ConcurrentHashMap<Long, Boolean> volcanoSurvival = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /** Where this cell's volcano would stand, or null if the cell does not roll one. Mirrors the first rolls of create. */
+    /**
+     * Where this cell's volcano would stand, or null if the cell does not roll one. Mirrors the first rolls of create.
+     */
     private int[] volcanoCentre(int cellX, int cellZ) {
         RandomSource rnd = RandomSource.create(mix(seed, cellX, cellZ));
         if (pick(rnd.nextFloat()) != Kind.VOLCANO) return null;
@@ -605,6 +607,120 @@ public final class Landforms {
             }
         }
         return out;
+    }
+
+    /**
+     * A landform described for other systems (map markers and the like). {@code key} is stable for a
+     * given world seed, so it can be stored; {@code color} is RRGGBB and {@code icon} a Solaris icon id.
+     */
+    public record Sighting(String key, String label, String color, String icon, int x, int z, int baseY,
+                           int reach) {}
+
+    public java.util.List<Sighting> sightingsNear(int x, int z, int margin, int seaLevel,
+                                                  IntBinaryOperator ground) {
+        java.util.List<Sighting> out = new java.util.ArrayList<>(4);
+        for (Instance inst : near(x, z, margin, seaLevel, ground)) out.add(describe(inst));
+        return out;
+    }
+
+    private Sighting describe(Instance inst) {
+        String label;
+        String color;
+        String icon;
+        switch (inst.kind()) {
+            case VOLCANO -> {
+                label = switch (inst.state()) {
+                    case ACTIVE -> "Active Volcano";
+                    case DORMANT -> "Dormant Volcano";
+                    default -> "Extinct Volcano";
+                };
+                color = "FF5A30";
+                icon = "DANGER";
+            }
+            case HOODOOS -> {
+                label = "Hoodoos";
+                color = "C8A070";
+                icon = "CIRCLE";
+            }
+            case KARST -> {
+                label = "Karst Towers";
+                color = "B0C8A0";
+                icon = "CIRCLE";
+            }
+            case PLATEAU -> {
+                label = "Plateau";
+                color = "C8B090";
+                icon = "CIRCLE";
+            }
+            case SEA_STACKS -> {
+                label = "Sea Stacks";
+                color = "70B8D8";
+                icon = "CIRCLE";
+            }
+            case CENOTE -> {
+                label = "Cenote";
+                color = "30C8C8";
+                icon = "RESOURCE";
+            }
+            case FUNGUS -> {
+                label = "Giant Fungus";
+                color = "8AE08A";
+                icon = "STAR";
+            }
+            case RIBS -> {
+                label = "Rib Arches";
+                color = "E0E0D0";
+                icon = "CIRCLE";
+            }
+            case SKY_ISLAND -> {
+                label = "Floating Island";
+                color = "B890FF";
+                icon = "STAR";
+            }
+            case GEODE -> {
+                label = "Geode";
+                color = "E070FF";
+                icon = "STAR";
+            }
+            case IMPACT -> {
+                label = "Impact Crater";
+                color = "FFA040";
+                icon = "DANGER";
+            }
+            case PIT_MINE -> {
+                label = "Pit Mine";
+                color = "C0A060";
+                icon = "RESOURCE";
+            }
+            case TOWERS -> {
+                label = "Cooling Towers";
+                color = "C0C0C0";
+                icon = "CIRCLE";
+            }
+            case OVERPASS -> {
+                label = "Overpass";
+                color = "A0A0A0";
+                icon = "CIRCLE";
+            }
+            case COLUMNS -> {
+                label = "Basalt Columns";
+                color = "909098";
+                icon = "CIRCLE";
+            }
+            case GEYSER -> {
+                label = "Geyser";
+                color = "60E0FF";
+                icon = "DANGER";
+            }
+            default -> {
+                label = "Landform";
+                color = "FFFFFF";
+                icon = "DOT";
+            }
+        }
+        String key = disciplineId + ":" + inst.kind().name().toLowerCase(java.util.Locale.ROOT) + ":" + inst.cx() +
+                ":" + inst.cz();
+        return new Sighting(key, label, color, icon, inst.cx(), inst.cz(), inst.baseY(), inst.reach());
     }
 
     public boolean occupies(int x, int z, int margin, int seaLevel, IntBinaryOperator ground) {

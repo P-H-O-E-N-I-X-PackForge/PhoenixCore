@@ -423,6 +423,23 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         });
     }
 
+    public java.util.List<net.phoenix.core.integration.conflux.dimension.worldgen.Landforms.Sighting> landformSightingsNear(
+                                                                                                                            net.minecraft.server.level.ServerLevel level,
+                                                                                                                            int x,
+                                                                                                                            int z,
+                                                                                                                            int margin) {
+        if (!landforms.enabled()) return java.util.List.of();
+        TerrainProfile profile = resolveTerrainProfile(level.getChunkSource().randomState());
+        int minY = getMinY();
+        int maxY = minY + getGenDepth();
+        return landforms.sightingsNear(x, z, margin, getSeaLevel(), (gx, gz) -> {
+            for (int y = maxY - 1; y >= minY; y--) {
+                if (profile.sampler().sample(gx, y, gz) > 0) return y + 1;
+            }
+            return minY;
+        });
+    }
+
     public boolean landformNear(int x, int z, int margin, RandomState randomState) {
         TerrainProfile profile = resolveTerrainProfile(randomState);
         int minY = getMinY();

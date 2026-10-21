@@ -207,6 +207,8 @@ dependencies {
         version { strictly "[${phoenix_wiki_version},)"; prefer phoenix_wiki_version }
     }
     compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
+    // Solaris (map). Local build, no published artifact; compile-only, the integration only loads when it is installed
+    compileOnly files("libs/solaris-neoforge-1.6.5.jar")
     // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
     implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
     // Local build of PhoenixChronicles-1.21.1 so the dev client has quests; rebuild it and copy the jar into libs/
