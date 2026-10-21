@@ -62,3 +62,17 @@ type = "optional"
 versionRange = "[0,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "phoenix_tesla_network"
+type = "required"
+versionRange = "[0.5.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "phoenix_continuum"
+type = "required"
+versionRange = "[0.1.0,)"
+ordering = "NONE"
+side = "BOTH"

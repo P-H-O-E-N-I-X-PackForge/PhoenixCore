@@ -207,8 +207,12 @@ dependencies {
         version { strictly "[${phoenix_wiki_version},)"; prefer phoenix_wiki_version }
     }
     compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
-    // Optional: the standalone Tesla Network mod; its recipes are registered here when it is installed
-    compileOnly "net.phoenix_tesla_network.tesla:phoenix_tesla_network:${phoenix_tesla_version}"
+    // The split-out mods are part of the suite and required: the Tesla recipes live here, and Continuum is run
+    // together with core in dev. Non-transitive, since Continuum itself depends on this mod.
+    implementation("net.phoenix_tesla_network.tesla:phoenix_tesla_network:${phoenix_tesla_version}") {
+        transitive = false
+    }
+    implementation("net.phoenix.continuum:phoenix_continuum:${phoenix_continuum_version}") { transitive = false }
     // Solaris (map). Local build, no published artifact; compile-only, the integration only loads when it is installed
     compileOnly files("libs/solaris-neoforge-1.6.5.jar")
     // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
