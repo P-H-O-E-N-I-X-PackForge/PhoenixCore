@@ -99,7 +99,6 @@ import net.phoenix.core.integration.growth.GrowthBlocks;
 import net.phoenix.core.integration.growth.GrowthItems;
 import net.phoenix.core.integration.growth.GrowthMachines;
 import net.phoenix.core.integration.matter_manipulater.common.data.item.ManipulaterItems;
-import net.phoenix.core.integration.phoenix_tesla_network.common.machine.PhoenixTeslaMachines;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.network.PhoenixNetwork;
 
@@ -325,7 +324,6 @@ public class PhoenixCore {
     private void registerMachines() {
         PhoenixMachines.init();
         PhoenixBeeMachines.init();
-        PhoenixTeslaMachines.init();
         ConfluxProducerMachines.init();
         ConfluxMultiblockRegistry.init();
         GrowthMachines.init();

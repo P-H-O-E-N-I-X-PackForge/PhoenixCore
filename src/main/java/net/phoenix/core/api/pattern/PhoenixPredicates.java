@@ -11,8 +11,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.common.machine.PhoenixMachines;
-import net.phoenix.core.integration.phoenix_tesla_network.api.machine.trait.ITeslaBattery;
-import net.phoenix.core.integration.phoenix_tesla_network.common.block.TeslaBatteryBlock;
 import net.phoenix.core.integration.vocal_resonance.SoundHatchPartMachine;
 import net.phoenix.core.integration.vocal_resonance.SpeakerBlock;
 
@@ -26,29 +24,6 @@ import static com.gregtechceu.gtceu.common.data.GTBlocks.BORDERLESS_LAMPS;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.LAMPS;
 
 public class PhoenixPredicates {
-
-    public static MultiPredicate teslaBatteries() {
-        List<BlockInfo> candidates = PhoenixAPI.TESLA_BATTERIES.entrySet().stream()
-                .sorted(Comparator.comparingInt(e -> e.getKey().getTier()))
-                .map(e -> new BlockInfo(e.getValue().get().defaultBlockState()))
-                .collect(Collectors.toList());
-
-        return Predicates.builder("tesla_battery")
-                .candidates(candidates)
-                .predicate(ctx -> {
-                    BlockState state = ctx.state();
-                    for (Map.Entry<ITeslaBattery, Supplier<TeslaBatteryBlock>> entry : PhoenixAPI.TESLA_BATTERIES
-                            .entrySet()) {
-                        if (state.is(entry.getValue().get())) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
-                .errorFunction(ctx -> PlaceholderError.instance())
-                .toMultiPredicate()
-                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.batteries"));
-    }
 
     @SafeVarargs
     public static MultiPredicate lamps(BlockEntry<LampBlock>... lampEntries) {

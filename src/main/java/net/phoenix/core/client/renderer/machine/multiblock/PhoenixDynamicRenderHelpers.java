@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
 
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.renderer.machine.*;
-import net.phoenix.core.integration.phoenix_tesla_network.client.renderer.machine.TeslaTowerRenderer;
 
 public class PhoenixDynamicRenderHelpers {
 
@@ -21,7 +20,6 @@ public class PhoenixDynamicRenderHelpers {
         DynamicRenderManager.register(PhoenixCore.id("custom_fluid"), CustomFluidRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("helical_fusion"), HelicalFusionRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("honey_chamber"), HoneyChamberDynamicRender.TYPE);
-        DynamicRenderManager.register(PhoenixCore.id("tesla_tower"), TeslaTowerRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("engine_gearbox"), EngineGearboxRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("sanctum_ward"), SanctumWardRender.TYPE);
     }
@@ -50,9 +48,6 @@ public class PhoenixDynamicRenderHelpers {
         return HoneyChamberDynamicRender.INSTANCE;
     }
 
-    public static DynamicRender<?, ?> getTeslaTowerRenderer() {
-        return TeslaTowerRenderer.INSTANCE;
-    }
 
     public static DynamicRender<?, ?> getEngineGearboxRenderer() {
         return EngineGearboxRenderer.INSTANCE;

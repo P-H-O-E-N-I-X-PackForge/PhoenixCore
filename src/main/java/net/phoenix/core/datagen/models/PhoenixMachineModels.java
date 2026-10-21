@@ -10,8 +10,6 @@ import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.model.PartRenderProfile;
 import net.phoenix.core.common.machine.multiblock.part.ShieldRenderProperty;
-import net.phoenix.core.integration.phoenix_tesla_network.api.machine.trait.ITeslaBattery;
-import net.phoenix.core.integration.phoenix_tesla_network.common.block.TeslaBatteryBlock;
 
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
@@ -96,15 +94,6 @@ public class PhoenixMachineModels {
                 }
                 return model;
             });
-        };
-    }
-
-    public static NonNullBiConsumer<DataGenContext<Block, TeslaBatteryBlock>, RegistrateBlockstateProvider> createTeslaBlockModel(ITeslaBattery batteryData) {
-        return (ctx, prov) -> {
-            prov.simpleBlock(ctx.getEntry(), prov.models().cubeBottomTop(ctx.getName(),
-                    PhoenixCore.id("block/casings/batteries/" + batteryData.getBatteryName() + "/side"),
-                    PhoenixCore.id("block/casings/batteries/" + batteryData.getBatteryName() + "/top"),
-                    PhoenixCore.id("block/casings/batteries/" + batteryData.getBatteryName() + "/top")));
         };
     }
 

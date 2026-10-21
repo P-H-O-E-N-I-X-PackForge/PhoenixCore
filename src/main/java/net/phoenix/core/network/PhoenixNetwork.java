@@ -13,11 +13,7 @@ public class PhoenixNetwork {
     public static void register(PayloadRegistrar registrar) {
         registrar.playToServer(SelectColorPacket.TYPE, SelectColorPacket.STREAM_CODEC, SelectColorPacket::handle);
 
-        registrar.playToServer(C2STeslaDischargePacket.TYPE, C2STeslaDischargePacket.STREAM_CODEC,
-                C2STeslaDischargePacket::handle);
 
-        registrar.playToServer(UpdateWingSettingsPacket.TYPE, UpdateWingSettingsPacket.STREAM_CODEC,
-                (msg, ctx) -> msg.handle(ctx));
 
         registrar.playToServer(PacketPhoenixModeSync.TYPE, PacketPhoenixModeSync.STREAM_CODEC,
                 PacketPhoenixModeSync::handle);
@@ -44,8 +40,6 @@ public class PhoenixNetwork {
 
         registrar.playToClient(S2CPlayStreamPacket.TYPE, S2CPlayStreamPacket.STREAM_CODEC, S2CPlayStreamPacket::handle);
 
-        registrar.playToServer(C2SToggleTeslaModePacket.TYPE, C2SToggleTeslaModePacket.STREAM_CODEC,
-                C2SToggleTeslaModePacket::handle);
 
         registrar.playToClient(S2CShopSyncPacket.TYPE, S2CShopSyncPacket.STREAM_CODEC, S2CShopSyncPacket::handle);
 

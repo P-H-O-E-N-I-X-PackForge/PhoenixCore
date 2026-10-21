@@ -44,7 +44,6 @@ import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomPhoenixBak
 import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomSculkBaker;
 import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomSealedBaker;
 import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomVoidBaker;
-import net.phoenix.core.integration.phoenix_tesla_network.client.particles.TeslaSparkParticle;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 import net.phoenix.core.integration.vocal_vibrancy.VocalVibrancyClient;
 
@@ -85,8 +84,6 @@ public class PhoenixClient {
 
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(PhoenixParticles.TESLA_SPARK.get(), TeslaSparkProvider::new);
-
         event.registerSpriteSet(DimensionParticleTypes.VOLCANIC_ASH.get(), SuspendedTownParticle.Provider::new);
         event.registerSpriteSet(DimensionParticleTypes.HEAT_SHIMMER.get(), SuspendedTownParticle.Provider::new);
         event.registerSpriteSet(DimensionParticleTypes.LAVA_SPARK.get(), SuspendedTownParticle.Provider::new);
@@ -102,26 +99,6 @@ public class PhoenixClient {
         event.registerSpriteSet(DimensionParticleTypes.GLITCH_EFFECT.get(), SuspendedTownParticle.Provider::new);
         event.registerSpriteSet(DimensionParticleTypes.REALITY_TEAR.get(), SuspendedTownParticle.Provider::new);
         event.registerSpriteSet(DimensionParticleTypes.INVERTED_GLOW.get(), SuspendedTownParticle.Provider::new);
-    }
-
-    public static class TeslaSparkProvider implements ParticleProvider<SimpleParticleType> {
-
-        private final SpriteSet sprites;
-
-        public TeslaSparkProvider(SpriteSet sprites) {
-            this.sprites = sprites;
-        }
-
-        @Override
-        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level,
-                                       double x, double y, double z,
-                                       double xSpeed, double ySpeed, double zSpeed) {
-            TeslaSparkParticle particle = new TeslaSparkParticle(level, x, y, z);
-            if (this.sprites != null) {
-                particle.pickSprite(this.sprites);
-            }
-            return particle;
-        }
     }
 
     @SubscribeEvent

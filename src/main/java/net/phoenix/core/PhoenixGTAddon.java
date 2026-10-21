@@ -14,9 +14,6 @@ import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksModuleBaseR
 import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksModuleRecipes;
 import net.phoenix.core.integration.gregpacks.common.recipe.GregPacksOmniPacksRecipes;
 import net.phoenix.core.integration.gregvaults.common.recipe.GTVaultsRecipes;
-import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaHatchRecipes;
-import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.TeslaMultiAmpHatchRecipes;
-import net.phoenix.core.integration.phoenix_tesla_network.common.data.recipe.WirelessChargerRecipes;
 
 @SuppressWarnings("unused")
 @GTAddon(PhoenixCore.MOD_ID)
@@ -34,11 +31,7 @@ public class PhoenixGTAddon implements IGTAddon {
         PhoenixToolRecipes.init(provider);
         PhoenixBeeRecipeGenerator.loadBeeRecipes(provider);
         CrystalRoseAssemblerGenerator.generateCrystalRoseRecipes(provider);
-        TeslaHatchRecipes.init(provider);
-        TeslaMultiAmpHatchRecipes.init(provider);
-        CustomComponetRecipes.init(provider);
         net.phoenix.core.common.data.recipe.generated.UlvCoverRecipes.init(provider);
-        WirelessChargerRecipes.init(provider);
         SourceHatchRecipes.init(provider);
         GTVaultsRecipes.init(provider);
         GregPacksModuleBaseRecipes.init(provider);

@@ -16,15 +16,12 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.gui.WingFlightScreen;
 import net.phoenix.core.client.gui.screen.ColorRadialMenuScreen;
 import net.phoenix.core.client.keybind.PhoenixKeybinds;
-import net.phoenix.core.common.data.item.PhoenixArmorItem;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 import net.phoenix.core.network.client.ClientSoundHandler;
-import net.phoenix.core.network.packet.C2STeslaDischargePacket;
 import net.phoenix.core.network.packet.SelectColorPacket;
 import net.phoenix.core.util.StackNbt;
 
@@ -38,12 +35,6 @@ public class ClientTickHandler {
 
         ClientSoundHandler.tickActiveStreams(mc.player);
 
-        while (PhoenixKeybinds.OPEN_WING_GUI.consumeClick()) {
-            if (mc.screen == null &&
-                    mc.player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PhoenixArmorItem) {
-                mc.setScreen(new WingFlightScreen());
-            }
-        }
         if (PhoenixKeybinds.SPRAY_CAN_MENU.consumeClick()) {
             ItemStack stack = mc.player.getMainHandItem();
             if (stack.getItem() instanceof ChameleonSprayCanItem) {
@@ -86,27 +77,6 @@ public class ClientTickHandler {
                 RecipeBuilderMenu menu = new RecipeBuilderMenu(0, mc.player.getInventory());
                 mc.setScreen(
                         new RecipeBuilderScreen(menu, mc.player.getInventory(), Component.literal("Recipe Builder")));
-            }
-        }
-
-        while (PhoenixKeybinds.TESLA_MODE.consumeClick()) {
-            ItemStack chestItem = mc.player.getItemBySlot(EquipmentSlot.CHEST);
-            if (!chestItem.isEmpty() &&
-                    chestItem.getItem() instanceof net.phoenix.core.common.data.item.PhoenixArmorItem) {
-                PacketDistributor.sendToServer(new net.phoenix.core.network.packet.C2SToggleTeslaModePacket());
-            }
-        }
-
-        while (PhoenixKeybinds.TESLA_DISCHARGE.consumeClick()) {
-            ItemStack bootsItem = mc.player.getItemBySlot(EquipmentSlot.FEET);
-
-            if (!bootsItem.isEmpty() &&
-                    bootsItem.getItem() instanceof net.phoenix.core.common.data.item.PhoenixArmorItem) {
-                CompoundTag nbt = StackNbt.getOrCreateTag(bootsItem);
-
-                if (nbt.getInt("dischargeCooldown") == 0) {
-                    PacketDistributor.sendToServer(new C2STeslaDischargePacket());
-                }
             }
         }
 

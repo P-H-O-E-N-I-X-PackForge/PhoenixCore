@@ -23,7 +23,6 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(new SourceMachineProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new SourceTankJadeProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new SourceHatchProvider(), MetaMachine.class);
-        registration.registerBlockDataProvider(new TeslaNetworkProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new HighPressurePlasmaArcFurnaceProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new ThreadedRecipeOutputProvider(), MetaMachine.class);
         registration.registerBlockDataProvider(new AstralThreadHatchProvider(), MetaMachine.class);
@@ -39,7 +38,6 @@ public class PhoenixJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(new SourceMachineProvider(), Block.class);
         registration.registerBlockComponent(new SourceTankJadeProvider(), Block.class);
         registration.registerBlockComponent(new SourceHatchProvider(), Block.class);
-        registration.registerBlockComponent(new TeslaNetworkProvider(), Block.class);
         registration.registerBlockComponent(new HighPressurePlasmaArcFurnaceProvider(), Block.class);
         registration.registerBlockComponent(new ThreadedRecipeOutputProvider(), Block.class);
         registration.registerBlockComponent(new AstralThreadHatchProvider(), Block.class);

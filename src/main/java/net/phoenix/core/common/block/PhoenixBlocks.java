@@ -18,8 +18,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.integration.phoenix_tesla_network.api.machine.trait.ITeslaBattery;
-import net.phoenix.core.integration.phoenix_tesla_network.common.block.TeslaBatteryBlock;
 import net.phoenix.core.integration.vocal_resonance.ISpeakerType;
 import net.phoenix.core.integration.vocal_resonance.SpeakerBlock;
 import net.phoenix.core.integration.vocal_resonance.SpeakerTier;
@@ -64,43 +62,6 @@ public class PhoenixBlocks {
             .model((ctx, prov) -> prov.generated(ctx, prov.modLoc("item/crystal_rose")))
             .build()
             .register();
-
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_UHV = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.UHV);
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_UEV = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.UEV);
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_UIV = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.UIV);
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_UXV = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.UXV);
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_OPV = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.OPV);
-    public static final BlockEntry<TeslaBatteryBlock> TESLA_BATTERY_MAX = createTeslaBattery(
-            TeslaBatteryBlock.TeslaBatteryType.MAX);
-
-    private static BlockEntry<TeslaBatteryBlock> createTeslaBattery(ITeslaBattery batteryData) {
-        String tierName = batteryData.getBatteryName();
-
-        var battery = REGISTRATE
-                .block("tesla_battery_%s".formatted(tierName), p -> new TeslaBatteryBlock(p, batteryData))
-                .initialProperties(() -> Blocks.IRON_BLOCK)
-                .lang("Tesla Battery " + (tierName.equalsIgnoreCase("opv") ? "OpV" : tierName.toUpperCase()))
-                .blockstate((ctx, prov) -> {
-                    String folderPath = "block/casings/batteries/tesla_" + tierName + "/";
-                    var side = PhoenixCore.id(folderPath + "side");
-                    var top = PhoenixCore.id(folderPath + "top");
-                    var bottom = PhoenixCore.id(folderPath + "bottom");
-
-                    prov.simpleBlock(ctx.getEntry(),
-                            prov.models().cubeBottomTop(ctx.getName(), side, bottom, top));
-                })
-                .item(BlockItem::new)
-                .build()
-                .register();
-
-        PhoenixAPI.TESLA_BATTERIES.put(batteryData, battery);
-        return battery;
-    }
 
     public static final BlockEntry<CoilBlock> COIL_TRUE_HEAT_STABLE = createCoilBlock(
             PhoenixCoilBlock.CoilType.COIL_TRUE_HEAT_STABLE);
