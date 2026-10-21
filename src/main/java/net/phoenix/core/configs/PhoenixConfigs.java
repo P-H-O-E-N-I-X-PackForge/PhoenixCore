@@ -121,6 +121,13 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Add a Continuum page to the Solaris map: a top-down map of each planet and moon you have found, with",
+                "mapped deposits, your outpost and your personal dimension on it. Client side. Default: true"
+        })
+        public boolean continuumPage = true;
+
+        @Configurable
+        @Configurable.Comment({
                 "Ore sense: inside a Conflux dimension, mark the ore around you on the Solaris map. How much you see",
                 "grows with your discipline's research: some ore is there, then which ore, then exactly where, how",
                 "much and how deep. Default: true"

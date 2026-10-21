@@ -33,6 +33,7 @@ final class SolarisSkinBridge {
         SolarisBackdropBridge.registerAll();
         SolarisZoneBridge.register();
         SolarisCoverageBridge.register();
+        SolarisContinuumPage.register();
 
         ConfluxTheme.refresh();
         String discipline = disciplineFor(mc.level);
