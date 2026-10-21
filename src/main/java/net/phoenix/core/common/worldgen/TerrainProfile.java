@@ -78,17 +78,13 @@ public record TerrainProfile(
             return this;
         }
 
-        /**
-         * Roughly the share of the world (0..1) that is flat. Only the ridged style uses it, and the mapping from share to
-         * noise threshold is an estimate, so nudge it by eye.
-         */
         public Builder flatShare(double share) {
             this.flatThreshold = 0.5 + 0.17 * Math.sqrt(2.0) * inverseErf(2.0 * share - 1.0);
             return this;
         }
 
         private static double inverseErf(double x) {
-            // Winitzki's approximation, good to about 1e-3, which is plenty for a threshold chosen by eye
+            
             double a = 0.147;
             double ln = Math.log(1.0 - x * x);
             double t = 2.0 / (Math.PI * a) + ln / 2.0;

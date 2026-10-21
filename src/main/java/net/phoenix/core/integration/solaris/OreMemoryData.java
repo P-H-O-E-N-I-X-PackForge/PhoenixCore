@@ -15,16 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/** The ore each research team has sensed, per chunk, so it can stay on their map. */
 public class OreMemoryData extends SavedData {
 
     private static final String DATA_NAME = "phoenixcore_ore_memory";
 
-    /** Ore of one kind in one chunk. */
     public record Memory(String dimension, int chunkX, int chunkZ, String block, int count, int x, int y, int z,
                          int minY, int maxY) {}
 
-    // team -> "dimension|chunkX|chunkZ" -> block id -> memory
     private final Map<UUID, Map<String, Map<String, Memory>>> byTeam = new HashMap<>();
 
     public static OreMemoryData get(ServerLevel level) {
@@ -37,7 +34,6 @@ public class OreMemoryData extends SavedData {
         return dimension + "|" + chunkX + "|" + chunkZ;
     }
 
-    /** Replaces what a team remembers about one chunk (an empty collection forgets it, e.g. once mined out). */
     public void replaceChunk(UUID team, String dimension, int chunkX, int chunkZ, Collection<Memory> memories) {
         Map<String, Map<String, Memory>> chunks = byTeam.computeIfAbsent(team, id -> new LinkedHashMap<>());
         String key = chunkKey(dimension, chunkX, chunkZ);

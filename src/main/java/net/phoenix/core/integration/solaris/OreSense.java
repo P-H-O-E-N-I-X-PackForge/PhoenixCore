@@ -33,14 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * "Ore sense": finds the ore a discipline's worldgen put into the chunks around a player, and works out how
- * much of it the player's research lets them see. Knows nothing about Solaris; {@link SolarisOreBridge}
- * turns the readings into map markers.
- */
 final class OreSense {
 
-    /** Ore of one kind in one chunk. {@code count} blocks, centred on (x, y, z), spanning minY..maxY. */
     record Reading(int chunkX, int chunkZ, Block block, int count, int x, int y, int z, int minY, int maxY) {}
 
     private record ScanKey(ResourceKey<Level> dimension, int chunkX, int chunkZ) {}
@@ -58,7 +52,6 @@ final class OreSense {
 
     private OreSense() {}
 
-    /** 0 = nothing, 1 = something is there, 2 = what it is, 3 = exactly where and how much. */
     static int tier(ServerPlayer player) {
         String discipline = net.phoenix.core.api.ConfluxApi.discipline(player);
         if (discipline == null) return 0;
@@ -93,7 +86,6 @@ final class OreSense {
         return location.getPath().substring("conflux/".length());
     }
 
-    /** Scans a couple of not-yet-scanned chunks near the player. Cheap enough to call every few ticks. */
     static void scanStep(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
         String discipline = disciplineOf(level);
@@ -133,7 +125,6 @@ final class OreSense {
         return OreSenseApi.getPersistence(discipline) == OreSenseApi.Persistence.PERSISTENT;
     }
 
-    // A team can only remember what it was able to sense, so nothing is stored before the first research.
     private static void remember(ServerPlayer player, ServerLevel level, String discipline, int cx, int cz,
                                  List<Reading> found) {
         if (!persistent(discipline) || tier(player) == 0) return;
@@ -155,7 +146,6 @@ final class OreSense {
         OreMemoryData.get(level).replaceChunk(team, dimension, cx, cz, memories);
     }
 
-    /** What the player can sense, nearest first: what the team remembers, or only what is around them. */
     static List<Reading> readings(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
         var config = PhoenixConfigs.INSTANCE.confluxSolaris;
@@ -198,7 +188,6 @@ final class OreSense {
         var theme = DisciplineThemeRegistry.getTheme(discipline);
         if (theme == null || theme.worldgenConfig == null) return Set.of();
 
-        // Rebuild only when the theme (and so its ore list) has been reloaded.
         if (ORE_SOURCE.get(discipline) != theme) {
             Set<Block> blocks = new HashSet<>();
             for (DisciplineWorldgenConfig.OreConfig ore : theme.worldgenConfig.ores) {

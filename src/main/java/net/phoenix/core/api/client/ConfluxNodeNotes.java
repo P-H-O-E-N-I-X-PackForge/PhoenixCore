@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-/**
- * Lets other mods add lines to the "Also" section of the research node viewer, such as "Surveys Rime". Register a provider
- * once at client setup; it is called with the node being viewed and returns formatted text lines (may be empty).
- */
 @OnlyIn(Dist.CLIENT)
 public final class ConfluxNodeNotes {
 

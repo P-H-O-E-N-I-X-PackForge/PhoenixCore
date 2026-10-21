@@ -26,11 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Pins the Conflux landforms a research team has found onto the Solaris map. Landforms are generated
- * from the world seed, so being near one is enough to find it; once found it stays on the map for the
- * whole team. Only reached when Solaris is loaded.
- */
 final class SolarisLandmarkBridge {
 
     private static final MarkerSync MARKERS = new MarkerSync("FFFFFF", "DOT", "Landforms");
@@ -109,7 +104,6 @@ final class SolarisLandmarkBridge {
         PacketDistributor.sendToPlayer(player, new S2CLandformZonesPacket(defs));
     }
 
-    /** Tesla towers, range extenders and Continuum launch complexes. These use the guild/player team, not research. */
     private static void addNetworkSites(ServerPlayer player, Map<String, MarkerSync.Marker> desired) {
         for (NetworkSites.Site site : NetworkSites.of(player)) {
             String key = "phoenixcore:net/" + site.kind() + "/" + Long.toHexString(site.pos().asLong()) + "/" +

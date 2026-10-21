@@ -12,12 +12,6 @@ import net.phoenixvine.solaris.client.SolarisThemeUtils;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Makes the Solaris map look like it belongs to the player's discipline: the accent colour follows the
- * Conflux discipline (the dimension's own inside a Conflux dimension, otherwise the one the player
- * chose), and each Conflux dimension's unexplored area is drawn with that dimension's sky shader (see
- * {@link SolarisBackdropBridge}). Only reached when Solaris is loaded.
- */
 @OnlyIn(Dist.CLIENT)
 final class SolarisSkinBridge {
 

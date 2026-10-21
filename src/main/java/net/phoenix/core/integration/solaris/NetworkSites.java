@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * The sites of the split-out mods that belong on a player's map: Tesla towers and range extenders (read from the
- * network's saved data, so nothing has to be loaded) and Continuum launch complexes. Names no Solaris type.
- */
 final class NetworkSites {
 
     static final String LAUNCH_COMPLEX = "launch_complex";

@@ -15,11 +15,6 @@ import net.phoenixvine.solaris.client.render.SmoothShapes;
 
 import java.util.List;
 
-/**
- * Draws the reach of the Tesla towers and range extenders on the fullscreen map. The server sends coverage to a
- * player who is holding a Tesla Binder, so the map shows the last coverage received (in the dimension it was
- * received in) rather than needing the binder in hand while the map is open. Only reached when Solaris is loaded.
- */
 @OnlyIn(Dist.CLIENT)
 final class SolarisCoverageBridge implements MapLayer {
 
@@ -56,7 +51,7 @@ final class SolarisCoverageBridge implements MapLayer {
         if (remembered.isEmpty() || !dimension.equals(rememberedDimension)) return;
 
         for (S2CCoverageSyncPacket.Entry entry : remembered) {
-            if (entry.radius() <= 0) continue; // unlimited reach covers everything: nothing to outline
+            if (entry.radius() <= 0) continue; 
 
             int color = switch (entry.kind()) {
                 case S2CCoverageSyncPacket.TOWER -> 0x55E0FF;

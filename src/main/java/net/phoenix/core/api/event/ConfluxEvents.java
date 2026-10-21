@@ -8,12 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/** Posting side of the Conflux events, so the call sites stay one line. */
 public final class ConfluxEvents {
 
     private ConfluxEvents() {}
 
-    /** Posts the Pre event and returns the context to hand to {@link #postResearch}. */
     public static Map<String, Object> preResearch(MinecraftServer server, UUID team, ResourceLocation nodeId) {
         Map<String, Object> context = new HashMap<>();
         NeoForge.EVENT_BUS.post(new ConfluxResearchEvent.Pre(server, team, nodeId, context));

@@ -20,11 +20,6 @@ public final class PhoenixTerrainNoise {
         return regionFactor(regionNoise, x, z, Double.NaN);
     }
 
-    /**
-     * flatThreshold is where on the 0..1 region noise the land stops being flat; NaN keeps the plain linear ramp. The
-     * noise sits mostly near the middle, so a threshold a little under 0.5 leaves about two fifths of the world on the
-     * flat side and the rest hilly.
-     */
     private static double regionFactor(SimplexNoise regionNoise, double x, double z, double flatThreshold) {
         double n = regionNoise.getValue(x * REGION_FREQUENCY, 0, z * REGION_FREQUENCY);
         double u = n * 0.5 + 0.5;

@@ -109,14 +109,10 @@ public final class Landforms {
         return h;
     }
 
-    /** Volcanoes are 60 to 115 blocks in radius, so two whose centres are closer than this would merge into a lump. */
     private static final int VOLCANO_GAP = 260;
 
     private final java.util.concurrent.ConcurrentHashMap<Long, Boolean> volcanoSurvival = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /**
-     * Where this cell's volcano would stand, or null if the cell does not roll one. Mirrors the first rolls of create.
-     */
     private int[] volcanoCentre(int cellX, int cellZ) {
         RandomSource rnd = RandomSource.create(mix(seed, cellX, cellZ));
         if (pick(rnd.nextFloat()) != Kind.VOLCANO) return null;
@@ -126,10 +122,6 @@ public final class Landforms {
         return new int[] { cx, cz };
     }
 
-    /**
-     * A volcano is dropped when an earlier cell's surviving volcano stands within VOLCANO_GAP of it. "Earlier" is a
-     * fixed order on cells, so every chunk that asks gets the same answer.
-     */
     private boolean volcanoSurvives(int cellX, int cellZ) {
         long k = key(cellX, cellZ);
         Boolean known = volcanoSurvival.get(k);
@@ -609,10 +601,6 @@ public final class Landforms {
         return out;
     }
 
-    /**
-     * A landform described for other systems (map markers and the like). {@code key} is stable for a
-     * given world seed, so it can be stored; {@code color} is RRGGBB and {@code icon} a Solaris icon id.
-     */
     public record Sighting(String key, String label, String color, String icon, int x, int z, int baseY,
                            int reach, java.util.List<Zone> zones) {}
 
@@ -622,17 +610,16 @@ public final class Landforms {
         CONVEYOR,
         BOUNCE,
         SLICK,
-        /** A geyser vent; {@code phase} lets a client work out when it next erupts. */
+        
         GEYSER
     }
 
     public enum ZoneShape {
         CIRCLE,
-        /** {@code a} is the half length along {@code theta}, {@code b} the half width. */
+        
         RECT
     }
 
-    /** Where a landform's physics effect applies, in world X/Z. For circles {@code a} is the radius. */
     public record Zone(ZoneType type, ZoneShape shape, double x, double z, double a, double b, double theta,
                        long phase) {
 
@@ -646,7 +633,6 @@ public final class Landforms {
         }
     }
 
-    // Mirrors the areas LandformPhysics applies its effects in.
     private java.util.List<Zone> zonesOf(Instance inst) {
         java.util.List<Zone> zones = new java.util.ArrayList<>();
         double cx = inst.cx();

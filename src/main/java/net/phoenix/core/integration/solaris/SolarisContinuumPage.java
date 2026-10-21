@@ -31,11 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-/**
- * A Solaris map page for the worlds Continuum has found: a top-down map of each planet or moon, with the deposits that
- * have been mapped, your outpost and your personal dimension on it. It does not depend on the dimension the player is
- * in. Only reached when Solaris is loaded.
- */
 @OnlyIn(Dist.CLIENT)
 final class SolarisContinuumPage implements MapPage {
 
@@ -200,15 +195,12 @@ final class SolarisContinuumPage implements MapPage {
         return markers;
     }
 
-    /** A stable spot on the map for a named thing, away from the poles. */
     private static double[] spot(ContinuumBody body, String what) {
         Random random = new Random(body.id().toString().hashCode() * 31L + what.hashCode());
         double x = (random.nextDouble() - 0.5) * SurfaceMap.WIDTH * 0.86;
         double y = (random.nextDouble() - 0.5) * SurfaceMap.HEIGHT * 0.62;
         return new double[] { x, y };
     }
-
-    // ------------------------------------------------------------------ outpost list
 
     private static final int LIST_WIDTH = 176;
     private static final int ROW = 13;

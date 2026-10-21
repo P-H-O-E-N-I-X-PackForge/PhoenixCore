@@ -15,10 +15,6 @@ import net.phoenix.core.api.event.ConfluxResearchEvent;
 import net.phoenix.core.api.event.ConfluxTeamChangedEvent;
 import net.phoenix.core.configs.PhoenixConfigs;
 
-/**
- * Entry points for the Solaris integration. This class never names a Solaris type; every call into
- * Solaris goes through a bridge class and only after {@link SolarisSupport#isActive()}.
- */
 public final class SolarisEvents {
 
     private static final int DISCOVER_INTERVAL_TICKS = 40;

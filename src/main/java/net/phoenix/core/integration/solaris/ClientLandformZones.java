@@ -4,7 +4,6 @@ import net.phoenix.core.network.packet.S2CLandformZonesPacket;
 
 import java.util.List;
 
-/** Client copy of the landform zones the server last sent. Replaced wholesale on every update. */
 public final class ClientLandformZones {
 
     private static volatile List<S2CLandformZonesPacket.ZoneDef> zones = List.of();

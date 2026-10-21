@@ -17,7 +17,6 @@ public final class SuiteButtons {
     public static void register() {
         Minecraft mc = Minecraft.getInstance();
 
-
         SuiteHudBar.register(
                 PhoenixCore.MOD_ID + "_conflux",
                 PRIORITY_CONFLUX,

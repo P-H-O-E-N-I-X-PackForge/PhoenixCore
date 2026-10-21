@@ -7,7 +7,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 
 import java.util.UUID;
 
-/** Events from ore sense, posted on the NeoForge event bus. */
 public abstract class OreSenseEvent extends Event {
 
     private final MinecraftServer server;
@@ -32,10 +31,6 @@ public abstract class OreSenseEvent extends Event {
         return discipline;
     }
 
-    /**
-     * A team's ore sense is about to remember some ore. Cancel it to leave the ore out of the team's memory; it is
-     * still shown while the player is close enough to sense it. Only posted while the discipline is persistent.
-     */
     public static final class Remember extends OreSenseEvent implements ICancellableEvent {
 
         private final Block block;

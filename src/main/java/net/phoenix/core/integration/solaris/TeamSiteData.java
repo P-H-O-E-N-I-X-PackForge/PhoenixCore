@@ -13,11 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Places that belong to a research team (their Research Terminals), kept so they can be shown on a map
- * without loading the chunks they are in. Entries are checked against the world before being shown, so a
- * terminal that was blown up does not linger.
- */
 public class TeamSiteData extends SavedData {
 
     private static final String DATA_NAME = "phoenixcore_team_sites";
@@ -37,7 +32,6 @@ public class TeamSiteData extends SavedData {
                 new SavedData.Factory<>(TeamSiteData::new, TeamSiteData::load), DATA_NAME);
     }
 
-    /** Called when a terminal gets an owner or loads with one; safe to call repeatedly. */
     public static void registerTerminal(ServerLevel level, UUID team, BlockPos pos) {
         TeamSiteData data = get(level);
         String dimension = level.dimension().location().toString();
@@ -46,7 +40,6 @@ public class TeamSiteData extends SavedData {
         if (sites.put(key, new Site(dimension, pos.getX(), pos.getY(), pos.getZ())) == null) data.setDirty();
     }
 
-    /** Remembers a site of another kind (for example a Continuum launch complex) for a team. */
     public static void registerSite(ServerLevel level, UUID team, String kind, BlockPos pos) {
         TeamSiteData data = get(level);
         String dimension = level.dimension().location().toString();

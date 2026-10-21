@@ -14,17 +14,6 @@ import net.phoenixvine.solaris.api.SolarisGatesAPI;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Lets Conflux research decide which Solaris map features a player has. Registers gate ids Solaris
- * can bind features to (its own {@code progressionGates} server config works with these too):
- * <ul>
- * <li>{@code conflux:discipline}: the player has chosen a discipline</li>
- * <li>{@code conflux:discipline/<id>}: the player has chosen that discipline</li>
- * <li>{@code conflux:core/<id>}: the player has unlocked the commitment node of that discipline's tree</li>
- * <li>{@code conflux:node/<node id>}: the player's team has unlocked that research node</li>
- * </ul>
- * Only reached when Solaris is loaded.
- */
 final class SolarisGatesBridge {
 
     static final List<String> DISCIPLINES = List.of("phoenix", "sculk", "void", "sealed_a", "sealed_b");
@@ -52,10 +41,6 @@ final class SolarisGatesBridge {
         }
     }
 
-    /**
-     * Opt-in defaults: inside each Conflux dimension the basic map needs a chosen discipline, and the
-     * more revealing features need that discipline's commitment node. Bound once per server run.
-     */
     static void bindDefaults() {
         if (defaultsBound) return;
         defaultsBound = true;

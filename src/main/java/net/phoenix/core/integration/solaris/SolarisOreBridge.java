@@ -10,11 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Shows what {@link OreSense} finds as Solaris markers, with detail that grows with research:
- * tier 1 says there is ore, tier 2 says which, tier 3 gives the exact spot, amount and depth.
- * Only reached when Solaris is loaded.
- */
 final class SolarisOreBridge {
 
     private static final String CATEGORY = "Ore Sense";

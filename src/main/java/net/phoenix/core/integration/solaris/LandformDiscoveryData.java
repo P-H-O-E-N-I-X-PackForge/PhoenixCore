@@ -15,10 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Which Conflux landforms each research team has discovered. Stored with everything needed to put the
- * landform back on a map, so markers can be rebuilt without regenerating or reloading terrain.
- */
 public class LandformDiscoveryData extends SavedData {
 
     private static final String DATA_NAME = "phoenixcore_landform_discovery";
@@ -34,7 +30,6 @@ public class LandformDiscoveryData extends SavedData {
                 new SavedData.Factory<>(LandformDiscoveryData::new, LandformDiscoveryData::load), DATA_NAME);
     }
 
-    /** Returns true if this landform was not known to the team before. */
     public boolean discover(UUID team, String key, Entry entry) {
         Map<String, Entry> known = byTeam.computeIfAbsent(team, id -> new LinkedHashMap<>());
         Entry existing = known.get(key);
@@ -43,7 +38,7 @@ public class LandformDiscoveryData extends SavedData {
             setDirty();
             return true;
         }
-        // Landforms found before zones were recorded get them filled in the next time they are seen.
+        
         if (existing.zones().isEmpty() && !entry.zones().isEmpty()) {
             known.put(key, entry);
             setDirty();

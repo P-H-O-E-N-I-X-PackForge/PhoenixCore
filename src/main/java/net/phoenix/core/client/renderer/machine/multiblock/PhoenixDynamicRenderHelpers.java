@@ -48,7 +48,6 @@ public class PhoenixDynamicRenderHelpers {
         return HoneyChamberDynamicRender.INSTANCE;
     }
 
-
     public static DynamicRender<?, ?> getEngineGearboxRenderer() {
         return EngineGearboxRenderer.INSTANCE;
     }

@@ -25,11 +25,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/**
- * The unexplored part of the Solaris map in a Conflux dimension is drawn with that dimension's own sky
- * shader (the same programs the sky uses), looking at a fixed patch of sky that slides as you pan the map.
- * Only reached when Solaris is loaded.
- */
 @OnlyIn(Dist.CLIENT)
 final class SolarisBackdropBridge {
 
@@ -90,7 +85,6 @@ final class SolarisBackdropBridge {
         int w = mc.getWindow().getWidth();
         int h = mc.getWindow().getHeight();
 
-        // The sky shaders rebuild a view ray from these matrices, so the map's position becomes where we look.
         float yaw = (float) (centerX * 0.0015);
         float pitch = (float) Mth.clamp(centerZ * 0.001, -1.1, 1.1);
         Matrix4f invView = new Matrix4f().rotateX(pitch).rotateY(yaw).invert();

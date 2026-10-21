@@ -7,11 +7,6 @@ import net.neoforged.bus.api.Event;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * A team is about to gain, or has just gained, a research node. Posted on the NeoForge bus on the server thread for every
- * route: the terminal, Research All, dev commands and {@code ConfluxApi.grantUnlock}. {@link Pre} and {@link Post} for one
- * unlock share a context map, so a listener can take a snapshot before and compare after.
- */
 public abstract class ConfluxResearchEvent extends Event {
 
     private final MinecraftServer server;
@@ -39,7 +34,6 @@ public abstract class ConfluxResearchEvent extends Event {
         return nodeId;
     }
 
-    /** Scratch space shared by the Pre and Post event of one unlock. Key it with your own mod id. */
     public Map<String, Object> getContext() {
         return context;
     }

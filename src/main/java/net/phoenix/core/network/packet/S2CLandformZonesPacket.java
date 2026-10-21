@@ -13,7 +13,6 @@ import net.phoenix.core.integration.solaris.ClientLandformZones;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The physics-effect zones of the landforms a team has found, for the map to draw. Replaces the client's list. */
 public class S2CLandformZonesPacket implements CustomPacketPayload {
 
     public static final Type<S2CLandformZonesPacket> TYPE = new Type<>(

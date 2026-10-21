@@ -14,15 +14,9 @@ import net.phoenixvine.solaris.client.render.MapLayers;
 import net.phoenixvine.solaris.client.render.MapProjection;
 import net.phoenixvine.solaris.client.render.SmoothShapes;
 
-/**
- * Draws where the landform physics act on the fullscreen map (updrafts, low gravity, conveyors, bounce pads, slick
- * rock) and a live countdown above each geyser vent. Geyser timing is the same formula the server uses, run on the
- * synced game time. Only reached when Solaris is loaded.
- */
 @OnlyIn(Dist.CLIENT)
 final class SolarisZoneBridge implements MapLayer {
 
-    // Matches LandformPhysics: a vent erupts for 40 of every 200 ticks and bubbles for the 30 ticks before.
     private static final int GEYSER_PERIOD = 200;
     private static final int GEYSER_ERUPTION = 40;
     private static final int GEYSER_WARNING = 30;
