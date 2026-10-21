@@ -1,0 +1,25 @@
+{
+  "name": "Tandem",
+  "description": "Two suns that have each been taken in hand: one is netted by a swarm of mirrors, the other is shut in a sphere of plates.",
+  "galaxy": [
+    -9.4,
+    -1.3,
+    5.6
+  ],
+  "star_color": "#ffd27a",
+  "star_radius": 0.5,
+  "star_kind": "dyson_swarm",
+  "companion": {
+    "kind": "dyson_sphere",
+    "color": "#8fc0ff",
+    "radius": 0.8,
+    "separation": 7.0,
+    "mass_ratio": 0.75,
+    "period_seconds": 48
+  },
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_tandem_signal",
+    "surveyed_research": "phoenixcore:space_tandem_decode"
+  }
+}

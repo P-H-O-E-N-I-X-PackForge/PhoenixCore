@@ -907,6 +907,54 @@
         }
       ],
       "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_tandem_signal",
+      "title": "Tandem Signal",
+      "lore": "A star whose light arrives in pieces.",
+      "icon": "minecraft:glowstone",
+      "position": [
+        16,
+        9
+      ],
+      "prerequisites": [
+        "phoenixcore:space_survey"
+      ],
+      "cost": {
+        "computational": 3200,
+        "arcane": 2000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_tandem_signal"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_tandem_decode",
+      "title": "Decode Tandem",
+      "lore": "Work out what was built around the pair.",
+      "icon": "minecraft:spyglass",
+      "position": [
+        16,
+        12
+      ],
+      "prerequisites": [
+        "phoenixcore:space_tandem_signal"
+      ],
+      "cost": {
+        "computational": 6400,
+        "arcane": 4000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_tandem_decode"
+        }
+      ],
+      "hidden": true
     }
   ]
 }

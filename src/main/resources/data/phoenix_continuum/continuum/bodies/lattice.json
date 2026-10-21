@@ -1,0 +1,69 @@
+{
+  "system": "phoenix_continuum:tandem",
+  "type": "planet",
+  "name": "Lattice",
+  "description": "A banded giant whose rings are the most orderly thing in the system.",
+  "orbit": {
+    "radius_au": 2.2,
+    "period_days": 640,
+    "phase": 0.15
+  },
+  "radius": 3.4,
+  "gas_giant": true,
+  "axial_tilt": 14,
+  "spin_deg_per_sec": 6,
+  "cloud_spin_deg_per_sec": 9.0,
+  "surface": {
+    "seed": 31,
+    "scale": 2.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.0,
+    "low": "#6b4a28",
+    "mid": "#c9a265",
+    "high": "#f2dcae",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#e8c88a",
+    "density": 0.35
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_tandem_signal",
+    "surveyed_research": "phoenixcore:space_tandem_decode"
+  },
+  "trip_minutes": 100,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 6,
+      "max": 14,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:quartz",
+      "min": 4,
+      "max": 8,
+      "chance": 0.6
+    }
+  ],
+  "lore": {
+    "detected": "A giant, and a ring system with edges too clean to be natural.",
+    "surveyed": "Lattice has more rings than anyone cares to count, with gaps so regular they look ruled. The material is ice and rock, and some of it is not."
+  },
+  "style": "storm",
+  "rings": {
+    "inner": 1.5,
+    "outer": 2.7,
+    "color": "#f2dcae",
+    "color2": "#8a7050",
+    "tilt": 18,
+    "opacity": 0.9
+  }
+}
