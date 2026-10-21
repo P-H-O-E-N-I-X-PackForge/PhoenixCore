@@ -13,8 +13,6 @@ public class PhoenixNetwork {
     public static void register(PayloadRegistrar registrar) {
         registrar.playToServer(SelectColorPacket.TYPE, SelectColorPacket.STREAM_CODEC, SelectColorPacket::handle);
 
-
-
         registrar.playToServer(PacketPhoenixModeSync.TYPE, PacketPhoenixModeSync.STREAM_CODEC,
                 PacketPhoenixModeSync::handle);
 
@@ -39,7 +37,6 @@ public class PhoenixNetwork {
         registrar.playToClient(S2CPlaySoundPacket.TYPE, S2CPlaySoundPacket.STREAM_CODEC, S2CPlaySoundPacket::handle);
 
         registrar.playToClient(S2CPlayStreamPacket.TYPE, S2CPlayStreamPacket.STREAM_CODEC, S2CPlayStreamPacket::handle);
-
 
         registrar.playToClient(S2CShopSyncPacket.TYPE, S2CShopSyncPacket.STREAM_CODEC, S2CShopSyncPacket::handle);
 
@@ -117,6 +114,8 @@ public class PhoenixNetwork {
                 S2CAttuneResultPacket::handle);
         registrar.playToClient(S2CPhysicsImpulsePacket.TYPE, S2CPhysicsImpulsePacket.STREAM_CODEC,
                 S2CPhysicsImpulsePacket::handle);
+        registrar.playToClient(S2CLandformZonesPacket.TYPE, S2CLandformZonesPacket.STREAM_CODEC,
+                S2CLandformZonesPacket::handle);
         registrar.playToServer(C2SOpenCalibrationPacket.TYPE, C2SOpenCalibrationPacket.STREAM_CODEC,
                 C2SOpenCalibrationPacket::handle);
         registrar.playToServer(C2SCalibratePacket.TYPE, C2SCalibratePacket.STREAM_CODEC, C2SCalibratePacket::handle);

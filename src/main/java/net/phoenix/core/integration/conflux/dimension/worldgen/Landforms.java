@@ -614,7 +614,94 @@ public final class Landforms {
      * given world seed, so it can be stored; {@code color} is RRGGBB and {@code icon} a Solaris icon id.
      */
     public record Sighting(String key, String label, String color, String icon, int x, int z, int baseY,
-                           int reach) {}
+                           int reach, java.util.List<Zone> zones) {}
+
+    public enum ZoneType {
+        UPDRAFT,
+        LOW_GRAVITY,
+        CONVEYOR,
+        BOUNCE,
+        SLICK,
+        /** A geyser vent; {@code phase} lets a client work out when it next erupts. */
+        GEYSER
+    }
+
+    public enum ZoneShape {
+        CIRCLE,
+        /** {@code a} is the half length along {@code theta}, {@code b} the half width. */
+        RECT
+    }
+
+    /** Where a landform's physics effect applies, in world X/Z. For circles {@code a} is the radius. */
+    public record Zone(ZoneType type, ZoneShape shape, double x, double z, double a, double b, double theta,
+                       long phase) {
+
+        public static Zone circle(ZoneType type, double x, double z, double radius) {
+            return new Zone(type, ZoneShape.CIRCLE, x, z, radius, radius, 0.0, 0L);
+        }
+
+        public static Zone rect(ZoneType type, double x, double z, double halfLength, double halfWidth,
+                                double theta) {
+            return new Zone(type, ZoneShape.RECT, x, z, halfLength, halfWidth, theta, 0L);
+        }
+    }
+
+    // Mirrors the areas LandformPhysics applies its effects in.
+    private java.util.List<Zone> zonesOf(Instance inst) {
+        java.util.List<Zone> zones = new java.util.ArrayList<>();
+        double cx = inst.cx();
+        double cz = inst.cz();
+        switch (inst.kind()) {
+            case VOLCANO -> {
+                if (inst.state() == ACTIVE && inst.variant() != DOME) {
+                    if (inst.variant() == FISSURE) {
+                        zones.add(Zone.rect(ZoneType.UPDRAFT, cx, cz, (inst.reach() - 6.0) * 0.85, 4.0,
+                                inst.rivuletAngles()[0]));
+                    } else if (inst.variant() == CALDERA) {
+                        zones.add(Zone.circle(ZoneType.UPDRAFT, cx, cz, inst.reach() * 0.35));
+                    } else {
+                        zones.add(Zone.circle(ZoneType.UPDRAFT, cx, cz, inst.craterRadius() * 1.3));
+                    }
+                }
+            }
+            case SKY_ISLAND -> {
+                for (Pillar p : inst.pillars()) {
+                    zones.add(Zone.circle(ZoneType.LOW_GRAVITY, p.x(), p.z(), p.radius() + 5.0));
+                }
+            }
+            case GEODE -> zones.add(Zone.circle(ZoneType.LOW_GRAVITY, cx, cz, inst.height() - 4.0));
+            case IMPACT -> zones.add(Zone.circle(ZoneType.LOW_GRAVITY, cx, cz, inst.craterRadius()));
+            case CENOTE -> zones.add(Zone.circle(ZoneType.LOW_GRAVITY, cx, cz, inst.craterRadius() * 0.95));
+            case FUNGUS -> {
+                for (Pillar p : inst.pillars()) {
+                    zones.add(Zone.circle(ZoneType.BOUNCE, p.x(), p.z(), p.radius() * 4.0 + 2.0));
+                }
+            }
+            case RIBS -> {
+                if (inst.variant() == 1) {
+                    double half = (inst.craterRadius() * inst.craterDepth() + 34) * 0.5;
+                    zones.add(Zone.rect(ZoneType.UPDRAFT, cx, cz, half, 6.5, inst.rivuletAngles()[0]));
+                }
+            }
+            case PIT_MINE -> zones.add(Zone.circle(ZoneType.CONVEYOR, cx, cz, inst.craterRadius()));
+            case TOWERS -> {
+                for (Pillar p : inst.pillars()) {
+                    zones.add(Zone.circle(ZoneType.UPDRAFT, p.x(), p.z(), Math.max(2.0, p.radius() - 1.0)));
+                }
+            }
+            case OVERPASS -> zones.add(Zone.rect(ZoneType.CONVEYOR, cx, cz,
+                    inst.craterRadius() * inst.craterDepth() / 2.0 + 4.0, 4.5, inst.rivuletAngles()[0]));
+            case COLUMNS -> zones.add(Zone.circle(ZoneType.SLICK, cx, cz, inst.reach()));
+            case GEYSER -> {
+                for (Pillar p : inst.pillars()) {
+                    zones.add(new Zone(ZoneType.GEYSER, ZoneShape.CIRCLE, p.x(), p.z(), 2.4, 2.4, 0.0,
+                            mix(inst.seed(), p.x(), p.z())));
+                }
+            }
+            default -> {}
+        }
+        return zones;
+    }
 
     public java.util.List<Sighting> sightingsNear(int x, int z, int margin, int seaLevel,
                                                   IntBinaryOperator ground) {
@@ -720,7 +807,8 @@ public final class Landforms {
         }
         String key = disciplineId + ":" + inst.kind().name().toLowerCase(java.util.Locale.ROOT) + ":" + inst.cx() +
                 ":" + inst.cz();
-        return new Sighting(key, label, color, icon, inst.cx(), inst.cz(), inst.baseY(), inst.reach());
+        return new Sighting(key, label, color, icon, inst.cx(), inst.cz(), inst.baseY(), inst.reach(),
+                zonesOf(inst));
     }
 
     public boolean occupies(int x, int z, int margin, int seaLevel, IntBinaryOperator ground) {

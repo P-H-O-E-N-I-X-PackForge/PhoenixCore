@@ -100,6 +100,14 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Draw where the physics of the landforms your team has found act on the Solaris map (updrafts, low",
+                "gravity, conveyors, bounce pads, slick rock), and a live countdown above each geyser vent. Client side.",
+                "Default: true"
+        })
+        public boolean landformZones = true;
+
+        @Configurable
+        @Configurable.Comment({
                 "Show your team's Research Terminals and the Ethereal Spawn on the Solaris map. Default: true"
         })
         public boolean researchSiteMarkers = true;
@@ -111,6 +119,21 @@ public class PhoenixConfigs {
                 "much and how deep. Default: true"
         })
         public boolean oreSense = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Whether ore sense remembers what a team has sensed. PERSISTENT: it stays on their map and is",
+                "refreshed when they return. LIVE: only the ore around the player right now is shown.",
+                "Default: PERSISTENT. Scripts can change it per discipline through OreSenseApi."
+        })
+        public net.phoenix.core.api.OreSenseApi.Persistence oreSenseMemory = net.phoenix.core.api.OreSenseApi.Persistence.PERSISTENT;
+
+        @Configurable
+        @Configurable.Comment({
+                "Comma-separated disciplines (phoenix, sculk, void, sealed_a, sealed_b) whose ore sense is always LIVE,",
+                "whatever oreSenseMemory says. Default: empty"
+        })
+        public String oreSenseLiveDisciplines = "";
 
         @Configurable
         @Configurable.Comment({ "How many chunks around you ore sense looks. Default: 6" })

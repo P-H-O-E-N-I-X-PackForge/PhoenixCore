@@ -6,9 +6,12 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.phoenix.core.integration.conflux.dimension.worldgen.Landforms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,7 +23,8 @@ public class LandformDiscoveryData extends SavedData {
 
     private static final String DATA_NAME = "phoenixcore_landform_discovery";
 
-    public record Entry(String dimension, String label, String color, String icon, int x, int z, int y) {}
+    public record Entry(String dimension, String label, String color, String icon, int x, int z, int y,
+                        List<Landforms.Zone> zones) {}
 
     private final Map<UUID, Map<String, Entry>> byTeam = new HashMap<>();
 
@@ -33,9 +37,18 @@ public class LandformDiscoveryData extends SavedData {
     /** Returns true if this landform was not known to the team before. */
     public boolean discover(UUID team, String key, Entry entry) {
         Map<String, Entry> known = byTeam.computeIfAbsent(team, id -> new LinkedHashMap<>());
-        if (known.putIfAbsent(key, entry) != null) return false;
-        setDirty();
-        return true;
+        Entry existing = known.get(key);
+        if (existing == null) {
+            known.put(key, entry);
+            setDirty();
+            return true;
+        }
+        // Landforms found before zones were recorded get them filled in the next time they are seen.
+        if (existing.zones().isEmpty() && !entry.zones().isEmpty()) {
+            known.put(key, entry);
+            setDirty();
+        }
+        return false;
     }
 
     public Map<String, Entry> forTeam(UUID team) {
@@ -52,8 +65,17 @@ public class LandformDiscoveryData extends SavedData {
             ListTag entries = teamTag.getList("Landforms", Tag.TAG_COMPOUND);
             for (int j = 0; j < entries.size(); j++) {
                 CompoundTag e = entries.getCompound(j);
+                List<Landforms.Zone> zones = new ArrayList<>();
+                ListTag zoneList = e.getList("Zones", Tag.TAG_COMPOUND);
+                for (int k = 0; k < zoneList.size(); k++) {
+                    CompoundTag z = zoneList.getCompound(k);
+                    zones.add(new Landforms.Zone(Landforms.ZoneType.values()[z.getByte("Type")],
+                            Landforms.ZoneShape.values()[z.getByte("Shape")], z.getDouble("X"), z.getDouble("Z"),
+                            z.getDouble("A"), z.getDouble("B"), z.getDouble("Theta"), z.getLong("Phase")));
+                }
                 known.put(e.getString("Key"), new Entry(e.getString("Dimension"), e.getString("Label"),
-                        e.getString("Color"), e.getString("Icon"), e.getInt("X"), e.getInt("Z"), e.getInt("Y")));
+                        e.getString("Color"), e.getString("Icon"), e.getInt("X"), e.getInt("Z"), e.getInt("Y"),
+                        zones));
             }
             data.byTeam.put(teamTag.getUUID("Team"), known);
         }
@@ -78,6 +100,20 @@ public class LandformDiscoveryData extends SavedData {
                 e.putInt("X", value.x());
                 e.putInt("Z", value.z());
                 e.putInt("Y", value.y());
+                ListTag zoneList = new ListTag();
+                for (Landforms.Zone zone : value.zones()) {
+                    CompoundTag z = new CompoundTag();
+                    z.putByte("Type", (byte) zone.type().ordinal());
+                    z.putByte("Shape", (byte) zone.shape().ordinal());
+                    z.putDouble("X", zone.x());
+                    z.putDouble("Z", zone.z());
+                    z.putDouble("A", zone.a());
+                    z.putDouble("B", zone.b());
+                    z.putDouble("Theta", zone.theta());
+                    z.putLong("Phase", zone.phase());
+                    zoneList.add(z);
+                }
+                e.put("Zones", zoneList);
                 entries.add(e);
             }
             teamTag.put("Landforms", entries);

@@ -33,7 +33,15 @@ every 2 seconds for landforms within `discoverMargin` blocks of their edge and r
 (saved with the overworld, per research team). Every 5 seconds the team's discovered landforms are synced to each member
 as Solaris markers in a "Landforms" category; only changes are sent.
 
-Not done yet: the geyser eruption countdown and updraft-zone overlays from `LandformPhysics`.
+### Effect zones and the geyser countdown
+
+`Landforms.zonesOf` describes where each landform's `LandformPhysics` effect applies (updraft, low gravity, conveyor, bounce,
+slick, geyser vent), as circles or oriented rectangles in world X/Z. The zones are stored with each discovery and sent to team
+members in `S2CLandformZonesPacket` whenever they change. On the client `SolarisZoneBridge` is a Solaris `MapLayer` that draws
+them on the fullscreen map, tinted by type, and puts a live countdown above every geyser vent. Geyser timing is the server's
+own formula (`(gameTime + phase) mod 200`, erupting for 40 ticks, bubbling for the 30 before) run on the synced game time, so
+no per-second packets are needed. `landformZones` turns it off. Landforms found before this existed get their zones the next time
+a player is near them.
 
 ## Research sites
 
@@ -55,8 +63,19 @@ result as "Ore Sense" markers. What you see depends on the share of your discipl
 | 2 | 40% of the tree | "<Ore> deposit", chunk centre, ore colour |
 | 3 | 80% of the tree | "<Ore> xN (yA to B)", exact centre of the ore |
 
-Chunks with fewer than `oreSenseMinBlocks` of one ore are skipped, the nearest 64 readings are shown, and nothing is
-saved: it is a sense, not a survey.
+Chunks with fewer than `oreSenseMinBlocks` of one ore are skipped and the nearest 128 readings are shown.
+
+### Memory and the pack-dev API
+
+By default what a team senses is remembered (`OreMemoryData`, per team, per chunk): it stays on their map, is replaced when
+they scan the chunk again (so mined-out ore drops off), and shows at whatever tier their research gives *now*. A team can only
+remember what it was able to sense, so nothing is stored before its first research.
+
+`OreSenseApi` controls this: `setPersistence(discipline, PERSISTENT | LIVE | null)` overrides it at runtime (not saved; call it
+on server start), and `forget(server, team)`, `forgetDiscipline(server, discipline)` and `forgetAll(server)` clear memory. The
+config has `oreSenseMemory` for the default and `oreSenseLiveDisciplines` to force some disciplines to LIVE. In LIVE mode only
+the ore around the player is shown. `OreSenseEvent.Remember` is posted for each reading about to be remembered and can be
+cancelled to keep that ore out of the team's memory.
 
 ## Discipline skin (client)
 

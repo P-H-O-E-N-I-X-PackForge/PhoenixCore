@@ -10,6 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.neoforged.neoforge.common.NeoForge;
+import net.phoenix.core.api.OreSenseApi;
+import net.phoenix.core.api.OreSenseEvent;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry;
 import net.phoenix.core.integration.conflux.dimension.worldgen.DisciplineWorldgenConfig;
@@ -47,6 +50,7 @@ final class OreSense {
     private static final int RESCAN_TICKS = 3000;
     private static final int SCANS_PER_STEP = 2;
     private static final int MAX_CACHE = 4096;
+    private static final int MAX_MARKERS = 128;
 
     private static final Map<ScanKey, Scan> CACHE = new HashMap<>();
     private static final Map<String, Set<Block>> ORE_BLOCKS = new HashMap<>();
@@ -116,17 +120,47 @@ final class OreSense {
 
                     LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
                     if (chunk == null) continue;
-                    CACHE.put(key, new Scan(now, scan(chunk, ores)));
+                    List<Reading> found = scan(chunk, ores);
+                    CACHE.put(key, new Scan(now, found));
+                    remember(player, level, discipline, cx, cz, found);
                     scanned++;
                 }
             }
         }
     }
 
-    /** What is known around the player, nearest first, limited to chunks inside the sense radius. */
+    private static boolean persistent(String discipline) {
+        return OreSenseApi.getPersistence(discipline) == OreSenseApi.Persistence.PERSISTENT;
+    }
+
+    // A team can only remember what it was able to sense, so nothing is stored before the first research.
+    private static void remember(ServerPlayer player, ServerLevel level, String discipline, int cx, int cz,
+                                 List<Reading> found) {
+        if (!persistent(discipline) || tier(player) == 0) return;
+
+        var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+        UUID team = ResearchTeamHelper.getTeamId(player);
+        String dimension = level.dimension().location().toString();
+
+        List<OreMemoryData.Memory> memories = new ArrayList<>();
+        for (Reading reading : found) {
+            if (reading.count() < config.oreSenseMinBlocks) continue;
+            var event = new OreSenseEvent.Remember(level.getServer(), team, discipline, reading.block(), cx, cz,
+                    reading.count());
+            if (NeoForge.EVENT_BUS.post(event).isCanceled()) continue;
+            memories.add(new OreMemoryData.Memory(dimension, cx, cz,
+                    BuiltInRegistries.BLOCK.getKey(reading.block()).toString(), reading.count(), reading.x(),
+                    reading.y(), reading.z(), reading.minY(), reading.maxY()));
+        }
+        OreMemoryData.get(level).replaceChunk(team, dimension, cx, cz, memories);
+    }
+
+    /** What the player can sense, nearest first: what the team remembers, or only what is around them. */
     static List<Reading> readings(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
         var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+        String discipline = disciplineOf(level);
+        if (discipline != null && persistent(discipline)) return remembered(player, level);
         int radius = config.oreSenseRadiusChunks;
         ChunkPos center = player.chunkPosition();
 
@@ -141,7 +175,23 @@ final class OreSense {
             }
         }
         out.sort(Comparator.comparingDouble(r -> player.distanceToSqr(r.x(), r.y(), r.z())));
-        return out.size() > 64 ? out.subList(0, 64) : out;
+        return out.size() > MAX_MARKERS ? out.subList(0, MAX_MARKERS) : out;
+    }
+
+    private static List<Reading> remembered(ServerPlayer player, ServerLevel level) {
+        UUID team = ResearchTeamHelper.getTeamId(player);
+        List<Reading> out = new ArrayList<>();
+        for (OreMemoryData.Memory memory : OreMemoryData.get(level).forTeam(team,
+                level.dimension().location().toString())) {
+            var id = net.minecraft.resources.ResourceLocation.tryParse(memory.block());
+            if (id == null) continue;
+            Block block = BuiltInRegistries.BLOCK.get(id);
+            if (block == net.minecraft.world.level.block.Blocks.AIR) continue;
+            out.add(new Reading(memory.chunkX(), memory.chunkZ(), block, memory.count(), memory.x(), memory.y(),
+                    memory.z(), memory.minY(), memory.maxY()));
+        }
+        out.sort(Comparator.comparingDouble(r -> player.distanceToSqr(r.x(), r.y(), r.z())));
+        return out.size() > MAX_MARKERS ? out.subList(0, MAX_MARKERS) : out;
     }
 
     private static Set<Block> oresFor(String discipline) {

@@ -9,17 +9,20 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
 import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
 import net.phoenix.core.integration.conflux.dimension.worldgen.Landforms;
 import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
 import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
+import net.phoenix.core.network.packet.S2CLandformZonesPacket;
 import net.phoenixvine.solaris.api.SolarisMarkerSyncEvent;
 import net.phoenixvine.solaris.integration.MarkerSync;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,6 +35,7 @@ final class SolarisLandmarkBridge {
 
     private static final MarkerSync MARKERS = new MarkerSync("FFFFFF", "DOT", "Landforms");
     private static boolean listening = false;
+    private static final Map<UUID, Integer> ZONE_HASH = new HashMap<>();
 
     private SolarisLandmarkBridge() {}
 
@@ -49,6 +53,7 @@ final class SolarisLandmarkBridge {
     }
 
     static void forget(UUID player) {
+        ZONE_HASH.remove(player);
         MARKERS.reset(player);
         SolarisOreBridge.forget(player);
     }
@@ -66,7 +71,7 @@ final class SolarisLandmarkBridge {
         String dimension = level.dimension().location().toString();
         for (Landforms.Sighting sighting : sightings) {
             var entry = new LandformDiscoveryData.Entry(dimension, sighting.label(), sighting.color(),
-                    sighting.icon(), sighting.x(), sighting.z(), sighting.baseY());
+                    sighting.icon(), sighting.x(), sighting.z(), sighting.baseY(), sighting.zones());
             if (data.discover(team, sighting.key(), entry)) {
                 player.displayClientMessage(Component.literal("Discovered: " + sighting.label()), true);
             }
@@ -86,6 +91,21 @@ final class SolarisLandmarkBridge {
         }
         if (PhoenixConfigs.INSTANCE.confluxSolaris.researchSiteMarkers) addSites(player, team, desired);
         MARKERS.apply(player, desired);
+        if (PhoenixConfigs.INSTANCE.confluxSolaris.landformZones) sendZones(player, team);
+    }
+
+    private static void sendZones(ServerPlayer player, UUID team) {
+        List<S2CLandformZonesPacket.ZoneDef> defs = new ArrayList<>();
+        for (LandformDiscoveryData.Entry entry : LandformDiscoveryData.get(player.serverLevel()).forTeam(team)
+                .values()) {
+            for (Landforms.Zone zone : entry.zones()) defs.add(new S2CLandformZonesPacket.ZoneDef(entry.dimension(),
+                    zone));
+        }
+        int hash = defs.hashCode();
+        Integer sent = ZONE_HASH.get(player.getUUID());
+        if (sent != null && sent == hash) return;
+        ZONE_HASH.put(player.getUUID(), hash);
+        PacketDistributor.sendToPlayer(player, new S2CLandformZonesPacket(defs));
     }
 
     private static void addSites(ServerPlayer player, UUID team, Map<String, MarkerSync.Marker> desired) {

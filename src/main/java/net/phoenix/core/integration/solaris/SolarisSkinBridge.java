@@ -31,6 +31,7 @@ final class SolarisSkinBridge {
         }
 
         SolarisBackdropBridge.registerAll();
+        SolarisZoneBridge.register();
 
         ConfluxTheme.refresh();
         String discipline = disciplineFor(mc.level);
@@ -43,6 +44,7 @@ final class SolarisSkinBridge {
     }
 
     static void clear() {
+        ClientLandformZones.clear();
         SolarisThemeUtils.setAccentOverride(null);
     }
 
