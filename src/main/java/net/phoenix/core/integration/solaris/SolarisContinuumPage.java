@@ -208,6 +208,73 @@ final class SolarisContinuumPage implements MapPage {
         return new double[] { x, y };
     }
 
+    // ------------------------------------------------------------------ outpost list
+
+    private static final int LIST_WIDTH = 176;
+    private static final int ROW = 13;
+    private int listX;
+    private int listY;
+    private final List<ContinuumBody> listRows = new ArrayList<>();
+
+    private List<ContinuumBody> outpostBodies() {
+        List<ContinuumBody> out = new ArrayList<>();
+        for (ContinuumBody body : bodies()) {
+            if (ContinuumClientState.outpost(body.id()) != null) out.add(body);
+        }
+        return out;
+    }
+
+    private static int statusColor(ContinuumStateSnapshot.OutpostView outpost) {
+        if (outpost.damaged()) return 0xFF5555;
+        if (!outpost.powered()) return 0xFFAA33;
+        return outpost.readyAt(ContinuumClientState.now()) > 0 ? 0x66FF88 : 0x66DDFF;
+    }
+
+    @Override
+    public void renderOverlay(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+        listRows.clear();
+        List<ContinuumBody> rows = outpostBodies();
+        if (rows.isEmpty()) return;
+
+        var font = Minecraft.getInstance().font;
+        listX = x + 6;
+        listY = y + 6;
+        int height = 16 + rows.size() * ROW + 4;
+        g.fill(listX, listY, listX + LIST_WIDTH, listY + height, 0xD0101418);
+        g.renderOutline(listX, listY, LIST_WIDTH, height, 0xFF3A4452);
+        g.drawString(font, "Outposts (" + rows.size() + ")", listX + 6, listY + 5, 0xFFFFFFFF, false);
+
+        ContinuumBody shown = current();
+        long now = ContinuumClientState.now();
+        for (int i = 0; i < rows.size(); i++) {
+            ContinuumBody body = rows.get(i);
+            ContinuumStateSnapshot.OutpostView outpost = ContinuumClientState.outpost(body.id());
+            int ry = listY + 16 + i * ROW;
+            boolean hover = mouseX >= listX && mouseX < listX + LIST_WIDTH && mouseY >= ry && mouseY < ry + ROW;
+            if (body == shown) g.fill(listX + 1, ry, listX + LIST_WIDTH - 1, ry + ROW, 0x40FFFFFF);
+            else if (hover) g.fill(listX + 1, ry, listX + LIST_WIDTH - 1, ry + ROW, 0x20FFFFFF);
+            g.fill(listX + 6, ry + 4, listX + 11, ry + 9, 0xFF000000 | statusColor(outpost));
+            String name = font.plainSubstrByWidth(body.name(), 84);
+            g.drawString(font, name, listX + 15, ry + 3, 0xFFDDE4EE, false);
+            String right = outpost.probes() + "p  " + outpost.readyAt(now) + " rdy";
+            g.drawString(font, right, listX + LIST_WIDTH - 6 - font.width(right), ry + 3, 0xFF99A6B8, false);
+            listRows.add(body);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button != 0 || listRows.isEmpty()) return false;
+        if (mouseX < listX || mouseX >= listX + LIST_WIDTH) return false;
+        int row = (int) ((mouseY - (listY + 16)) / ROW);
+        if (mouseY < listY + 16 || row < 0 || row >= listRows.size()) return false;
+
+        int index = bodies().indexOf(listRows.get(row));
+        if (index < 0) return false;
+        selected = index;
+        return true;
+    }
+
     @Override
     public Component footer() {
         ContinuumBody body = current();
