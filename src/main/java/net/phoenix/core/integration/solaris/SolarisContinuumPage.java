@@ -57,7 +57,10 @@ final class SolarisContinuumPage implements MapPage {
         List<ContinuumBody> out = new ArrayList<>();
         for (ContinuumBody body : ContinuumData.allBodies()) {
             if (ContinuumClientState.isHidden(body.id())) continue;
-            if (!ContinuumClientState.stage(body.id()).atLeast(DiscoveryStage.DETECTED)) continue;
+            if (!PhoenixConfigs.INSTANCE.confluxSolaris.continuumPageShowUndiscovered &&
+                    !ContinuumClientState.stage(body.id()).atLeast(DiscoveryStage.DETECTED)) {
+                continue;
+            }
             out.add(body);
         }
         // per system: the central body first, then everything by distance
@@ -141,7 +144,9 @@ final class SolarisContinuumPage implements MapPage {
 
         if (!charted(body)) {
             var font = Minecraft.getInstance().font;
-            String text = "Only detected. Survey " + body.name() + " to chart it.";
+            String text = ContinuumClientState.stage(body.id()) == DiscoveryStage.UNKNOWN ?
+                    body.name() + " has not been detected yet." :
+                    "Only detected. Survey " + body.name() + " to chart it.";
             g.drawCenteredString(font, text, x + w / 2, y + h / 2, 0xFFFFFFFF);
         }
     }

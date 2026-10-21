@@ -52,6 +52,7 @@ final class ContinuumBodySearchScreen extends Screen {
     private EditBox box;
     private Kind kind = Kind.ALL;
     private int scroll;
+    private final long openedAt = net.minecraft.Util.getMillis();
 
     ContinuumBodySearchScreen(@Nullable Screen parent, List<ContinuumBody> bodies, Consumer<ContinuumBody> onPick) {
         super(Component.literal("Search bodies"));
@@ -120,14 +121,13 @@ final class ContinuumBodySearchScreen extends Screen {
     @Override
     protected void renderBlurredBackground(float partialTick) {}
 
+    /** Drawn by {@link #render} itself; Screen.render would otherwise paint it over the panel. */
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float partialTick) {
-        g.fill(0, 0, width, height, 0xE00A0E14);
-    }
+    public void renderBackground(GuiGraphics g, int mx, int my, float partialTick) {}
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float partialTick) {
-        renderBackground(g, mx, my, partialTick);
+        g.fill(0, 0, width, height, 0xE00A0E14);
         int x = left();
         int y = top();
         int panelH = Math.min(height - 24 - y, 62 + visibleRows() * ROW + 8);
@@ -212,6 +212,13 @@ final class ContinuumBodySearchScreen extends Screen {
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
         scroll -= (int) Math.signum(scrollY) * 2;
         return true;
+    }
+
+    @Override
+    public boolean charTyped(char c, int mods) {
+        // the F that opened this screen arrives as a character a moment later: do not type it into the box
+        if ((c == 'f' || c == 'F') && net.minecraft.Util.getMillis() - openedAt < 150) return true;
+        return super.charTyped(c, mods);
     }
 
     @Override
