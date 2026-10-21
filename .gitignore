@@ -33,3 +33,4 @@ run-data/
 /src/generated/resources/.cache/*
 /docs/.venv/
 run-1211/
+server_core.txt
