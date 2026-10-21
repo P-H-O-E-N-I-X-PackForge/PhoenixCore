@@ -1,0 +1,38 @@
+{
+  "system": "phoenix_continuum:tenebrae",
+  "type": "planet",
+  "name": "Shredded Star",
+  "description": "A star that wandered too close. It will not last long.",
+  "style": "tidal_disruption",
+  "orbit": {
+    "radius_au": 4.5,
+    "period_days": 500,
+    "phase": 0.62
+  },
+  "radius": 0.8,
+  "gas_giant": false,
+  "surface": {
+    "seed": 3131,
+    "scale": 3.0,
+    "low": "#ff8a30",
+    "mid": "#ffd080",
+    "high": "#ffffff"
+  },
+  "atmosphere": {
+    "color": "#ffb060",
+    "density": 0.0
+  },
+  "trip_minutes": 30,
+  "initial_stage": "unknown",
+  "transient": {
+    "duration_minutes": 5,
+    "cooldown_minutes": 45,
+    "chance": 0.6,
+    "inner_au": 0.4,
+    "outer_au": 4.5
+  },
+  "lore": {
+    "detected": "A point of light that is being pulled into a line.",
+    "surveyed": "A whole star, stretched into a stream and wound into the hole. For a few minutes it outshines the disk; then there is only the glow, fading."
+  }
+}
