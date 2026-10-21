@@ -134,6 +134,7 @@ public class PhoenixCore {
         GregPacksUpgrades.init();
 
         PHOENIX_REGISTRATE.registerEventListeners(modEventBus);
+        net.phoenix.core.integration.continuum.ContinuumBridge.init();
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerPayloads);
@@ -226,6 +227,7 @@ public class PhoenixCore {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         registerCurioRenderers();
+        event.enqueueWork(net.phoenix.core.integration.continuum.ContinuumBridge::initClient);
     }
 
     private void registerCurioRenderers() {
