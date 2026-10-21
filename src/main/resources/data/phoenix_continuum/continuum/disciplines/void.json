@@ -1,0 +1,22 @@
+{
+  "discipline": "void",
+  "affinities": [
+    {
+      "type": "black_hole",
+      "trip": 0.85,
+      "yield": 1.2,
+      "label": "The Void reads the dark between stars."
+    },
+    {
+      "system": "phoenix_continuum:tenebrae",
+      "wear": 0.85,
+      "label": "Tenebrae is quiet to the Void."
+    },
+    {
+      "system": "phoenix_continuum:reliquary",
+      "trip": 0.9,
+      "yield": 1.15,
+      "label": "The Void keeps company with what is dead."
+    }
+  ]
+}

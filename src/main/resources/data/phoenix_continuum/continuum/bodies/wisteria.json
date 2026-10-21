@@ -1,0 +1,60 @@
+{
+  "system": "phoenix_continuum:duet",
+  "type": "planet",
+  "name": "Wisteria",
+  "description": "A pale violet gas giant, banded and slowly stirred by the pair it circles.",
+  "orbit": {
+    "radius_au": 3.2,
+    "period_days": 1500,
+    "phase": 0.7
+  },
+  "radius": 7.5,
+  "gas_giant": true,
+  "axial_tilt": 3,
+  "spin_deg_per_sec": 11,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 17,
+    "scale": 5.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#4a2a7a",
+    "mid": "#a070e0",
+    "high": "#eadbff",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#b48cff",
+    "density": 0.4
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_tenebrae_lensing",
+    "surveyed_research": "phoenixcore:space_survey_umbra"
+  },
+  "trip_minutes": 40,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 4,
+      "max": 9,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:glowstone_dust",
+      "min": 3,
+      "max": 6,
+      "chance": 0.6
+    }
+  ],
+  "lore": {
+    "detected": "A gas giant tinted violet, close enough to the pair that its bands lean toward them.",
+    "surveyed": "The storm bands on Wisteria are pulled slightly out of true twice an orbit, once for each of the holes. The deformation is regular enough to set a clock by."
+  }
+}

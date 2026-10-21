@@ -1,0 +1,16 @@
+{
+  "discipline": "sealed_b",
+  "affinities": [
+    {
+      "system": "phoenix_continuum:kaleid",
+      "yield": 1.2,
+      "wear": 0.85,
+      "label": "Sealed B cuts clean along the Kaleid."
+    },
+    {
+      "system": "phoenix_continuum:reliquary",
+      "wear": 0.9,
+      "label": "Sealed B reads the ruins of Reliquary."
+    }
+  ]
+}
