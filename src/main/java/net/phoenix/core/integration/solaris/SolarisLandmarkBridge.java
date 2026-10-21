@@ -90,6 +90,7 @@ final class SolarisLandmarkBridge {
                     new BlockPos(e.x(), e.y(), e.z()), e.color(), e.icon(), "Landforms"));
         }
         if (PhoenixConfigs.INSTANCE.confluxSolaris.researchSiteMarkers) addSites(player, team, desired);
+        if (PhoenixConfigs.INSTANCE.confluxSolaris.networkSiteMarkers) addNetworkSites(player, desired);
         MARKERS.apply(player, desired);
         if (PhoenixConfigs.INSTANCE.confluxSolaris.landformZones) sendZones(player, team);
     }
@@ -108,10 +109,21 @@ final class SolarisLandmarkBridge {
         PacketDistributor.sendToPlayer(player, new S2CLandformZonesPacket(defs));
     }
 
+    /** Tesla towers, range extenders and Continuum launch complexes. These use the guild/player team, not research. */
+    private static void addNetworkSites(ServerPlayer player, Map<String, MarkerSync.Marker> desired) {
+        for (NetworkSites.Site site : NetworkSites.of(player)) {
+            String key = "phoenixcore:net/" + site.kind() + "/" + Long.toHexString(site.pos().asLong()) + "/" +
+                    Integer.toHexString(site.dimension().hashCode());
+            desired.put(key, new MarkerSync.Marker(site.name(), site.dimension(), site.pos(), site.color(),
+                    site.icon(), site.category()));
+        }
+    }
+
     private static void addSites(ServerPlayer player, UUID team, Map<String, MarkerSync.Marker> desired) {
         MinecraftServer server = player.server;
         TeamSiteData sites = TeamSiteData.get(player.serverLevel());
         for (Map.Entry<String, TeamSiteData.Site> entry : new ArrayList<>(sites.forTeam(team).entrySet())) {
+            if (!entry.getKey().startsWith("terminal/")) continue;
             TeamSiteData.Site site = entry.getValue();
             ResourceLocation dimension = ResourceLocation.parse(site.dimension());
             ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimension));

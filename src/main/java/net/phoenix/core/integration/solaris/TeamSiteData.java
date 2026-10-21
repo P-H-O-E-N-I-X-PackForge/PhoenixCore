@@ -46,6 +46,15 @@ public class TeamSiteData extends SavedData {
         if (sites.put(key, new Site(dimension, pos.getX(), pos.getY(), pos.getZ())) == null) data.setDirty();
     }
 
+    /** Remembers a site of another kind (for example a Continuum launch complex) for a team. */
+    public static void registerSite(ServerLevel level, UUID team, String kind, BlockPos pos) {
+        TeamSiteData data = get(level);
+        String dimension = level.dimension().location().toString();
+        String key = kind + "/" + dimension + "/" + pos.asLong();
+        Map<String, Site> sites = data.byTeam.computeIfAbsent(team, id -> new LinkedHashMap<>());
+        if (sites.put(key, new Site(dimension, pos.getX(), pos.getY(), pos.getZ())) == null) data.setDirty();
+    }
+
     public Map<String, Site> forTeam(UUID team) {
         return byTeam.getOrDefault(team, Map.of());
     }

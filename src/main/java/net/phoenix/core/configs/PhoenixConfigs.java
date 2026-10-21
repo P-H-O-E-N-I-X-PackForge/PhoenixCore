@@ -114,6 +114,13 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Show your team's Tesla towers and range extenders (green when online) and Continuum Launch",
+                "Complexes on the Solaris map. Default: true"
+        })
+        public boolean networkSiteMarkers = true;
+
+        @Configurable
+        @Configurable.Comment({
                 "Ore sense: inside a Conflux dimension, mark the ore around you on the Solaris map. How much you see",
                 "grows with your discipline's research: some ore is there, then which ore, then exactly where, how",
                 "much and how deep. Default: true"
