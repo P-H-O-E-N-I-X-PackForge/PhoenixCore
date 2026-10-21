@@ -56,12 +56,15 @@ final class SolarisContinuumPage implements MapPage {
 
         List<ContinuumBody> out = new ArrayList<>();
         for (ContinuumBody body : ContinuumData.allBodies()) {
-            if (body.type() != ContinuumBody.Type.PLANET && body.type() != ContinuumBody.Type.MOON) continue;
             if (ContinuumClientState.isHidden(body.id())) continue;
             if (!ContinuumClientState.stage(body.id()).atLeast(DiscoveryStage.DETECTED)) continue;
             out.add(body);
         }
-        out.sort(Comparator.comparing((ContinuumBody b) -> b.system().toString()).thenComparing(b -> b.orbitAu()));
+        // per system: the central body first, then everything by distance
+        out.sort(Comparator.comparing((ContinuumBody b) -> b.system().toString())
+                .thenComparing(b -> b.type() == ContinuumBody.Type.STAR || b.type() == ContinuumBody.Type.BLACK_HOLE ?
+                        0 : 1)
+                .thenComparing(b -> b.orbitAu()));
         cachedBodies = out;
         return out;
     }
@@ -202,6 +205,27 @@ final class SolarisContinuumPage implements MapPage {
         return new double[] { x, y };
     }
 
+    private int searchX;
+    private int searchY;
+    private int searchW;
+
+    private void openSearch() {
+        var mc = Minecraft.getInstance();
+        mc.setScreen(new ContinuumBodySearchScreen(mc.screen, bodies(), body -> {
+            int index = bodies().indexOf(body);
+            if (index >= 0) selected = index;
+        }));
+    }
+
+    @Override
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
+        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_F) {
+            openSearch();
+            return true;
+        }
+        return false;
+    }
+
     private static final int LIST_WIDTH = 176;
     private static final int ROW = 13;
     private int listX;
@@ -224,6 +248,17 @@ final class SolarisContinuumPage implements MapPage {
 
     @Override
     public void renderOverlay(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+        var searchFont = Minecraft.getInstance().font;
+        String searchLabel = "Search bodies  [F]";
+        searchW = searchFont.width(searchLabel) + 14;
+        searchX = x + w - searchW - 6;
+        searchY = y + 6;
+        boolean searchHover = mouseX >= searchX && mouseX < searchX + searchW && mouseY >= searchY &&
+                mouseY < searchY + 15;
+        g.fill(searchX, searchY, searchX + searchW, searchY + 15, searchHover ? 0xE02A3A50 : 0xD0101418);
+        g.renderOutline(searchX, searchY, searchW, 15, 0xFF3A4452);
+        g.drawString(searchFont, searchLabel, searchX + 7, searchY + 4, 0xFFFFFFFF, false);
+
         listRows.clear();
         List<ContinuumBody> rows = outpostBodies();
         if (rows.isEmpty()) return;
@@ -256,6 +291,11 @@ final class SolarisContinuumPage implements MapPage {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && searchW > 0 && mouseX >= searchX && mouseX < searchX + searchW && mouseY >= searchY &&
+                mouseY < searchY + 15) {
+            openSearch();
+            return true;
+        }
         if (button != 0 || listRows.isEmpty()) return false;
         if (mouseX < listX || mouseX >= listX + LIST_WIDTH) return false;
         int row = (int) ((mouseY - (listY + 16)) / ROW);
@@ -277,6 +317,6 @@ final class SolarisContinuumPage implements MapPage {
                         body.yields().size() :
                 "";
         return Component.literal(body.name() + "  (" + stage.label() + ")" + mapped +
-                "   Q / E: switch body   Esc: back");
+                "   Q / E: switch   F: search   Esc: back");
     }
 }
