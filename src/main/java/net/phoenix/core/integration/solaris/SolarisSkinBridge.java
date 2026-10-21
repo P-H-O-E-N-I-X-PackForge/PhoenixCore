@@ -8,30 +8,18 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.core.integration.conflux.client.ClientResearchCache;
 import net.phoenix.core.integration.conflux.client.ConfluxTheme;
 import net.phoenix.core.integration.conflux.research.DisciplineInfo;
-import net.phoenixvine.solaris.api.SolarisAPI;
 import net.phoenixvine.solaris.client.SolarisThemeUtils;
-import net.phoenixvine.solaris.client.render.UnexploredStyle;
 
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 /**
  * Makes the Solaris map look like it belongs to the player's discipline: the accent colour follows the
  * Conflux discipline (the dimension's own inside a Conflux dimension, otherwise the one the player
- * chose), and each Conflux dimension gets its own fog of war. Only reached when Solaris is loaded.
+ * chose), and each Conflux dimension's unexplored area is drawn with that dimension's sky shader (see
+ * {@link SolarisBackdropBridge}). Only reached when Solaris is loaded.
  */
 @OnlyIn(Dist.CLIENT)
 final class SolarisSkinBridge {
-
-    private static final Map<String, UnexploredStyle> FOG = Map.of(
-            "phoenix", UnexploredStyle.PHOENIX,
-            "void", UnexploredStyle.STARFIELD,
-            "sculk", UnexploredStyle.CLOUD,
-            "sealed_a", UnexploredStyle.FOG,
-            "sealed_b", UnexploredStyle.FOG);
-
-    private static boolean fogApplied = false;
 
     private SolarisSkinBridge() {}
 
@@ -42,13 +30,7 @@ final class SolarisSkinBridge {
             return;
         }
 
-        if (!fogApplied) {
-            fogApplied = true;
-            for (Map.Entry<String, UnexploredStyle> fog : FOG.entrySet()) {
-                SolarisAPI.setUnexploredStyle(ResourceLocation.fromNamespaceAndPath("phoenixcore",
-                        "conflux/" + fog.getKey()), fog.getValue());
-            }
-        }
+        SolarisBackdropBridge.registerAll();
 
         ConfluxTheme.refresh();
         String discipline = disciplineFor(mc.level);

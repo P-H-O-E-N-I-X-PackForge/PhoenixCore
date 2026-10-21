@@ -23,6 +23,7 @@ public final class SolarisEvents {
 
     private static final int DISCOVER_INTERVAL_TICKS = 40;
     private static final int SYNC_INTERVAL_TICKS = 100;
+    private static final int ORE_SCAN_INTERVAL_TICKS = 10;
 
     private SolarisEvents() {}
 
@@ -56,10 +57,18 @@ public final class SolarisEvents {
         @SubscribeEvent
         public static void onPlayerTick(PlayerTickEvent.Post event) {
             if (!(event.getEntity() instanceof ServerPlayer player)) return;
-            if (!SolarisSupport.isActive() || !PhoenixConfigs.INSTANCE.confluxSolaris.landformMarkers) return;
+            if (!SolarisSupport.isActive()) return;
 
-            if (player.tickCount % DISCOVER_INTERVAL_TICKS == 0) SolarisLandmarkBridge.discover(player);
-            if (player.tickCount % SYNC_INTERVAL_TICKS == 0) SolarisLandmarkBridge.sync(player);
+            var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+            if (config.landformMarkers && player.tickCount % DISCOVER_INTERVAL_TICKS == 0) {
+                SolarisLandmarkBridge.discover(player);
+            }
+            if (config.oreSense && player.tickCount % ORE_SCAN_INTERVAL_TICKS == 0) OreSense.scanStep(player);
+
+            if (player.tickCount % SYNC_INTERVAL_TICKS == 0) {
+                if (config.landformMarkers || config.researchSiteMarkers) SolarisLandmarkBridge.sync(player);
+                if (config.oreSense) SolarisOreBridge.sync(player);
+            }
         }
 
         @SubscribeEvent

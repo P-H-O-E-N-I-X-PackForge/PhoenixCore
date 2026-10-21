@@ -100,6 +100,46 @@ public class PhoenixConfigs {
 
         @Configurable
         @Configurable.Comment({
+                "Show your team's Research Terminals and the Ethereal Spawn on the Solaris map. Default: true"
+        })
+        public boolean researchSiteMarkers = true;
+
+        @Configurable
+        @Configurable.Comment({
+                "Ore sense: inside a Conflux dimension, mark the ore around you on the Solaris map. How much you see",
+                "grows with your discipline's research: some ore is there, then which ore, then exactly where, how",
+                "much and how deep. Default: true"
+        })
+        public boolean oreSense = true;
+
+        @Configurable
+        @Configurable.Comment({ "How many chunks around you ore sense looks. Default: 6" })
+        @Configurable.Range(min = 1, max = 12)
+        public int oreSenseRadiusChunks = 6;
+
+        @Configurable
+        @Configurable.Comment({ "Fewest ore blocks of one kind in a chunk before it is marked. Default: 6" })
+        @Configurable.Range(min = 1, max = 256)
+        public int oreSenseMinBlocks = 6;
+
+        @Configurable
+        @Configurable.Comment({
+                "Percent of your discipline's research nodes you need for ore sense to say which ore it is (tier 2).",
+                "Any research at all gives tier 1. Default: 40"
+        })
+        @Configurable.Range(min = 1, max = 100)
+        public int oreTier2Percent = 40;
+
+        @Configurable
+        @Configurable.Comment({
+                "Percent of your discipline's research nodes you need for ore sense to give the exact spot, amount",
+                "and depth (tier 3). Default: 80"
+        })
+        @Configurable.Range(min = 1, max = 100)
+        public int oreTier3Percent = 80;
+
+        @Configurable
+        @Configurable.Comment({
                 "How far past a landform's edge, in blocks, you have to be to discover it. Default: 48"
         })
         @Configurable.Range(min = 0, max = 512)

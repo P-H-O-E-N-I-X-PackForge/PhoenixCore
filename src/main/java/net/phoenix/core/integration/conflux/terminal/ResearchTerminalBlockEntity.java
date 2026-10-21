@@ -42,6 +42,20 @@ public class ResearchTerminalBlockEntity extends BlockEntity implements ConfluxM
             setChanged();
         }
         migrateLegacy();
+        registerSite();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        registerSite();
+    }
+
+    // Lets a map show where the team's terminals are without loading them.
+    private void registerSite() {
+        if (ownerTeam != null && level instanceof ServerLevel server) {
+            net.phoenix.core.integration.solaris.TeamSiteData.registerTerminal(server, ownerTeam, getBlockPos());
+        }
     }
 
     private void migrateLegacy() {

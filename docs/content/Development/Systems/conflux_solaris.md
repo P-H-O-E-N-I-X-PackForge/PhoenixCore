@@ -35,8 +35,35 @@ as Solaris markers in a "Landforms" category; only changes are sent.
 
 Not done yet: the geyser eruption countdown and updraft-zone overlays from `LandformPhysics`.
 
+## Research sites
+
+`ResearchTerminalBlockEntity` records itself in `TeamSiteData` when it gets an owner team or loads with one. Every 5
+seconds each team member gets markers for the team's terminals (checked against the world first, so a destroyed terminal
+drops off) and for the Ethereal Spawn, in a "Research" category. `researchSiteMarkers` turns it off. Natural Conflux
+structures are already covered by Solaris's own automatic structure waypoints.
+
+## Ore sense
+
+`OreSense` scans the chunks around a player in a Conflux dimension for the ore blocks that discipline's worldgen config
+places (`DisciplineWorldgenConfig.ores`), two chunks per scan step, cached for 2.5 minutes. `SolarisOreBridge` shows the
+result as "Ore Sense" markers. What you see depends on the share of your discipline's tree your team has researched
+(`oreTier2Percent` / `oreTier3Percent`):
+
+| Tier | Needs | Marker |
+|---|---|---|
+| 1 | any research in the discipline | "Ore deposit", chunk centre, grey |
+| 2 | 40% of the tree | "<Ore> deposit", chunk centre, ore colour |
+| 3 | 80% of the tree | "<Ore> xN (yA to B)", exact centre of the ore |
+
+Chunks with fewer than `oreSenseMinBlocks` of one ore are skipped, the nearest 64 readings are shown, and nothing is
+saved: it is a sense, not a survey.
+
 ## Discipline skin (client)
 
 `SolarisSkinBridge` sets Solaris's accent colour (`SolarisThemeUtils.setAccentOverride`) from `ConfluxTheme.accent`: the
-dimension's own discipline inside a Conflux dimension, otherwise the one the player chose. Each Conflux dimension also gets
-its own fog of war through `SolarisAPI.setUnexploredStyle`: Phoenix, Void (starfield), Sculk (cloud), Sealed (plain fog).
+dimension's own discipline inside a Conflux dimension, otherwise the one the player chose.
+
+`SolarisBackdropBridge` registers an `UnexploredBackdrop` for each Conflux dimension and sets its unexplored style to
+`BACKDROP`, so the unexplored part of the fullscreen map is the dimension's own sky shader (Phoenix nebula, Void galaxy,
+Sculk abyss, Sealed A industrial, Sealed B chaos), drawn through the same inverse view/projection uniforms the sky uses.
+The map's centre becomes the view direction, so the backdrop slides as you pan.
