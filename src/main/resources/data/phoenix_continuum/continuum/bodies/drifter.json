@@ -1,0 +1,74 @@
+{
+  "system": "phoenix_continuum:aurelian",
+  "type": "planet",
+  "name": "Drifter",
+  "description": "A world with no star, passing through on its own.",
+  "orbit": {
+    "radius_au": 5.5,
+    "period_days": 3000,
+    "phase": 0.7
+  },
+  "radius": 0.9,
+  "gas_giant": false,
+  "axial_tilt": 12,
+  "spin_deg_per_sec": 3,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 333,
+    "scale": 2.6,
+    "ocean_level": 0.0,
+    "polar_ice": 0.2,
+    "cloud_cover": 0.0,
+    "bump": 1.1,
+    "low": "#080a10",
+    "mid": "#1a2231",
+    "high": "#46586f",
+    "ocean_deep": "#000000",
+    "ocean_shallow": "#000000",
+    "emissive": "#000000",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#000000",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "mid",
+    "detected_research": null,
+    "surveyed_research": null
+  },
+  "trip_minutes": 50,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:blue_ice",
+      "min": 2,
+      "max": 5,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 1,
+      "max": 3,
+      "chance": 0.6
+    },
+    {
+      "item": "minecraft:echo_shard",
+      "min": 1,
+      "max": 1,
+      "chance": 0.1
+    }
+  ],
+  "transient": {
+    "duration_minutes": 360,
+    "cooldown_minutes": 1500,
+    "chance": 0.2,
+    "inner_au": 0.8,
+    "outer_au": 6.0
+  },
+  "lore": {
+    "detected": "A cold shadow that blots out a patch of stars and does not orbit anything.",
+    "surveyed": "Drifter was thrown out of some other system long ago and has been falling through the dark ever since. Its surface is frozen glass; under the ice there are still the cracks of a world that once had a sun."
+  },
+  "style": "rogue"
+}
