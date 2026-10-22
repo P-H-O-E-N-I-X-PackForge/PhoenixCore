@@ -27,7 +27,6 @@
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "client.MixinAbstractContainerScreen",
-    "client.CreativeScreenDebugMixin",
     "client.MixinMachineModel",
     "emi.EmiRenderHelperMixin",
     "emi.EmiFavoritesMixin",
