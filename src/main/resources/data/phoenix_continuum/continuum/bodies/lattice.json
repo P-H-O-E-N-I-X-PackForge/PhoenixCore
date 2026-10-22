@@ -65,5 +65,39 @@
     "color2": "#8a7050",
     "tilt": 18,
     "opacity": 0.9
-  }
+  },
+  "anomalies": [
+    {
+      "id": "ruled_rings",
+      "name": "The Ruled Rings",
+      "reveal": "surveyed",
+      "description": "A gap in the rings too clean to be natural.",
+      "cost": {
+        "item": "minecraft:redstone",
+        "count": 8
+      },
+      "reward": {
+        "message": "A probe threaded the gap. The ice on its edges is cut, not worn, and there is something metal lodged in it.",
+        "items": [
+          {
+            "item": "minecraft:gold_ingot",
+            "min": 2,
+            "max": 4,
+            "chance": 1.0
+          },
+          {
+            "item": "minecraft:amethyst_shard",
+            "min": 3,
+            "max": 6,
+            "chance": 0.7
+          },
+          {
+            "item": "minecraft:echo_shard",
+            "count": 1,
+            "chance": 0.15
+          }
+        ]
+      }
+    }
+  ]
 }

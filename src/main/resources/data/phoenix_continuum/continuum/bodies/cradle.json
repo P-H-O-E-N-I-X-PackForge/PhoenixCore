@@ -56,5 +56,30 @@
   "lore": {
     "detected": "A pale blue point that throws two shadows.",
     "surveyed": "Cradle keeps a thick, cold sea under a sky that has two suns in it, one netted and one sealed. Nobody built anything here; they only built around what lights it."
-  }
+  },
+  "anomalies": [
+    {
+      "id": "twin_shadow_shoals",
+      "name": "Twin-Shadow Shoals",
+      "reveal": "detected",
+      "description": "Where both suns cast a shadow, the sea glows.",
+      "reward": {
+        "message": "The glow is a bloom of something that only grows where two shadows cross. Samples are in the hold.",
+        "items": [
+          {
+            "item": "minecraft:prismarine_crystals",
+            "min": 3,
+            "max": 6,
+            "chance": 1.0
+          },
+          {
+            "item": "minecraft:sea_lantern",
+            "min": 1,
+            "max": 2,
+            "chance": 0.5
+          }
+        ]
+      }
+    }
+  ]
 }
