@@ -27,6 +27,7 @@
     "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "client.MixinAbstractContainerScreen",
+    "client.CreativeScreenDebugMixin",
     "client.MixinMachineModel",
     "emi.EmiFavoritesMixin",
     "emi.EmiScreenManagerAccessor",
@@ -39,6 +40,7 @@
     "minecraft.MixinOggAudioStream",
     "minecraft.RenderTargetMixin",
     "minecraft.SoundEngineMixin",
+    "modularui.ItemDisplayWidgetMixin",
     "modularui.OverlayStackMixin"
   ],
   "injectors": {
