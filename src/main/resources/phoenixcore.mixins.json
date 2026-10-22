@@ -29,6 +29,7 @@
     "client.MixinAbstractContainerScreen",
     "client.CreativeScreenDebugMixin",
     "client.MixinMachineModel",
+    "emi.EmiRenderHelperMixin",
     "emi.EmiFavoritesMixin",
     "emi.EmiScreenManagerAccessor",
     "emi.EmiScreenManagerMixin",

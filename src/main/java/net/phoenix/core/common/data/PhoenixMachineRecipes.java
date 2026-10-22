@@ -201,6 +201,7 @@ public class PhoenixMachineRecipes {
                 .save(provider);
 
         GrowthRecipes.init(provider);
+        CountDisplayExampleRecipes.init(provider);
         net.phoenix.core.integration.astral.AstralRecipes.init(provider);
 
         ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread")
