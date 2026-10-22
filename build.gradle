@@ -215,11 +215,12 @@ dependencies {
     implementation("net.phoenix.continuum:phoenix_continuum:${phoenix_continuum_version}") { transitive = false }
     // Solaris (map). Local build, no published artifact; compile-only, the integration only loads when it is installed
     compileOnly files("libs/solaris-neoforge-1.6.5.jar")
-    runtimeOnly files("libs/solaris-neoforge-1.6.5.jar")
+    // (bisecting a client bug: -PnoSolaris / -PnoChronicles / -PnoEmi leave that mod out of the dev runtime)
+    if (!project.hasProperty('noSolaris')) runtimeOnly files("libs/solaris-neoforge-1.6.5.jar")
     // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
     implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
     // Local build of PhoenixChronicles-1.21.1 so the dev client has quests; rebuild it and copy the jar into libs/
-    runtimeOnly files("libs/phoenix_chronicles-neoforge-10.0.0.jar")
+    if (!project.hasProperty('noChronicles')) runtimeOnly files("libs/phoenix_chronicles-neoforge-10.0.0.jar")
     implementation "maven.modrinth:extended-ae:1.21-2.2.35-neoforge"
     implementation "maven.modrinth:glodium:1.21-2.2-neoforge"
 
@@ -229,7 +230,7 @@ dependencies {
     implementation "dev.toma.configuration:configuration-${minecraft_version}:${configuration_version}"
 
     compileOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
-    runtimeOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
+    if (!project.hasProperty('noEmi')) runtimeOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
 
     // Optional integrations
     implementation "maven.modrinth:jade:15.10.6+neoforge"
