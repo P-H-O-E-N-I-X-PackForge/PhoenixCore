@@ -139,18 +139,18 @@ public final class StellarForgeRenderer {
                                  Matrix4f projection, Vector3f at) {
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
-                    0.04f + 0.05f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
+                    0.05f + 0.065f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
             case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at,
-                    0.08f + 0.04f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
-            case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius);
+                    0.09f + 0.06f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
+            case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius * 1.2f);
             case BLACK_HOLE -> {
                 ContinuumRender.beginWorldObject(view, projection, at);
                 if (holeTint >= 0) {
                     int cool = ((int) (((holeTint >> 16) & 0xFF) * 0.55f) << 16) |
                             ((int) (((holeTint >> 8) & 0xFF) * 0.55f) << 8) | (int) ((holeTint & 0xFF) * 0.55f);
-                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius);
+                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius * 1.25f);
                 } else {
-                    ContinuumRender.drawBlackHole(null, view, projection, at, radius);
+                    ContinuumRender.drawBlackHole(null, view, projection, at, radius * 1.25f);
                 }
                 ContinuumRender.endWorldObject();
             }
