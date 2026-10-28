@@ -23,9 +23,26 @@ public final class ChroniclesScaffold {
 
     public static void install() {
         if (!ChroniclesLink.present()) return;
-        Path quests = FMLPaths.CONFIGDIR.get().resolve("phoenix_chronicles").resolve("quests");
+        Path config = FMLPaths.CONFIGDIR.get().resolve("phoenix_chronicles");
+        Path quests = config.resolve("quests");
         Map<String, List<String>> chapters = readIndex();
         int installed = 0;
+        // the categories (one folder per discipline, shown only to that discipline) go beside the quests, file by file
+        List<String> categories = chapters.remove("categories");
+        if (categories != null) {
+            Path folder = config.resolve("categories");
+            for (String file : categories) {
+                Path target = folder.resolve(file);
+                if (Files.exists(target)) continue;
+                try {
+                    Files.createDirectories(folder);
+                    copy("categories/" + file, target);
+                } catch (IOException e) {
+                    PhoenixCore.LOGGER.warn("[Chronicles] Could not install the starter category {}: {}", file,
+                            e.getMessage());
+                }
+            }
+        }
         for (Map.Entry<String, List<String>> chapter : chapters.entrySet()) {
             Path folder = quests.resolve(chapter.getKey());
             if (Files.exists(folder)) continue;

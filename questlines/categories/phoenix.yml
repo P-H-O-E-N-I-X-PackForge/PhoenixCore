@@ -1,0 +1,7 @@
+id: phoenix
+display_name: "Phoenix"
+color: FF8833
+icon: "minecraft:beacon"
+enable_if: "conflux:discipline:phoenix"
+chapters:
+  - PHOENIX

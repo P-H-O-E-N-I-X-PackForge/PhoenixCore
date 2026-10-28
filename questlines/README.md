@@ -8,8 +8,10 @@ Install: nothing to do. PhoenixCore copies each chapter into `config/phoenix_chr
 it runs with Chronicles installed (`ChroniclesScaffold`). A chapter whose folder is already there is left alone; delete
 the folder to get its starter back. The chapter's name, icon and order are in `<chapter>/<chapter>.json`.
 
-- The hub is always visible. Every discipline quest has `enable_if: conflux:flag:<discipline first flag>`, so a player only
-  sees the questline of the discipline their team chose.
+- The hub is always visible. Each discipline is its own category (`categories/<discipline>.yml`, a folder in the sidebar)
+  holding its chapter, with `enable_if: conflux:discipline:<id>`: the folder and its chapter are hidden from everyone who
+  has not chosen that discipline. (A dev-mode player with "show flag-disabled chapters" on still sees them all.) Every
+  discipline quest also has `enable_if: conflux:flag:<discipline first flag>`.
 - Tasks: `conflux_research` (by flag), `conflux_discipline`, `dimension`, `structure`, optional `archive_entry`.
 - Rewards: xp, items, and `conflux_unlock` flag grants. Each discipline has one quest that grants a restriction-lifting
   flag (e.g. `px_contained_reactions`), the quest-side route to the same recipes the Dispensations trees unlock.

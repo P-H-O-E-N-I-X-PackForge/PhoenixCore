@@ -1,0 +1,7 @@
+id: sealed_b
+display_name: "Sealed B"
+color: 8A8F99
+icon: "minecraft:sculk"
+enable_if: "conflux:discipline:sealed_b"
+chapters:
+  - SEALED_B

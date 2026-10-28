@@ -318,9 +318,30 @@ def write_chapter(folder):
                 % (folder, name, icon, order))
 
 
+# discipline -> (display name, colour). Each discipline is a category (a folder in the sidebar) holding its chapter, and
+# it is shown only to a team that chose that discipline.
+CATEGORIES = {
+    'phoenix': ('Phoenix', 'FF8833'),
+    'sculk': ('Sculk', '2FB5A8'),
+    'void': ('Void', '8C6CFF'),
+    'sealed_a': ('Sealed A', '8A8F99'),
+    'sealed_b': ('Sealed B', '8A8F99'),
+}
+
+
+def write_categories():
+    folder = os.path.join(OUT, 'categories')
+    os.makedirs(folder, exist_ok=True)
+    for disc, (name, color) in CATEGORIES.items():
+        with open(os.path.join(folder, disc + '.yml'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write('id: %s\ndisplay_name: "%s"\ncolor: %s\nicon: "%s"\nenable_if: "conflux:discipline:%s"\n'
+                    'chapters:\n  - %s\n' % (disc, name, color, CHAPTERS[disc][1], disc, disc.upper()))
+
+
 def write_index():
+    write_categories()
     lines = []
-    for folder in CHAPTERS:
+    for folder in list(CHAPTERS) + ['categories']:
         for name in sorted(os.listdir(os.path.join(OUT, folder))):
             lines.append('%s/%s' % (folder, name))
     with open(os.path.join(OUT, 'index.txt'), 'w', encoding='utf-8') as f:

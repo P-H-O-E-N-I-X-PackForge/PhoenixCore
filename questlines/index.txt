@@ -52,3 +52,8 @@ sealed_b/sb_q_hall.snbt
 sealed_b/sb_q_realm.snbt
 sealed_b/sb_q_terms.snbt
 sealed_b/sealed_b.json
+categories/phoenix.yml
+categories/sculk.yml
+categories/sealed_a.yml
+categories/sealed_b.yml
+categories/void.yml

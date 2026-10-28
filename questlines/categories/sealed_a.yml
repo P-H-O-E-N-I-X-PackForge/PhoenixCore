@@ -1,0 +1,7 @@
+id: sealed_a
+display_name: "Sealed A"
+color: 8A8F99
+icon: "minecraft:iron_bars"
+enable_if: "conflux:discipline:sealed_a"
+chapters:
+  - SEALED_A

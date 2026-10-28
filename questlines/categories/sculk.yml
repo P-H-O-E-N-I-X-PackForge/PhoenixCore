@@ -1,0 +1,7 @@
+id: sculk
+display_name: "Sculk"
+color: 2FB5A8
+icon: "minecraft:sculk"
+enable_if: "conflux:discipline:sculk"
+chapters:
+  - SCULK

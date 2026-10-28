@@ -1,0 +1,7 @@
+id: void
+display_name: "Void"
+color: 8C6CFF
+icon: "minecraft:spyglass"
+enable_if: "conflux:discipline:void"
+chapters:
+  - VOID
