@@ -54,15 +54,15 @@ public final class StellarForgeClient {
         private long lastSample;
         public static final int HISTORY = 300;
 
-        /** How big the black hole is for the mass it has swallowed (0.12 when it forms, up to 0.30): grows with the log of it. */
+        /** How big the black hole is for the mass it has swallowed (0.12 when it forms, up to 0.40): grows with the log of it. */
         public static float holeSize(double mass) {
             double growth = Math.log10(1.0 + Math.max(0.0, mass) / 4000.0) / Math.log10(9.0);
-            return 0.12f + 0.18f * (float) Math.max(0.0, Math.min(1.0, growth));
+            return 0.12f + 0.28f * (float) Math.max(0.0, Math.min(1.0, growth));
         }
 
         /** 0 (just formed) to 1 (huge): how far its mass has taken it. */
         public static float holeGrowth(double mass) {
-            return (holeSize(mass) - 0.12f) / 0.18f;
+            return (holeSize(mass) - 0.12f) / 0.28f;
         }
 
         void step(StellarForgeMachine machine) {
