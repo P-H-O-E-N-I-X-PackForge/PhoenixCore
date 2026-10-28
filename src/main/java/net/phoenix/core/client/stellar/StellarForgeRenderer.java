@@ -3,7 +3,6 @@ package net.phoenix.core.client.stellar;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -110,11 +109,11 @@ public final class StellarForgeRenderer {
                 level = Math.max(level, 0.6f + 0.8f * wind);
             }
 
-            VertexConsumer lines = buffers.getBuffer(RenderType.lightning());
+            VertexConsumer lines = buffers.getBuffer(StellarBeamRenderType.BEAMS);
             containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash);
             injectors(lines, pose, machine, at, seconds, color, flicker * level);
             if (falling && p >= StellarForgeClient.Anim.COLLAPSE_FLASH_AT) shockwave(lines, pose, at, post);
-            buffers.endBatch(RenderType.lightning());
+            buffers.endBatch(StellarBeamRenderType.BEAMS);
 
             if (falling) {
                 if (p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
@@ -171,7 +170,7 @@ public final class StellarForgeRenderer {
             float radius = 0.3f + local * (ring == 0 ? 3.2f : 2.4f);
             float strength = (1.0f - local) * (ring == 0 ? 1.0f : 0.6f);
             float tilt = ring * 0.9f;
-            int segments = 72;
+            int segments = 120;
             Vector3f previous = null;
             for (int i = 0; i <= segments; i++) {
                 double a = Math.PI * 2.0 * i / segments;
@@ -180,12 +179,19 @@ public final class StellarForgeRenderer {
                 Vector3f point = new Vector3f(c.x + px, c.y + pz * (float) Math.sin(tilt),
                         c.z + pz * (float) Math.cos(tilt));
                 if (previous != null) {
-                    ContinuumRender.drawBeam(out, pose, previous, point, 0.05f * (1.0f - local * 0.5f), 0xcfe0ff,
+                    beam(out, pose, previous, point, 0.07f * (1.0f - local * 0.5f), 0xcfe0ff,
                             strength);
                 }
                 previous = point;
             }
         }
+    }
+
+    /** A beam as light: a faint wide halo under a bright core, so it stays smooth and visible at a distance. */
+    private static void beam(VertexConsumer out, Matrix4f pose, Vector3f a, Vector3f b, float width, int color,
+                             float strength) {
+        ContinuumRender.drawBeam(out, pose, a, b, width * 3.2f, color, strength * 0.22f);
+        ContinuumRender.drawBeam(out, pose, a, b, width, color, strength);
     }
 
     /** Three tilted rings of field round the body, turning with the spin, brighter with the field. */
@@ -196,7 +202,7 @@ public final class StellarForgeRenderer {
         for (int ring = 0; ring < 3; ring++) {
             float tilt = ring * 1.05f - 1.05f;
             float radius = 1.25f - ring * 0.08f + flash * 0.4f * (ring + 1);
-            int segments = 56;
+            int segments = 96;
             Vector3f previous = null;
             for (int i = 0; i <= segments; i++) {
                 double a = Math.PI * 2.0 * i / segments + turn * (ring % 2 == 0 ? 1 : -1);
@@ -207,21 +213,21 @@ public final class StellarForgeRenderer {
                 Vector3f point = new Vector3f(c.x + px, c.y + py, c.z + pz);
                 if (previous != null) {
                     float fade = 0.35f + 0.65f * (float) Math.max(0.0, Math.sin(a * 3.0 - seconds * 3.0));
-                    ContinuumRender.drawBeam(out, pose, previous, point, 0.025f, color, strength * fade);
+                    beam(out, pose, previous, point, 0.045f, color, strength * fade);
                 }
                 previous = point;
             }
         }
         if (flash > 0.0f) {
             // a stage change: a ring of light flung out
-            int segments = 48;
+            int segments = 96;
             Vector3f previous = null;
             float radius = 0.4f + (1.0f - flash) * 1.4f;
             for (int i = 0; i <= segments; i++) {
                 double a = Math.PI * 2.0 * i / segments;
                 Vector3f point = new Vector3f(c.x + (float) Math.cos(a) * radius, c.y,
                         c.z + (float) Math.sin(a) * radius);
-                if (previous != null) ContinuumRender.drawBeam(out, pose, previous, point, 0.06f, 0xffffff, flash);
+                if (previous != null) beam(out, pose, previous, point, 0.09f, 0xffffff, flash);
                 previous = point;
             }
         }
@@ -236,10 +242,10 @@ public final class StellarForgeRenderer {
             double a = Math.PI * 0.5 * i + Math.PI * 0.25;
             Vector3f base = new Vector3f(c.x + (float) Math.cos(a) * 1.3f, c.y - 1.45f,
                     c.z + (float) Math.sin(a) * 1.3f);
-            ContinuumRender.drawBeam(out, pose, base, c, 0.03f, color, 0.35f * feed * flicker);
+            beam(out, pose, base, c, 0.05f, color, 0.4f * feed * flicker);
             for (int k = 0; k < 2; k++) {
                 float t = Mth.frac(seconds * (0.4f + 1.4f * feed) + i * 0.25f + k * 0.5f);
-                ContinuumRender.drawBeamPulse(out, pose, base, c, t, 0.08f, 0.05f, flicker);
+                ContinuumRender.drawBeamPulse(out, pose, base, c, t, 0.1f, 0.09f, flicker);
             }
         }
     }
