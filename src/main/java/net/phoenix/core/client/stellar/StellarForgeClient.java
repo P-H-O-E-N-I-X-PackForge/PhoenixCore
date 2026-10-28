@@ -40,6 +40,11 @@ public final class StellarForgeClient {
         public int collapseDone;
         public float nextBeat;
 
+        /** The last disturbance this run had that this client has seen, and when. */
+        private int lastEventCount = -1;
+        public long eventAt;
+        public int eventKind;
+
         /** The black hole's size (eased), from how much mass it has swallowed. */
         public float hole;
         private long last = Util.getMillis();
@@ -66,6 +71,14 @@ public final class StellarForgeClient {
             last = now;
             float target = StellarForgeState.radius(machine.stage(), machine.mass());
             radius += (target - radius) * Math.min(1.0f, dt * 2.5f);
+            int events = machine.eventCount();
+            if (lastEventCount >= 0 && events > lastEventCount) {
+                surge = 1.0f;
+                flash = Math.max(flash, 0.5f);
+                eventAt = now;
+                eventKind = machine.eventKind();
+            }
+            lastEventCount = events;
             float holeTarget = holeSize(machine.mass());
             hole = hole <= 0.0f ? holeTarget : hole + (holeTarget - hole) * Math.min(1.0f, dt * 0.8f);
             heat += (machine.heat() - heat) * Math.min(1.0f, dt * 1.5f);

@@ -66,4 +66,66 @@ class StellarForgeStateTest {
             assertTrue(a.radius() <= 1.25f, stage + " must fit in a three block room: " + a.radius());
         }
     }
+
+    @Test
+    void everyRunOfTheSameForgeIsADifferentPuzzle() {
+        var a = new StellarForgeState(7L);
+        var b = new StellarForgeState(7L);
+        a.stage = b.stage = StellarForgeState.Stage.PROTOSTAR;
+        a.run = 1;
+        b.run = 1;
+        assertEquals(a.fieldBand(), b.fieldBand(), "the same run gives the same bands");
+        assertEquals(a.nextMass(), b.nextMass());
+
+        int different = 0;
+        for (int run = 2; run < 40; run++) {
+            b.run = run;
+            if (a.fieldBand().low() != b.fieldBand().low() || a.spinBand().low() != b.spinBand().low() ||
+                    a.nextMass() != b.nextMass()) {
+                different++;
+            }
+            double ratio = b.nextMass() / StellarForgeState.PROTOSTAR_TO_STAR;
+            assertTrue(ratio >= 0.85 && ratio <= 1.15, "what a stage needs varies at most 15%: " + ratio);
+        }
+        assertTrue(different >= 35, "other runs of the same forge are not the same puzzle: " + different);
+    }
+
+    @Test
+    void bandsWanderAsARunGoesOn() {
+        var s = new StellarForgeState(5L);
+        s.stage = StellarForgeState.Stage.STAR;
+        s.run = 3;
+        float start = s.fieldBand().low();
+        float most = 0.0f;
+        for (int age = 0; age < 6000; age += 100) {
+            s.age = age;
+            most = Math.max(most, Math.abs(s.fieldBand().low() - start));
+        }
+        assertTrue(most >= 2.0f && most <= 12.0f, "a band drifts a few points, and not all over: " + most);
+    }
+
+    @Test
+    void aRunHasDisturbancesThatKnockSomethingOutOfPlace() {
+        var s = new StellarForgeState(11L);
+        s.run = 9;
+        s.stage = StellarForgeState.Stage.STAR;
+        s.mass = 500.0;
+        s.heat = 60.0f;
+        s.stability = 90.0f;
+        int before = s.eventCount;
+        float worst = 0.0f;
+        for (int i = 0; i < 3 * 60 * 20; i++) {
+            float h = s.heat;
+            float st = s.stability;
+            var f = s.fieldBand();
+            var p = s.spinBand();
+            s.field = Math.round((f.low() + f.high()) / 2.0f);
+            s.spin = Math.round((p.low() + p.high()) / 2.0f);
+            s.feed = 50;
+            s.tick(0.0, true, false);
+            worst = Math.max(worst, Math.max(Math.abs(s.heat - h), Math.abs(s.stability - st)));
+        }
+        assertTrue(s.eventCount > before, "a three minute run has at least one disturbance");
+        assertTrue(worst >= 8.0f, "and it moves a number noticeably: " + worst);
+    }
 }

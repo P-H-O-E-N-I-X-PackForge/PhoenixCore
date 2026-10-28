@@ -279,6 +279,14 @@ public final class StellarHudPage implements CanvasPainter {
             g.drawString(font, text, x, y, (boolean) check[1] ? C_GREEN : C_DIM, false);
             x += width;
         }
+        var anim = StellarForgeClient.animOf(machine);
+        if (anim.eventAt > 0 && System.currentTimeMillis() - anim.eventAt < 6000L) {
+            String[] hints = { "heat spiked: bring it back into band", "stability knocked down: steady the settings",
+                    "heat dropped: warm it back into band" };
+            String name = StellarForgeState.EVENT_NAMES[Math.floorMod(anim.eventKind, 3)];
+            GuiDraw.drawWrapped(g, font, name.toUpperCase(Locale.ROOT) + ": " + hints[Math.floorMod(anim.eventKind, 3)], 8,
+                    top - 24, w - 16, C_GOLD);
+        }
         if (view.holdTicks > 0) {
             String hold = String.format(Locale.ROOT, "holding %d/%d", view.holdTicks,
                     StellarForgeState.HOLD_TICKS_TO_ADVANCE);

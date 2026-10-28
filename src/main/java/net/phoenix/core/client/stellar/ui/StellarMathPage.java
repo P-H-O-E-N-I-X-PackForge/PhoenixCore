@@ -95,7 +95,7 @@ public final class StellarMathPage implements CanvasPainter {
                 sb.contains(s.spin) ? StellarHudPage.C_GREEN : gold);
         y = line(g, font, x, y, String.format(Locale.ROOT, "heat   %.0f%%  in [%.0f, %.0f]", s.heat, hb.low(), hb.high()),
                 hb.contains(s.heat) ? StellarHudPage.C_GREEN : gold);
-        y = line(g, font, x, y, "(every forge shifts the bands a little)", dim);
+        y = line(g, font, x, y, "(every run shifts and widens the bands, and they drift as it goes)", dim);
         y += 4;
 
         y = heading(g, font, x, y, w - 16, "HEAT");

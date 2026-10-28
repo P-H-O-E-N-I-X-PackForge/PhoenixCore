@@ -79,14 +79,43 @@ public final class StellarForgeState {
     /** Shifts the bands a little, differently in every forge. */
     public final long seed;
 
+    /** A number rolled afresh each time a run starts (from idle), so the same forge plays differently every time. */
+    public int run;
+
+    /** Ticks since the run started: the bands drift with it. */
+    public int age;
+
+    /** How many disturbances (flare, shock, chill) this run has had, and what the last one was (0 flare, 1 shock, 2 chill). */
+    public int eventCount;
+    public int eventKind;
+    private int nextEvent = -1;
+
+    public static final String[] EVENT_NAMES = { "Flare", "Shock", "Chill" };
+
     public StellarForgeState(long seed) {
         this.seed = seed;
     }
 
-    private float shift(int salt) {
-        long h = seed * 0x9E3779B97F4A7C15L + salt * 0xC2B2AE3D27D4EB4FL;
+    /** A number from 0 to 1 that is the same for a given forge, run and salt. */
+    public float roll(int salt) {
+        long h = (seed ^ ((long) run * 0xD6E8FEB86659FD93L)) * 0x9E3779B97F4A7C15L + salt * 0xC2B2AE3D27D4EB4FL;
         h ^= h >>> 29;
-        return ((h & 0xFFFF) / 65535.0f - 0.5f) * 14.0f;
+        h *= 0xBF58476D1CE4E5B9L;
+        h ^= h >>> 32;
+        return (h & 0xFFFF) / 65535.0f;
+    }
+
+    /** Where a band sits (up to 10 either way) now: set by the run, and wandering slowly as it goes on. */
+    private float shift(int salt) {
+        float base = (roll(salt) - 0.5f) * 20.0f;
+        float period = 1200.0f + 1800.0f * roll(salt + 50);
+        float drift = 5.0f * (float) Math.sin(age * (Math.PI * 2.0) / period + roll(salt + 70) * Math.PI * 2.0);
+        return base + drift;
+    }
+
+    /** The mass a stage needs varies 15% either way from run to run. */
+    private double threshold(double base, Stage forStage) {
+        return base * (0.85 + 0.3 * roll(10 + forStage.ordinal()));
     }
 
     /** Where the containment field should sit now. */
@@ -99,7 +128,8 @@ public final class StellarForgeState {
             default -> 0.0f;
         };
         float centre = base + shift(1);
-        return new Band(Math.max(0.0f, centre - 12.0f), Math.min(100.0f, centre + 12.0f));
+        float half = 12.0f + 4.0f * (roll(3) - 0.5f) * 2.0f;
+        return new Band(Math.max(0.0f, centre - half), Math.min(100.0f, centre + half));
     }
 
     public Band spinBand() {
@@ -111,18 +141,23 @@ public final class StellarForgeState {
             default -> 0.0f;
         };
         float centre = base + shift(2);
-        return new Band(Math.max(0.0f, centre - 14.0f), Math.min(100.0f, centre + 14.0f));
+        float half = 14.0f + 4.0f * (roll(4) - 0.5f) * 2.0f;
+        return new Band(Math.max(0.0f, centre - half), Math.min(100.0f, centre + half));
     }
 
     /** Where the heat should sit: a cloud wants to stay cool, a star to burn. */
     public Band heatBand() {
-        return switch (stage) {
+        Band base = switch (stage) {
             case GAS_CLOUD -> new Band(0.0f, 30.0f);
             case PROTOSTAR -> new Band(30.0f, 70.0f);
             case STAR -> new Band(50.0f, 85.0f);
             case BLACK_HOLE -> new Band(60.0f, 100.0f);
             default -> new Band(0.0f, 100.0f);
         };
+        if (stage == Stage.IDLE) return base;
+        // a run runs a little hotter or cooler than another
+        float offset = (roll(5) - 0.5f) * 16.0f;
+        return new Band(Math.max(0.0f, base.low() + offset), Math.min(100.0f, base.high() + offset));
     }
 
     /** Mass now as a share of what this stage needs to move on. */
@@ -132,9 +167,9 @@ public final class StellarForgeState {
 
     public double nextMass() {
         return switch (stage) {
-            case IDLE, GAS_CLOUD -> CLOUD_TO_PROTOSTAR;
-            case PROTOSTAR -> PROTOSTAR_TO_STAR;
-            case STAR -> STAR_TO_HOLE;
+            case IDLE, GAS_CLOUD -> threshold(CLOUD_TO_PROTOSTAR, Stage.GAS_CLOUD);
+            case PROTOSTAR -> threshold(PROTOSTAR_TO_STAR, Stage.PROTOSTAR);
+            case STAR -> threshold(STAR_TO_HOLE, Stage.STAR);
             case BLACK_HOLE -> Double.MAX_VALUE;
         };
     }
@@ -190,11 +225,31 @@ public final class StellarForgeState {
             }
         }
         mass += fed;
+        age++;
+        disturb();
 
         heat += (heatTarget(powered) - heat) * 0.02f;
         stability += (stabilityTarget(powered, outputBlocked) - stability) * 0.05f;
 
         advance();
+    }
+
+    /**
+     * Now and then a run has a disturbance (every 30 to 120 seconds, when it comes and what it is decided by the run): a
+     * flare throws the heat up, a shock knocks the stability down, a chill takes the heat away. They have to be corrected.
+     */
+    private void disturb() {
+        if (nextEvent < 0) nextEvent = 600 + (int) (roll(20) * 1800.0f);
+        if (--nextEvent > 0) return;
+        java.util.Random rng = new java.util.Random(seed * 31L + run * 0x9E3779B9L + eventCount * 7919L);
+        eventKind = rng.nextInt(3);
+        eventCount++;
+        switch (eventKind) {
+            case 0 -> heat = Math.min(100.0f, heat + 15.0f + rng.nextInt(11));
+            case 1 -> stability = Math.max(0.0f, stability - (10.0f + rng.nextInt(9)));
+            default -> heat = Math.max(0.0f, heat - (15.0f + rng.nextInt(11)));
+        }
+        nextEvent = 600 + rng.nextInt(1800);
     }
 
     public float effectiveField(boolean powered) {
@@ -235,6 +290,8 @@ public final class StellarForgeState {
     /** The stability it would settle at (heat included) if the three settings were held at these values. */
     public float equilibriumStability(int atFeed, int atField, int atSpin) {
         StellarForgeState probe = new StellarForgeState(seed);
+        probe.run = run;
+        probe.age = age;
         probe.stage = stage;
         probe.mass = mass;
         probe.feed = atFeed;
@@ -310,6 +367,9 @@ public final class StellarForgeState {
     }
 
     public void disperse() {
+        age = 0;
+        eventCount = 0;
+        nextEvent = -1;
         stage = Stage.IDLE;
         mass = 0.0;
         heat = 0.0f;

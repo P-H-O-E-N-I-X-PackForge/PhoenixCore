@@ -96,6 +96,23 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private boolean collapseArmed;
 
+    /** The number rolled when this run started, how long it has run, and its disturbances so far. */
+    @SaveField
+    @SyncToClient
+    private int runSeed;
+
+    @SaveField
+    @SyncToClient
+    private int runAge;
+
+    @SaveField
+    @SyncToClient
+    private int eventCount;
+
+    @SaveField
+    @SyncToClient
+    private int eventKind;
+
     /** A dye for the star and for the black hole's disk (0xRRGGBB), or -1 for the colour the heat gives. */
     @SaveField
     @SyncToClient
@@ -174,6 +191,14 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             return shownStability;
         }
         return stabilityX10 / 10.0f;
+    }
+
+    public int eventCount() {
+        return eventCount;
+    }
+
+    public int eventKind() {
+        return eventKind;
     }
 
     public int starTint() {
@@ -260,6 +285,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         view.feed = feed;
         view.field = field;
         view.spin = spin;
+        view.run = runSeed;
+        view.age = runAge;
+        view.eventCount = eventCount;
+        view.eventKind = eventKind;
         return view;
     }
 
@@ -276,6 +305,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             state.field = field;
             state.spin = spin;
             state.collapseArmed = collapseArmed;
+            state.run = runSeed;
+            state.age = runAge;
+            state.eventCount = eventCount;
+            state.eventKind = eventKind;
         }
         return state;
     }
@@ -444,6 +477,11 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     s.stage, s.mass, s.stability, s.heat, s.holdTicks, feed, field, s.fieldBand(), spin, s.spinBand(),
                     want, fed, hatches(IO.IN).size(), ok, report);
         }
+        // idle, the run's number is rolled again each tick, so it is set at the moment feed starts the next one
+        if (s.stage == StellarForgeState.Stage.IDLE) {
+            runSeed = getLevel().random.nextInt();
+            s.run = runSeed;
+        }
         s.tick(fed, ok, blocked);
         if (getLevel().getGameTime() % 20 == 0) applyTints();
         if (s.stage != lastStage) {
@@ -469,7 +507,15 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         if (stageNow != stageOrdinal) {
             stageOrdinal = stageNow;
             syncDataHolder.markClientSyncFieldDirty("stageOrdinal");
+            syncDataHolder.markClientSyncFieldDirty("runSeed");
             push = true;
+        }
+        runAge = s.age;
+        if (eventCount != s.eventCount) {
+            eventCount = s.eventCount;
+            eventKind = s.eventKind;
+            syncDataHolder.markClientSyncFieldDirty("eventCount");
+            syncDataHolder.markClientSyncFieldDirty("eventKind");
         }
         massX100 = (int) Math.min(Integer.MAX_VALUE, Math.round(s.mass * 100.0));
         heatX10 = Math.round(s.heat * 10.0f);
@@ -484,7 +530,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         // the changing numbers are sent a few times a second, not every tick
         if (push) {
             for (String name : new String[] { "massX100", "heatX10", "stabilityX10", "feed", "field", "spin",
-                    "powered", "energyUse", "plasmaRateX10" }) {
+                    "powered", "energyUse", "plasmaRateX10", "runAge" }) {
                 syncDataHolder.markClientSyncFieldDirty(name);
             }
         }
