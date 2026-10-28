@@ -7,6 +7,7 @@ import net.phoenix.core.client.gui.hud.CanvasPainter;
 import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarControls;
+import net.phoenix.core.common.machine.multiblock.stellar.StellarPlasma;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 
@@ -111,6 +112,7 @@ public final class StellarHudPage implements CanvasPainter {
         buttons(g, font, view, mouseX, mouseY);
 
         checklist(g, font, w, view, 214);
+        if (pickerOpen) picker(g, font, view, mouseX, mouseY);
     }
 
     private void ladder(GuiGraphics g, Font font, int w, StellarForgeState view, int accent) {
@@ -235,7 +237,7 @@ public final class StellarHudPage implements CanvasPainter {
                 view.collapseArmed ? C_GOLD : C_PURPLE, star, mouseX, mouseY);
         button(g, font, disperseRect, 118, 195, 64, 14, "DISPERSE", C_RED, view.stage != StellarForgeState.Stage.IDLE,
                 mouseX, mouseY);
-        // the exotic plasma: each press picks the next, and none (the usual oxygen plasma) after the last
+        // the exotic plasma: opens a list to pick from
         boolean exotic = !machine.plasmaId().isEmpty();
         button(g, font, plasmaRect, 188, 195, 68, 14, exotic ? "PLASMA*" : "PLASMA", exotic ? C_CYAN : C_BLUE,
                 true, mouseX, mouseY);
@@ -304,6 +306,106 @@ public final class StellarHudPage implements CanvasPainter {
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ the plasma picker
+
+    private static final int PICK_X = 80;
+    private static final int PICK_W = 176;
+    private static final int PICK_BOTTOM = 192;
+    private static final int ROW_H = 12;
+    private static final int MAX_ROWS = 8;
+
+    private boolean pickerOpen;
+    private int pickerScroll;
+    private final int[] pickerRect = new int[4];
+
+    /** Everything that can be picked: the usual oxygen plasma, then each exotic one. */
+    private static java.util.List<StellarPlasma.Recipe> choices() {
+        return StellarPlasma.forDisplay();
+    }
+
+    private int selectedIndex() {
+        String id = machine.plasmaId();
+        if (id.isEmpty()) return 0;
+        var list = choices();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).id().toString().equals(id)) return i + 1;
+        }
+        return 0;
+    }
+
+    private int visibleRows() {
+        return Math.min(MAX_ROWS, choices().size() + 1);
+    }
+
+    private void picker(GuiGraphics g, Font font, StellarForgeState view, int mouseX, int mouseY) {
+        var list = choices();
+        int rows = visibleRows();
+        int total = list.size() + 1;
+        pickerScroll = Math.max(0, Math.min(total - rows, pickerScroll));
+        int height = rows * ROW_H + 14;
+        int top = PICK_BOTTOM - height;
+        pickerRect[0] = PICK_X;
+        pickerRect[1] = top;
+        pickerRect[2] = PICK_W;
+        pickerRect[3] = height;
+        g.fill(PICK_X, top, PICK_X + PICK_W, PICK_BOTTOM, 0xFA_010810);
+        GuiDraw.drawBorder(g, PICK_X, top, PICK_W, height, C_CYAN, 1);
+        int selected = selectedIndex();
+        String hint = null;
+        for (int row = 0; row < rows; row++) {
+            int index = pickerScroll + row;
+            int y = top + 2 + row * ROW_H;
+            boolean hover = mouseX >= PICK_X + 1 && mouseX < PICK_X + PICK_W - 1 && mouseY >= y && mouseY < y + ROW_H;
+            if (hover) g.fill(PICK_X + 1, y, PICK_X + PICK_W - 1, y + ROW_H, 0xFF_0A2A38);
+            if (index == selected) g.fill(PICK_X + 1, y, PICK_X + 3, y + ROW_H, C_CYAN);
+            String name;
+            String tag;
+            int color;
+            if (index == 0) {
+                name = "Oxygen plasma";
+                tag = "usual";
+                color = C_WHITE;
+            } else {
+                var recipe = list.get(index - 1);
+                String why = recipe.whyNot(view);
+                name = recipe.name();
+                tag = recipe.body() == StellarForgeState.Stage.BLACK_HOLE ? "hole" : "star";
+                color = why == null ? C_GREEN : C_MID;
+                if (hover) hint = why == null ? "can be drawn now" : why;
+            }
+            int tagW = font.width(tag);
+            g.drawString(font, font.plainSubstrByWidth(name, PICK_W - tagW - 22), PICK_X + 6, y + 2, color, false);
+            g.drawString(font, tag, PICK_X + PICK_W - tagW - (total > rows ? 8 : 5), y + 2, C_DIM, false);
+        }
+        if (total > rows) {
+            int trackTop = top + 2;
+            int trackH = rows * ROW_H;
+            g.fill(PICK_X + PICK_W - 4, trackTop, PICK_X + PICK_W - 2, trackTop + trackH, 0xFF_0A2430);
+            int thumbH = Math.max(6, trackH * rows / total);
+            int thumbY = trackTop + (trackH - thumbH) * pickerScroll / Math.max(1, total - rows);
+            g.fill(PICK_X + PICK_W - 4, thumbY, PICK_X + PICK_W - 2, thumbY + thumbH, C_CYAN);
+        }
+        g.fill(PICK_X + 1, PICK_BOTTOM - 13, PICK_X + PICK_W - 1, PICK_BOTTOM - 12, 0x33_00E5CC);
+        String foot = hint != null ? hint : "pick what to draw";
+        g.drawString(font, font.plainSubstrByWidth(foot, PICK_W - 10), PICK_X + 5, PICK_BOTTOM - 10, C_MID, false);
+    }
+
+    /** A click while the picker is open: pick a row, or close it. True if the click was used. */
+    private boolean pickerClick(double mx, double my) {
+        boolean inside = mx >= pickerRect[0] && mx < pickerRect[0] + pickerRect[2] && my >= pickerRect[1] &&
+                my < pickerRect[1] + pickerRect[3];
+        if (inside) {
+            int row = (int) ((my - pickerRect[1] - 2) / ROW_H);
+            if (row >= 0 && row < visibleRows()) {
+                controls.set(StellarControls.PLASMA, pickerScroll + row);
+                pickerOpen = false;
+            }
+            return true;
+        }
+        pickerOpen = false;
+        return hit(plasmaRect, mx, my) ? true : false;
+    }
+
     private static boolean hit(int[] r, double mx, double my) {
         return r[2] > 0 && mx >= r[0] && mx < r[0] + r[2] && my >= r[1] && my < r[1] + r[3];
     }
@@ -328,6 +430,7 @@ public final class StellarHudPage implements CanvasPainter {
     @Override
     public boolean click(double mx, double my, int button) {
         if (button != 0) return false;
+        if (pickerOpen && pickerClick(mx, my)) return true;
         if (hit(armRect, mx, my)) {
             controls.press(StellarControls.ARM);
             return true;
@@ -337,7 +440,8 @@ public final class StellarHudPage implements CanvasPainter {
             return true;
         }
         if (hit(plasmaRect, mx, my)) {
-            controls.press(StellarControls.PLASMA);
+            pickerOpen = true;
+            pickerScroll = Math.max(0, selectedIndex() - 3);
             return true;
         }
         int which = sliderAt(mx, my);
@@ -362,6 +466,11 @@ public final class StellarHudPage implements CanvasPainter {
 
     @Override
     public boolean scroll(double mx, double my, double amount) {
+        if (pickerOpen && mx >= pickerRect[0] && mx < pickerRect[0] + pickerRect[2] && my >= pickerRect[1] &&
+                my < pickerRect[1] + pickerRect[3]) {
+            pickerScroll -= (int) Math.signum(amount);
+            return true;
+        }
         int which = sliderAt(mx, my);
         if (which < 0) return false;
         int now = which == 0 ? machine.feedSetting() : which == 1 ? machine.fieldSetting() : machine.spinSetting();

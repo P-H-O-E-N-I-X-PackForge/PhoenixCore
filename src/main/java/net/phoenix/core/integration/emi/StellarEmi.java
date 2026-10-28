@@ -75,7 +75,42 @@ public final class StellarEmi {
         }
     }
 
-    private static final int W = 170;
+    private static final int W = 190;
+    private static final int TEXT_X = 66;
+    private static final int TEXT_TOP = 24;
+
+    /** How tall a page needs to be for its lines, wrapped to the width they get, under the header. */
+    private static int heightOf(List<Component> lines, int min) {
+        Font font = Minecraft.getInstance().font;
+        int y = TEXT_TOP;
+        for (Component line : lines) {
+            y += font.split(line, W - TEXT_X).size() * 10 + 2;
+        }
+        return Math.max(min, y + 2);
+    }
+
+    private static List<Component> plasmaLines(StellarPlasma.Recipe recipe) {
+        boolean hole = recipe.body() == StellarForgeState.Stage.BLACK_HOLE;
+        return List.of(
+                Component.literal(hole ? "From a black hole" : String.format(Locale.ROOT,
+                        "From a star, heat %.0f to %.0f", recipe.heatMin(), recipe.heatMax())),
+                Component.literal(String.format(Locale.ROOT, "Needs %,.0f M, draws %.1f mB/t", recipe.minMass(),
+                        recipe.rate())),
+                Component.literal(String.format(Locale.ROOT, "Costs %.2f stability and %.2f M every tick",
+                        recipe.damageStability(), recipe.damageMass())),
+                Component.literal("Pick it with the PLASMA button"));
+    }
+
+    private static List<Component> dyeLines(StellarTint.Tint tint) {
+        boolean clears = tint.color() < 0;
+        String target = tint.star() && tint.blackHole() ? "a star or a black hole's disk" :
+                tint.blackHole() ? "a black hole's disk" : "a star";
+        return List.of(
+                Component.literal((clears ? "Puts the colour of " : "Colours ") + target +
+                        (clears ? " back to the heat's own" :
+                                String.format(Locale.ROOT, " #%06x", tint.color() & 0xFFFFFF))),
+                Component.literal("Put it in the input hatch, it is used up"));
+    }
 
     /** The body drawn flat on a dark panel. */
     private static final class Picture extends Widget {
@@ -153,7 +188,8 @@ public final class StellarEmi {
 
         PlasmaRecipe(StellarPlasma.Recipe recipe) {
             super(PLASMA, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
-                    "/stellar_plasma/" + recipe.id().getNamespace() + "/" + recipe.id().getPath()), W, 96);
+                    "/stellar_plasma/" + recipe.id().getNamespace() + "/" + recipe.id().getPath()), W,
+                    heightOf(plasmaLines(recipe), 96));
             this.recipe = recipe;
             this.outputs = List.of(fluid(recipe.fluid(), 1000));
             this.catalysts = List.of(forge());
@@ -161,19 +197,13 @@ public final class StellarEmi {
 
         @Override
         public void addWidgets(WidgetHolder widgets) {
-            boolean hole = recipe.body() == StellarForgeState.Stage.BLACK_HOLE;
             float mid = (recipe.heatMin() + recipe.heatMax()) / 2.0f;
-            widgets.add(new Picture(0, 0, 60, 96, recipe.body(), StellarForgeState.colorOf(mid) & 0xFFFFFF, -1));
-            widgets.addSlot(outputs.get(0), 66, 0).recipeContext(this);
-            widgets.add(new Lines(88, 1, W - 88, 20, List.of(Component.literal(recipe.name())), List.of(0xFFFFFFFF)));
-            widgets.add(new Lines(66, 24, W - 66, 72, List.of(
-                    Component.literal(hole ? "From a black hole" : String.format(Locale.ROOT,
-                            "From a star, heat %.0f to %.0f", recipe.heatMin(), recipe.heatMax())),
-                    Component.literal(String.format(Locale.ROOT, "Needs %,.0f M, draws %.1f mB/t", recipe.minMass(),
-                            recipe.rate())),
-                    Component.literal(String.format(Locale.ROOT, "Costs %.2f stability and %.2f M every tick",
-                            recipe.damageStability(), recipe.damageMass())),
-                    Component.literal("Pick it with the PLASMA button")),
+            widgets.add(new Picture(0, 0, 60, getDisplayHeight(), recipe.body(),
+                    StellarForgeState.colorOf(mid) & 0xFFFFFF, -1));
+            widgets.addSlot(outputs.get(0), TEXT_X, 0).recipeContext(this);
+            widgets.add(new Lines(TEXT_X + 22, 1, W - TEXT_X - 22, 20, List.of(Component.literal(recipe.name())),
+                    List.of(0xFFFFFFFF)));
+            widgets.add(new Lines(TEXT_X, TEXT_TOP, W - TEXT_X, getDisplayHeight() - TEXT_TOP, plasmaLines(recipe),
                     List.of(0xFFC8CCDC, 0xFFC8CCDC, 0xFFFF6A6A, 0xFF808898)));
         }
     }
@@ -184,7 +214,7 @@ public final class StellarEmi {
 
         DyeRecipe(ResourceLocation id, StellarTint.Tint tint) {
             super(DYE, ResourceLocation.fromNamespaceAndPath(PhoenixCore.MOD_ID,
-                    "/stellar_dye/" + id.getNamespace() + "/" + id.getPath()), W, 70);
+                    "/stellar_dye/" + id.getNamespace() + "/" + id.getPath()), W, heightOf(dyeLines(tint), 70));
             this.tint = tint;
             this.inputs = List.of(fluid(tint.fluid(), tint.amount()));
             this.catalysts = List.of(forge());
@@ -196,16 +226,11 @@ public final class StellarEmi {
             StellarForgeState.Stage shown = tint.star() ? StellarForgeState.Stage.STAR :
                     StellarForgeState.Stage.BLACK_HOLE;
             int rgb = clears ? 0xFFD060 : tint.color() & 0xFFFFFF;
-            widgets.add(new Picture(0, 0, 60, 70, shown, rgb, clears ? -1 : rgb));
-            widgets.addSlot(inputs.get(0), 66, 0).recipeContext(this);
-            String target = tint.star() && tint.blackHole() ? "a star or a black hole's disk" :
-                    tint.blackHole() ? "a black hole's disk" : "a star";
-            widgets.add(new Lines(88, 1, W - 88, 20, List.of(Component.literal(clears ? "Clears the dye" : "Dye")),
-                    List.of(0xFFFFFFFF)));
-            widgets.add(new Lines(66, 24, W - 66, 46, List.of(
-                    Component.literal((clears ? "Puts the colour of " : "Colours ") + target +
-                            (clears ? " back to the heat's own" : String.format(Locale.ROOT, " #%06x", tint.color() & 0xFFFFFF))),
-                    Component.literal("Put it in the input hatch, it is used up")),
+            widgets.add(new Picture(0, 0, 60, getDisplayHeight(), shown, rgb, clears ? -1 : rgb));
+            widgets.addSlot(inputs.get(0), TEXT_X, 0).recipeContext(this);
+            widgets.add(new Lines(TEXT_X + 22, 1, W - TEXT_X - 22, 20,
+                    List.of(Component.literal(clears ? "Clears the dye" : "Dye")), List.of(0xFFFFFFFF)));
+            widgets.add(new Lines(TEXT_X, TEXT_TOP, W - TEXT_X, getDisplayHeight() - TEXT_TOP, dyeLines(tint),
                     List.of(clears ? 0xFFC8CCDC : 0xFF000000 | tint.color(), 0xFF808898)));
         }
     }

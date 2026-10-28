@@ -347,8 +347,9 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         }
     }
 
-    private void cyclePlasma() {
-        plasmaId = StellarPlasma.next(plasmaId);
+    private void pickPlasma(int index) {
+        var list = StellarPlasma.all();
+        plasmaId = index >= 1 && index <= list.size() ? list.get(index - 1).id().toString() : "";
         plasmaBuffer = 0.0;
         syncDataHolder.markClientSyncFieldDirty("plasmaId");
     }
@@ -627,7 +628,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             case StellarControls.SPIN -> setSpin(value);
             case StellarControls.ARM -> armCollapse();
             case StellarControls.DISPERSE -> disperse();
-            case StellarControls.PLASMA -> cyclePlasma();
+            case StellarControls.PLASMA -> pickPlasma(value);
             default -> {}
         }
     }

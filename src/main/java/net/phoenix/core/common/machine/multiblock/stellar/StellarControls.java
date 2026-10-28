@@ -9,7 +9,7 @@ public interface StellarControls {
     int ARM = 3;
     int DISPERSE = 4;
 
-    /** Pick the next exotic plasma to draw (and none, the usual oxygen plasma, after the last). */
+    /** Pick the plasma to draw: with {@link #set}, 0 for the usual oxygen plasma, or 1 and up for an exotic one in the list. */
     int PLASMA = 5;
 
     /** Set feed, field or spin to a percentage. */

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import net.phoenix.continuum.api.client.ContinuumRender;
 import net.phoenix.core.client.gui.hud.CanvasPainter;
 import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.client.gui.hud.HudTheme;
@@ -14,7 +15,8 @@ import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 import java.util.Locale;
 
 /**
- * The chamber seen from outside: the body drawn flat (see {@link Stellar2D}), tilted by dragging and zoomed by the wheel. Beside it run the vital readings, in a viewfinder frame.
+ * The chamber seen from outside: the body drawn with Continuum's own shaders, the way it looks on the star map, that
+ * can be dragged round and zoomed. Beside it run the vital readings, in a viewfinder frame.
  */
 public final class StellarViewPage implements CanvasPainter {
 
@@ -28,11 +30,18 @@ public final class StellarViewPage implements CanvasPainter {
     private double lastX;
     private double lastY;
     private boolean overResetNow;
-    private float tilt = 0.3f;
-    private float zoom = 1.0f;
 
     public StellarViewPage(StellarForgeMachine machine) {
         this.machine = machine;
+    }
+
+    private static ContinuumRender.Body bodyOf(StellarForgeState.Stage stage) {
+        return switch (stage) {
+            case GAS_CLOUD, IDLE -> ContinuumRender.Body.GAS_CLOUD;
+            case PROTOSTAR -> ContinuumRender.Body.PROTOSTAR;
+            case STAR -> ContinuumRender.Body.STAR;
+            case BLACK_HOLE -> ContinuumRender.Body.BLACK_HOLE;
+        };
     }
 
     @Override
@@ -61,18 +70,15 @@ public final class StellarViewPage implements CanvasPainter {
             float size01 = Mth.clamp((anim.radius - 0.15f) / 1.05f, 0.0f, 1.0f);
             int rgb = stage == StellarForgeState.Stage.STAR && machine.starTint() >= 0 ? machine.starTint() :
                     StellarForgeState.colorOf(machine.heat()) & 0xFFFFFF;
-            float r = VIEW * 0.5f * (0.45f + 0.4f * size01) * zoom;
-            float vigor = StellarForgeClient.Anim.holeGrowth(machine.mass());
-            GuiDraw.enableScissor(g, VX, VY, VX + VIEW, VY + VIEW);
-            Stellar2D.draw(g, stage, rgb, VX + VIEW / 2.0f, VY + VIEW / 2.0f, r, Stellar2D.time(), tilt,
-                    machine.holeTint(), vigor);
-            g.disableScissor();
+            boolean drawn = ContinuumRender.ready() && ContinuumRender.preview().draw(g, bodyOf(stage), rgb, size01, VX, VY, VIEW, false,
+                    machine.holeTint());
+            if (!drawn) fallback(g, VX + VIEW / 2, VY + VIEW / 2, 14 + size01 * 40, 0xFF_000000 | rgb);
         }
         frame(g, VX, VY, VIEW, VIEW);
 
         // corner readouts over the glass
         g.drawString(font, String.format(Locale.ROOT, "R %.2f", anim.radius), VX + 5, VY + VIEW - 12, GuiDraw.withAlpha(T.accent(), 0xC0), false);
-        String hint = dragging ? "rotating" : "drag tilts / scroll zooms";
+        String hint = dragging ? "rotating" : "drag / scroll";
         g.drawString(font, hint, VX + VIEW - 5 - font.width(hint), VY + 5, GuiDraw.withAlpha(T.accent2(), 0xA0), false);
 
         // vitals
@@ -138,11 +144,21 @@ public final class StellarViewPage implements CanvasPainter {
         }
     }
 
+    /** When the shaders are not ready: a plain glowing disc. */
+    private void fallback(GuiGraphics g, int cx, int cy, float r, int color) {
+        for (int ring = (int) r; ring > 0; ring -= 3) {
+            int a = (int) (0x18 + 0x60 * (1 - ring / r));
+            for (int dy = -ring; dy <= ring; dy++) {
+                int half = (int) Math.sqrt(ring * ring - dy * dy);
+                g.fill(cx - half, cy + dy, cx + half + 1, cy + dy + 1, GuiDraw.withAlpha(color, a));
+            }
+        }
+    }
+
     @Override
     public boolean click(double mx, double my, int button) {
         if (button == 0 && overResetNow) {
-            tilt = 0.3f;
-            zoom = 1.0f;
+            ContinuumRender.preview().reset();
             return true;
         }
         if (button == 0 && mx >= VX && mx < VX + VIEW && my >= VY && my < VY + VIEW) {
@@ -157,7 +173,7 @@ public final class StellarViewPage implements CanvasPainter {
     @Override
     public void drag(double mx, double my, int button) {
         if (!dragging) return;
-        tilt = Mth.clamp(tilt + (float) (my - lastY) * 0.01f, 0.0f, 1.0f);
+        ContinuumRender.preview().rotate((float) (mx - lastX), (float) (my - lastY));
         lastX = mx;
         lastY = my;
     }
@@ -170,7 +186,7 @@ public final class StellarViewPage implements CanvasPainter {
     @Override
     public boolean scroll(double mx, double my, double amount) {
         if (mx >= VX && mx < VX + VIEW && my >= VY && my < VY + VIEW) {
-            zoom = Mth.clamp(zoom * (1.0f + (float) amount * 0.1f), 0.5f, 1.6f);
+            ContinuumRender.preview().zoom((float) amount);
             return true;
         }
         return false;
