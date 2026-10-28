@@ -1,5 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
@@ -189,23 +192,61 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
         return isWorking;
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.of(Component.literal("§5Aetheric Analysis:"))));
-        widgets.add(new TextWidget<>(Text.dynamic(
-                () -> Component.literal("  §7Chunk Base Soul: §d" + String.format("%.2f", cachedSoulDensity)))));
-        widgets.add(new TextWidget<>(Text
-                .dynamic(() -> Component.literal("  §7Flora Bonus: §b+" + String.format("%.2f", lastBotanicalBoost)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            boolean isNight = getLevel() != null && getLevel().isNight();
-            return Component.literal("  §7Veil Status: " + (isNight ? "§aActive (1.25x)" : "§6Dormant"));
-        })));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component.literal(
-                "  §eTotal EU Multiplier: §l" + String.format("%.2fx", cachedSoulDensity + lastBotanicalBoost)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> lastBotanicalBoost > 1.0f ?
-                Component.literal("§b§l» SOUL SATURATED «") : Component.literal(""))));
-        return widgets;
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private float multiplier() {
+        return cachedSoulDensity + lastBotanicalBoost;
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Bio-Aetheric Engine")
+                .formed(this::isFormed)
+                .badge(() -> lastBotanicalBoost > 1.0f && isFormed() ? new HudModel.Badge("SOUL SATURATED", HudModel.CYAN) :
+                        HudRecipes.badge(this))
+                .subtitle(() -> "Generates from the soul of the chunk and the flora round it")
+                .cells(() -> {
+                    var cells = HudRecipes.cells(this);
+                    boolean night = getLevel() != null && getLevel().isNight();
+                    cells.add(HudModel.cell("CHUNK SOUL", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                            "base", HudModel.PURPLE));
+                    cells.add(HudModel.cell("FLORA BONUS", String.format(java.util.Locale.ROOT, "+%.2f", lastBotanicalBoost),
+                            "from plants nearby", HudModel.GREEN));
+                    cells.add(HudModel.cell("VEIL", night ? "active" : "dormant", night ? "x1.25 faster" : "wakes at night",
+                            night ? HudModel.CYAN : HudModel.DIM));
+                    return cells;
+                })
+                .bars(() -> java.util.List.of(
+                        new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
+                                String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)),
+                                HudModel.CYAN),
+                        new HudModel.Bar("EU multiplier", Math.min(1.0f, multiplier() / 4.0f),
+                                String.format(java.util.Locale.ROOT, "%.2fx", multiplier()), HudModel.GOLD)))
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD, this::isFormed)
+                .math(() -> java.util.List.of(
+                        HudModel.heading("RESONANCE"),
+                        HudModel.line("resonance = chunk soul + flora bonus", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f + %.2f = %.2f", cachedSoulDensity,
+                                lastBotanicalBoost, multiplier()), HudModel.WHITE),
+                        HudModel.heading("OUTPUT"),
+                        HudModel.line("time = 1 / (1 + resonance * 0.1), / 1.25 at night", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= x%.3f", 1.0 / (1.0 + multiplier() * 0.1)),
+                                HudModel.WHITE),
+                        HudModel.line("EU output = x resonance", HudModel.MID),
+                        HudModel.line("source cost = 1 + resonance * 0.05", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= x%.3f", 1.0 + multiplier() * 0.05),
+                                HudModel.WHITE)))
+                .graph("EU multiplier", HudModel.GOLD, this::multiplier, 0.0f)
+                .graph("progress %", HudModel.CYAN, () -> HudRecipes.progressPercent(this), 100.0f)
+                .graph("EU/t", HudModel.ORANGE, () -> HudRecipes.euPerTick(this), 0.0f);
     }
 }

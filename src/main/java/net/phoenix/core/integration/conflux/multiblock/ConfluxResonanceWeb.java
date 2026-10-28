@@ -1,5 +1,11 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
+import brachy.modularui.value.sync.DoubleSyncValue;
+import brachy.modularui.value.sync.FloatSyncValue;
+import brachy.modularui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -139,37 +145,67 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
         }
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        syncManager.syncValue("web_active", 0, new BooleanSyncValue(() -> this.webActive, v -> this.webActive = v));
+        syncManager.syncValue("total_pipes", 0, new IntSyncValue(() -> this.totalPipeCount, v -> this.totalPipeCount = v));
+        syncManager.syncValue("distinct_types", 0, new IntSyncValue(() -> this.distinctTypeCount,
+                v -> this.distinctTypeCount = v));
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
 
-        syncManager.syncValue("web_active", new BooleanSyncValue(() -> this.webActive, (v) -> this.webActive = v));
-        syncManager.syncValue("total_pipes",
-                new IntSyncValue(() -> this.totalPipeCount, (v) -> this.totalPipeCount = v));
-        syncManager.syncValue("distinct_types",
-                new IntSyncValue(() -> this.distinctTypeCount, (v) -> this.distinctTypeCount = v));
+    private float diversity() {
+        return 1f + 0.25f * distinctTypeCount;
+    }
 
-        widgets.add(new TextWidget<>(Text.dynamic(() -> this.webActive ? Component.literal("§a[SCANNING]§r") :
-                Component.literal("§c[OFFLINE — insufficient EU]§r"))));
+    private long ratePerType() {
+        return (long) (totalPipeCount * RATE_PER_PIPE * diversity());
+    }
 
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component.literal(String.format(
-                "Pipes detected: §e%,d§r  |  Types active: §b%d§r/5", this.totalPipeCount, this.distinctTypeCount)))));
-
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            if (this.totalPipeCount > 0) {
-                float bonus = 1f + 0.25f * this.distinctTypeCount;
-                long rateEach = (long) (this.totalPipeCount * RATE_PER_PIPE * bonus);
-                return Component.literal(String.format(
-                        "Rate / type: §e%,d§r u/t  Diversity bonus: §6+%.0f%%§r", rateEach, (bonus - 1f) * 100));
-            } else {
-                return Component.literal("§7No Axiom pipes detected in range.§r");
-            }
-        })));
-
-        widgets.add(new TextWidget<>(Text.of(Component.literal(String.format(
-                "§7Scan radius: %d blocks  Interval: %d ticks§r", SCAN_RADIUS, SCAN_INTERVAL)))));
-        return widgets;
+    private HudModel hudModel() {
+        return HudModel.of("Conflux Resonance Web")
+                .formed(this::isFormed)
+                .badge(() -> webActive ? new HudModel.Badge("SCANNING", HudModel.GREEN) :
+                        new HudModel.Badge("OFFLINE", HudModel.RED))
+                .subtitle(() -> "Reads the Axiom pipes within " + SCAN_RADIUS + " blocks")
+                .cells(() -> {
+                    var cells = new java.util.ArrayList<HudModel.Cell>();
+                    cells.add(HudModel.cell("PIPES", String.format(java.util.Locale.ROOT, "%,d", totalPipeCount),
+                            "in range", HudModel.CYAN));
+                    cells.add(HudModel.cell("TYPES", distinctTypeCount + " / 5", "kinds of data", HudModel.PURPLE));
+                    cells.add(HudModel.cell("DIVERSITY", String.format(java.util.Locale.ROOT, "+%.0f%%",
+                            (diversity() - 1f) * 100), "bonus", HudModel.GOLD));
+                    cells.add(HudModel.cell("RATE / TYPE", String.format(java.util.Locale.ROOT, "%,d u/t", ratePerType()),
+                            "each type", HudModel.GREEN));
+                    cells.add(HudModel.cell("POWER", String.format(java.util.Locale.ROOT, "%,d EU/t", EU_PER_TICK),
+                            webActive ? "supplied" : "SHORT", webActive ? HudModel.GREEN : HudModel.RED));
+                    return cells;
+                })
+                .bars(() -> java.util.List.of(new HudModel.Bar("Types active", distinctTypeCount / 5.0f,
+                        distinctTypeCount + " / 5", HudModel.PURPLE)))
+                .notes(() -> java.util.List.of(totalPipeCount > 0 ?
+                        HudModel.line("Scans every " + SCAN_INTERVAL + " ticks.", HudModel.MID) :
+                        HudModel.line("No Axiom pipes detected in range.", HudModel.GOLD)))
+                .math(() -> java.util.List.of(
+                        HudModel.heading("RATE"),
+                        HudModel.line("diversity = 1 + 0.25 * types", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= 1 + 0.25 * %d = %.2f", distinctTypeCount,
+                                diversity()), HudModel.WHITE),
+                        HudModel.line("rate per type = pipes * " + RATE_PER_PIPE + " * diversity", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %d * %d * %.2f = %,d u/t", totalPipeCount,
+                                RATE_PER_PIPE, diversity(), ratePerType()), HudModel.WHITE),
+                        HudModel.heading("LIMITS"),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "buffer %,d per type, push %,d u/t", BUFFER_PER,
+                                PUSH_RATE), HudModel.MID)))
+                .graph("pipes", HudModel.CYAN, () -> (float) totalPipeCount, 0.0f)
+                .graph("rate / type", HudModel.GREEN, () -> (float) ratePerType(), 0.0f)
+                .graph("types", HudModel.PURPLE, () -> (float) distinctTypeCount, 5.0f);
     }
 
     @Override

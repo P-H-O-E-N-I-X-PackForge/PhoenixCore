@@ -1,5 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -163,26 +166,68 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.of(Component.literal("§5Alchemical Analysis:"))));
-        widgets.add(new TextWidget<>(Text.dynamic(
-                () -> Component.literal("  §7Soul Resonance: §d" + String.format("%.2f", cachedSoulDensity)))));
-        widgets.add(new TextWidget<>(Text.dynamic(
-                () -> Component.literal("  §7Garden Boost:   §b+" + String.format("%.2f", cachedFloraBoost)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            float harmonicBonus = (totalWorkTicks >= HARMONIZATION_THRESHOLD) ? 0.5f : 0.0f;
-            float totalPotency = cachedSoulDensity + cachedFloraBoost + harmonicBonus;
-            return Component.literal("  §eTotal Potency:  §l" + String.format("%.2fx", totalPotency));
-        })));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            if (totalWorkTicks >= HARMONIZATION_THRESHOLD)
-                return Component.literal("§6Status: §l§nCHUNK HARMONIZED §a(+0.50)");
-            int percent = (int) ((totalWorkTicks / (double) HARMONIZATION_THRESHOLD) * 100);
-            return Component.literal("§8Harmonizing: " + percent + "%");
-        })));
-        return widgets;
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private float harmonicBonus() {
+        return totalWorkTicks >= HARMONIZATION_THRESHOLD ? 0.5f : 0.0f;
+    }
+
+    private float totalPotency() {
+        return cachedSoulDensity + cachedFloraBoost + harmonicBonus();
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Alchemical Imbuer")
+                .formed(this::isFormed)
+                .badge(() -> HudRecipes.badge(this))
+                .subtitle(() -> totalWorkTicks >= HARMONIZATION_THRESHOLD ? "Chunk harmonized" :
+                        "Harmonizing the chunk as it works")
+                .cells(() -> {
+                    var cells = HudRecipes.cells(this);
+                    cells.add(HudModel.cell("SOUL RESONANCE", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                            "this chunk", HudModel.PURPLE));
+                    cells.add(HudModel.cell("GARDEN BOOST", String.format(java.util.Locale.ROOT, "+%.2f", cachedFloraBoost),
+                            "from flora nearby", HudModel.GREEN));
+                    cells.add(HudModel.cell("TOTAL POTENCY", String.format(java.util.Locale.ROOT, "%.2fx", totalPotency()),
+                            harmonicBonus() > 0 ? "harmonized +0.50" : "not harmonized", HudModel.GOLD));
+                    return cells;
+                })
+                .bars(() -> {
+                    var bars = new java.util.ArrayList<HudModel.Bar>();
+                    bars.add(new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
+                            String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)), HudModel.CYAN));
+                    double harmony = Math.min(1.0, totalWorkTicks / (double) HARMONIZATION_THRESHOLD);
+                    bars.add(new HudModel.Bar("Chunk harmonization", (float) harmony,
+                            String.format(java.util.Locale.ROOT, "%.0f%%", harmony * 100.0), HudModel.GOLD));
+                    return bars;
+                })
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD, this::isFormed)
+                .math(() -> java.util.List.of(
+                        HudModel.heading("POTENCY"),
+                        HudModel.line("potency = soul + garden + harmony", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f + %.2f + %.2f = %.2fx", cachedSoulDensity,
+                                cachedFloraBoost, harmonicBonus(), totalPotency()), HudModel.WHITE),
+                        HudModel.heading("EFFICIENCY"),
+                        HudModel.line("efficiency = 1 + (potency - 1) * 0.9", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f", 1.0 + (totalPotency() - 1.0) * 0.9),
+                                HudModel.WHITE),
+                        HudModel.line("most recipes: time and source cost divided by it", HudModel.DIM),
+                        HudModel.line("extraction: x0.8 time, source x1.1 * efficiency", HudModel.DIM),
+                        HudModel.heading("HARMONY"),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "%,d of %,d work ticks", totalWorkTicks,
+                                (long) HARMONIZATION_THRESHOLD), HudModel.WHITE)))
+                .graph("potency", HudModel.GOLD, this::totalPotency, 0.0f)
+                .graph("progress %", HudModel.CYAN, () -> HudRecipes.progressPercent(this), 100.0f)
+                .graph("EU/t", HudModel.ORANGE, () -> HudRecipes.euPerTick(this), 0.0f);
     }
 }

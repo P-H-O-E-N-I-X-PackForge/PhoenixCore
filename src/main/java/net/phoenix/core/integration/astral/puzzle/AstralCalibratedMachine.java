@@ -1,5 +1,10 @@
 package net.phoenix.core.integration.astral.puzzle;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
+import brachy.modularui.value.sync.BooleanSyncValue;
+import brachy.modularui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -202,39 +207,76 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
                         drawn.size(), lost));
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.dynamic(() -> calibrated ?
-                Component.literal("§7Calibration: §acalibrated" + (aligned ? " §b(aligned, faster)" : "")) :
-                Component.literal("§7Calibration: §cuncalibrated §7- it will not run"))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            int stored = 0;
-            int capacity = 0;
-            int hatches = 0;
-            for (var part : getParts()) {
-                if (part instanceof AstralThreadHatchPartMachine hatch && hatch.getThreadContainer() != null) {
-                    stored += hatch.getThreadContainer().getThread();
-                    capacity += hatch.getThreadContainer().getMaxThread();
-                    hatches++;
-                }
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private int[] threadReading() {
+        int stored = 0;
+        int capacity = 0;
+        int hatches = 0;
+        for (var part : getParts()) {
+            if (part instanceof AstralThreadHatchPartMachine hatch && hatch.getThreadContainer() != null) {
+                stored += hatch.getThreadContainer().getThread();
+                capacity += hatch.getThreadContainer().getMaxThread();
+                hatches++;
             }
-            if (hatches == 0) return Component.literal("§7Thread: §8no thread hatch fitted");
-            int pct = (int) (stored * 100L / Math.max(1, capacity));
-            String bar = "|".repeat(pct / 10) + "§8" + "|".repeat(10 - pct / 10);
-            return Component.literal("§7Thread: §d" + bar + " §f" + stored + " / " + capacity + " §7(" + hatches +
-                    (hatches == 1 ? " hatch)" : " hatches)"));
-        })));
-        widgets.add(new ButtonWidget<>()
-                .overlay(new ItemDrawable(new ItemStack(Items.SPYGLASS)).asIcon().size(16))
-                .tooltip(new RichTooltip().addLine(Text.of(Component
-                        .literal(calibrated ? "Recalibrate (draws a new chart over the old)" :
-                                "Open the star chart to calibrate this machine"))))
-                .onMousePressed((context, button) -> {
-                    PacketDistributor.sendToServer(new C2SOpenCalibrationPacket(getBlockPos()));
-                    return true;
-                }));
-        return widgets;
+        }
+        return new int[] { stored, capacity, hatches };
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Astral Machine")
+                .formed(this::isFormed)
+                .badge(() -> !calibrated ? new HudModel.Badge("UNCALIBRATED", HudModel.RED) : aligned ?
+                        new HudModel.Badge("ALIGNED", HudModel.CYAN) : HudRecipes.badge(this))
+                .subtitle(() -> calibrated ? (aligned ? "Aligned: runs faster" : "Calibrated") :
+                        "It will not run until it is calibrated")
+                .cells(() -> {
+                    var cells = HudRecipes.cells(this);
+                    cells.add(HudModel.cell("CALIBRATION", calibrated ? "calibrated" : "no", aligned ?
+                            "aligned x" + ALIGNED_DURATION + " time" : "not aligned",
+                            calibrated ? HudModel.GREEN : HudModel.RED));
+                    int[] thread = threadReading();
+                    cells.add(HudModel.cell("THREAD", thread[2] == 0 ? "no hatch" : thread[0] + " / " + thread[1],
+                            thread[2] + (thread[2] == 1 ? " hatch" : " hatches"), thread[2] == 0 ? HudModel.RED :
+                                    HudModel.PURPLE));
+                    return cells;
+                })
+                .bars(() -> {
+                    var bars = new java.util.ArrayList<HudModel.Bar>();
+                    bars.add(new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
+                            String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)),
+                            HudModel.CYAN));
+                    int[] thread = threadReading();
+                    if (thread[2] > 0) {
+                        bars.add(new HudModel.Bar("Thread", thread[0] / (float) Math.max(1, thread[1]),
+                                thread[0] + " / " + thread[1], HudModel.PURPLE));
+                    }
+                    return bars;
+                })
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE, HudModel.GOLD,
+                        this::isFormed)
+                .localButton(calibratedLabel(), HudModel.BLUE, this::isFormed, () ->
+                        PacketDistributor.sendToServer(new C2SOpenCalibrationPacket(getBlockPos())))
+                .math(() -> java.util.List.of(
+                        HudModel.heading("CALIBRATION"),
+                        HudModel.line("calibrate it with the star chart to run", HudModel.MID),
+                        HudModel.line("a chart that is aligned runs x" + ALIGNED_DURATION + " the time", HudModel.MID),
+                        HudModel.heading("THREAD"),
+                        HudModel.line("drawn from the thread hatches as it works", HudModel.MID)))
+                .graph("progress %", HudModel.CYAN, () -> HudRecipes.progressPercent(this), 100.0f)
+                .graph("thread", HudModel.PURPLE, () -> (float) threadReading()[0], 0.0f);
+    }
+
+    private String calibratedLabel() {
+        return "STAR CHART";
     }
 }

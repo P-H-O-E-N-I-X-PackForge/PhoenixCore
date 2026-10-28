@@ -1,5 +1,10 @@
 package net.phoenix.core.integration.vocal_resonance;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
+import brachy.modularui.value.sync.BooleanSyncValue;
+import brachy.modularui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -294,27 +299,60 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
                 new S2CPlayStreamPacket(currentStreamUrl, getBlockPos(), getFinalRange(), resonancePower));
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.of(Component.literal("§bAcoustic Capabilities:"))));
-        widgets.add(
-                new TextWidget<>(Text.dynamic(() -> Component.literal(getGateStatus("Physical Discs", hasDiscHatch)))));
-        widgets.add(new TextWidget<>(
-                Text.dynamic(() -> Component.literal(getGateStatus("Sound Library", hasLibraryHatch)))));
-        widgets.add(
-                new TextWidget<>(Text.dynamic(() -> Component.literal(getGateStatus("YT Streaming", hasStreamHatch)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component.literal("§7Radius: §a" + getFinalRange() +
-                "m §8(base " + BASE_RANGE + " + §7" + totalSpeakerRange + "§8 speaker bonus)"))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            boolean active = (!selectedLibrarySound.isEmpty() || !currentStreamUrl.isEmpty()) && isWorkingEnabled();
-            return Component.literal("§7Usage: §e" + (active ? MUSIC_ENERGY_DRAIN : 0L) + " EU/t");
-        })));
-        widgets.add(new TextWidget<>(
-                Text.dynamic(() -> currentLiveBPM > 0 ? Component.literal("§7BPM detected: §f" + currentLiveBPM) :
-                        Component.literal("§7BPM detected: §8Awaiting Analysis..."))));
-        return widgets;
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        syncManager.syncValue("jukebox_disc", 0, new BooleanSyncValue(() -> hasDiscHatch, v -> hasDiscHatch = v));
+        syncManager.syncValue("jukebox_library", 0, new BooleanSyncValue(() -> hasLibraryHatch, v -> hasLibraryHatch = v));
+        syncManager.syncValue("jukebox_stream", 0, new BooleanSyncValue(() -> hasStreamHatch, v -> hasStreamHatch = v));
+        syncManager.syncValue("jukebox_range", 0, new IntSyncValue(() -> totalSpeakerRange, v -> totalSpeakerRange = v));
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private boolean playing() {
+        return (!selectedLibrarySound.isEmpty() || !currentStreamUrl.isEmpty()) && isWorkingEnabled();
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Resonant Jukebox")
+                .formed(this::isFormed)
+                .badge(() -> playing() ? new HudModel.Badge("PLAYING", HudModel.GREEN) : HudRecipes.badge(this))
+                .subtitle(() -> !currentStreamUrl.isEmpty() ? streamTitle : !selectedLibrarySound.isEmpty() ?
+                        selectedLibrarySound : "Nothing playing")
+                .cells(() -> {
+                    var cells = new java.util.ArrayList<HudModel.Cell>();
+                    cells.add(HudModel.cell("RADIUS", getFinalRange() + " m", "base " + BASE_RANGE + " + " +
+                            totalSpeakerRange, HudModel.CYAN));
+                    cells.add(HudModel.cell("USAGE", (playing() ? MUSIC_ENERGY_DRAIN : 0L) + " EU/t",
+                            playing() ? "playing" : "idle", HudModel.ORANGE));
+                    cells.add(HudModel.cell("BPM", currentLiveBPM > 0 ? String.valueOf(currentLiveBPM) : "-",
+                            currentLiveBPM > 0 ? "detected" : "awaiting analysis", HudModel.PURPLE));
+                    cells.add(HudModel.cell("DISCS", hasDiscHatch ? "ready" : "no hatch", "physical discs",
+                            hasDiscHatch ? HudModel.GREEN : HudModel.RED));
+                    cells.add(HudModel.cell("LIBRARY", hasLibraryHatch ? "ready" : "no hatch", "sound library",
+                            hasLibraryHatch ? HudModel.GREEN : HudModel.RED));
+                    cells.add(HudModel.cell("STREAMING", hasStreamHatch ? "ready" : "no hatch", "YT streaming",
+                            hasStreamHatch ? HudModel.GREEN : HudModel.RED));
+                    return cells;
+                })
+                .bars(() -> java.util.List.of(new HudModel.Bar("Bass", Math.min(1.0f, currentLiveBass),
+                        String.format(java.util.Locale.ROOT, "%.0f%%", currentLiveBass * 100), HudModel.PURPLE)))
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE, HudModel.GOLD,
+                        this::isFormed)
+                .math(() -> java.util.List.of(
+                        HudModel.heading("RANGE"),
+                        HudModel.line("radius = base + speaker bonus", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %d + %d = %d m", BASE_RANGE, totalSpeakerRange,
+                                getFinalRange()), HudModel.WHITE),
+                        HudModel.heading("ENERGY"),
+                        HudModel.line("music costs " + MUSIC_ENERGY_DRAIN + " EU/t while playing", HudModel.MID)))
+                .graph("bass %", HudModel.PURPLE, () -> currentLiveBass * 100.0f, 100.0f)
+                .graph("BPM", HudModel.CYAN, () -> (float) currentLiveBPM, 0.0f);
     }
 
     private String getGateStatus(String name, boolean active) {

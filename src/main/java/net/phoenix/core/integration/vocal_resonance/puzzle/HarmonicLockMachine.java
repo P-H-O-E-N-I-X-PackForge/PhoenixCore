@@ -1,5 +1,9 @@
 package net.phoenix.core.integration.vocal_resonance.puzzle;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
+import brachy.modularui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
@@ -346,82 +350,76 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
         return names[Math.floorMod(midi, 12)] + (midi / 12 - 1);
     }
 
-    @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
-                            UISettings settings) {
-        Flow column = Flow.col()
-                .coverChildren()
-                .margin(8, 6)
-                .child(Text.dynamic(() -> Component.literal("§bHARMONIC LOCK")).asWidget().marginBottom(8));
-        if (!isFormed()) {
-            column.child(Text.dynamic(() -> Component.literal("§cNot formed")).asWidget());
-        }
-        for (IWidget widget : getWidgetsForDisplay(syncManager)) {
-            column.child(widget);
-        }
-        mainWidget.child(column);
-    }
-
     private static AcousticStateMachine.State stateOf(int ordinal) {
         AcousticStateMachine.State[] values = AcousticStateMachine.State.values();
         return values[Math.max(0, Math.min(ordinal, values.length - 1))];
     }
 
-    @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
+    private void hudAction(int id, int value) {}
 
-        IntSyncValue attuneSv = syncManager.getOrCreateSyncHandler("lock_attune", IntSyncValue.class,
-                () -> new IntSyncValue(() -> attuneState));
-        IntSyncValue gradeSv = syncManager.getOrCreateSyncHandler("lock_grade", IntSyncValue.class,
-                () -> new IntSyncValue(() -> attuneGrade));
-        IntSyncValue levelSv = syncManager.getOrCreateSyncHandler("lock_level", IntSyncValue.class,
-                () -> new IntSyncValue(() -> tuneLevel));
-        IntSyncValue stepSv = syncManager.getOrCreateSyncHandler("lock_step", IntSyncValue.class,
-                () -> new IntSyncValue(() -> step));
-        IntSyncValue stateSv = syncManager.getOrCreateSyncHandler("lock_state", IntSyncValue.class,
-                () -> new IntSyncValue(() -> state));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> switch (attuneSv.getIntValue()) {
-            case ATTUNING -> Component.literal("§7Lock: §eattuning... §7(play the rhythm game)");
-            case ATTUNED -> Component.literal("§7Lock: §aattuned §7(" +
-                    AttuneDifficulty.fromLevel(levelSv.getIntValue()).label() +
-                    ", " + (gradeSv.getIntValue() >= 2 ? "perfect" : gradeSv.getIntValue() == 1 ? "good" : "passed") +
-                    ")");
-            default -> Component.literal("§7Lock: §cdormant §7- attune it to wake the puzzle");
-        })));
-        widgets.add(new ButtonWidget<>()
-                .overlay(new ItemDrawable(new ItemStack(Items.NOTE_BLOCK)).asIcon().size(16))
-                .tooltip(new RichTooltip().addLine(Text.of(Component
-                        .literal(levelSv.getIntValue() == 0 ? "Attune the lock: a rhythm game (keys D F J K)" :
-                                "Retune the lock for a harder level and bigger boosts"))))
-                .onMousePressed((context, button) -> {
-                    net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient
-                            .openDifficulty(getBlockPos(), tuneLevel);
-                    return true;
-                }));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> levelSv.getIntValue() == 0 ? Component.empty() :
-                Component.literal("§7Forgives §f" + Math.max(0, levelSv.getIntValue() - 1) + " §7wrong note" +
-                        (levelSv.getIntValue() == 2 ? "" : "s") + " in a row."))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            AcousticPuzzle puzzle = getPuzzle();
-            if (attuneSv.getIntValue() != ATTUNED) return Component.literal("§7Puzzle: §8asleep");
-            if (puzzle == null) return Component.literal("§7Puzzle: §8none loaded");
-            String progress = stepSv.getIntValue() + "/" + puzzle.steps().size();
-            return Component.literal("§7Puzzle: " + switch (stateOf(stateSv.getIntValue())) {
-                case IDLE -> "§8waiting §7(" + progress + ")";
-                case LISTENING -> "§elistening §7(" + progress + ")";
-                case SOLVED -> "§aSOLVED";
-                case FAILED -> "§cwrong note, start again";
-            });
-        })));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            AcousticPuzzle puzzle = getPuzzle();
-            if (attuneSv.getIntValue() != ATTUNED || puzzle == null) return Component.empty();
-            return Component.literal("§7Opens with: §f" + hint(puzzle));
-        })));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component
-                .literal("§7Listens to Resonant Jukeboxes in range of this lock."))));
-        return widgets;
+    @Override
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Harmonic Lock")
+                .formed(this::isFormed)
+                .badge(() -> switch (attuneState) {
+                    case ATTUNING -> new HudModel.Badge("ATTUNING", HudModel.GOLD);
+                    case ATTUNED -> new HudModel.Badge("ATTUNED", HudModel.GREEN);
+                    default -> new HudModel.Badge("DORMANT", HudModel.RED);
+                })
+                .subtitle(() -> attuneState == DORMANT ? "Attune it to wake the puzzle" :
+                        "Listens to Resonant Jukeboxes in range")
+                .cells(() -> {
+                    var cells = new java.util.ArrayList<HudModel.Cell>();
+                    cells.add(HudModel.cell("LOCK", attuneState == ATTUNED ? "attuned" : attuneState == ATTUNING ?
+                            "attuning" : "dormant", attuneState == ATTUNING ? "play the rhythm game" : "",
+                            attuneState == ATTUNED ? HudModel.GREEN : HudModel.RED));
+                    cells.add(HudModel.cell("LEVEL", tuneLevel == 0 ? "-" : AttuneDifficulty.fromLevel(tuneLevel).label(),
+                            tuneLevel == 0 ? "not tuned" : "forgives " + Math.max(0, tuneLevel - 1) + " wrong",
+                            HudModel.PURPLE));
+                    cells.add(HudModel.cell("GRADE", attuneState != ATTUNED ? "-" : attuneGrade >= 2 ? "perfect" :
+                            attuneGrade == 1 ? "good" : "passed", "attunement", HudModel.GOLD));
+                    AcousticPuzzle puzzle = getPuzzle();
+                    String progress = puzzle == null ? "-" : step + "/" + puzzle.steps().size();
+                    cells.add(HudModel.cell("PUZZLE", attuneState != ATTUNED ? "asleep" : puzzle == null ? "none loaded" :
+                            switch (stateOf(state)) {
+                                case IDLE -> "waiting";
+                                case LISTENING -> "listening";
+                                case SOLVED -> "SOLVED";
+                                case FAILED -> "wrong note";
+                            }, progress, attuneState == ATTUNED && stateOf(state) == AcousticStateMachine.State.SOLVED ?
+                                    HudModel.GREEN : HudModel.CYAN));
+                    return cells;
+                })
+                .bars(() -> {
+                    AcousticPuzzle puzzle = getPuzzle();
+                    if (attuneState != ATTUNED || puzzle == null || puzzle.steps().isEmpty()) return java.util.List.of();
+                    return java.util.List.of(new HudModel.Bar("Puzzle", step / (float) puzzle.steps().size(),
+                            step + " / " + puzzle.steps().size(), HudModel.CYAN));
+                })
+                .localButton("ATTUNE", HudModel.PURPLE, this::isFormed, () ->
+                        net.phoenix.core.integration.vocal_resonance.puzzle.client.AttuneClient
+                                .openDifficulty(getBlockPos(), tuneLevel))
+                .notes(() -> {
+                    AcousticPuzzle puzzle = getPuzzle();
+                    if (attuneState != ATTUNED || puzzle == null) {
+                        return java.util.List.of(HudModel.line(tuneLevel == 0 ?
+                                "Attune the lock: a rhythm game (D F J K)." : "Retune for a harder level and bigger boosts.",
+                                HudModel.MID));
+                    }
+                    return java.util.List.of(HudModel.line("Opens with: " + hint(puzzle), HudModel.WHITE));
+                })
+                .math(() -> java.util.List.of(
+                        HudModel.heading("ATTUNEMENT"),
+                        HudModel.line("level " + tuneLevel + ": forgives " + Math.max(0, tuneLevel - 1) +
+                                " wrong notes in a row", HudModel.MID),
+                        HudModel.line("grade is set by how many notes were perfect or good", HudModel.DIM),
+                        HudModel.heading("PUZZLE"),
+                        HudModel.line("play the notes in order; a wrong note starts over", HudModel.MID)));
     }
 }

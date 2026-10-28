@@ -1,5 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -122,24 +125,61 @@ public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
                 .build();
     }
 
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.of(Component.literal("§5Reactor Core Metrics:"))));
-        widgets.add(new TextWidget<>(Text.dynamic(
-                () -> Component.literal("  §7Local Soul Density: §d" + String.format("%.2f", cachedSoulDensity)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            String color = reactorStability > 2.0f ? "§b" : (reactorStability > 1.5f ? "§a" : "§e");
-            return Component.literal("  §7Stability Index: " + color + String.format("%.2fx", reactorStability));
-        })));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component
-                .literal("  §eReaction Pressure: §l" + String.format("%.2fx", cachedSoulDensity * reactorStability)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            if (reactorStability < 1.1f) return Component.literal("§c§l⚠ LOW STABILITY — Source Waste Imminent ⚠");
-            if (reactorStability > 2.2f) return Component.literal("§b§l⚡ CRITICAL EFFICIENCY ⚡");
-            return Component.literal("");
-        })));
-        return widgets;
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("Source Reactor")
+                .formed(this::isFormed)
+                .badge(() -> reactorStability < 1.1f && isFormed() ? new HudModel.Badge("LOW STABILITY", HudModel.RED) :
+                        reactorStability > 2.2f ? new HudModel.Badge("CRITICAL EFFICIENCY", HudModel.CYAN) :
+                                HudRecipes.badge(this))
+                .subtitle(() -> "Reaction pressure rises with soul density and stability")
+                .cells(() -> {
+                    var cells = HudRecipes.cells(this);
+                    cells.add(HudModel.cell("SOUL DENSITY", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                            "this chunk", HudModel.PURPLE));
+                    cells.add(HudModel.cell("STABILITY", String.format(java.util.Locale.ROOT, "%.2fx", reactorStability),
+                            reactorStability > 2.0f ? "excellent" : reactorStability > 1.5f ? "good" : "poor",
+                            reactorStability > 1.5f ? HudModel.GREEN : HudModel.GOLD));
+                    cells.add(HudModel.cell("PRESSURE", String.format(java.util.Locale.ROOT, "%.2fx",
+                            cachedSoulDensity * reactorStability), "soul x stability", HudModel.ORANGE));
+                    return cells;
+                })
+                .bars(() -> java.util.List.of(
+                        new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
+                                String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)),
+                                HudModel.CYAN),
+                        new HudModel.Bar("Stability", Math.min(1.0f, reactorStability / 2.5f),
+                                String.format(java.util.Locale.ROOT, "%.2fx", reactorStability), HudModel.GREEN)))
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD, this::isFormed)
+                .notes(() -> java.util.List.of(reactorStability < 1.1f ?
+                        HudModel.line("Low stability: source waste imminent.", HudModel.RED) :
+                        reactorStability > 2.2f ? HudModel.line("Critical efficiency.", HudModel.CYAN) :
+                                HudModel.line("Stable.", HudModel.MID)))
+                .math(() -> java.util.List.of(
+                        HudModel.heading("SPEED AND COST"),
+                        HudModel.line("speed = 1 + soul * 0.15", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f", 1.0 + cachedSoulDensity * 0.15),
+                                HudModel.WHITE),
+                        HudModel.line("cost divisor = 1 + stability * 0.1", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f", 1.0 + reactorStability * 0.1),
+                                HudModel.WHITE),
+                        HudModel.heading("PRESSURE"),
+                        HudModel.line("pressure = soul density * stability", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f * %.2f = %.2f", cachedSoulDensity,
+                                reactorStability, cachedSoulDensity * reactorStability), HudModel.WHITE)))
+                .graph("stability", HudModel.GREEN, () -> reactorStability, 2.5f)
+                .graph("pressure", HudModel.ORANGE, () -> cachedSoulDensity * reactorStability, 0.0f)
+                .graph("progress %", HudModel.CYAN, () -> HudRecipes.progressPercent(this), 100.0f);
     }
 }

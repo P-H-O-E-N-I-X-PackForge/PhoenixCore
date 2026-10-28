@@ -143,6 +143,7 @@ public final class MachineHud {
         private int lastSent = Integer.MIN_VALUE;
         private int[][] sliderRects = new int[0][];
         private int[][] buttonRects = new int[0][];
+        private Runnable[] buttonLocals = new Runnable[0];
 
         ProgressPage(HudModel m, Actions send) {
             this.m = m;
@@ -208,6 +209,7 @@ public final class MachineHud {
             }
             sliderRects = new int[sliderCount][];
             buttonRects = new int[buttonCount][];
+            buttonLocals = new Runnable[buttonCount];
             int si = 0;
             int bi = 0;
             int bx = 8;
@@ -233,6 +235,7 @@ public final class MachineHud {
                             0xAA)) : 0x44_3A5E6A, 1);
                     g.drawString(font, text, bx + 8, y + 3, enabled ? b.color() : HudModel.DIM, false);
                     buttonRects[bi] = new int[] { bx, y, enabled ? bw : 0, 14, b.id() };
+                    buttonLocals[bi] = b.local();
                     bi++;
                     bx += bw + 6;
                 }
@@ -294,9 +297,11 @@ public final class MachineHud {
         @Override
         public boolean click(double mx, double my, int button) {
             if (button != 0) return false;
-            for (int[] r : buttonRects) {
+            for (int i = 0; i < buttonRects.length; i++) {
+                int[] r = buttonRects[i];
                 if (r != null && r[2] > 0 && mx >= r[0] && mx < r[0] + r[2] && my >= r[1] && my < r[1] + r[3]) {
-                    send.run(r[4], 0);
+                    if (buttonLocals[i] != null) buttonLocals[i].run();
+                    else send.run(r[4], 0);
                     return true;
                 }
             }

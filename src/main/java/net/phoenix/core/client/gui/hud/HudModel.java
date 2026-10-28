@@ -47,8 +47,9 @@ public final class HudModel {
     public record Slider(String label, int id, IntSupplier value, int min, int max, Supplier<Band> band,
                          String unit) implements Control {}
 
-    public record Button(String label, int id, int color, BooleanSupplier enabled,
-                         Supplier<String> text) implements Control {}
+    /** A button: it tells the server {@code id}, or when {@code local} is set runs that on this client instead. */
+    public record Button(String label, int id, int color, BooleanSupplier enabled, Supplier<String> text,
+                         Runnable local) implements Control {}
 
     /** A value to graph: sampled once a second while the screen is open. */
     public record Series(String name, int color, Supplier<Float> value, float max) {}
@@ -103,12 +104,18 @@ public final class HudModel {
     }
 
     public HudModel button(String label, int id, int color, BooleanSupplier enabled) {
-        controls.add(new Button(label, id, color, enabled, () -> label));
+        controls.add(new Button(label, id, color, enabled, () -> label, null));
         return this;
     }
 
     public HudModel button(Supplier<String> text, int id, int color, BooleanSupplier enabled) {
-        controls.add(new Button(text.get(), id, color, enabled, text));
+        controls.add(new Button(text.get(), id, color, enabled, text, null));
+        return this;
+    }
+
+    /** A button that does something on this client only, such as opening a screen. */
+    public HudModel localButton(String label, int color, BooleanSupplier enabled, Runnable action) {
+        controls.add(new Button(label, -1, color, enabled, () -> label, action));
         return this;
     }
 
