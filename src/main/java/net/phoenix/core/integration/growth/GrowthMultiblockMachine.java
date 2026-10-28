@@ -733,6 +733,8 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     private HudModel hudModel() {
         return HudModel.of("Growth Chamber")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.ORGANIC)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.vines(() -> growthStage / (float) Math.max(1, maxStage()), () -> growthStage + 1, net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent(), net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent2()), 40)
                 .badge(this::growthBadge)
                 .subtitle(() -> isControlled() ? "Growth control hatch fitted" :
                         "No growth control hatch: growth is wild and breaks what is in its way")

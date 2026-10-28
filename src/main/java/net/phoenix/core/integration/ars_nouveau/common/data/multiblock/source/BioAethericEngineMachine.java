@@ -210,6 +210,8 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
     private HudModel hudModel() {
         return HudModel.of("Bio-Aetheric Engine")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, multiplier() / 4.0f), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 30)
                 .badge(() -> lastBotanicalBoost > 1.0f && isFormed() ? new HudModel.Badge("SOUL SATURATED", HudModel.CYAN) :
                         HudRecipes.badge(this))
                 .subtitle(() -> "Generates from the soul of the chunk and the flora round it")

@@ -64,7 +64,7 @@ public final class MachineHud {
             tabs.add(new TabStrip.Tab("H", new Sampled(sampler, new ProgressPage(m, sender))));
             if (m.hasMath) tabs.add(new TabStrip.Tab("M", new Sampled(sampler, new MathPage(m))));
             if (!m.series.isEmpty()) tabs.add(new TabStrip.Tab("~", new Sampled(sampler, new GraphPage(m, history))));
-            screen = new TabStrip(tabs);
+            screen = new TabStrip(tabs, m.theme);
         }
         final TabStrip tabs = screen;
         var panel = MachineUIPanelBuilder.panelBuilder(machine).attachInventory(false).addTitleBar(false)
@@ -153,9 +153,11 @@ public final class MachineHud {
         @Override
         public void render(GuiGraphics g, int w, int h, int mouseX, int mouseY) {
             Font font = Minecraft.getInstance().font;
-            g.fill(0, 0, w, h, 0xEE_010810);
-            GuiDraw.drawBorder(g, 0, 0, w, h, 0x33_00E5CC, 1);
-            g.drawString(font, m.title.toUpperCase(Locale.ROOT), 8, 7, HudModel.CYAN, false);
+            HudTheme T = m.theme;
+            g.fill(0, 0, w, h, GuiDraw.withAlpha(T.bgBottom(), 0xEE));
+            T.pattern(g, 0, 0, w, h);
+            GuiDraw.drawBorder(g, 0, 0, w, h, T.line(), 1);
+            g.drawString(font, m.title.toUpperCase(Locale.ROOT), 8, 7, T.accent(), false);
             if (!m.formed.get()) {
                 g.drawString(font, "Structure not formed.", 8, 24, HudModel.DIM, false);
                 return;
@@ -167,7 +169,7 @@ public final class MachineHud {
                 GuiDraw.drawBorder(g, w - 8 - bw, 4, bw, 12, badge.color(), 1);
                 g.drawString(font, badge.text(), w - 8 - bw + 5, 6, badge.color(), false);
             }
-            g.fill(8, 19, w - 8, 20, 0x33_00E5CC);
+            g.fill(8, 19, w - 8, 20, T.line());
             int y = 24;
             String sub = m.subtitle.get();
             if (!sub.isEmpty()) {
@@ -176,13 +178,26 @@ public final class MachineHud {
             }
 
             List<HudModel.Cell> cells = m.cells.get();
+            if (m.hero != null) {
+                int needed = ((cells.size() + 2) / 3) * 32 + 2 + m.bars.get().size() * 21 +
+                        (int) m.controls.stream().filter(c -> c instanceof HudModel.Slider).count() * 14 +
+                        (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
+                        m.notes.get().size() * 10 + 6;
+                if (y + m.heroHeight + 4 + needed <= h) {
+                    GuiDraw.enableScissor(g, 8, y, w - 16, m.heroHeight);
+                    m.hero.draw(g, 8, y, w - 16, m.heroHeight, Heroes.now());
+                    g.disableScissor();
+                    GuiDraw.drawBorder(g, 8, y, w - 16, m.heroHeight, T.line(), 1);
+                    y += m.heroHeight + 4;
+                }
+            }
             int cw = (w - 16 - 8) / 3;
             for (int i = 0; i < cells.size(); i++) {
                 int cx = 8 + (i % 3) * (cw + 4);
                 int cy = y + (i / 3) * 32;
                 var c = cells.get(i);
-                g.fill(cx, cy, cx + cw, cy + 30, 0xAA_010A12);
-                GuiDraw.drawBorder(g, cx, cy, cw, 30, 0x55_00E5CC, 1);
+                g.fill(cx, cy, cx + cw, cy + 30, GuiDraw.withAlpha(T.bgTop(), 0xAA));
+                GuiDraw.drawBorder(g, cx, cy, cw, 30, GuiDraw.withAlpha(T.accent(), 0x55), 1);
                 g.fill(cx, cy, cx + 2, cy + 30, c.color());
                 g.drawString(font, font.plainSubstrByWidth(c.label(), cw - 8), cx + 6, cy + 3, HudModel.DIM, false);
                 g.drawString(font, font.plainSubstrByWidth(c.value(), cw - 8), cx + 6, cy + 13, c.color(), false);
@@ -194,9 +209,9 @@ public final class MachineHud {
                 g.drawString(font, font.plainSubstrByWidth(bar.label(), w - 100), 8, y, HudModel.MID, false);
                 g.drawString(font, bar.right(), w - 8 - font.width(bar.right()), y, HudModel.WHITE, false);
                 int bw = w - 16;
-                g.fill(8, y + 10, 8 + bw, y + 17, 0xFF_0A2430);
+                g.fill(8, y + 10, 8 + bw, y + 17, T.dim());
                 g.fill(8, y + 10, 8 + (int) (bw * Mth.clamp(bar.fraction(), 0.0f, 1.0f)), y + 17, bar.color());
-                GuiDraw.drawBorder(g, 8, y + 10, bw, 7, 0x66_00E5CC, 1);
+                GuiDraw.drawBorder(g, 8, y + 10, bw, 7, GuiDraw.withAlpha(T.accent(), 0x66), 1);
                 y += 21;
             }
 
@@ -215,7 +230,7 @@ public final class MachineHud {
             int bx = 8;
             for (var c : m.controls) {
                 if (c instanceof HudModel.Slider s) {
-                    sliderRects[si] = slider(g, font, s, y, mouseX, mouseY);
+                    sliderRects[si] = slider(g, font, T, s, y, mouseX, mouseY);
                     si++;
                     y += 14;
                 }
@@ -230,7 +245,7 @@ public final class MachineHud {
                     }
                     boolean enabled = b.enabled().getAsBoolean();
                     boolean hover = enabled && mouseX >= bx && mouseX < bx + bw && mouseY >= y && mouseY < y + 14;
-                    g.fill(bx, y, bx + bw, y + 14, !enabled ? 0xFF_010810 : hover ? 0xFF_061825 : 0xFF_010A12);
+                    g.fill(bx, y, bx + bw, y + 14, !enabled ? T.bgBottom() : hover ? GuiDraw.mix(T.bgTop(), T.accent(), 0.15f) : T.bgTop());
                     GuiDraw.drawBorder(g, bx, y, bw, 14, enabled ? (hover ? b.color() : GuiDraw.withAlpha(b.color(),
                             0xAA)) : 0x44_3A5E6A, 1);
                     g.drawString(font, text, bx + 8, y + 3, enabled ? b.color() : HudModel.DIM, false);
@@ -250,13 +265,13 @@ public final class MachineHud {
             }
         }
 
-        private int[] slider(GuiGraphics g, Font font, HudModel.Slider s, int y, int mouseX, int mouseY) {
+        private int[] slider(GuiGraphics g, Font font, HudTheme T, HudModel.Slider s, int y, int mouseX, int mouseY) {
             int x0 = 64;
             int sw = 130;
             int value = s.value().getAsInt();
             float frac = (value - s.min()) / (float) Math.max(1, s.max() - s.min());
             g.drawString(font, s.label(), 8, y + 1, HudModel.DIM, false);
-            g.fill(x0, y + 3, x0 + sw, y + 8, 0xFF_0A2430);
+            g.fill(x0, y + 3, x0 + sw, y + 8, T.dim());
             HudModel.Band band = s.band() == null ? null : s.band().get();
             if (band != null) {
                 float lo = (band.low() - s.min()) / (float) Math.max(1, s.max() - s.min());
@@ -264,7 +279,7 @@ public final class MachineHud {
                 g.fill(x0 + Math.round(sw * Mth.clamp(lo, 0, 1)), y + 3, x0 + Math.round(sw * Mth.clamp(hi, 0, 1)),
                         y + 8, 0x88_33FF88);
             }
-            GuiDraw.drawBorder(g, x0, y + 3, sw, 5, 0x66_00E5CC, 1);
+            GuiDraw.drawBorder(g, x0, y + 3, sw, 5, GuiDraw.withAlpha(T.accent(), 0x66), 1);
             int hx = x0 + Math.round(sw * Mth.clamp(frac, 0.0f, 1.0f));
             boolean inside = band == null || band.contains(value);
             g.fill(hx - 2, y, hx + 2, y + 11, inside ? HudModel.GREEN : HudModel.GOLD);
@@ -358,8 +373,10 @@ public final class MachineHud {
         @Override
         public void render(GuiGraphics g, int w, int h, int mouseX, int mouseY) {
             Font font = Minecraft.getInstance().font;
-            g.fill(0, 0, w, h, 0xEE_010810);
-            GuiDraw.drawBorder(g, 0, 0, w, h, 0x33_00E5CC, 1);
+            HudTheme T = m.theme;
+            g.fill(0, 0, w, h, GuiDraw.withAlpha(T.bgBottom(), 0xEE));
+            T.pattern(g, 0, 0, w, h);
+            GuiDraw.drawBorder(g, 0, 0, w, h, T.line(), 1);
             int maxScroll = Math.max(0, contentHeight - h);
             scroll = Mth.clamp(scroll, 0, maxScroll);
             GuiDraw.enableScissor(g, 0, 0, w, h);
@@ -372,9 +389,9 @@ public final class MachineHud {
                 for (var line : m.math.get()) {
                     if (line.text().startsWith("# ")) {
                         y += 3;
-                        g.fill(8, y, w - 18, y + 1, 0x33_00E5CC);
-                        g.fill(8, y + 3, 11, y + 11, 0xFF_00AAA0);
-                        g.drawString(font, line.text().substring(2), 15, y + 3, HudModel.CYAN, false);
+                        g.fill(8, y, w - 18, y + 1, T.line());
+                        g.fill(8, y + 3, 11, y + 11, T.accent2());
+                        g.drawString(font, line.text().substring(2), 15, y + 3, T.accent(), false);
                         y += 15;
                     } else {
                         g.drawString(font, font.plainSubstrByWidth(line.text(), w - 24), 8, y, line.color(), false);
@@ -387,8 +404,8 @@ public final class MachineHud {
             if (maxScroll > 0) {
                 int thumbH = Math.max(12, (int) (h * (h / (double) contentHeight)));
                 int thumbY = (int) ((h - thumbH) * (scroll / (double) maxScroll));
-                g.fill(w - 4, 0, w, h, 0x33_00E5CC);
-                g.fill(w - 4, thumbY, w, thumbY + thumbH, 0xAA_00E5CC);
+                g.fill(w - 4, 0, w, h, T.line());
+                g.fill(w - 4, thumbY, w, thumbY + thumbH, GuiDraw.withAlpha(T.accent(), 0xAA));
             }
             g.disableScissor();
         }
@@ -415,8 +432,10 @@ public final class MachineHud {
         @Override
         public void render(GuiGraphics g, int w, int h, int mouseX, int mouseY) {
             Font font = Minecraft.getInstance().font;
-            g.fill(0, 0, w, h, 0xEE_010810);
-            GuiDraw.drawBorder(g, 0, 0, w, h, 0x33_00E5CC, 1);
+            HudTheme T = m.theme;
+            g.fill(0, 0, w, h, GuiDraw.withAlpha(T.bgBottom(), 0xEE));
+            T.pattern(g, 0, 0, w, h);
+            GuiDraw.drawBorder(g, 0, 0, w, h, T.line(), 1);
             int x = 8;
             int y = 8;
             int bw = w - 16;
@@ -437,7 +456,7 @@ public final class MachineHud {
             y += 12;
             int plotH = Math.min(110, h - y - 14 - m.series.size() * 10 - 12);
             g.fill(x, y, x + bw, y + plotH, 0x18_FFFFFF);
-            GuiDraw.drawBorder(g, x, y, bw, plotH, 0x44_00E5CC, 1);
+            GuiDraw.drawBorder(g, x, y, bw, plotH, GuiDraw.withAlpha(T.accent(), 0x44), 1);
             for (int i = 1; i <= 3; i++) {
                 int gy = y + plotH - (int) (i * 0.25 * plotH);
                 g.fill(x, gy, x + bw, gy + 1, 0x18_FFFFFF);
@@ -470,7 +489,7 @@ public final class MachineHud {
             g.drawString(font, "-" + all.length + "s", x, y, HudModel.DIM, false);
             g.drawString(font, "now", x + bw - font.width("now"), y, HudModel.DIM, false);
             y += 14;
-            g.fill(x, y - 3, x + bw, y - 2, 0x33_00E5CC);
+            g.fill(x, y - 3, x + bw, y - 2, T.line());
             for (int s = 0; s < m.series.size(); s++) {
                 var series = m.series.get(s);
                 float latest = all[all.length - 1][s];

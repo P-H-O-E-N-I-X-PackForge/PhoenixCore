@@ -244,6 +244,8 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
     private HudModel hudModel() {
         return HudModel.of("Conflux Harmonic Lens")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> (float) currentEfficiency, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 38)
                 .badge(() -> lensActive ? new HudModel.Badge("TRANSMUTING", HudModel.GREEN) :
                         new HudModel.Badge("OFFLINE", HudModel.RED))
                 .subtitle(() -> inputType.displayName + " data in, " + outputType.displayName + " data out")

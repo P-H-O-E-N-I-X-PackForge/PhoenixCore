@@ -228,6 +228,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
     private HudModel hudModel() {
         return HudModel.of("Conflux Cascade Engine")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.dataFlow(() -> momentum, 3, 0xFF_FFC44D, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 30)
                 .badge(() -> engineActive ? new HudModel.Badge("RUNNING", HudModel.GREEN) :
                         new HudModel.Badge("STALLED", HudModel.RED))
                 .subtitle(() -> "Spins up on fuel and pushes " + outputType.displayName + " data")

@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.List;
 
 /**
- * A tab column over a machine screen: a dark cell for each page with a teal border that lights when active, hung off
- * the left edge of the panel. Used as the page itself: it draws and clicks through to whichever tab is active.
+ * The tabs of a machine screen, laid out the way its {@link HudTheme} says: a column of squares or diamonds down the
+ * left edge, or a bar along the top. Used as the page itself: it draws and clicks through to whichever tab is active.
  */
 public class TabStrip implements CanvasPainter {
 
@@ -17,26 +17,58 @@ public class TabStrip implements CanvasPainter {
     public static final int TAB_W = 16;
     private static final int TAB_H = 16;
     private static final int GAP = 2;
+    private static final int TOP_W = 30;
 
-    private static final int BG = 0xFF_010810;
-    private static final int BG_HOVER = 0xFF_061825;
-    private static final int BG_ACTIVE = 0xFF_002830;
-    private static final int C_CYAN = 0xFF_00E5CC;
-    private static final int C_DIM = 0xFF_3A5E6A;
     private static final int C_WHITE = 0xFF_DCF0F4;
 
     private final List<Tab> tabs;
+    private final HudTheme theme;
     private int active = 0;
 
     public TabStrip(List<Tab> tabs) {
+        this(tabs, HudTheme.TEAL);
+    }
+
+    public TabStrip(List<Tab> tabs, HudTheme theme) {
         this.tabs = tabs;
+        this.theme = theme;
     }
 
+    public HudTheme theme() {
+        return theme;
+    }
+
+    public int activeIndex() {
+        return active;
+    }
+
+    public boolean horizontal() {
+        return theme.tabs() == HudTheme.TabStyle.TOP;
+    }
+
+    /** Width of the strip as a widget. */
+    public int stripWidth() {
+        return horizontal() ? tabs.size() * (TOP_W + GAP) - GAP : TAB_W;
+    }
+
+    /** Height of the strip as a widget. */
     public int stripHeight() {
-        return tabs.size() * (TAB_H + GAP) - GAP;
+        return horizontal() ? TAB_H : tabs.size() * (TAB_H + GAP) - GAP;
     }
 
-    /** The vertical tab column, meant to hang off the left edge of the panel. */
+    private int slotX(int i) {
+        return horizontal() ? i * (TOP_W + GAP) : 0;
+    }
+
+    private int slotY(int i) {
+        return horizontal() ? 0 : i * (TAB_H + GAP);
+    }
+
+    private int slotW() {
+        return horizontal() ? TOP_W : TAB_W;
+    }
+
+    /** The tab strip, meant to hang off the edge of the panel. */
     public CanvasPainter stripPainter() {
         return new CanvasPainter() {
 
@@ -44,26 +76,62 @@ public class TabStrip implements CanvasPainter {
             public void render(GuiGraphics g, int w, int h, int mouseX, int mouseY) {
                 Font font = Minecraft.getInstance().font;
                 for (int i = 0; i < tabs.size(); i++) {
-                    int y = i * (TAB_H + GAP);
+                    int x = slotX(i);
+                    int y = slotY(i);
+                    int sw = slotW();
                     boolean isActive = i == active;
-                    boolean hovered = mouseX >= 0 && mouseX < TAB_W && mouseY >= y && mouseY < y + TAB_H;
-                    g.fill(0, y, TAB_W, y + TAB_H, isActive ? BG_ACTIVE : hovered ? BG_HOVER : BG);
-                    GuiDraw.drawBorder(g, 0, y, TAB_W, TAB_H,
-                            isActive ? 0xFF_00AAA0 : hovered ? 0xCC_00E5CC : 0x66_00E5CC, 1);
+                    boolean hovered = mouseX >= x && mouseX < x + sw && mouseY >= y && mouseY < y + TAB_H;
+                    int fill = isActive ? GuiDraw.mix(theme.bgTop(), theme.accent(), 0.28f) :
+                            hovered ? GuiDraw.mix(theme.bgTop(), theme.accent(), 0.12f) : theme.bgBottom();
+                    int edge = isActive ? theme.accent() : hovered ? theme.accent2() : GuiDraw.withAlpha(theme.accent2(), 0x80);
+                    int text = isActive ? theme.accent() : hovered ? C_WHITE : theme.dim();
                     String label = tabs.get(i).label();
-                    int color = isActive ? C_CYAN : hovered ? C_WHITE : C_DIM;
-                    g.drawString(font, label, (TAB_W - font.width(label)) / 2 + 1,
-                            y + (TAB_H - font.lineHeight) / 2 + 1, color, false);
+                    switch (theme.tabs()) {
+                        case DIAMOND -> {
+                            // a diamond: rows narrowing to the points
+                            int cx = x + sw / 2;
+                            int cy = y + TAB_H / 2;
+                            int r = TAB_H / 2;
+                            for (int dy = -r; dy <= r; dy++) {
+                                int half = r - Math.abs(dy);
+                                g.fill(cx - half, cy + dy, cx + half + 1, cy + dy + 1, fill);
+                                g.fill(cx - half, cy + dy, cx - half + 1, cy + dy + 1, edge);
+                                g.fill(cx + half, cy + dy, cx + half + 1, cy + dy + 1, edge);
+                            }
+                            g.fill(cx, y, cx + 1, y + 1, edge);
+                            g.fill(cx, y + TAB_H - 1, cx + 1, y + TAB_H, edge);
+                            g.drawString(font, label, cx - font.width(label) / 2 + 1, cy - font.lineHeight / 2 + 1, text, false);
+                        }
+                        case TOP -> {
+                            // a flat tab hanging from a rule, the active one filled and lit along its top
+                            g.fill(x, y, x + sw, y + TAB_H, fill);
+                            g.fill(x, y + TAB_H - 1, x + sw, y + TAB_H, isActive ? theme.accent() : theme.line());
+                            g.fill(x, y, x + 1, y + TAB_H, edge);
+                            g.fill(x + sw - 1, y, x + sw, y + TAB_H, edge);
+                            if (isActive) g.fill(x, y, x + sw, y + 2, theme.accent());
+                            g.drawString(font, label, x + (sw - font.width(label)) / 2 + 1,
+                                    y + (TAB_H - font.lineHeight) / 2 + 1, text, false);
+                        }
+                        default -> {
+                            g.fill(x, y, x + sw, y + TAB_H, fill);
+                            GuiDraw.drawBorder(g, x, y, sw, TAB_H, edge, 1);
+                            if (isActive) g.fill(x + sw - 2, y + 2, x + sw, y + TAB_H - 2, theme.accent());
+                            g.drawString(font, label, x + (sw - font.width(label)) / 2 + 1,
+                                    y + (TAB_H - font.lineHeight) / 2 + 1, text, false);
+                        }
+                    }
                 }
             }
 
             @Override
             public boolean click(double mouseX, double mouseY, int button) {
-                if (button != 0 || mouseX < 0 || mouseX >= TAB_W || mouseY < 0) return false;
-                int idx = (int) (mouseY / (TAB_H + GAP));
-                if (idx < tabs.size() && mouseY - idx * (TAB_H + GAP) < TAB_H) {
-                    active = idx;
-                    return true;
+                if (button != 0 || mouseX < 0 || mouseY < 0) return false;
+                for (int i = 0; i < tabs.size(); i++) {
+                    if (mouseX >= slotX(i) && mouseX < slotX(i) + slotW() && mouseY >= slotY(i) &&
+                            mouseY < slotY(i) + TAB_H) {
+                        active = i;
+                        return true;
+                    }
                 }
                 return false;
             }

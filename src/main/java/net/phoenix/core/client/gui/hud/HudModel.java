@@ -65,11 +65,27 @@ public final class HudModel {
     final List<Series> series = new ArrayList<>();
     Supplier<Boolean> formed = () -> true;
     boolean hasMath;
+    HudTheme theme = HudTheme.TEAL;
+    Heroes.Hero hero;
+    int heroHeight = 36;
 
     public static HudModel of(String title) {
         HudModel m = new HudModel();
         m.title = title;
         return m;
+    }
+
+    /** How this machine's screen looks: colours, background pattern and tab layout. */
+    public HudModel theme(HudTheme theme) {
+        this.theme = theme;
+        return this;
+    }
+
+    /** A moving picture across the top of the progress page, drawn when there is room for it. */
+    public HudModel hero(Heroes.Hero hero, int height) {
+        this.hero = hero;
+        this.heroHeight = height;
+        return this;
     }
 
     public HudModel badge(Supplier<Badge> badge) {

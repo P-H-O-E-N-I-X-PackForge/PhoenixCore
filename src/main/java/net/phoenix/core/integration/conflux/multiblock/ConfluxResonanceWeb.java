@@ -171,6 +171,8 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
     private HudModel hudModel() {
         return HudModel.of("Conflux Resonance Web")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(), () -> distinctTypeCount / 5.0f, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 36)
                 .badge(() -> webActive ? new HudModel.Badge("SCANNING", HudModel.GREEN) :
                         new HudModel.Badge("OFFLINE", HudModel.RED))
                 .subtitle(() -> "Reads the Axiom pipes within " + SCAN_RADIUS + " blocks")

@@ -188,6 +188,8 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
     private HudModel hudModel() {
         return HudModel.of("Alchemical Imbuer")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0, totalWorkTicks / (double) HARMONIZATION_THRESHOLD), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 44)
                 .badge(() -> HudRecipes.badge(this))
                 .subtitle(() -> totalWorkTicks >= HARMONIZATION_THRESHOLD ? "Chunk harmonized" :
                         "Harmonizing the chunk as it works")

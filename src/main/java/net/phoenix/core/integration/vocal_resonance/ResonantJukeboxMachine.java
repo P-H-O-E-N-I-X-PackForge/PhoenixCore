@@ -321,6 +321,8 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
     private HudModel hudModel() {
         return HudModel.of("Resonant Jukebox")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.NEON)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.equaliser(() -> playing() ? Math.max(0.35f, currentLiveBass) : 0.04f, () -> (float) currentLiveBPM, net.phoenix.core.client.gui.hud.HudTheme.NEON.accent(), net.phoenix.core.client.gui.hud.HudTheme.NEON.accent2()), 36)
                 .badge(() -> playing() ? new HudModel.Badge("PLAYING", HudModel.GREEN) : HudRecipes.badge(this))
                 .subtitle(() -> !currentStreamUrl.isEmpty() ? streamTitle : !selectedLibrarySound.isEmpty() ?
                         selectedLibrarySound : "Nothing playing")

@@ -367,6 +367,8 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private HudModel hudModel() {
         return HudModel.of("Harmonic Lock")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.LOCK)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.tumblers(() -> attuneState == ATTUNED ? step : 0, () -> getPuzzle() == null ? 5 : getPuzzle().steps().size(), net.phoenix.core.client.gui.hud.HudTheme.LOCK.accent()), 26)
                 .badge(() -> switch (attuneState) {
                     case ATTUNING -> new HudModel.Badge("ATTUNING", HudModel.GOLD);
                     case ATTUNED -> new HudModel.Badge("ATTUNED", HudModel.GREEN);

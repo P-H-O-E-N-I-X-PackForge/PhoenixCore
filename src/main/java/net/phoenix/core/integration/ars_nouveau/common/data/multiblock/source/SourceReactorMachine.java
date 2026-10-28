@@ -139,6 +139,8 @@ public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
     private HudModel hudModel() {
         return HudModel.of("Source Reactor")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.REACTOR)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> reactorStability / 2.5f, net.phoenix.core.client.gui.hud.HudTheme.REACTOR.accent()), 38)
                 .badge(() -> reactorStability < 1.1f && isFormed() ? new HudModel.Badge("LOW STABILITY", HudModel.RED) :
                         reactorStability > 2.2f ? new HudModel.Badge("CRITICAL EFFICIENCY", HudModel.CYAN) :
                                 HudRecipes.badge(this))

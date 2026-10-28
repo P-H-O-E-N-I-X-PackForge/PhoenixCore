@@ -235,6 +235,8 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
     private HudModel hudModel() {
         return HudModel.of("Astral Machine")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.ASTRAL)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(), () -> !calibrated ? 0.15f : aligned ? 1.0f : 0.6f, net.phoenix.core.client.gui.hud.HudTheme.ASTRAL.accent()), 40)
                 .badge(() -> !calibrated ? new HudModel.Badge("UNCALIBRATED", HudModel.RED) : aligned ?
                         new HudModel.Badge("ALIGNED", HudModel.CYAN) : HudRecipes.badge(this))
                 .subtitle(() -> calibrated ? (aligned ? "Aligned: runs faster" : "Calibrated") :

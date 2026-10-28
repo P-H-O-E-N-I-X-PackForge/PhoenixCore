@@ -279,6 +279,8 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
     private HudModel hudModel() {
         return HudModel.of("High-Pressure Plasma Arc Furnace")
                 .formed(this::isFormed)
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.FURNACE)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.shieldRing(() -> shieldType == Shield.ShieldTypes.NORMAL ? shieldHealth / (float) Math.max(1, Shield.ShieldTypes.NORMAL.shieldHealth) : 0.0f, net.phoenix.core.client.gui.hud.HudTheme.FURNACE.accent()), 44)
                 .badge(() -> HudRecipes.badge(this))
                 .subtitle(() -> shieldType == Shield.ShieldTypes.NORMAL ? "Shield up" :
                         shieldType == Shield.ShieldTypes.DECAYED ? "Shield decayed: needs an activation recipe" :
