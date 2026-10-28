@@ -59,3 +59,13 @@ starter kit, and `pdimLeave` logs.
 - `plotRadius` and `protectPlots` only matter where there are plots; on Anvil (no plots) they would do nothing.
 - Weather is per dimension: Rime's cycle and Cinder's storm do not touch the overworld, and `/weather` does not touch them.
 - Full documentation: the "Personal dimension worldgen" sections of Continuum's `PACKDEV.md`.
+
+## Without KubeJS
+
+`config/phoenix_continuum/pdim_worldgen/` holds the same nine worlds as spec files (`anvil.json`, `halo.json`, `rime.json`,
+`meridian.json`, `ember.json`, `cinder.json`, `calliope.json`, `marrow.json`, `lantern.json`), plus `pelagia_tidal_sea.json`. They do the
+same things as the startup script, for a pack (or a dev instance) with no KubeJS. Use the files **or** the script, not both. The
+rules at the end of the script have no file equivalent here except `home_system_defaults.json`.
+
+Chunks a world has already generated keep what they were, and the arrival spot of a world you have already visited is already
+built: use a fresh world (or a body you have not made a dimension of) to see a new spec.

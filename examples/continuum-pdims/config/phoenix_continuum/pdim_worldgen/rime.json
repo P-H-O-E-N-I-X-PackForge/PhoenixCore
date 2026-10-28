@@ -1,0 +1,13 @@
+{
+  "body": "phoenix_continuum:rime",
+  "type": "noise",
+  "settings": "minecraft:overworld",
+  "biome": "minecraft:ice_spikes",
+  "weather": {
+    "clear_min": 300,
+    "clear_max": 1200,
+    "rain_min": 120,
+    "rain_max": 300,
+    "storm_chance": 0.5
+  }
+}

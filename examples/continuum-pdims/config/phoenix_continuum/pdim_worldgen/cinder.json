@@ -1,0 +1,14 @@
+{
+  "body": "phoenix_continuum:cinder",
+  "type": "flat",
+  "biome": "minecraft:basalt_deltas",
+  "layers": [
+    "minecraft:bedrock",
+    "minecraft:basalt*40",
+    "minecraft:blackstone*10",
+    "minecraft:magma_block"
+  ],
+  "weather": "storm",
+  "mobs": false,
+  "plot_structure": "minecraft:village/desert/houses/desert_small_house_2"
+}

@@ -1,0 +1,7 @@
+{
+  "body": "phoenix_continuum:lantern",
+  "type": "noise",
+  "settings": "minecraft:overworld",
+  "biome": "minecraft:jungle",
+  "weather": "rain"
+}

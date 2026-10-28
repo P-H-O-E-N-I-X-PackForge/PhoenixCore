@@ -1,0 +1,15 @@
+{
+  "body": "phoenix_continuum:anvil",
+  "type": "noise",
+  "settings": "minecraft:overworld",
+  "biome": "minecraft:badlands",
+  "plots": false,
+  "spawn": [
+    0,
+    70,
+    0
+  ],
+  "gt_ores": "minecraft:overworld",
+  "weather": "clear",
+  "plot_structure": "minecraft:village/desert/houses/desert_small_house_1"
+}

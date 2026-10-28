@@ -1,0 +1,15 @@
+{
+  "body": "phoenix_continuum:marrow",
+  "type": "generator",
+  "generator": {
+    "type": "phoenixcore:discipline",
+    "discipline_id": "sculk",
+    "seed": 7312045,
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "phoenixcore:sculk"
+    }
+  },
+  "dimension_type": "phoenixcore:discipline",
+  "arrival": "surface"
+}
