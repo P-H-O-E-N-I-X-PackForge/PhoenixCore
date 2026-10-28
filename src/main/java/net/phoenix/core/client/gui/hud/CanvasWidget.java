@@ -18,24 +18,33 @@ public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
         this.painter = painter;
     }
 
+    /** The mouse in this widget's own pixels: the absolute mouse less the widget's absolute corner. */
+    private int localX(ModularGuiContext ctx) {
+        return ctx.getAbsMouseX() - getArea().x;
+    }
+
+    private int localY(ModularGuiContext ctx) {
+        return ctx.getAbsMouseY() - getArea().y;
+    }
+
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         var g = context.getGraphics();
         GuiDraw.enableScissor(g, 0, 0, getArea().width, getArea().height);
-        painter.render(g, getArea().width, getArea().height, context.getMouseX(), context.getMouseY());
+        painter.render(g, getArea().width, getArea().height, localX(context), localY(context));
         g.disableScissor();
     }
 
     @Override
     public Result onMousePressed(int mouseButton) {
         ModularGuiContext ctx = getContext();
-        return painter.click(ctx.getMouseX(), ctx.getMouseY(), mouseButton) ? Result.SUCCESS : Result.IGNORE;
+        return painter.click(localX(ctx), localY(ctx), mouseButton) ? Result.SUCCESS : Result.IGNORE;
     }
 
     @Override
     public void onMouseDrag(int mouseButton, double dragX, double dragY) {
         ModularGuiContext ctx = getContext();
-        painter.drag(ctx.getMouseX(), ctx.getMouseY(), mouseButton);
+        painter.drag(localX(ctx), localY(ctx), mouseButton);
     }
 
     @Override
@@ -47,6 +56,6 @@ public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
     @Override
     public boolean onMouseScrolled(double scrollX, double scrollY) {
         ModularGuiContext ctx = getContext();
-        return painter.scroll(ctx.getMouseX(), ctx.getMouseY(), scrollY);
+        return painter.scroll(localX(ctx), localY(ctx), scrollY);
     }
 }
