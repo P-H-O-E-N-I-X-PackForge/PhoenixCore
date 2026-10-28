@@ -141,6 +141,8 @@ public final class StellarForgeRenderer {
      */
     private static void drawBody(StellarForgeState.Stage stage, float radius, int color, int holeTint, Matrix4f view,
                                  Matrix4f projection, Vector3f at) {
+        // drawn before the translucent blocks: write depth where lit, so water and glass behind do not show over it
+        ContinuumRender.beginWorldObject(view, projection, at, true);
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
                     0.045f + 0.039f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
@@ -148,7 +150,6 @@ public final class StellarForgeRenderer {
                     0.05f + 0.025f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
             case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius * 1.2f);
             case BLACK_HOLE -> {
-                ContinuumRender.beginWorldObject(view, projection, at);
                 if (holeTint >= 0) {
                     int cool = ((int) (((holeTint >> 16) & 0xFF) * 0.55f) << 16) |
                             ((int) (((holeTint >> 8) & 0xFF) * 0.55f) << 8) | (int) ((holeTint & 0xFF) * 0.55f);
@@ -156,10 +157,10 @@ public final class StellarForgeRenderer {
                 } else {
                     ContinuumRender.drawBlackHole(null, view, projection, at, radius * 0.76f);
                 }
-                ContinuumRender.endWorldObject();
             }
             default -> {}
         }
+        ContinuumRender.endWorldObject();
     }
 
     /** Rings of light thrown out when it falls in: two, one after the other, fading as they go. */
