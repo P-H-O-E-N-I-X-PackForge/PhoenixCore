@@ -74,8 +74,8 @@ public final class CinderForgeMachines {
                     .pattern(definition -> MultiblockPatternBuilder
                             .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                             .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
-                            .slice("CCCCC", "C   C", "CSCCC", "C   C", "CCCCC")
-                            .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
+                            .slice("CCCCC", "C   C", "C   C", "C   C", "CCCCC")
+                            .slice("CCCCC", "CCCCC", "CCSCC", "CCCCC", "CCCCC")
                             .where('S', Predicates.controller(definition))
                             .where('C', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                             .where(' ', Predicates.air())
@@ -83,8 +83,8 @@ public final class CinderForgeMachines {
                     .pattern("tier1", definition -> MultiblockPatternBuilder
                             .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                             .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
-                            .slice("CCCCC", "C   C", "CSCCC", "C   C", "CCCCC")
-                            .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
+                            .slice("CCCCC", "C   C", "C   C", "C   C", "CCCCC")
+                            .slice("CCCCC", "CCCCC", "CCSCC", "CCCCC", "CCCCC")
                             .where('S', Predicates.controller(definition))
                             .where('C', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                             .where(' ', Predicates.air())
