@@ -336,6 +336,7 @@ public class PhoenixCore {
         SanctumWardMachines.init();
     }
 
+        net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines.init();
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }

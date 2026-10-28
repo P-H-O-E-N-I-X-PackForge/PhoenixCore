@@ -38,5 +38,6 @@ public class PhoenixGTAddon implements IGTAddon {
         GregPacksModuleBaseRecipes.init(provider);
         GregPacksModuleRecipes.init(provider);
         GregPacksOmniPacksRecipes.init(provider);
+        net.phoenix.core.common.machine.multiblock.stellar.StellarForgeRecipes.init(provider);
     }
 }
