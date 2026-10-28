@@ -372,14 +372,30 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     /** Copy the numbers to the fields that are saved and sent to clients (only changed ones cause a sync). */
     private void publish() {
         StellarForgeState s = state();
-        stageOrdinal = s.stage.ordinal();
+        boolean push = getLevel() != null && getLevel().getGameTime() % 5 == 0;
+        int stageNow = s.stage.ordinal();
+        if (stageNow != stageOrdinal) {
+            stageOrdinal = stageNow;
+            syncDataHolder.markClientSyncFieldDirty("stageOrdinal");
+            push = true;
+        }
         massX100 = (int) Math.min(Integer.MAX_VALUE, Math.round(s.mass * 100.0));
         heatX10 = Math.round(s.heat * 10.0f);
         stabilityX10 = Math.round(s.stability * 10.0f);
         feed = s.feed;
         field = s.field;
         spin = s.spin;
-        collapseArmed = s.collapseArmed;
+        if (collapseArmed != s.collapseArmed) {
+            collapseArmed = s.collapseArmed;
+            syncDataHolder.markClientSyncFieldDirty("collapseArmed");
+        }
+        // the changing numbers are sent a few times a second, not every tick
+        if (push) {
+            for (String name : new String[] { "massX100", "heatX10", "stabilityX10", "feed", "field", "spin",
+                    "powered", "energyUse", "plasmaRateX10" }) {
+                syncDataHolder.markClientSyncFieldDirty(name);
+            }
+        }
     }
 
     // ------------------------------------------------------------------------------------------------ the screen

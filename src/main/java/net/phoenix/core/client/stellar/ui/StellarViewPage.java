@@ -69,7 +69,7 @@ public final class StellarViewPage implements CanvasPainter {
         } else {
             float size01 = Mth.clamp((anim.radius - 0.15f) / 1.05f, 0.0f, 1.0f);
             int rgb = StellarForgeState.colorOf(machine.heat()) & 0xFFFFFF;
-            boolean drawn = ContinuumRender.ready() && ContinuumRender.preview().draw(g, bodyOf(stage), rgb, size01, VX, VY, VIEW);
+            boolean drawn = ContinuumRender.ready() && ContinuumRender.preview().draw(g, bodyOf(stage), rgb, size01, VX, VY, VIEW, false);
             if (!drawn) fallback(g, VX + VIEW / 2, VY + VIEW / 2, 14 + size01 * 40, 0xFF_000000 | rgb);
         }
         frame(g, VX, VY, VIEW, VIEW);

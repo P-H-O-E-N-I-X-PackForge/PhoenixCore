@@ -87,8 +87,11 @@ public final class StellarForgeRenderer {
             buffers.endBatch(RenderType.lightning());
 
             switch (stage) {
-                case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at, radius);
-                case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at, radius);
+                // a cloud's and a protostar's glow reaches 16 to 18 times the radius they are given: keep it in the chamber
+                case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
+                        0.04f + 0.05f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
+                case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at,
+                        0.08f + 0.04f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
                 case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius);
                 case BLACK_HOLE -> {
                     ContinuumRender.beginWorldObject(view, projection, at);
