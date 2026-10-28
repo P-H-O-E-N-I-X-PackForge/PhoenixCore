@@ -166,8 +166,11 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
+    /** The recipe type is not sent to the client by GT, so the screen syncs it itself. */
+    private boolean extractMode;
+
     private boolean extracting() {
-        return getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get();
+        return isRemote() ? extractMode : getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get();
     }
 
     private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0,
@@ -183,6 +186,8 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
     public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
+        syncManager.syncValue("extract_mode", 0, new brachy.modularui.value.sync.BooleanSyncValue(
+                () -> getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get(), v -> extractMode = v));
         return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
     }
 
