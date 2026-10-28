@@ -17,6 +17,15 @@ public final class StellarForgeClient {
         public float radius;
         public float heat;
         public float flash;
+
+        /** Flares to 1 when energy or a setting is pushed hard, and dies away. */
+        public float surge;
+
+        /** 0 while something is changing, rising to 1 once the body has been steady for a few seconds. */
+        public float settle;
+        private int lastEnergy;
+        private int lastSettings = -1;
+        private float steadyFor;
         public StellarForgeState.Stage stage = StellarForgeState.Stage.IDLE;
         private long last = Util.getMillis();
 
@@ -32,6 +41,23 @@ public final class StellarForgeClient {
                 flash = 1.0f;
             }
             flash = Math.max(0.0f, flash - dt * 0.6f);
+
+            // a big jump in the energy it draws, or a setting moved a long way, is a push: the light flares
+            int energy = machine.energyUse();
+            int jump = energy - lastEnergy;
+            if (jump > 1500 && jump > energy * 0.25f) surge = Math.max(surge, Math.min(1.0f, jump / (energy * 0.6f + 1.0f)));
+            lastEnergy = energy;
+            int settings = machine.feedSetting() * 10000 + machine.fieldSetting() * 100 + machine.spinSetting();
+            if (lastSettings >= 0 && settings != lastSettings) {
+                int dFeed = Math.abs(machine.feedSetting() - lastSettings / 10000);
+                int dField = Math.abs(machine.fieldSetting() - lastSettings / 100 % 100);
+                if (dFeed + dField >= 8) surge = Math.max(surge, 0.8f);
+            }
+            lastSettings = settings;
+            boolean steady = machine.stage() == stage && Math.abs(radius - target) < 0.02f && surge < 0.05f;
+            steadyFor = steady ? steadyFor + dt : 0.0f;
+            settle = Math.min(1.0f, Math.max(0.0f, (steadyFor - 2.0f) / 2.5f));
+            surge = Math.max(0.0f, surge - dt * 0.4f);
         }
     }
 

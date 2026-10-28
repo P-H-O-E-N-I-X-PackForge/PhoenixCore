@@ -63,10 +63,14 @@ public final class StellarForgeRenderer {
             float radius = Math.max(0.02f, anim.radius);
             float field = machine.fieldSetting() / 100.0f;
             float flicker = machine.powerOk() ? 1.0f : 0.5f + 0.5f * (float) Math.sin(seconds * 31.0f);
+            // once the body is all there and nothing is happening the light settles and breathes; a push flares it
+            float calm = 0.16f + 0.05f * (float) Math.sin(seconds * 1.1f);
+            float live = Math.max(anim.surge, machine.feedSetting() / 100.0f * 0.7f);
+            float level = Mth.lerp(anim.settle, 1.0f, calm + (1.0f - calm) * live);
 
             VertexConsumer lines = buffers.getBuffer(RenderType.lightning());
-            containment(lines, pose, at, machine.spinSetting() / 100.0f, field, seconds, color, flicker, anim.flash);
-            injectors(lines, pose, machine, at, seconds, color, flicker);
+            containment(lines, pose, at, machine.spinSetting() / 100.0f, field, seconds, color, flicker * level, anim.flash);
+            injectors(lines, pose, machine, at, seconds, color, flicker * level);
             buffers.endBatch(RenderType.lightning());
 
             switch (stage) {
