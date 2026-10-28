@@ -16,6 +16,12 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.network.chat.Component;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
+import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.UISettings;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -260,23 +266,72 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
                 new PlasmaBoost("Nickel Plasma", 0.6, 0.9, 50, 10));
     }
 
+    /** A screen control pressed on the server. */
+    private void hudAction(int id, int value) {
+        HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = super.getWidgetsForDisplay(syncManager);
-        if (!isFormed()) return widgets;
-        widgets.add(new TextWidget<>(Text.dynamic(() -> Component.translatable("shield.phoenixcore.current_shield",
-                Component.translatable(this.shieldType.langKey)))));
-        widgets.add(new TextWidget<>(Text.dynamic(() -> {
-            if (this.shieldType == Shield.ShieldTypes.NORMAL)
-                return Component.translatable("shield.phoenixcore.health", this.shieldHealth);
-            if (this.shieldType == Shield.ShieldTypes.DECAYED && this.shieldCooldownTimer > 0)
-                return Component.translatable("shield.phoenixcore.cooldown", this.shieldCooldownTimer / 20);
-            return Component.literal("");
-        })));
-        widgets.add(
-                new TextWidget<>(Text.dynamic(() -> (this.shieldType == Shield.ShieldTypes.NORMAL && !isPlasmaBoosted) ?
-                        Component.literal("§7No Plasma Catalyst§r") : Component.literal(""))));
-        return widgets;
+    public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
+
+    private HudModel hudModel() {
+        return HudModel.of("High-Pressure Plasma Arc Furnace")
+                .formed(this::isFormed)
+                .badge(() -> HudRecipes.badge(this))
+                .subtitle(() -> shieldType == Shield.ShieldTypes.NORMAL ? "Shield up" :
+                        shieldType == Shield.ShieldTypes.DECAYED ? "Shield decayed: needs an activation recipe" :
+                                "Shield down: run an activation recipe first")
+                .cells(() -> {
+                    var cells = HudRecipes.cells(this);
+                    cells.add(HudModel.cell("SHIELD", shieldType == Shield.ShieldTypes.NORMAL ? shieldHealth + " HP" :
+                            shieldType == Shield.ShieldTypes.DECAYED ? "decayed" : "inactive",
+                            shieldType == Shield.ShieldTypes.NORMAL ? "decaying " + shieldType.decayRate + " / s" :
+                                    shieldCooldownTimer > 0 ? "cooldown " + shieldCooldownTimer / 20 + "s" : "-",
+                            shieldType == Shield.ShieldTypes.NORMAL ? HudModel.GREEN : HudModel.RED));
+                    boolean boosted = isPlasmaBoosted && activeBoost != null;
+                    cells.add(HudModel.cell("PLASMA BOOST", boosted ? activeBoost.name() : "none",
+                            boosted ? String.format(java.util.Locale.ROOT, "x%.2f time, x%.2f EU",
+                                    activeBoost.durationMultiplier(), activeBoost.eutMultiplier()) :
+                                    "no plasma catalyst",
+                            boosted ? HudModel.PURPLE : HudModel.DIM));
+                    return cells;
+                })
+                .bars(() -> {
+                    var bars = new java.util.ArrayList<HudModel.Bar>();
+                    bars.add(new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
+                            String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)),
+                            HudModel.CYAN));
+                    if (shieldType == Shield.ShieldTypes.NORMAL) {
+                        bars.add(new HudModel.Bar("Shield", shieldHealth / (float) Math.max(1,
+                                Shield.ShieldTypes.NORMAL.shieldHealth), shieldHealth + " HP", HudModel.GREEN));
+                    }
+                    return bars;
+                })
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD, this::isFormed)
+                .notes(() -> java.util.List.of(HudModel.line(isPlasmaBoosted ?
+                        "Plasma catalyst feeding the furnace." : "A plasma catalyst in a plasma hatch speeds it up.",
+                        HudModel.MID)))
+                .math(() -> java.util.List.of(
+                        HudModel.heading("SHIELD"),
+                        HudModel.line("health falls " + Shield.ShieldTypes.NORMAL.decayRate + " HP each second while up",
+                                HudModel.MID),
+                        HudModel.line("at 0 it decays, and needs " + Shield.ShieldTypes.DECAYED.shieldCooldownTicks / 20 +
+                                "s to recover", HudModel.MID),
+                        HudModel.line("shield now " + shieldHealth + " / " + Shield.ShieldTypes.NORMAL.shieldHealth,
+                                HudModel.WHITE),
+                        HudModel.heading("PLASMA CATALYSTS"),
+                        HudModel.line("Helium: x0.90 time, x0.80 EU, 1 mB / 40 ticks", HudModel.MID),
+                        HudModel.line("Iron:   x0.70 time, x0.85 EU, 200 mB / 20 ticks", HudModel.MID),
+                        HudModel.line("Nickel: x0.60 time, x0.90 EU, 50 mB / 10 ticks", HudModel.MID),
+                        HudModel.heading("RECIPE"),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "time %d / %d ticks",
+                                getRecipeLogic().getProgress(), getRecipeLogic().getMaxProgress()), HudModel.WHITE)))
+                .graph("progress %", HudModel.CYAN, () -> HudRecipes.progressPercent(this), 100.0f)
+                .graph("shield HP", HudModel.GREEN, () -> (float) shieldHealth, Shield.ShieldTypes.NORMAL.shieldHealth)
+                .graph("EU/t", HudModel.ORANGE, () -> HudRecipes.euPerTick(this), 0.0f);
     }
 
     public int getShieldHealth() {

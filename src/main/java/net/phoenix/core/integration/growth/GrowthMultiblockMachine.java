@@ -1,5 +1,8 @@
 package net.phoenix.core.integration.growth;
 
+import net.phoenix.core.client.gui.hud.MachineHud;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.HudModel;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -693,108 +696,117 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return 32f + growthStage * 8f;
     }
 
+    private static final int ID_PAUSE = 1;
+    private static final int ID_TENDRILS = 4;
+    private static final int ID_GROW = 5;
+    private static final int ID_TARGET = 20;
+    private static final int ID_ANCHOR = 30;
+
+    /** A screen control pressed on the server. */
+    private void hudAction(int id, int value) {
+        if (id == ID_PAUSE) togglePaused();
+        else if (id == ID_TENDRILS) toggleTendrils();
+        else if (id == ID_GROW) tryManualGrow();
+        else if (id == ID_TARGET && isControlled()) {
+            targetStage = Math.max(0, Math.min(maxStage(), value));
+            getSyncDataHolder().markClientSyncFieldDirty("targetStage");
+        } else if (id >= ID_ANCHOR && id < ID_ANCHOR + 16) toggleAnchor(id - ID_ANCHOR);
+        else HudRecipes.handle(this, id);
+    }
+
     @Override
-    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
-        List<IWidget> widgets = new ArrayList<>(super.getWidgetsForDisplay(syncManager));
+    public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
+                                                           PanelSyncManager syncManager,
+                                                           brachy.modularui.screen.UISettings settings) {
+        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+    }
 
-        widgets.addAll(StageTrackerWidget.of(syncManager, "growthStagePips", this::getGrowthStage,
-                getGrowthStages().size() - 1));
+    private HudModel.Badge growthBadge() {
+        if (!isFormed()) return new HudModel.Badge("NOT FORMED", HudModel.RED);
+        if (growthStage >= maxStage()) return new HudModel.Badge("FULLY GROWN", HudModel.GOLD);
+        if (isControlled() && growthPaused) return new HudModel.Badge("PAUSED", HudModel.GOLD);
+        if (growthStall == STALL_COST) return new HudModel.Badge("NEEDS MATERIALS", HudModel.RED);
+        if (growthStall == STALL_BLOCKED) return new HudModel.Badge("BLOCKED", HudModel.RED);
+        return new HudModel.Badge("GROWING", HudModel.GREEN);
+    }
 
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
-            GrowthStage stage = currentStage();
-            if (!stage.hasBonus()) {
-                return net.minecraft.network.chat.Component.literal("Stage " + growthStage + ": no bonus yet")
-                        .withStyle(ChatFormatting.GRAY);
-            }
-            StringBuilder text = new StringBuilder("Stage " + growthStage + ":");
-            if (stage.speedBonus() > 0.0f)
-                text.append(" ").append(Math.round(stage.speedBonus() * 100)).append("% faster");
-            if (stage.outputBonus() > 0.0f) {
-                text.append(" +").append(Math.round(stage.outputBonus() * 100)).append("% output");
-            }
-            if (stage.batch() > 1) text.append(" x").append(stage.batch()).append(" batch");
-            return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GREEN);
-        })));
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
-            List<GrowthStage> stages = getGrowthStages();
-            if (growthStage + 1 >= stages.size()) {
-                return net.minecraft.network.chat.Component.literal("Fully grown").withStyle(ChatFormatting.GOLD);
-            }
-            StringBuilder text = new StringBuilder("Next stage needs:");
-            List<ItemStack> cost = stages.get(growthStage + 1).cost();
-            if (cost.isEmpty()) text.append(" nothing");
-            for (ItemStack required : cost) {
-                text.append(" ").append(required.getCount()).append("x ").append(required.getHoverName().getString());
-            }
-            return net.minecraft.network.chat.Component.literal(text.toString()).withStyle(ChatFormatting.GRAY);
-        })));
-
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> isControlled() ?
-                net.minecraft.network.chat.Component
-                        .literal("Growth control: " + (growthPaused ? "PAUSED" : "running") +
-                                "   target stage " + Math.min(targetStage, maxStage()) + "   tendrils " +
-                                (tendrilsEnabled ? "on" : "off"))
-                        .withStyle(ChatFormatting.AQUA) :
-                net.minecraft.network.chat.Component.literal("No growth control hatch: growth is wild and breaks " +
-                        "what is in its way").withStyle(ChatFormatting.RED))));
-        widgets.add(ActionButtons.simple(syncManager, "growthPause", this::togglePaused,
-                new ItemDrawable(new ItemStack(Items.CLOCK)).asIcon().size(16),
-                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                        .literal("Pause or resume growth (needs a growth control hatch)")))));
-        widgets.add(ActionButtons.simple(syncManager, "growthTargetDown", () -> adjustTargetStage(-1),
-                new ItemDrawable(new ItemStack(Items.RED_DYE)).asIcon().size(16),
-                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                        .literal("Lower the stage growth stops at")))));
-        widgets.add(ActionButtons.simple(syncManager, "growthTargetUp", () -> adjustTargetStage(1),
-                new ItemDrawable(new ItemStack(Items.LIME_DYE)).asIcon().size(16),
-                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                        .literal("Raise the stage growth stops at")))));
-        widgets.add(ActionButtons.simple(syncManager, "growthTendrilsToggle", this::toggleTendrils,
-                new ItemDrawable(new ItemStack(Items.VINE)).asIcon().size(16),
-                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                        .literal("Switch tendril growth on or off")))));
-        for (int i = 0; i < Math.min(6, getTendrilAnchors().size()); i++) {
-            final int anchor = i;
-            widgets.add(ActionButtons.simple(syncManager, "growthAnchor" + i, () -> toggleAnchor(anchor),
-                    new ItemDrawable(new ItemStack(Items.ARROW)).asIcon().size(16),
-                    new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                            .literal("Toggle tendril side " + (i + 1) + " (it is " +
-                                    ((anchorMask & (1 << i)) != 0 ? "on" : "off") + ")")))));
-        }
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> net.minecraft.network.chat.Component
-                .literal("Tendril blocks: " + tendrilBlockCount + "  (" + Math.round(tendrilSpeedBonus() * 100) +
-                        "% faster, +" + Math.round(tendrilOutputBonus() * 100) + "% output)")
-                .withStyle(ChatFormatting.DARK_GREEN))));
-
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> {
-            if (growthStall == STALL_COST) {
-                return net.minecraft.network.chat.Component
-                        .literal("Growth is waiting: the next stage's cost is not in " +
-                                "the input buses")
-                        .withStyle(ChatFormatting.RED);
-            }
-            if (growthStall == STALL_BLOCKED) {
-                return net.minecraft.network.chat.Component.literal("Growth is waiting: something is in the way")
-                        .withStyle(ChatFormatting.RED);
-            }
-            return net.minecraft.network.chat.Component.empty();
-        })));
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> net.minecraft.network.chat.Component
-                .literal("Tendrils: " + activeTendrils.size() + " growing, " + maturedTendrils + " of " +
-                        getMaxMaturedTendrils() + " grown")
-                .withStyle(ChatFormatting.GRAY))));
-
-        brachy.modularui.value.sync.DoubleSyncValue progressSync = syncManager.getOrCreateSyncHandler(
-                "growthProgressPct", brachy.modularui.value.sync.DoubleSyncValue.class,
-                () -> new brachy.modularui.value.sync.DoubleSyncValue(() -> (double) getGrowthProgress()));
-        widgets.add(new brachy.modularui.widgets.TextWidget<>(Text.dynamic(() -> net.minecraft.network.chat.Component
-                .literal("Growth: " + Math.round(progressSync.getDoubleValue() * 100) + "%"))));
-
-        widgets.add(ActionButtons.simple(syncManager, "growthTriggerPressed", () -> tryManualGrow(),
-                new ItemDrawable(new ItemStack(getShellBlockState().getBlock())).asIcon().size(16),
-                new RichTooltip().addLine(Text.of(net.minecraft.network.chat.Component
-                        .translatable("phoenixcore.growth.trigger_button")))));
-
-        return widgets;
+    private HudModel hudModel() {
+        return HudModel.of("Growth Chamber")
+                .formed(this::isFormed)
+                .badge(this::growthBadge)
+                .subtitle(() -> isControlled() ? "Growth control hatch fitted" :
+                        "No growth control hatch: growth is wild and breaks what is in its way")
+                .cells(() -> {
+                    var cells = new java.util.ArrayList<HudModel.Cell>();
+                    GrowthStage stage = currentStage();
+                    cells.add(HudModel.cell("STAGE", growthStage + " / " + maxStage(),
+                            growthStage >= maxStage() ? "fully grown" : "of " + (maxStage() + 1) + " stages",
+                            HudModel.CYAN));
+                    cells.add(HudModel.cell("SPEED", "+" + Math.round(totalSpeedBonus() * 100) + "%",
+                            "stage +" + Math.round(stage.speedBonus() * 100) + "%", HudModel.GREEN));
+                    cells.add(HudModel.cell("OUTPUT", "+" + Math.round(totalOutputBonus() * 100) + "%",
+                            "stage +" + Math.round(stage.outputBonus() * 100) + "%", HudModel.GOLD));
+                    cells.add(HudModel.cell("BATCH", "x" + Math.max(1, stage.batch()), "per cycle", HudModel.PURPLE));
+                    cells.add(HudModel.cell("TENDRIL BLOCKS", String.valueOf(tendrilBlockCount),
+                            "+" + Math.round(tendrilSpeedBonus() * 100) + "% speed", HudModel.BLUE));
+                    cells.add(HudModel.cell("TENDRILS", activeTendrils.size() + " growing",
+                            maturedTendrils + " of " + getMaxMaturedTendrils() + " grown", HudModel.ORANGE));
+                    return cells;
+                })
+                .bars(() -> {
+                    var bars = new java.util.ArrayList<HudModel.Bar>();
+                    bars.add(new HudModel.Bar("Growth to the next stage", getGrowthProgress(),
+                            Math.round(getGrowthProgress() * 100) + "%", HudModel.GREEN));
+                    bars.add(new HudModel.Bar("Stages", growthStage / (float) Math.max(1, maxStage()),
+                            growthStage + " / " + maxStage(), HudModel.CYAN));
+                    return bars;
+                })
+                .slider("TARGET", ID_TARGET, () -> Math.min(targetStage, maxStage()), 0, Math.max(1, maxStage()), null,
+                        "")
+                .button(() -> growthPaused ? "RESUME" : "PAUSE", ID_PAUSE, HudModel.GOLD, this::isControlled)
+                .button(() -> tendrilsEnabled ? "TENDRILS ON" : "TENDRILS OFF", ID_TENDRILS, HudModel.GREEN,
+                        this::isControlled)
+                .button("GROW NOW", ID_GROW, HudModel.CYAN, this::isFormed)
+                .notes(() -> {
+                    List<GrowthStage> stages = getGrowthStages();
+                    if (growthStage + 1 >= stages.size()) {
+                        return java.util.List.of(HudModel.line("Fully grown.", HudModel.GOLD));
+                    }
+                    StringBuilder text = new StringBuilder("Next stage needs:");
+                    List<ItemStack> cost = stages.get(growthStage + 1).cost();
+                    if (cost.isEmpty()) text.append(" nothing");
+                    for (ItemStack required : cost) {
+                        text.append(" ").append(required.getCount()).append("x ")
+                                .append(required.getHoverName().getString());
+                    }
+                    var lines = new java.util.ArrayList<HudModel.Line>();
+                    lines.add(HudModel.line(text.toString(), HudModel.MID));
+                    if (growthStall == STALL_COST) {
+                        lines.add(HudModel.line("Waiting: that is not in the input buses.", HudModel.RED));
+                    } else if (growthStall == STALL_BLOCKED) {
+                        lines.add(HudModel.line("Waiting: something is in the way.", HudModel.RED));
+                    }
+                    return lines;
+                })
+                .math(() -> java.util.List.of(
+                        HudModel.heading("BONUSES"),
+                        HudModel.line("speed = min(0.75, stage + tendrils)", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= min(0.75, %.2f + %.2f) = %.2f",
+                                currentStage().speedBonus(), tendrilSpeedBonus(), totalSpeedBonus()), HudModel.WHITE),
+                        HudModel.line("output = stage + tendrils", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f + %.2f = %.2f",
+                                currentStage().outputBonus(), tendrilOutputBonus(), totalOutputBonus()), HudModel.WHITE),
+                        HudModel.heading("TENDRILS"),
+                        HudModel.line("tendril speed = min(max, blocks * per block)", HudModel.MID),
+                        HudModel.line(String.format(java.util.Locale.ROOT, "%d blocks: +%.1f%% speed, +%.1f%% output",
+                                tendrilBlockCount, tendrilSpeedBonus() * 100, tendrilOutputBonus() * 100),
+                                HudModel.WHITE),
+                        HudModel.heading("STAGES"),
+                        HudModel.line("stage " + growthStage + " of " + maxStage() + (isControlled() ?
+                                ", stops at " + Math.min(targetStage, maxStage()) : ""), HudModel.WHITE)))
+                .graph("growth %", HudModel.GREEN, () -> getGrowthProgress() * 100.0f, 100.0f)
+                .graph("stage", HudModel.CYAN, () -> (float) growthStage, Math.max(1, maxStage()))
+                .graph("speed %", HudModel.GOLD, () -> totalSpeedBonus() * 100.0f, 0.0f)
+                .graph("tendril blocks", HudModel.BLUE, () -> (float) tendrilBlockCount, 0.0f);
     }
 }
