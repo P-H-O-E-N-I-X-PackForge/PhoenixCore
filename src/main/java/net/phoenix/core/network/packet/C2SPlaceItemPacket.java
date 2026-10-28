@@ -21,6 +21,9 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SPlaceItemPacket> STREAM_CODEC = StreamCodec
             .ofMember(C2SPlaceItemPacket::encode, C2SPlaceItemPacket::new);
 
+    /** How many can stand on one face of a block. */
+    public static final int MAX_PER_FACE = 3;
+
     private final BlockPos pos;
     private final Direction face;
     private final Vec3 hit;
@@ -70,6 +73,20 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
         for (PlacedItemEntity other : level.getEntitiesOfClass(PlacedItemEntity.class,
                 new net.minecraft.world.phys.AABB(point, point).inflate(0.12))) {
             if (other.face() == msg.face && other.position().distanceToSqr(point) < 0.1) return;
+        }
+        // up to three on one face of a block
+        int onFace = 0;
+        for (PlacedItemEntity other : level.getEntitiesOfClass(PlacedItemEntity.class,
+                new net.minecraft.world.phys.AABB(msg.pos).inflate(0.1))) {
+            if (other.face() == msg.face && BlockPos.containing(other.position().subtract(msg.face.getStepX() * 0.05,
+                    msg.face.getStepY() * 0.05, msg.face.getStepZ() * 0.05)).equals(msg.pos)) {
+                onFace++;
+            }
+        }
+        if (onFace >= MAX_PER_FACE) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                    "Only " + MAX_PER_FACE + " items fit on one side of a block."), true);
+            return;
         }
         ItemStack one = held.copyWithCount(1);
         level.addFreshEntity(PlacedItemEntity.create(level, one, msg.face, point));
