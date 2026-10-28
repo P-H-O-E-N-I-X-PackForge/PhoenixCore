@@ -1,15 +1,16 @@
 """Generates the Conflux per-discipline Chronicles questlines.
 
 Writes SNBT quest files (the format Phoenix Chronicles loads from config/phoenix_chronicles/quests/) to
-questlines/conflux/<discipline>/<id>.snbt. Copy the questlines/conflux folder into the pack's
-config/phoenix_chronicles/quests/ to use them. Re-run this script after editing the tables below.
+questlines/<chapter>/<id>.snbt, with a <chapter>.json that names the chapter and gives it an icon, and an index.txt
+the mod uses to copy the chapters into config/phoenix_chronicles/quests/ the first time (a chapter that is already
+there is left alone). Re-run this script after editing the tables below.
 
 Every quest is hidden until the team has the discipline's first research flag (enable_if conflux:flag:...), so each
 player only ever sees the questline of the discipline they chose.
 """
 import os
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'questlines', 'conflux')
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'questlines')
 CELL = 110
 
 
@@ -67,6 +68,43 @@ def flag(f):
     return {'type': 'conflux_unlock', 'flag_mode': True, 'flag': f, 'node_id': 'phoenixcore:unknown'}
 
 
+# ----------------------------------------------------------------- chapters
+# folder -> (display name, icon, order)
+CHAPTERS = {
+    'conflux': ('The Conflux', 'minecraft:amethyst_cluster', 0),
+    'phoenix': ('Phoenix', 'minecraft:beacon', 1),
+    'sculk': ('Sculk', 'minecraft:sculk', 2),
+    'void': ('Void', 'minecraft:spyglass', 3),
+    'sealed_a': ('Sealed A', 'minecraft:iron_bars', 4),
+    'sealed_b': ('Sealed B', 'minecraft:sculk', 5),
+}
+
+
+def discipline_chosen(disc):
+    # state task from PhoenixCore: done while the team's discipline is this one (blank: any)
+    return {'type': 'conflux_discipline', 'discipline': disc, 'label': 'Choose a discipline' if not disc else disc}
+
+
+def trigger(trigger_id, count, label):
+    # fired by PhoenixCore (see ChroniclesLink / PhoenixChroniclesTriggers) and counted by the quest
+    return {'type': 'external_trigger', 'trigger_id': trigger_id, 'required': count, 'label': label}
+
+
+# The hub chapter every player sees: the way in, and the choice that opens one of the discipline chapters below.
+# (key, title, description, icon, (gx, gy), prereq keys, tasks, rewards, extras)
+HUB = dict(
+    chapter='CONFLUX', prefix='cf', gate=None,
+    quests=[
+        ('begin', 'The Conflux',
+         'Something old and patient has been watching the work you do. It wants you to choose what you become.',
+         'minecraft:amethyst_cluster', (0, 0), [], [info('Open the Conflux research screen and read what it offers.')],
+         [xp(2)], {'subtitle': 'The Conflux'}),
+        ('choose', 'Choose a Discipline',
+         'Each discipline is a way of working, and the Conflux will only teach you one. Choose with care.',
+         'minecraft:compass', (1, 0), ['begin'], [discipline_chosen('')], [xp(5)], {'subtitle': 'The Conflux'}),
+    ])
+
+
 # ----------------------------------------------------------------- questline tables
 # (key, title, description, icon, (gx, gy), prereq keys, tasks, rewards, extras)
 LINES = {}
@@ -79,7 +117,7 @@ LINES['phoenix'] = dict(
          'minecraft:blaze_powder', (0, 0), [], [research('px_awakened', 'Awaken the Phoenix')],
          [xp(3), item('minecraft:blaze_rod', 4)], {}),
         ('realm', 'Ash Under Your Boots', 'Stand in the realm the flame built for you.', 'minecraft:magma_block',
-         (0, 1), ['arrival'], [dimension('phoenixcore:conflux/phoenix')], [xp(2)], {}),
+         (0, 1), ['arrival'], [dimension('phoenixcore:conflux/phoenix')], [xp(2)], {'subtitle': 'The Conflux'}),
         ('hall', 'The Hall of Cinders', 'Somebody kept a hearth lit here long after they left. Find it.',
          'minecraft:campfire', (-1, 2), ['realm'], [structure('phoenixcore:conflux_phoenix_hall')],
          [xp(5), item('minecraft:coal', 16)], {}),
@@ -119,7 +157,7 @@ LINES['sculk'] = dict(
          'minecraft:sculk', (0, 0), [], [research('sk_awakened', 'Make first contact')],
          [xp(3), item('minecraft:sculk', 16)], {}),
         ('realm', 'Beneath the Listening Floor', 'Walk where the network can feel you walk.',
-         'minecraft:sculk_sensor', (0, 1), ['arrival'], [dimension('phoenixcore:conflux/sculk')], [xp(2)], {}),
+         'minecraft:sculk_sensor', (0, 1), ['arrival'], [dimension('phoenixcore:conflux/sculk')], [xp(2)], {'subtitle': 'The Conflux'}),
         ('hall', 'The Reading Hall', 'A room arranged around the absence of a speaker.', 'minecraft:lectern',
          (-1, 2), ['realm'], [structure('phoenixcore:conflux_sculk_hall')], [xp(5), item('minecraft:book', 4)], {}),
         ('shrine', 'Shrine of Small Hands', 'Tendrils, folded in rows. Somebody prayed here with their whole body.',
@@ -157,7 +195,7 @@ LINES['void'] = dict(
          'minecraft:spyglass', (0, 0), [], [research('vd_awakened', 'Wake the Void')],
          [xp(3), item('minecraft:ender_pearl', 8)], {}),
         ('realm', 'Where the Floor Is a Rumour', 'Step out. It mostly holds.', 'minecraft:end_stone', (0, 1),
-         ['arrival'], [dimension('phoenixcore:conflux/void')], [xp(2)], {}),
+         ['arrival'], [dimension('phoenixcore:conflux/void')], [xp(2)], {'subtitle': 'The Conflux'}),
         ('hall', 'The Hall With No Far Wall', 'Walk to the end. Count the steps. They will not match.',
          'minecraft:purpur_block', (-1, 2), ['realm'], [structure('phoenixcore:conflux_void_hall')],
          [xp(5), item('minecraft:ender_pearl', 8)], {}),
@@ -197,7 +235,7 @@ LINES['sealed_a'] = dict(
          {'dev_notes': 'Sealed discipline: scaffold only. Costs are intentionally enormous; flesh this out when '
                        'the sealed disciplines are designed.'}),
         ('realm', 'Behind the Seal', 'Look around. Touch nothing.', 'minecraft:iron_bars', (0, 1), ['arrival'],
-         [dimension('phoenixcore:conflux/sealed_a')], [xp(2)], {}),
+         [dimension('phoenixcore:conflux/sealed_a')], [xp(2)], {'subtitle': 'The Conflux'}),
         ('hall', 'The Waiting Hall', 'Someone is meant to be here. Perhaps you are early.',
          'minecraft:stone_bricks', (-1, 2), ['realm'], [structure('phoenixcore:conflux_sealed_a_hall')],
          [xp(5)], {}),
@@ -217,7 +255,7 @@ LINES['sealed_b'] = dict(
          {'dev_notes': 'Sealed discipline: scaffold only. Costs are intentionally enormous; flesh this out when '
                        'the sealed disciplines are designed.'}),
         ('realm', 'Behind the Hush', 'Look around. Keep to the seal\'s tempo.', 'minecraft:sculk', (0, 1),
-         ['arrival'], [dimension('phoenixcore:conflux/sealed_b')], [xp(2)], {}),
+         ['arrival'], [dimension('phoenixcore:conflux/sealed_b')], [xp(2)], {'subtitle': 'The Conflux'}),
         ('hall', 'The Quiet Hall', 'A hall for watchers. Not for sleepers.', 'minecraft:deepslate_bricks',
          (-1, 2), ['realm'], [structure('phoenixcore:conflux_sealed_b_hall')], [xp(5)], {}),
         ('terms', 'Seal, Barely Audible', 'Hear it in the register where you cannot tell your pulse from it.',
@@ -232,10 +270,11 @@ LINES['sealed_b'] = dict(
 # ----------------------------------------------------------------- emit
 def build(disc, line):
     prefix = line['prefix']
-    gate = 'conflux:flag:' + line['gate']
+    gate = ('conflux:flag:' + line['gate']) if line.get('gate') else None
     count = 0
     outdir = os.path.join(OUT, disc)
     os.makedirs(outdir, exist_ok=True)
+    write_chapter(disc)
     for key, title, desc, icon, (gx, gy), prereqs, tasks, rewards, extra in line['quests']:
         qid = '%s_q_%s' % (prefix, key)
         task_list = []
@@ -256,7 +295,6 @@ def build(disc, line):
             'position_is_center': True,
             'shape': 'CIRCLE',
             'parent': 'none',
-            'enable_if': gate,
             'require_all_prereqs': True,
             'visibility': 'NORMAL',
             'prerequisites': [{'id': '%s_q_%s' % (prefix, p), 'required': True} for p in prereqs],
@@ -264,11 +302,29 @@ def build(disc, line):
             'rewards': rewards,
             'tags': ['conflux', disc],
         }
+        if gate:
+            quest['enable_if'] = gate
         quest.update(extra)
         with open(os.path.join(outdir, qid + '.snbt'), 'w', encoding='utf-8') as f:
             f.write(snbt(quest))
         count += 1
     return count
+
+
+def write_chapter(folder):
+    name, icon, order = CHAPTERS[folder]
+    with open(os.path.join(OUT, folder, folder + '.json'), 'w', encoding='utf-8') as f:
+        f.write('{"id":"%s","name":"%s","icon":"%s","order":%d,"background":null,"requirements":[]}'
+                % (folder, name, icon, order))
+
+
+def write_index():
+    lines = []
+    for folder in CHAPTERS:
+        for name in sorted(os.listdir(os.path.join(OUT, folder))):
+            lines.append('%s/%s' % (folder, name))
+    with open(os.path.join(OUT, 'index.txt'), 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines) + '\n')
 
 
 def snbt_text(text):
@@ -277,7 +333,8 @@ def snbt_text(text):
 
 
 if __name__ == '__main__':
-    total = 0
+    total = build('conflux', HUB)
     for disc, line in LINES.items():
         total += build(disc, line)
+    write_index()
     print('wrote %d quests to %s' % (total, os.path.abspath(OUT)))

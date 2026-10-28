@@ -76,9 +76,15 @@ public class UniqueWorkableElectricMultiblockMachine extends WorkableElectricMul
             this.isDuplicate = !data.isUnique(owner, multiblockId, dimension, pos);
             if (isDuplicate) {
                 recipeLogic.setStatus(RecipeLogic.Status.SUSPEND);
+                net.phoenix.core.integration.chronicles.ChroniclesLink.fire(getLevel().getServer(), owner,
+                        net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.UNIQUE_DUPLICATE,
+                        net.phoenix.core.integration.chronicles.ChroniclesLink.data("machine", multiblockId));
             }
         } else {
             data.addMultiblock(owner, multiblockId, dimension, pos);
+            net.phoenix.core.integration.chronicles.ChroniclesLink.fire(getLevel().getServer(), owner,
+                    net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.UNIQUE_REGISTERED,
+                    net.phoenix.core.integration.chronicles.ChroniclesLink.data("machine", multiblockId));
         }
     }
 

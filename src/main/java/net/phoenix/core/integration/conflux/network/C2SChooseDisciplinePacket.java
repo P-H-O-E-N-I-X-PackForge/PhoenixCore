@@ -53,6 +53,10 @@ public class C2SChooseDisciplinePacket implements CustomPacketPayload {
                     .chooseDiscipline(teamId, pkt.disciplineId, ResearchTreeRegistry.INSTANCE);
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
+                net.phoenix.core.integration.chronicles.ChroniclesLink.fireTeam(player.server, teamId,
+                        net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.CONFLUX_DISCIPLINE_CHOSEN,
+                        net.phoenix.core.integration.chronicles.ChroniclesLink.data("discipline",
+                                pkt.disciplineId));
 
                 net.phoenix.core.api.event.ConfluxEvents.teamChanged(player.server,
                         teamId);

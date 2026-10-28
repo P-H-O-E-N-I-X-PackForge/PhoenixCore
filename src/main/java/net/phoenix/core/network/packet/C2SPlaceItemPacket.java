@@ -103,6 +103,10 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
         ItemStack one = held.copyWithCount(1);
         level.addFreshEntity(PlacedItemEntity.create(level, one, msg.face, point));
         if (!player.isCreative()) held.shrink(1);
+        net.phoenix.core.integration.chronicles.ChroniclesLink.fire(player,
+                net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.ITEM_PLACED,
+                net.phoenix.core.integration.chronicles.ChroniclesLink.data("item",
+                        net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(one.getItem()).toString()));
         level.playSound(null, msg.pos, net.minecraft.sounds.SoundEvents.ITEM_FRAME_ADD_ITEM,
                 net.minecraft.sounds.SoundSource.BLOCKS, 1.0f, 1.0f);
     }

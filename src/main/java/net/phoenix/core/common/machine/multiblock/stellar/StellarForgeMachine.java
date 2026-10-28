@@ -570,6 +570,11 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                 syncDataHolder.markClientSyncFieldDirty("holeTint");
             }
             lastStage = s.stage;
+            String trigger = net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.stellar(s.stage.name());
+            if (trigger != null) {
+                net.phoenix.core.integration.chronicles.ChroniclesLink.fire(getLevel().getServer(), getOwnerUUID(),
+                        trigger, net.phoenix.core.integration.chronicles.ChroniclesLink.data("stage", s.stage.name()));
+            }
         }
         powered = ok;
         energyUse = (int) Math.min(Integer.MAX_VALUE, need);

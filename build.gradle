@@ -220,7 +220,9 @@ dependencies {
     // Local build of the 1.21.1 branch of PhoenixChromaticCodes (no published artifact); the jar lives in libs/
     implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
     // Local build of PhoenixChronicles-1.21.1 so the dev client has quests; rebuild it and copy the jar into libs/
-    if (!project.hasProperty('noChronicles')) runtimeOnly files("libs/phoenix_chronicles-neoforge-10.0.0.jar")
+    // Published to maven local from the 1.21.1 branch of PhoenixChronicles (publishToMavenLocal)
+    compileOnly("net.phoenixvine.chronicles:phoenix_chronicles-neoforge:${phoenix_chronicles_version}") { transitive = false }
+    if (!project.hasProperty('noChronicles')) runtimeOnly("net.phoenixvine.chronicles:phoenix_chronicles-neoforge:${phoenix_chronicles_version}") { transitive = false }
     implementation "maven.modrinth:extended-ae:1.21-2.2.35-neoforge"
     implementation "maven.modrinth:glodium:1.21-2.2-neoforge"
 
@@ -280,6 +282,11 @@ tasks.named('processResources', ProcessResources).configure {
     inputs.properties replaceProperties
     filesMatching('META-INF/neoforge.mods.toml') {
         expand replaceProperties
+    }
+    // the starter Chronicles chapters, copied into config/phoenix_chronicles/quests the first time (ChroniclesScaffold)
+    from('questlines') {
+        into 'phoenixcore_questlines'
+        exclude 'README.md'
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -29,6 +29,10 @@ public final class ConfluxApi {
     public static void grantFlag(ServerPlayer player, String flag) {
         data(player).grantFlag(ResearchTeamHelper.getTeamId(player), flag);
         ConfluxNetwork.syncResearchToPlayer(player);
+        net.phoenix.core.integration.chronicles.ChroniclesLink.fireTeam(player.server,
+                ResearchTeamHelper.getTeamId(player),
+                net.phoenix.core.integration.chronicles.PhoenixChroniclesTriggers.CONFLUX_FLAG,
+                net.phoenix.core.integration.chronicles.ChroniclesLink.data("flag", flag));
     }
 
     public static void grantUnlock(ServerPlayer player, ResourceLocation nodeId) {

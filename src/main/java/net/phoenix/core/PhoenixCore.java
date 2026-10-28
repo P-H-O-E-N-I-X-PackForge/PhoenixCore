@@ -279,6 +279,8 @@ public class PhoenixCore {
             PhoenixRecipeTypes.postInit();
             VaultRegistry.registerLinkables();
             CinderAtlasWirelessLink.register();
+            net.phoenix.core.integration.chronicles.ChroniclesLink.setup();
+            net.phoenix.core.integration.chronicles.ChroniclesScaffold.install();
 
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(
