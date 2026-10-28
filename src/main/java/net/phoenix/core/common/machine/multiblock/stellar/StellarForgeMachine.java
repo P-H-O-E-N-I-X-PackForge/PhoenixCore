@@ -96,6 +96,17 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private boolean collapseArmed;
 
+    /** A dye for the star and for the black hole's disk (0xRRGGBB), or -1 for the colour the heat gives. */
+    @SaveField
+    @SyncToClient
+    private int starTint = -1;
+
+    @SaveField
+    @SyncToClient
+    private int holeTint = -1;
+
+    private StellarForgeState.Stage lastStage = StellarForgeState.Stage.IDLE;
+
     @SyncToClient
     private boolean powered = true;
 
@@ -163,6 +174,41 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             return shownStability;
         }
         return stabilityX10 / 10.0f;
+    }
+
+    public int starTint() {
+        return starTint;
+    }
+
+    public int holeTint() {
+        return holeTint;
+    }
+
+    /** One tint fluid in an input hatch, used up to dye the body in the chamber. */
+    private void applyTints() {
+        var stage = s().stage;
+        for (FluidHatchPartMachine hatch : hatches(IO.IN)) {
+            for (int tank = 0; tank < hatch.tank.getTanks(); tank++) {
+                FluidStack inside = hatch.tank.getFluidInTank(tank);
+                var tint = StellarTint.match(inside, stage);
+                if (tint == null) continue;
+                FluidStack taken = hatch.tank.drainInternal(new FluidStack(inside.getFluid(), tint.amount()),
+                        IFluidHandler.FluidAction.EXECUTE);
+                if (taken.getAmount() < tint.amount()) continue;
+                if (stage == StellarForgeState.Stage.STAR) {
+                    starTint = tint.color();
+                    syncDataHolder.markClientSyncFieldDirty("starTint");
+                } else {
+                    holeTint = tint.color();
+                    syncDataHolder.markClientSyncFieldDirty("holeTint");
+                }
+                return;
+            }
+        }
+    }
+
+    private StellarForgeState s() {
+        return state();
     }
 
     public int feedSetting() {
@@ -259,6 +305,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
     public void disperse() {
         state().disperse();
+        starTint = -1;
+        holeTint = -1;
+        syncDataHolder.markClientSyncFieldDirty("starTint");
+        syncDataHolder.markClientSyncFieldDirty("holeTint");
         publish();
     }
 
@@ -395,6 +445,16 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     want, fed, hatches(IO.IN).size(), ok, report);
         }
         s.tick(fed, ok, blocked);
+        if (getLevel().getGameTime() % 20 == 0) applyTints();
+        if (s.stage != lastStage) {
+            // a star's dye stays with it when it falls in
+            if (s.stage == StellarForgeState.Stage.BLACK_HOLE && lastStage == StellarForgeState.Stage.STAR &&
+                    starTint >= 0) {
+                holeTint = starTint;
+                syncDataHolder.markClientSyncFieldDirty("holeTint");
+            }
+            lastStage = s.stage;
+        }
         powered = ok;
         energyUse = (int) Math.min(Integer.MAX_VALUE, need);
         plasmaRateX10 = Math.round((float) rate * 10.0f);
@@ -433,7 +493,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     // ------------------------------------------------------------------------------------------------ the screen
 
     private static final int UI_WIDTH = 264;
-    private static final int UI_HEIGHT = 230;
+    private static final int UI_HEIGHT = 262;
 
     /** A setting or button pressed on the screen, done here on the server. */
     private void control(int which, int value) {

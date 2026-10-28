@@ -78,7 +78,12 @@ public final class StellarForgeRenderer {
             // the star draws itself in as it falls: slowly at first, then all at once
             float squeeze = pre * pre * pre;
 
-            int color = StellarForgeState.colorOf(anim.heat);
+            // a dye overrides the colour the heat gives
+            var shownStage = falling && p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT ? anim.collapseFrom : stage;
+            int color = shownStage == StellarForgeState.Stage.STAR && machine.starTint() >= 0 ? machine.starTint() :
+                    shownStage == StellarForgeState.Stage.BLACK_HOLE && machine.holeTint() >= 0 ? machine.holeTint() :
+                            StellarForgeState.colorOf(anim.heat);
+            int holeTint = machine.holeTint();
             if (falling && p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
                 color = net.phoenix.core.client.gui.hud.GuiDraw.mix(0xFF_000000 | color, 0xFF_FFFFFF, squeeze) & 0xFFFFFF;
             }
@@ -115,22 +120,22 @@ public final class StellarForgeRenderer {
                 if (p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
                     // the old body, squeezed down to a point and whitened
                     float r = anim.collapseRadius * (1.0f - 0.92f * squeeze);
-                    drawBody(anim.collapseFrom, Math.max(0.02f, r), color, view, projection, at);
+                    drawBody(anim.collapseFrom, Math.max(0.02f, r), color, -1, view, projection, at);
                 } else if (post > 0.0f) {
                     // the black hole opening where it was: small and growing, its disk spinning up
                     float target = StellarForgeState.radius(StellarForgeState.Stage.BLACK_HOLE, machine.mass());
                     float grow = 1.0f - (1.0f - post) * (1.0f - post);
-                    drawBody(StellarForgeState.Stage.BLACK_HOLE, Math.max(0.02f, target * grow), color, view,
+                    drawBody(StellarForgeState.Stage.BLACK_HOLE, Math.max(0.02f, target * grow), color, holeTint, view,
                             projection, at);
                 }
             } else {
-                drawBody(stage, radius, color, view, projection, at);
+                drawBody(stage, radius, color, holeTint, view, projection, at);
             }
         }
     }
 
     /** One body of a stage drawn at a size the chamber can hold (a cloud's and a protostar's glow reaches 16 to 18 times the radius). */
-    private static void drawBody(StellarForgeState.Stage stage, float radius, int color, Matrix4f view,
+    private static void drawBody(StellarForgeState.Stage stage, float radius, int color, int holeTint, Matrix4f view,
                                  Matrix4f projection, Vector3f at) {
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
@@ -140,7 +145,13 @@ public final class StellarForgeRenderer {
             case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius);
             case BLACK_HOLE -> {
                 ContinuumRender.beginWorldObject(view, projection, at);
-                ContinuumRender.drawBlackHole(null, view, projection, at, radius);
+                if (holeTint >= 0) {
+                    int cool = ((int) (((holeTint >> 16) & 0xFF) * 0.55f) << 16) |
+                            ((int) (((holeTint >> 8) & 0xFF) * 0.55f) << 8) | (int) ((holeTint & 0xFF) * 0.55f);
+                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius);
+                } else {
+                    ContinuumRender.drawBlackHole(null, view, projection, at, radius);
+                }
                 ContinuumRender.endWorldObject();
             }
             default -> {}

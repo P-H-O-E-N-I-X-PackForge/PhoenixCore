@@ -33,7 +33,7 @@ public final class StellarHudPage implements CanvasPainter {
     private static final String[] RUNGS = { "GAS CLOUD", "PROTOSTAR", "STAR", "BLACK HOLE" };
 
     private static final int SLIDER_X = 64;
-    private static final int SLIDER_W = 140;
+    private static final int SLIDER_W = 120;
     private static final int[] SLIDER_Y = { 150, 164, 178 };
 
     private final StellarForgeMachine machine;
@@ -109,7 +109,7 @@ public final class StellarHudPage implements CanvasPainter {
         sliders(g, font, view, mouseX, mouseY);
         buttons(g, font, view, mouseX, mouseY);
 
-        g.drawString(font, hint(view), 8, h - 12, C_MID, false);
+        checklist(g, font, w, view, 214);
     }
 
     private void ladder(GuiGraphics g, Font font, int w, StellarForgeState view, int accent) {
@@ -236,16 +236,54 @@ public final class StellarHudPage implements CanvasPainter {
                 mouseX, mouseY);
     }
 
-    private String hint(StellarForgeState view) {
-        if (!machine.powerOk() && view.stage != StellarForgeState.Stage.IDLE) return "Out of power: the field slips.";
-        return switch (view.stage) {
-            case IDLE -> "Hydrogen, helium or neutronium in, feed up.";
-            case GAS_CLOUD, PROTOSTAR -> view.stability < 40 ? "Unstable: bring the markers into the green." :
-                    "Keep field and spin in the green and the heat in band.";
-            case STAR -> view.collapseArmed ? "It will fall in once it is heavy and hot enough." :
-                    "Steady star. Feed it heavy matter and arm the collapse.";
-            case BLACK_HOLE -> "A black hole. It gives plasma while it is steady.";
-        };
+    /** What the forge is waiting for, as ticks and crosses, wrapping onto more lines as needed. */
+    private void checklist(GuiGraphics g, Font font, int w, StellarForgeState view, int top) {
+        var stage = view.stage;
+        if (!machine.powerOk() && stage != StellarForgeState.Stage.IDLE) {
+            g.drawString(font, "Out of power: the field slips.", 8, top, C_RED, false);
+            return;
+        }
+        if (stage == StellarForgeState.Stage.IDLE) {
+            g.drawString(font, "Hydrogen, helium or neutronium in, feed up.", 8, top, C_MID, false);
+            return;
+        }
+        if (stage == StellarForgeState.Stage.BLACK_HOLE) {
+            g.drawString(font, "A black hole. It gives plasma while it is steady.", 8, top, C_MID, false);
+            return;
+        }
+        var fb = view.fieldBand();
+        var sb = view.spinBand();
+        boolean star = stage == StellarForgeState.Stage.STAR;
+        java.util.List<Object[]> checks = new java.util.ArrayList<>();
+        checks.add(new Object[] { String.format(Locale.ROOT, "mass %,.0f/%,.0f", view.mass, view.nextMass()),
+                view.mass >= view.nextMass() });
+        checks.add(new Object[] { String.format(Locale.ROOT, "stability %.0f/70", view.stability),
+                view.stability >= 70.0f });
+        checks.add(new Object[] { "heat in band", view.heatBand().miss(view.heat, 25.0f) < 0.2f });
+        checks.add(new Object[] { "field in band", view.field >= fb.low() && view.field <= fb.high() });
+        checks.add(new Object[] { "spin in band", view.spin >= sb.low() && view.spin <= sb.high() });
+        if (star) {
+            checks.add(new Object[] { "collapse armed", view.collapseArmed });
+            checks.add(new Object[] { String.format(Locale.ROOT, "field %d/70 to fall in", view.field),
+                    view.field >= 70 });
+        }
+        int x = 8;
+        int y = top;
+        for (Object[] check : checks) {
+            String text = ((boolean) check[1] ? "[x] " : "[ ] ") + check[0];
+            int width = font.width(text) + 8;
+            if (x + width > w - 8 && x > 8) {
+                x = 8;
+                y += 10;
+            }
+            g.drawString(font, text, x, y, (boolean) check[1] ? C_GREEN : C_DIM, false);
+            x += width;
+        }
+        if (view.holdTicks > 0) {
+            String hold = String.format(Locale.ROOT, "holding %d/%d", view.holdTicks,
+                    StellarForgeState.HOLD_TICKS_TO_ADVANCE);
+            g.drawString(font, hold, w - 8 - font.width(hold), top - 12, C_GREEN, false);
+        }
     }
 
     private static boolean hit(int[] r, double mx, double my) {
