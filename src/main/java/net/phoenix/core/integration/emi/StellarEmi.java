@@ -171,6 +171,10 @@ public final class StellarEmi {
         @Override
         public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
+            // EMI's own background is light, so the text sits on a dark panel
+            g.fill(bounds.x() - 2, bounds.y() - 2, bounds.x() + bounds.width(), bounds.y() + bounds.height(),
+                    0xFF10131C);
+            g.renderOutline(bounds.x() - 2, bounds.y() - 2, bounds.width() + 2, bounds.height() + 2, 0xFF30344A);
             int y = bounds.y();
             for (int i = 0; i < lines.size(); i++) {
                 for (FormattedCharSequence part : font.split(lines.get(i), bounds.width())) {
@@ -204,7 +208,7 @@ public final class StellarEmi {
             widgets.add(new Lines(TEXT_X + 22, 1, W - TEXT_X - 22, 20, List.of(Component.literal(recipe.name())),
                     List.of(0xFFFFFFFF)));
             widgets.add(new Lines(TEXT_X, TEXT_TOP, W - TEXT_X, getDisplayHeight() - TEXT_TOP, plasmaLines(recipe),
-                    List.of(0xFFC8CCDC, 0xFFC8CCDC, 0xFFFF6A6A, 0xFF808898)));
+                    List.of(0xFFE4E8F4, 0xFFE4E8F4, 0xFFFF6A6A, 0xFFA8B0C4)));
         }
     }
 
@@ -231,7 +235,7 @@ public final class StellarEmi {
             widgets.add(new Lines(TEXT_X + 22, 1, W - TEXT_X - 22, 20,
                     List.of(Component.literal(clears ? "Clears the dye" : "Dye")), List.of(0xFFFFFFFF)));
             widgets.add(new Lines(TEXT_X, TEXT_TOP, W - TEXT_X, getDisplayHeight() - TEXT_TOP, dyeLines(tint),
-                    List.of(clears ? 0xFFC8CCDC : 0xFF000000 | tint.color(), 0xFF808898)));
+                    List.of(clears ? 0xFFE4E8F4 : 0xFF000000 | tint.color(), 0xFFA8B0C4)));
         }
     }
 }
