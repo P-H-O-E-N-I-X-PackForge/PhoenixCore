@@ -46,10 +46,17 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     /** Mass in M that a millibucket of each feed adds. */
     private static double massPerMb(FluidStack stack) {
         Fluid fluid = stack.getFluid();
-        if (isFluid(fluid, GTMaterials.Neutronium.getFluid())) return 1.0;
-        if (isFluid(fluid, GTMaterials.Helium.getFluid())) return 0.02;
-        if (isFluid(fluid, GTMaterials.Hydrogen.getFluid())) return 0.01;
+        if (isMaterial(fluid, GTMaterials.Neutronium)) return 1.0;
+        if (isMaterial(fluid, GTMaterials.Helium)) return 0.02;
+        if (isMaterial(fluid, GTMaterials.Hydrogen)) return 0.01;
         return 0.0;
+    }
+
+    /** A material's fluid in any state (gas or liquid): GT keeps hydrogen and helium as gases, not as the default fluid. */
+    private static boolean isMaterial(Fluid fluid, com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry material) {
+        if (isFluid(fluid, material.getFluid())) return true;
+        if (isFluid(fluid, material.getFluid(FluidStorageKeys.LIQUID))) return true;
+        return isFluid(fluid, material.getFluid(FluidStorageKeys.GAS));
     }
 
     private static boolean isFluid(Fluid a, @Nullable Fluid b) {
@@ -364,6 +371,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
     /** A setting or button pressed on the screen, done here on the server. */
     private void control(int which, int value) {
+        net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] control {} = {} (stage {})", which, value, stage());
         switch (which) {
             case StellarControls.FEED -> setFeed(value);
             case StellarControls.FIELD -> setField(value);
