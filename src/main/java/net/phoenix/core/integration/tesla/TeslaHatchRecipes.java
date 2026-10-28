@@ -10,8 +10,8 @@ import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.phoenix_tesla_network.tesla.common.data.item.PhoenixTeslaItems;
 import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
+import net.phoenix_tesla_network.tesla.common.data.item.PhoenixTeslaItems;
 import net.phoenix_tesla_network.tesla.common.machine.PhoenixTeslaMachines;
 
 import org.jetbrains.annotations.NotNull;
@@ -139,7 +139,8 @@ public class TeslaHatchRecipes {
     private static boolean missing(String what, int tier, ItemStack... parts) {
         for (ItemStack part : parts) {
             if (part.isEmpty()) {
-                net.phoenix_tesla_network.tesla.PhoenixTeslaNetwork.LOGGER.warn("Skipping {} recipes for tier {}: an ingredient is empty",
+                net.phoenix_tesla_network.tesla.PhoenixTeslaNetwork.LOGGER.warn(
+                        "Skipping {} recipes for tier {}: an ingredient is empty",
                         what,
                         tier);
                 return true;

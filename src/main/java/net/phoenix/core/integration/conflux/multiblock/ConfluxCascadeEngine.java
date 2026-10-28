@@ -1,13 +1,5 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.value.sync.BooleanSyncValue;
-import brachy.modularui.value.sync.DoubleSyncValue;
-import brachy.modularui.value.sync.FloatSyncValue;
-import brachy.modularui.value.sync.IntSyncValue;
-import brachy.modularui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -17,22 +9,24 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
 import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.FloatSyncValue;
+import brachy.modularui.value.sync.IntSyncValue;
+import brachy.modularui.value.sync.LongSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -229,7 +223,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
         return HudModel.of("Conflux Cascade Engine")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.dataFlow(() -> momentum, 3, 0xFF_FFC44D, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 30)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.dataFlow(() -> momentum, 3, 0xFF_FFC44D,
+                        net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 30)
                 .badge(() -> engineActive ? new HudModel.Badge("RUNNING", HudModel.GREEN) :
                         new HudModel.Badge("STALLED", HudModel.RED))
                 .subtitle(() -> "Spins up on fuel and pushes " + outputType.displayName + " data")
@@ -248,14 +243,16 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
                     return cells;
                 })
                 .bars(() -> java.util.List.of(
-                        new HudModel.Bar("Momentum", momentum, String.format(java.util.Locale.ROOT, "%.0f%%", momentum * 100f),
+                        new HudModel.Bar("Momentum", momentum,
+                                String.format(java.util.Locale.ROOT, "%.0f%%", momentum * 100f),
                                 HudModel.GOLD),
                         new HudModel.Bar("Data buffer", dataBuffer / (float) BUFFER,
                                 String.format(java.util.Locale.ROOT, "%.0f%%", dataBuffer * 100.0 / BUFFER),
                                 HudModel.BLUE)))
                 .notes(() -> java.util.List.of(momentum < 1f ?
                         HudModel.line("Full momentum in " + (int) ((1f - momentum) / MOMENTUM_GAIN) + " ticks.",
-                                HudModel.MID) : HudModel.line("Full momentum.", HudModel.GREEN)))
+                                HudModel.MID) :
+                        HudModel.line("Full momentum.", HudModel.GREEN)))
                 .math(() -> java.util.List.of(
                         HudModel.heading("OUTPUT"),
                         HudModel.line("multiplier = 1 + (max - 1) * momentum", HudModel.MID),

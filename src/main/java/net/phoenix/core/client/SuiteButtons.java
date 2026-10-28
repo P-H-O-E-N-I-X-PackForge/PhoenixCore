@@ -8,7 +8,6 @@ import net.phoenix.core.integration.conflux.client.ResearchTerminalScreen;
 import net.phoenixvine.wiki.client.suite.SuiteHudBar;
 
 import static net.phoenixvine.wiki.client.suite.SuiteHudBar.PRIORITY_CONFLUX;
-import static net.phoenixvine.wiki.client.suite.SuiteHudBar.PRIORITY_CONTINUUM;
 
 public final class SuiteButtons {
 

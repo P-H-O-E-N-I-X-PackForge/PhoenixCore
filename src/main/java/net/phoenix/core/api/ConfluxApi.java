@@ -22,6 +22,19 @@ public final class ConfluxApi {
         return data(player).isUnlocked(ResearchTeamHelper.getTeamId(player), nodeId);
     }
 
+    /** What this client has been told of its team's research (call on the client only). */
+    public static boolean clientHasFlag(String flag) {
+        return net.phoenix.core.integration.conflux.client.ClientResearchCache.flags.contains(flag);
+    }
+
+    public static boolean clientIsUnlocked(ResourceLocation nodeId) {
+        return net.phoenix.core.integration.conflux.client.ClientResearchCache.isUnlocked(nodeId);
+    }
+
+    public static @Nullable String clientDiscipline() {
+        return net.phoenix.core.integration.conflux.client.ClientResearchCache.getDisciplineInfo().disciplineId();
+    }
+
     public static @Nullable String discipline(ServerPlayer player) {
         return data(player).getDiscipline(ResearchTeamHelper.getTeamId(player));
     }

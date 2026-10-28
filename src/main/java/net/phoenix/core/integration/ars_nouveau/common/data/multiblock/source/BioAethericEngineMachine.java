@@ -1,8 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
@@ -21,18 +18,17 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.saveddata.SoulSavedData;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -211,18 +207,23 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
         return HudModel.of("Bio-Aetheric Engine")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, multiplier() / 4.0f), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 30)
-                .badge(() -> lastBotanicalBoost > 1.0f && isFormed() ? new HudModel.Badge("SOUL SATURATED", HudModel.CYAN) :
+                .hero(net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, multiplier() / 4.0f),
+                        net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 30)
+                .badge(() -> lastBotanicalBoost > 1.0f && isFormed() ?
+                        new HudModel.Badge("SOUL SATURATED", HudModel.CYAN) :
                         HudRecipes.badge(this))
                 .subtitle(() -> "Generates from the soul of the chunk and the flora round it")
                 .cells(() -> {
                     var cells = HudRecipes.cells(this);
                     boolean night = getLevel() != null && getLevel().isNight();
-                    cells.add(HudModel.cell("CHUNK SOUL", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
-                            "base", HudModel.PURPLE));
-                    cells.add(HudModel.cell("FLORA BONUS", String.format(java.util.Locale.ROOT, "+%.2f", lastBotanicalBoost),
+                    cells.add(
+                            HudModel.cell("CHUNK SOUL", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                                    "base", HudModel.PURPLE));
+                    cells.add(HudModel.cell("FLORA BONUS",
+                            String.format(java.util.Locale.ROOT, "+%.2f", lastBotanicalBoost),
                             "from plants nearby", HudModel.GREEN));
-                    cells.add(HudModel.cell("VEIL", night ? "active" : "dormant", night ? "x1.25 faster" : "wakes at night",
+                    cells.add(HudModel.cell("VEIL", night ? "active" : "dormant",
+                            night ? "x1.25 faster" : "wakes at night",
                             night ? HudModel.CYAN : HudModel.DIM));
                     return cells;
                 })

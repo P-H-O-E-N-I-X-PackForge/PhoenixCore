@@ -1,11 +1,9 @@
 package net.phoenix.core.client.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
@@ -59,8 +57,9 @@ public class ClientTickHandler {
             if (mc.screen != null || mc.player.getMainHandItem().isEmpty()) continue;
             if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit &&
                     hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
-                net.neoforged.neoforge.network.PacketDistributor.sendToServer(new net.phoenix.core.network.packet.C2SPlaceItemPacket(
-                        hit.getBlockPos(), hit.getDirection(), hit.getLocation()));
+                net.neoforged.neoforge.network.PacketDistributor
+                        .sendToServer(new net.phoenix.core.network.packet.C2SPlaceItemPacket(
+                                hit.getBlockPos(), hit.getDirection(), hit.getLocation()));
             }
         }
 

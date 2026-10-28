@@ -1,10 +1,5 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.value.sync.FloatSyncValue;
-import brachy.modularui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -23,6 +18,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
@@ -30,13 +28,10 @@ import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
 import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.LongSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,7 +230,8 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
                                                            brachy.modularui.screen.UISettings settings) {
         syncManager.syncValue("lens_active", 0, new BooleanSyncValue(() -> this.lensActive, v -> this.lensActive = v));
         syncManager.syncValue("input_buffer", 0, new LongSyncValue(() -> this.inputBuffer, v -> this.inputBuffer = v));
-        syncManager.syncValue("output_buffer", 0, new LongSyncValue(() -> this.outputBuffer, v -> this.outputBuffer = v));
+        syncManager.syncValue("output_buffer", 0,
+                new LongSyncValue(() -> this.outputBuffer, v -> this.outputBuffer = v));
         syncManager.syncValue("efficiency", 0, new DoubleSyncValue(() -> this.currentEfficiency,
                 v -> this.currentEfficiency = v));
         return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
@@ -245,17 +241,22 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
         return HudModel.of("Conflux Harmonic Lens")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> (float) currentEfficiency, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 38)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> (float) currentEfficiency,
+                        net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 38)
                 .badge(() -> lensActive ? new HudModel.Badge("TRANSMUTING", HudModel.GREEN) :
                         new HudModel.Badge("OFFLINE", HudModel.RED))
                 .subtitle(() -> inputType.displayName + " data in, " + outputType.displayName + " data out")
                 .cells(() -> {
                     var cells = new java.util.ArrayList<HudModel.Cell>();
                     cells.add(HudModel.cell("EFFICIENCY", String.format(java.util.Locale.ROOT, "%.1f%%",
-                            currentEfficiency * 100), String.format(java.util.Locale.ROOT, "+%.1f%% research",
-                                    (currentEfficiency - BASE_EFFICIENCY) * 100), HudModel.GOLD));
-                    cells.add(HudModel.cell("INPUT", inputType.displayName, String.format(java.util.Locale.ROOT, "%,d held",
-                            inputBuffer), HudModel.BLUE));
+                            currentEfficiency * 100),
+                            String.format(java.util.Locale.ROOT, "+%.1f%% research",
+                                    (currentEfficiency - BASE_EFFICIENCY) * 100),
+                            HudModel.GOLD));
+                    cells.add(HudModel.cell("INPUT", inputType.displayName,
+                            String.format(java.util.Locale.ROOT, "%,d held",
+                                    inputBuffer),
+                            HudModel.BLUE));
                     cells.add(HudModel.cell("OUTPUT", outputType.displayName, String.format(java.util.Locale.ROOT,
                             "%,d held", outputBuffer), HudModel.CYAN));
                     cells.add(HudModel.cell("THROUGHPUT", String.format(java.util.Locale.ROOT, "%,d u/t", THROUGHPUT),
@@ -266,24 +267,28 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
                 })
                 .bars(() -> java.util.List.of(
                         new HudModel.Bar("Input buffer", inputBuffer / (float) INPUT_BUFFER,
-                                String.format(java.util.Locale.ROOT, "%,d / %,d", inputBuffer, INPUT_BUFFER), HudModel.BLUE),
+                                String.format(java.util.Locale.ROOT, "%,d / %,d", inputBuffer, INPUT_BUFFER),
+                                HudModel.BLUE),
                         new HudModel.Bar("Output buffer", outputBuffer / (float) OUTPUT_BUFFER,
                                 String.format(java.util.Locale.ROOT, "%,d / %,d", outputBuffer, OUTPUT_BUFFER),
                                 HudModel.CYAN)))
-                .notes(() -> java.util.List.of(HudModel.line("Screwdriver cycles the types. Research nearby adds efficiency.",
-                        HudModel.MID)))
+                .notes(() -> java.util.List
+                        .of(HudModel.line("Screwdriver cycles the types. Research nearby adds efficiency.",
+                                HudModel.MID)))
                 .math(() -> java.util.List.of(
                         HudModel.heading("EFFICIENCY"),
                         HudModel.line(String.format(java.util.Locale.ROOT, "base %.0f%% + research bonus (max %.0f%%)",
                                 BASE_EFFICIENCY * 100, MAX_BONUS * 100), HudModel.MID),
                         HudModel.line(String.format(java.util.Locale.ROOT, "now %.1f%% = %.1f%% + %.1f%%",
-                                currentEfficiency * 100, BASE_EFFICIENCY * 100, (currentEfficiency - BASE_EFFICIENCY) * 100),
+                                currentEfficiency * 100, BASE_EFFICIENCY * 100,
+                                (currentEfficiency - BASE_EFFICIENCY) * 100),
                                 HudModel.WHITE),
                         HudModel.line("each research node adds " + String.format(java.util.Locale.ROOT, "%.3f%%",
                                 BONUS_PER_NODE * 100), HudModel.DIM),
                         HudModel.heading("TRANSMUTING"),
                         HudModel.line("out = in * efficiency, " + THROUGHPUT + " u/t at most", HudModel.MID),
-                        HudModel.line(String.format(java.util.Locale.ROOT, "%,d u in -> %,d u out per second", THROUGHPUT * 20,
+                        HudModel.line(String.format(java.util.Locale.ROOT, "%,d u in -> %,d u out per second",
+                                THROUGHPUT * 20,
                                 (long) (THROUGHPUT * 20 * currentEfficiency)), HudModel.WHITE)))
                 .graph("efficiency %", HudModel.GOLD, () -> (float) (currentEfficiency * 100), 100.0f)
                 .graph("input %", HudModel.BLUE, () -> inputBuffer * 100.0f / INPUT_BUFFER, 100.0f)

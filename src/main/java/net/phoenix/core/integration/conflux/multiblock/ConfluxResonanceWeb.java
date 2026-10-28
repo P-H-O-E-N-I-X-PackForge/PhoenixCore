@@ -1,11 +1,5 @@
 package net.phoenix.core.integration.conflux.multiblock;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.value.sync.DoubleSyncValue;
-import brachy.modularui.value.sync.FloatSyncValue;
-import brachy.modularui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -15,19 +9,18 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
 import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.ConfluxPipeBlockEntity;
 import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.IntSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -154,7 +147,8 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
         syncManager.syncValue("web_active", 0, new BooleanSyncValue(() -> this.webActive, v -> this.webActive = v));
-        syncManager.syncValue("total_pipes", 0, new IntSyncValue(() -> this.totalPipeCount, v -> this.totalPipeCount = v));
+        syncManager.syncValue("total_pipes", 0,
+                new IntSyncValue(() -> this.totalPipeCount, v -> this.totalPipeCount = v));
         syncManager.syncValue("distinct_types", 0, new IntSyncValue(() -> this.distinctTypeCount,
                 v -> this.distinctTypeCount = v));
         return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
@@ -172,7 +166,8 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
         return HudModel.of("Conflux Resonance Web")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.DATA)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(), () -> distinctTypeCount / 5.0f, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 36)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(),
+                        () -> distinctTypeCount / 5.0f, net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 36)
                 .badge(() -> webActive ? new HudModel.Badge("SCANNING", HudModel.GREEN) :
                         new HudModel.Badge("OFFLINE", HudModel.RED))
                 .subtitle(() -> "Reads the Axiom pipes within " + SCAN_RADIUS + " blocks")
@@ -183,8 +178,9 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
                     cells.add(HudModel.cell("TYPES", distinctTypeCount + " / 5", "kinds of data", HudModel.PURPLE));
                     cells.add(HudModel.cell("DIVERSITY", String.format(java.util.Locale.ROOT, "+%.0f%%",
                             (diversity() - 1f) * 100), "bonus", HudModel.GOLD));
-                    cells.add(HudModel.cell("RATE / TYPE", String.format(java.util.Locale.ROOT, "%,d u/t", ratePerType()),
-                            "each type", HudModel.GREEN));
+                    cells.add(
+                            HudModel.cell("RATE / TYPE", String.format(java.util.Locale.ROOT, "%,d u/t", ratePerType()),
+                                    "each type", HudModel.GREEN));
                     cells.add(HudModel.cell("POWER", String.format(java.util.Locale.ROOT, "%,d EU/t", EU_PER_TICK),
                             webActive ? "supplied" : "SHORT", webActive ? HudModel.GREEN : HudModel.RED));
                     return cells;
@@ -203,8 +199,10 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
                         HudModel.line(String.format(java.util.Locale.ROOT, "= %d * %d * %.2f = %,d u/t", totalPipeCount,
                                 RATE_PER_PIPE, diversity(), ratePerType()), HudModel.WHITE),
                         HudModel.heading("LIMITS"),
-                        HudModel.line(String.format(java.util.Locale.ROOT, "buffer %,d per type, push %,d u/t", BUFFER_PER,
-                                PUSH_RATE), HudModel.MID)))
+                        HudModel.line(
+                                String.format(java.util.Locale.ROOT, "buffer %,d per type, push %,d u/t", BUFFER_PER,
+                                        PUSH_RATE),
+                                HudModel.MID)))
                 .graph("pipes", HudModel.CYAN, () -> (float) totalPipeCount, 0.0f)
                 .graph("rate / type", HudModel.GREEN, () -> (float) ratePerType(), 0.0f)
                 .graph("types", HudModel.PURPLE, () -> (float) distinctTypeCount, 5.0f);

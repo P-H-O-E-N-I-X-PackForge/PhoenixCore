@@ -51,7 +51,7 @@ final class SolarisCoverageBridge implements MapLayer {
         if (remembered.isEmpty() || !dimension.equals(rememberedDimension)) return;
 
         for (S2CCoverageSyncPacket.Entry entry : remembered) {
-            if (entry.radius() <= 0) continue; 
+            if (entry.radius() <= 0) continue;
 
             int color = switch (entry.kind()) {
                 case S2CCoverageSyncPacket.TOWER -> 0x55E0FF;

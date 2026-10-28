@@ -610,13 +610,13 @@ public final class Landforms {
         CONVEYOR,
         BOUNCE,
         SLICK,
-        
+
         GEYSER
     }
 
     public enum ZoneShape {
         CIRCLE,
-        
+
         RECT
     }
 

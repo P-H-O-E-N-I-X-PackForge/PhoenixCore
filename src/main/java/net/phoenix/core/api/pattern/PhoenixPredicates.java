@@ -6,10 +6,8 @@ import com.gregtechceu.gtceu.api.multiblock.error.PlaceholderError;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.common.block.LampBlock;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.common.machine.PhoenixMachines;
 import net.phoenix.core.integration.vocal_resonance.SoundHatchPartMachine;
 import net.phoenix.core.integration.vocal_resonance.SpeakerBlock;
@@ -17,7 +15,6 @@ import net.phoenix.core.integration.vocal_resonance.SpeakerBlock;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.gregtechceu.gtceu.common.data.GTBlocks.BORDERLESS_LAMPS;

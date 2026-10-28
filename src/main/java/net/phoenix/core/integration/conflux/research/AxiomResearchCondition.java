@@ -108,7 +108,7 @@ public class AxiomResearchCondition extends RecipeCondition<AxiomResearchConditi
     @Override
     public RecipeUIModifier modifyUI() {
         return (recipe, widget) -> {
-            
+
             String mine = net.phoenix.core.integration.conflux.client.ClientResearchCache.getDisciplineInfo()
                     .disciplineId();
             if (!only.isEmpty() && mine != null && !listed(only, mine)) return;

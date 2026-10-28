@@ -1,24 +1,15 @@
 package net.phoenix.core.integration.tesla;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static net.phoenix.core.common.data.recipe.generated.CustomComponetRecipes.*;

@@ -1,8 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -13,17 +10,16 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.saveddata.SoulSavedData;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -140,18 +136,21 @@ public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
         return HudModel.of("Source Reactor")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.REACTOR)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> reactorStability / 2.5f, net.phoenix.core.client.gui.hud.HudTheme.REACTOR.accent()), 38)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> reactorStability / 2.5f,
+                        net.phoenix.core.client.gui.hud.HudTheme.REACTOR.accent()), 38)
                 .badge(() -> reactorStability < 1.1f && isFormed() ? new HudModel.Badge("LOW STABILITY", HudModel.RED) :
                         reactorStability > 2.2f ? new HudModel.Badge("CRITICAL EFFICIENCY", HudModel.CYAN) :
                                 HudRecipes.badge(this))
                 .subtitle(() -> "Reaction pressure rises with soul density and stability")
                 .cells(() -> {
                     var cells = HudRecipes.cells(this);
-                    cells.add(HudModel.cell("SOUL DENSITY", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                    cells.add(HudModel.cell("SOUL DENSITY",
+                            String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
                             "this chunk", HudModel.PURPLE));
-                    cells.add(HudModel.cell("STABILITY", String.format(java.util.Locale.ROOT, "%.2fx", reactorStability),
-                            reactorStability > 2.0f ? "excellent" : reactorStability > 1.5f ? "good" : "poor",
-                            reactorStability > 1.5f ? HudModel.GREEN : HudModel.GOLD));
+                    cells.add(
+                            HudModel.cell("STABILITY", String.format(java.util.Locale.ROOT, "%.2fx", reactorStability),
+                                    reactorStability > 2.0f ? "excellent" : reactorStability > 1.5f ? "good" : "poor",
+                                    reactorStability > 1.5f ? HudModel.GREEN : HudModel.GOLD));
                     cells.add(HudModel.cell("PRESSURE", String.format(java.util.Locale.ROOT, "%.2fx",
                             cachedSoulDensity * reactorStability), "soul x stability", HudModel.ORANGE));
                     return cells;

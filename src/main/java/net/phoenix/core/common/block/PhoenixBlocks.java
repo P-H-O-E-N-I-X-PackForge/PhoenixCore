@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.phoenix.core.PhoenixAPI;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenix.core.integration.vocal_resonance.ISpeakerType;

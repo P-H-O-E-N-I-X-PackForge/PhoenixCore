@@ -5,15 +5,10 @@ import com.gregtechceu.gtceu.api.registry.registrate.builder.MachineBuilder;
 import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.model.PartRenderProfile;
 import net.phoenix.core.common.machine.multiblock.part.ShieldRenderProperty;
-
-import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 
 import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.CHARGER_STATE;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.SIDED_SIDED_OVERLAY_MODEL;

@@ -33,7 +33,8 @@ final class NetworkSites {
             boolean tower = node.type.isTower();
             String state = node.working ? "online" : "offline";
             sites.add(new Site(tower ? "tower" : "relay", (tower ? "Tesla Tower" : "Tesla Range Extender") + " (" +
-                    state + ")", node.dimension.location(), node.pos, node.working ? (tower ? "55E0FF" : "A070FF") :
+                    state + ")", node.dimension.location(), node.pos,
+                    node.working ? (tower ? "55E0FF" : "A070FF") :
                             "888888",
                     tower ? "RESOURCE" : "DOT", "Tesla"));
         }

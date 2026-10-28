@@ -84,7 +84,6 @@ public record TerrainProfile(
         }
 
         private static double inverseErf(double x) {
-            
             double a = 0.147;
             double ln = Math.log(1.0 - x * x);
             double t = 2.0 / (Math.PI * a) + ln / 2.0;

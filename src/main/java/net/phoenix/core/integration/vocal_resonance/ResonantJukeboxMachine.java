@@ -1,10 +1,5 @@
 package net.phoenix.core.integration.vocal_resonance;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.value.sync.BooleanSyncValue;
-import brachy.modularui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -15,10 +10,12 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
 import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
@@ -26,10 +23,9 @@ import net.phoenix.core.network.packet.C2SSelectSoundPacket;
 import net.phoenix.core.network.packet.S2CPlaySoundPacket;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.BooleanSyncValue;
+import brachy.modularui.value.sync.IntSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -308,9 +304,11 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
         syncManager.syncValue("jukebox_disc", 0, new BooleanSyncValue(() -> hasDiscHatch, v -> hasDiscHatch = v));
-        syncManager.syncValue("jukebox_library", 0, new BooleanSyncValue(() -> hasLibraryHatch, v -> hasLibraryHatch = v));
+        syncManager.syncValue("jukebox_library", 0,
+                new BooleanSyncValue(() -> hasLibraryHatch, v -> hasLibraryHatch = v));
         syncManager.syncValue("jukebox_stream", 0, new BooleanSyncValue(() -> hasStreamHatch, v -> hasStreamHatch = v));
-        syncManager.syncValue("jukebox_range", 0, new IntSyncValue(() -> totalSpeakerRange, v -> totalSpeakerRange = v));
+        syncManager.syncValue("jukebox_range", 0,
+                new IntSyncValue(() -> totalSpeakerRange, v -> totalSpeakerRange = v));
         return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
     }
 
@@ -322,7 +320,10 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         return HudModel.of("Resonant Jukebox")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.NEON)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.equaliser(() -> playing() ? Math.max(0.35f, currentLiveBass) : 0.04f, () -> (float) currentLiveBPM, net.phoenix.core.client.gui.hud.HudTheme.NEON.accent(), net.phoenix.core.client.gui.hud.HudTheme.NEON.accent2()), 36)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.equaliser(
+                        () -> playing() ? Math.max(0.35f, currentLiveBass) : 0.04f, () -> (float) currentLiveBPM,
+                        net.phoenix.core.client.gui.hud.HudTheme.NEON.accent(),
+                        net.phoenix.core.client.gui.hud.HudTheme.NEON.accent2()), 36)
                 .badge(() -> playing() ? new HudModel.Badge("PLAYING", HudModel.GREEN) : HudRecipes.badge(this))
                 .subtitle(() -> !currentStreamUrl.isEmpty() ? streamTitle : !selectedLibrarySound.isEmpty() ?
                         selectedLibrarySound : "Nothing playing")
@@ -344,13 +345,16 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
                 })
                 .bars(() -> java.util.List.of(new HudModel.Bar("Bass", Math.min(1.0f, currentLiveBass),
                         String.format(java.util.Locale.ROOT, "%.0f%%", currentLiveBass * 100), HudModel.PURPLE)))
-                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE, HudModel.GOLD,
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD,
                         this::isFormed)
                 .math(() -> java.util.List.of(
                         HudModel.heading("RANGE"),
                         HudModel.line("radius = base + speaker bonus", HudModel.MID),
-                        HudModel.line(String.format(java.util.Locale.ROOT, "= %d + %d = %d m", BASE_RANGE, totalSpeakerRange,
-                                getFinalRange()), HudModel.WHITE),
+                        HudModel.line(
+                                String.format(java.util.Locale.ROOT, "= %d + %d = %d m", BASE_RANGE, totalSpeakerRange,
+                                        getFinalRange()),
+                                HudModel.WHITE),
                         HudModel.heading("ENERGY"),
                         HudModel.line("music costs " + MUSIC_ENERGY_DRAIN + " EU/t while playing", HudModel.MID)))
                 .graph("bass %", HudModel.PURPLE, () -> currentLiveBass * 100.0f, 100.0f)

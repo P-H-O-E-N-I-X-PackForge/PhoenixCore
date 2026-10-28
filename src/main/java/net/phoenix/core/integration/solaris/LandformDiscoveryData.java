@@ -38,7 +38,7 @@ public class LandformDiscoveryData extends SavedData {
             setDirty();
             return true;
         }
-        
+
         if (existing.zones().isEmpty() && !entry.zones().isEmpty()) {
             known.put(key, entry);
             setDirty();

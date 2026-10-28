@@ -1,10 +1,5 @@
 package net.phoenix.core.integration.astral.puzzle;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.value.sync.BooleanSyncValue;
-import brachy.modularui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -19,8 +14,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,19 +21,16 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.data.materials.AstralMaterials;
 import net.phoenix.core.integration.astral.skein.AstralThreadHatchPartMachine;
 import net.phoenix.core.network.packet.C2SOpenCalibrationPacket;
 import net.phoenix.core.network.packet.S2CCalibrationResultPacket;
 import net.phoenix.core.network.packet.S2COpenCalibrationPacket;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.drawable.ItemDrawable;
-import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.ButtonWidget;
-import brachy.modularui.widgets.TextWidget;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -236,7 +226,9 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
         return HudModel.of("Astral Machine")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.ASTRAL)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(), () -> !calibrated ? 0.15f : aligned ? 1.0f : 0.6f, net.phoenix.core.client.gui.hud.HudTheme.ASTRAL.accent()), 40)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(),
+                        () -> !calibrated ? 0.15f : aligned ? 1.0f : 0.6f,
+                        net.phoenix.core.client.gui.hud.HudTheme.ASTRAL.accent()), 40)
                 .badge(() -> !calibrated ? new HudModel.Badge("UNCALIBRATED", HudModel.RED) : aligned ?
                         new HudModel.Badge("ALIGNED", HudModel.CYAN) : HudRecipes.badge(this))
                 .subtitle(() -> calibrated ? (aligned ? "Aligned: runs faster" : "Calibrated") :
@@ -264,10 +256,11 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
                     }
                     return bars;
                 })
-                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE, HudModel.GOLD,
+                .button(() -> getRecipeLogic().isWorkingEnabled() ? "PAUSE" : "RESUME", HudRecipes.TOGGLE,
+                        HudModel.GOLD,
                         this::isFormed)
-                .localButton(calibratedLabel(), HudModel.BLUE, this::isFormed, () ->
-                        PacketDistributor.sendToServer(new C2SOpenCalibrationPacket(getBlockPos())))
+                .localButton(calibratedLabel(), HudModel.BLUE, this::isFormed,
+                        () -> PacketDistributor.sendToServer(new C2SOpenCalibrationPacket(getBlockPos())))
                 .math(() -> java.util.List.of(
                         HudModel.heading("CALIBRATION"),
                         HudModel.line("calibrate it with the star chart to run", HudModel.MID),

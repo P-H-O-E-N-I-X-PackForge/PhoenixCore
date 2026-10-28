@@ -2,24 +2,17 @@ package net.phoenix.core.common.data.item;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
-import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.component.ElectricStats;
-import com.gregtechceu.gtceu.common.item.armor.GTArmorMaterials;
 import com.gregtechceu.gtceu.common.item.behavior.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.common.item.behavior.TooltipBehavior;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 import net.phoenix.core.common.data.PhoenixCovers;
 import net.phoenix.core.common.item.ChameleonSprayCanItem;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
 
-import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static net.phoenix.core.PhoenixCore.PHOENIX_CREATIVE_TAB;
@@ -337,5 +330,6 @@ public class PhoenixItems {
                             .append(Component.literal(" for extreme metallurgy.").withStyle(ChatFormatting.YELLOW))))
             .lang("§cFeather §6Of §cRebirth")
             .register();
+
     public static void init() {}
 }

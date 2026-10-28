@@ -197,7 +197,7 @@ public class DisciplineChunkGenerator extends ChunkGenerator {
         WorldgenProfile.BiomeDefinition chosen = pick.best();
 
         if (pick.second() != null && pick.margin() < BIOME_BLEND_BAND) {
-            
+
             long hh = seed ^ (x * 0x9E3779B97F4A7C15L) ^ (z * 0xC2B2AE3D27D4EB4FL);
             hh ^= hh >>> 33;
             hh *= 0xFF51AFD7ED558CCDL;
