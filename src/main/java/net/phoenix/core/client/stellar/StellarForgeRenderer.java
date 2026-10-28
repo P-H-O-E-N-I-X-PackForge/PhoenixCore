@@ -146,9 +146,18 @@ public final class StellarForgeRenderer {
             if (falling) collapseSounds(mc, anim, machine, world, seconds, before, pA, pB, after);
             reportToPlayer(distance, before, pA, pB, p, after);
 
+            // the lasers grow with a black hole: its disk reaches a long way, and they ring it
+            float scale = 1.0f;
+            if (falling && !before) {
+                float open = Mth.clamp((after - 0.07f) / 0.65f, 0.0f, 1.0f);
+                scale = 1.0f + (StellarForgeClient.Anim.holeScale(anim.hole) - 1.0f) * (1.0f - (1.0f - open) * (1.0f - open));
+            } else if (!falling && stage == StellarForgeState.Stage.BLACK_HOLE) {
+                scale = StellarForgeClient.Anim.holeScale(anim.hole);
+            }
+
             VertexConsumer lines = buffers.getBuffer(StellarBeamRenderType.BEAMS);
-            containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash, ringScale);
-            injectors(lines, pose, machine, at, seconds, color, flicker * level);
+            containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash, ringScale * scale);
+            injectors(lines, pose, machine, at, seconds, color, flicker * level, scale);
             if (before && pB > 0.0f) inwardStreaks(lines, pose, at, seconds, pB, color);
             if (falling && !before) shockwave(lines, pose, at, after);
             buffers.endBatch(StellarBeamRenderType.BEAMS);
@@ -383,7 +392,7 @@ public final class StellarForgeRenderer {
                 Vector3f point = new Vector3f(c.x + px, c.y + py, c.z + pz);
                 if (previous != null) {
                     float fade = 0.35f + 0.65f * (float) Math.max(0.0, Math.sin(a * 3.0 - seconds * 3.0));
-                    beam(out, pose, previous, point, 0.03f, color, strength * fade * 0.8f);
+                    beam(out, pose, previous, point, 0.03f * (float) Math.sqrt(scale), color, strength * fade * 0.8f);
                 }
                 previous = point;
             }
@@ -405,17 +414,18 @@ public final class StellarForgeRenderer {
 
     /** Beams from the floor of the chamber to the middle, with pulses running up them as fast as the feed. */
     private static void injectors(VertexConsumer out, Matrix4f pose, StellarForgeMachine machine, Vector3f c,
-                                  float seconds, int color, float flicker) {
+                                  float seconds, int color, float flicker, float scale) {
         float feed = machine.feedSetting() / 100.0f;
         if (feed <= 0.0f) return;
         for (int i = 0; i < 4; i++) {
             double a = Math.PI * 0.5 * i + Math.PI * 0.25;
-            Vector3f base = new Vector3f(c.x + (float) Math.cos(a) * 1.3f, c.y - 1.45f,
-                    c.z + (float) Math.sin(a) * 1.3f);
-            beam(out, pose, base, c, 0.035f, color, 0.3f * feed * flicker);
+            Vector3f base = new Vector3f(c.x + (float) Math.cos(a) * 1.3f * scale, c.y - 1.45f * scale,
+                    c.z + (float) Math.sin(a) * 1.3f * scale);
+            float thick = (float) Math.sqrt(scale);
+            beam(out, pose, base, c, 0.035f * thick, color, 0.3f * feed * flicker);
             for (int k = 0; k < 2; k++) {
                 float t = Mth.frac(seconds * (0.4f + 1.4f * feed) + i * 0.25f + k * 0.5f);
-                ContinuumRender.drawBeamPulse(out, pose, base, c, t, 0.1f, 0.06f, flicker * 0.8f);
+                ContinuumRender.drawBeamPulse(out, pose, base, c, t, 0.1f * thick, 0.06f * thick, flicker * 0.8f);
             }
         }
     }
