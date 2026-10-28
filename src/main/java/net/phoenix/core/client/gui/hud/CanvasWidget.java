@@ -38,7 +38,10 @@ public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
     @Override
     public Result onMousePressed(int mouseButton) {
         ModularGuiContext ctx = getContext();
-        return painter.click(localX(ctx), localY(ctx), mouseButton) ? Result.SUCCESS : Result.IGNORE;
+        boolean used = painter.click(localX(ctx), localY(ctx), mouseButton);
+        net.phoenix.core.PhoenixCore.LOGGER.debug("[HUD] press {} at {},{} in {}x{}: {}", mouseButton, localX(ctx),
+                localY(ctx), getArea().width, getArea().height, used ? "used" : "ignored");
+        return used ? Result.SUCCESS : Result.IGNORE;
     }
 
     @Override

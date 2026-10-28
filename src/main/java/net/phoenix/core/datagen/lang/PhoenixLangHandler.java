@@ -96,6 +96,7 @@ public class PhoenixLangHandler {
         provider.add("config.jade.plugin_phoenixcore.source_hatch_info", "Source Hatch Info");
         provider.add("config.jade.plugin_phoenixcore.astral_thread_hatch_info", "Astral Thread Hatch Info");
         provider.add("config.jade.plugin_phoenixcore.growth_machine_info", "Growth Machine Info");
+        provider.add("config.jade.plugin_phoenixcore.stellar_forge_info", "Stellar Forge Info");
 
         provider.add("key.categories.phoenixcore", "PhoenixCore");
         provider.add("key.phoenixcore.wing_flight_gui", "Wing Flight Settings");

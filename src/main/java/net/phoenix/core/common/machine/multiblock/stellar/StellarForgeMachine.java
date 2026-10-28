@@ -75,7 +75,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
     @SaveField
     @SyncToClient
-    private int feed;
+    private int feed = 50;
 
     @SaveField
     @SyncToClient
