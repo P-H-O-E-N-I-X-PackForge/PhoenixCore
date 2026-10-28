@@ -20,6 +20,7 @@ public final class ConfluxMultiblockRegistry {
 
     public static final MachineEntry<MultiblockMachineDefinition> CASCADE_ENGINE = REGISTRATE
             .multiblock("axiom_cascade_engine", ConfluxCascadeEngine::new)
+            .recipeType(com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES)
             .langValue("Axiom Cascade Engine")
             .tier(GTValues.ZPM)
             .rotationState(RotationState.NON_Y_AXIS)
@@ -58,6 +59,7 @@ public final class ConfluxMultiblockRegistry {
 
     public static final MachineEntry<MultiblockMachineDefinition> RESONANCE_WEB = REGISTRATE
             .multiblock("axiom_resonance_web", ConfluxResonanceWeb::new)
+            .recipeType(com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES)
             .langValue("Axiom Resonance Web")
             .tier(GTValues.UV)
             .rotationState(RotationState.NON_Y_AXIS)
@@ -104,6 +106,7 @@ public final class ConfluxMultiblockRegistry {
 
     public static final MachineEntry<MultiblockMachineDefinition> HARMONIC_LENS = REGISTRATE
             .multiblock("axiom_harmonic_lens", ConfluxHarmonicLens::new)
+            .recipeType(com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES)
             .langValue("Axiom Harmonic Lens")
             .tier(GTValues.ZPM)
             .rotationState(RotationState.NON_Y_AXIS)
