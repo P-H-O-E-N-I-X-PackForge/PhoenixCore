@@ -24,7 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * An item or block stood on the face of a block in a scaled down version, like Draconic Evolution's placed items. It sits
- * where it was put (snapped to a sixteenth of a block), faces out of the block, and can be turned with an empty hand and
+ * in one of three places on the face (a triangle), faces out of the block, and can be turned with an empty hand and
  * taken back by sneaking and right clicking it (or hitting it). It falls off, back into a dropped item, when the block it is on goes.
  */
 public class PlacedItemEntity extends Entity {
@@ -55,19 +55,29 @@ public class PlacedItemEntity extends Entity {
         return e;
     }
 
-    /** The point on the face for a spot hit on it: snapped to an eighth, kept off the edges of the block. */
-    public static Vec3 snap(BlockPos block, Direction face, Vec3 hit) {
-        double x = hit.x - block.getX();
-        double y = hit.y - block.getY();
-        double z = hit.z - block.getZ();
-        x = face.getAxis() == Direction.Axis.X ? face.getStepX() > 0 ? 1.0 : 0.0 : edge(x);
-        y = face.getAxis() == Direction.Axis.Y ? face.getStepY() > 0 ? 1.0 : 0.0 : edge(y);
-        z = face.getAxis() == Direction.Axis.Z ? face.getStepZ() > 0 ? 1.0 : 0.0 : edge(z);
-        return new Vec3(block.getX() + x, block.getY() + y, block.getZ() + z);
-    }
+    /** Where the three places on a face are, as (across, up) on the face: a triangle, one at the top and two below. */
+    private static final double[][] SLOTS = { { 0.5, 0.7 }, { 0.28, 0.3 }, { 0.72, 0.3 } };
 
-    private static double edge(double v) {
-        return Math.max(0.15, Math.min(0.85, Math.round(v * 16.0) / 16.0));
+    public static final int SLOT_COUNT = SLOTS.length;
+
+    /** The point in the world of place {@code slot} on a face of a block. */
+    public static Vec3 slot(BlockPos block, Direction face, int slot) {
+        double across = SLOTS[slot][0];
+        double up = SLOTS[slot][1];
+        // looking at the face from outside: right is the face turned a quarter; up is up (or, on a floor or ceiling, north)
+        Vec3 origin = new Vec3(block.getX() + 0.5, block.getY() + 0.5, block.getZ() + 0.5)
+                .add(face.getStepX() * 0.5, face.getStepY() * 0.5, face.getStepZ() * 0.5);
+        Vec3 right;
+        Vec3 upward;
+        if (face.getAxis().isHorizontal()) {
+            Direction r = face.getCounterClockWise();
+            right = new Vec3(r.getStepX(), 0.0, r.getStepZ());
+            upward = new Vec3(0.0, 1.0, 0.0);
+        } else {
+            right = new Vec3(1.0, 0.0, 0.0);
+            upward = new Vec3(0.0, 0.0, face == Direction.UP ? -1.0 : 1.0);
+        }
+        return origin.add(right.scale(across - 0.5)).add(upward.scale(up - 0.5));
     }
 
     public ItemStack item() {

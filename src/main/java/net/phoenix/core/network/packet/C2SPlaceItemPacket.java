@@ -60,38 +60,6 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
         });
     }
 
-    private static boolean clear(Vec3 point, float scale, java.util.List<PlacedItemEntity> there) {
-        for (PlacedItemEntity other : there) {
-            if (other.position().distanceTo(point) < (other.scale() + scale) * 0.5 * 0.7) return false;
-        }
-        return true;
-    }
-
-    private static double along(BlockPos pos, Direction.Axis axis) {
-        return axis == Direction.Axis.X ? pos.getX() : axis == Direction.Axis.Y ? pos.getY() : pos.getZ();
-    }
-
-    /**
-     * Where to put it: where you pointed, or, if something is there, the nearest free spot on the same face (searched
-     * across the whole face, so it does not matter exactly where you click), so a block and an item can stand together.
-     */
-    private static Vec3 freeSpot(BlockPos pos, Direction face, Vec3 wanted, float scale,
-                                 java.util.List<PlacedItemEntity> there) {
-        if (clear(wanted, scale, there)) return wanted;
-        Direction.Axis[] axes = java.util.Arrays.stream(Direction.Axis.values()).filter(a -> a != face.getAxis())
-                .toArray(Direction.Axis[]::new);
-        Vec3 best = null;
-        for (int i = 0; i <= 14; i++) {
-            for (int j = 0; j <= 14; j++) {
-                Vec3 candidate = wanted.with(axes[0], along(pos, axes[0]) + 0.15 + 0.05 * i)
-                        .with(axes[1], along(pos, axes[1]) + 0.15 + 0.05 * j);
-                if (!clear(candidate, scale, there)) continue;
-                if (best == null || candidate.distanceToSqr(wanted) < best.distanceToSqr(wanted)) best = candidate;
-            }
-        }
-        return best;
-    }
-
     private static void place(ServerPlayer player, C2SPlaceItemPacket msg) {
         ItemStack held = player.getMainHandItem();
         if (held.isEmpty() || player.isSpectator()) return;
@@ -110,15 +78,24 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
                 there.add(other);
             }
         }
-        // up to two on one face of a block, blocks and items alike
+        // up to three on one face of a block, blocks and items alike
         if (there.size() >= MAX_PER_FACE) {
             player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                     "Only " + MAX_PER_FACE + " items fit on one side of a block."), true);
             return;
         }
-        float scale = held.getItem() instanceof net.minecraft.world.item.BlockItem ? PlacedItemEntity.BLOCK_SCALE :
-                PlacedItemEntity.ITEM_SCALE;
-        Vec3 point = freeSpot(msg.pos, msg.face, PlacedItemEntity.snap(msg.pos, msg.face, msg.hit), scale, there);
+        // three places on the face, in a triangle: it goes in the free one nearest where you pointed
+        Vec3 point = null;
+        for (int slot = 0; slot < PlacedItemEntity.SLOT_COUNT; slot++) {
+            Vec3 candidate = PlacedItemEntity.slot(msg.pos, msg.face, slot);
+            boolean taken = false;
+            for (PlacedItemEntity other : there) {
+                if (other.position().distanceToSqr(candidate) < 0.01) taken = true;
+            }
+            if (!taken && (point == null || candidate.distanceToSqr(msg.hit) < point.distanceToSqr(msg.hit))) {
+                point = candidate;
+            }
+        }
         if (point == null) {
             player.displayClientMessage(net.minecraft.network.chat.Component.literal("No room left on that side."), true);
             return;
