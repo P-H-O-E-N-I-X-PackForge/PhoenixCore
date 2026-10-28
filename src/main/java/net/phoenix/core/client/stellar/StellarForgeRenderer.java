@@ -28,6 +28,7 @@ import org.joml.Vector3f;
 public final class StellarForgeRenderer {
 
     private static final double RANGE = 64.0;
+    private static long lastReport;
 
     private StellarForgeRenderer() {}
 
@@ -40,7 +41,19 @@ public final class StellarForgeRenderer {
     public static void onRender(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || !ContinuumRender.ready()) return;
+        if (mc.level == null) return;
+        if (System.currentTimeMillis() - lastReport > 5000L) {
+            lastReport = System.currentTimeMillis();
+            var report = new StringBuilder();
+            for (var entry : StellarForgeClient.all()) {
+                var m = entry.getKey();
+                report.append(String.format(java.util.Locale.ROOT, "[%s formed=%s stage=%s radius=%.2f dist=%.1f] ",
+                        m.getBlockPos().toShortString(), m.isFormed(), m.stage(), entry.getValue().radius,
+                        m.chamberCentre().distanceTo(event.getCamera().getPosition())));
+            }
+            PhoenixCore.LOGGER.debug("[StellarRender] shadersReady={} forges={}", ContinuumRender.ready(), report);
+        }
+        if (!ContinuumRender.ready()) return;
 
         Vec3 camera = event.getCamera().getPosition();
         Matrix4f view = new Matrix4f(event.getModelViewMatrix());

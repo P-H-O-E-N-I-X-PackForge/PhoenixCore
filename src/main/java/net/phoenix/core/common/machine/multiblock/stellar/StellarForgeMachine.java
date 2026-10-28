@@ -357,9 +357,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                             .append(" x").append(inside.getAmount()).append(" (").append(massPerMb(inside)).append("/mB) ");
                 }
             }
-            net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] tick: stage {} feed {} want {} buffer {} fed {} " +
-                    "inHatches {} powered {} fluids: {}", s.stage, feed, want, feedBuffer, fed, hatches(IO.IN).size(), ok,
-                    report);
+            net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] tick: stage {} mass {} stability {} heat {} hold {} " +
+                    "feed {} field {} (band {}) spin {} (band {}) want {} fed {} inHatches {} powered {} fluids: {}",
+                    s.stage, s.mass, s.stability, s.heat, s.holdTicks, feed, field, s.fieldBand(), spin, s.spinBand(),
+                    want, fed, hatches(IO.IN).size(), ok, report);
         }
         s.tick(fed, ok, blocked);
         powered = ok;
