@@ -46,7 +46,7 @@ public final class PhoenixToolRecipes {
 
     private static void initTierMaps() {
         motorItems.put(GTValues.LuV, GTItems.ELECTRIC_MOTOR_LuV);
-        baseMaterials.put(GTValues.LuV, GTMaterials.RhodiumPlatedPalladium);
+        baseMaterials.put(GTValues.LuV, GTMaterials.RhodiumPlatedPalladium.get());
         batteryItems.put(GTValues.LuV, List.of(
                 GTItems.ENERGY_LAPOTRONIC_ORB_CLUSTER));
 

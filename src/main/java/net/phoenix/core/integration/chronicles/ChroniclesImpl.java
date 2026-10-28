@@ -10,7 +10,6 @@ import net.phoenixvine.chronicles.common.registry.PhoenixTaskRegistry;
 
 import org.jetbrains.annotations.Nullable;
 
-/** The part of the link that uses Chronicles classes: only loaded when Chronicles is installed. */
 final class ChroniclesImpl {
 
     private ChroniclesImpl() {}
@@ -36,7 +35,6 @@ final class ChroniclesImpl {
         registerTrigger(PhoenixChroniclesTriggers.UNIQUE_DUPLICATE, "They tried to build a second unique multiblock.");
         registerTrigger(PhoenixChroniclesTriggers.ITEM_PLACED, "They put an item or block on a block face.");
 
-        // done while it is true rather than counted: the team has chosen this discipline (blank: any)
         PhoenixTaskRegistry.registerScripted("conflux_discipline")
                 .label("Conflux Discipline (PhoenixCore)")
                 .icon("§b☉")

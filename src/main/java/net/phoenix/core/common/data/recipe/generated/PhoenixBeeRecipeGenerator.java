@@ -3,6 +3,8 @@ package net.phoenix.core.common.data.recipe.generated;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -67,17 +69,17 @@ public class PhoenixBeeRecipeGenerator {
 
     private static TagPrefix tierPrefix(int tier) {
         return switch (tier) {
-            case 1 -> PhoenixMaterialFlags.tier_one_bee;
-            case 2 -> PhoenixMaterialFlags.tier_two_bee;
-            case 3 -> PhoenixMaterialFlags.tier_three_bee;
-            default -> PhoenixMaterialFlags.tier_one_bee;
+            case 1 -> PhoenixMaterialFlags.tier_one_bee.get();
+            case 2 -> PhoenixMaterialFlags.tier_two_bee.get();
+            case 3 -> PhoenixMaterialFlags.tier_three_bee.get();
+            default -> PhoenixMaterialFlags.tier_one_bee.get();
         };
     }
 
-    private static Material getMaterial(String id) {
+    private static MaterialRegistryEntry getMaterial(String id) {
         if (id == null || id.isEmpty()) return null;
 
-        Material mat = switch (id) {
+        MaterialRegistryEntry mat = switch (id) {
             case "fluorite" -> PhoenixOres.FLUORITE;
             case "voidglass_shard" -> PhoenixOres.VOIDGLASS_SHARD;
             case "ignisium" -> PhoenixOres.IGNISIUM;
@@ -86,7 +88,19 @@ public class PhoenixBeeRecipeGenerator {
             case "resonant_ender" -> PhoenixProgressionMaterials.RESONANT_ENDER;
             case "source_gem" -> PhoenixProgressionMaterials.SOURCE_GEM;
             case "prismarine" -> PhoenixProgressionMaterials.PRISMARINE;
-            default -> Mats.byName(id);
+            default -> {
+                String normalizedId = id.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+                com.gregtechceu.gtceu.api.data.chemical.material.Material rawMat = Mats.byName(normalizedId);
+                if (rawMat == null) {
+                    rawMat = Mats.byName(id.toLowerCase());
+                }
+                if (rawMat == null) yield null;
+                net.minecraft.resources.ResourceLocation loc = GTRegistries.MATERIALS.getKey(rawMat);
+                yield loc != null ? new MaterialRegistryEntry(
+                        net.phoenix.core.PhoenixCore.PHOENIX_REGISTRATE,
+                        net.neoforged.neoforge.registries.DeferredHolder.create(GTRegistries.Keys.MATERIAL, loc)) :
+                        null;
+            }
         };
 
         if (mat == null && WARNED_MISSING.add(id)) {
@@ -110,11 +124,11 @@ public class PhoenixBeeRecipeGenerator {
 
     public static void generateSimulatedColonyRecipes(RecipeOutput provider, ItemStack base) {
         for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
-            Material mat = getMaterial(config.beeId());
+            MaterialRegistryEntry mat = getMaterial(config.beeId());
             if (mat == null) continue;
 
-            ItemStack beeCatalyst = ChemicalHelper.get(tierPrefix(config.tier()), mat);
-            ItemStack combOutput = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat);
+            ItemStack beeCatalyst = ChemicalHelper.get(tierPrefix(config.tier()), mat.get());
+            ItemStack combOutput = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat.get());
             ItemStack pollinationInput = safeStack(config.pollinationInputId(), 1);
 
             if (beeCatalyst.isEmpty() || combOutput.isEmpty() || pollinationInput.isEmpty()) continue;
@@ -130,7 +144,7 @@ public class PhoenixBeeRecipeGenerator {
                     .outputItems(combOutput.copyWithCount(4))
                     .save(provider);
 
-            ItemStack crystalRose = ChemicalHelper.get(PhoenixMaterialFlags.crystal_rose, mat);
+            ItemStack crystalRose = ChemicalHelper.get(PhoenixMaterialFlags.crystal_rose, mat.get());
             if (!crystalRose.isEmpty()) {
                 SIMULATED_COLONY_RECIPES.recipeBuilder(MOD_ID + "/simulated_colony_boosted/" + config.beeId())
                         .EUt(config.boostedDecantingEut()).duration(config.boostedDecantingDuration())
@@ -148,11 +162,11 @@ public class PhoenixBeeRecipeGenerator {
     public static void loadBeeCombProductionRecipes(RecipeOutput provider, ItemStack base) {
         for (FullBeeConfig config : BeeRecipeData.ALL_BEE_CONFIGS.values()) {
             String beeId = config.beeId();
-            Material mat = getMaterial(beeId);
+            MaterialRegistryEntry mat = getMaterial(beeId);
             if (mat == null) continue;
 
             ItemStack combIn = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat.get());
-            // a bee can have a comb material without honeyed or wax ones registered: skip it rather than crash
+
             var honeyedEntry = PhoenixBeeMaterials.HONEYED_MATERIALS.get(beeId);
             var rawWaxEntry = PhoenixBeeMaterials.RAW_WAX_MATERIALS.get(beeId);
             if (honeyedEntry == null || rawWaxEntry == null) continue;
@@ -231,8 +245,11 @@ public class PhoenixBeeRecipeGenerator {
 
     public static void generateApisProgenitorRecipes(RecipeOutput provider) {
         for (ApisProgenitorConfig cfg : BeeRecipeData.UNIQUE_APIS_PROGENITOR_CONFIGS) {
-            Material inMat = getMaterial(cfg.inputMaterialId());
-            Material outMat = getMaterial(cfg.outputMaterialId());
+            MaterialRegistryEntry inMatEntry = getMaterial(cfg.inputMaterialId());
+            MaterialRegistryEntry outMatEntry = getMaterial(cfg.outputMaterialId());
+
+            Material inMat = inMatEntry != null ? inMatEntry.get() : null;
+            Material outMat = outMatEntry != null ? outMatEntry.get() : null;
             if (inMat == null || outMat == null) continue;
 
             ItemStack inBee = ChemicalHelper.get(tierPrefix(cfg.inputTier()), inMat);
@@ -275,7 +292,7 @@ public class PhoenixBeeRecipeGenerator {
     }
 
     public static void generateSpecialtyBeeRecipes(RecipeOutput provider, ItemStack base) {
-        Material source = PhoenixProgressionMaterials.SOURCE_GEM;
+        Material source = PhoenixProgressionMaterials.SOURCE_GEM.get();
         ItemStack catalystBee = ChemicalHelper.get(PhoenixMaterialFlags.tier_one_bee, source);
         ItemStack jelly = safeStack("phoenixcore:royal_jelly", 8);
 

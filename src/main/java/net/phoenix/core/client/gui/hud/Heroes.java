@@ -6,11 +6,6 @@ import net.minecraft.util.Mth;
 
 import java.util.function.Supplier;
 
-/**
- * Animated pictures for the top of a machine screen, each a different idea: a shield ring, turning runes, packets
- * flowing down lanes, an equaliser, a growing vine, a constellation, a set of lock tumblers, a gauge, a pulse line.
- * They move on their own and are driven by the machine's numbers, so a screen has something to look at.
- */
 public final class Heroes {
 
     private Heroes() {}
@@ -18,7 +13,6 @@ public final class Heroes {
     @FunctionalInterface
     public interface Hero {
 
-        /** Draw into the box at (x, y) of w by h, {@code t} seconds into the animation. */
         void draw(GuiGraphics g, int x, int y, int w, int h, float t);
     }
 
@@ -48,9 +42,6 @@ public final class Heroes {
         g.fill(Math.round(x) - r, Math.round(y) - r, Math.round(x) + r + 1, Math.round(y) + r + 1, color);
     }
 
-    // ------------------------------------------------------------------------------------------------ shield ring
-
-    /** Concentric rings, the outer one filled by how full the shield is, ticks turning round it. */
     public static Hero shieldRing(Supplier<Float> fill, int color) {
         return (g, x, y, w, h, t) -> {
             float cx = x + w / 2.0f;
@@ -64,7 +55,8 @@ public final class Heroes {
                 double a = Math.PI * 2 * i / 24 + t * 0.35;
                 float inner = r - 9;
                 float outer = r - (i % 6 == 0 ? 6 : 8);
-                GuiDraw.drawLine(g, Math.round(cx + (float) Math.cos(a) * inner), Math.round(cy + (float) Math.sin(a) * inner),
+                GuiDraw.drawLine(g, Math.round(cx + (float) Math.cos(a) * inner),
+                        Math.round(cy + (float) Math.sin(a) * inner),
                         Math.round(cx + (float) Math.cos(a) * outer), Math.round(cy + (float) Math.sin(a) * outer),
                         GuiDraw.withAlpha(color, i % 6 == 0 ? 0xAA : 0x55));
             }
@@ -74,9 +66,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ runes
-
-    /** A ring of rune ticks turning with orbiting sparks; more power spins it faster and brighter. */
     public static Hero runes(Supplier<Float> power, int color) {
         return (g, x, y, w, h, t) -> {
             float cx = x + w / 2.0f;
@@ -93,13 +82,16 @@ public final class Heroes {
                 float cyr = cy + (float) Math.sin(a) * rr;
                 int variant = i % 4;
                 int c = GuiDraw.withAlpha(color, 0x60 + (int) (0x80 * p));
-                // each tick a small glyph of strokes
+
                 g.fill(Math.round(cxr), Math.round(cyr) - 2, Math.round(cxr) + 1, Math.round(cyr) + 3, c);
-                if (variant == 1) g.fill(Math.round(cxr) - 1, Math.round(cyr), Math.round(cxr) + 3, Math.round(cyr) + 1, c);
-                if (variant == 2) g.fill(Math.round(cxr) - 1, Math.round(cyr) - 2, Math.round(cxr) + 2, Math.round(cyr) - 1, c);
-                if (variant == 3) g.fill(Math.round(cxr), Math.round(cyr) + 2, Math.round(cxr) + 3, Math.round(cyr) + 3, c);
+                if (variant == 1)
+                    g.fill(Math.round(cxr) - 1, Math.round(cyr), Math.round(cxr) + 3, Math.round(cyr) + 1, c);
+                if (variant == 2)
+                    g.fill(Math.round(cxr) - 1, Math.round(cyr) - 2, Math.round(cxr) + 2, Math.round(cyr) - 1, c);
+                if (variant == 3)
+                    g.fill(Math.round(cxr), Math.round(cyr) + 2, Math.round(cxr) + 3, Math.round(cyr) + 3, c);
             }
-            // a triangle and a counter-turning one, a seal
+
             for (int tri = 0; tri < 2; tri++) {
                 double base = (tri == 0 ? 1 : -1) * t * 0.5 * (0.3 + p) + tri * Math.PI / 3;
                 float rr = r - 9;
@@ -123,9 +115,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ data flow
-
-    /** Lanes of packets running left to right; faster and denser with the rate; the colour shifts down the lane. */
     public static Hero dataFlow(Supplier<Float> rate, int lanes, int from, int to) {
         return (g, x, y, w, h, t) -> {
             float r = Mth.clamp(rate.get(), 0.0f, 1.0f);
@@ -144,15 +133,12 @@ public final class Heroes {
                     g.fill(Math.round(x + pos), ly - 1, Math.round(x + pos) + len, ly + 2, GuiDraw.withAlpha(col, a));
                 }
             }
-            // gates at both ends
+
             g.fill(x, y, x + 2, y + h, GuiDraw.withAlpha(from, 0xB0));
             g.fill(x + w - 2, y, x + w, y + h, GuiDraw.withAlpha(to, 0xB0));
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ equaliser
-
-    /** An equaliser: bars that dance harder with the level, kicking at the beat. */
     public static Hero equaliser(Supplier<Float> level, Supplier<Float> bpm, int color, int peak) {
         return (g, x, y, w, h, t) -> {
             float l = Mth.clamp(level.get(), 0.0f, 1.0f);
@@ -162,19 +148,18 @@ public final class Heroes {
             for (int i = 0; i < bars; i++) {
                 float n1 = (float) (0.5 + 0.5 * Math.sin(t * (2.1 + (i % 5) * 0.7) + i * 1.9));
                 float n2 = (float) (0.5 + 0.5 * Math.sin(t * (4.3 + (i % 3)) + i * 0.7));
-                float v = Mth.clamp((0.12f + 0.88f * l) * (0.25f + 0.5f * n1 + 0.25f * n2) * (0.75f + 0.5f * beat), 0.03f, 1.0f);
+                float v = Mth.clamp((0.12f + 0.88f * l) * (0.25f + 0.5f * n1 + 0.25f * n2) * (0.75f + 0.5f * beat),
+                        0.03f, 1.0f);
                 int bh = Math.max(1, Math.round(v * h));
                 int bx = x + i * (w / bars);
                 int col = GuiDraw.mix(color, peak, v);
                 g.fill(bx, y + h - bh, bx + Math.max(2, w / bars - 2), y + h, GuiDraw.withAlpha(col, 0xB0));
-                g.fill(bx, y + h - bh, bx + Math.max(2, w / bars - 2), y + h - bh + 1, GuiDraw.withAlpha(0xFF_FFFFFF, 0xC0));
+                g.fill(bx, y + h - bh, bx + Math.max(2, w / bars - 2), y + h - bh + 1,
+                        GuiDraw.withAlpha(0xFF_FFFFFF, 0xC0));
             }
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ vines
-
-    /** A vine that grows branch by branch as the progress rises, swaying a little. */
     public static Hero vines(Supplier<Float> progress, Supplier<Integer> stage, int color, int leaf) {
         return (g, x, y, w, h, t) -> {
             float p = Mth.clamp(progress.get(), 0.0f, 1.0f);
@@ -189,7 +174,8 @@ public final class Heroes {
                 int segs = Math.max(2, (int) (height / 4));
                 for (int k = 1; k <= segs; k++) {
                     float f = k / (float) segs;
-                    float sway = (float) Math.sin(t * 0.9 + i * 1.7 + f * 3.0) * 3.0f * f + (float) Math.sin(f * 5 + i) * 4 * f;
+                    float sway = (float) Math.sin(t * 0.9 + i * 1.7 + f * 3.0) * 3.0f * f +
+                            (float) Math.sin(f * 5 + i) * 4 * f;
                     float nx = baseX + sway;
                     float ny = y + h - 1 - height * f;
                     GuiDraw.drawLine(g, Math.round(px), Math.round(py), Math.round(nx), Math.round(ny),
@@ -197,7 +183,8 @@ public final class Heroes {
                     if (k % 2 == 0 && f > 0.25f) {
                         int side = (k / 2) % 2 == 0 ? 1 : -1;
                         float lx = nx + side * 4;
-                        g.fill(Math.round(lx), Math.round(ny) - 1, Math.round(lx) + 3, Math.round(ny) + 1, GuiDraw.withAlpha(leaf, 0xD0));
+                        g.fill(Math.round(lx), Math.round(ny) - 1, Math.round(lx) + 3, Math.round(ny) + 1,
+                                GuiDraw.withAlpha(leaf, 0xD0));
                     }
                     px = nx;
                     py = ny;
@@ -208,9 +195,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ constellation
-
-    /** A scatter of stars that link up into a constellation as the fraction rises. */
     public static Hero constellation(long seed, Supplier<Float> fraction, int color) {
         return (g, x, y, w, h, t) -> {
             float f = Mth.clamp(fraction.get(), 0.0f, 1.0f);
@@ -232,7 +216,8 @@ public final class Heroes {
             for (int i = 0; i < n; i++) {
                 boolean lit = i <= linked;
                 float tw = 0.6f + 0.4f * (float) Math.sin(t * 1.5 + i * 2.0);
-                dot(g, sx[i], sy[i], lit ? 1 : 0, GuiDraw.withAlpha(lit ? 0xFF_FFFFFF : color, (int) ((lit ? 0xFF : 0x60) * tw)));
+                dot(g, sx[i], sy[i], lit ? 1 : 0,
+                        GuiDraw.withAlpha(lit ? 0xFF_FFFFFF : color, (int) ((lit ? 0xFF : 0x60) * tw)));
                 if (lit) {
                     g.fill(Math.round(sx[i]) - 3, Math.round(sy[i]), Math.round(sx[i]) + 4, Math.round(sy[i]) + 1,
                             GuiDraw.withAlpha(color, 0x40));
@@ -243,9 +228,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ tumblers
-
-    /** Rows of lock tumblers; solved ones click to a stop and glow, the rest keep turning. */
     public static Hero tumblers(Supplier<Integer> solved, Supplier<Integer> total, int color) {
         return (g, x, y, w, h, t) -> {
             int n = Math.max(1, Math.min(14, total.get()));
@@ -265,9 +247,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ arc gauge
-
-    /** A half-moon gauge with a needle that settles and shivers a little. */
     public static Hero arcGauge(Supplier<Float> value, int color) {
         return (g, x, y, w, h, t) -> {
             float v = Mth.clamp(value.get(), 0.0f, 1.0f);
@@ -279,9 +258,11 @@ public final class Heroes {
             arc(g, cx, cy, r - 4, r - 4, Math.PI, Math.PI * 2, GuiDraw.withAlpha(color, 0x20));
             for (int i = 0; i <= 10; i++) {
                 double a = Math.PI + Math.PI * i / 10;
-                GuiDraw.drawLine(g, Math.round(cx + (float) Math.cos(a) * (r - 7)), Math.round(cy + (float) Math.sin(a) * (r - 7)),
+                GuiDraw.drawLine(g, Math.round(cx + (float) Math.cos(a) * (r - 7)),
+                        Math.round(cy + (float) Math.sin(a) * (r - 7)),
                         Math.round(cx + (float) Math.cos(a) * (r - (i % 5 == 0 ? 3 : 5))),
-                        Math.round(cy + (float) Math.sin(a) * (r - (i % 5 == 0 ? 3 : 5))), GuiDraw.withAlpha(color, 0x80));
+                        Math.round(cy + (float) Math.sin(a) * (r - (i % 5 == 0 ? 3 : 5))),
+                        GuiDraw.withAlpha(color, 0x80));
             }
             double needle = Math.PI + Math.PI * v + Math.sin(t * 13) * 0.012;
             GuiDraw.drawLine(g, Math.round(cx), Math.round(cy), Math.round(cx + (float) Math.cos(needle) * (r - 5)),
@@ -290,9 +271,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ pulse line
-
-    /** A heart monitor line: a steady trace with a spike per beat, sharper and quicker with the level. */
     public static Hero pulseLine(Supplier<Float> level, int color) {
         return (g, x, y, w, h, t) -> {
             float l = Mth.clamp(level.get(), 0.0f, 1.0f);
@@ -307,7 +285,8 @@ public final class Heroes {
                 if (phase < 0.08f) v = (float) Math.sin(phase / 0.08f * Math.PI) * (0.3f + 0.7f * l);
                 else if (phase < 0.14f) v = -0.35f * (float) Math.sin((phase - 0.08f) / 0.06f * Math.PI) * l;
                 int cy = mid - Math.round(v * (h / 2 - 2));
-                if (i > 0) GuiDraw.drawLine(g, px, py, x + i, cy, GuiDraw.withAlpha(color, 0x40 + (int) (0xA0 * (i / (float) w))));
+                if (i > 0) GuiDraw.drawLine(g, px, py, x + i, cy,
+                        GuiDraw.withAlpha(color, 0x40 + (int) (0xA0 * (i / (float) w))));
                 px = x + i;
                 py = cy;
             }
@@ -316,22 +295,22 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ radar
-
-    /** A radar sweep over rings; each contact shows as a blip that flares when the beam passes it. */
     public static Hero radar(Supplier<Integer> contacts, int color) {
         return (g, x, y, w, h, t) -> {
             float cx = x + w / 2.0f;
             float cy = y + h / 2.0f;
             float rx = w / 2.0f - 3;
             float ry = h / 2.0f - 2;
-            for (int i = 1; i <= 3; i++) arc(g, cx, cy, rx * i / 3, ry * i / 3, 0, Math.PI * 2, GuiDraw.withAlpha(color, 0x30));
-            g.fill(Math.round(cx - rx), Math.round(cy), Math.round(cx + rx), Math.round(cy) + 1, GuiDraw.withAlpha(color, 0x20));
+            for (int i = 1; i <= 3; i++)
+                arc(g, cx, cy, rx * i / 3, ry * i / 3, 0, Math.PI * 2, GuiDraw.withAlpha(color, 0x30));
+            g.fill(Math.round(cx - rx), Math.round(cy), Math.round(cx + rx), Math.round(cy) + 1,
+                    GuiDraw.withAlpha(color, 0x20));
             double sweep = (t * 1.1) % (Math.PI * 2);
             for (int i = 0; i < 14; i++) {
                 double a = sweep - i * 0.045;
                 GuiDraw.drawLine(g, Math.round(cx), Math.round(cy), Math.round(cx + (float) Math.cos(a) * rx),
-                        Math.round(cy + (float) Math.sin(a) * ry), GuiDraw.withAlpha(color, Math.max(0, 0x90 - i * 10)));
+                        Math.round(cy + (float) Math.sin(a) * ry),
+                        GuiDraw.withAlpha(color, Math.max(0, 0x90 - i * 10)));
             }
             int n = Math.min(24, contacts.get());
             long s = 99;
@@ -342,20 +321,19 @@ public final class Heroes {
                 float d = 0.2f + 0.75f * ((s >>> 33) % 1000) / 1000.0f;
                 double since = ((sweep - a) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
                 int alpha = (int) (0x40 + 0xBF * Math.max(0.0, 1.0 - since / 3.0));
-                dot(g, cx + (float) Math.cos(a) * rx * d, cy + (float) Math.sin(a) * ry * d, 1, GuiDraw.withAlpha(0xFF_FFFFFF, alpha));
+                dot(g, cx + (float) Math.cos(a) * rx * d, cy + (float) Math.sin(a) * ry * d, 1,
+                        GuiDraw.withAlpha(0xFF_FFFFFF, alpha));
             }
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ embers
-
-    /** Sparks rising off a glowing bed; a hotter level throws more of them, higher. */
     public static Hero embers(Supplier<Float> heat, int color, int hot) {
         return (g, x, y, w, h, t) -> {
             float l = Mth.clamp(heat.get(), 0.0f, 1.0f);
             for (int i = 0; i < 4; i++) {
                 int a = (int) ((0x20 + 0x50 * l) * (1 - i / 4.0f));
-                g.fill(x, y + h - 2 - i * 2, x + w, y + h - i * 2, GuiDraw.withAlpha(GuiDraw.mix(hot, color, i / 4.0f), a));
+                g.fill(x, y + h - 2 - i * 2, x + w, y + h - i * 2,
+                        GuiDraw.withAlpha(GuiDraw.mix(hot, color, i / 4.0f), a));
             }
             int n = 10 + (int) (28 * l);
             for (int i = 0; i < n; i++) {
@@ -370,9 +348,6 @@ public final class Heroes {
         };
     }
 
-    // ------------------------------------------------------------------------------------------------ sigil
-
-    /** A drawing seal: turning hexagons over spokes with sparks drawn in towards a pulsing eye (a siphon). */
     public static Hero sigil(Supplier<Float> power, int color) {
         return (g, x, y, w, h, t) -> {
             float cx = x + w / 2.0f;

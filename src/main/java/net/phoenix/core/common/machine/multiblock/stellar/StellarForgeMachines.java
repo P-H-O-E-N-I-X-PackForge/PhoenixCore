@@ -15,7 +15,6 @@ import net.phoenix.core.common.block.PhoenixBlocks;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/** The Stellar Forge multiblock: a glass chamber on a floor of hatches, with the star made in the middle. */
 public final class StellarForgeMachines {
 
     private StellarForgeMachines() {}

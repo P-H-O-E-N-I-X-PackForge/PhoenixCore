@@ -14,10 +14,6 @@ import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 
 import java.util.Locale;
 
-/**
- * The chamber seen from outside: the body drawn with Continuum's own shaders, the way it looks on the star map, that
- * can be dragged round and zoomed. Beside it run the vital readings, in a viewfinder frame.
- */
 public final class StellarViewPage implements CanvasPainter {
 
     private static final HudTheme T = HudTheme.DEEP_SPACE;
@@ -57,11 +53,11 @@ public final class StellarViewPage implements CanvasPainter {
         }
         var stage = machine.stage();
         var anim = StellarForgeClient.animOf(machine);
-        g.drawString(font, stage.label.toUpperCase(Locale.ROOT), w - 8 - font.width(stage.label.toUpperCase(Locale.ROOT)), 7,
+        g.drawString(font, stage.label.toUpperCase(Locale.ROOT),
+                w - 8 - font.width(stage.label.toUpperCase(Locale.ROOT)), 7,
                 T.accent2(), false);
         g.fill(8, 19, w - 8, 20, T.line());
 
-        // the viewfinder: black glass with the body in it
         g.fill(VX, VY, VX + VIEW, VY + VIEW, 0xFF_000004);
         if (stage == StellarForgeState.Stage.IDLE) {
             g.drawCenteredString(font, "Chamber empty", VX + VIEW / 2, VY + VIEW / 2 - 8, T.dim());
@@ -70,18 +66,18 @@ public final class StellarViewPage implements CanvasPainter {
             float size01 = Mth.clamp((anim.radius - 0.15f) / 1.05f, 0.0f, 1.0f);
             int rgb = stage == StellarForgeState.Stage.STAR && machine.starTint() >= 0 ? machine.starTint() :
                     StellarForgeState.colorOf(machine.heat()) & 0xFFFFFF;
-            boolean drawn = ContinuumRender.ready() && ContinuumRender.preview().draw(g, bodyOf(stage), rgb, size01, VX, VY, VIEW, false,
-                    machine.holeTint());
+            boolean drawn = ContinuumRender.ready() &&
+                    ContinuumRender.preview().draw(g, bodyOf(stage), rgb, size01, VX, VY, VIEW, false,
+                            machine.holeTint());
             if (!drawn) fallback(g, VX + VIEW / 2, VY + VIEW / 2, 14 + size01 * 40, 0xFF_000000 | rgb);
         }
         frame(g, VX, VY, VIEW, VIEW);
 
-        // corner readouts over the glass
-        g.drawString(font, String.format(Locale.ROOT, "R %.2f", anim.radius), VX + 5, VY + VIEW - 12, GuiDraw.withAlpha(T.accent(), 0xC0), false);
+        g.drawString(font, String.format(Locale.ROOT, "R %.2f", anim.radius), VX + 5, VY + VIEW - 12,
+                GuiDraw.withAlpha(T.accent(), 0xC0), false);
         String hint = dragging ? "rotating" : "drag / scroll";
         g.drawString(font, hint, VX + VIEW - 5 - font.width(hint), VY + 5, GuiDraw.withAlpha(T.accent2(), 0xA0), false);
 
-        // vitals
         int cx = VX + VIEW + 10;
         int cw = w - 8 - cx;
         int y = VY;
@@ -94,25 +90,26 @@ public final class StellarViewPage implements CanvasPainter {
                 machine.stability() / 100.0f,
                 machine.stability() > 66 ? 0xFF_33FF88 : machine.stability() > 33 ? 0xFF_FFC44D : 0xFF_FF3333);
 
-        // the reset button
         int by = VY + VIEW - 14;
         overResetNow = mouseX >= cx && mouseX < cx + cw && mouseY >= by && mouseY < by + 14;
         g.fill(cx, by, cx + cw, by + 14, overResetNow ? GuiDraw.mix(T.bgTop(), T.accent(), 0.2f) : T.bgTop());
         GuiDraw.drawBorder(g, cx, by, cw, 14, overResetNow ? T.accent() : GuiDraw.withAlpha(T.accent2(), 0xAA), 1);
-        g.drawString(font, "RESET", cx + (cw - font.width("RESET")) / 2, by + 3, overResetNow ? T.accent() : T.dim(), false);
+        g.drawString(font, "RESET", cx + (cw - font.width("RESET")) / 2, by + 3, overResetNow ? T.accent() : T.dim(),
+                false);
 
-        // a tooltip line under the glass: what the cursor is over
         int ty = VY + VIEW + 6;
         String note;
         if (mouseX >= VX && mouseX < VX + VIEW && mouseY >= VY && mouseY < VY + VIEW) {
-            note = String.format(Locale.ROOT, "%s, %.2f blocks across, %,.0f K", stage.label, anim.radius * 2.0f, view.kelvin());
+            note = String.format(Locale.ROOT, "%s, %.2f blocks across, %,.0f K", stage.label, anim.radius * 2.0f,
+                    view.kelvin());
         } else {
             note = "Settings are on the first tab.";
         }
         g.drawString(font, font.plainSubstrByWidth(note, w - 16), 8, ty, T.dim(), false);
     }
 
-    private int vital(GuiGraphics g, Font font, int x, int y, int w, String label, String value, float frac, int color) {
+    private int vital(GuiGraphics g, Font font, int x, int y, int w, String label, String value, float frac,
+                      int color) {
         g.drawString(font, label, x, y, T.dim(), false);
         g.drawString(font, font.plainSubstrByWidth(value, w), x, y + 10, color, false);
         g.fill(x, y + 22, x + w, y + 27, T.dim());
@@ -121,7 +118,6 @@ public final class StellarViewPage implements CanvasPainter {
         return y + 36;
     }
 
-    /** Corner brackets and graticule ticks, so the glass reads as an instrument. */
     private void frame(GuiGraphics g, int x, int y, int w, int h) {
         int c = T.accent();
         int len = 10;
@@ -144,7 +140,6 @@ public final class StellarViewPage implements CanvasPainter {
         }
     }
 
-    /** When the shaders are not ready: a plain glowing disc. */
     private void fallback(GuiGraphics g, int cx, int cy, float r, int color) {
         for (int ring = (int) r; ring > 0; ring -= 3) {
             int a = (int) (0x18 + 0x60 * (1 - ring / r));

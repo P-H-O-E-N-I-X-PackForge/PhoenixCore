@@ -4,11 +4,13 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.WireProperties;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.Util;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.phoenix.core.PhoenixCore;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
@@ -27,14 +29,15 @@ public class PhoenixWireRecipeHandler {
 
     private static final Reference2IntMap<TagPrefix> INSULATION_AMOUNT = Util.make(new Reference2IntOpenHashMap<>(),
             map -> {
-                map.put(cableGtSingle, 1);
-                map.put(cableGtDouble, 1);
-                map.put(cableGtQuadruple, 2);
-                map.put(cableGtOctal, 3);
-                map.put(cableGtHex, 5);
+                map.put(cableGtSingle.get(), 1);
+                map.put(cableGtDouble.get(), 1);
+                map.put(cableGtQuadruple.get(), 2);
+                map.put(cableGtOctal.get(), 3);
+                map.put(cableGtHex.get(), 5);
             });
 
-    private static final TagPrefix[] wireSizes = { wireGtDouble, wireGtQuadruple, wireGtOctal, wireGtHex };
+    private static final TagPrefix[] wireSizes = { wireGtDouble.get(), wireGtQuadruple.get(), wireGtOctal.get(),
+            wireGtHex.get() };
 
     private PhoenixWireRecipeHandler() {}
 
@@ -44,11 +47,11 @@ public class PhoenixWireRecipeHandler {
             return;
         }
 
-        generateCableCovering(provider, property, wireGtSingle, material);
-        generateCableCovering(provider, property, wireGtDouble, material);
-        generateCableCovering(provider, property, wireGtQuadruple, material);
-        generateCableCovering(provider, property, wireGtOctal, material);
-        generateCableCovering(provider, property, wireGtHex, material);
+        generateCableCovering(provider, property, wireGtSingle.get(), material);
+        generateCableCovering(provider, property, wireGtDouble.get(), material);
+        generateCableCovering(provider, property, wireGtQuadruple.get(), material);
+        generateCableCovering(provider, property, wireGtOctal.get(), material);
+        generateCableCovering(provider, property, wireGtHex.get(), material);
     }
 
     private static void generateCableCovering(@NotNull RecipeOutput provider,
@@ -60,7 +63,7 @@ public class PhoenixWireRecipeHandler {
         }
 
         int cableAmount = (int) (prefix.getMaterialAmount(material) * 2 / M);
-        TagPrefix cablePrefix = TagPrefix.get("cable" + prefix.name().substring(4));
+        TagPrefix cablePrefix = GTRegistries.TAG_PREFIXES.get(PhoenixCore.id("cable" + prefix.name().substring(4)));
         int voltageTier = GTUtil.getTierByVoltage(property.getVoltage());
         int insulationAmount = INSULATION_AMOUNT.getInt(cablePrefix);
 

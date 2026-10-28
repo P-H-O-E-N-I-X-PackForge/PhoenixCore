@@ -2,22 +2,15 @@ package net.phoenix.core.common.data.recipe.generated;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
-import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
-import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.common.data.materials.PhoenixProgressionMaterials;
 import net.phoenix.core.common.machine.PhoenixMachines;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -27,7 +20,7 @@ public class CustomComponetRecipes {
 
     private static final int[] VA = GTValues.VA;
 
-    private static final Map<Integer, Material> MATERIAL_MAP = Map.of(
+    private static final Map<Integer, MaterialRegistryEntry> MATERIAL_MAP = Map.of(
             LV, PhoenixProgressionMaterials.AURUM_STEEL,
             MV, PhoenixProgressionMaterials.ALUMINFROST,
             HV, PhoenixProgressionMaterials.FROST_REINFORCED_STAINED_STEEL,
@@ -37,8 +30,8 @@ public class CustomComponetRecipes {
             ZPM, PhoenixProgressionMaterials.ADVANCED_QUIN_NAQUADIAN_ALLOY);
 
     private static ItemStack get(TagPrefix prefix, int tier) {
-        Material mat = MATERIAL_MAP.getOrDefault(tier, PhoenixProgressionMaterials.AURUM_STEEL);
-        return ChemicalHelper.get(prefix, mat);
+        MaterialRegistryEntry mat = MATERIAL_MAP.getOrDefault(tier, PhoenixProgressionMaterials.AURUM_STEEL);
+        return ChemicalHelper.get(prefix, mat != null ? mat.get() : null);
     }
 
     private static final Map<Integer, TagKey<Item>> CIRCUIT_MAP = Map.of(
@@ -47,55 +40,55 @@ public class CustomComponetRecipes {
             ZPM, CustomTags.ZPM_CIRCUITS, UV, CustomTags.UV_CIRCUITS, UHV, CustomTags.UHV_CIRCUITS);
 
     public static ItemStack getFoilForTier(int tier) {
-        return get(TagPrefix.foil, tier);
+        return get(TagPrefix.foil.get(), tier);
     }
 
     public static ItemStack getPlateForTier(int tier) {
-        return get(TagPrefix.plate, tier);
+        return get(TagPrefix.plate.get(), tier);
     }
 
     public static ItemStack getDensePlateForTier(int tier) {
-        return get(TagPrefix.plateDense, tier);
+        return get(TagPrefix.plateDense.get(), tier);
     }
 
     public static ItemStack getSmallGearForTier(int tier) {
-        return get(TagPrefix.gearSmall, tier);
+        return get(TagPrefix.gearSmall.get(), tier);
     }
 
     public static ItemStack getGearForTier(int tier) {
-        return get(TagPrefix.gear, tier);
+        return get(TagPrefix.gear.get(), tier);
     }
 
     public static ItemStack getRodForTier(int tier) {
-        return get(TagPrefix.rod, tier);
+        return get(TagPrefix.rod.get(), tier);
     }
 
     public static ItemStack getLongRodForTier(int tier) {
-        return get(TagPrefix.rodLong, tier);
+        return get(TagPrefix.rodLong.get(), tier);
     }
 
     public static ItemStack getFrameForTier(int tier) {
-        return get(TagPrefix.frameGt, tier);
+        return get(TagPrefix.frameGt.get(), tier);
     }
 
     public static ItemStack getQuadWireForTier(int tier) {
-        return get(TagPrefix.wireGtQuadruple, tier);
+        return get(TagPrefix.wireGtQuadruple.get(), tier);
     }
 
     public static ItemStack getQuadCableForTier(int tier) {
-        return get(TagPrefix.cableGtQuadruple, tier);
+        return get(TagPrefix.cableGtQuadruple.get(), tier);
     }
 
     public static ItemStack getOctalWireForTier(int tier) {
-        return get(TagPrefix.wireGtOctal, tier);
+        return get(TagPrefix.wireGtOctal.get(), tier);
     }
 
     public static ItemStack getOctalCableForTier(int tier) {
-        return get(TagPrefix.cableGtOctal, tier);
+        return get(TagPrefix.cableGtOctal.get(), tier);
     }
 
     public static ItemStack getHexWireForTier(int tier) {
-        return get(TagPrefix.wireGtHex, tier);
+        return get(TagPrefix.wireGtHex.get(), tier);
     }
 
     public static TagKey<Item> getCircuitForTier(int tier) {

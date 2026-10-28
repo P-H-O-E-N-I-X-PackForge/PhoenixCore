@@ -16,28 +16,16 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
 
-/**
- * The four bodies drawn flat, in plain screen geometry (glows, rings and spokes), for screens and recipe viewers: no
- * shaders, so it works anywhere a {@link GuiGraphics} does. The picture lives inside a circle of radius {@code r}
- * around the centre; the glows and the black hole's disk reach about that far.
- */
 public final class Stellar2D {
 
     private Stellar2D() {}
 
     private static final int SEGS = 48;
 
-    /** Game ticks (fractional), for the slow motion in every body. */
     public static float time() {
         return Util.getMillis() / 50.0f;
     }
 
-    /**
-     * @param rgb the body's colour (a star's heat colour, a cloud's tint)
-     * @param holeRgb the black hole's own colour, or -1 for the usual orange to white
-     * @param tilt 0 (edge on) to 1 (face on): how open the black hole's disk is seen
-     * @param vigor 0 to 1: how fiercely the disk burns (more mass, more feed)
-     */
     public static void draw(GuiGraphics g, StellarForgeState.Stage stage, int rgb, float cx, float cy, float r,
                             float time, float tilt, int holeRgb, float vigor) {
         rgb &= 0xFFFFFF;
@@ -54,8 +42,6 @@ public final class Stellar2D {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
     }
-
-    // ------------------------------------------------------------------------------------------------ the bodies
 
     private static void cloud(Matrix4f m, float cx, float cy, float r, int rgb, float t) {
         additive();
@@ -76,11 +62,11 @@ public final class Stellar2D {
         int dust = GuiDraw.mix(0xFF000000 | rgb, 0xFFFF9A40, 0.5f) & 0xFFFFFF;
         additive();
         glow(m, cx, cy, r, r, alpha(rgb, 0x30), alpha(rgb, 0));
-        // jets out of the poles
+
         float flick = 0.85f + 0.15f * Mth.sin(t * 0.2f);
         spike(m, cx, cy, -Mth.HALF_PI, r * 1.0f * flick, r * 0.09f, alpha(0xCFE8FF, 0x70));
         spike(m, cx, cy, Mth.HALF_PI, r * 1.0f * flick, r * 0.09f, alpha(0xCFE8FF, 0x70));
-        // the dust disk it is still pulling in
+
         for (int i = 0; i < 7; i++) {
             float rr = r * (0.38f + 0.075f * i);
             ring(m, cx, cy, rr, rr + r * 0.08f, 0.26f, 0.0f, Mth.TWO_PI,
@@ -102,9 +88,9 @@ public final class Stellar2D {
         }
         glow(m, cx, cy, r * 0.75f, r * 0.75f, alpha(rgb, 0x70), alpha(rgb, 0));
         normal();
-        // the disc: white in the middle, its own colour at the limb
+
         disc(m, cx, cy, body, 0xFF000000 | white, 0xFF000000 | GuiDraw.mix(0xFF000000 | rgb, 0xFF000000, 0.15f));
-        // granulation turning slowly
+
         for (int i = 0; i < 26; i++) {
             float a = i * 2.399f + t * 0.006f;
             float d = body * 0.88f * (float) Math.sqrt(frac(i * 0.754f + 0.1f));
@@ -132,7 +118,7 @@ public final class Stellar2D {
         normal();
         disk(m, cx, cy, inner, outer, open, t, hot, cool, vigor, 0.0f, Mth.TWO_PI);
         disc(m, cx, cy, shadow, 0xFF000000, 0xFF000000);
-        // light bent over the top and under the bottom of the hole: the back of the disk, seen round it
+
         additive();
         ring(m, cx, cy, shadow * 1.0f, shadow * 1.55f, 1.0f, Mth.PI, Mth.TWO_PI,
                 alpha(hot, 0xE0), alpha(cool, 0x00));
@@ -140,7 +126,7 @@ public final class Stellar2D {
         ring(m, cx, cy, shadow * 0.97f, shadow * 1.06f, 1.0f, 0.0f, Mth.TWO_PI, alpha(0xFFFFFF, 0xC0),
                 alpha(hot, 0x20));
         normal();
-        // the near half of the disk crosses in front of the hole
+
         disk(m, cx, cy, inner, outer, open, t, hot, cool, vigor, 0.0f, Mth.PI);
     }
 
@@ -167,22 +153,19 @@ public final class Stellar2D {
         }
     }
 
-    /** Colour at an angle and a fraction out (0 at the inner edge): hot and bright inside, spiral arms, one side brighter. */
     private static int diskColor(float a, float out, float t, int hot, int cool, float vigor) {
         float arm = 0.5f + 0.5f * Mth.sin(2.0f * a - 10.0f * out + t * 0.09f);
         arm *= arm;
         float doppler = 0.5f + 0.5f * Mth.cos(a + t * 0.04f);
         float inten = Mth.clamp(0.3f + 0.4f * arm + 0.35f * doppler * doppler, 0.0f, 1.0f);
         float heat = (float) Math.pow(1.0f - out, 1.4f);
-        int rgb = GuiDraw.mix(0xFF000000 | cool, 0xFF000000 | hot, Mth.clamp(heat * (0.55f + 0.7f * inten), 0.0f, 1.0f));
+        int rgb = GuiDraw.mix(0xFF000000 | cool, 0xFF000000 | hot,
+                Mth.clamp(heat * (0.55f + 0.7f * inten), 0.0f, 1.0f));
         rgb = GuiDraw.mix(0xFF000000 | rgb, 0xFFFFFFFF, heat * heat * 0.5f * vigor) & 0xFFFFFF;
         float fade = (1.0f - 0.8f * out) * (0.45f + 0.55f * inten) * (0.7f + 0.3f * vigor);
         return alpha(rgb, (int) Mth.clamp(255 * fade, 0.0f, 255.0f));
     }
 
-    // ------------------------------------------------------------------------------------------------ the shapes
-
-    /** A soft spot: {@code center} at the middle fading to {@code edge}, an ellipse. */
     private static void glow(Matrix4f m, float cx, float cy, float rx, float ry, int center, int edge) {
         BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN,
                 DefaultVertexFormat.POSITION_COLOR);
@@ -198,7 +181,6 @@ public final class Stellar2D {
         glow(m, cx, cy, r, r, center, edge);
     }
 
-    /** A band between two radii squashed to {@code open} tall, over the angles {@code from} to {@code to}. */
     private static void ring(Matrix4f m, float cx, float cy, float r0, float r1, float open, float from, float to,
                              int inside, int outside) {
         int steps = Math.max(8, (int) (SEGS * (to - from) / Mth.TWO_PI));
@@ -214,7 +196,6 @@ public final class Stellar2D {
         BufferUploader.drawWithShader(b.buildOrThrow());
     }
 
-    /** A thin triangle from the middle out to a point, bright at the base and gone at the tip. */
     private static void spike(Matrix4f m, float cx, float cy, float angle, float len, float width, int base) {
         float ca = Mth.cos(angle);
         float sa = Mth.sin(angle);

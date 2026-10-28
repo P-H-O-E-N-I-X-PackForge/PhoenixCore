@@ -7,19 +7,11 @@ import net.phoenix.core.PhoenixCore;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.CENTRIFUGE_RECIPES;
 
-/**
- * EXAMPLE recipes whose only job is to show item counts of every size, so the count display (the EMI amount mixin and the
- * vanilla count mixin) can be seen at work in EMI's recipe page: a count under 1,000 is shown as is, and anything at or over
- * that reads compactly (1.5k, 15.3k, 123k, 1.5M). They cost almost nothing and make nothing useful. Look them up in EMI by
- * searching for "cobblestone", or open the Assembler or Centrifuge pages, and check the numbers sit inside their slots and are
- * not drawn twice.
- */
 public final class CountDisplayExampleRecipes {
 
     private CountDisplayExampleRecipes() {}
 
     public static void init(RecipeOutput provider) {
-        // many sizes going in
         ASSEMBLER_RECIPES.recipeBuilder(PhoenixCore.id("example_item_counts_in"))
                 .inputItems(Items.COBBLESTONE, 64)
                 .inputItems(Items.STONE, 999)
@@ -33,7 +25,6 @@ public final class CountDisplayExampleRecipes {
                 .EUt(1).duration(20)
                 .save(provider);
 
-        // many sizes coming out
         CENTRIFUGE_RECIPES.recipeBuilder(PhoenixCore.id("example_item_counts_out"))
                 .inputItems(Items.COBBLESTONE, 2_048)
                 .outputItems(Items.ANDESITE, 12)

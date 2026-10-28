@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StellarForgeStateTest {
 
-    /** A player who keeps every setting in the middle of its band. */
     private static void play(StellarForgeState s, double massPerTick, int ticks) {
         for (int i = 0; i < ticks; i++) {
             var f = s.fieldBand();

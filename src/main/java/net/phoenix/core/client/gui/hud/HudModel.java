@@ -6,11 +6,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-/**
- * What a machine shows on its HUD screen, described once with suppliers that are read every frame: a header and badge,
- * readouts, progress bars, controls, notes, the formulas it uses and the values to graph. {@link MachineHud} turns it
- * into the tabbed pages (progress, math, graphs) so each machine only says what its numbers are.
- */
 public final class HudModel {
 
     public static final int CYAN = 0xFF_00E5CC;
@@ -33,7 +28,6 @@ public final class HudModel {
 
     public record Line(String text, int color) {}
 
-    /** A range a setting should sit in, in the slider's own units. */
     public record Band(float low, float high) {
 
         public boolean contains(float v) {
@@ -43,15 +37,14 @@ public final class HudModel {
 
     public sealed interface Control permits Slider, Button {}
 
-    /** A slider: click, drag or scroll. {@code id} is what the server is told. */
     public record Slider(String label, int id, IntSupplier value, int min, int max, Supplier<Band> band,
-                         String unit) implements Control {}
+                         String unit)
+            implements Control {}
 
-    /** A button: it tells the server {@code id}, or when {@code local} is set runs that on this client instead. */
     public record Button(String label, int id, int color, BooleanSupplier enabled, Supplier<String> text,
-                         Runnable local) implements Control {}
+                         Runnable local)
+            implements Control {}
 
-    /** A value to graph: sampled once a second while the screen is open. */
     public record Series(String name, int color, Supplier<Float> value, float max) {}
 
     String title = "";
@@ -75,13 +68,11 @@ public final class HudModel {
         return m;
     }
 
-    /** How this machine's screen looks: colours, background pattern and tab layout. */
     public HudModel theme(HudTheme theme) {
         this.theme = theme;
         return this;
     }
 
-    /** A moving picture across the top of the progress page, drawn when there is room for it. */
     public HudModel hero(Heroes.Hero hero, int height) {
         this.hero = hero;
         this.heroHeight = height;
@@ -129,7 +120,6 @@ public final class HudModel {
         return this;
     }
 
-    /** A button that does something on this client only, such as opening a screen. */
     public HudModel localButton(String label, int color, BooleanSupplier enabled, Runnable action) {
         controls.add(new Button(label, -1, color, enabled, () -> label, action));
         return this;
@@ -159,7 +149,6 @@ public final class HudModel {
         return new Line(text, color);
     }
 
-    /** A heading line in the math page. */
     public static Line heading(String text) {
         return new Line("# " + text, CYAN);
     }

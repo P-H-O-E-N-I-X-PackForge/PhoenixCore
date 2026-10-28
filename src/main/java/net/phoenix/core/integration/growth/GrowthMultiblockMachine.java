@@ -1,8 +1,5 @@
 package net.phoenix.core.integration.growth;
 
-import net.phoenix.core.client.gui.hud.MachineHud;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.HudModel;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -15,7 +12,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -28,13 +24,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.phoenix.core.api.gui.widget.ActionButtons;
-import net.phoenix.core.api.gui.widget.StageTrackerWidget;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.client.worldfx.IWorldFXEmitter;
 import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
 import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
@@ -45,10 +41,6 @@ import net.phoenix.core.integration.growth.tendril.GrowthWardBlock;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
 import net.phoenix.core.integration.growth.tendril.TendrilShapeRegistry;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.drawable.ItemDrawable;
-import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.value.sync.PanelSyncManager;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -702,7 +694,6 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     private static final int ID_TARGET = 20;
     private static final int ID_ANCHOR = 30;
 
-    /** A screen control pressed on the server. */
     private void hudAction(int id, int value) {
         if (id == ID_PAUSE) togglePaused();
         else if (id == ID_TENDRILS) toggleTendrils();
@@ -734,7 +725,9 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
         return HudModel.of("Growth Chamber")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.ORGANIC)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.vines(() -> growthStage / (float) Math.max(1, maxStage()), () -> growthStage + 1, net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent(), net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent2()), 40)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.vines(() -> growthStage / (float) Math.max(1, maxStage()),
+                        () -> growthStage + 1, net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent(),
+                        net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent2()), 40)
                 .badge(this::growthBadge)
                 .subtitle(() -> isControlled() ? "Growth control hatch fitted" :
                         "No growth control hatch: growth is wild and breaks what is in its way")
@@ -797,7 +790,8 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
                                 currentStage().speedBonus(), tendrilSpeedBonus(), totalSpeedBonus()), HudModel.WHITE),
                         HudModel.line("output = stage + tendrils", HudModel.MID),
                         HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f + %.2f = %.2f",
-                                currentStage().outputBonus(), tendrilOutputBonus(), totalOutputBonus()), HudModel.WHITE),
+                                currentStage().outputBonus(), tendrilOutputBonus(), totalOutputBonus()),
+                                HudModel.WHITE),
                         HudModel.heading("TENDRILS"),
                         HudModel.line("tendril speed = min(max, blocks * per block)", HudModel.MID),
                         HudModel.line(String.format(java.util.Locale.ROOT, "%d blocks: +%.1f%% speed, +%.1f%% output",

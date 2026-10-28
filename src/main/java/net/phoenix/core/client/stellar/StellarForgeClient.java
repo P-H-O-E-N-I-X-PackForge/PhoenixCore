@@ -7,7 +7,6 @@ import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/** The Stellar Forges loaded on this client, and what each one is showing right now (eased, so it grows and flashes). */
 public final class StellarForgeClient {
 
     private StellarForgeClient() {}
@@ -18,17 +17,14 @@ public final class StellarForgeClient {
         public float heat;
         public float flash;
 
-        /** Flares to 1 when energy or a setting is pushed hard, and dies away. */
         public float surge;
 
-        /** 0 while something is changing, rising to 1 once the body has been steady for a few seconds. */
         public float settle;
         private int lastEnergy;
         private int lastSettings = -1;
         private float steadyFor;
         public StellarForgeState.Stage stage = StellarForgeState.Stage.IDLE;
 
-        /** Seconds into the collapse to a black hole, or -1 when there is none going on. */
         public float collapse = -1.0f;
         public StellarForgeState.Stage collapseFrom = StellarForgeState.Stage.STAR;
         public float collapseRadius;
@@ -36,20 +32,16 @@ public final class StellarForgeClient {
         public static final float COLLAPSE_SECONDS = 9.0f;
         public static final float COLLAPSE_FLASH_AT = 0.5f;
 
-        /** Which one-shots of the collapse have played (sounds and bursts), a bit each. */
         public int collapseDone;
         public float nextBeat;
 
-        /** The last disturbance this run had that this client has seen, and when. */
         private int lastEventCount = -1;
         public long eventAt;
         public int eventKind;
 
-        /** The black hole's size (eased), from how much mass it has swallowed. */
         public float hole;
         private long last = Util.getMillis();
 
-        /** One reading a second for the last five minutes: mass, heat, stability, energy a tick. */
         public final java.util.ArrayDeque<float[]> history = new java.util.ArrayDeque<>();
         private long lastSample;
         public static final int HISTORY = 300;
@@ -57,18 +49,15 @@ public final class StellarForgeClient {
         public static final float HOLE_MIN = 0.12f;
         public static final float HOLE_MAX = 1.6f;
 
-        /** How big the black hole is for the mass it has swallowed (0.12 when it forms, up to 1.6): grows with the log of it. */
         public static float holeSize(double mass) {
             double growth = Math.log10(1.0 + Math.max(0.0, mass) / 4000.0) / Math.log10(9.0);
             return HOLE_MIN + (HOLE_MAX - HOLE_MIN) * (float) Math.max(0.0, Math.min(1.0, growth));
         }
 
-        /** 0 (just formed) to 1 (huge): how far its mass has taken it. */
         public static float holeGrowth(double mass) {
             return (holeSize(mass) - HOLE_MIN) / (HOLE_MAX - HOLE_MIN);
         }
 
-        /** How many times the chamber's usual proportions the black hole has grown to (1 when it forms, 4 when huge): the lasers follow it. */
         public static float holeScale(float hole) {
             return 1.0f + 3.0f * Math.max(0.0f, Math.min(1.0f, (hole - HOLE_MIN) / (HOLE_MAX - HOLE_MIN)));
         }
@@ -118,10 +107,10 @@ public final class StellarForgeClient {
             }
             flash = Math.max(0.0f, flash - dt * 0.6f);
 
-            // a big jump in the energy it draws, or a setting moved a long way, is a push: the light flares
             int energy = machine.energyUse();
             int jump = energy - lastEnergy;
-            if (jump > 1500 && jump > energy * 0.25f) surge = Math.max(surge, Math.min(1.0f, jump / (energy * 0.6f + 1.0f)));
+            if (jump > 1500 && jump > energy * 0.25f)
+                surge = Math.max(surge, Math.min(1.0f, jump / (energy * 0.6f + 1.0f)));
             lastEnergy = energy;
             int settings = machine.feedSetting() * 10000 + machine.fieldSetting() * 100 + machine.spinSetting();
             if (lastSettings >= 0 && settings != lastSettings) {
@@ -130,7 +119,8 @@ public final class StellarForgeClient {
                 if (dFeed + dField >= 8) surge = Math.max(surge, 0.8f);
             }
             lastSettings = settings;
-            boolean steady = collapse < 0.0f && machine.stage() == stage && Math.abs(radius - target) < 0.02f && surge < 0.05f;
+            boolean steady = collapse < 0.0f && machine.stage() == stage && Math.abs(radius - target) < 0.02f &&
+                    surge < 0.05f;
             steadyFor = steady ? steadyFor + dt : 0.0f;
             settle = Math.min(1.0f, Math.max(0.0f, (steadyFor - 2.0f) / 2.5f));
             surge = Math.max(0.0f, surge - dt * 0.4f);

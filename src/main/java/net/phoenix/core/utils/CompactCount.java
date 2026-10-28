@@ -35,14 +35,12 @@ public final class CompactCount {
         return component;
     }
 
-    /** The smallest count the item-count mixins compact (a four-digit count already overflows a slot). */
     public static final long COUNT_THRESHOLD = 1_000L;
 
     public static String compactIfNumeric(String s) {
         return compactIfNumeric(s, 10_000L);
     }
 
-    /** As above, compacting anything at or over {@code threshold} (non-numeric text comes back unchanged). */
     public static String compactIfNumeric(String s, long threshold) {
         if (s == null || s.isEmpty()) return s;
 

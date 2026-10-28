@@ -257,18 +257,18 @@ public class PhoenixMachineRecipes {
                 .outputItems(ELECTRONIC_CIRCUIT_MV)
                 .save(provider);
 
-        PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder("source_gem")
+        PhoenixRecipeTypes.SOURCE_IMBUEMENT_RECIPES.recipeBuilder(PhoenixCore.id("source_gem"))
                 .inputItems(gem, Amethyst, 1)
                 .input(SourceRecipeCapability.CAP, new SourceIngredient(150))
                 .duration(40)
                 .EUt(GTValues.VA[GTValues.HV] / 2)
                 .outputItems(SOURCE_GEM, 2)
                 .save(provider);
-        SOURCE_IMBUEMENT_RECIPES.recipeBuilder("soul_lens")
-                .inputItems(lens, Amethyst, 1)
-                .inputItems(ring, Gold, 2)
+        SOURCE_IMBUEMENT_RECIPES.recipeBuilder(PhoenixCore.id("soul_lens"))
+                .inputItems(lens.get(), Amethyst.get(), 1)
+                .inputItems(ring.get(), Gold.get(), 2)
                 .inputItems(PhoenixItems.SOURCE_FIBER_MESH)
-                .inputItemsRanged(ring, Gold, UniformInt.of(2, 4))
+                .inputItemsRanged(ring.get(), Gold.get(), UniformInt.of(2, 4))
                 .input(SourceRecipeCapability.CAP, new SourceIngredient(400))
                 .duration(400)
                 .EUt(GTValues.VA[GTValues.HV] / 2)

@@ -1,68 +1,66 @@
 package net.phoenix.core.common.data.materials;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry;
 import com.gregtechceu.gtceu.common.data.GTElements;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
-import net.phoenix.core.PhoenixCore;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.HIGH;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.MID;
+import static net.phoenix.core.PhoenixCore.PHOENIX_REGISTRATE;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.ICY_STEEL_MATRIX;
 import static net.phoenix.core.common.data.materials.PhoenixProgressionMaterials.SOURCE_IMBUED_TITANIUM;
 
 public class PhoenixFissionMaterials {
 
-    public static Material URANIUM_233, URANIUM_236, AMERICIUM_241, AMERICIUM_HEXAFLUORIDE, URANIUM_OXIDE;
-    public static Material INERT_GAS_WASTE, IRRADIATED_THORIUM, IRRADIATED_URANIUM_236, SPENT_URANIUM_233,
+    public static MaterialRegistryEntry URANIUM_233, URANIUM_236, AMERICIUM_241, AMERICIUM_HEXAFLUORIDE, URANIUM_OXIDE;
+    public static MaterialRegistryEntry INERT_GAS_WASTE, IRRADIATED_THORIUM, IRRADIATED_URANIUM_236, SPENT_URANIUM_233,
             SPENT_URANIUM_235, DEPLETED_URANIUM, DEPLETED_THORIUM, PLUTONIUM_FISSION_ASH, DEPLETED_PLUTONIUM_241,
             LOW_LEVEL_RADIOACTIVE_WASTE, EXTREMELY_MODIFIED_SPACE_GRADE_STEEL;
 
-    public static Material BORON_CARBIDE;
-    public static Material NIOBIUM_MODIFIED_SILICON_CARBIDE;
-    public static Material CRYO_GRAPHITE_BINDING_SOLUTION, CRYO_ZIRCONIUM_BINDING_SOLUTION;
-    public static Material HAFNIUM_CHLORIDE;
-    public static Material ZIRCALLOY;
-    public static Material ZIRCON, SPACE_GRADE_STEEL;
+    public static MaterialRegistryEntry BORON_CARBIDE;
+    public static MaterialRegistryEntry NIOBIUM_MODIFIED_SILICON_CARBIDE;
+    public static MaterialRegistryEntry CRYO_GRAPHITE_BINDING_SOLUTION, CRYO_ZIRCONIUM_BINDING_SOLUTION;
+    public static MaterialRegistryEntry HAFNIUM_CHLORIDE;
+    public static MaterialRegistryEntry ZIRCALLOY;
+    public static MaterialRegistryEntry ZIRCON, SPACE_GRADE_STEEL;
 
-    public static Material MEDIUM_LEVEL_RADIOACTIVE_WASTE;
-    public static Material HOT_SODIUM_POTASSIUM;
-    public static Material MEDIUM_PRESSURE_FISSILE_STEAM;
-    public static Material CRITICAL_STEAM;
+    public static MaterialRegistryEntry MEDIUM_LEVEL_RADIOACTIVE_WASTE;
+    public static MaterialRegistryEntry HOT_SODIUM_POTASSIUM;
+    public static MaterialRegistryEntry MEDIUM_PRESSURE_FISSILE_STEAM;
+    public static MaterialRegistryEntry CRITICAL_STEAM;
 
-    public static Material FISSION_PRODUCTS_FLUID;
-    public static Material RADIOACTIVE_SLUDGE;
-    public static Material RADIOACTIVE_GAS_MIXTURE;
-    public static Material IMPURE_ZIRCONIUM;
-    public static Material IMPURE_HAFNIUM;
+    public static MaterialRegistryEntry FISSION_PRODUCTS_FLUID;
+    public static MaterialRegistryEntry RADIOACTIVE_SLUDGE;
+    public static MaterialRegistryEntry RADIOACTIVE_GAS_MIXTURE;
+    public static MaterialRegistryEntry IMPURE_ZIRCONIUM;
+    public static MaterialRegistryEntry IMPURE_HAFNIUM;
 
-    public static Material RHODIUM_PALLADIUM_SOLUTION;
-    public static Material TECHNETIUM_STRONTIUM_SOLUTION;
-    public static Material GASEOUS_FISSION_BYPRODUCTS;
-    public static Material ACIDIC_WASTE;
-    public static Material TRACE_FISSION_GASES;
-    public static Material PURIFIED_RADIOACTIVE_WASTE_FLUID;
+    public static MaterialRegistryEntry RHODIUM_PALLADIUM_SOLUTION;
+    public static MaterialRegistryEntry TECHNETIUM_STRONTIUM_SOLUTION;
+    public static MaterialRegistryEntry GASEOUS_FISSION_BYPRODUCTS;
+    public static MaterialRegistryEntry ACIDIC_WASTE;
+    public static MaterialRegistryEntry TRACE_FISSION_GASES;
+    public static MaterialRegistryEntry PURIFIED_RADIOACTIVE_WASTE_FLUID;
 
-    public static Material EXOTIC_FISSION_CONCENTRATE;
-    public static Material EXOTIC_FISSILE_MATERIALS_CLUMP;
-    public static Material FISSILE_ASH;
-    public static Material TRACE_ACTINIDES;
+    public static MaterialRegistryEntry EXOTIC_FISSION_CONCENTRATE;
+    public static MaterialRegistryEntry EXOTIC_FISSILE_MATERIALS_CLUMP;
+    public static MaterialRegistryEntry FISSILE_ASH;
+    public static MaterialRegistryEntry TRACE_ACTINIDES;
 
     public static void register() {
-        ZIRCON = new Material.Builder(PhoenixCore.id("zircon"))
+        ZIRCON = PHOENIX_REGISTRATE.material("zircon", builder -> builder
                 .dust()
                 .color(0xC2B280)
                 .secondaryColor(0x8B7D6B)
                 .iconSet(MaterialIconSet.DULL)
-                .formula("ZrSiO4")
-                .buildAndRegister();
+                .formula("ZrSiO4"));
 
-        BORON_CARBIDE = new Material.Builder(PhoenixCore.id("boron_carbide"))
+        BORON_CARBIDE = PHOENIX_REGISTRATE.material("boron_carbide", builder -> builder
 
                 .ingot()
                 .color(0x353630)
@@ -70,57 +68,54 @@ public class PhoenixFissionMaterials {
                 .blastTemp(3600, com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.LOW,
                         500, 1500)
                 .flags(MaterialFlags.GENERATE_PLATE, MaterialFlags.GENERATE_ROD, MaterialFlags.GENERATE_DENSE)
-                .formula("B4C")
-                .buildAndRegister();
+                .formula("B4C"));
 
-        LOW_LEVEL_RADIOACTIVE_WASTE = new Material.Builder(PhoenixCore.id("low_level_radioactive_waste"))
+        LOW_LEVEL_RADIOACTIVE_WASTE = PHOENIX_REGISTRATE.material("low_level_radioactive_waste", builder -> builder
                 .ingot()
                 .color(0x262a23)
                 .secondaryColor(0x365320)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        MEDIUM_LEVEL_RADIOACTIVE_WASTE = new Material.Builder(PhoenixCore.id("medium_level_radioactive_waste"))
-                .ingot()
-                .color(0x4d5447).secondaryColor(0x1a2e0a)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+        MEDIUM_LEVEL_RADIOACTIVE_WASTE = PHOENIX_REGISTRATE.material("medium_level_radioactive_waste",
+                builder -> builder
+                        .ingot()
+                        .color(0x4d5447).secondaryColor(0x1a2e0a)
+                        .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        NIOBIUM_MODIFIED_SILICON_CARBIDE = new Material.Builder(PhoenixCore.id("niobium_modified_silicon_carbide"))
+        NIOBIUM_MODIFIED_SILICON_CARBIDE = PHOENIX_REGISTRATE.material("niobium_modified_silicon_carbide",
+                builder -> builder
 
-                .ingot()
-                .color(0x4A4B6B)
-                .secondaryColor(0x101021)
-                .iconSet(MaterialIconSet.METALLIC)
-                .flags(MaterialFlags.GENERATE_PLATE, MaterialFlags.GENERATE_FRAME, MaterialFlags.GENERATE_FOIL)
-                .blastTemp(4500, BlastProperty.GasTier.MID,
-                        2000, 1800)
-                .formula("Nb(SiC)x")
-                .buildAndRegister();
+                        .ingot()
+                        .color(0x4A4B6B)
+                        .secondaryColor(0x101021)
+                        .iconSet(MaterialIconSet.METALLIC)
+                        .flags(MaterialFlags.GENERATE_PLATE, MaterialFlags.GENERATE_FRAME, MaterialFlags.GENERATE_FOIL)
+                        .blastTemp(4500, BlastProperty.GasTier.MID,
+                                2000, 1800)
+                        .formula("Nb(SiC)x"));
 
-        CRYO_GRAPHITE_BINDING_SOLUTION = new Material.Builder(PhoenixCore.id("cryo_graphite_binding_solution"))
+        CRYO_GRAPHITE_BINDING_SOLUTION = PHOENIX_REGISTRATE.material("cryo_graphite_binding_solution",
+                builder -> builder
 
-                .fluid()
-                .color(0x507080)
-                .secondaryColor(0x7090A0)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                        .fluid()
+                        .color(0x507080)
+                        .secondaryColor(0x7090A0)
+                        .iconSet(MaterialIconSet.DULL));
 
-        CRYO_ZIRCONIUM_BINDING_SOLUTION = new Material.Builder(PhoenixCore.id("cryo_zirconium_binding_solution"))
+        CRYO_ZIRCONIUM_BINDING_SOLUTION = PHOENIX_REGISTRATE.material("cryo_zirconium_binding_solution",
+                builder -> builder
 
-                .fluid()
-                .color(0x80B0CC)
-                .secondaryColor(0xA0D0E0)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                        .fluid()
+                        .color(0x80B0CC)
+                        .secondaryColor(0xA0D0E0)
+                        .iconSet(MaterialIconSet.DULL));
 
-        HAFNIUM_CHLORIDE = new Material.Builder(PhoenixCore.id("hafnium_chloride"))
+        HAFNIUM_CHLORIDE = PHOENIX_REGISTRATE.material("hafnium_chloride", builder -> builder
                 .fluid()
                 .color(0xC0C0C0)
-                .iconSet(MaterialIconSet.BRIGHT)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.BRIGHT));
 
-        ZIRCALLOY = new Material.Builder(PhoenixCore.id("zircalloy"))
+        ZIRCALLOY = PHOENIX_REGISTRATE.material("zircalloy", builder -> builder
                 .ingot().dust()
                 .color(0x002327)
                 .secondaryColor(0x000000)
@@ -133,10 +128,9 @@ public class PhoenixFissionMaterials {
                         MaterialFlags.GENERATE_DENSE,
                         MaterialFlags.GENERATE_FOIL,
                         MaterialFlags.GENERATE_SPRING,
-                        MaterialFlags.GENERATE_FRAME)
-                .buildAndRegister();
+                        MaterialFlags.GENERATE_FRAME));
 
-        SPACE_GRADE_STEEL = new Material.Builder(PhoenixCore.id("space_grade_steel"))
+        SPACE_GRADE_STEEL = PHOENIX_REGISTRATE.material("space_grade_steel", builder -> builder
                 .ingot()
                 .color(0xA9A9A9)
                 .secondaryColor(0xB0B0B0)
@@ -151,198 +145,181 @@ public class PhoenixFissionMaterials {
                         GENERATE_BOLT_SCREW,
                         GENERATE_FRAME,
                         GENERATE_DENSE,
-                        GENERATE_ROTOR)
-                .buildAndRegister();
+                        GENERATE_ROTOR));
 
-        HOT_SODIUM_POTASSIUM = new Material.Builder(PhoenixCore.id("hot_sodium_potassium"))
+        HOT_SODIUM_POTASSIUM = PHOENIX_REGISTRATE.material("hot_sodium_potassium", builder -> builder
 
                 .fluid()
                 .color(0xFF4500)
                 .secondaryColor(0xFFD700)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        MEDIUM_PRESSURE_FISSILE_STEAM = new Material.Builder(PhoenixCore.id("medium_pressure_fissile_steam"))
+        MEDIUM_PRESSURE_FISSILE_STEAM = PHOENIX_REGISTRATE.material("medium_pressure_fissile_steam", builder -> builder
                 .fluid()
                 .color(0x7DA10E)
-                .iconSet(MaterialIconSet.BRIGHT)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.BRIGHT));
 
-        CRITICAL_STEAM = new Material.Builder(PhoenixCore.id("critical_steam"))
+        CRITICAL_STEAM = PHOENIX_REGISTRATE.material("critical_steam", builder -> builder
                 .gas()
                 .color(0xF0F8FF)
                 .secondaryColor(0xADD8E6)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        FISSION_PRODUCTS_FLUID = new Material.Builder(PhoenixCore.id("fission_products_fluid"))
+        FISSION_PRODUCTS_FLUID = PHOENIX_REGISTRATE.material("fission_products_fluid", builder -> builder
                 .fluid()
                 .color(0x556B2F)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        RADIOACTIVE_SLUDGE = new Material.Builder(PhoenixCore.id("radioactive_sludge"))
+        RADIOACTIVE_SLUDGE = PHOENIX_REGISTRATE.material("radioactive_sludge", builder -> builder
                 .fluid()
                 .color(0x2F4F4F)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        RADIOACTIVE_GAS_MIXTURE = new Material.Builder(PhoenixCore.id("radioactive_gas_mixture"))
+        RADIOACTIVE_GAS_MIXTURE = PHOENIX_REGISTRATE.material("radioactive_gas_mixture", builder -> builder
                 .gas()
                 .color(0x6B8E23)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        RHODIUM_PALLADIUM_SOLUTION = new Material.Builder(PhoenixCore.id("rhodium_palladium_solution"))
+        RHODIUM_PALLADIUM_SOLUTION = PHOENIX_REGISTRATE.material("rhodium_palladium_solution", builder -> builder
 
                 .fluid()
                 .color(0x9E9E9E)
-                .iconSet(MaterialIconSet.SHINY)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.SHINY));
 
-        TECHNETIUM_STRONTIUM_SOLUTION = new Material.Builder(PhoenixCore.id("technetium_strontium_solution"))
+        TECHNETIUM_STRONTIUM_SOLUTION = PHOENIX_REGISTRATE.material("technetium_strontium_solution", builder -> builder
 
                 .fluid()
                 .color(0x7CFC00)
-                .iconSet(MaterialIconSet.BRIGHT)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.BRIGHT));
 
-        GASEOUS_FISSION_BYPRODUCTS = new Material.Builder(PhoenixCore.id("gaseous_fission_byproducts"))
+        GASEOUS_FISSION_BYPRODUCTS = PHOENIX_REGISTRATE.material("gaseous_fission_byproducts", builder -> builder
                 .gas()
                 .color(0xB0C4DE)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        ACIDIC_WASTE = new Material.Builder(PhoenixCore.id("acidic_waste"))
+        ACIDIC_WASTE = PHOENIX_REGISTRATE.material("acidic_waste", builder -> builder
                 .fluid()
                 .color(0x9ACD32)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        TRACE_FISSION_GASES = new Material.Builder(PhoenixCore.id("trace_fission_gases"))
+        TRACE_FISSION_GASES = PHOENIX_REGISTRATE.material("trace_fission_gases", builder -> builder
                 .gas()
                 .color(0xC0FFEE)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        PURIFIED_RADIOACTIVE_WASTE_FLUID = new Material.Builder(PhoenixCore.id("purified_radioactive_waste_fluid"))
-                .fluid()
-                .color(0x3B5323)
-                .iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
+        PURIFIED_RADIOACTIVE_WASTE_FLUID = PHOENIX_REGISTRATE.material("purified_radioactive_waste_fluid",
+                builder -> builder
+                        .fluid()
+                        .color(0x3B5323)
+                        .iconSet(MaterialIconSet.DULL));
 
-        EXOTIC_FISSION_CONCENTRATE = new Material.Builder(PhoenixCore.id("exotic_fission_concentrate"))
+        EXOTIC_FISSION_CONCENTRATE = PHOENIX_REGISTRATE.material("exotic_fission_concentrate", builder -> builder
                 .dust()
                 .color(0x800080)
                 .secondaryColor(0x00FF00)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        EXOTIC_FISSILE_MATERIALS_CLUMP = new Material.Builder(PhoenixCore.id("exotic_fissile_materials_clump"))
-                .dust()
-                .color(0x556B2F)
-                .secondaryColor(0x00FF00)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+        EXOTIC_FISSILE_MATERIALS_CLUMP = PHOENIX_REGISTRATE.material("exotic_fissile_materials_clump",
+                builder -> builder
+                        .dust()
+                        .color(0x556B2F)
+                        .secondaryColor(0x00FF00)
+                        .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        FISSILE_ASH = new Material.Builder(PhoenixCore.id("fissile_ash"))
+        FISSILE_ASH = PHOENIX_REGISTRATE.material("fissile_ash", builder -> builder
                 .dust()
                 .color(0x444444)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        PLUTONIUM_FISSION_ASH = new Material.Builder(PhoenixCore.id("plutonium_fission_ash"))
+        PLUTONIUM_FISSION_ASH = PHOENIX_REGISTRATE.material("plutonium_fission_ash", builder -> builder
                 .dust()
                 .color(0x4B0082)
                 .secondaryColor(0x8A2BE2)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        TRACE_ACTINIDES = new Material.Builder(PhoenixCore.id("trace_actinides"))
+        TRACE_ACTINIDES = PHOENIX_REGISTRATE.material("trace_actinides", builder -> builder
                 .dust()
                 .color(0x2E8B57)
-                .iconSet(MaterialIconSet.RADIOACTIVE)
-                .buildAndRegister();
-        URANIUM_233 = new Material.Builder(PhoenixCore.id("uranium_233"))
+                .iconSet(MaterialIconSet.RADIOACTIVE));
+        URANIUM_233 = PHOENIX_REGISTRATE.material("uranium_233", builder -> builder
 
                 .ingot().fluid().color(0x33FF33).secondaryColor(0x00CC00).element(PhoenixElements.URANIUM_233)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        URANIUM_236 = new Material.Builder(PhoenixCore.id("uranium_236"))
+        URANIUM_236 = PHOENIX_REGISTRATE.material("uranium_236", builder -> builder
 
                 .ingot().fluid().color(0x33CCFF).secondaryColor(0x0099EE).element(PhoenixElements.URANIUM_236)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        AMERICIUM_241 = new Material.Builder(PhoenixCore.id("americium_241"))
+        AMERICIUM_241 = PHOENIX_REGISTRATE.material("americium_241", builder -> builder
 
                 .ingot().color(0xCDC9C9).secondaryColor(0x8B8B7A).element(PhoenixElements.AMERICIUM_241)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        AMERICIUM_HEXAFLUORIDE = new Material.Builder(PhoenixCore.id("americium_hexafluoride"))
-                .gas().color(0xFFFFFF).secondaryColor(0xADD8E6).iconSet(MaterialIconSet.DULL).buildAndRegister();
+        AMERICIUM_HEXAFLUORIDE = PHOENIX_REGISTRATE.material("americium_hexafluoride", builder -> builder
+                .gas().color(0xFFFFFF).secondaryColor(0xADD8E6).iconSet(MaterialIconSet.DULL));
 
-        URANIUM_OXIDE = new Material.Builder(PhoenixCore.id("uranium_oxide"))
-                .fluid().color(0x00FF00).secondaryColor(0x000000).iconSet(MaterialIconSet.DULL).buildAndRegister();
+        URANIUM_OXIDE = PHOENIX_REGISTRATE.material("uranium_oxide", builder -> builder
+                .fluid().color(0x00FF00).secondaryColor(0x000000).iconSet(MaterialIconSet.DULL));
 
-        INERT_GAS_WASTE = new Material.Builder(PhoenixCore.id("inert_gas_waste"))
-                .gas().color(0xC0C0C0).secondaryColor(0xD0D0D0).iconSet(MaterialIconSet.DULL).buildAndRegister();
+        INERT_GAS_WASTE = PHOENIX_REGISTRATE.material("inert_gas_waste", builder -> builder
+                .gas().color(0xC0C0C0).secondaryColor(0xD0D0D0).iconSet(MaterialIconSet.DULL));
 
-        IRRADIATED_THORIUM = new Material.Builder(PhoenixCore.id("irradiated_thorium"))
+        IRRADIATED_THORIUM = PHOENIX_REGISTRATE.material("irradiated_thorium", builder -> builder
                 .ingot().fluid().color(0x90A090).secondaryColor(0x708070).element(GTElements.Th)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        IRRADIATED_URANIUM_236 = new Material.Builder(PhoenixCore.id("irradiated_uranium_236"))
+        IRRADIATED_URANIUM_236 = PHOENIX_REGISTRATE.material("irradiated_uranium_236", builder -> builder
                 .ingot().fluid().color(0x90A090).secondaryColor(0x708070).element(PhoenixElements.URANIUM_236)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        SPENT_URANIUM_233 = new Material.Builder(PhoenixCore.id("spent_uranium_233"))
+        SPENT_URANIUM_233 = PHOENIX_REGISTRATE.material("spent_uranium_233", builder -> builder
 
                 .dust().ingot().color(0x503040).secondaryColor(0x705060).element(PhoenixElements.URANIUM_233)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        SPENT_URANIUM_235 = new Material.Builder(PhoenixCore.id("spent_uranium_235"))
+        SPENT_URANIUM_235 = PHOENIX_REGISTRATE.material("spent_uranium_235", builder -> builder
 
                 .ingot().color(0x603030).secondaryColor(0x402020).element(GTElements.U235)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        SPENT_URANIUM_235 = new Material.Builder(PhoenixCore.id("spent_uranium_236"))
+        SPENT_URANIUM_235 = PHOENIX_REGISTRATE.material("spent_uranium_236", builder -> builder
 
                 .ingot()
                 .color(0x8B8878)
                 .secondaryColor(0x556B2F)
                 .element(PhoenixElements.URANIUM_236)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        DEPLETED_URANIUM = new Material.Builder(PhoenixCore.id("depleted_uranium"))
+        DEPLETED_URANIUM = PHOENIX_REGISTRATE.material("depleted_uranium", builder -> builder
                 .ingot().color(0x555030).secondaryColor(0x333010).element(GTElements.U238)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        DEPLETED_THORIUM = new Material.Builder(PhoenixCore.id("depleted_thorium"))
+        DEPLETED_THORIUM = PHOENIX_REGISTRATE.material("depleted_thorium", builder -> builder
                 .ingot()
                 .color(0x505050)
                 .secondaryColor(0x707070)
                 .element(GTElements.Th)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        DEPLETED_PLUTONIUM_241 = new Material.Builder(PhoenixCore.id("depleted_plutonium_241"))
+        DEPLETED_PLUTONIUM_241 = PHOENIX_REGISTRATE.material("depleted_plutonium_241", builder -> builder
                 .ingot()
                 .color(0x2F4F4F)
                 .secondaryColor(0x696969)
                 .element(GTElements.Pu241)
-                .iconSet(MaterialIconSet.RADIOACTIVE).buildAndRegister();
+                .iconSet(MaterialIconSet.RADIOACTIVE));
 
-        EXTREMELY_MODIFIED_SPACE_GRADE_STEEL = new Material.Builder(
-                PhoenixCore.id("extremely_modified_space_grade_steel"))
+        EXTREMELY_MODIFIED_SPACE_GRADE_STEEL = PHOENIX_REGISTRATE.material("extremely_modified_space_grade_steel",
+                builder -> builder
 
-                .ingot()
-                .liquid(6500)
-                .color(0xad6161)
-                .secondaryColor(0x593856)
-                .iconSet(MaterialIconSet.BRIGHT)
-                .cableProperties(GTValues.V[GTValues.LuV], 64, 0, true)
-                .components(SOURCE_IMBUED_TITANIUM, 4, GTMaterials.Ruthenium, 2,
-                        PhoenixFissionMaterials.SPACE_GRADE_STEEL, 4, GTMaterials.Radon, 1)
-                .blastTemp(7200, HIGH, GTValues.VA[GTValues.LuV], 600)
-                .buildAndRegister();
+                        .ingot()
+                        .liquid(6500)
+                        .color(0xad6161)
+                        .secondaryColor(0x593856)
+                        .iconSet(MaterialIconSet.BRIGHT)
+                        .cableProperties(GTValues.V[GTValues.LuV], 64, 0, true)
+                        .components(SOURCE_IMBUED_TITANIUM, 4, GTMaterials.Ruthenium, 2,
+                                PhoenixFissionMaterials.SPACE_GRADE_STEEL, 4, GTMaterials.Radon, 1)
+                        .blastTemp(7200, HIGH, GTValues.VA[GTValues.LuV], 600));
     }
 }

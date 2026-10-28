@@ -5,7 +5,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.api.event.ConfluxResearchEvent;
 
-/** Conflux events passed on to Chronicles. */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ChroniclesEvents {
 

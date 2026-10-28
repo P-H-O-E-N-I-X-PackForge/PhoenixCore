@@ -22,9 +22,8 @@ public class SourceRecipeCapability extends RecipeCapability<SourceIngredient> {
                 SourceIngredient.Serializer.INSTANCE);
     }
 
-    /** Shows Source as a line of text in the recipe viewer (it has no slot to draw). */
     public static com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout.Builder viewer(
-                                                                                         com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout.Builder builder) {
+                                                                                           com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout.Builder builder) {
         builder.setRecipeViewerLayoutCapabilityLayoutBuilder(CAP, (layout, widget, io) -> {
             if (layout.getRecipeType().getMaxSlots(CAP, io) == 0) return;
             widget.textComponents.child(brachy.modularui.widgets.layout.Flow.col().childPadding(1)

@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-/**
- * Search every Continuum body you have found: type to filter by name, system, type or stage, narrow by kind with the
- * chips, click (or Enter for the first match) to open it on the page. Opened from the Continuum page with F.
- */
 @OnlyIn(Dist.CLIENT)
 final class ContinuumBodySearchScreen extends Screen {
 
@@ -117,11 +113,9 @@ final class ContinuumBodySearchScreen extends Screen {
         };
     }
 
-    /** No 1.21 background blur: this screen paints its own backdrop. */
     @Override
     protected void renderBlurredBackground(float partialTick) {}
 
-    /** Drawn by {@link #render} itself; Screen.render would otherwise paint it over the panel. */
     @Override
     public void renderBackground(GuiGraphics g, int mx, int my, float partialTick) {}
 
@@ -137,7 +131,6 @@ final class ContinuumBodySearchScreen extends Screen {
         String count = shown.size() + " / " + all.size();
         g.drawString(font, count, x + W - 8 - font.width(count), y + 7, 0xFF99A6B8, false);
 
-        // kind chips
         int cx = x + 8;
         int cy = y + 42;
         for (Kind k : Kind.values()) {
@@ -216,7 +209,6 @@ final class ContinuumBodySearchScreen extends Screen {
 
     @Override
     public boolean charTyped(char c, int mods) {
-        // the F that opened this screen arrives as a character a moment later: do not type it into the box
         if ((c == 'f' || c == 'F') && net.minecraft.Util.getMillis() - openedAt < 150) return true;
         return super.charTyped(c, mods);
     }

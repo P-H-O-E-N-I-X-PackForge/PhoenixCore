@@ -21,24 +21,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * Exotic plasmas a Stellar Forge can give instead of its usual oxygen plasma. Each is for one kind of body (a star in a
- * range of heat, a black hole), needs a minimum mass, and hurts the body while it is drawn: it eats stability and mass. Only
- * one can be drawn at a time, picked on the forge's screen. They come from data packs
- * ({@code data/<namespace>/phoenixcore/stellar_plasmas/*.json}) and from code ({@link #register}):
- *
- * <pre>{@code
- * { "fluid": "gtceu:iron_plasma",
- *   "name": "Iron plasma",                    // shown on the screen (default: the file name)
- *   "body": "star",                           // "star" or "black_hole"
- *   "heat": { "min": 70, "max": 100 },        // the heat the body must be in (default any)
- *   "min_mass": 1500,                         // in M
- *   "rate": 8.0,                              // mB a tick at full stability
- *   "damage": { "stability": 0.25,            // taken off the stability every tick
- *               "mass": 0.04,                 // M lost every tick
- *               "heat": 0.0 } }               // heat added every tick (negative cools)
- * }</pre>
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class StellarPlasma {
 
@@ -48,14 +30,13 @@ public final class StellarPlasma {
                          float heatMin, float heatMax, double minMass, double rate, float damageStability,
                          double damageMass, float damageHeat) {
 
-        /** Whether this body can give it right now: the right kind of body, hot enough and heavy enough. */
         public boolean eligible(StellarForgeState s) {
             return s.stage == body && s.heat >= heatMin && s.heat <= heatMax && s.mass >= minMass;
         }
 
-        /** Why not, or null if it can. */
         public @Nullable String whyNot(StellarForgeState s) {
-            if (s.stage != body) return "needs a " + (body == StellarForgeState.Stage.BLACK_HOLE ? "black hole" : "star");
+            if (s.stage != body)
+                return "needs a " + (body == StellarForgeState.Stage.BLACK_HOLE ? "black hole" : "star");
             if (s.mass < minMass) return String.format(Locale.ROOT, "needs %,.0f M (it has %,.0f)", minMass, s.mass);
             if (s.heat < heatMin || s.heat > heatMax) {
                 return String.format(Locale.ROOT, "needs heat %.0f to %.0f (it is %.0f)", heatMin, heatMax, s.heat);
@@ -69,23 +50,19 @@ public final class StellarPlasma {
 
     private static volatile @Nullable List<Recipe> clientCopy;
 
-    /** On a client of a dedicated server the data packs are not here: the server sends what it has. */
     public static void setClientCopy(List<Recipe> recipes) {
         clientCopy = List.copyOf(recipes);
     }
 
-    /** What to show: the server's list when it has sent one, otherwise what this game has loaded. */
     public static List<Recipe> forDisplay() {
         var copy = clientCopy;
         return copy != null ? copy : all();
     }
 
-    /** Register one from code (kept across reloads). */
     public static synchronized void register(Recipe recipe) {
         FROM_CODE.put(recipe.id(), recipe);
     }
 
-    /** Everything that can be picked, in a fixed order (by id). */
     public static synchronized List<Recipe> all() {
         Map<ResourceLocation, Recipe> merged = new TreeMap<>(FROM_DATA);
         merged.putAll(FROM_CODE);
@@ -101,18 +78,17 @@ public final class StellarPlasma {
         return null;
     }
 
-    /** The one after {@code id} in the list, wrapping through "none" (the usual plasma): "" for none. */
     public static String next(String id) {
         List<Recipe> list = all();
         if (list.isEmpty()) return "";
         if (id == null || id.isEmpty()) return list.get(0).id().toString();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).id().toString().equals(id)) return i + 1 < list.size() ? list.get(i + 1).id().toString() : "";
+            if (list.get(i).id().toString().equals(id))
+                return i + 1 < list.size() ? list.get(i + 1).id().toString() : "";
         }
         return "";
     }
 
-    /** Tell clients what there is, when they join and when the data reloads. */
     @SubscribeEvent
     public static void onSync(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
         var packet = new net.phoenix.core.network.packet.S2CStellarDataPacket(all(), StellarTint.forDisplay());
@@ -133,7 +109,8 @@ public final class StellarPlasma {
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, JsonElement> found, ResourceManager manager, ProfilerFiller profiler) {
+        protected void apply(Map<ResourceLocation, JsonElement> found, ResourceManager manager,
+                             ProfilerFiller profiler) {
             synchronized (StellarPlasma.class) {
                 FROM_DATA.clear();
                 for (var entry : found.entrySet()) {

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** The Stellar Forge's plasma recipes and dyes, sent to a client so the recipe viewer can show them. */
 public class S2CStellarDataPacket implements CustomPacketPayload {
 
     public static final Type<S2CStellarDataPacket> TYPE = new Type<>(
@@ -35,7 +34,8 @@ public class S2CStellarDataPacket implements CustomPacketPayload {
         int n = buf.readVarInt();
         for (int i = 0; i < n; i++) {
             plasmas.add(new StellarPlasma.Recipe(buf.readResourceLocation(), buf.readResourceLocation(), buf.readUtf(),
-                    StellarForgeState.Stage.values()[buf.readVarInt()], buf.readFloat(), buf.readFloat(), buf.readDouble(),
+                    StellarForgeState.Stage.values()[buf.readVarInt()], buf.readFloat(), buf.readFloat(),
+                    buf.readDouble(),
                     buf.readDouble(), buf.readFloat(), buf.readDouble(), buf.readFloat()));
         }
         this.tints = new ArrayList<>();
@@ -92,7 +92,7 @@ public class S2CStellarDataPacket implements CustomPacketPayload {
                 try {
                     dev.emi.emi.runtime.EmiReloadManager.reload();
                 } catch (Throwable ignored) {
-                    // the recipe viewer reads the new lists when it next reloads
+
                 }
             }
         });

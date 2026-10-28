@@ -8,7 +8,6 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
-/** A ModularUI widget that hands its whole area to a {@link CanvasPainter}. */
 @OnlyIn(Dist.CLIENT)
 public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
 
@@ -18,7 +17,6 @@ public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
         this.painter = painter;
     }
 
-    /** The mouse in this widget's own pixels: the absolute mouse less the widget's absolute corner. */
     private int localX(ModularGuiContext ctx) {
         return ctx.getAbsMouseX() - getArea().x;
     }

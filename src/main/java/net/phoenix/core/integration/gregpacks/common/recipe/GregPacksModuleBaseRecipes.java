@@ -20,12 +20,12 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 public class GregPacksModuleBaseRecipes {
 
     public static void init(RecipeOutput provider) {
-        registerModuleBase(provider, "lv", GregPacksItems.LV_MODULE_BASE, GTMaterials.Steel);
-        registerModuleBase(provider, "mv", GregPacksItems.MV_MODULE_BASE, GTMaterials.Aluminium);
-        registerModuleBase(provider, "hv", GregPacksItems.HV_MODULE_BASE, GTMaterials.StainlessSteel);
-        registerModuleBase(provider, "ev", GregPacksItems.EV_MODULE_BASE, GTMaterials.Titanium);
-        registerModuleBase(provider, "iv", GregPacksItems.IV_MODULE_BASE, GTMaterials.TungstenSteel);
-        registerModuleBase(provider, "luv", GregPacksItems.LUV_MODULE_BASE, GTMaterials.HSSE);
+        registerModuleBase(provider, "lv", GregPacksItems.LV_MODULE_BASE, GTMaterials.Steel.get());
+        registerModuleBase(provider, "mv", GregPacksItems.MV_MODULE_BASE, GTMaterials.Aluminium.get());
+        registerModuleBase(provider, "hv", GregPacksItems.HV_MODULE_BASE, GTMaterials.StainlessSteel.get());
+        registerModuleBase(provider, "ev", GregPacksItems.EV_MODULE_BASE, GTMaterials.Titanium.get());
+        registerModuleBase(provider, "iv", GregPacksItems.IV_MODULE_BASE, GTMaterials.TungstenSteel.get());
+        registerModuleBase(provider, "luv", GregPacksItems.LUV_MODULE_BASE, GTMaterials.HSSE.get());
 
         VanillaRecipeHelper.addShapedRecipe(provider, true, PhoenixCore.id("module_casting_mold"),
                 new ItemStack(GregPacksItems.MODULE_CASTING_MOLD.get()),

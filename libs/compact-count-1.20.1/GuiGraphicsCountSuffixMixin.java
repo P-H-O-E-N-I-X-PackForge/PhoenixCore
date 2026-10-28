@@ -13,21 +13,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Shows big item stack counts compactly (12345 as 12.3k) in the corner of an item slot.
- *
- * <p>It only touches the count that vanilla draws on an item ({@code renderItemDecorations}), and nothing else that happens
- * to be a number: the old version rewrote every number any screen drew, which scrambled other screens (EMI's recipe preview
- * with its overclock tier, text fields, tooltips) and, because it ignored where vanilla had right-aligned the original text,
- * put the compact text in the wrong place. Vanilla right-aligns the count to the slot using the width of the long text; here
- * the compact text is right-aligned to that same edge.
- */
+
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsCountSuffixMixin {
 
     private static final String DECORATIONS = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V";
 
-    /** Greater than zero while an item's decorations (its count, durability bar and so on) are being drawn. */
     @Unique
     private int phoenix$decorationDepth;
 
@@ -74,10 +65,6 @@ public abstract class GuiGraphicsCountSuffixMixin {
         }
     }
 
-    /**
-     * Draws the compact text smaller, with its right edge where the right edge of the original (long) text would have been:
-     * {@code x} is where vanilla started the long text, so that edge is {@code x + originalWidth}.
-     */
     @Unique
     private int phoenix$renderScaled(Font font, String compacted, int originalWidth, int x, int y, int color,
                                      boolean shadow) {

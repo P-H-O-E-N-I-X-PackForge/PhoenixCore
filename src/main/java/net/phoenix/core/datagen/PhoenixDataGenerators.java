@@ -15,7 +15,7 @@ import com.tterrag.registrate.providers.loot.RegistrateLootTableProvider;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-@EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public class PhoenixDataGenerators {
 
     static {
@@ -24,13 +24,12 @@ public class PhoenixDataGenerators {
 
         REGISTRATE.addDataGenerator(ProviderType.LOOT,
                 prov -> prov.addLootAction(RegistrateLootTableProvider.LootType.BLOCK, blockLoot -> {
-                    for (var entry : GTMaterialBlocks.MATERIAL_BLOCKS.row(PhoenixMaterialFlags.crystal_rose)
+                    for (var entry : GTMaterialBlocks.MATERIAL_BLOCKS.row(PhoenixMaterialFlags.crystal_rose.get())
                             .values()) {
                         if (!entry.getId().getNamespace().equals(PhoenixCore.MOD_ID)) continue;
                         blockLoot.dropSelf(entry.get());
                     }
                 }));
-
         REGISTRATE.addDataGenerator(ProviderType.LANG, prov -> {
             prov.add("tooltip.phoenixcore.cinder_core.target", "Target: %s");
             prov.add("tooltip.phoenixcore.cinder_core.unconfigured",
@@ -41,9 +40,9 @@ public class PhoenixDataGenerators {
             prov.add("tooltip.phoenixcore.cinder_core.ready", "All materials stocked - ready to build");
             prov.add("tooltip.phoenixcore.cinder_core.missing_entry", "  %s: %s/%s");
             prov.add("tooltip.phoenixcore.cinder_core.missing_more", "  ...and %s more");
+            prov.add("key.phoenixcore.cinder_atlas_radial", "Cinder Atlas Loadout Wheel");
             prov.add("key.phoenixcore.place_item", "Place Held Item On Block");
             prov.add("entity.phoenixcore.placed_item", "Placed Item");
-            prov.add("key.phoenixcore.cinder_atlas_radial", "Cinder Atlas Loadout Wheel");
             prov.add("entity.phoenixcore.teto_slime", "Teto Slime");
             prov.add("item.phoenixcore.teto_slime_spawn_egg", "Teto Slime Spawn Egg");
         });

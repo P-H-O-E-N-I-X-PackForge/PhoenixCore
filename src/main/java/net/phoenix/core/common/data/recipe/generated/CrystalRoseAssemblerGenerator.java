@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
@@ -29,7 +31,7 @@ public class CrystalRoseAssemblerGenerator {
 
         BeeRecipeData.ALL_BEE_CONFIGS.forEach((id, config) -> {
 
-            Material material = getMaterial(id);
+            MaterialRegistryEntry material = getMaterial(id);
 
             if (material == null) return;
 
@@ -56,7 +58,7 @@ public class CrystalRoseAssemblerGenerator {
         });
     }
 
-    private static Material getMaterial(String id) {
+    private static MaterialRegistryEntry getMaterial(String id) {
         if (id == null || id.isEmpty()) return null;
 
         switch (id) {
@@ -106,25 +108,35 @@ public class CrystalRoseAssemblerGenerator {
                 return PhoenixProgressionMaterials.PRISMARINE;
             }
             case "titanium" -> {
-                return GTMaterials.Titanium;
+                return new MaterialRegistryEntry(
+                        net.phoenix.core.PhoenixCore.PHOENIX_REGISTRATE,
+                        net.neoforged.neoforge.registries.DeferredHolder.create(GTRegistries.Keys.MATERIAL,
+                                GTMaterials.Titanium.getId()));
             }
         }
 
         String normalizedId = id.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
-        Material mat = Mats.byName(normalizedId);
+        com.gregtechceu.gtceu.api.data.chemical.material.Material rawMat = Mats.byName(normalizedId);
 
-        if (mat == null) {
-            mat = Mats.byName(id.toLowerCase());
+        if (rawMat == null) {
+            rawMat = Mats.byName(id.toLowerCase());
         }
 
-        return mat;
+        if (rawMat == null) return null;
+
+        net.minecraft.resources.ResourceLocation loc = GTRegistries.MATERIALS.getKey(rawMat);
+        if (loc == null) return null;
+
+        return new MaterialRegistryEntry(
+                net.phoenix.core.PhoenixCore.PHOENIX_REGISTRATE,
+                net.neoforged.neoforge.registries.DeferredHolder.create(GTRegistries.Keys.MATERIAL, loc));
     }
 
     public static void linkCrystalRoseFlags() {
         BeeRecipeData.ALL_BEE_CONFIGS.forEach((id, config) -> {
-            Material material = getMaterial(id);
+            MaterialRegistryEntry material = getMaterial(id);
             if (material != null) {
-                material.addFlags(PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE);
+                material.get().addFlags(PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE);
             }
         });
     }

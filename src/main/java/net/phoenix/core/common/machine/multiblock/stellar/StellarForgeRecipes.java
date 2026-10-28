@@ -13,7 +13,6 @@ import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
-/** How a Stellar Forge is built. */
 public final class StellarForgeRecipes {
 
     private StellarForgeRecipes() {}

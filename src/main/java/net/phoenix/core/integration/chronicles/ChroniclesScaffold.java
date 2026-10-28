@@ -15,12 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * The starter chapters (a Conflux hub and one chapter per discipline), copied into
- * {@code config/phoenix_chronicles/quests/} the first time. A chapter whose folder is already there is left alone, so
- * the quests can be edited or replaced freely; delete a chapter's folder to get its starter back. The files are made by
- * {@code tools/gen_conflux_questlines.py} and listed, folder by folder, in {@code phoenixcore_questlines/index.txt}.
- */
 public final class ChroniclesScaffold {
 
     private static final String ROOT = "/phoenixcore_questlines/";
@@ -54,7 +48,6 @@ public final class ChroniclesScaffold {
         }
     }
 
-    /** Lines of {@code chapter/file}. */
     private static Map<String, List<String>> readIndex() {
         Map<String, List<String>> out = new LinkedHashMap<>();
         try (InputStream in = ChroniclesScaffold.class.getResourceAsStream(ROOT + "index.txt")) {

@@ -2,7 +2,6 @@ package net.phoenix.core.client.gui.hud;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-/** Small drawing helpers for HUD style screens: borders, gradients, lines, scissoring in local coordinates. */
 public final class GuiDraw {
 
     private GuiDraw() {}
@@ -18,7 +17,6 @@ public final class GuiDraw {
         g.fill(x + w - thickness, y + thickness, x + w, y + h - thickness, color);
     }
 
-    /** A line of one pixel dots, which is all a canvas can do. */
     public static void drawLine(GuiGraphics g, int x1, int y1, int x2, int y2, int color) {
         int dx = x2 - x1;
         int dy = y2 - y1;
@@ -34,10 +32,6 @@ public final class GuiDraw {
         }
     }
 
-    /**
-     * Vanilla 1.21.1 scissors in absolute GUI coordinates and ignores the pose stack, so local drawing code has to
-     * push the current translation and scale into the rectangle itself.
-     */
     public static void enableScissor(GuiGraphics g, int x1, int y1, int x2, int y2) {
         var m = g.pose().last().pose();
         int ax = Math.round(m.m00() * x1 + m.m30());
@@ -47,8 +41,8 @@ public final class GuiDraw {
         g.enableScissor(ax, ay, bx, by);
     }
 
-    /** Text wrapped to {@code width} pixels, ten pixels a line: the y below the last line. */
-    public static int drawWrapped(GuiGraphics g, net.minecraft.client.gui.Font font, String text, int x, int y, int width,
+    public static int drawWrapped(GuiGraphics g, net.minecraft.client.gui.Font font, String text, int x, int y,
+                                  int width,
                                   int color) {
         for (var line : font.split(net.minecraft.network.chat.Component.literal(text), Math.max(20, width))) {
             g.drawString(font, line, x, y, color, false);

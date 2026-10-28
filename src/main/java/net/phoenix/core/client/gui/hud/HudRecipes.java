@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** What every recipe machine can show without knowing anything about it: status, progress, energy. */
 public final class HudRecipes {
 
     private HudRecipes() {}
 
-    /** The id of the "turn the machine on or off" control. */
     public static final int TOGGLE = 1000;
 
     public static HudModel.Badge badge(WorkableElectricMultiblockMachine m) {
@@ -27,7 +25,6 @@ public final class HudRecipes {
         };
     }
 
-    /** The cells every recipe machine has: progress, energy use, stored energy. */
     public static List<HudModel.Cell> cells(WorkableElectricMultiblockMachine m) {
         List<HudModel.Cell> cells = new ArrayList<>();
         RecipeLogic logic = m.getRecipeLogic();
@@ -54,7 +51,6 @@ public final class HudRecipes {
         return recipe == null || !m.getRecipeLogic().isWorking() ? 0.0f : recipe.getInputEUt().getTotalEU();
     }
 
-    /** The server side of the on/off control. */
     public static boolean handle(WorkableElectricMultiblockMachine m, int id) {
         if (id != TOGGLE) return false;
         m.getRecipeLogic().setWorkingEnabled(!m.getRecipeLogic().isWorkingEnabled());

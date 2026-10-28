@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
@@ -16,34 +17,25 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.phoenix.core.client.gui.hud.CanvasWidget;
+import net.phoenix.core.client.gui.hud.HudPanel;
+import net.phoenix.core.client.gui.hud.TabStrip;
 import net.phoenix.core.client.stellar.StellarForgeClient;
-
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import net.phoenix.core.client.stellar.ui.StellarGraphsPage;
+import net.phoenix.core.client.stellar.ui.StellarHudPage;
+import net.phoenix.core.client.stellar.ui.StellarMathPage;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
-import net.phoenix.core.client.gui.hud.CanvasWidget;
-import net.phoenix.core.client.gui.hud.HudPanel;
-import net.phoenix.core.client.gui.hud.TabStrip;
-import net.phoenix.core.client.stellar.ui.StellarGraphsPage;
-import net.phoenix.core.client.stellar.ui.StellarHudPage;
-import net.phoenix.core.client.stellar.ui.StellarMathPage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Stellar Forge: a chamber that gathers a cloud of gas, lights it as a star, and, fed something heavy enough,
- * lets it fall in as a black hole, all of it shown inside the machine while it is made. The rules are in
- * {@link StellarForgeState}; this connects them to hatches (energy and matter in, plasma out), keeps them over restarts
- * and tells clients what to draw.
- */
 public class StellarForgeMachine extends MultiblockControllerMachine implements IMuiMachine {
 
-    /** Mass in M that a millibucket of each feed adds. */
     private static double massPerMb(FluidStack stack) {
         Fluid fluid = stack.getFluid();
         if (isMaterial(fluid, GTMaterials.Neutronium)) return 1.0;
@@ -52,8 +44,8 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         return 0.0;
     }
 
-    /** A material's fluid in any state (gas or liquid): GT keeps hydrogen and helium as gases, not as the default fluid. */
-    private static boolean isMaterial(Fluid fluid, com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry material) {
+    private static boolean isMaterial(Fluid fluid,
+                                      com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry material) {
         if (isFluid(fluid, material.getFluid())) return true;
         if (isFluid(fluid, material.getFluid(FluidStorageKeys.LIQUID))) return true;
         return isFluid(fluid, material.getFluid(FluidStorageKeys.GAS));
@@ -67,7 +59,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private int stageOrdinal;
 
-    /** Mass times a hundred, to keep it in an int. */
     @SaveField
     @SyncToClient
     private int massX100;
@@ -96,7 +87,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private boolean collapseArmed;
 
-    /** The exotic plasma picked to draw (a {@link StellarPlasma} id), "" for the usual oxygen plasma; and what the screen says of it. */
     @SaveField
     @SyncToClient
     private String plasmaId = "";
@@ -107,7 +97,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private String plasmaNote = "";
 
-    /** The number rolled when this run started, how long it has run, and its disturbances so far. */
     @SaveField
     @SyncToClient
     private int runSeed;
@@ -124,7 +113,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private int eventKind;
 
-    /** A dye for the star and for the black hole's disk (0xRRGGBB), or -1 for the colour the heat gives. */
     @SaveField
     @SyncToClient
     private int starTint = -1;
@@ -154,14 +142,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         this.tickHandler = new ConditionalSubscriptionHandler(this, this::forgeTick, this::isFormed);
     }
 
-    // ------------------------------------------------------------------------------------------------ what is seen
-
     public StellarForgeState.Stage stage() {
         return StellarForgeState.Stage.of(stageOrdinal);
     }
 
-    // What the client shows is eased towards the latest numbers, so they run smoothly between the few updates a second
-    // that arrive, not in steps. The server always uses the real ones.
     private double shownMass;
     private float shownHeat;
     private float shownStability;
@@ -220,7 +204,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         return holeTint;
     }
 
-    /** One tint fluid in an input hatch, used up to dye the body in the chamber. */
     private void applyTints() {
         var stage = s().stage;
         for (FluidHatchPartMachine hatch : hatches(IO.IN)) {
@@ -275,7 +258,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         return plasmaRateX10 / 10.0f;
     }
 
-    /** The chamber's middle, in the world: the room inside is the middle of the structure. */
     public net.minecraft.world.phys.Vec3 chamberCentre() {
         Direction back = getFrontFacing().getOpposite();
         return new net.minecraft.world.phys.Vec3(getBlockPos().getX() + 0.5 + back.getStepX() * 2.0,
@@ -286,7 +268,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         return view().massFraction();
     }
 
-    /** A copy of the numbers as they are now, for the bands the screen draws. */
     public StellarForgeState view() {
         StellarForgeState view = new StellarForgeState(getBlockPos().asLong());
         view.stage = stage();
@@ -302,8 +283,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         view.eventKind = eventKind;
         return view;
     }
-
-    // ------------------------------------------------------------------------------------------------ the controls
 
     private StellarForgeState state() {
         if (state == null) {
@@ -367,8 +346,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         } else {
             name = exotic.name();
             String why = exotic.whyNot(s);
-            note = drawing ? String.format(java.util.Locale.ROOT, "drawing %.1f mB/t, costs %.2f stability and %.2f M a tick",
-                    rate, exotic.damageStability(), exotic.damageMass()) : why != null ? why : "waiting (nothing to take yet)";
+            note = drawing ?
+                    String.format(java.util.Locale.ROOT, "drawing %.1f mB/t, costs %.2f stability and %.2f M a tick",
+                            rate, exotic.damageStability(), exotic.damageMass()) :
+                    why != null ? why : "waiting (nothing to take yet)";
         }
         if (!name.equals(plasmaName)) {
             plasmaName = name;
@@ -401,8 +382,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         publish();
     }
 
-    // ------------------------------------------------------------------------------------------------ the ticking
-
     @Override
     public void onLoad() {
         super.onLoad();
@@ -420,7 +399,8 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @Override
     public void formStructure(String substructureName) {
         super.formStructure(substructureName);
-        net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] structure formed ({}), subscribing the tick", substructureName);
+        net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] structure formed ({}), subscribing the tick",
+                substructureName);
         tickHandler.updateSubscription();
     }
 
@@ -466,12 +446,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         if (getLevel() == null || getLevel().isClientSide) return;
         StellarForgeState s = state();
 
-        // energy first: without it the field slips
         long need = s.energyPerTick();
         boolean ok = need <= 0 || energyAvailable() >= need;
         if (ok && need > 0) takeEnergy(need);
 
-        // then what is fed in
         double fed = 0.0;
         double want = s.stage == StellarForgeState.Stage.IDLE ?
                 StellarForgeState.MAX_FEED_PER_TICK[1] * feed / 100.0 : s.feedPerTick();
@@ -494,18 +472,17 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     }
                 }
             }
-            // nothing in the hatches to take: the buffer does not pile up
+
             feedBuffer = Math.min(feedBuffer, 2.0);
         }
 
-        // plasma out, and a full hatch backs the pressure up
         boolean blocked = false;
         double rate = s.plasmaPerTick();
         Fluid plasma = GTMaterials.Oxygen.getFluid(FluidStorageKeys.PLASMA);
         StellarPlasma.Recipe exotic = StellarPlasma.get(plasmaId);
         boolean drawingExotic = false;
         if (!plasmaId.isEmpty()) {
-            // an exotic plasma replaces the usual one: only a body of the right kind, heat and mass gives it
+
             rate = 0.0;
             plasma = null;
             if (exotic != null && exotic.eligible(s)) {
@@ -525,7 +502,8 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                 if (plasma != null) {
                     for (FluidHatchPartMachine hatch : hatches(IO.OUT)) {
                         if (left <= 0) break;
-                        left -= hatch.tank.fillInternal(new FluidStack(plasma, left), IFluidHandler.FluidAction.EXECUTE);
+                        left -= hatch.tank.fillInternal(new FluidStack(plasma, left),
+                                IFluidHandler.FluidAction.EXECUTE);
                     }
                 }
                 plasmaBuffer -= out - left;
@@ -534,7 +512,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             }
         }
         if (drawingExotic && !blocked) {
-            // drawing it hurts the body a little every tick
+
             s.stability = Math.max(0.0f, s.stability - exotic.damageStability());
             s.mass = Math.max(0.0, s.mass - exotic.damageMass());
             s.heat = Math.max(0.0f, Math.min(100.0f, s.heat + exotic.damageHeat()));
@@ -547,7 +525,8 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                 for (int tank = 0; tank < hatch.tank.getTanks(); tank++) {
                     FluidStack inside = hatch.tank.getFluidInTank(tank);
                     if (!inside.isEmpty()) report.append(inside.getFluid().builtInRegistryHolder().key().location())
-                            .append(" x").append(inside.getAmount()).append(" (").append(massPerMb(inside)).append("/mB) ");
+                            .append(" x").append(inside.getAmount()).append(" (").append(massPerMb(inside))
+                            .append("/mB) ");
                 }
             }
             net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] tick: stage {} mass {} stability {} heat {} hold {} " +
@@ -555,7 +534,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     s.stage, s.mass, s.stability, s.heat, s.holdTicks, feed, field, s.fieldBand(), spin, s.spinBand(),
                     want, fed, hatches(IO.IN).size(), ok, report);
         }
-        // idle, the run's number is rolled again each tick, so it is set at the moment feed starts the next one
+
         if (s.stage == StellarForgeState.Stage.IDLE) {
             runSeed = getLevel().random.nextInt();
             s.run = runSeed;
@@ -563,7 +542,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         s.tick(fed, ok, blocked);
         if (getLevel().getGameTime() % 20 == 0) applyTints();
         if (s.stage != lastStage) {
-            // a star's dye stays with it when it falls in
+
             if (s.stage == StellarForgeState.Stage.BLACK_HOLE && lastStage == StellarForgeState.Stage.STAR &&
                     starTint >= 0) {
                 holeTint = starTint;
@@ -582,7 +561,6 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         publish();
     }
 
-    /** Copy the numbers to the fields that are saved and sent to clients (only changed ones cause a sync). */
     private void publish() {
         StellarForgeState s = state();
         boolean push = getLevel() != null && getLevel().getGameTime() % 2 == 0;
@@ -610,7 +588,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             collapseArmed = s.collapseArmed;
             syncDataHolder.markClientSyncFieldDirty("collapseArmed");
         }
-        // the changing numbers are sent a few times a second, not every tick
+
         if (push) {
             for (String name : new String[] { "massX100", "heatX10", "stabilityX10", "feed", "field", "spin",
                     "powered", "energyUse", "plasmaRateX10", "runAge" }) {
@@ -619,12 +597,9 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         }
     }
 
-    // ------------------------------------------------------------------------------------------------ the screen
-
     private static final int UI_WIDTH = 264;
     private static final int UI_HEIGHT = 276;
 
-    /** A setting or button pressed on the screen, done here on the server. */
     private void control(int which, int value) {
         net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] control {} = {} (stage {})", which, value, stage());
         switch (which) {

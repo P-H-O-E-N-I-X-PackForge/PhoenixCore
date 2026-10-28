@@ -6,6 +6,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,28 +43,28 @@ public class ProvinceVeinTemplates {
     private record Need(boolean deep, Material... sources) {}
 
     private static final Need[] PROGRESSION = {
-            new Need(false, Iron, Pyrite),
-            new Need(false, Copper, Chalcopyrite, Bornite),
-            new Need(false, Tin, Cassiterite),
-            new Need(false, Zinc, Sphalerite),
-            new Need(false, Lead, Galena),
-            new Need(false, Nickel, Pentlandite),
-            new Need(false, Gold),
-            new Need(false, Silver),
-            new Need(false, Bauxite, Aluminium),
-            new Need(false, Redstone),
-            new Need(false, Sulfur),
-            new Need(false, Coal),
-            new Need(true, Diamond),
-            new Need(false, Lapis),
-            new Need(false, NetherQuartz, CertusQuartz),
-            new Need(true, Cobalt, Cobaltite),
-            new Need(true, Chromium),
-            new Need(true, Scheelite),
-            new Need(true, Ilmenite),
-            new Need(true, Platinum, Cooperite),
-            new Need(true, Pyrolusite),
-            new Need(true, Molybdenite)
+            new Need(false, Iron.get(), Pyrite.get()),
+            new Need(false, Copper.get(), Chalcopyrite.get(), Bornite.get()),
+            new Need(false, Tin.get(), Cassiterite.get()),
+            new Need(false, Zinc.get(), Sphalerite.get()),
+            new Need(false, Lead.get(), Galena.get()),
+            new Need(false, Nickel.get(), Pentlandite.get()),
+            new Need(false, Gold.get()),
+            new Need(false, Silver.get()),
+            new Need(false, Bauxite.get(), Aluminium.get()),
+            new Need(false, Redstone.get()),
+            new Need(false, Sulfur.get()),
+            new Need(false, Coal.get()),
+            new Need(true, Diamond.get()),
+            new Need(false, Lapis.get()),
+            new Need(false, NetherQuartz.get(), CertusQuartz.get()),
+            new Need(true, Cobalt.get(), Cobaltite.get()),
+            new Need(true, Chromium.get()),
+            new Need(true, Scheelite.get()),
+            new Need(true, Ilmenite.get()),
+            new Need(true, Platinum.get(), Cooperite.get()),
+            new Need(true, Pyrolusite.get()),
+            new Need(true, Molybdenite.get())
     };
 
     private static OreLayer layer(int weight, Material material) {
@@ -76,103 +77,134 @@ public class ProvinceVeinTemplates {
 
     static {
         register("phoenix_plains", -48, 100,
-                layer(3, Iron), layer(3, Tin), layer(2, Copper), layer(2, Zinc), layer(1, Nickel), layer(1, Cobalt));
+                layer(3, Iron.get()), layer(3, Tin.get()), layer(2, Copper.get()), layer(2, Zinc.get()),
+                layer(1, Nickel.get()), layer(1, Cobalt.get()));
 
         register("phoenix_peaks", -56, 0,
-                layer(3, Diamond), layer(2, Scheelite), layer(2, Cooperite), layer(2, Platinum),
-                layer(2, Pyrolusite), layer(2, Ilmenite));
+                layer(3, Diamond.get()), layer(2, Scheelite.get()), layer(2, Cooperite.get()), layer(2, Platinum.get()),
+                layer(2, Pyrolusite.get()), layer(2, Ilmenite.get()));
 
         register("phoenix_crimson", -40, 48,
-                layer(3, Ruby), layer(3, Gold), layer(2, Cinnabar), layer(2, Redstone), layer(2, Pyrite));
+                layer(3, Ruby.get()), layer(3, Gold.get()), layer(2, Cinnabar.get()), layer(2, Redstone.get()),
+                layer(2, Pyrite.get()));
 
         register("phoenix_ashlands", -40, 80,
-                layer(3, Lead), layer(3, Aluminium), layer(2, Bauxite), layer(2, Stibnite), layer(2, Bornite));
+                layer(3, Lead.get()), layer(3, Aluminium.get()), layer(2, Bauxite.get()), layer(2, Stibnite.get()),
+                layer(2, Bornite.get()));
 
         register("phoenix_sulfur_fields", -48, 32,
-                layer(3, Sulfur), layer(2, Platinum), layer(2, Palladium), layer(2, Molybdenite), layer(2, Barite));
+                layer(3, Sulfur.get()), layer(2, Platinum.get()), layer(2, Palladium.get()),
+                layer(2, Molybdenite.get()), layer(2, Barite.get()));
 
         register("phoenix_basalt_flats", -40, 48,
-                layer(3, Sapphire), layer(2, Chromium), layer(2, NetherQuartz), layer(2, Beryllium), layer(2, Lithium));
+                layer(3, Sapphire.get()), layer(2, Chromium.get()), layer(2, NetherQuartz.get()),
+                layer(2, Beryllium.get()), layer(2, Lithium.get()));
 
         register("phoenix_scorched_grove", -32, 64,
-                layer(3, Emerald), layer(2, Lapis), layer(2, Topaz), layer(2, Amethyst), layer(2, Silver));
+                layer(3, Emerald.get()), layer(2, Lapis.get()), layer(2, Topaz.get()), layer(2, Amethyst.get()),
+                layer(2, Silver.get()));
 
         register("void_island", -48, 100,
-                layer(3, Chalcopyrite), layer(3, Cassiterite), layer(2, Sphalerite), layer(2, Galena),
-                layer(2, Pentlandite));
+                layer(3, Chalcopyrite.get()), layer(3, Cassiterite.get()), layer(2, Sphalerite.get()),
+                layer(2, Galena.get()),
+                layer(2, Pentlandite.get()));
 
         register("void_cosmic", -56, 8,
-                layer(3, Diamond), layer(2, Emerald), layer(2, CertusQuartz), layer(2, Cobaltite), layer(2, Chromium));
+                layer(3, Diamond.get()), layer(2, Emerald.get()), layer(2, CertusQuartz.get()),
+                layer(2, Cobaltite.get()), layer(2, Chromium.get()));
 
         register("void_crystal_field", -40, 48,
-                layer(2, Almandine), layer(2, Andradite), layer(2, Grossular), layer(2, Pyrope),
-                layer(2, Spessartine), layer(2, Uvarovite));
+                layer(2, Almandine.get()), layer(2, Andradite.get()), layer(2, Grossular.get()), layer(2, Pyrope.get()),
+                layer(2, Spessartine.get()), layer(2, Uvarovite.get()));
 
         register("void_amethyst_grove", -32, 64,
-                layer(3, Amethyst), layer(2, Lapis), layer(2, Sapphire), layer(2, GreenSapphire), layer(2, BlueTopaz));
+                layer(3, Amethyst.get()), layer(2, Lapis.get()), layer(2, Sapphire.get()),
+                layer(2, GreenSapphire.get()), layer(2, BlueTopaz.get()));
 
         register("void_starlit_meadow", -48, 40,
-                layer(3, Silver), layer(2, Platinum), layer(2, Palladium), layer(1, Cooperite),
-                layer(2, Pollucite), layer(2, Spodumene));
+                layer(3, Silver.get()),
+                layer(2, Platinum.get()),
+                layer(2, Palladium.get()),
+                layer(1, Cooperite.get()),
+                layer(2, Pollucite.get()),
+                layer(2, Spodumene.get()));
 
         register("void_lavender_fields", -40, 48,
-                layer(3, Ruby), layer(2, Topaz), layer(2, Bastnasite), layer(2, Apatite), layer(2, Lepidolite));
+                layer(3, Ruby.get()), layer(2, Topaz.get()), layer(2, Bastnasite.get()), layer(2, Apatite.get()),
+                layer(2, Lepidolite.get()));
 
         register("void_drift", -48, 32,
-                layer(3, Gold), layer(2, NetherQuartz), layer(2, Redstone), layer(2, Pyrite), layer(2, Sulfur));
+                layer(3, Gold.get()), layer(2, NetherQuartz.get()), layer(2, Redstone.get()), layer(2, Pyrite.get()),
+                layer(2, Sulfur.get()));
 
         register("sculk_forest", -40, 96,
-                layer(3, Iron), layer(2, Tin), layer(2, Zinc), layer(2, Nickel), layer(1, Cobalt));
+                layer(3, Iron.get()), layer(2, Tin.get()), layer(2, Zinc.get()), layer(2, Nickel.get()),
+                layer(1, Cobalt.get()));
 
         register("sculk_depths", -56, -8,
-                layer(3, Diamond), layer(2, CertusQuartz), layer(2, Chromium), layer(2, Platinum),
-                layer(2, Palladium), layer(1, Cooperite));
+                layer(3, Diamond.get()), layer(2, CertusQuartz.get()), layer(2, Chromium.get()),
+                layer(2, Platinum.get()),
+                layer(2, Palladium.get()), layer(1, Cooperite.get()));
 
         register("sculk_shriek", -48, 32,
-                layer(3, Amethyst), layer(2, Lapis), layer(2, Redstone), layer(2, Pyrite), layer(2, Cinnabar));
+                layer(3, Amethyst.get()), layer(2, Lapis.get()), layer(2, Redstone.get()), layer(2, Pyrite.get()),
+                layer(2, Cinnabar.get()));
 
         register("sculk_hollow", -40, 60,
-                layer(2, Bornite), layer(2, Galena), layer(2, Sphalerite), layer(2, Pentlandite), layer(2, Apatite));
+                layer(2, Bornite.get()), layer(2, Galena.get()), layer(2, Sphalerite.get()),
+                layer(2, Pentlandite.get()), layer(2, Apatite.get()));
 
         register("sculk_marsh", -32, 80,
-                layer(2, Barite), layer(2, Stibnite), layer(2, Cassiterite), layer(2, Bauxite), layer(2, Molybdenite));
+                layer(2, Barite.get()), layer(2, Stibnite.get()), layer(2, Cassiterite.get()), layer(2, Bauxite.get()),
+                layer(2, Molybdenite.get()));
 
         register("sculk_thicket", -40, 64,
-                layer(3, Emerald), layer(2, Sapphire), layer(2, GreenSapphire), layer(2, Topaz),
-                layer(2, Silver), layer(1, Beryllium));
+                layer(3, Emerald.get()), layer(2, Sapphire.get()), layer(2, GreenSapphire.get()), layer(2, Topaz.get()),
+                layer(2, Silver.get()), layer(1, Beryllium.get()));
 
         register("sculk_ridge", -56, 16,
-                layer(3, Gold), layer(2, Pyrolusite), layer(2, Scheelite), layer(2, Cooperite), layer(2, Ilmenite));
+                layer(3, Gold.get()), layer(2, Pyrolusite.get()), layer(2, Scheelite.get()), layer(2, Cooperite.get()),
+                layer(2, Ilmenite.get()));
 
         register("sealed_industrial", -32, 96,
-                layer(3, Iron), layer(3, Copper), layer(2, Tin), layer(2, Zinc), layer(2, Coal));
+                layer(3, Iron.get()), layer(3, Copper.get()), layer(2, Tin.get()), layer(2, Zinc.get()),
+                layer(2, Coal.get()));
         register("sealed_vault", -56, 0,
-                layer(3, Chromium), layer(2, Platinum), layer(2, Scheelite), layer(2, Ilmenite), layer(1, Diamond));
+                layer(3, Chromium.get()), layer(2, Platinum.get()), layer(2, Scheelite.get()), layer(2, Ilmenite.get()),
+                layer(1, Diamond.get()));
         register("sealed_scrapyard", -40, 64,
-                layer(3, Copper), layer(2, Lead), layer(2, Nickel), layer(2, Silver), layer(1, Cobalt));
+                layer(3, Copper.get()), layer(2, Lead.get()), layer(2, Nickel.get()), layer(2, Silver.get()),
+                layer(1, Cobalt.get()));
         register("sealed_concrete_flats", -32, 64,
-                layer(3, Bauxite), layer(2, CertusQuartz), layer(2, Barite), layer(2, Stibnite));
+                layer(3, Bauxite.get()), layer(2, CertusQuartz.get()), layer(2, Barite.get()),
+                layer(2, Stibnite.get()));
         register("sealed_rust_fields", -32, 48,
-                layer(3, Pyrite), layer(2, Iron), layer(2, Pyrolusite), layer(2, Molybdenite));
+                layer(3, Pyrite.get()), layer(2, Iron.get()), layer(2, Pyrolusite.get()), layer(2, Molybdenite.get()));
         register("sealed_overgrown_ruins", -24, 80,
-                layer(3, Lapis), layer(2, Redstone), layer(2, Zinc), layer(2, Galena), layer(2, Coal));
+                layer(3, Lapis.get()), layer(2, Redstone.get()), layer(2, Zinc.get()), layer(2, Galena.get()),
+                layer(2, Coal.get()));
         register("sealed_ash_yard", -40, 32,
-                layer(3, Coal), layer(3, Sulfur), layer(2, Gold), layer(2, Cinnabar));
+                layer(3, Coal.get()), layer(3, Sulfur.get()), layer(2, Gold.get()), layer(2, Cinnabar.get()));
 
         register("sealed_nether", -40, 40,
-                layer(3, Gold), layer(3, NetherQuartz), layer(2, Sulfur), layer(2, Redstone));
+                layer(3, Gold.get()), layer(3, NetherQuartz.get()), layer(2, Sulfur.get()), layer(2, Redstone.get()));
         register("sealed_warped", -32, 64,
-                layer(2, Copper), layer(2, Tin), layer(2, Iron), layer(2, Zinc), layer(2, Lapis));
+                layer(2, Copper.get()), layer(2, Tin.get()), layer(2, Iron.get()), layer(2, Zinc.get()),
+                layer(2, Lapis.get()));
         register("sealed_crimson_zone", -40, 48,
-                layer(3, Iron), layer(2, Cinnabar), layer(2, Redstone), layer(2, Pyrite), layer(2, Coal));
+                layer(3, Iron.get()), layer(2, Cinnabar.get()), layer(2, Redstone.get()), layer(2, Pyrite.get()),
+                layer(2, Coal.get()));
         register("sealed_basalt_wastes", -48, 16,
-                layer(3, Scheelite), layer(2, Chromium), layer(2, Ilmenite), layer(2, Pyrolusite), layer(1, Platinum));
+                layer(3, Scheelite.get()), layer(2, Chromium.get()), layer(2, Ilmenite.get()),
+                layer(2, Pyrolusite.get()), layer(1, Platinum.get()));
         register("sealed_soul_valley", -40, 40,
-                layer(3, Nickel), layer(2, Cobalt), layer(2, Lead), layer(2, Silver), layer(1, Molybdenite));
+                layer(3, Nickel.get()), layer(2, Cobalt.get()), layer(2, Lead.get()), layer(2, Silver.get()),
+                layer(1, Molybdenite.get()));
         register("sealed_warped_depths", -56, 0,
-                layer(3, Diamond), layer(2, Platinum), layer(2, Palladium), layer(2, Cooperite));
+                layer(3, Diamond.get()), layer(2, Platinum.get()), layer(2, Palladium.get()),
+                layer(2, Cooperite.get()));
         register("sealed_glowstone_caverns", -32, 56,
-                layer(3, Bauxite), layer(2, Coal), layer(2, Sulfur), layer(2, Galena));
+                layer(3, Bauxite.get()), layer(2, Coal.get()), layer(2, Sulfur.get()), layer(2, Galena.get()));
 
         for (String dimension : new String[] { "phoenix", "void", "sculk", "sealed_a", "sealed_b" }) {
             ensureProgression(dimension);
@@ -202,7 +234,7 @@ public class ProvinceVeinTemplates {
         java.util.List<String> byTop = new java.util.ArrayList<>(regions);
         byTop.sort((a, b) -> Integer.compare(TEMPLATES.get(b).maxY(), TEMPLATES.get(a).maxY()));
         java.util.List<String> byBottom = new java.util.ArrayList<>(regions);
-        byBottom.sort((a, b) -> Integer.compare(TEMPLATES.get(a).minY(), TEMPLATES.get(b).minY()));
+        byBottom.sort(Comparator.comparingInt(a -> TEMPLATES.get(a).minY()));
 
         for (Need need : PROGRESSION) {
             boolean met = false;

@@ -7,16 +7,12 @@ import net.phoenix.core.client.gui.hud.CanvasPainter;
 import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarControls;
-import net.phoenix.core.common.machine.multiblock.stellar.StellarPlasma;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
+import net.phoenix.core.common.machine.multiblock.stellar.StellarPlasma;
 
 import java.util.Locale;
 
-/**
- * The first page: where the forge is on its way from gas cloud to black hole, in numbers, with the three settings to
- * keep inside their bands (click or drag a slider, or scroll over it).
- */
 public final class StellarHudPage implements CanvasPainter {
 
     static final int C_CYAN = 0xFF_00E5CC;
@@ -68,7 +64,6 @@ public final class StellarHudPage implements CanvasPainter {
                 String.format(Locale.ROOT, "%02d:%02d", s / 60, s % 60);
     }
 
-    /** Seconds until the next stage at the mass gained over the last ten readings, or -1. */
     static double eta(StellarForgeMachine machine, StellarForgeState view) {
         var history = StellarForgeClient.animOf(machine).history;
         if (history.size() < 4) return -1.0;
@@ -96,7 +91,6 @@ public final class StellarHudPage implements CanvasPainter {
         var stage = view.stage;
         int accent = stageColor(stage);
 
-        // header
         g.drawString(font, "STELLAR FORGE", 8, 7, C_CYAN, false);
         String label = stage.label.toUpperCase(Locale.ROOT);
         int bw = font.width(label) + 10;
@@ -155,7 +149,8 @@ public final class StellarHudPage implements CanvasPainter {
                 String.format(Locale.ROOT, "%,.0f K", k);
         cell(g, font, 8, 52, "MASS", String.format(Locale.ROOT, "%,.1f M", view.mass),
                 view.stage == StellarForgeState.Stage.BLACK_HOLE ? "collapsed" :
-                        String.format(Locale.ROOT, "%.0f%% of next", view.massFraction() * 100.0), accent);
+                        String.format(Locale.ROOT, "%.0f%% of next", view.massFraction() * 100.0),
+                accent);
         cell(g, font, 92, 52, "TEMPERATURE", temp, String.format(Locale.ROOT, "heat %.0f%%", view.heat), C_ORANGE);
         cell(g, font, 176, 52, "STABILITY", String.format(Locale.ROOT, "%.0f%%", stab),
                 stab >= StellarForgeState.HOLD_STABILITY ? "holding" : stab >= 40 ? "drifting" : "failing", stabColor);
@@ -186,7 +181,7 @@ public final class StellarHudPage implements CanvasPainter {
         g.fill(x, y + 11, x + bw, y + 19, 0xFF_0A2430);
         double frac = view.stage == StellarForgeState.Stage.BLACK_HOLE ? 1.0 : view.massFraction();
         g.fill(x, y + 11, x + (int) (bw * frac), y + 19, accent);
-        // how long it has held steady, as a thin line under the bar
+
         double hold = Math.min(1.0, view.holdTicks / (double) StellarForgeState.HOLD_TICKS_TO_ADVANCE);
         g.fill(x, y + 20, x + (int) (bw * hold), y + 21, C_GREEN);
         GuiDraw.drawBorder(g, x, y + 11, bw, 8, 0x66_00E5CC, 1);
@@ -237,18 +232,18 @@ public final class StellarHudPage implements CanvasPainter {
                 view.collapseArmed ? C_GOLD : C_PURPLE, star, mouseX, mouseY);
         button(g, font, disperseRect, 118, 195, 64, 14, "DISPERSE", C_RED, view.stage != StellarForgeState.Stage.IDLE,
                 mouseX, mouseY);
-        // the exotic plasma: opens a list to pick from
+
         boolean exotic = !machine.plasmaId().isEmpty();
         button(g, font, plasmaRect, 188, 195, 68, 14, exotic ? "PLASMA*" : "PLASMA", exotic ? C_CYAN : C_BLUE,
                 true, mouseX, mouseY);
     }
 
-    /** What the forge is waiting for, as ticks and crosses, wrapping onto more lines as needed. */
     private void checklist(GuiGraphics g, Font font, int w, StellarForgeState view, int top) {
         var stage = view.stage;
         if (!machine.plasmaId().isEmpty() && stage != StellarForgeState.Stage.IDLE) {
             String note = machine.plasmaNote();
-            top = GuiDraw.drawWrapped(g, font, "plasma: " + machine.plasmaName() + (note.isEmpty() ? "" : " - " + note), 8,
+            top = GuiDraw.drawWrapped(g, font, "plasma: " + machine.plasmaName() + (note.isEmpty() ? "" : " - " + note),
+                    8,
                     top, w - 16, note.startsWith("drawing") ? C_GREEN : C_GOLD);
         }
         if (!machine.powerOk() && stage != StellarForgeState.Stage.IDLE) {
@@ -296,7 +291,8 @@ public final class StellarHudPage implements CanvasPainter {
             String[] hints = { "heat spiked: bring it back into band", "stability knocked down: steady the settings",
                     "heat dropped: warm it back into band" };
             String name = StellarForgeState.EVENT_NAMES[Math.floorMod(anim.eventKind, 3)];
-            GuiDraw.drawWrapped(g, font, name.toUpperCase(Locale.ROOT) + ": " + hints[Math.floorMod(anim.eventKind, 3)], 8,
+            GuiDraw.drawWrapped(g, font, name.toUpperCase(Locale.ROOT) + ": " + hints[Math.floorMod(anim.eventKind, 3)],
+                    8,
                     top - 24, w - 16, C_GOLD);
         }
         if (view.holdTicks > 0) {
@@ -305,8 +301,6 @@ public final class StellarHudPage implements CanvasPainter {
             g.drawString(font, hold, w - 8 - font.width(hold), top - 12, C_GREEN, false);
         }
     }
-
-    // ------------------------------------------------------------------------------------------------ the plasma picker
 
     private static final int PICK_X = 80;
     private static final int PICK_W = 176;
@@ -318,7 +312,6 @@ public final class StellarHudPage implements CanvasPainter {
     private int pickerScroll;
     private final int[] pickerRect = new int[4];
 
-    /** Everything that can be picked: the usual oxygen plasma, then each exotic one. */
     private static java.util.List<StellarPlasma.Recipe> choices() {
         return StellarPlasma.forDisplay();
     }
@@ -390,7 +383,6 @@ public final class StellarHudPage implements CanvasPainter {
         g.drawString(font, font.plainSubstrByWidth(foot, PICK_W - 10), PICK_X + 5, PICK_BOTTOM - 10, C_MID, false);
     }
 
-    /** A click while the picker is open: pick a row, or close it. True if the click was used. */
     private boolean pickerClick(double mx, double my) {
         boolean inside = mx >= pickerRect[0] && mx < pickerRect[0] + pickerRect[2] && my >= pickerRect[1] &&
                 my < pickerRect[1] + pickerRect[3];

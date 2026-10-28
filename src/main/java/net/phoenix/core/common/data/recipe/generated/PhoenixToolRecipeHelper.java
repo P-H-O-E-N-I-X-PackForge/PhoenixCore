@@ -65,7 +65,7 @@ public class PhoenixToolRecipeHelper {
             final MaterialEntry steelRing = new MaterialEntry(TagPrefix.ring, GTMaterials.Steel);
 
             if (property.hasType(GTToolType.CHAINSAW_LV)) {
-                toolPrefix = TagPrefix.toolHeadChainsaw;
+                toolPrefix = TagPrefix.toolHeadChainsaw.get();
                 VanillaRecipeHelper.addShapedRecipe(provider, String.format("chainsaw_head_%s", material.getName()),
                         ChemicalHelper.get(toolPrefix, material),
                         "SRS", "XhX", "SRS",
@@ -81,7 +81,7 @@ public class PhoenixToolRecipeHelper {
             }
 
             if (property.hasType(GTToolType.DRILL_LV)) {
-                toolPrefix = TagPrefix.toolHeadDrill;
+                toolPrefix = TagPrefix.toolHeadDrill.get();
                 VanillaRecipeHelper.addShapedRecipe(provider, String.format("drill_head_%s", material.getName()),
                         ChemicalHelper.get(toolPrefix, material),
                         "XSX", "XSX", "ShS",
@@ -93,7 +93,7 @@ public class PhoenixToolRecipeHelper {
             }
 
             if (property.hasType(GTToolType.WIRE_CUTTER_LV)) {
-                toolPrefix = toolHeadWireCutter;
+                toolPrefix = toolHeadWireCutter.get();
                 addElectricToolRecipe(provider, toolPrefix,
                         new GTToolType[] { PhoenixToolType.WIRE_CUTTER_MV, PhoenixToolType.WIRE_CUTTER_EV,
                                 PhoenixToolType.WIRE_CUTTER_LuV, PhoenixToolType.WIRE_CUTTER_ZPM },
@@ -108,7 +108,7 @@ public class PhoenixToolRecipeHelper {
             }
 
             if (property.hasType(GTToolType.BUZZSAW_LV)) {
-                toolPrefix = TagPrefix.toolHeadBuzzSaw;
+                toolPrefix = TagPrefix.toolHeadBuzzSaw.get();
                 addElectricToolRecipe(provider, toolPrefix,
                         new GTToolType[] { PhoenixToolType.BUZZSAW_MV, PhoenixToolType.BUZZSAW_HV,
                                 PhoenixToolType.BUZZSAW_EV, PhoenixToolType.BUZZSAW_IV, PhoenixToolType.BUZZSAW_LuV,
@@ -122,7 +122,7 @@ public class PhoenixToolRecipeHelper {
             }
 
             if (property.hasType(GTToolType.WRENCH_LV)) {
-                toolPrefix = TagPrefix.toolHeadWrench;
+                toolPrefix = TagPrefix.toolHeadWrench.get();
                 addElectricToolRecipe(provider, toolPrefix,
                         new GTToolType[] { PhoenixToolType.WRENCH_MV, PhoenixToolType.WRENCH_EV,
                                 PhoenixToolType.WRENCH_LuV, PhoenixToolType.WRENCH_ZPM },
@@ -141,7 +141,7 @@ public class PhoenixToolRecipeHelper {
         if (property.hasType(GTToolType.SCREWDRIVER_LV)) {
 
             if (material.hasFlag(GENERATE_LONG_ROD)) {
-                toolPrefix = TagPrefix.toolHeadScrewdriver;
+                toolPrefix = TagPrefix.toolHeadScrewdriver.get();
                 addElectricToolRecipe(provider, toolPrefix,
                         new GTToolType[] { PhoenixToolType.SCREWDRIVER_MV,
                                 PhoenixToolType.SCREWDRIVER_EV,

@@ -15,25 +15,21 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import net.minecraft.network.chat.Component;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import brachy.modularui.factory.PosGuiData;
-import brachy.modularui.screen.ModularPanel;
-import brachy.modularui.screen.UISettings;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.common.machine.multiblock.ShieldedMachine;
 import net.phoenix.core.common.machine.multiblock.part.fluid.PlasmaHatchPartMachine;
 import net.phoenix.core.common.machine.trait.NotifiableShieldContainer;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -266,7 +262,6 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
                 new PlasmaBoost("Nickel Plasma", 0.6, 0.9, 50, 10));
     }
 
-    /** A screen control pressed on the server. */
     private void hudAction(int id, int value) {
         HudRecipes.handle(this, id);
     }
@@ -280,7 +275,10 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
         return HudModel.of("High-Pressure Plasma Arc Furnace")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.FURNACE)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.shieldRing(() -> shieldType == Shield.ShieldTypes.NORMAL ? shieldHealth / (float) Math.max(1, Shield.ShieldTypes.NORMAL.shieldHealth) : 0.0f, net.phoenix.core.client.gui.hud.HudTheme.FURNACE.accent()), 44)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.shieldRing(
+                        () -> shieldType == Shield.ShieldTypes.NORMAL ?
+                                shieldHealth / (float) Math.max(1, Shield.ShieldTypes.NORMAL.shieldHealth) : 0.0f,
+                        net.phoenix.core.client.gui.hud.HudTheme.FURNACE.accent()), 44)
                 .badge(() -> HudRecipes.badge(this))
                 .subtitle(() -> shieldType == Shield.ShieldTypes.NORMAL ? "Shield up" :
                         shieldType == Shield.ShieldTypes.DECAYED ? "Shield decayed: needs an activation recipe" :
@@ -318,10 +316,13 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
                         HudModel.MID)))
                 .math(() -> java.util.List.of(
                         HudModel.heading("SHIELD"),
-                        HudModel.line("health falls " + Shield.ShieldTypes.NORMAL.decayRate + " HP each second while up",
+                        HudModel.line(
+                                "health falls " + Shield.ShieldTypes.NORMAL.decayRate + " HP each second while up",
                                 HudModel.MID),
-                        HudModel.line("at 0 it decays, and needs " + Shield.ShieldTypes.DECAYED.shieldCooldownTicks / 20 +
-                                "s to recover", HudModel.MID),
+                        HudModel.line(
+                                "at 0 it decays, and needs " + Shield.ShieldTypes.DECAYED.shieldCooldownTicks / 20 +
+                                        "s to recover",
+                                HudModel.MID),
                         HudModel.line("shield now " + shieldHealth + " / " + Shield.ShieldTypes.NORMAL.shieldHealth,
                                 HudModel.WHITE),
                         HudModel.heading("PLASMA CATALYSTS"),

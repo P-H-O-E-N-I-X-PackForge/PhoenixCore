@@ -12,7 +12,6 @@ import net.phoenix.core.common.entity.PlacedItemEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
-/** A placed item drawn on its block face the way an item frame draws its item, only smaller. */
 public class PlacedItemRenderer extends EntityRenderer<PlacedItemEntity> {
 
     private final EntityRendererProvider.Context context;
@@ -35,13 +34,13 @@ public class PlacedItemRenderer extends EntityRenderer<PlacedItemEntity> {
         Direction face = entity.face();
         float scale = entity.scale();
         pose.pushPose();
-        // as an item frame does: turn so the front faces out of the block
+
         float xRot = face == Direction.UP ? -90.0f : face == Direction.DOWN ? 90.0f : 0.0f;
         float yRot = face.getAxis().isHorizontal() ? face.get2DDataValue() * 90.0f : 0.0f;
         pose.mulPose(Axis.XP.rotationDegrees(xRot));
         pose.mulPose(Axis.YP.rotationDegrees(180.0f - yRot));
         pose.mulPose(Axis.ZP.rotationDegrees(entity.spin() * 45.0f));
-        // a block's middle stands half its size off the face; a flat item lies just off it
+
         pose.translate(0.0, 0.0, entity.isBlock() ? -scale * 0.5f : -0.03f);
         pose.scale(scale, scale, scale);
         context.getItemRenderer().renderStatic(entity.item(), ItemDisplayContext.FIXED, light,

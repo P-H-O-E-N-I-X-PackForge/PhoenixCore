@@ -63,7 +63,7 @@ final class SolarisContinuumPage implements MapPage {
             }
             out.add(body);
         }
-        // per system: the central body first, then everything by distance
+
         out.sort(Comparator.comparing((ContinuumBody b) -> b.system().toString())
                 .thenComparing(b -> b.type() == ContinuumBody.Type.STAR || b.type() == ContinuumBody.Type.BLACK_HOLE ?
                         0 : 1)
@@ -183,7 +183,8 @@ final class SolarisContinuumPage implements MapPage {
             List<Component> lines = new ArrayList<>();
             lines.add(Component.literal(outpost.probes() + " probes, " + outpost.readyAt(ContinuumClientState.now()) +
                     " cycles ready").withStyle(ChatFormatting.GRAY));
-            if (outpost.damaged()) lines.add(Component.literal("Damaged: fly a repair run").withStyle(ChatFormatting.RED));
+            if (outpost.damaged())
+                lines.add(Component.literal("Damaged: fly a repair run").withStyle(ChatFormatting.RED));
             else if (!outpost.powered()) lines.add(Component.literal("Unpowered").withStyle(ChatFormatting.RED));
             else if (outpost.upkeepPerCycle() > 0) {
                 lines.add(Component.literal(String.format(Locale.ROOT, "%,d EU per cycle", outpost.upkeepPerCycle()))

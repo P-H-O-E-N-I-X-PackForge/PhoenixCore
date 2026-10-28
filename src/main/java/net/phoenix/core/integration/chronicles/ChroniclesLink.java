@@ -11,19 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-/**
- * PhoenixCore's way into Phoenix Chronicles, safe to call with Chronicles not installed (every call does nothing then).
- * This is the extension point for quests: fire a trigger and any quest with an "External Trigger" task of that id counts
- * it. Triggers registered here show up in the quest editor. Addons use it the same way:
- *
- * <pre>{@code
- * ChroniclesLink.registerTrigger("mymod:my_machine/done", "A player's My Machine finished a run.");
- * ChroniclesLink.fire(player, "mymod:my_machine/done", data);
- * }</pre>
- *
- * This class never touches a Chronicles class itself, so it loads without Chronicles; the work is in
- * {@link ChroniclesImpl}, which is only loaded when the mod is there.
- */
 public final class ChroniclesLink {
 
     public static final String MOD_ID = "phoenix_chronicles";
@@ -37,24 +24,20 @@ public final class ChroniclesLink {
         return present;
     }
 
-    /** Make a trigger id known to the quest editor (it can be used without this, but is not listed). */
     public static void registerTrigger(String id, @Nullable String description) {
         if (present()) ChroniclesImpl.registerTrigger(id, description);
     }
 
-    /** One player did the thing: every quest of theirs waiting on this trigger counts it. Server side only. */
     public static void fire(@Nullable Player player, String id, @Nullable CompoundTag data) {
         if (player instanceof ServerPlayer && present()) ChroniclesImpl.fire(player, id, data);
     }
 
-    /** As {@link #fire}, for a player who may be offline (a machine's owner): does nothing if they are not on. */
     public static void fire(@Nullable MinecraftServer server, @Nullable UUID player, String id,
                             @Nullable CompoundTag data) {
         if (server == null || player == null || !present()) return;
         fire(server.getPlayerList().getPlayer(player), id, data);
     }
 
-    /** Every online member of a Conflux research team did the thing. */
     public static void fireTeam(MinecraftServer server, UUID team, String id, @Nullable CompoundTag data) {
         if (!present()) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -62,14 +45,12 @@ public final class ChroniclesLink {
         }
     }
 
-    /** A small data tag with one text value, the usual payload of a trigger. */
     public static CompoundTag data(String key, String value) {
         CompoundTag tag = new CompoundTag();
         tag.putString(key, value);
         return tag;
     }
 
-    /** Called once at startup: registers PhoenixCore's own triggers and task types. */
     public static void setup() {
         if (present()) ChroniclesImpl.setup();
     }

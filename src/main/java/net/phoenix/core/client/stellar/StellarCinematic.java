@@ -9,11 +9,6 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.phoenix.core.PhoenixCore;
 
-/**
- * What the player themselves feels when a Stellar Forge collapses: the camera shakes as the star tears itself in and the
- * screen whites out in the flash, both fading with distance. The renderer reports each frame what the nearest collapse is
- * doing; this applies it (a frame late, which nobody sees).
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class StellarCinematic {
 
@@ -24,7 +19,6 @@ public final class StellarCinematic {
 
     private StellarCinematic() {}
 
-    /** Start of a frame: what was reported last frame is what is shown, and the tally starts again. */
     static void frame() {
         shakeShown = shakeAcc;
         whiteShown = whiteAcc;
@@ -32,7 +26,6 @@ public final class StellarCinematic {
         whiteAcc = 0.0f;
     }
 
-    /** A collapse is shaking the camera by {@code shake} and whiting the screen by {@code white} (both 0 to 1). */
     static void report(float shake, float white) {
         shakeAcc = Math.max(shakeAcc, shake);
         whiteAcc = Math.max(whiteAcc, white);

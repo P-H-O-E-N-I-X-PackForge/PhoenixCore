@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** The Stellar Forge's exotic plasmas and dyes in EMI. */
 public final class StellarEmi {
 
     private StellarEmi() {}
@@ -79,7 +78,6 @@ public final class StellarEmi {
     private static final int TEXT_X = 66;
     private static final int TEXT_TOP = 24;
 
-    /** How tall a page needs to be for its lines, wrapped to the width they get, under the header. */
     private static int heightOf(List<Component> lines, int min) {
         Font font = Minecraft.getInstance().font;
         int y = TEXT_TOP;
@@ -112,7 +110,6 @@ public final class StellarEmi {
                 Component.literal("Put it in the input hatch, it is used up"));
     }
 
-    /** The body drawn flat on a dark panel. */
     private static final class Picture extends Widget {
 
         private final Bounds bounds;
@@ -150,7 +147,6 @@ public final class StellarEmi {
         }
     }
 
-    /** Lines of text that wrap inside their width rather than running off the edge. */
     private static final class Lines extends Widget {
 
         private final Bounds bounds;
@@ -171,7 +167,7 @@ public final class StellarEmi {
         @Override
         public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
-            // EMI's own background is light, so the text sits on a dark panel
+
             g.fill(bounds.x() - 2, bounds.y() - 2, bounds.x() + bounds.width(), bounds.y() + bounds.height(),
                     0xFF10131C);
             g.renderOutline(bounds.x() - 2, bounds.y() - 2, bounds.width() + 2, bounds.height() + 2, 0xFF30344A);

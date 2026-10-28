@@ -3,8 +3,10 @@ package net.phoenix.core.common.block;
 import com.gregtechceu.gtceu.api.block.ActiveBlock;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
@@ -15,6 +17,7 @@ import net.phoenix.core.PhoenixCore;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -43,12 +46,13 @@ public class PhoenixCoilBlock extends ActiveBlock {
             tooltip.add(
                     Component.translatable("block.gtceu.wire_coil.tooltip_parallel_smelter", coilType.getLevel() * 32));
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_energy_smelter",
-                    Math.max(1, (4 * coilType.getLevel() * 32 / (8 * coilType.getEnergyDiscount())))));
+                    Math.max(1, (4 - coilType.getLevel() * 32 / (8 - coilType.getEnergyDiscount())))));
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_pyro"));
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_speed_pyro",
-                    coilTier == 0 ? 75 : 50 * (coilTier + 1)));
+                    coilTier == 0 ? 75 : 50 / (coilTier + 1)));
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_cracking"));
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_energy_cracking", 100 - 10 * coilTier));
+
         } else {
             tooltip.add(Component.translatable("block.gtceu.wire_coil.tooltip_extended_info"));
         }
@@ -56,7 +60,8 @@ public class PhoenixCoilBlock extends ActiveBlock {
 
     public enum CoilType implements StringRepresentable, ICoilType {
 
-        COIL_TRUE_HEAT_STABLE("true_heat_stable", 1, 1, 1, 1, PHOENIX_ENRICHED_TRITANIUM,
+        COIL_TRUE_HEAT_STABLE("true_heat_stable", 1, 1, 1, 1,
+                GTRegistries.MATERIALS.getHolder(PHOENIX_ENRICHED_TRITANIUM.getId()).orElse(null),
                 PhoenixCore.id("block/true_heat_stable_coil_block"));
 
         @NotNull
@@ -71,14 +76,15 @@ public class PhoenixCoilBlock extends ActiveBlock {
         private final int energyDiscount;
         @Getter
         private final int tier;
-        @NotNull
+        @Nullable
         @Getter
-        private final Material material;
+        private final Holder<Material> material;
         @NotNull
         @Getter
         private final ResourceLocation texture;
 
-        CoilType(String name, int coilTemperature, int level, int energyDiscount, int tier, Material material,
+        CoilType(String name, int coilTemperature, int level, int energyDiscount, int tier,
+                 @Nullable Holder<Material> material,
                  ResourceLocation texture) {
             this.name = name;
             this.coilTemperature = coilTemperature;
@@ -89,7 +95,6 @@ public class PhoenixCoilBlock extends ActiveBlock {
             this.texture = texture;
         }
 
-        @NotNull
         @Override
         public int getTier() {
             return this.tier;

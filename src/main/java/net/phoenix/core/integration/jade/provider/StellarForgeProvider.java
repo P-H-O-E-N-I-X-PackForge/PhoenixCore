@@ -16,7 +16,6 @@ import snownee.jade.api.config.IPluginConfig;
 
 import java.util.Locale;
 
-/** What a Stellar Forge is making, and how steady it is, for the tooltip. */
 public class StellarForgeProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
     public static final ResourceLocation UID = PhoenixCore.id("stellar_forge_info");
@@ -35,7 +34,8 @@ public class StellarForgeProvider implements IBlockComponentProvider, IServerDat
         tooltip.add(Component.literal("Making: ").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(stage.label).withStyle(stageColor(stage))));
         if (stage == StellarForgeState.Stage.IDLE) {
-            tooltip.add(Component.literal("Feed it hydrogen, helium or neutronium").withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add(
+                    Component.literal("Feed it hydrogen, helium or neutronium").withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
 
@@ -43,8 +43,9 @@ public class StellarForgeProvider implements IBlockComponentProvider, IServerDat
                 data.getFloat("heat"))).withStyle(ChatFormatting.GRAY));
         float stability = data.getFloat("stability");
         tooltip.add(Component.literal(String.format(Locale.ROOT, "Stability %.0f%%", stability)).withStyle(
-                stability >= net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState.HOLD_STABILITY ? ChatFormatting.GREEN : stability >= 40.0f ? ChatFormatting.YELLOW :
-                        ChatFormatting.RED));
+                stability >= net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState.HOLD_STABILITY ?
+                        ChatFormatting.GREEN : stability >= 40.0f ? ChatFormatting.YELLOW :
+                                ChatFormatting.RED));
         tooltip.add(Component.literal(String.format(Locale.ROOT, "Feed %d%%   Field %d%%   Spin %d%%",
                 data.getInt("feed"), data.getInt("field"), data.getInt("spin"))).withStyle(ChatFormatting.GRAY));
 

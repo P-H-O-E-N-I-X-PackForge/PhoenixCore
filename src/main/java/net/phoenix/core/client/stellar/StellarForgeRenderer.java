@@ -1,7 +1,5 @@
 package net.phoenix.core.client.stellar;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -19,20 +17,10 @@ import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-/**
- * Draws what a Stellar Forge is making inside its chamber: a gas cloud, a protostar, a star or a black hole, held by
- * rings of containment field that turn with the spin and glow with the field, and fed by beams from the floor that
- * run with the feed. It is drawn before the translucent blocks, so the glass of the chamber is in front of it.
- *
- * <p>
- * A black hole grows with the mass it has swallowed and its disk gets fiercer with it and with the feed. When a star falls
- * in it is a scene of about nine seconds: the star's heartbeat quickens and it shudders and brightens, the field tightens
- * round it as it is squeezed to a point, the screen whites out in the flash, and rings of light are thrown out as a black
- * hole opens, furious at first, then settling.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class StellarForgeRenderer {
 
@@ -45,7 +33,6 @@ public final class StellarForgeRenderer {
     private static final int DONE_FLASH = 1;
     private static final int DONE_OPEN = 2;
 
-    /** What a black hole looks like right now. */
     private record HoleLook(float radius, int hot, int cool, float intensity, float feeding) {}
 
     private StellarForgeRenderer() {}
@@ -94,8 +81,10 @@ public final class StellarForgeRenderer {
             float p = falling ? Mth.clamp(anim.collapse / StellarForgeClient.Anim.COLLAPSE_SECONDS, 0.0f, 1.0f) : 1.0f;
             boolean before = falling && p < FLASH;
             float pA = before ? Mth.clamp(p / INSTABILITY, 0.0f, 1.0f) : falling ? 1.0f : 0.0f;
-            float pB = before ? Mth.clamp((p - INSTABILITY) / (FLASH - INSTABILITY), 0.0f, 1.0f) : falling ? 1.0f : 0.0f;
-            float after = falling && !before ? Mth.clamp((p - FLASH) / (1.0f - FLASH), 0.0f, 1.0f) : falling ? 0.0f : 1.0f;
+            float pB = before ? Mth.clamp((p - INSTABILITY) / (FLASH - INSTABILITY), 0.0f, 1.0f) :
+                    falling ? 1.0f : 0.0f;
+            float after = falling && !before ? Mth.clamp((p - FLASH) / (1.0f - FLASH), 0.0f, 1.0f) :
+                    falling ? 0.0f : 1.0f;
             float squeeze = (float) Math.pow(pB, 2.2);
             float distance = (float) centre.length();
             Vec3 world = machine.chamberCentre();
@@ -106,7 +95,7 @@ public final class StellarForgeRenderer {
                     shownStage == StellarForgeState.Stage.BLACK_HOLE && holeTint >= 0 ? holeTint :
                             StellarForgeState.colorOf(anim.heat);
             if (before) {
-                // it brightens and goes blue-white as it tears in
+
                 int blue = GuiDraw.mix(0xFF_000000 | color, 0xFF_A8C8FF, 0.55f * pB) & 0xFFFFFF;
                 color = GuiDraw.mix(0xFF_000000 | blue, 0xFF_FFFFFF, 0.3f * pA + 0.7f * squeeze) & 0xFFFFFF;
             }
@@ -120,7 +109,7 @@ public final class StellarForgeRenderer {
             float radius = Math.max(0.02f, anim.radius);
             float field = machine.fieldSetting() / 100.0f;
             float flicker = machine.powerOk() ? 1.0f : 0.5f + 0.5f * (float) Math.sin(seconds * 31.0f);
-            // once the body is all there and nothing is happening the light settles and breathes; a push flares it
+
             float calm = 0.16f + 0.05f * (float) Math.sin(seconds * 1.1f);
             float live = Math.max(anim.surge, machine.feedSetting() / 100.0f * 0.7f);
             float level = Mth.lerp(anim.settle, 1.0f, calm + (1.0f - calm) * live);
@@ -128,13 +117,13 @@ public final class StellarForgeRenderer {
             float ringScale = 1.0f;
             if (falling) {
                 if (before) {
-                    // the field winds up, shivers, then draws tight round the star
+
                     spin = Math.min(1.0f, spin + 0.4f * pA + 1.2f * pB);
                     field = Math.min(1.0f, field + 0.5f * pA + 0.5f * pB);
                     level = Math.max(level, 0.6f + 0.4f * pA + 0.8f * pB);
                     ringScale = 1.0f + 0.06f * pA * (float) Math.sin(seconds * 14.0f) - 0.65f * squeeze;
                 } else {
-                    // and springs out past where it was when it lets go, then settles
+
                     float wind = (1.0f - after) * (1.0f - after);
                     spin = Math.min(1.0f, spin + wind * 1.2f);
                     field = Math.min(1.0f, field + wind);
@@ -146,31 +135,31 @@ public final class StellarForgeRenderer {
             if (falling) collapseSounds(mc, anim, machine, world, seconds, before, pA, pB, after);
             reportToPlayer(distance, before, pA, pB, p, after);
 
-            // the lasers grow with a black hole: its disk reaches a long way, and they ring it
             float scale = 1.0f;
             if (falling && !before) {
                 float open = Mth.clamp((after - 0.07f) / 0.65f, 0.0f, 1.0f);
-                scale = 1.0f + (StellarForgeClient.Anim.holeScale(anim.hole) - 1.0f) * (1.0f - (1.0f - open) * (1.0f - open));
+                scale = 1.0f +
+                        (StellarForgeClient.Anim.holeScale(anim.hole) - 1.0f) * (1.0f - (1.0f - open) * (1.0f - open));
             } else if (!falling && stage == StellarForgeState.Stage.BLACK_HOLE) {
                 scale = StellarForgeClient.Anim.holeScale(anim.hole);
             }
 
-
             if (falling) {
                 if (before) {
-                    // the old body: shuddering, then squeezed down to a point and whitened
+
                     float shudder = 1.0f + 0.10f * pA * (float) Math.sin(seconds * (10.0f + 30.0f * pA));
                     float r = anim.collapseRadius * shudder * (1.0f - 0.95f * squeeze);
                     drawBody(anim.collapseFrom, Math.max(0.015f, r), color, null, view, projection, at);
                 } else if (after < 0.07f) {
-                    // the flash: a point of white where it was
+
                     drawBody(StellarForgeState.Stage.STAR, 0.05f, 0xFFFFFF, null, view, projection, at);
                 } else {
-                    // the black hole opening: it swells from nothing and its disk is furious, then settles
+
                     float open = Mth.clamp((after - 0.07f) / 0.65f, 0.0f, 1.0f);
                     float grow = 1.0f - (1.0f - open) * (1.0f - open) * (1.0f - open);
                     float boost = (float) Math.pow(1.0f - Mth.clamp((after - 0.07f) / 0.8f, 0.0f, 1.0f), 1.5);
-                    drawBody(StellarForgeState.Stage.BLACK_HOLE, 0.0f, color, holeLook(machine, anim, holeTint, grow, boost),
+                    drawBody(StellarForgeState.Stage.BLACK_HOLE, 0.0f, color,
+                            holeLook(machine, anim, holeTint, grow, boost),
                             view, projection, at);
                 }
             } else if (stage == StellarForgeState.Stage.BLACK_HOLE) {
@@ -179,7 +168,6 @@ public final class StellarForgeRenderer {
                 drawBody(stage, radius, color, null, view, projection, at);
             }
 
-            // after the body, so the near side of a ring crosses in front of it and the far side goes behind
             VertexConsumer lines = buffers.getBuffer(StellarBeamRenderType.BEAMS);
             containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash, ringScale * scale);
             injectors(lines, pose, machine, at, seconds, color, flicker * level, scale);
@@ -189,13 +177,6 @@ public final class StellarForgeRenderer {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------ the black hole
-
-    /**
-     * A black hole's look: it grows with the mass it has swallowed (a log scale, so it keeps growing visibly), and its disk
-     * gets fiercer with that mass and with the feed: brighter, bluer-white in the middle, reaching further and flaring.
-     * {@code grow} scales the size (0 to 1, for it opening) and {@code boost} (0 to 1) is extra fury, for the first moments.
-     */
     private static HoleLook holeLook(StellarForgeMachine machine, StellarForgeClient.Anim anim, int tint, float grow,
                                      float boost) {
         float g = StellarForgeClient.Anim.holeGrowth(machine.mass());
@@ -211,7 +192,7 @@ public final class StellarForgeRenderer {
             hot = GuiDraw.mix(0xFF_FFDB99, 0xFF_DCEAFF, g) & 0xFFFFFF;
             cool = GuiDraw.mix(0xFF_F25214, 0xFF_FF8A3A, g) & 0xFFFFFF;
         }
-        // the disk reaches 35% further at full feeding: draw the body smaller to match, so it stays inside the chamber
+
         float radius = Math.max(0.02f, anim.hole * 0.9f * grow / (1.0f + 0.35f * feeding));
         return new HoleLook(radius, hot, cool, intensity, feeding);
     }
@@ -221,18 +202,12 @@ public final class StellarForgeRenderer {
                 (int) ((rgb & 0xFF) * keep);
     }
 
-    /**
-     * One body of a stage at a size the chamber can hold. The cloud's and protostar's glow and the black hole's disk are
-     * flat pictures that cannot be cut off by the walls, so they are kept inside them (about 1.35 blocks from the middle,
-     * the chamber being 1.5): bigger and they draw over the casing. The star is a real sphere and can be larger.
-     */
     private static void drawBody(StellarForgeState.Stage stage, float radius, int color, HoleLook hole, Matrix4f view,
                                  Matrix4f projection, Vector3f at) {
-        // the beams just drawn leave the depth test off, and the bodies' spheres need it on to hide behind blocks
         com.mojang.blaze3d.systems.RenderSystem.enableDepthTest();
         com.mojang.blaze3d.systems.RenderSystem.depthFunc(515);
         com.mojang.blaze3d.systems.RenderSystem.depthMask(true);
-        // drawn before the translucent blocks: write depth where lit, so water and glass behind do not show over it
+
         ContinuumRender.beginWorldObject(view, projection, at, true);
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
@@ -251,16 +226,14 @@ public final class StellarForgeRenderer {
         ContinuumRender.endWorldObject();
     }
 
-    // ------------------------------------------------------------------------------------------------ the collapse
-
     private static float backOut(float t) {
         float c = 1.70158f;
         float u = t - 1.0f;
         return 1.0f + (c + 1.0f) * u * u * u + c * u * u;
     }
 
-    /** The heartbeat that quickens, the blast, the thunder and the low note as the hole opens; and the particles. */
-    private static void collapseSounds(Minecraft mc, StellarForgeClient.Anim anim, StellarForgeMachine machine, Vec3 world,
+    private static void collapseSounds(Minecraft mc, StellarForgeClient.Anim anim, StellarForgeMachine machine,
+                                       Vec3 world,
                                        float seconds, boolean before, float pA, float pB, float after) {
         var level = mc.level;
         if (level == null) return;
@@ -272,7 +245,7 @@ public final class StellarForgeRenderer {
                 anim.nextBeat = seconds + 1.0f - 0.8f * dread;
             }
             if (pB > 0.0f) {
-                // dust pouring into the point
+
                 int count = 1 + (int) (8.0f * pB);
                 for (int i = 0; i < count; i++) {
                     double a = level.random.nextDouble() * Math.PI * 2.0;
@@ -289,9 +262,11 @@ public final class StellarForgeRenderer {
         }
         if ((anim.collapseDone & DONE_FLASH) == 0) {
             anim.collapseDone |= DONE_FLASH;
-            level.playLocalSound(world.x, world.y, world.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0f,
+            level.playLocalSound(world.x, world.y, world.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS,
+                    4.0f,
                     0.55f, false);
-            level.playLocalSound(world.x, world.y, world.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS, 5.0f,
+            level.playLocalSound(world.x, world.y, world.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS,
+                    5.0f,
                     0.45f, false);
             level.addParticle(ParticleTypes.FLASH, world.x, world.y, world.z, 0.0, 0.0, 0.0);
             for (int i = 0; i < 60; i++) {
@@ -304,12 +279,12 @@ public final class StellarForgeRenderer {
         }
         if (after > 0.1f && (anim.collapseDone & DONE_OPEN) == 0) {
             anim.collapseDone |= DONE_OPEN;
-            level.playLocalSound(world.x, world.y, world.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 2.5f, 0.4f,
+            level.playLocalSound(world.x, world.y, world.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 2.5f,
+                    0.4f,
                     false);
         }
     }
 
-    /** The camera shakes and the screen whites out for a player near the collapse, less the further away. */
     private static void reportToPlayer(float distance, boolean before, float pA, float pB, float p, float after) {
         float near = Mth.clamp(1.0f - distance / 14.0f, 0.0f, 1.0f);
         float close = Mth.clamp(1.0f - distance / 10.0f, 0.0f, 1.0f);
@@ -326,11 +301,11 @@ public final class StellarForgeRenderer {
         StellarCinematic.report(shake * near, white * close);
     }
 
-    /** Streaks of light drawn in from the walls to the point as the star is squeezed. */
-    private static void inwardStreaks(VertexConsumer out, Matrix4f pose, Vector3f c, float seconds, float pB, int color) {
+    private static void inwardStreaks(VertexConsumer out, Matrix4f pose, Vector3f c, float seconds, float pB,
+                                      int color) {
         int n = 14;
         for (int i = 0; i < n; i++) {
-            // evenly spread directions, turning slowly
+
             double y = 1.0 - 2.0 * (i + 0.5) / n;
             double r = Math.sqrt(1.0 - y * y);
             double a = i * 2.399963 + seconds * 0.6;
@@ -342,7 +317,6 @@ public final class StellarForgeRenderer {
         }
     }
 
-    /** Rings of light thrown out when it falls in: three, one after the other, fading as they go. */
     private static void shockwave(VertexConsumer out, Matrix4f pose, Vector3f c, float t) {
         for (int ring = 0; ring < 3; ring++) {
             float local = Mth.clamp((t - 0.01f * ring * 10.0f * 0.8f) * 1.7f, 0.0f, 1.0f);
@@ -366,16 +340,12 @@ public final class StellarForgeRenderer {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------ the beams
-
-    /** A beam as light: a faint wide halo under a bright core, so it stays smooth and visible at a distance. */
     private static void beam(VertexConsumer out, Matrix4f pose, Vector3f a, Vector3f b, float width, int color,
                              float strength) {
         ContinuumRender.drawBeam(out, pose, a, b, width * 2.6f, color, strength * 0.12f);
         ContinuumRender.drawBeam(out, pose, a, b, width, color, strength);
     }
 
-    /** Three tilted rings of field round the body, turning with the spin, brighter with the field. */
     private static void containment(VertexConsumer out, Matrix4f pose, Vector3f c, float spin, float field,
                                     float seconds, int color, float flicker, float flash, float scale) {
         float strength = (0.25f + 0.75f * field) * flicker;
@@ -400,7 +370,7 @@ public final class StellarForgeRenderer {
             }
         }
         if (flash > 0.0f) {
-            // a stage change: a ring of light flung out
+
             int segments = 96;
             Vector3f previous = null;
             float radius = 0.4f + (1.0f - flash) * 1.4f;
@@ -414,7 +384,6 @@ public final class StellarForgeRenderer {
         }
     }
 
-    /** Beams from the floor of the chamber to the middle, with pulses running up them as fast as the feed. */
     private static void injectors(VertexConsumer out, Matrix4f pose, StellarForgeMachine machine, Vector3f c,
                                   float seconds, int color, float flicker, float scale) {
         float feed = machine.feedSetting() / 100.0f;

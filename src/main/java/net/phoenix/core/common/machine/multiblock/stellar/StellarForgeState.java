@@ -1,14 +1,5 @@
 package net.phoenix.core.common.machine.multiblock.stellar;
 
-/**
- * What a Stellar Forge is doing, and the rules it follows: a puzzle of three settings (feed, containment field, spin)
- * that must be kept inside bands that move with the mass gathered and are shifted a little differently in every forge.
- * Hold them and the cloud of gas gathers into a protostar, lights as a star, and, fed something heavy enough, falls in
- * as a black hole. Let them drift and it loses stability, and then mass.
- *
- * <p>
- * This is only numbers, no Minecraft: the machine feeds it what it drew from its hatches and reads back what to show.
- */
 public final class StellarForgeState {
 
     public enum Stage {
@@ -31,14 +22,12 @@ public final class StellarForgeState {
         }
     }
 
-    /** A band a setting must sit inside, in percent. */
     public record Band(float low, float high) {
 
         public boolean contains(float value) {
             return value >= low && value <= high;
         }
 
-        /** 0 when inside, rising to 1 as far as {@code reach} outside. */
         public float miss(float value, float reach) {
             if (contains(value)) return 0.0f;
             float distance = value < low ? low - value : value - high;
@@ -46,20 +35,17 @@ public final class StellarForgeState {
         }
     }
 
-    /** Mass (in M) that a stage needs before the next. */
     public static final double CLOUD_TO_PROTOSTAR = 40.0;
     public static final double PROTOSTAR_TO_STAR = 400.0;
     public static final double STAR_TO_HOLE = 4000.0;
-    /** Enough mass, fast enough, and the cloud skips straight to a black hole. */
+
     public static final double DIRECT_COLLAPSE = 3000.0;
 
     public static final int HOLD_TICKS_TO_ADVANCE = 100;
 
-    /** Stability it has to stay at or above for a stage to move on. */
     public static final float HOLD_STABILITY = 50.0f;
     public static final int FAIL_TICKS_TO_REGRESS = 200;
 
-    /** Fluid each stage can take in at full feed, in mB a tick. */
     public static final double[] MAX_FEED_PER_TICK = { 0.0, 20.0, 40.0, 80.0, 160.0 };
 
     public Stage stage = Stage.IDLE;
@@ -67,7 +53,6 @@ public final class StellarForgeState {
     public float heat;
     public float stability;
 
-    /** The player's three settings, 0 to 100. */
     public int feed;
     public int field;
     public int spin;
@@ -76,16 +61,12 @@ public final class StellarForgeState {
     public int holdTicks;
     public int failTicks;
 
-    /** Shifts the bands a little, differently in every forge. */
     public final long seed;
 
-    /** A number rolled afresh each time a run starts (from idle), so the same forge plays differently every time. */
     public int run;
 
-    /** Ticks since the run started: the bands drift with it. */
     public int age;
 
-    /** How many disturbances (flare, shock, chill) this run has had, and what the last one was (0 flare, 1 shock, 2 chill). */
     public int eventCount;
     public int eventKind;
     private int nextEvent = -1;
@@ -96,7 +77,6 @@ public final class StellarForgeState {
         this.seed = seed;
     }
 
-    /** A number from 0 to 1 that is the same for a given forge, run and salt. */
     public float roll(int salt) {
         long h = (seed ^ ((long) run * 0xD6E8FEB86659FD93L)) * 0x9E3779B97F4A7C15L + salt * 0xC2B2AE3D27D4EB4FL;
         h ^= h >>> 29;
@@ -105,7 +85,6 @@ public final class StellarForgeState {
         return (h & 0xFFFF) / 65535.0f;
     }
 
-    /** Where a band sits (up to 10 either way) now: set by the run, and wandering slowly as it goes on. */
     private float shift(int salt) {
         float base = (roll(salt) - 0.5f) * 20.0f;
         float period = 1200.0f + 1800.0f * roll(salt + 50);
@@ -113,12 +92,10 @@ public final class StellarForgeState {
         return base + drift;
     }
 
-    /** The mass a stage needs varies 15% either way from run to run. */
     private double threshold(double base, Stage forStage) {
         return base * (0.85 + 0.3 * roll(10 + forStage.ordinal()));
     }
 
-    /** Where the containment field should sit now. */
     public Band fieldBand() {
         float base = switch (stage) {
             case GAS_CLOUD -> 25.0f + (float) (massFraction() * 20.0);
@@ -145,7 +122,6 @@ public final class StellarForgeState {
         return new Band(Math.max(0.0f, centre - half), Math.min(100.0f, centre + half));
     }
 
-    /** Where the heat should sit: a cloud wants to stay cool, a star to burn. */
     public Band heatBand() {
         Band base = switch (stage) {
             case GAS_CLOUD -> new Band(0.0f, 30.0f);
@@ -155,12 +131,11 @@ public final class StellarForgeState {
             default -> new Band(0.0f, 100.0f);
         };
         if (stage == Stage.IDLE) return base;
-        // a run runs a little hotter or cooler than another
+
         float offset = (roll(5) - 0.5f) * 16.0f;
         return new Band(Math.max(0.0f, base.low() + offset), Math.min(100.0f, base.high() + offset));
     }
 
-    /** Mass now as a share of what this stage needs to move on. */
     public double massFraction() {
         return Math.min(1.0, mass / nextMass());
     }
@@ -174,7 +149,6 @@ public final class StellarForgeState {
         };
     }
 
-    /** What the forge draws to run this stage, in EU a tick. */
     public long energyPerTick() {
         if (stage == Stage.IDLE) return 0L;
         long base = 256L + 40L * field + 20L * spin + 12L * feed;
@@ -185,19 +159,16 @@ public final class StellarForgeState {
         return MAX_FEED_PER_TICK[stage.ordinal()];
     }
 
-    /** mB a tick the settings ask for. */
     public double feedPerTick() {
         return maxFeedPerTick() * feed / 100.0;
     }
 
-    /** What a star or black hole gives, in mB of plasma a tick. */
     public double plasmaPerTick() {
         if (stage != Stage.STAR && stage != Stage.BLACK_HOLE) return 0.0;
         double size = Math.max(1.0, Math.min(64.0, mass / 50.0));
         return size * (stability / 100.0) * (stage == Stage.BLACK_HOLE ? 2.0 : 1.0);
     }
 
-    /** The picture's size, in blocks, for the chamber (it has to fit inside a three block room). */
     public float radius() {
         return radius(stage, mass);
     }
@@ -213,7 +184,6 @@ public final class StellarForgeState {
         };
     }
 
-    /** One tick. {@code fed} is mass that came in this tick, {@code powered} whether the forge got its energy. */
     public void tick(double fed, boolean powered, boolean outputBlocked) {
         if (stage == Stage.IDLE) {
             if (fed > 0.0) {
@@ -234,10 +204,6 @@ public final class StellarForgeState {
         advance();
     }
 
-    /**
-     * Now and then a run has a disturbance (every 30 to 120 seconds, when it comes and what it is decided by the run): a
-     * flare throws the heat up, a shock knocks the stability down, a chill takes the heat away. They have to be corrected.
-     */
     private void disturb() {
         if (nextEvent < 0) nextEvent = 600 + (int) (roll(20) * 1800.0f);
         if (--nextEvent > 0) return;
@@ -256,7 +222,6 @@ public final class StellarForgeState {
         return powered ? field : field * 0.3f;
     }
 
-    /** Where the heat settles: the middle of its band, up with feed and spin, down with the field, lower while young. */
     public float heatTarget(boolean powered) {
         var hb = heatBand();
         var fb = fieldBand();
@@ -279,7 +244,6 @@ public final class StellarForgeState {
         return heatBand().miss(heat, 25.0f);
     }
 
-    /** Where stability is heading with the settings and heat as they are now. */
     public float stabilityTarget(boolean powered, boolean outputBlocked) {
         float target = 100.0f * Math.max(0.0f, 1.0f - (missField(powered) + missSpin() + missHeat()) / 2.0f);
         if (!powered) target = Math.min(target, 30.0f);
@@ -287,7 +251,6 @@ public final class StellarForgeState {
         return target;
     }
 
-    /** The stability it would settle at (heat included) if the three settings were held at these values. */
     public float equilibriumStability(int atFeed, int atField, int atSpin) {
         StellarForgeState probe = new StellarForgeState(seed);
         probe.run = run;
@@ -301,7 +264,6 @@ public final class StellarForgeState {
         return probe.stabilityTarget(true, false);
     }
 
-    /** A temperature to show, in kelvin, for the stage and how hot it is running. */
     public double kelvin() {
         return switch (stage) {
             case IDLE -> 3.0;
@@ -313,7 +275,6 @@ public final class StellarForgeState {
     }
 
     private void advance() {
-        // enough mass and energy, all at once, and a cloud or protostar falls in as a black hole
         if ((stage == Stage.GAS_CLOUD || stage == Stage.PROTOSTAR) && mass >= DIRECT_COLLAPSE && field >= 85 &&
                 feed >= 80) {
             collapse();
@@ -353,7 +314,6 @@ public final class StellarForgeState {
         holdTicks = 0;
     }
 
-    /** A cloud that cannot hold itself scatters, a star loses its hold and a black hole stays a black hole. */
     private void regress() {
         mass *= 0.6;
         switch (stage) {
@@ -379,7 +339,6 @@ public final class StellarForgeState {
         collapseArmed = false;
     }
 
-    /** A colour for the body from how hot it burns: red, orange, yellow, white, blue. */
     public int color() {
         return colorOf(heat);
     }

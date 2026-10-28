@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:plates/steel"
+    },
+    "B": {
+      "tag": "gtceu:circuits/lv"
+    },
+    "C": {
+      "tag": "c:rods/iron"
+    },
+    "D": {
+      "item": "gtceu:steel_crate"
+    },
+    "E": {
+      "tag": "c:double_plates/iron"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "phoenixcore:large_steel_vault"
+  },
+  "show_notification": false
+}

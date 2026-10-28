@@ -18,10 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * Turns a {@link HudModel} into a machine screen in the HUD style: a tab column with a progress page (readouts, bars,
- * controls), a math page with the formulas and numbers, and a graph page of everything the model asked to be graphed.
- */
 public final class MachineHud {
 
     private MachineHud() {}
@@ -29,7 +25,6 @@ public final class MachineHud {
     public static final int WIDTH = 288;
     public static final int HEIGHT = 272;
 
-    /** What a control on the screen does on the server. */
     @FunctionalInterface
     public interface Actions {
 
@@ -39,20 +34,12 @@ public final class MachineHud {
     private static final Map<Object, ArrayDeque<float[]>> HISTORY = new WeakHashMap<>();
     private static final int HISTORY_SECONDS = 300;
 
-    /**
-     * Build the panel. Call it from {@code buildUI}; the actions are registered on both sides, the pages only on the
-     * client. {@code model} is asked for only on the client.
-     */
     public static ModularPanel<?> build(com.gregtechceu.gtceu.api.machine.MetaMachine machine, PosGuiData data,
                                         PanelSyncManager sync, UISettings settings, Actions actions,
                                         java.util.function.Supplier<HudModel> model) {
         return build(machine, data, sync, settings, actions, model, null);
     }
 
-    /**
-     * An existing ModularUI screen kept as one tab of the HUD: {@code content} fills a container the size of the page
-     * and is built on both sides (so its slots and syncs work), but only shown while that tab is open.
-     */
     public record Classic(String label, int width, int height,
                           java.util.function.Consumer<brachy.modularui.widget.ParentWidget<?>> content) {}
 
@@ -105,7 +92,6 @@ public final class MachineHud {
         return panel;
     }
 
-    /** The page behind a hosted screen: just the theme's panel. */
     private record BackdropPage(HudTheme theme) implements CanvasPainter {
 
         @Override
@@ -115,8 +101,6 @@ public final class MachineHud {
             GuiDraw.drawBorder(g, 0, 0, w, h, theme.line(), 1);
         }
     }
-
-    // ------------------------------------------------------------------------------------------------ sampling
 
     private static final class Sampler {
 
@@ -171,8 +155,6 @@ public final class MachineHud {
             return page.scroll(mx, my, amount);
         }
     }
-
-    // ------------------------------------------------------------------------------------------------ progress
 
     private static final class ProgressPage implements CanvasPainter {
 
@@ -229,7 +211,10 @@ public final class MachineHud {
                 int needed = cellsH + m.bars.get().size() * 21 +
                         (int) m.controls.stream().filter(c -> c instanceof HudModel.Slider).count() * 14 +
                         (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
-                        m.notes.get().stream().mapToInt(n -> font.split(net.minecraft.network.chat.Component.literal(n.text()), w - 16).size()).sum() * 10 + 6;
+                        m.notes.get().stream().mapToInt(
+                                n -> font.split(net.minecraft.network.chat.Component.literal(n.text()), w - 16).size())
+                                .sum() * 10 +
+                        6;
                 int room = Math.min(m.heroHeight, h - y - 4 - needed - 2);
                 if (room >= 24) {
                     GuiDraw.enableScissor(g, 8, y, w - 8, y + room);
@@ -274,7 +259,6 @@ public final class MachineHud {
                 y += 21;
             }
 
-            // controls: sliders, then buttons side by side
             int sliderCount = 0;
             int buttonCount = 0;
             for (var c : m.controls) {
@@ -304,7 +288,8 @@ public final class MachineHud {
                     }
                     boolean enabled = b.enabled().getAsBoolean();
                     boolean hover = enabled && mouseX >= bx && mouseX < bx + bw && mouseY >= y && mouseY < y + 14;
-                    g.fill(bx, y, bx + bw, y + 14, !enabled ? T.bgBottom() : hover ? GuiDraw.mix(T.bgTop(), T.accent(), 0.15f) : T.bgTop());
+                    g.fill(bx, y, bx + bw, y + 14,
+                            !enabled ? T.bgBottom() : hover ? GuiDraw.mix(T.bgTop(), T.accent(), 0.15f) : T.bgTop());
                     GuiDraw.drawBorder(g, bx, y, bw, 14, enabled ? (hover ? b.color() : GuiDraw.withAlpha(b.color(),
                             0xAA)) : 0x44_3A5E6A, 1);
                     g.drawString(font, text, bx + 8, y + 3, enabled ? b.color() : HudModel.DIM, false);
@@ -329,16 +314,15 @@ public final class MachineHud {
             }
         }
 
-        /** Three cells across when their text fits, otherwise two, so nothing is cut off. */
         private static int columns(Font font, List<HudModel.Cell> cells, int w) {
             int room = (w - 16 - 8) / 3 - 14;
             for (var c : cells) {
-                if (font.width(c.label()) > room || font.width(c.value()) > room || font.width(c.sub()) > room) return 2;
+                if (font.width(c.label()) > room || font.width(c.value()) > room || font.width(c.sub()) > room)
+                    return 2;
             }
             return 3;
         }
 
-        /** At most two wrapped lines of a cell's text. */
         private static List<net.minecraft.util.FormattedCharSequence> cellLines(Font font, String text, int width) {
             if (text.isEmpty()) return List.of();
             var lines = font.split(net.minecraft.network.chat.Component.literal(text), width);
@@ -377,7 +361,8 @@ public final class MachineHud {
             g.fill(hx - 1, y + 1, hx + 1, y + 10, 0xFF_DCF0F4);
             g.drawString(font, value + s.unit(), x0 + sw + 8, y + 1, inside ? HudModel.WHITE : HudModel.GOLD, false);
             if (band != null) {
-                g.drawString(font, String.format(Locale.ROOT, "%.0f-%.0f", band.low(), band.high()), x0 + sw + 40, y + 1,
+                g.drawString(font, String.format(Locale.ROOT, "%.0f-%.0f", band.low(), band.high()), x0 + sw + 40,
+                        y + 1,
                         inside ? HudModel.GREEN : HudModel.DIM, false);
             }
             return new int[] { x0 - 4, y - 1, sw + 8, 13, s.id(), s.min(), s.max() };
@@ -449,8 +434,6 @@ public final class MachineHud {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------ math
-
     private static final class MathPage implements CanvasPainter {
 
         private final HudModel m;
@@ -509,8 +492,6 @@ public final class MachineHud {
             return true;
         }
     }
-
-    // ------------------------------------------------------------------------------------------------ graphs
 
     private static final class GraphPage implements CanvasPainter {
 
@@ -588,7 +569,8 @@ public final class MachineHud {
                 float latest = all[all.length - 1][s];
                 float peak = 0.0f;
                 for (float[] row : all) peak = Math.max(peak, row[s]);
-                g.drawString(font, String.format(Locale.ROOT, "%s  %,.1f   (peak %,.1f)", series.name(), latest, peak), x, y,
+                g.drawString(font, String.format(Locale.ROOT, "%s  %,.1f   (peak %,.1f)", series.name(), latest, peak),
+                        x, y,
                         series.color(), false);
                 y += 10;
             }

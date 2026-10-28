@@ -1,8 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.common.data.multiblock.source;
 
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -14,19 +11,18 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
+import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenix.core.client.gui.hud.HudRecipes;
+import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.saveddata.SoulSavedData;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.TextWidget;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -166,17 +162,19 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
-    /** The recipe type is not sent to the client by GT, so the screen syncs it itself. */
     private boolean extractMode;
 
     private boolean extracting() {
         return isRemote() ? extractMode : getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get();
     }
 
-    private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0,
-            totalWorkTicks / (double) HARMONIZATION_THRESHOLD), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent());
-    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes.sigil(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
-            0xFF_FFC44D);
+    private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(
+            () -> (float) Math.min(1.0,
+                    totalWorkTicks / (double) HARMONIZATION_THRESHOLD),
+            net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent());
+    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes
+            .sigil(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
+                    0xFF_FFC44D);
 
     private void hudAction(int id, int value) {
         HudRecipes.handle(this, id);
@@ -209,18 +207,22 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
                         (totalWorkTicks >= HARMONIZATION_THRESHOLD ? "chunk harmonized" : "harmonizing as it works"))
                 .cells(() -> {
                     var cells = HudRecipes.cells(this);
-                    cells.add(HudModel.cell("SOUL RESONANCE", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
+                    cells.add(HudModel.cell("SOUL RESONANCE",
+                            String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),
                             "this chunk", HudModel.PURPLE));
-                    cells.add(HudModel.cell("GARDEN BOOST", String.format(java.util.Locale.ROOT, "+%.2f", cachedFloraBoost),
+                    cells.add(HudModel.cell("GARDEN BOOST",
+                            String.format(java.util.Locale.ROOT, "+%.2f", cachedFloraBoost),
                             "from flora nearby", HudModel.GREEN));
-                    cells.add(HudModel.cell("TOTAL POTENCY", String.format(java.util.Locale.ROOT, "%.2fx", totalPotency()),
+                    cells.add(HudModel.cell("TOTAL POTENCY",
+                            String.format(java.util.Locale.ROOT, "%.2fx", totalPotency()),
                             harmonicBonus() > 0 ? "harmonized +0.50" : "not harmonized", HudModel.GOLD));
                     return cells;
                 })
                 .bars(() -> {
                     var bars = new java.util.ArrayList<HudModel.Bar>();
                     bars.add(new HudModel.Bar("Recipe", HudRecipes.progressPercent(this) / 100.0f,
-                            String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)), HudModel.CYAN));
+                            String.format(java.util.Locale.ROOT, "%.0f%%", HudRecipes.progressPercent(this)),
+                            HudModel.CYAN));
                     double harmony = Math.min(1.0, totalWorkTicks / (double) HARMONIZATION_THRESHOLD);
                     bars.add(new HudModel.Bar("Chunk harmonization", (float) harmony,
                             String.format(java.util.Locale.ROOT, "%.0f%%", harmony * 100.0), HudModel.GOLD));
@@ -231,11 +233,14 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
                 .math(() -> java.util.List.of(
                         HudModel.heading("POTENCY"),
                         HudModel.line("potency = soul + garden + harmony", HudModel.MID),
-                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f + %.2f + %.2f = %.2fx", cachedSoulDensity,
-                                cachedFloraBoost, harmonicBonus(), totalPotency()), HudModel.WHITE),
+                        HudModel.line(
+                                String.format(java.util.Locale.ROOT, "= %.2f + %.2f + %.2f = %.2fx", cachedSoulDensity,
+                                        cachedFloraBoost, harmonicBonus(), totalPotency()),
+                                HudModel.WHITE),
                         HudModel.heading("EFFICIENCY"),
                         HudModel.line("efficiency = 1 + (potency - 1) * 0.9", HudModel.MID),
-                        HudModel.line(String.format(java.util.Locale.ROOT, "= %.2f", 1.0 + (totalPotency() - 1.0) * 0.9),
+                        HudModel.line(
+                                String.format(java.util.Locale.ROOT, "= %.2f", 1.0 + (totalPotency() - 1.0) * 0.9),
                                 HudModel.WHITE),
                         HudModel.line("most recipes: time and source cost divided by it", HudModel.DIM),
                         HudModel.line("extraction: x0.8 time, source x1.1 * efficiency", HudModel.DIM),

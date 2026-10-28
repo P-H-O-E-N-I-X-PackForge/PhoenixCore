@@ -22,11 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * An item or block stood on the face of a block in a scaled down version, like Draconic Evolution's placed items. It sits
- * in one of three places on the face (a triangle), faces out of the block, and can be turned with an empty hand and
- * taken back by sneaking and right clicking it (or hitting it). It falls off, back into a dropped item, when the block it is on goes.
- */
 public class PlacedItemEntity extends Entity {
 
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(PlacedItemEntity.class,
@@ -36,7 +31,6 @@ public class PlacedItemEntity extends Entity {
     private static final EntityDataAccessor<Integer> SPIN = SynchedEntityData.defineId(PlacedItemEntity.class,
             EntityDataSerializers.INT);
 
-    /** How big blocks and flat items are drawn, as a fraction of their usual size. */
     public static final float BLOCK_SCALE = 0.3f;
     public static final float ITEM_SCALE = 0.4f;
 
@@ -55,16 +49,14 @@ public class PlacedItemEntity extends Entity {
         return e;
     }
 
-    /** Where the three places on a face are, as (across, up) on the face: a triangle, one at the top and two below. */
     private static final double[][] SLOTS = { { 0.5, 0.7 }, { 0.28, 0.3 }, { 0.72, 0.3 } };
 
     public static final int SLOT_COUNT = SLOTS.length;
 
-    /** The point in the world of place {@code slot} on a face of a block. */
     public static Vec3 slot(BlockPos block, Direction face, int slot) {
         double across = SLOTS[slot][0];
         double up = SLOTS[slot][1];
-        // looking at the face from outside: right is the face turned a quarter; up is up (or, on a floor or ceiling, north)
+
         Vec3 origin = new Vec3(block.getX() + 0.5, block.getY() + 0.5, block.getZ() + 0.5)
                 .add(face.getStepX() * 0.5, face.getStepY() * 0.5, face.getStepZ() * 0.5);
         Vec3 right;
@@ -88,7 +80,6 @@ public class PlacedItemEntity extends Entity {
         return Direction.from3DDataValue(entityData.get(FACE));
     }
 
-    /** 0 to 7: eighths of a turn about the way the item faces. */
     public int spin() {
         return entityData.get(SPIN);
     }
@@ -146,7 +137,7 @@ public class PlacedItemEntity extends Entity {
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (player.isShiftKeyDown()) {
-            // sneak and right click takes it back
+
             if (!level().isClientSide) {
                 if (!player.isCreative()) {
                     ItemStack back = item().copy();

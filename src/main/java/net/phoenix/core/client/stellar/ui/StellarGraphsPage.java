@@ -11,11 +11,6 @@ import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 
 import java.util.Locale;
 
-/**
- * Two graphs: how mass, heat and stability have gone over the last minutes, and the response curve: where stability
- * would settle at every value of the field (and of the spin) with the other settings held where they are, which is
- * the puzzle seen from above.
- */
 public final class StellarGraphsPage implements CanvasPainter {
 
     private static final int C_MASS = 0xFF_44AAFF;
@@ -137,7 +132,7 @@ public final class StellarGraphsPage implements CanvasPainter {
         curve(g, x, y, w, plotH, power, maxPower * 1.1f, C_POWER);
         curve(g, x, y, w, plotH, heat, 100.0f, C_HEAT);
         curve(g, x, y, w, plotH, stab, 100.0f, C_STAB);
-        // the line stability has to stay above
+
         int hold = y + plotH - 2 - Math.round(StellarForgeState.HOLD_STABILITY / 100.0f * (plotH - 4));
         g.fill(x + 1, hold, x + w - 1, hold + 1, 0x55_33FF88);
         y += plotH + 4;
@@ -151,8 +146,10 @@ public final class StellarGraphsPage implements CanvasPainter {
                 maxMass), x, y, w, C_MASS);
         y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "heat %.0f%%   stability %.0f%%",
                 heat[all.length - 1], stab[all.length - 1]), x, y, w, C_STAB);
-        GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "power %,d EU/t (peak %,.0f)", (int) power[all.length - 1],
-                maxPower), x, y, w, C_POWER);
+        GuiDraw.drawWrapped(g, font,
+                String.format(Locale.ROOT, "power %,d EU/t (peak %,.0f)", (int) power[all.length - 1],
+                        maxPower),
+                x, y, w, C_POWER);
     }
 
     private void response(GuiGraphics g, Font font, int x, int y, int w, int h) {
@@ -163,7 +160,6 @@ public final class StellarGraphsPage implements CanvasPainter {
         int samples = Math.max(2, w - 2);
         plot(g, x, y, w, plotH);
 
-        // the field's band, shaded
         var fb = s.fieldBand();
         var sb = s.spinBand();
         g.fill(x + 1 + Math.round((w - 2) * fb.low() / 100.0f), y + 1, x + 1 + Math.round((w - 2) * fb.high() / 100.0f),
@@ -179,7 +175,6 @@ public final class StellarGraphsPage implements CanvasPainter {
         curve(g, x, y, w, plotH, vsField, 100.0f, StellarHudPage.C_CYAN);
         curve(g, x, y, w, plotH, vsSpin, 100.0f, StellarHudPage.C_PURPLE);
 
-        // where the settings are now
         int fx = x + 1 + Math.round((w - 3) * s.field / 100.0f);
         int sx = x + 1 + Math.round((w - 3) * s.spin / 100.0f);
         g.fill(fx, y + 1, fx + 1, y + plotH - 1, StellarHudPage.C_CYAN);
@@ -196,8 +191,10 @@ public final class StellarGraphsPage implements CanvasPainter {
 
         g.fill(x, y - 3, x + w, y - 2, 0x33_00E5CC);
         g.fill(x, y + 3, x + 8, y + 5, StellarHudPage.C_CYAN);
-        y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "field: now %d%%, would settle at %.0f%% (band %.0f-%.0f)",
-                s.field, s.equilibriumStability(s.feed, s.field, s.spin), fb.low(), fb.high()), x + 12, y, w - 12,
+        y = GuiDraw.drawWrapped(g, font,
+                String.format(Locale.ROOT, "field: now %d%%, would settle at %.0f%% (band %.0f-%.0f)",
+                        s.field, s.equilibriumStability(s.feed, s.field, s.spin), fb.low(), fb.high()),
+                x + 12, y, w - 12,
                 StellarHudPage.C_CYAN);
         g.fill(x, y + 3, x + 8, y + 5, StellarHudPage.C_PURPLE);
         y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "spin: now %d%%, band %.0f-%.0f", s.spin, sb.low(),

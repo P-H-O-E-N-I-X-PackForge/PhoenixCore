@@ -299,9 +299,8 @@ public class PhoenixCore {
     }
 
     private void addMaterials() {
-        PhoenixOres.register();
-        PhoenixMaterials.register();
         PhoenixProgressionMaterials.register();
+        PhoenixOres.register();
         PhoenixPolymerMaterials.register();
         PhoenixBeeMaterials.register();
         PhoenixFissionMaterials.register();
@@ -310,7 +309,9 @@ public class PhoenixCore {
     }
 
     private void modifyMaterials(PostMaterialEvent event) {
+        PhoenixMaterials.register(event);
         PhoenixMaterials.modifyMaterials();
+        PhoenixMaterials.postInit();
     }
 
     private void registerRecipeTypes() {
@@ -335,10 +336,10 @@ public class PhoenixCore {
         VaultRegistry.initMachines();
         VaultMachineDefinition.init();
         CinderForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines.init();
         SanctumWardMachines.init();
     }
 
-        net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines.init();
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }

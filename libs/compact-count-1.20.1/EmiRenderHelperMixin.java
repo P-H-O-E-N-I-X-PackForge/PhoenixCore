@@ -12,12 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Shows big amounts compactly (1500 as 1.5k) in EMI's slots. EMI draws a stack's amount itself ({@code renderAmount}), not
- * through vanilla's item decorations (it asks vanilla for an empty count), so this is where the counts of GT recipes in EMI come
- * from. EMI right-aligns the text at 14 pixels wide at most, so a long number started inside the slot and ran into the next one;
- * the compact text is drawn smaller and right-aligned to the slot's edge.
- */
+
 @Mixin(value = EmiRenderHelper.class, remap = false)
 public abstract class EmiRenderHelperMixin {
 

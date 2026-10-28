@@ -10,7 +10,6 @@ import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 
 import java.util.Locale;
 
-/** The rules the forge follows, with the numbers it is using right now put in. Scroll for more. */
 public final class StellarMathPage implements CanvasPainter {
 
     private static final int CONTENT_HEIGHT = 330;
@@ -79,7 +78,8 @@ public final class StellarMathPage implements CanvasPainter {
 
         y = heading(g, font, x, y, w - 16, "STAGE " + s.stage.label.toUpperCase(Locale.ROOT));
         y = line(g, font, x, y, String.format(Locale.ROOT, "mass %,.2f M   next at %s", s.mass,
-                s.stage == StellarForgeState.Stage.BLACK_HOLE ? "-" : String.format(Locale.ROOT, "%,.0f M", s.nextMass())),
+                s.stage == StellarForgeState.Stage.BLACK_HOLE ? "-" :
+                        String.format(Locale.ROOT, "%,.0f M", s.nextMass())),
                 mid);
         y = line(g, font, x, y, String.format(Locale.ROOT, "hold %d / %d ticks   fail %d / %d ticks", s.holdTicks,
                 StellarForgeState.HOLD_TICKS_TO_ADVANCE, s.failTicks, StellarForgeState.FAIL_TICKS_TO_REGRESS), mid);
@@ -89,11 +89,13 @@ public final class StellarMathPage implements CanvasPainter {
         var fb = s.fieldBand();
         var sb = s.spinBand();
         var hb = s.heatBand();
-        y = line(g, font, x, y, String.format(Locale.ROOT, "field  %d%%  in [%.0f, %.0f]", s.field, fb.low(), fb.high()),
+        y = line(g, font, x, y,
+                String.format(Locale.ROOT, "field  %d%%  in [%.0f, %.0f]", s.field, fb.low(), fb.high()),
                 fb.contains(s.field) ? StellarHudPage.C_GREEN : gold);
         y = line(g, font, x, y, String.format(Locale.ROOT, "spin   %d%%  in [%.0f, %.0f]", s.spin, sb.low(), sb.high()),
                 sb.contains(s.spin) ? StellarHudPage.C_GREEN : gold);
-        y = line(g, font, x, y, String.format(Locale.ROOT, "heat   %.0f%%  in [%.0f, %.0f]", s.heat, hb.low(), hb.high()),
+        y = line(g, font, x, y,
+                String.format(Locale.ROOT, "heat   %.0f%%  in [%.0f, %.0f]", s.heat, hb.low(), hb.high()),
                 hb.contains(s.heat) ? StellarHudPage.C_GREEN : gold);
         y = line(g, font, x, y, "(every run shifts and widens the bands, and they drift as it goes)", dim);
         y += 4;
@@ -129,16 +131,22 @@ public final class StellarMathPage implements CanvasPainter {
         y = heading(g, font, x, y, w - 16, "OUTPUT AND SIZE");
         y = line(g, font, x, y, "plasma = clamp(mass / 50, 1, 64) * stability   (x2 black hole)", mid);
         y = line(g, font, x, y, String.format(Locale.ROOT, "= %.1f mB/t of oxygen plasma", s.plasmaPerTick()), white);
-        y = line(g, font, x, y, "exotic plasma (PLASMA button): replaces it; rate * stability, and every tick it takes stability and mass off the body. Each is for one kind of body, in a heat range, above a mass.", dim);
-        y = line(g, font, x, y, String.format(Locale.ROOT, "size %.2f blocks, temperature %,.0f K", s.radius(), s.kelvin()),
+        y = line(g, font, x, y,
+                "exotic plasma (PLASMA button): replaces it; rate * stability, and every tick it takes stability and mass off the body. Each is for one kind of body, in a heat range, above a mass.",
+                dim);
+        y = line(g, font, x, y,
+                String.format(Locale.ROOT, "size %.2f blocks, temperature %,.0f K", s.radius(), s.kelvin()),
                 white);
         y += 4;
 
         y = heading(g, font, x, y, w - 16, "FALLING IN");
         boolean direct = (s.stage == StellarForgeState.Stage.GAS_CLOUD || s.stage == StellarForgeState.Stage.PROTOSTAR);
-        y = line(g, font, x, y, String.format(Locale.ROOT, "direct: mass >= %,.0f M, field >= 85, feed >= 80", StellarForgeState.DIRECT_COLLAPSE),
+        y = line(g, font, x, y,
+                String.format(Locale.ROOT, "direct: mass >= %,.0f M, field >= 85, feed >= 80",
+                        StellarForgeState.DIRECT_COLLAPSE),
                 direct ? white : dim);
-        y = line(g, font, x, y, String.format(Locale.ROOT, "star: mass >= %,.0f M, field >= 70, armed", StellarForgeState.STAR_TO_HOLE),
+        y = line(g, font, x, y,
+                String.format(Locale.ROOT, "star: mass >= %,.0f M, field >= 70, armed", StellarForgeState.STAR_TO_HOLE),
                 s.stage == StellarForgeState.Stage.STAR ? white : dim);
     }
 }

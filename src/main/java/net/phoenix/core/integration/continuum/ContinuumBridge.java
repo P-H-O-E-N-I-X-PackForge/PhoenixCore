@@ -23,10 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-/**
- * Connects Continuum to what PhoenixCore owns: guild or FTB teams, Conflux research, the discipline worlds and the
- * research node viewer. Continuum has no dependency on this mod; it asks {@link ContinuumHost}, and this class answers.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ContinuumBridge {
 
@@ -34,7 +30,6 @@ public final class ContinuumBridge {
 
     private ContinuumBridge() {}
 
-    /** Call once at startup, on both sides. */
     public static void init() {
         ContinuumHost.setTeams(new ContinuumHost.Teams() {
 
@@ -90,7 +85,6 @@ public final class ContinuumBridge {
         });
     }
 
-    /** Client side only. */
     public static void initClient() {
         ConfluxNodeNotes.register(node -> ContinuumNodeNotes.notes(node.id));
     }

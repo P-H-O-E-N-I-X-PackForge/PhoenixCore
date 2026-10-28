@@ -3,7 +3,6 @@ package net.phoenix.core.client.gui.hud;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.ModularPanel;
 
-/** The shared chrome of HUD style machine screens: the theme's background and the tab strip outside the panel edge. */
 public final class HudPanel {
 
     private HudPanel() {}

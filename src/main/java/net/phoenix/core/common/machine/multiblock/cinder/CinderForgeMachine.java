@@ -150,7 +150,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return null;
     }
 
-    /** The tier is worked out on the server and sent over: the client does not know the named patterns. */
     @com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient
     private int tierOrdinal = -1;
 
@@ -283,21 +282,26 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     var cells = new ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
                     CinderForgeTier tier = currentTier();
                     ItemStack core = coreStack();
-                    var def = core.getItem() instanceof CinderCoreItem ? CinderSchemaData.getTargetDefinition(core) : null;
+                    var def = core.getItem() instanceof CinderCoreItem ? CinderSchemaData.getTargetDefinition(core) :
+                            null;
                     cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TIER", tier == null ? "-" :
-                            tier.name().replace("TIER", "Tier "), tier != null && tier.automated ? "automated" : "manual",
+                            tier.name().replace("TIER", "Tier "),
+                            tier != null && tier.automated ? "automated" : "manual",
                             net.phoenix.core.client.gui.hud.HudModel.GOLD));
                     cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TARGET", def == null ? "none" :
                             def.getBlock().getName().getString(), def == null ? "no Core configured" : "being packaged",
                             def == null ? net.phoenix.core.client.gui.hud.HudModel.DIM :
                                     net.phoenix.core.client.gui.hud.HudModel.CYAN));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("STOCKED", core.getItem() instanceof CinderCoreItem ?
-                            String.valueOf(CinderSchemaData.tallyStocked(core).size()) : "-", "kinds of part",
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("STOCKED",
+                            core.getItem() instanceof CinderCoreItem ?
+                                    String.valueOf(CinderSchemaData.tallyStocked(core).size()) : "-",
+                            "kinds of part",
                             net.phoenix.core.client.gui.hud.HudModel.GREEN));
                     return cells;
                 })
                 .notes(() -> List.of(net.phoenix.core.client.gui.hud.HudModel.line(
-                        "Pick targets and configure the Core on the C tab.", net.phoenix.core.client.gui.hud.HudModel.MID)));
+                        "Pick targets and configure the Core on the C tab.",
+                        net.phoenix.core.client.gui.hud.HudModel.MID)));
     }
 
     @Override

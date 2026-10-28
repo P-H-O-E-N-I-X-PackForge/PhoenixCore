@@ -7,13 +7,8 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.gregtechceu.gtceu.data.pack.event.RegisterDynamicResourcesEvent;
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.SuspendedTownParticle;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -30,7 +25,6 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.command.TerrainPreviewCommand;
-import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.client.renderer.machine.*;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
 import net.phoenix.core.common.data.materials.PhoenixMaterialFlags;
@@ -47,9 +41,7 @@ import net.phoenix.core.integration.conflux.tools.capture.bakers.AxiomVoidBaker;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 import net.phoenix.core.integration.vocal_vibrancy.VocalVibrancyClient;
 
-import org.jetbrains.annotations.NotNull;
-
-@EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public class PhoenixClient {
 
     private PhoenixClient() {}
@@ -121,10 +113,12 @@ public class PhoenixClient {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerBeeMaterialColors(RegisterColorHandlersEvent.Item event) {
-        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_ONE_BEE, PhoenixMaterialFlags.tier_one_bee);
-        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_TWO_BEE, PhoenixMaterialFlags.tier_two_bee);
+        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_ONE_BEE,
+                PhoenixMaterialFlags.tier_one_bee.get());
+        registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_TWO_BEE,
+                PhoenixMaterialFlags.tier_two_bee.get());
         registerBeeTierColors(event, PhoenixMaterialFlags.GENERATE_TIER_THREE_BEE,
-                PhoenixMaterialFlags.tier_three_bee);
+                PhoenixMaterialFlags.tier_three_bee.get());
     }
 
     private static void registerBeeTierColors(RegisterColorHandlersEvent.Item event, MaterialFlag flag,

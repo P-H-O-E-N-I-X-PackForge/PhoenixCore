@@ -7,13 +7,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.entity.PlacedItemEntity;
 
-/** The held item put on the block face the player is looking at (the "place item" key). */
 public class C2SPlaceItemPacket implements CustomPacketPayload {
 
     public static final Type<C2SPlaceItemPacket> TYPE = new Type<>(
@@ -21,7 +19,6 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SPlaceItemPacket> STREAM_CODEC = StreamCodec
             .ofMember(C2SPlaceItemPacket::encode, C2SPlaceItemPacket::new);
 
-    /** How many can stand on one face of a block. */
     public static final int MAX_PER_FACE = 3;
 
     private final BlockPos pos;
@@ -67,9 +64,9 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
         if (!level.isLoaded(msg.pos) || level.getBlockState(msg.pos).isAir()) return;
         if (player.distanceToSqr(Vec3.atCenterOf(msg.pos)) > 64.0) return;
         if (!player.mayInteract(level, msg.pos)) return;
-        // the spot in front of the face has to be free of another block
+
         if (level.getBlockState(msg.pos.relative(msg.face)).isSolidRender(level, msg.pos.relative(msg.face))) return;
-        // what is already on this face of the block
+
         java.util.List<PlacedItemEntity> there = new java.util.ArrayList<>();
         for (PlacedItemEntity other : level.getEntitiesOfClass(PlacedItemEntity.class,
                 new net.minecraft.world.phys.AABB(msg.pos).inflate(0.1))) {
@@ -78,13 +75,13 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
                 there.add(other);
             }
         }
-        // up to three on one face of a block, blocks and items alike
+
         if (there.size() >= MAX_PER_FACE) {
             player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                     "Only " + MAX_PER_FACE + " items fit on one side of a block."), true);
             return;
         }
-        // three places on the face, in a triangle: it goes in the free one nearest where you pointed
+
         Vec3 point = null;
         for (int slot = 0; slot < PlacedItemEntity.SLOT_COUNT; slot++) {
             Vec3 candidate = PlacedItemEntity.slot(msg.pos, msg.face, slot);
@@ -97,7 +94,8 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
             }
         }
         if (point == null) {
-            player.displayClientMessage(net.minecraft.network.chat.Component.literal("No room left on that side."), true);
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("No room left on that side."),
+                    true);
             return;
         }
         ItemStack one = held.copyWithCount(1);

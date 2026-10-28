@@ -57,7 +57,6 @@ public class PhoenixKeybinds {
             GLFW.GLFW_KEY_KP_1,
             "key.categories.phoenixcore");
 
-    /** Put the held item or block on the face you are looking at, scaled down. Rebind it in Controls. */
     public static final KeyMapping PLACE_ITEM = new KeyMapping(
             "key.phoenixcore.place_item",
             InputConstants.Type.KEYSYM,

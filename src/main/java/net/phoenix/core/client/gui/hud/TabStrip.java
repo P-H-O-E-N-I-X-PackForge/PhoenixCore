@@ -6,10 +6,6 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.List;
 
-/**
- * The tabs of a machine screen, laid out the way its {@link HudTheme} says: a column of squares or diamonds down the
- * left edge, or a bar along the top. Used as the page itself: it draws and clicks through to whichever tab is active.
- */
 public class TabStrip implements CanvasPainter {
 
     public record Tab(String label, CanvasPainter painter) {}
@@ -46,12 +42,10 @@ public class TabStrip implements CanvasPainter {
         return theme.tabs() == HudTheme.TabStyle.TOP;
     }
 
-    /** Width of the strip as a widget. */
     public int stripWidth() {
         return horizontal() ? tabs.size() * (TOP_W + GAP) - GAP : TAB_W;
     }
 
-    /** Height of the strip as a widget. */
     public int stripHeight() {
         return horizontal() ? TAB_H : tabs.size() * (TAB_H + GAP) - GAP;
     }
@@ -68,7 +62,6 @@ public class TabStrip implements CanvasPainter {
         return horizontal() ? TOP_W : TAB_W;
     }
 
-    /** The tab strip, meant to hang off the edge of the panel. */
     public CanvasPainter stripPainter() {
         return new CanvasPainter() {
 
@@ -83,12 +76,13 @@ public class TabStrip implements CanvasPainter {
                     boolean hovered = mouseX >= x && mouseX < x + sw && mouseY >= y && mouseY < y + TAB_H;
                     int fill = isActive ? GuiDraw.mix(theme.bgTop(), theme.accent(), 0.28f) :
                             hovered ? GuiDraw.mix(theme.bgTop(), theme.accent(), 0.12f) : theme.bgBottom();
-                    int edge = isActive ? theme.accent() : hovered ? theme.accent2() : GuiDraw.withAlpha(theme.accent2(), 0x80);
+                    int edge = isActive ? theme.accent() :
+                            hovered ? theme.accent2() : GuiDraw.withAlpha(theme.accent2(), 0x80);
                     int text = isActive ? theme.accent() : hovered ? C_WHITE : theme.dim();
                     String label = tabs.get(i).label();
                     switch (theme.tabs()) {
                         case DIAMOND -> {
-                            // a diamond: rows narrowing to the points
+
                             int cx = x + sw / 2;
                             int cy = y + TAB_H / 2;
                             int r = TAB_H / 2;
@@ -100,10 +94,11 @@ public class TabStrip implements CanvasPainter {
                             }
                             g.fill(cx, y, cx + 1, y + 1, edge);
                             g.fill(cx, y + TAB_H - 1, cx + 1, y + TAB_H, edge);
-                            g.drawString(font, label, cx - font.width(label) / 2 + 1, cy - font.lineHeight / 2 + 1, text, false);
+                            g.drawString(font, label, cx - font.width(label) / 2 + 1, cy - font.lineHeight / 2 + 1,
+                                    text, false);
                         }
                         case TOP -> {
-                            // a flat tab hanging from a rule, the active one filled and lit along its top
+
                             g.fill(x, y, x + sw, y + TAB_H, fill);
                             g.fill(x, y + TAB_H - 1, x + sw, y + TAB_H, isActive ? theme.accent() : theme.line());
                             g.fill(x, y, x + 1, y + TAB_H, edge);

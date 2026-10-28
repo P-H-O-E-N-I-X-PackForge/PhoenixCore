@@ -3,57 +3,60 @@ package net.phoenix.core.common.data.materials;
 import com.gregtechceu.gtceu.api.data.chemical.Element;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 public class PhoenixElements {
 
-    public static Element URANIUM_233;
-    public static Element URANIUM_236;
-    public static Element AMERICIUM_241;
+    public static Holder<Element> URANIUM_233;
+    public static Holder<Element> URANIUM_236;
+    public static Holder<Element> AMERICIUM_241;
 
-    public static Element PHOENIX_ENRICHED_TRITANIUM;
-    public static Element EMBER;
-    public static Element PHOENIX_ENRICHED_NAQUADAH;
-    public static Element AKASHIC_ZERONIUM;
-    public static Element AETHERIUM_STEEL;
-    public static Element VOID_TOUCHED_TUNGSTEN_STEEL;
-    public static Element CELESTIAL_AURORIUM;
-    public static Element PRIMORDIAL_FLUX_METAL;
-    public static Element ETERNAL_STARFORGED_STEEL;
-    public static Element DIMENSIONAL_REFLECTION_ALLOY;
-    public static Element TIMEWOVEN_PLATINUM;
-    public static Element SOULBOUND_ETHERSTEEL;
-    public static Element TACHYON_INFUSED_CHROMIUM;
-    public static Element ECHO_CRYSTAL_ALLOY;
-    public static Element NEBULAR_RESONANCE_INGOT;
-    public static Element PARADOXIUM;
-    public static Element SUBSPACE_COBALT;
-    public static Element SINGULARITY_FORGED_TITANIUM;
-    public static Element EXOTIC_VANADIUM_COMPOSITE;
-    public static Element DARK_MATTER_PLATED_IRIDIUM;
-    public static Element CORRUPTED_HYPERALLOY;
-    public static Element REALITY_BOUND_OSMIUM;
-    public static Element VOID_STITCHED_NEODYMIUM;
-    public static Element PHOENIX_TEMPERED_MITHRIL;
-    public static Element VOID_SUNG_ADAMANTITE;
-    public static Element ENTANGLED_PALLADIUM;
-    public static Element ENTANGLED_NEUTRON_ALLOY;
-    public static Element SUPERPOSITION_TUNGSTEN_MATRIX;
-    public static Element EXO_TEMPORAL_ORICHALCUM;
-    public static Element INFINITY;
-    public static Element GALAXIUM_CORE_ALLOY;
-    public static Element DARK_NEBULA_INFUSED_IRIDIUM;
-    public static Element ELDRITCH_VOIDSTEEL;
-    public static Element AKASHIC_CHRONO_METAL;
-    public static Element ABSOLUTE_ZERO_ZERONIUM;
-    public static Element MULTIVERSAL_HYPERALLOY;
-    public static Element GLITCHED_CORRUPTION_SUBSTRATE;
-    public static Element GALACTIC_HEART_MATTER;
-    public static Element EVENT_HORIZON_MATTER;
-    public static Element ANTIMATTER;
-    public static Element ZIRCALLOY;
-    public static Element SOURCE_IMBUED_TITANIUM;
-    public static Element ICY_STEEL_MATRIX;
+    public static Holder<Element> PHOENIX_ENRICHED_TRITANIUM;
+    public static Holder<Element> EMBER;
+    public static Holder<Element> PHOENIX_ENRICHED_NAQUADAH;
+    public static Holder<Element> AKASHIC_ZERONIUM;
+    public static Holder<Element> AETHERIUM_STEEL;
+    public static Holder<Element> VOID_TOUCHED_TUNGSTEN_STEEL;
+    public static Holder<Element> CELESTIAL_AURORIUM;
+    public static Holder<Element> PRIMORDIAL_FLUX_METAL;
+    public static Holder<Element> ETERNAL_STARFORGED_STEEL;
+    public static Holder<Element> DIMENSIONAL_REFLECTION_ALLOY;
+    public static Holder<Element> TIMEWOVEN_PLATINUM;
+    public static Holder<Element> SOULBOUND_ETHERSTEEL;
+    public static Holder<Element> TACHYON_INFUSED_CHROMIUM;
+    public static Holder<Element> ECHO_CRYSTAL_ALLOY;
+    public static Holder<Element> NEBULAR_RESONANCE_INGOT;
+    public static Holder<Element> PARADOXIUM;
+    public static Holder<Element> SUBSPACE_COBALT;
+    public static Holder<Element> SINGULARITY_FORGED_TITANIUM;
+    public static Holder<Element> EXOTIC_VANADIUM_COMPOSITE;
+    public static Holder<Element> DARK_MATTER_PLATED_IRIDIUM;
+    public static Holder<Element> CORRUPTED_HYPERALLOY;
+    public static Holder<Element> REALITY_BOUND_OSMIUM;
+    public static Holder<Element> VOID_STITCHED_NEODYMIUM;
+    public static Holder<Element> PHOENIX_TEMPERED_MITHRIL;
+    public static Holder<Element> VOID_SUNG_ADAMANTITE;
+    public static Holder<Element> ENTANGLED_PALLADIUM;
+    public static Holder<Element> ENTANGLED_NEUTRON_ALLOY;
+    public static Holder<Element> SUPERPOSITION_TUNGSTEN_MATRIX;
+    public static Holder<Element> EXO_TEMPORAL_ORICHALCUM;
+    public static Holder<Element> INFINITY;
+    public static Holder<Element> GALAXIUM_CORE_ALLOY;
+    public static Holder<Element> DARK_NEBULA_INFUSED_IRIDIUM;
+    public static Holder<Element> ELDRITCH_VOIDSTEEL;
+    public static Holder<Element> AKASHIC_CHRONO_METAL;
+    public static Holder<Element> ABSOLUTE_ZERO_ZERONIUM;
+    public static Holder<Element> MULTIVERSAL_HYPERALLOY;
+    public static Holder<Element> GLITCHED_CORRUPTION_SUBSTRATE;
+    public static Holder<Element> GALACTIC_HEART_MATTER;
+    public static Holder<Element> EVENT_HORIZON_MATTER;
+    public static Holder<Element> ANTIMATTER;
+    public static Holder<Element> ZIRCALLOY;
+    public static Holder<Element> SOURCE_IMBUED_TITANIUM;
+    public static Holder<Element> ICY_STEEL_MATRIX;
 
     public static void init() {
         URANIUM_233 = create("uranium_233", 92L, 141L, -1L, null, "Uranium-233", "U²²³", true);
@@ -111,18 +114,15 @@ public class PhoenixElements {
         ICY_STEEL_MATRIX = create("icy_steel_matrix", 8, 118, "❆Is<>");
     }
 
-    private static Element create(String name, int protons, int neutrons, String symbol) {
-        return create(name, (long) protons, (long) neutrons, -1L, (String) null, name, symbol, false);
+    private static Holder<Element> create(String path, long protons, long neutrons, long halfLife, String decayTo,
+                                          String name, String symbol, boolean isIsotope) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("phoenixcore", path);
+        Element element = new Element(protons, neutrons, halfLife, decayTo, name, symbol, isIsotope);
+        Registry.register(GTRegistries.ELEMENTS, id, element);
+        return GTRegistries.ELEMENTS.getHolderOrThrow(ResourceKey.create(GTRegistries.Keys.ELEMENT, id));
     }
 
-    private static Element create(String id, long protons, long neutrons, long halfLife, String decayTo, String name,
-                                  String symbol, boolean isIsotope) {
-        Element element = new Element(protons, neutrons, halfLife, decayTo, name, symbol, isIsotope);
-
-        ResourceLocation registryId = ResourceLocation.fromNamespaceAndPath("phoenixcore", id);
-
-        GTRegistries.register(GTRegistries.ELEMENTS, registryId, element);
-
-        return element;
+    private static Holder<Element> create(String path, int protons, int neutrons, String symbol) {
+        return create(path, (long) protons, (long) neutrons, -1L, null, path, symbol, false);
     }
 }

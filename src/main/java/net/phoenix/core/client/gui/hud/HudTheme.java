@@ -5,10 +5,6 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import brachy.modularui.api.drawable.IDrawable;
 
-/**
- * How a machine screen looks: its colours, what is drawn behind everything, and how its tabs are laid out. Every machine
- * picks its own, so they do not all read as the same screen with different numbers.
- */
 public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern pattern, TabStyle tabs) {
 
     public enum Pattern {
@@ -22,11 +18,11 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
     }
 
     public enum TabStyle {
-        /** A column of squares down the left edge. */
+
         SIDE,
-        /** A column of diamonds down the left edge. */
+
         DIAMOND,
-        /** A bar of tabs along the top edge. */
+
         TOP
     }
 
@@ -66,7 +62,6 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
         return GuiDraw.mix(accent2, 0xFF_000000, 0.55f);
     }
 
-    /** The panel background: a gradient with this theme's pattern over it. */
     public IDrawable background() {
         return (ctx, x, y, w, h, theme) -> {
             GuiGraphics g = ctx.getGraphics();
@@ -77,7 +72,6 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
         };
     }
 
-    /** The pattern behind a page, drawn in local coordinates. */
     public void pattern(GuiGraphics g, int x, int y, int w, int h) {
         float t = (Util.getMillis() % 100000L) / 1000.0f;
         int faint = GuiDraw.withAlpha(accent, 0x0C);
@@ -88,11 +82,12 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
             }
             case DOTS -> {
                 for (int gx = x + 5; gx < x + w; gx += 7) {
-                    for (int gy = y + 5; gy < y + h; gy += 7) g.fill(gx, gy, gx + 1, gy + 1, GuiDraw.withAlpha(accent, 0x22));
+                    for (int gy = y + 5; gy < y + h; gy += 7)
+                        g.fill(gx, gy, gx + 1, gy + 1, GuiDraw.withAlpha(accent, 0x22));
                 }
             }
             case HEX -> {
-                // a lattice of small diamonds, every other row shifted
+
                 for (int row = 0, gy = y + 6; gy < y + h; gy += 6, row++) {
                     for (int gx = x + 6 + (row % 2) * 6; gx < x + w; gx += 12) {
                         g.fill(gx, gy - 1, gx + 1, gy, faint);
@@ -102,7 +97,8 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
                 }
             }
             case SCAN -> {
-                for (int gy = y + 2; gy < y + h; gy += 3) g.fill(x, gy, x + w, gy + 1, GuiDraw.withAlpha(0xFF_000000, 0x30));
+                for (int gy = y + 2; gy < y + h; gy += 3)
+                    g.fill(x, gy, x + w, gy + 1, GuiDraw.withAlpha(0xFF_000000, 0x30));
                 int sweep = y + (int) ((t * 40.0f) % (h + 30)) - 15;
                 for (int i = 0; i < 12; i++) {
                     int gy = sweep + i;
@@ -110,7 +106,7 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
                 }
             }
             case CIRCUIT -> {
-                // fixed traces: right angles and pads
+
                 long seed = 0x9E3779B97F4A7C15L;
                 for (int i = 0; i < 26; i++) {
                     seed = seed * 6364136223846793005L + 1442695040888963407L;

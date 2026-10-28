@@ -1,96 +1,101 @@
 package net.phoenix.core.common.data.materials;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
-
-import net.phoenix.core.PhoenixCore;
+import com.gregtechceu.gtceu.api.registry.registrate.entry.MaterialRegistryEntry;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
+import static net.phoenix.core.PhoenixCore.PHOENIX_REGISTRATE;
 
 public class PhoenixBeeMaterials {
 
-    public static Material FRUCTOSE, GLUCOSE, SUCROSE, SUGAR_WATER;
-    public static Material PEANUT_BUTTER, PEANUT, CREAM, SKIM_MILK, MOLASSES;
-    public static Material AMMONIUM_BISULFATE, AMMONIUM_BISULFATE_SOLUTION, AMMONIUM_PERSULFATE, PROTEIN_SOLUTION,
+    public static MaterialRegistryEntry FRUCTOSE, GLUCOSE, SUCROSE, SUGAR_WATER;
+    public static MaterialRegistryEntry PEANUT_BUTTER, PEANUT, CREAM, SKIM_MILK, MOLASSES;
+    public static MaterialRegistryEntry AMMONIUM_BISULFATE, AMMONIUM_BISULFATE_SOLUTION, AMMONIUM_PERSULFATE,
+            PROTEIN_SOLUTION,
             AMINO_ACIDS;
-    public static Material HONEY_CATALYST, HONEY_COMB_BASE_MIXTURE, POLLEN_CONCENTRATE_FLUID, WAX_MELTING_CATALYST;
-    public static Material AURUM_WOOD, INVERT_SUGAR_SOLUTION, HONEY, SUPERCONDUCTIVE_HONEY;
+    public static MaterialRegistryEntry HONEY_CATALYST, HONEY_COMB_BASE_MIXTURE, POLLEN_CONCENTRATE_FLUID,
+            WAX_MELTING_CATALYST;
+    public static MaterialRegistryEntry AURUM_WOOD, INVERT_SUGAR_SOLUTION, HONEY, SUPERCONDUCTIVE_HONEY;
 
-    public static Material IMPURE_WAX, IMPURE_HONEY;
+    public static MaterialRegistryEntry IMPURE_WAX, IMPURE_HONEY;
 
-    public static final Map<String, Material> HONEYED_MATERIALS = new HashMap<>();
-    public static final Map<String, Material> RAW_WAX_MATERIALS = new HashMap<>();
+    public static final Map<String, MaterialRegistryEntry> HONEYED_MATERIALS = new HashMap<>();
+    public static final Map<String, MaterialRegistryEntry> RAW_WAX_MATERIALS = new HashMap<>();
 
     public static void register() {
-        HONEY = new Material.Builder(PhoenixCore.id("honey")).fluid().ingot().color(0xf9c901)
-                .iconSet(MaterialIconSet.BRIGHT).buildAndRegister();
-        SUPERCONDUCTIVE_HONEY = new Material.Builder(PhoenixCore.id("superconductive_honey"))
+        HONEY = PHOENIX_REGISTRATE.material("honey", builder -> builder.fluid().ingot().color(0xf9c901)
+                .iconSet(MaterialIconSet.BRIGHT));
+        SUPERCONDUCTIVE_HONEY = PHOENIX_REGISTRATE.material("superconductive_honey", builder -> builder
 
                 .ingot().fluid()
                 .color(0xFFBF00)
                 .secondaryColor(0x87CEFA)
                 .iconSet(MaterialIconSet.DULL)
                 .flags(MaterialFlags.NO_SMELTING)
-                .cableProperties(GTValues.V[GTValues.IV], 32, 0, true)
-                .buildAndRegister();
-        FRUCTOSE = new Material.Builder(PhoenixCore.id("fructose")).fluid().color(0xF0F0F0)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        GLUCOSE = new Material.Builder(PhoenixCore.id("glucose")).fluid().color(0xFFFAF0).iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
-        SUCROSE = new Material.Builder(PhoenixCore.id("sucrose")).fluid().color(0xF8F8F8).iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
-        SUGAR_WATER = new Material.Builder(PhoenixCore.id("sugar_water")).fluid().color(0xFFFFF0)
-                .flags(DISABLE_DECOMPOSITION).iconSet(MaterialIconSet.DULL).buildAndRegister();
-        INVERT_SUGAR_SOLUTION = new Material.Builder(PhoenixCore.id("invert_sugar_solution")).fluid().color(0xFFFCDE)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        MOLASSES = new Material.Builder(PhoenixCore.id("molasses")).fluid().color(0x82574C)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
+                .cableProperties(GTValues.V[GTValues.IV], 32, 0, true));
+        FRUCTOSE = PHOENIX_REGISTRATE.material("fructose", builder -> builder.fluid().color(0xF0F0F0)
+                .iconSet(MaterialIconSet.DULL));
+        GLUCOSE = PHOENIX_REGISTRATE.material("glucose",
+                builder -> builder.fluid().color(0xFFFAF0).iconSet(MaterialIconSet.DULL));
+        SUCROSE = PHOENIX_REGISTRATE.material("sucrose",
+                builder -> builder.fluid().color(0xF8F8F8).iconSet(MaterialIconSet.DULL));
+        SUGAR_WATER = PHOENIX_REGISTRATE.material("sugar_water", builder -> builder.fluid().color(0xFFFFF0)
+                .flags(DISABLE_DECOMPOSITION).iconSet(MaterialIconSet.DULL));
+        INVERT_SUGAR_SOLUTION = PHOENIX_REGISTRATE.material("invert_sugar_solution",
+                builder -> builder.fluid().color(0xFFFCDE)
+                        .iconSet(MaterialIconSet.DULL));
+        MOLASSES = PHOENIX_REGISTRATE.material("molasses", builder -> builder.fluid().color(0x82574C)
+                .iconSet(MaterialIconSet.DULL));
 
-        PEANUT_BUTTER = new Material.Builder(PhoenixCore.id("peanut_butter")).fluid().color(0xD8BC9D)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        PEANUT = new Material.Builder(PhoenixCore.id("peanut")).dust().color(0xE0C8A0).iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
-        CREAM = new Material.Builder(PhoenixCore.id("cream")).fluid().color(0xFFFBE6).iconSet(MaterialIconSet.DULL)
-                .buildAndRegister();
-        SKIM_MILK = new Material.Builder(PhoenixCore.id("skim_milk")).fluid().color(0xF8F8FF)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
+        PEANUT_BUTTER = PHOENIX_REGISTRATE.material("peanut_butter", builder -> builder.fluid().color(0xD8BC9D)
+                .iconSet(MaterialIconSet.DULL));
+        PEANUT = PHOENIX_REGISTRATE.material("peanut",
+                builder -> builder.dust().color(0xE0C8A0).iconSet(MaterialIconSet.DULL));
+        CREAM = PHOENIX_REGISTRATE.material("cream",
+                builder -> builder.fluid().color(0xFFFBE6).iconSet(MaterialIconSet.DULL));
+        SKIM_MILK = PHOENIX_REGISTRATE.material("skim_milk", builder -> builder.fluid().color(0xF8F8FF)
+                .iconSet(MaterialIconSet.DULL));
 
-        AMMONIUM_BISULFATE = new Material.Builder(PhoenixCore.id("ammonium_bisulfate")).dust().color(0xF0F0F0)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        AMMONIUM_BISULFATE_SOLUTION = new Material.Builder(PhoenixCore.id("ammonium_bisulfate_solution")).fluid()
-                .color(0xF0F0F0).iconSet(MaterialIconSet.DULL).buildAndRegister();
-        AMMONIUM_PERSULFATE = new Material.Builder(PhoenixCore.id("ammonium_persulfate")).fluid().color(0xF0FFFF)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        PROTEIN_SOLUTION = new Material.Builder(PhoenixCore.id("protein_solution")).fluid().color(0xFFE0C0)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        AMINO_ACIDS = new Material.Builder(PhoenixCore.id("amino_acids")).fluid().color(0xFFFFFF)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
+        AMMONIUM_BISULFATE = PHOENIX_REGISTRATE.material("ammonium_bisulfate", builder -> builder.dust().color(0xF0F0F0)
+                .iconSet(MaterialIconSet.DULL));
+        AMMONIUM_BISULFATE_SOLUTION = PHOENIX_REGISTRATE.material("ammonium_bisulfate_solution",
+                builder -> builder.fluid()
+                        .color(0xF0F0F0).iconSet(MaterialIconSet.DULL));
+        AMMONIUM_PERSULFATE = PHOENIX_REGISTRATE.material("ammonium_persulfate",
+                builder -> builder.fluid().color(0xF0FFFF)
+                        .iconSet(MaterialIconSet.DULL));
+        PROTEIN_SOLUTION = PHOENIX_REGISTRATE.material("protein_solution", builder -> builder.fluid().color(0xFFE0C0)
+                .iconSet(MaterialIconSet.DULL));
+        AMINO_ACIDS = PHOENIX_REGISTRATE.material("amino_acids", builder -> builder.fluid().color(0xFFFFFF)
+                .iconSet(MaterialIconSet.DULL));
 
-        HONEY_CATALYST = new Material.Builder(PhoenixCore.id("honey_catalyst")).fluid()
+        HONEY_CATALYST = PHOENIX_REGISTRATE.material("honey_catalyst", builder -> builder.fluid()
                 .color(0xFFF9E3)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        HONEY_COMB_BASE_MIXTURE = new Material.Builder(PhoenixCore.id("honey_comb_base_mixture"))
+                .iconSet(MaterialIconSet.DULL));
+        HONEY_COMB_BASE_MIXTURE = PHOENIX_REGISTRATE.material("honey_comb_base_mixture", builder -> builder
                 .fluid()
-                .color(0xFFF0F5).iconSet(MaterialIconSet.DULL).buildAndRegister();
-        POLLEN_CONCENTRATE_FLUID = new Material.Builder(PhoenixCore.id("pollen_concentrate_fluid"))
+                .color(0xFFF0F5).iconSet(MaterialIconSet.DULL));
+        POLLEN_CONCENTRATE_FLUID = PHOENIX_REGISTRATE.material("pollen_concentrate_fluid", builder -> builder
                 .fluid()
-                .color(0xFFC200).iconSet(MaterialIconSet.DULL).buildAndRegister();
-        WAX_MELTING_CATALYST = new Material.Builder(PhoenixCore.id("wax_melting_catalyst")).fluid().color(0xADD8E6)
-                .secondaryColor(0x6A5ACD).iconSet(MaterialIconSet.DULL).buildAndRegister();
+                .color(0xFFC200).iconSet(MaterialIconSet.DULL));
+        WAX_MELTING_CATALYST = PHOENIX_REGISTRATE.material("wax_melting_catalyst",
+                builder -> builder.fluid().color(0xADD8E6)
+                        .secondaryColor(0x6A5ACD).iconSet(MaterialIconSet.DULL));
 
-        AURUM_WOOD = new Material.Builder(PhoenixCore.id("aurum_wood")).dust()
+        AURUM_WOOD = PHOENIX_REGISTRATE.material("aurum_wood", builder -> builder.dust()
                 .color(0x291306).secondaryColor(0xfccd31)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
+                .iconSet(MaterialIconSet.DULL));
 
-        IMPURE_WAX = new Material.Builder(PhoenixCore.id("impure_wax")).fluid().color(0xFFA500).secondaryColor(0xD2691E)
-                .iconSet(MaterialIconSet.DULL).buildAndRegister();
-        IMPURE_HONEY = new Material.Builder(PhoenixCore.id("impure_honey")).fluid().color(0xD2B48C)
-                .secondaryColor(0x8B4513).iconSet(MaterialIconSet.DULL).buildAndRegister();
+        IMPURE_WAX = PHOENIX_REGISTRATE.material("impure_wax",
+                builder -> builder.fluid().color(0xFFA500).secondaryColor(0xD2691E)
+                        .iconSet(MaterialIconSet.DULL));
+        IMPURE_HONEY = PHOENIX_REGISTRATE.material("impure_honey", builder -> builder.fluid().color(0xD2B48C)
+                .secondaryColor(0x8B4513).iconSet(MaterialIconSet.DULL));
 
         registerAllBeeMineralMaterials();
     }
@@ -184,20 +189,18 @@ public class PhoenixBeeMaterials {
             int baseColor = entry.getValue()[0];
             int secColor = entry.getValue()[1];
 
-            Material honeyed = new Material.Builder(PhoenixCore.id("honeyed_" + name))
+            MaterialRegistryEntry honeyed = PHOENIX_REGISTRATE.material("honeyed_" + name, builder -> builder
                     .fluid()
                     .color(baseColor)
                     .secondaryColor(secColor)
-                    .iconSet(MaterialIconSet.DULL)
-                    .buildAndRegister();
+                    .iconSet(MaterialIconSet.DULL));
             HONEYED_MATERIALS.put(name, honeyed);
 
-            Material rawWax = new Material.Builder(PhoenixCore.id("raw_" + name + "_wax"))
+            MaterialRegistryEntry rawWax = PHOENIX_REGISTRATE.material("raw_" + name + "_wax", builder -> builder
                     .dust()
                     .color(baseColor)
                     .secondaryColor(secColor)
-                    .iconSet(MaterialIconSet.DULL)
-                    .buildAndRegister();
+                    .iconSet(MaterialIconSet.DULL));
             RAW_WAX_MATERIALS.put(name, rawWax);
         }
     }

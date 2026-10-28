@@ -7,7 +7,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.common.entity.PhoenixEntities;
 
-@EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class PhoenixEntityRenderers {
 
     private PhoenixEntityRenderers() {}
