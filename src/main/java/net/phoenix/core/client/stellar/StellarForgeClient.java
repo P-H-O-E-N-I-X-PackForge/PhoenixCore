@@ -33,8 +33,15 @@ public final class StellarForgeClient {
         public StellarForgeState.Stage collapseFrom = StellarForgeState.Stage.STAR;
         public float collapseRadius;
         private boolean collapseFlashed;
-        public static final float COLLAPSE_SECONDS = 5.5f;
-        public static final float COLLAPSE_FLASH_AT = 0.58f;
+        public static final float COLLAPSE_SECONDS = 9.0f;
+        public static final float COLLAPSE_FLASH_AT = 0.5f;
+
+        /** Which one-shots of the collapse have played (sounds and bursts), a bit each. */
+        public int collapseDone;
+        public float nextBeat;
+
+        /** The black hole's size (eased), from how much mass it has swallowed. */
+        public float hole;
         private long last = Util.getMillis();
 
         /** One reading a second for the last five minutes: mass, heat, stability, energy a tick. */
@@ -42,12 +49,25 @@ public final class StellarForgeClient {
         private long lastSample;
         public static final int HISTORY = 300;
 
+        /** How big the black hole is for the mass it has swallowed (0.12 when it forms, up to 0.30): grows with the log of it. */
+        public static float holeSize(double mass) {
+            double growth = Math.log10(1.0 + Math.max(0.0, mass) / 4000.0) / Math.log10(9.0);
+            return 0.12f + 0.18f * (float) Math.max(0.0, Math.min(1.0, growth));
+        }
+
+        /** 0 (just formed) to 1 (huge): how far its mass has taken it. */
+        public static float holeGrowth(double mass) {
+            return (holeSize(mass) - 0.12f) / 0.18f;
+        }
+
         void step(StellarForgeMachine machine) {
             long now = Util.getMillis();
             float dt = Math.min(0.25f, (now - last) / 1000.0f);
             last = now;
             float target = StellarForgeState.radius(machine.stage(), machine.mass());
             radius += (target - radius) * Math.min(1.0f, dt * 2.5f);
+            float holeTarget = holeSize(machine.mass());
+            hole = hole <= 0.0f ? holeTarget : hole + (holeTarget - hole) * Math.min(1.0f, dt * 0.8f);
             heat += (machine.heat() - heat) * Math.min(1.0f, dt * 1.5f);
             if (machine.stage() != stage) {
                 var previous = stage;
@@ -60,6 +80,8 @@ public final class StellarForgeClient {
                     collapseFrom = previous;
                     collapseRadius = radius;
                     collapseFlashed = false;
+                    collapseDone = 0;
+                    nextBeat = 0.0f;
                 } else {
                     flash = 1.0f;
                 }
