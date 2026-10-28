@@ -121,15 +121,47 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         return StellarForgeState.Stage.of(stageOrdinal);
     }
 
+    // What the client shows is eased towards the latest numbers, so they run smoothly between the few updates a second
+    // that arrive, not in steps. The server always uses the real ones.
+    private double shownMass;
+    private float shownHeat;
+    private float shownStability;
+    private long shownAt;
+    private boolean shownSeeded;
+
+    private void ease() {
+        long now = System.nanoTime();
+        float dt = shownSeeded ? Math.min(0.25f, (now - shownAt) / 1.0e9f) : 1.0f;
+        if (dt <= 0.0f) return;
+        shownAt = now;
+        float k = shownSeeded ? 1.0f - (float) Math.exp(-dt * 9.0f) : 1.0f;
+        shownSeeded = true;
+        shownMass += (massX100 / 100.0 - shownMass) * k;
+        shownHeat += (heatX10 / 10.0f - shownHeat) * k;
+        shownStability += (stabilityX10 / 10.0f - shownStability) * k;
+    }
+
     public double mass() {
+        if (isRemote()) {
+            ease();
+            return shownMass;
+        }
         return massX100 / 100.0;
     }
 
     public float heat() {
+        if (isRemote()) {
+            ease();
+            return shownHeat;
+        }
         return heatX10 / 10.0f;
     }
 
     public float stability() {
+        if (isRemote()) {
+            ease();
+            return shownStability;
+        }
         return stabilityX10 / 10.0f;
     }
 
@@ -372,7 +404,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     /** Copy the numbers to the fields that are saved and sent to clients (only changed ones cause a sync). */
     private void publish() {
         StellarForgeState s = state();
-        boolean push = getLevel() != null && getLevel().getGameTime() % 5 == 0;
+        boolean push = getLevel() != null && getLevel().getGameTime() % 2 == 0;
         int stageNow = s.stage.ordinal();
         if (stageNow != stageOrdinal) {
             stageOrdinal = stageNow;

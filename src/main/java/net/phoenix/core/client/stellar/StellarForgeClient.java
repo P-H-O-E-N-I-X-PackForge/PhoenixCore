@@ -27,6 +27,14 @@ public final class StellarForgeClient {
         private int lastSettings = -1;
         private float steadyFor;
         public StellarForgeState.Stage stage = StellarForgeState.Stage.IDLE;
+
+        /** Seconds into the collapse to a black hole, or -1 when there is none going on. */
+        public float collapse = -1.0f;
+        public StellarForgeState.Stage collapseFrom = StellarForgeState.Stage.STAR;
+        public float collapseRadius;
+        private boolean collapseFlashed;
+        public static final float COLLAPSE_SECONDS = 5.5f;
+        public static final float COLLAPSE_FLASH_AT = 0.58f;
         private long last = Util.getMillis();
 
         /** One reading a second for the last five minutes: mass, heat, stability, energy a tick. */
@@ -42,8 +50,28 @@ public final class StellarForgeClient {
             radius += (target - radius) * Math.min(1.0f, dt * 2.5f);
             heat += (machine.heat() - heat) * Math.min(1.0f, dt * 1.5f);
             if (machine.stage() != stage) {
+                var previous = stage;
                 stage = machine.stage();
-                flash = 1.0f;
+                boolean fell = stage == StellarForgeState.Stage.BLACK_HOLE &&
+                        (previous == StellarForgeState.Stage.STAR || previous == StellarForgeState.Stage.PROTOSTAR ||
+                                previous == StellarForgeState.Stage.GAS_CLOUD);
+                if (fell) {
+                    collapse = 0.0f;
+                    collapseFrom = previous;
+                    collapseRadius = radius;
+                    collapseFlashed = false;
+                } else {
+                    flash = 1.0f;
+                }
+            }
+            if (collapse >= 0.0f) {
+                collapse += dt;
+                if (!collapseFlashed && collapse >= COLLAPSE_SECONDS * COLLAPSE_FLASH_AT) {
+                    collapseFlashed = true;
+                    flash = 1.0f;
+                    surge = 1.0f;
+                }
+                if (collapse >= COLLAPSE_SECONDS) collapse = -1.0f;
             }
             flash = Math.max(0.0f, flash - dt * 0.6f);
 
@@ -59,7 +87,7 @@ public final class StellarForgeClient {
                 if (dFeed + dField >= 8) surge = Math.max(surge, 0.8f);
             }
             lastSettings = settings;
-            boolean steady = machine.stage() == stage && Math.abs(radius - target) < 0.02f && surge < 0.05f;
+            boolean steady = collapse < 0.0f && machine.stage() == stage && Math.abs(radius - target) < 0.02f && surge < 0.05f;
             steadyFor = steady ? steadyFor + dt : 0.0f;
             settle = Math.min(1.0f, Math.max(0.0f, (steadyFor - 2.0f) / 2.5f));
             surge = Math.max(0.0f, surge - dt * 0.4f);

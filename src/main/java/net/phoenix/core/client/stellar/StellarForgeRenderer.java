@@ -71,8 +71,24 @@ public final class StellarForgeRenderer {
             var stage = machine.stage();
             if (stage == StellarForgeState.Stage.IDLE && anim.radius < 0.02f) continue;
 
+            boolean falling = anim.collapse >= 0.0f;
+            float p = falling ? Mth.clamp(anim.collapse / StellarForgeClient.Anim.COLLAPSE_SECONDS, 0.0f, 1.0f) : 0.0f;
+            float pre = falling ? Mth.clamp(p / StellarForgeClient.Anim.COLLAPSE_FLASH_AT, 0.0f, 1.0f) : 0.0f;
+            float post = falling ? Mth.clamp((p - 0.62f) / 0.38f, 0.0f, 1.0f) : 1.0f;
+            // the star draws itself in as it falls: slowly at first, then all at once
+            float squeeze = pre * pre * pre;
+
             int color = StellarForgeState.colorOf(anim.heat);
+            if (falling && p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
+                color = net.phoenix.core.client.gui.hud.GuiDraw.mix(0xFF_000000 | color, 0xFF_FFFFFF, squeeze) & 0xFFFFFF;
+            }
             Vector3f at = new Vector3f((float) centre.x, (float) centre.y, (float) centre.z);
+            if (falling && p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
+                // a tremble that grows as it goes
+                float shake = 0.02f * pre * pre;
+                at.add((float) Math.sin(seconds * 71.0f) * shake, (float) Math.sin(seconds * 83.0f + 1.0f) * shake,
+                        (float) Math.sin(seconds * 67.0f + 2.0f) * shake);
+            }
             float radius = Math.max(0.02f, anim.radius);
             float field = machine.fieldSetting() / 100.0f;
             float flicker = machine.powerOk() ? 1.0f : 0.5f + 0.5f * (float) Math.sin(seconds * 31.0f);
@@ -80,25 +96,78 @@ public final class StellarForgeRenderer {
             float calm = 0.16f + 0.05f * (float) Math.sin(seconds * 1.1f);
             float live = Math.max(anim.surge, machine.feedSetting() / 100.0f * 0.7f);
             float level = Mth.lerp(anim.settle, 1.0f, calm + (1.0f - calm) * live);
+            float spin = machine.spinSetting() / 100.0f;
+            if (falling) {
+                // the containment winds up as it tightens, and lets go in the flash
+                float wind = p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT ? squeeze : 1.0f - post;
+                spin = Math.min(1.0f, spin + wind * 1.2f);
+                field = Math.min(1.0f, field + wind);
+                level = Math.max(level, 0.6f + 0.8f * wind);
+            }
 
             VertexConsumer lines = buffers.getBuffer(RenderType.lightning());
-            containment(lines, pose, at, machine.spinSetting() / 100.0f, field, seconds, color, flicker * level, anim.flash);
+            containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash);
             injectors(lines, pose, machine, at, seconds, color, flicker * level);
+            if (falling && p >= StellarForgeClient.Anim.COLLAPSE_FLASH_AT) shockwave(lines, pose, at, post);
             buffers.endBatch(RenderType.lightning());
 
-            switch (stage) {
-                // a cloud's and a protostar's glow reaches 16 to 18 times the radius they are given: keep it in the chamber
-                case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
-                        0.04f + 0.05f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
-                case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at,
-                        0.08f + 0.04f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
-                case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius);
-                case BLACK_HOLE -> {
-                    ContinuumRender.beginWorldObject(view, projection, at);
-                    ContinuumRender.drawBlackHole(null, view, projection, at, radius);
-                    ContinuumRender.endWorldObject();
+            if (falling) {
+                if (p < StellarForgeClient.Anim.COLLAPSE_FLASH_AT) {
+                    // the old body, squeezed down to a point and whitened
+                    float r = anim.collapseRadius * (1.0f - 0.92f * squeeze);
+                    drawBody(anim.collapseFrom, Math.max(0.02f, r), color, view, projection, at);
+                } else if (post > 0.0f) {
+                    // the black hole opening where it was: small and growing, its disk spinning up
+                    float target = StellarForgeState.radius(StellarForgeState.Stage.BLACK_HOLE, machine.mass());
+                    float grow = 1.0f - (1.0f - post) * (1.0f - post);
+                    drawBody(StellarForgeState.Stage.BLACK_HOLE, Math.max(0.02f, target * grow), color, view,
+                            projection, at);
                 }
-                default -> {}
+            } else {
+                drawBody(stage, radius, color, view, projection, at);
+            }
+        }
+    }
+
+    /** One body of a stage drawn at a size the chamber can hold (a cloud's and a protostar's glow reaches 16 to 18 times the radius). */
+    private static void drawBody(StellarForgeState.Stage stage, float radius, int color, Matrix4f view,
+                                 Matrix4f projection, Vector3f at) {
+        switch (stage) {
+            case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
+                    0.04f + 0.05f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
+            case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at,
+                    0.08f + 0.04f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
+            case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius);
+            case BLACK_HOLE -> {
+                ContinuumRender.beginWorldObject(view, projection, at);
+                ContinuumRender.drawBlackHole(null, view, projection, at, radius);
+                ContinuumRender.endWorldObject();
+            }
+            default -> {}
+        }
+    }
+
+    /** Rings of light thrown out when it falls in: two, one after the other, fading as they go. */
+    private static void shockwave(VertexConsumer out, Matrix4f pose, Vector3f c, float t) {
+        for (int ring = 0; ring < 2; ring++) {
+            float local = Mth.clamp(t * 1.4f - ring * 0.25f, 0.0f, 1.0f);
+            if (local <= 0.0f) continue;
+            float radius = 0.3f + local * (ring == 0 ? 3.2f : 2.4f);
+            float strength = (1.0f - local) * (ring == 0 ? 1.0f : 0.6f);
+            float tilt = ring * 0.9f;
+            int segments = 72;
+            Vector3f previous = null;
+            for (int i = 0; i <= segments; i++) {
+                double a = Math.PI * 2.0 * i / segments;
+                float px = (float) Math.cos(a) * radius;
+                float pz = (float) Math.sin(a) * radius;
+                Vector3f point = new Vector3f(c.x + px, c.y + pz * (float) Math.sin(tilt),
+                        c.z + pz * (float) Math.cos(tilt));
+                if (previous != null) {
+                    ContinuumRender.drawBeam(out, pose, previous, point, 0.05f * (1.0f - local * 0.5f), 0xcfe0ff,
+                            strength);
+                }
+                previous = point;
             }
         }
     }
