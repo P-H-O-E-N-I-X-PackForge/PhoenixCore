@@ -22,7 +22,7 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
             .ofMember(C2SPlaceItemPacket::encode, C2SPlaceItemPacket::new);
 
     /** How many can stand on one face of a block. */
-    public static final int MAX_PER_FACE = 2;
+    public static final int MAX_PER_FACE = 3;
 
     private final BlockPos pos;
     private final Direction face;
