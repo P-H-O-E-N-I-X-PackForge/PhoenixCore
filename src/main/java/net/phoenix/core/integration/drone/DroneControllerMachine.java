@@ -293,7 +293,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                 .pos(2, 1)
                 .size(16, 16)
                 .background(GTGuiTextures.BUTTON)
-                .overlay(GTGuiTextures.BUTTON_THROTTLE_MINUS)
+                .overlay(Text.str("-").asIcon())
                 .tooltip(t -> t.addLine(Component.literal("Lower the cutoff priority threshold")
                         .withStyle(ChatFormatting.GRAY)))
                 .onMousePressed((ctx, btn) -> {
@@ -309,7 +309,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                 .pos(116, 1)
                 .size(16, 16)
                 .background(GTGuiTextures.BUTTON)
-                .overlay(GTGuiTextures.BUTTON_THROTTLE_PLUS)
+                .overlay(Text.str("+").asIcon())
                 .tooltip(t -> t.addLine(Component.literal("Raise the cutoff priority threshold")
                         .withStyle(ChatFormatting.GRAY)))
                 .onMousePressed((ctx, btn) -> {

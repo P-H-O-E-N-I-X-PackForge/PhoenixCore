@@ -46,11 +46,11 @@ public final class StellarForgeMachines {
                                 .setMaxGlobalLimited(2));
                 return MultiblockPatternBuilder
                         .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
-                        .slice("CCCCC", "CGGGC", "CGGGC", "CGGGC", "CCCCC")
-                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
-                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
-                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
                         .slice("CCSCC", "CGGGC", "CGGGC", "CGGGC", "CCCCC")
+                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
+                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
+                        .slice("CFFFC", "G   G", "G   G", "G   G", "CGGGC")
+                        .slice("CCCCC", "CGGGC", "CGGGC", "CGGGC", "CCCCC")
                         .where('S', Predicates.controller(definition))
                         .where('C', casing)
                         .where('G', glass)
