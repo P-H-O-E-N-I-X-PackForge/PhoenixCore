@@ -141,6 +141,10 @@ public final class StellarForgeRenderer {
     private static void drawBody(StellarForgeState.Stage stage, float radius, int color, int holeTint, Matrix4f view,
                                  Matrix4f projection, Vector3f at) {
         // drawn before the translucent blocks: write depth where lit, so water and glass behind do not show over it
+        // the beams just drawn leave the depth test off, and the bodies' spheres need it on to hide behind blocks
+        com.mojang.blaze3d.systems.RenderSystem.enableDepthTest();
+        com.mojang.blaze3d.systems.RenderSystem.depthFunc(515);
+        com.mojang.blaze3d.systems.RenderSystem.depthMask(true);
         ContinuumRender.beginWorldObject(view, projection, at, true);
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
