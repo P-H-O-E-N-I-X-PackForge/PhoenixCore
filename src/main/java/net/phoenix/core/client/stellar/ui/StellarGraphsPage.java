@@ -147,12 +147,12 @@ public final class StellarGraphsPage implements CanvasPainter {
         y += 14;
         float last = all.length - 1;
         g.fill(x, y - 3, x + w, y - 2, 0x33_00E5CC);
-        g.drawString(font, String.format(Locale.ROOT, "mass %,.1f M (peak %,.1f)", mass[all.length - 1], maxMass), x, y,
-                C_MASS, false);
-        g.drawString(font, String.format(Locale.ROOT, "heat %.0f%%   stability %.0f%%", heat[all.length - 1],
-                stab[all.length - 1]), x, y + 10, C_STAB, false);
-        g.drawString(font, String.format(Locale.ROOT, "power %,d EU/t (peak %,.0f)", (int) power[all.length - 1],
-                maxPower), x, y + 20, C_POWER, false);
+        y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "mass %,.1f M (peak %,.1f)", mass[all.length - 1],
+                maxMass), x, y, w, C_MASS);
+        y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "heat %.0f%%   stability %.0f%%",
+                heat[all.length - 1], stab[all.length - 1]), x, y, w, C_STAB);
+        GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "power %,d EU/t (peak %,.0f)", (int) power[all.length - 1],
+                maxPower), x, y, w, C_POWER);
     }
 
     private void response(GuiGraphics g, Font font, int x, int y, int w, int h) {
@@ -184,7 +184,7 @@ public final class StellarGraphsPage implements CanvasPainter {
         int sx = x + 1 + Math.round((w - 3) * s.spin / 100.0f);
         g.fill(fx, y + 1, fx + 1, y + plotH - 1, StellarHudPage.C_CYAN);
         g.fill(sx, y + 1, sx + 1, y + plotH - 1, StellarHudPage.C_PURPLE);
-        int hold = y + plotH - 2 - Math.round(0.7f * (plotH - 4));
+        int hold = y + plotH - 2 - Math.round(StellarForgeState.HOLD_STABILITY / 100.0f * (plotH - 4));
         g.fill(x + 1, hold, x + w - 1, hold + 1, 0x55_33FF88);
 
         y += plotH + 4;
@@ -196,13 +196,13 @@ public final class StellarGraphsPage implements CanvasPainter {
 
         g.fill(x, y - 3, x + w, y - 2, 0x33_00E5CC);
         g.fill(x, y + 3, x + 8, y + 5, StellarHudPage.C_CYAN);
-        g.drawString(font, String.format(Locale.ROOT, "field: now %d%%, would settle at %.0f%% (band %.0f-%.0f)", s.field,
-                s.equilibriumStability(s.feed, s.field, s.spin), fb.low(), fb.high()), x + 12, y, StellarHudPage.C_CYAN,
-                false);
-        g.fill(x, y + 13, x + 8, y + 15, StellarHudPage.C_PURPLE);
-        g.drawString(font, String.format(Locale.ROOT, "spin:  now %d%%, band %.0f-%.0f", s.spin, sb.low(), sb.high()),
-                x + 12, y + 10, StellarHudPage.C_PURPLE, false);
-        g.drawString(font, "the peak of a curve is where that setting wants to be", x, y + 22,
-                StellarHudPage.C_DIM, false);
+        y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "field: now %d%%, would settle at %.0f%% (band %.0f-%.0f)",
+                s.field, s.equilibriumStability(s.feed, s.field, s.spin), fb.low(), fb.high()), x + 12, y, w - 12,
+                StellarHudPage.C_CYAN);
+        g.fill(x, y + 3, x + 8, y + 5, StellarHudPage.C_PURPLE);
+        y = GuiDraw.drawWrapped(g, font, String.format(Locale.ROOT, "spin: now %d%%, band %.0f-%.0f", s.spin, sb.low(),
+                sb.high()), x + 12, y, w - 12, StellarHudPage.C_PURPLE);
+        GuiDraw.drawWrapped(g, font, "the peak of a curve is where that setting wants to be", x, y + 2, w,
+                StellarHudPage.C_DIM);
     }
 }

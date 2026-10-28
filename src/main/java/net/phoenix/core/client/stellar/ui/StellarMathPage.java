@@ -48,9 +48,10 @@ public final class StellarMathPage implements CanvasPainter {
         return true;
     }
 
+    private int textWidth = 240;
+
     private int line(GuiGraphics g, Font font, int x, int y, String text, int color) {
-        g.drawString(font, text, x, y, color, false);
-        return y + 10;
+        return GuiDraw.drawWrapped(g, font, text, x, y, textWidth - (x - 8), color);
     }
 
     private int heading(GuiGraphics g, Font font, int x, int y, int w, String text) {
@@ -66,6 +67,7 @@ public final class StellarMathPage implements CanvasPainter {
             g.drawString(font, "Structure not formed.", 8, 8, StellarHudPage.C_DIM, false);
             return;
         }
+        textWidth = w - 24;
         StellarForgeState s = machine.view();
         boolean ok = machine.powerOk();
         int y = 6;

@@ -47,6 +47,16 @@ public final class GuiDraw {
         g.enableScissor(ax, ay, bx, by);
     }
 
+    /** Text wrapped to {@code width} pixels, ten pixels a line: the y below the last line. */
+    public static int drawWrapped(GuiGraphics g, net.minecraft.client.gui.Font font, String text, int x, int y, int width,
+                                  int color) {
+        for (var line : font.split(net.minecraft.network.chat.Component.literal(text), Math.max(20, width))) {
+            g.drawString(font, line, x, y, color, false);
+            y += 10;
+        }
+        return y;
+    }
+
     public static int withAlpha(int rgb, int alpha) {
         return (alpha << 24) | (rgb & 0xFFFFFF);
     }
