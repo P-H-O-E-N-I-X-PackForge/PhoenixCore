@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:nitrogen_plasma",
+  "name": "Nitrogen plasma",
+  "body": "star",
+  "heat": {
+    "min": 40,
+    "max": 75
+  },
+  "min_mass": 300,
+  "rate": 6.0,
+  "damage": {
+    "stability": 0.12,
+    "mass": 0.015,
+    "heat": 0.0
+  }
+}

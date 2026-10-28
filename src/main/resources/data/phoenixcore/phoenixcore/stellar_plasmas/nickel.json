@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:nickel_plasma",
+  "name": "Nickel plasma",
+  "body": "black_hole",
+  "heat": {
+    "min": 60,
+    "max": 100
+  },
+  "min_mass": 6000,
+  "rate": 4.0,
+  "damage": {
+    "stability": 0.3,
+    "mass": 0.08,
+    "heat": 0.0
+  }
+}

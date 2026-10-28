@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:tin_plasma",
+  "name": "Tin plasma",
+  "body": "star",
+  "heat": {
+    "min": 60,
+    "max": 90
+  },
+  "min_mass": 2500,
+  "rate": 4.0,
+  "damage": {
+    "stability": 0.35,
+    "mass": 0.05,
+    "heat": 0.04
+  }
+}

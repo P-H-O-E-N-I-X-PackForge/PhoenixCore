@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:americium_plasma",
+  "name": "Americium plasma",
+  "body": "black_hole",
+  "heat": {
+    "min": 80,
+    "max": 100
+  },
+  "min_mass": 12000,
+  "rate": 2.5,
+  "damage": {
+    "stability": 0.5,
+    "mass": 0.15,
+    "heat": 0.06
+  }
+}

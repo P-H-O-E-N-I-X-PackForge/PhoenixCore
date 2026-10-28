@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:iron_plasma",
+  "name": "Iron plasma",
+  "body": "star",
+  "heat": {
+    "min": 70,
+    "max": 100
+  },
+  "min_mass": 1500,
+  "rate": 5.0,
+  "damage": {
+    "stability": 0.28,
+    "mass": 0.04,
+    "heat": 0.0
+  }
+}

@@ -96,6 +96,17 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @SyncToClient
     private boolean collapseArmed;
 
+    /** The exotic plasma picked to draw (a {@link StellarPlasma} id), "" for the usual oxygen plasma; and what the screen says of it. */
+    @SaveField
+    @SyncToClient
+    private String plasmaId = "";
+
+    @SyncToClient
+    private String plasmaName = "";
+
+    @SyncToClient
+    private String plasmaNote = "";
+
     /** The number rolled when this run started, how long it has run, and its disturbances so far. */
     @SaveField
     @SyncToClient
@@ -336,6 +347,50 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         }
     }
 
+    private void cyclePlasma() {
+        plasmaId = StellarPlasma.next(plasmaId);
+        plasmaBuffer = 0.0;
+        syncDataHolder.markClientSyncFieldDirty("plasmaId");
+    }
+
+    private void refreshPlasmaNote(StellarForgeState s, StellarPlasma.@Nullable Recipe exotic, boolean drawing,
+                                   double rate) {
+        String name;
+        String note;
+        if (plasmaId.isEmpty()) {
+            name = "Oxygen plasma";
+            note = "";
+        } else if (exotic == null) {
+            name = plasmaId;
+            note = "no such plasma";
+        } else {
+            name = exotic.name();
+            String why = exotic.whyNot(s);
+            note = drawing ? String.format(java.util.Locale.ROOT, "drawing %.1f mB/t, costs %.2f stability and %.2f M a tick",
+                    rate, exotic.damageStability(), exotic.damageMass()) : why != null ? why : "waiting (nothing to take yet)";
+        }
+        if (!name.equals(plasmaName)) {
+            plasmaName = name;
+            syncDataHolder.markClientSyncFieldDirty("plasmaName");
+        }
+        if (!note.equals(plasmaNote)) {
+            plasmaNote = note;
+            syncDataHolder.markClientSyncFieldDirty("plasmaNote");
+        }
+    }
+
+    public String plasmaId() {
+        return plasmaId;
+    }
+
+    public String plasmaName() {
+        return plasmaName;
+    }
+
+    public String plasmaNote() {
+        return plasmaNote;
+    }
+
     public void disperse() {
         state().disperse();
         starTint = -1;
@@ -445,11 +500,26 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
         // plasma out, and a full hatch backs the pressure up
         boolean blocked = false;
         double rate = s.plasmaPerTick();
+        Fluid plasma = GTMaterials.Oxygen.getFluid(FluidStorageKeys.PLASMA);
+        StellarPlasma.Recipe exotic = StellarPlasma.get(plasmaId);
+        boolean drawingExotic = false;
+        if (!plasmaId.isEmpty()) {
+            // an exotic plasma replaces the usual one: only a body of the right kind, heat and mass gives it
+            rate = 0.0;
+            plasma = null;
+            if (exotic != null && exotic.eligible(s)) {
+                Fluid wanted = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(exotic.fluid());
+                if (wanted != net.minecraft.world.level.material.Fluids.EMPTY) {
+                    plasma = wanted;
+                    rate = exotic.rate() * (s.stability / 100.0);
+                    drawingExotic = rate > 0.0;
+                }
+            }
+        }
         if (rate > 0.0) {
             plasmaBuffer += rate;
             int out = (int) plasmaBuffer;
             if (out > 0) {
-                Fluid plasma = GTMaterials.Oxygen.getFluid(FluidStorageKeys.PLASMA);
                 int left = out;
                 if (plasma != null) {
                     for (FluidHatchPartMachine hatch : hatches(IO.OUT)) {
@@ -462,6 +532,13 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                 plasmaBuffer = Math.min(plasmaBuffer, 64.0);
             }
         }
+        if (drawingExotic && !blocked) {
+            // drawing it hurts the body a little every tick
+            s.stability = Math.max(0.0f, s.stability - exotic.damageStability());
+            s.mass = Math.max(0.0, s.mass - exotic.damageMass());
+            s.heat = Math.max(0.0f, Math.min(100.0f, s.heat + exotic.damageHeat()));
+        }
+        if (getLevel().getGameTime() % 10 == 0) refreshPlasmaNote(s, exotic, drawingExotic, rate);
 
         if (getLevel().getGameTime() % 100 == 0) {
             var report = new StringBuilder();
@@ -539,7 +616,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     // ------------------------------------------------------------------------------------------------ the screen
 
     private static final int UI_WIDTH = 264;
-    private static final int UI_HEIGHT = 262;
+    private static final int UI_HEIGHT = 276;
 
     /** A setting or button pressed on the screen, done here on the server. */
     private void control(int which, int value) {
@@ -550,6 +627,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             case StellarControls.SPIN -> setSpin(value);
             case StellarControls.ARM -> armCollapse();
             case StellarControls.DISPERSE -> disperse();
+            case StellarControls.PLASMA -> cyclePlasma();
             default -> {}
         }
     }

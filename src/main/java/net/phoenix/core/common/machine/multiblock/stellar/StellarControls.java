@@ -9,6 +9,9 @@ public interface StellarControls {
     int ARM = 3;
     int DISPERSE = 4;
 
+    /** Pick the next exotic plasma to draw (and none, the usual oxygen plasma, after the last). */
+    int PLASMA = 5;
+
     /** Set feed, field or spin to a percentage. */
     void set(int which, int value);
 

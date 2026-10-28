@@ -43,6 +43,7 @@ public final class StellarHudPage implements CanvasPainter {
 
     private final int[] armRect = new int[4];
     private final int[] disperseRect = new int[4];
+    private final int[] plasmaRect = new int[4];
 
     public StellarHudPage(StellarForgeMachine machine, StellarControls controls) {
         this.machine = machine;
@@ -230,15 +231,24 @@ public final class StellarHudPage implements CanvasPainter {
 
     private void buttons(GuiGraphics g, Font font, StellarForgeState view, int mouseX, int mouseY) {
         boolean star = view.stage == StellarForgeState.Stage.STAR;
-        button(g, font, armRect, 8, 195, 110, 14, view.collapseArmed ? "COLLAPSE ARMED" : "ARM COLLAPSE",
+        button(g, font, armRect, 8, 195, 104, 14, view.collapseArmed ? "COLLAPSE ARMED" : "ARM COLLAPSE",
                 view.collapseArmed ? C_GOLD : C_PURPLE, star, mouseX, mouseY);
-        button(g, font, disperseRect, 124, 195, 70, 14, "DISPERSE", C_RED, view.stage != StellarForgeState.Stage.IDLE,
+        button(g, font, disperseRect, 118, 195, 64, 14, "DISPERSE", C_RED, view.stage != StellarForgeState.Stage.IDLE,
                 mouseX, mouseY);
+        // the exotic plasma: each press picks the next, and none (the usual oxygen plasma) after the last
+        boolean exotic = !machine.plasmaId().isEmpty();
+        button(g, font, plasmaRect, 188, 195, 68, 14, exotic ? "PLASMA*" : "PLASMA", exotic ? C_CYAN : C_BLUE,
+                true, mouseX, mouseY);
     }
 
     /** What the forge is waiting for, as ticks and crosses, wrapping onto more lines as needed. */
     private void checklist(GuiGraphics g, Font font, int w, StellarForgeState view, int top) {
         var stage = view.stage;
+        if (!machine.plasmaId().isEmpty() && stage != StellarForgeState.Stage.IDLE) {
+            String note = machine.plasmaNote();
+            top = GuiDraw.drawWrapped(g, font, "plasma: " + machine.plasmaName() + (note.isEmpty() ? "" : " - " + note), 8,
+                    top, w - 16, note.startsWith("drawing") ? C_GREEN : C_GOLD);
+        }
         if (!machine.powerOk() && stage != StellarForgeState.Stage.IDLE) {
             g.drawString(font, "Out of power: the field slips.", 8, top, C_RED, false);
             return;
@@ -324,6 +334,10 @@ public final class StellarHudPage implements CanvasPainter {
         }
         if (hit(disperseRect, mx, my)) {
             controls.press(StellarControls.DISPERSE);
+            return true;
+        }
+        if (hit(plasmaRect, mx, my)) {
+            controls.press(StellarControls.PLASMA);
             return true;
         }
         int which = sliderAt(mx, my);

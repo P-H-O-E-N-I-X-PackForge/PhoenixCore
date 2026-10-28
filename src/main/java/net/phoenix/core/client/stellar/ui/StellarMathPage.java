@@ -129,6 +129,7 @@ public final class StellarMathPage implements CanvasPainter {
         y = heading(g, font, x, y, w - 16, "OUTPUT AND SIZE");
         y = line(g, font, x, y, "plasma = clamp(mass / 50, 1, 64) * stability   (x2 black hole)", mid);
         y = line(g, font, x, y, String.format(Locale.ROOT, "= %.1f mB/t of oxygen plasma", s.plasmaPerTick()), white);
+        y = line(g, font, x, y, "exotic plasma (PLASMA button): replaces it; rate * stability, and every tick it takes stability and mass off the body. Each is for one kind of body, in a heat range, above a mass.", dim);
         y = line(g, font, x, y, String.format(Locale.ROOT, "size %.2f blocks, temperature %,.0f K", s.radius(), s.kelvin()),
                 white);
         y += 4;

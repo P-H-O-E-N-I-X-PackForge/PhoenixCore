@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:helium_plasma",
+  "name": "Helium plasma",
+  "body": "star",
+  "heat": {
+    "min": 0,
+    "max": 55
+  },
+  "min_mass": 100,
+  "rate": 6.0,
+  "damage": {
+    "stability": 0.08,
+    "mass": 0.01,
+    "heat": 0.0
+  }
+}
