@@ -150,7 +150,36 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return null;
     }
 
+    /** The tier is worked out on the server and sent over: the client does not know the named patterns. */
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient
+    private int tierOrdinal = -1;
+
     private @Nullable CinderForgeTier currentTier() {
+        if (isRemote()) {
+            return tierOrdinal < 0 || tierOrdinal >= CinderForgeTier.values().length ? null :
+                    CinderForgeTier.values()[tierOrdinal];
+        }
+        return computeTier();
+    }
+
+    @Override
+    public void formStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.formStructure(substructureName);
+        updateTier();
+    }
+
+    @Override
+    public void invalidateStructure(@org.jetbrains.annotations.NotNull String substructureName) {
+        super.invalidateStructure(substructureName);
+        updateTier();
+    }
+
+    private void updateTier() {
+        CinderForgeTier tier = computeTier();
+        tierOrdinal = tier == null ? -1 : tier.ordinal();
+    }
+
+    private @Nullable CinderForgeTier computeTier() {
         var tier3 = getPatternState("tier3");
         if (tier3 != null && tier3.isFormed()) return CinderForgeTier.TIER3;
         var tier2 = getPatternState("tier2");

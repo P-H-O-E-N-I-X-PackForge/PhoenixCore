@@ -229,7 +229,7 @@ public final class MachineHud {
                 int needed = cellsH + m.bars.get().size() * 21 +
                         (int) m.controls.stream().filter(c -> c instanceof HudModel.Slider).count() * 14 +
                         (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
-                        m.notes.get().size() * 10 + 6;
+                        m.notes.get().stream().mapToInt(n -> font.split(net.minecraft.network.chat.Component.literal(n.text()), w - 16).size()).sum() * 10 + 6;
                 int room = Math.min(m.heroHeight, h - y - 4 - needed - 2);
                 if (room >= 24) {
                     GuiDraw.enableScissor(g, 8, y, w - 8, y + room);
@@ -316,10 +316,15 @@ public final class MachineHud {
             }
             if (buttonCount > 0) y += 17;
 
-            var notes = m.notes.get();
-            int ny = h - 6 - notes.size() * 10;
-            for (var note : notes) {
-                g.drawString(font, font.plainSubstrByWidth(note.text(), w - 16), 8, ny, note.color(), false);
+            var wrapped = new java.util.ArrayList<java.util.Map.Entry<net.minecraft.util.FormattedCharSequence, Integer>>();
+            for (var note : m.notes.get()) {
+                for (var line : font.split(net.minecraft.network.chat.Component.literal(note.text()), w - 16)) {
+                    wrapped.add(java.util.Map.entry(line, note.color()));
+                }
+            }
+            int ny = h - 6 - wrapped.size() * 10;
+            for (var line : wrapped) {
+                g.drawString(font, line.getKey(), 8, ny, line.getValue(), false);
                 ny += 10;
             }
         }
@@ -480,8 +485,10 @@ public final class MachineHud {
                         g.drawString(font, line.text().substring(2), 15, y + 3, T.accent(), false);
                         y += 15;
                     } else {
-                        g.drawString(font, font.plainSubstrByWidth(line.text(), w - 24), 8, y, line.color(), false);
-                        y += 10;
+                        for (var part : font.split(net.minecraft.network.chat.Component.literal(line.text()), w - 24)) {
+                            g.drawString(font, part, 8, y, line.color(), false);
+                            y += 10;
+                        }
                     }
                 }
             }
