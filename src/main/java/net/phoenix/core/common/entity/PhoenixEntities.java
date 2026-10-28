@@ -29,6 +29,11 @@ public final class PhoenixEntities {
             () -> EntityType.Builder.<TetoSlime>of(TetoSlime::new, MobCategory.CREATURE).sized(2.04f, 2.04f)
                     .clientTrackingRange(10).build("teto_slime"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<PlacedItemEntity>> PLACED_ITEM = ENTITY_TYPES.register(
+            "placed_item",
+            () -> EntityType.Builder.<PlacedItemEntity>of(PlacedItemEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
+                    .clientTrackingRange(8).updateInterval(Integer.MAX_VALUE).noSummon().build("placed_item"));
+
     public static final DeferredHolder<Item, Item> TETO_SLIME_SPAWN_EGG = SPAWN_EGGS.register("teto_slime_spawn_egg",
             () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0,
                     new Item.Properties()));

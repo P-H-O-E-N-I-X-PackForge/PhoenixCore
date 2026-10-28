@@ -55,6 +55,15 @@ public class ClientTickHandler {
             }
         }
 
+        while (PhoenixKeybinds.PLACE_ITEM.consumeClick()) {
+            if (mc.screen != null || mc.player.getMainHandItem().isEmpty()) continue;
+            if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit &&
+                    hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToServer(new net.phoenix.core.network.packet.C2SPlaceItemPacket(
+                        hit.getBlockPos(), hit.getDirection(), hit.getLocation()));
+            }
+        }
+
         while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
             net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager = net.phoenix.core.integration.conflux.dimension.sky.SkyManager
                     .getInstance();

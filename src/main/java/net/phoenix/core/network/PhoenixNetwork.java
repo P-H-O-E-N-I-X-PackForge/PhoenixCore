@@ -43,6 +43,8 @@ public class PhoenixNetwork {
                 net.phoenix.core.network.packet.S2CStellarDataPacket.STREAM_CODEC,
                 net.phoenix.core.network.packet.S2CStellarDataPacket::handle);
 
+        registrar.playToServer(C2SPlaceItemPacket.TYPE, C2SPlaceItemPacket.STREAM_CODEC, C2SPlaceItemPacket::handle);
+
         registrar.playToServer(C2SBuyShopEntryPacket.TYPE, C2SBuyShopEntryPacket.STREAM_CODEC,
                 C2SBuyShopEntryPacket::handle);
 

@@ -1,0 +1,187 @@
+package net.phoenix.core.common.entity;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * An item or block stood on the face of a block in a scaled down version, like Draconic Evolution's placed items. It sits
+ * where it was put (snapped to an eighth of a block), faces out of the block, and can be turned with an empty hand and
+ * taken back by hitting it. It falls off, back into a dropped item, when the block it is on goes.
+ */
+public class PlacedItemEntity extends Entity {
+
+    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(PlacedItemEntity.class,
+            EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Integer> FACE = SynchedEntityData.defineId(PlacedItemEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SPIN = SynchedEntityData.defineId(PlacedItemEntity.class,
+            EntityDataSerializers.INT);
+
+    /** How big blocks and flat items are drawn, as a fraction of their usual size. */
+    public static final float BLOCK_SCALE = 0.3f;
+    public static final float ITEM_SCALE = 0.4f;
+
+    public PlacedItemEntity(EntityType<? extends PlacedItemEntity> type, Level level) {
+        super(type, level);
+        noPhysics = true;
+    }
+
+    public static PlacedItemEntity create(Level level, ItemStack stack, Direction face, Vec3 point) {
+        PlacedItemEntity e = new PlacedItemEntity(PhoenixEntities.PLACED_ITEM.get(), level);
+        e.entityData.set(ITEM, stack);
+        e.entityData.set(FACE, face.get3DDataValue());
+        e.setPos(point);
+        e.setXRot(face == Direction.UP ? -90.0f : face == Direction.DOWN ? 90.0f : 0.0f);
+        e.setYRot(face.getAxis().isHorizontal() ? face.get2DDataValue() * 90.0f : 0.0f);
+        return e;
+    }
+
+    /** The point on the face for a spot hit on it: snapped to an eighth, kept off the edges of the block. */
+    public static Vec3 snap(BlockPos block, Direction face, Vec3 hit) {
+        double x = hit.x - block.getX();
+        double y = hit.y - block.getY();
+        double z = hit.z - block.getZ();
+        x = face.getAxis() == Direction.Axis.X ? face.getStepX() > 0 ? 1.0 : 0.0 : edge(x);
+        y = face.getAxis() == Direction.Axis.Y ? face.getStepY() > 0 ? 1.0 : 0.0 : edge(y);
+        z = face.getAxis() == Direction.Axis.Z ? face.getStepZ() > 0 ? 1.0 : 0.0 : edge(z);
+        return new Vec3(block.getX() + x, block.getY() + y, block.getZ() + z);
+    }
+
+    private static double edge(double v) {
+        return Math.max(0.125, Math.min(0.875, Math.round(v * 8.0) / 8.0));
+    }
+
+    public ItemStack item() {
+        return entityData.get(ITEM);
+    }
+
+    public Direction face() {
+        return Direction.from3DDataValue(entityData.get(FACE));
+    }
+
+    /** 0 to 7: eighths of a turn about the way the item faces. */
+    public int spin() {
+        return entityData.get(SPIN);
+    }
+
+    public boolean isBlock() {
+        return item().getItem() instanceof BlockItem;
+    }
+
+    public float scale() {
+        return isBlock() ? BLOCK_SCALE : ITEM_SCALE;
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ITEM, ItemStack.EMPTY);
+        builder.define(FACE, Direction.UP.get3DDataValue());
+        builder.define(SPIN, 0);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key == ITEM || key == FACE) refreshDimensions();
+    }
+
+    @Override
+    protected AABB makeBoundingBox() {
+        Vec3 p = position();
+        Direction face = face();
+        double half = scale() * 0.5;
+        double lift = isBlock() ? half : 0.03;
+        Vec3 centre = p.add(face.getStepX() * lift, face.getStepY() * lift, face.getStepZ() * lift);
+        return new AABB(centre.x - half, centre.y - half, centre.z - half, centre.x + half, centre.y + half,
+                centre.z + half);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide && tickCount % 20 == 0) {
+            Vec3 into = position().subtract(face().getStepX() * 0.05, face().getStepY() * 0.05,
+                    face().getStepZ() * 0.05);
+            if (item().isEmpty() || level().getBlockState(BlockPos.containing(into)).isAir()) {
+                drop();
+            }
+        }
+    }
+
+    private void drop() {
+        if (!item().isEmpty()) spawnAtLocation(item().copy());
+        discard();
+    }
+
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        if (hand != InteractionHand.MAIN_HAND || !player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
+        if (!level().isClientSide) entityData.set(SPIN, (spin() + (player.isShiftKeyDown() ? 7 : 1)) % 8);
+        return InteractionResult.sidedSuccess(level().isClientSide);
+    }
+
+    @Override
+    public boolean skipAttackInteraction(Entity attacker) {
+        if (attacker instanceof Player player) {
+            if (!level().isClientSide) {
+                if (player.isCreative()) discard();
+                else drop();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        return false;
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
+    public boolean isAttackable() {
+        return true;
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        ItemStack.parse(registryAccess(), tag.getCompound("Item")).ifPresent(s -> entityData.set(ITEM, s));
+        entityData.set(FACE, tag.getInt("Face"));
+        entityData.set(SPIN, tag.getInt("Spin"));
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        if (!item().isEmpty()) tag.put("Item", item().save(registryAccess()));
+        tag.putInt("Face", entityData.get(FACE));
+        tag.putInt("Spin", spin());
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
+        return new ClientboundAddEntityPacket(this, entity);
+    }
+}
