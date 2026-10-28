@@ -223,7 +223,7 @@ public final class MachineHud {
                         (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
                         m.notes.get().size() * 10 + 6;
                 if (y + m.heroHeight + 4 + needed <= h) {
-                    GuiDraw.enableScissor(g, 8, y, w - 16, m.heroHeight);
+                    GuiDraw.enableScissor(g, 8, y, w - 8, y + m.heroHeight);
                     m.hero.draw(g, 8, y, w - 16, m.heroHeight, Heroes.now());
                     g.disableScissor();
                     GuiDraw.drawBorder(g, 8, y, w - 16, m.heroHeight, T.line(), 1);
