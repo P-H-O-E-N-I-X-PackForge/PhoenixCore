@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * An item or block stood on the face of a block in a scaled down version, like Draconic Evolution's placed items. It sits
  * where it was put (snapped to an eighth of a block), faces out of the block, and can be turned with an empty hand and
- * taken back by hitting it. It falls off, back into a dropped item, when the block it is on goes.
+ * taken back by sneaking and right clicking it (or hitting it). It falls off, back into a dropped item, when the block it is on goes.
  */
 public class PlacedItemEntity extends Entity {
 
@@ -134,8 +134,20 @@ public class PlacedItemEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        if (hand != InteractionHand.MAIN_HAND || !player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
-        if (!level().isClientSide) entityData.set(SPIN, (spin() + (player.isShiftKeyDown() ? 7 : 1)) % 8);
+        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        if (player.isShiftKeyDown()) {
+            // sneak and right click takes it back
+            if (!level().isClientSide) {
+                if (!player.isCreative()) {
+                    ItemStack back = item().copy();
+                    if (!player.getInventory().add(back)) player.drop(back, false);
+                }
+                discard();
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
+        if (!player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
+        if (!level().isClientSide) entityData.set(SPIN, (spin() + 1) % 8);
         return InteractionResult.sidedSuccess(level().isClientSide);
     }
 
