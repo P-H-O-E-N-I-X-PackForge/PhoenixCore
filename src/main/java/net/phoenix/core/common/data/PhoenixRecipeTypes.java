@@ -69,7 +69,7 @@ public class PhoenixRecipeTypes {
                         1)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .UI(builder -> SourceRecipeCapability.viewer(builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT)))
                 .setSound(GTSoundEntries.MIXER)
                 .register();
 
@@ -167,7 +167,7 @@ public class PhoenixRecipeTypes {
                 .setMaxIOSize(3, 2, 2, 2)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
+                .UI(builder -> SourceRecipeCapability.viewer(builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW)))
                 .setSound(GTSoundEntries.REPLICATOR)
                 .register();
 
@@ -176,7 +176,7 @@ public class PhoenixRecipeTypes {
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.OUT)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
+                .UI(builder -> SourceRecipeCapability.viewer(builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW)))
                 .setSound(GTSoundEntries.REPLICATOR)
                 .register();
 
@@ -184,7 +184,7 @@ public class PhoenixRecipeTypes {
                 .setMaxIOSize(3, 3, 1, 0)
                 .setMaxSize(IO.IN, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
+                .UI(builder -> SourceRecipeCapability.viewer(builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW)))
                 .setSound(GTSoundEntries.CHEMICAL)
                 .register();
 
@@ -192,7 +192,7 @@ public class PhoenixRecipeTypes {
                 .setMaxIOSize(2, 1, 1, 0)
                 .setMaxSize(IO.OUT, SourceRecipeCapability.CAP, 1)
                 .setEUIO(IO.IN)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
+                .UI(builder -> SourceRecipeCapability.viewer(builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW)))
                 .setSound(GTSoundEntries.CHEMICAL)
                 .register();
 

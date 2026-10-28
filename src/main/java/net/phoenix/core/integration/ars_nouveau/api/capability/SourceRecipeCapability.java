@@ -22,6 +22,33 @@ public class SourceRecipeCapability extends RecipeCapability<SourceIngredient> {
                 SourceIngredient.Serializer.INSTANCE);
     }
 
+    /** Shows Source as a line of text in the recipe viewer (it has no slot to draw). */
+    public static com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout.Builder viewer(
+                                                                                         com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout.Builder builder) {
+        builder.setRecipeViewerLayoutCapabilityLayoutBuilder(CAP, (layout, widget, io) -> {
+            if (layout.getRecipeType().getMaxSlots(CAP, io) == 0) return;
+            widget.textComponents.child(brachy.modularui.widgets.layout.Flow.col().childPadding(1)
+                    .coverChildrenHeight()
+                    .widthRel(1f)
+                    .crossAxisAlignment(brachy.modularui.utils.Alignment.CrossAxis.START)
+                    .name(com.gregtechceu.gtceu.api.recipe.gui.GTRecipeViewerWidget.capabilityWidgetName(CAP, io, 0)));
+        });
+        builder.setCapabilityContentBuilder(CAP, (widget, content, io, perTick, recipeType, recipe, chanceTier,
+                                                  recipeTier) -> {
+            if (!(widget instanceof brachy.modularui.widgets.layout.Flow flow)) return;
+            if (!(content.content() instanceof SourceIngredient source)) return;
+            String name = "source_" + io.name().toLowerCase(java.util.Locale.ROOT);
+            var text = brachy.modularui.api.drawable.Text.str(
+                    (io == com.gregtechceu.gtceu.api.capability.recipe.IO.IN ? "Uses " : "Makes ") +
+                            String.format(java.util.Locale.ROOT, "%,d", source.getSource()) + " Source")
+                    .color(0xFFC85CCF);
+            var existing = brachy.modularui.widget.WidgetTree.findFirstWithNameNullable(flow, name);
+            if (existing instanceof brachy.modularui.widgets.TextWidget<?> tw) tw.value(text);
+            else flow.child(text.asWidget().name(name));
+        });
+        return builder;
+    }
+
     @Override
     public SourceIngredient copyWithModifier(SourceIngredient content, ContentModifier modifier) {
         return new SourceIngredient((int) modifier.apply(content.getSource()));
