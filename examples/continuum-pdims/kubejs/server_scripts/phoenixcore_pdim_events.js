@@ -19,7 +19,7 @@ ContinuumEvents.pdimEnter(event => {
       player.tell('Anvil is shared: everybody who comes here arrives at the same place.')
       break
     case 'phoenix_continuum:cinder':
-      player.give('minecraft:torch 16')
+      player.give(Item.of('minecraft:torch', 16))
       player.tell('Cinder is under an ash storm. Your plot has a house; the rest is basalt.')
       break
     default:
