@@ -155,12 +155,6 @@ public final class StellarForgeRenderer {
                 scale = StellarForgeClient.Anim.holeScale(anim.hole);
             }
 
-            VertexConsumer lines = buffers.getBuffer(StellarBeamRenderType.BEAMS);
-            containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash, ringScale * scale);
-            injectors(lines, pose, machine, at, seconds, color, flicker * level, scale);
-            if (before && pB > 0.0f) inwardStreaks(lines, pose, at, seconds, pB, color);
-            if (falling && !before) shockwave(lines, pose, at, after);
-            buffers.endBatch(StellarBeamRenderType.BEAMS);
 
             if (falling) {
                 if (before) {
@@ -184,6 +178,14 @@ public final class StellarForgeRenderer {
             } else {
                 drawBody(stage, radius, color, null, view, projection, at);
             }
+
+            // after the body, so the near side of a ring crosses in front of it and the far side goes behind
+            VertexConsumer lines = buffers.getBuffer(StellarBeamRenderType.BEAMS);
+            containment(lines, pose, at, spin, field, seconds, color, flicker * level, anim.flash, ringScale * scale);
+            injectors(lines, pose, machine, at, seconds, color, flicker * level, scale);
+            if (before && pB > 0.0f) inwardStreaks(lines, pose, at, seconds, pB, color);
+            if (falling && !before) shockwave(lines, pose, at, after);
+            buffers.endBatch(StellarBeamRenderType.BEAMS);
         }
     }
 
