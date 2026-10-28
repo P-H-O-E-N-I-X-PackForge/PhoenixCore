@@ -204,14 +204,17 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
     public void setFeed(int value) {
         feed = state().feed = Math.max(0, Math.min(100, value));
+        syncDataHolder.markClientSyncFieldDirty("feed");
     }
 
     public void setField(int value) {
         field = state().field = Math.max(0, Math.min(100, value));
+        syncDataHolder.markClientSyncFieldDirty("field");
     }
 
     public void setSpin(int value) {
         spin = state().spin = Math.max(0, Math.min(100, value));
+        syncDataHolder.markClientSyncFieldDirty("spin");
     }
 
     public void armCollapse() {
@@ -246,6 +249,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
     @Override
     public void formStructure(String substructureName) {
         super.formStructure(substructureName);
+        net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] structure formed ({}), subscribing the tick", substructureName);
         tickHandler.updateSubscription();
     }
 
@@ -344,6 +348,19 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
             }
         }
 
+        if (getLevel().getGameTime() % 100 == 0) {
+            var report = new StringBuilder();
+            for (FluidHatchPartMachine hatch : hatches(IO.IN)) {
+                for (int tank = 0; tank < hatch.tank.getTanks(); tank++) {
+                    FluidStack inside = hatch.tank.getFluidInTank(tank);
+                    if (!inside.isEmpty()) report.append(inside.getFluid().builtInRegistryHolder().key().location())
+                            .append(" x").append(inside.getAmount()).append(" (").append(massPerMb(inside)).append("/mB) ");
+                }
+            }
+            net.phoenix.core.PhoenixCore.LOGGER.debug("[Stellar] tick: stage {} feed {} want {} buffer {} fed {} " +
+                    "inHatches {} powered {} fluids: {}", s.stage, feed, want, feedBuffer, fed, hatches(IO.IN).size(), ok,
+                    report);
+        }
         s.tick(fed, ok, blocked);
         powered = ok;
         energyUse = (int) Math.min(Integer.MAX_VALUE, need);
