@@ -134,23 +134,27 @@ public final class StellarForgeRenderer {
         }
     }
 
-    /** One body of a stage drawn at a size the chamber can hold (a cloud's and a protostar's glow reaches 16 to 18 times the radius). */
+    /**
+     * One body of a stage at a size the chamber can hold. The cloud's and protostar's glow and the black hole's disk are
+     * flat pictures that cannot be cut off by the walls, so they are kept inside them (about 1.35 blocks from the middle,
+     * the chamber being 1.5): bigger and they draw over the casing. The star is a real sphere and can be larger.
+     */
     private static void drawBody(StellarForgeState.Stage stage, float radius, int color, int holeTint, Matrix4f view,
                                  Matrix4f projection, Vector3f at) {
         switch (stage) {
             case GAS_CLOUD -> ContinuumRender.drawGasCloud(color, view, projection, at,
-                    0.05f + 0.065f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
+                    0.045f + 0.039f * Mth.clamp((radius - 0.3f) / 0.9f, 0.0f, 1.0f));
             case PROTOSTAR -> ContinuumRender.drawProtostar(color, view, projection, at,
-                    0.09f + 0.06f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
+                    0.05f + 0.025f * Mth.clamp((radius - 0.25f) / 0.3f, 0.0f, 1.0f));
             case STAR -> ContinuumRender.drawStar(null, color, view, projection, at, radius * 1.2f);
             case BLACK_HOLE -> {
                 ContinuumRender.beginWorldObject(view, projection, at);
                 if (holeTint >= 0) {
                     int cool = ((int) (((holeTint >> 16) & 0xFF) * 0.55f) << 16) |
                             ((int) (((holeTint >> 8) & 0xFF) * 0.55f) << 8) | (int) ((holeTint & 0xFF) * 0.55f);
-                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius * 1.25f);
+                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius * 0.76f);
                 } else {
-                    ContinuumRender.drawBlackHole(null, view, projection, at, radius * 1.25f);
+                    ContinuumRender.drawBlackHole(null, view, projection, at, radius * 0.76f);
                 }
                 ContinuumRender.endWorldObject();
             }
