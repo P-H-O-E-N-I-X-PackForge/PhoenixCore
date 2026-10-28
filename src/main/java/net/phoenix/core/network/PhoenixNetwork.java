@@ -39,6 +39,9 @@ public class PhoenixNetwork {
         registrar.playToClient(S2CPlayStreamPacket.TYPE, S2CPlayStreamPacket.STREAM_CODEC, S2CPlayStreamPacket::handle);
 
         registrar.playToClient(S2CShopSyncPacket.TYPE, S2CShopSyncPacket.STREAM_CODEC, S2CShopSyncPacket::handle);
+        registrar.playToClient(net.phoenix.core.network.packet.S2CStellarDataPacket.TYPE,
+                net.phoenix.core.network.packet.S2CStellarDataPacket.STREAM_CODEC,
+                net.phoenix.core.network.packet.S2CStellarDataPacket::handle);
 
         registrar.playToServer(C2SBuyShopEntryPacket.TYPE, C2SBuyShopEntryPacket.STREAM_CODEC,
                 C2SBuyShopEntryPacket::handle);

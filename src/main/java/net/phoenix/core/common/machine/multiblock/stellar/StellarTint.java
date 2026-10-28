@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +54,22 @@ public final class StellarTint {
     private static final Map<ResourceLocation, Tint> FROM_CODE = new LinkedHashMap<>();
 
     private StellarTint() {}
+
+    private static volatile @Nullable List<Map.Entry<ResourceLocation, Tint>> clientCopy;
+
+    /** On a client of a dedicated server the data packs are not here: the server sends what it has. */
+    public static void setClientCopy(List<Map.Entry<ResourceLocation, Tint>> tints) {
+        clientCopy = List.copyOf(tints);
+    }
+
+    /** Everything that can dye, for display: the server's list when it has sent one, otherwise what is loaded here. */
+    public static synchronized List<Map.Entry<ResourceLocation, Tint>> forDisplay() {
+        var copy = clientCopy;
+        if (copy != null) return copy;
+        List<Map.Entry<ResourceLocation, Tint>> all = new java.util.ArrayList<>(FROM_DATA.entrySet());
+        all.addAll(FROM_CODE.entrySet());
+        return all;
+    }
 
     /** Register a tint from code (kept across reloads). */
     public static synchronized void register(ResourceLocation id, Tint tint) {

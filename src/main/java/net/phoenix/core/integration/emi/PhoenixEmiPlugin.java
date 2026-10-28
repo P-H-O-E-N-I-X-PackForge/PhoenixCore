@@ -64,6 +64,7 @@ public class PhoenixEmiPlugin implements EmiPlugin {
 
         registry.addCategory(ASTRAL_RITUAL);
         registerAstralRituals(registry);
+        StellarEmi.register(registry);
 
         registry.addExclusionArea(RecipeBuilderScreen.class, (screen, consumer) -> consumer.accept(new Bounds(
                 screen.getGuiLeft(), screen.getGuiTop(),

@@ -67,6 +67,19 @@ public final class StellarPlasma {
     private static final Map<ResourceLocation, Recipe> FROM_DATA = new TreeMap<>();
     private static final Map<ResourceLocation, Recipe> FROM_CODE = new TreeMap<>();
 
+    private static volatile @Nullable List<Recipe> clientCopy;
+
+    /** On a client of a dedicated server the data packs are not here: the server sends what it has. */
+    public static void setClientCopy(List<Recipe> recipes) {
+        clientCopy = List.copyOf(recipes);
+    }
+
+    /** What to show: the server's list when it has sent one, otherwise what this game has loaded. */
+    public static List<Recipe> forDisplay() {
+        var copy = clientCopy;
+        return copy != null ? copy : all();
+    }
+
     /** Register one from code (kept across reloads). */
     public static synchronized void register(Recipe recipe) {
         FROM_CODE.put(recipe.id(), recipe);
@@ -97,6 +110,15 @@ public final class StellarPlasma {
             if (list.get(i).id().toString().equals(id)) return i + 1 < list.size() ? list.get(i + 1).id().toString() : "";
         }
         return "";
+    }
+
+    /** Tell clients what there is, when they join and when the data reloads. */
+    @SubscribeEvent
+    public static void onSync(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
+        var packet = new net.phoenix.core.network.packet.S2CStellarDataPacket(all(), StellarTint.forDisplay());
+        for (var player : event.getRelevantPlayers().toList()) {
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, packet);
+        }
     }
 
     @SubscribeEvent
