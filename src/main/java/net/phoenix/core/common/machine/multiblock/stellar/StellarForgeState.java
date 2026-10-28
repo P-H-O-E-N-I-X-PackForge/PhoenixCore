@@ -54,6 +54,9 @@ public final class StellarForgeState {
     public static final double DIRECT_COLLAPSE = 3000.0;
 
     public static final int HOLD_TICKS_TO_ADVANCE = 100;
+
+    /** Stability it has to stay at or above for a stage to move on. */
+    public static final float HOLD_STABILITY = 50.0f;
     public static final int FAIL_TICKS_TO_REGRESS = 200;
 
     /** Fluid each stage can take in at full feed, in mB a tick. */
@@ -260,7 +263,7 @@ public final class StellarForgeState {
             return;
         }
 
-        boolean holding = stability >= 70.0f && mass >= nextMass() && heatBand().miss(heat, 25.0f) < 0.2f;
+        boolean holding = stability >= HOLD_STABILITY && mass >= nextMass() && heatBand().miss(heat, 25.0f) < 0.2f;
         holdTicks = holding ? holdTicks + 1 : 0;
         if (holdTicks >= HOLD_TICKS_TO_ADVANCE) {
             holdTicks = 0;

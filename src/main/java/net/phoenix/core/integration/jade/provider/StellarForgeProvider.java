@@ -43,7 +43,7 @@ public class StellarForgeProvider implements IBlockComponentProvider, IServerDat
                 data.getFloat("heat"))).withStyle(ChatFormatting.GRAY));
         float stability = data.getFloat("stability");
         tooltip.add(Component.literal(String.format(Locale.ROOT, "Stability %.0f%%", stability)).withStyle(
-                stability >= 70.0f ? ChatFormatting.GREEN : stability >= 40.0f ? ChatFormatting.YELLOW :
+                stability >= net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState.HOLD_STABILITY ? ChatFormatting.GREEN : stability >= 40.0f ? ChatFormatting.YELLOW :
                         ChatFormatting.RED));
         tooltip.add(Component.literal(String.format(Locale.ROOT, "Feed %d%%   Field %d%%   Spin %d%%",
                 data.getInt("feed"), data.getInt("field"), data.getInt("spin"))).withStyle(ChatFormatting.GRAY));

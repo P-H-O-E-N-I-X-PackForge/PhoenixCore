@@ -137,8 +137,8 @@ public final class StellarGraphsPage implements CanvasPainter {
         curve(g, x, y, w, plotH, power, maxPower * 1.1f, C_POWER);
         curve(g, x, y, w, plotH, heat, 100.0f, C_HEAT);
         curve(g, x, y, w, plotH, stab, 100.0f, C_STAB);
-        // the 70% line stability has to stay above
-        int hold = y + plotH - 2 - Math.round(0.7f * (plotH - 4));
+        // the line stability has to stay above
+        int hold = y + plotH - 2 - Math.round(StellarForgeState.HOLD_STABILITY / 100.0f * (plotH - 4));
         g.fill(x + 1, hold, x + w - 1, hold + 1, 0x55_33FF88);
         y += plotH + 4;
         int seconds = all.length;

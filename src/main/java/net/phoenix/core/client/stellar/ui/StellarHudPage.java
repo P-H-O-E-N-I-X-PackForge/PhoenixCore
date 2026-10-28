@@ -146,7 +146,7 @@ public final class StellarHudPage implements CanvasPainter {
 
     private void readouts(GuiGraphics g, Font font, StellarForgeState view, int accent) {
         float stab = view.stability;
-        int stabColor = stab >= 70 ? C_GREEN : stab >= 40 ? C_GOLD : C_RED;
+        int stabColor = stab >= StellarForgeState.HOLD_STABILITY ? C_GREEN : stab >= 40 ? C_GOLD : C_RED;
         double k = view.kelvin();
         String temp = k >= 1.0e6 ? String.format(Locale.ROOT, "%.2f MK", k / 1.0e6) :
                 String.format(Locale.ROOT, "%,.0f K", k);
@@ -155,7 +155,7 @@ public final class StellarHudPage implements CanvasPainter {
                         String.format(Locale.ROOT, "%.0f%% of next", view.massFraction() * 100.0), accent);
         cell(g, font, 92, 52, "TEMPERATURE", temp, String.format(Locale.ROOT, "heat %.0f%%", view.heat), C_ORANGE);
         cell(g, font, 176, 52, "STABILITY", String.format(Locale.ROOT, "%.0f%%", stab),
-                stab >= 70 ? "holding" : stab >= 40 ? "drifting" : "failing", stabColor);
+                stab >= StellarForgeState.HOLD_STABILITY ? "holding" : stab >= 40 ? "drifting" : "failing", stabColor);
         cell(g, font, 8, 84, "SIZE", String.format(Locale.ROOT, "%.2f blk", view.radius()),
                 String.format(Locale.ROOT, "fits %.1f / 1.2", view.radius()), C_BLUE);
         cell(g, font, 92, 84, "POWER", String.format(Locale.ROOT, "%,d EU/t", machine.energyUse()),
@@ -257,8 +257,8 @@ public final class StellarHudPage implements CanvasPainter {
         java.util.List<Object[]> checks = new java.util.ArrayList<>();
         checks.add(new Object[] { String.format(Locale.ROOT, "mass %,.0f/%,.0f", view.mass, view.nextMass()),
                 view.mass >= view.nextMass() });
-        checks.add(new Object[] { String.format(Locale.ROOT, "stability %.0f/70", view.stability),
-                view.stability >= 70.0f });
+        checks.add(new Object[] { String.format(Locale.ROOT, "stability %.0f/%.0f", view.stability,
+                StellarForgeState.HOLD_STABILITY), view.stability >= StellarForgeState.HOLD_STABILITY });
         checks.add(new Object[] { "heat in band", view.heatBand().miss(view.heat, 25.0f) < 0.2f });
         checks.add(new Object[] { "field in band", view.field >= fb.low() && view.field <= fb.high() });
         checks.add(new Object[] { "spin in band", view.spin >= sb.low() && view.spin <= sb.high() });
