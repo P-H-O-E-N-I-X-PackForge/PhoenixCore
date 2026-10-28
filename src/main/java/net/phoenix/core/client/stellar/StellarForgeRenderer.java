@@ -152,9 +152,9 @@ public final class StellarForgeRenderer {
                 if (holeTint >= 0) {
                     int cool = ((int) (((holeTint >> 16) & 0xFF) * 0.55f) << 16) |
                             ((int) (((holeTint >> 8) & 0xFF) * 0.55f) << 8) | (int) ((holeTint & 0xFF) * 0.55f);
-                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius * 0.76f);
+                    ContinuumRender.drawBlackHole(holeTint, cool, view, projection, at, radius * 0.9f);
                 } else {
-                    ContinuumRender.drawBlackHole(null, view, projection, at, radius * 0.76f);
+                    ContinuumRender.drawBlackHole(null, view, projection, at, radius * 0.9f);
                 }
             }
             default -> {}
