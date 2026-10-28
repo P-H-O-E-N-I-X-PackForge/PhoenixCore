@@ -21,5 +21,6 @@ public final class PhoenixEntityRenderers {
     @SubscribeEvent
     public static void renderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PhoenixEntities.TETO_SLIME.get(), TetoSlimeRenderer::new);
+        event.registerEntityRenderer(PhoenixEntities.PLACED_ITEM.get(), PlacedItemRenderer::new);
     }
 }

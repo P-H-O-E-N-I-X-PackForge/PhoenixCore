@@ -41,6 +41,8 @@ public class PhoenixDataGenerators {
             prov.add("tooltip.phoenixcore.cinder_core.ready", "All materials stocked - ready to build");
             prov.add("tooltip.phoenixcore.cinder_core.missing_entry", "  %s: %s/%s");
             prov.add("tooltip.phoenixcore.cinder_core.missing_more", "  ...and %s more");
+            prov.add("key.phoenixcore.place_item", "Place Held Item On Block");
+            prov.add("entity.phoenixcore.placed_item", "Placed Item");
             prov.add("key.phoenixcore.cinder_atlas_radial", "Cinder Atlas Loadout Wheel");
             prov.add("entity.phoenixcore.teto_slime", "Teto Slime");
             prov.add("item.phoenixcore.teto_slime_spawn_egg", "Teto Slime Spawn Egg");
