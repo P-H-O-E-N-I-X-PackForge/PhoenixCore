@@ -166,6 +166,15 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
+    private boolean extracting() {
+        return getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get();
+    }
+
+    private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0,
+            totalWorkTicks / (double) HARMONIZATION_THRESHOLD), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent());
+    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
+            0xFF_FFC44D);
+
     private void hudAction(int id, int value) {
         HudRecipes.handle(this, id);
     }
@@ -189,10 +198,10 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         return HudModel.of("Alchemical Imbuer")
                 .formed(this::isFormed)
                 .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0, totalWorkTicks / (double) HARMONIZATION_THRESHOLD), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 44)
+                .hero((g, x, y, w, h, t) -> (extracting() ? EXTRACT_HERO : IMBUE_HERO).draw(g, x, y, w, h, t), 44)
                 .badge(() -> HudRecipes.badge(this))
-                .subtitle(() -> totalWorkTicks >= HARMONIZATION_THRESHOLD ? "Chunk harmonized" :
-                        "Harmonizing the chunk as it works")
+                .subtitle(() -> (extracting() ? "Siphoning source from the chunk: " : "Imbuing: ") +
+                        (totalWorkTicks >= HARMONIZATION_THRESHOLD ? "chunk harmonized" : "harmonizing as it works"))
                 .cells(() -> {
                     var cells = HudRecipes.cells(this);
                     cells.add(HudModel.cell("SOUL RESONANCE", String.format(java.util.Locale.ROOT, "%.2f", cachedSoulDensity),

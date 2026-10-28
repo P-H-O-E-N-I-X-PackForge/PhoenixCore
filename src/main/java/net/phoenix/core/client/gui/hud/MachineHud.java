@@ -26,7 +26,7 @@ public final class MachineHud {
 
     private MachineHud() {}
 
-    public static final int WIDTH = 264;
+    public static final int WIDTH = 288;
     public static final int HEIGHT = 230;
 
     /** What a control on the screen does on the server. */
@@ -218,7 +218,7 @@ public final class MachineHud {
 
             List<HudModel.Cell> cells = m.cells.get();
             if (m.hero != null) {
-                int needed = ((cells.size() + 2) / 3) * 32 + 2 + m.bars.get().size() * 21 +
+                int needed = ((cells.size() + columns(font, cells, w) - 1) / columns(font, cells, w)) * 32 + 2 + m.bars.get().size() * 21 +
                         (int) m.controls.stream().filter(c -> c instanceof HudModel.Slider).count() * 14 +
                         (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
                         m.notes.get().size() * 10 + 6;
@@ -230,10 +230,11 @@ public final class MachineHud {
                     y += m.heroHeight + 4;
                 }
             }
-            int cw = (w - 16 - 8) / 3;
+            int cols = columns(font, cells, w);
+            int cw = (w - 16 - (cols - 1) * 4) / cols;
             for (int i = 0; i < cells.size(); i++) {
-                int cx = 8 + (i % 3) * (cw + 4);
-                int cy = y + (i / 3) * 32;
+                int cx = 8 + (i % cols) * (cw + 4);
+                int cy = y + (i / cols) * 32;
                 var c = cells.get(i);
                 g.fill(cx, cy, cx + cw, cy + 30, GuiDraw.withAlpha(T.bgTop(), 0xAA));
                 GuiDraw.drawBorder(g, cx, cy, cw, 30, GuiDraw.withAlpha(T.accent(), 0x55), 1);
@@ -242,7 +243,7 @@ public final class MachineHud {
                 g.drawString(font, font.plainSubstrByWidth(c.value(), cw - 8), cx + 6, cy + 13, c.color(), false);
                 g.drawString(font, font.plainSubstrByWidth(c.sub(), cw - 8), cx + 6, cy + 22, HudModel.MID, false);
             }
-            y += ((cells.size() + 2) / 3) * 32 + 2;
+            y += ((cells.size() + cols - 1) / cols) * 32 + 2;
 
             for (var bar : m.bars.get()) {
                 g.drawString(font, font.plainSubstrByWidth(bar.label(), w - 100), 8, y, HudModel.MID, false);
@@ -302,6 +303,15 @@ public final class MachineHud {
                 g.drawString(font, font.plainSubstrByWidth(note.text(), w - 16), 8, ny, note.color(), false);
                 ny += 10;
             }
+        }
+
+        /** Three cells across when their text fits, otherwise two, so nothing is cut off. */
+        private static int columns(Font font, List<HudModel.Cell> cells, int w) {
+            int room = (w - 16 - 8) / 3 - 8;
+            for (var c : cells) {
+                if (font.width(c.label()) > room || font.width(c.value()) > room || font.width(c.sub()) > room) return 2;
+            }
+            return 3;
         }
 
         private int[] slider(GuiGraphics g, Font font, HudTheme T, HudModel.Slider s, int y, int mouseX, int mouseY) {
