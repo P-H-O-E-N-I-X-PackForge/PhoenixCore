@@ -188,27 +188,68 @@ public final class StellarForgeState {
         }
         mass += fed;
 
-        float effectiveField = powered ? field : field * 0.3f;
-        // where the heat settles: the middle of the band, pushed up by feed and spin and down by the field, and
-        // lower while the stage is young
-        var hb = heatBand();
-        float centre = (hb.low() + hb.high()) / 2.0f * (float) (0.5 + 0.5 * massFraction());
-        var fb = fieldBand();
-        var sb = spinBand();
-        float heatTarget = centre + 0.4f * (feed - 50) + 0.3f * (spin - (sb.low() + sb.high()) / 2.0f) -
-                0.4f * (effectiveField - (fb.low() + fb.high()) / 2.0f);
-        heatTarget = Math.max(0.0f, Math.min(100.0f, heatTarget));
-        heat += (heatTarget - heat) * 0.02f;
-
-        float missField = fb.miss(effectiveField, 25.0f);
-        float missSpin = sb.miss(spin, 25.0f);
-        float missHeat = heatBand().miss(heat, 25.0f);
-        float target = 100.0f * Math.max(0.0f, 1.0f - (missField + missSpin + missHeat) / 2.0f);
-        if (!powered) target = Math.min(target, 30.0f);
-        if (outputBlocked) target = Math.min(target, 60.0f);
-        stability += (target - stability) * 0.05f;
+        heat += (heatTarget(powered) - heat) * 0.02f;
+        stability += (stabilityTarget(powered, outputBlocked) - stability) * 0.05f;
 
         advance();
+    }
+
+    public float effectiveField(boolean powered) {
+        return powered ? field : field * 0.3f;
+    }
+
+    /** Where the heat settles: the middle of its band, up with feed and spin, down with the field, lower while young. */
+    public float heatTarget(boolean powered) {
+        var hb = heatBand();
+        var fb = fieldBand();
+        var sb = spinBand();
+        float centre = (hb.low() + hb.high()) / 2.0f * (float) (0.5 + 0.5 * massFraction());
+        float target = centre + 0.4f * (feed - 50) + 0.3f * (spin - (sb.low() + sb.high()) / 2.0f) -
+                0.4f * (effectiveField(powered) - (fb.low() + fb.high()) / 2.0f);
+        return Math.max(0.0f, Math.min(100.0f, target));
+    }
+
+    public float missField(boolean powered) {
+        return fieldBand().miss(effectiveField(powered), 25.0f);
+    }
+
+    public float missSpin() {
+        return spinBand().miss(spin, 25.0f);
+    }
+
+    public float missHeat() {
+        return heatBand().miss(heat, 25.0f);
+    }
+
+    /** Where stability is heading with the settings and heat as they are now. */
+    public float stabilityTarget(boolean powered, boolean outputBlocked) {
+        float target = 100.0f * Math.max(0.0f, 1.0f - (missField(powered) + missSpin() + missHeat()) / 2.0f);
+        if (!powered) target = Math.min(target, 30.0f);
+        if (outputBlocked) target = Math.min(target, 60.0f);
+        return target;
+    }
+
+    /** The stability it would settle at (heat included) if the three settings were held at these values. */
+    public float equilibriumStability(int atFeed, int atField, int atSpin) {
+        StellarForgeState probe = new StellarForgeState(seed);
+        probe.stage = stage;
+        probe.mass = mass;
+        probe.feed = atFeed;
+        probe.field = atField;
+        probe.spin = atSpin;
+        probe.heat = probe.heatTarget(true);
+        return probe.stabilityTarget(true, false);
+    }
+
+    /** A temperature to show, in kelvin, for the stage and how hot it is running. */
+    public double kelvin() {
+        return switch (stage) {
+            case IDLE -> 3.0;
+            case GAS_CLOUD -> 10.0 + heat * 9.0;
+            case PROTOSTAR -> 2000.0 + heat * 45.0;
+            case STAR -> 3000.0 + heat * 130.0;
+            case BLACK_HOLE -> 1.0e6 + heat * 4.0e5;
+        };
     }
 
     private void advance() {

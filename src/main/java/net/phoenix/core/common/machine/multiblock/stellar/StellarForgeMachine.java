@@ -18,10 +18,18 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 
-import brachy.modularui.screen.UISettings;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+
 import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widget.ParentWidget;
+import net.phoenix.core.client.gui.hud.CanvasWidget;
+import net.phoenix.core.client.gui.hud.HudPanel;
+import net.phoenix.core.client.gui.hud.TabStrip;
+import net.phoenix.core.client.stellar.ui.StellarGraphsPage;
+import net.phoenix.core.client.stellar.ui.StellarHudPage;
+import net.phoenix.core.client.stellar.ui.StellarMathPage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -351,9 +359,57 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
     // ------------------------------------------------------------------------------------------------ the screen
 
+    private static final int UI_WIDTH = 264;
+    private static final int UI_HEIGHT = 230;
+
+    /** A setting or button pressed on the screen, done here on the server. */
+    private void control(int which, int value) {
+        switch (which) {
+            case StellarControls.FEED -> setFeed(value);
+            case StellarControls.FIELD -> setField(value);
+            case StellarControls.SPIN -> setSpin(value);
+            case StellarControls.ARM -> armCollapse();
+            case StellarControls.DISPERSE -> disperse();
+            default -> {}
+        }
+    }
+
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
-                            UISettings settings) {
-        StellarForgeUi.build(this, mainWidget, syncManager);
+    public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        syncManager.registerServerSyncedAction("stellar_control", buf -> {
+            int which = buf.readVarInt();
+            int value = buf.readVarInt();
+            control(which, value);
+        });
+        TabStrip screen = null;
+        if (getLevel() != null && getLevel().isClientSide) {
+            StellarControls controls = new StellarControls() {
+
+                @Override
+                public void set(int which, int value) {
+                    syncManager.callSyncedAction("stellar_control", buf -> {
+                        buf.writeVarInt(which);
+                        buf.writeVarInt(value);
+                    });
+                }
+
+                @Override
+                public void press(int action) {
+                    set(action, 0);
+                }
+            };
+            screen = new TabStrip(List.of(new TabStrip.Tab("H", new StellarHudPage(this, controls)),
+                    new TabStrip.Tab("M", new StellarMathPage(this)),
+                    new TabStrip.Tab("~", new StellarGraphsPage(this))));
+        }
+        final TabStrip tabs = screen;
+        var panel = MachineUIPanelBuilder.panelBuilder(this).attachInventory(false).addTitleBar(false)
+                .drawGTLogo(false)
+                .mainContents(main -> {
+                    if (tabs != null) main.child(new CanvasWidget(tabs).size(UI_WIDTH, UI_HEIGHT));
+                    else main.size(UI_WIDTH, UI_HEIGHT);
+                }).build(syncManager, settings);
+        if (tabs != null) HudPanel.apply(panel, tabs);
+        return panel;
     }
 }

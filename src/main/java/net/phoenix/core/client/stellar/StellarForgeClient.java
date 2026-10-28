@@ -29,6 +29,11 @@ public final class StellarForgeClient {
         public StellarForgeState.Stage stage = StellarForgeState.Stage.IDLE;
         private long last = Util.getMillis();
 
+        /** One reading a second for the last five minutes: mass, heat, stability, energy a tick. */
+        public final java.util.ArrayDeque<float[]> history = new java.util.ArrayDeque<>();
+        private long lastSample;
+        public static final int HISTORY = 300;
+
         void step(StellarForgeMachine machine) {
             long now = Util.getMillis();
             float dt = Math.min(0.25f, (now - last) / 1000.0f);
@@ -58,6 +63,13 @@ public final class StellarForgeClient {
             steadyFor = steady ? steadyFor + dt : 0.0f;
             settle = Math.min(1.0f, Math.max(0.0f, (steadyFor - 2.0f) / 2.5f));
             surge = Math.max(0.0f, surge - dt * 0.4f);
+
+            if (now - lastSample >= 1000L) {
+                lastSample = now;
+                history.addLast(new float[] { (float) machine.mass(), machine.heat(), machine.stability(),
+                        machine.energyUse() });
+                while (history.size() > HISTORY) history.removeFirst();
+            }
         }
     }
 
@@ -78,6 +90,10 @@ public final class StellarForgeClient {
             list.add(Map.entry(entry.getKey(), entry.getValue()));
         }
         return list;
+    }
+
+    public static synchronized Anim animOf(StellarForgeMachine machine) {
+        return MACHINES.computeIfAbsent(machine, m -> new Anim());
     }
 
     public static synchronized void clear() {
