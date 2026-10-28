@@ -24,7 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * An item or block stood on the face of a block in a scaled down version, like Draconic Evolution's placed items. It sits
- * where it was put (snapped to an eighth of a block), faces out of the block, and can be turned with an empty hand and
+ * where it was put (snapped to a sixteenth of a block), faces out of the block, and can be turned with an empty hand and
  * taken back by sneaking and right clicking it (or hitting it). It falls off, back into a dropped item, when the block it is on goes.
  */
 public class PlacedItemEntity extends Entity {
@@ -67,7 +67,7 @@ public class PlacedItemEntity extends Entity {
     }
 
     private static double edge(double v) {
-        return Math.max(0.125, Math.min(0.875, Math.round(v * 8.0) / 8.0));
+        return Math.max(0.15, Math.min(0.85, Math.round(v * 16.0) / 16.0));
     }
 
     public ItemStack item() {

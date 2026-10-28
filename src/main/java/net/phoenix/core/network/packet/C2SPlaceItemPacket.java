@@ -62,29 +62,31 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
 
     private static boolean clear(Vec3 point, float scale, java.util.List<PlacedItemEntity> there) {
         for (PlacedItemEntity other : there) {
-            if (other.position().distanceTo(point) < (other.scale() + scale) * 0.5 * 0.85) return false;
+            if (other.position().distanceTo(point) < (other.scale() + scale) * 0.5 * 0.7) return false;
         }
         return true;
     }
 
+    private static double along(BlockPos pos, Direction.Axis axis) {
+        return axis == Direction.Axis.X ? pos.getX() : axis == Direction.Axis.Y ? pos.getY() : pos.getZ();
+    }
+
     /**
-     * Where to put it: the spot asked for, or, if that is taken, the nearest free spot beside it on the face, so a block
-     * and an item (or two of either) can stand together.
+     * Where to put it: where you pointed, or, if something is there, the nearest free spot on the same face (searched
+     * across the whole face, so it does not matter exactly where you click), so a block and an item can stand together.
      */
     private static Vec3 freeSpot(BlockPos pos, Direction face, Vec3 wanted, float scale,
                                  java.util.List<PlacedItemEntity> there) {
         if (clear(wanted, scale, there)) return wanted;
+        Direction.Axis[] axes = java.util.Arrays.stream(Direction.Axis.values()).filter(a -> a != face.getAxis())
+                .toArray(Direction.Axis[]::new);
         Vec3 best = null;
-        for (Direction.Axis axis : Direction.Axis.values()) {
-            if (axis == face.getAxis()) continue;
-            for (double step : new double[] { 0.25, 0.375, 0.5 }) {
-                for (int sign = -1; sign <= 1; sign += 2) {
-                    Vec3 candidate = wanted.with(axis, wanted.get(axis) + sign * step);
-                    double local = candidate.get(axis) - (axis == Direction.Axis.X ? pos.getX() :
-                            axis == Direction.Axis.Y ? pos.getY() : pos.getZ());
-                    if (local < 0.125 || local > 0.875 || !clear(candidate, scale, there)) continue;
-                    if (best == null || candidate.distanceToSqr(wanted) < best.distanceToSqr(wanted)) best = candidate;
-                }
+        for (int i = 0; i <= 14; i++) {
+            for (int j = 0; j <= 14; j++) {
+                Vec3 candidate = wanted.with(axes[0], along(pos, axes[0]) + 0.15 + 0.05 * i)
+                        .with(axes[1], along(pos, axes[1]) + 0.15 + 0.05 * j);
+                if (!clear(candidate, scale, there)) continue;
+                if (best == null || candidate.distanceToSqr(wanted) < best.distanceToSqr(wanted)) best = candidate;
             }
         }
         return best;
@@ -117,7 +119,10 @@ public class C2SPlaceItemPacket implements CustomPacketPayload {
         float scale = held.getItem() instanceof net.minecraft.world.item.BlockItem ? PlacedItemEntity.BLOCK_SCALE :
                 PlacedItemEntity.ITEM_SCALE;
         Vec3 point = freeSpot(msg.pos, msg.face, PlacedItemEntity.snap(msg.pos, msg.face, msg.hit), scale, there);
-        if (point == null) return;
+        if (point == null) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("No room left on that side."), true);
+            return;
+        }
         ItemStack one = held.copyWithCount(1);
         level.addFreshEntity(PlacedItemEntity.create(level, one, msg.face, point));
         if (!player.isCreative()) held.shrink(1);
