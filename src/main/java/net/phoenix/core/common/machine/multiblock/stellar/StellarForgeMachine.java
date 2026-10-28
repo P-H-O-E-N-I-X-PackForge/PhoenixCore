@@ -399,8 +399,10 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                 }
             };
             screen = new TabStrip(List.of(new TabStrip.Tab("H", new StellarHudPage(this, controls)),
+                    new TabStrip.Tab("V", new net.phoenix.core.client.stellar.ui.StellarViewPage(this)),
                     new TabStrip.Tab("M", new StellarMathPage(this)),
-                    new TabStrip.Tab("~", new StellarGraphsPage(this))));
+                    new TabStrip.Tab("~", new StellarGraphsPage(this))),
+                    net.phoenix.core.client.gui.hud.HudTheme.DEEP_SPACE);
         }
         final TabStrip tabs = screen;
         var panel = MachineUIPanelBuilder.panelBuilder(this).attachInventory(false).addTitleBar(false)
