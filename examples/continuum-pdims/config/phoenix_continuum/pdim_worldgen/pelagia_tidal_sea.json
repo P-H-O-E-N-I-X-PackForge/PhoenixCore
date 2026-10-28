@@ -1,0 +1,11 @@
+{
+  "body": "phoenix_continuum:pelagia",
+  "type": "noise",
+  "settings": "minecraft:overworld",
+  "biome": "minecraft:warm_ocean",
+  "arrival": "surface",
+  "weather": "rain",
+  "mobs": true,
+  "protect_plots": true,
+  "plot_radius": 400
+}
