@@ -172,7 +172,7 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
 
     private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(() -> (float) Math.min(1.0,
             totalWorkTicks / (double) HARMONIZATION_THRESHOLD), net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent());
-    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
+    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes.sigil(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
             0xFF_FFC44D);
 
     private void hudAction(int id, int value) {

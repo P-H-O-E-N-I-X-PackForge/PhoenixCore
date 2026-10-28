@@ -27,7 +27,7 @@ public final class MachineHud {
     private MachineHud() {}
 
     public static final int WIDTH = 288;
-    public static final int HEIGHT = 230;
+    public static final int HEIGHT = 272;
 
     /** What a control on the screen does on the server. */
     @FunctionalInterface
@@ -212,13 +212,21 @@ public final class MachineHud {
             int y = 24;
             String sub = m.subtitle.get();
             if (!sub.isEmpty()) {
-                g.drawString(font, sub, 8, y, HudModel.MID, false);
-                y += 12;
+                for (var line : font.split(net.minecraft.network.chat.Component.literal(sub), w - 16)) {
+                    g.drawString(font, line, 8, y, HudModel.MID, false);
+                    y += 10;
+                }
+                y += 2;
             }
 
             List<HudModel.Cell> cells = m.cells.get();
+            int cols = columns(font, cells, w);
+            int cw = (w - 16 - (cols - 1) * 4) / cols;
+            int[] rowH = rowHeights(font, cells, cols, cw);
+            int cellsH = 2;
+            for (int rh : rowH) cellsH += rh + 2;
             if (m.hero != null) {
-                int needed = ((cells.size() + columns(font, cells, w) - 1) / columns(font, cells, w)) * 32 + 2 + m.bars.get().size() * 21 +
+                int needed = cellsH + m.bars.get().size() * 21 +
                         (int) m.controls.stream().filter(c -> c instanceof HudModel.Slider).count() * 14 +
                         (m.controls.stream().anyMatch(c -> c instanceof HudModel.Button) ? 17 : 0) +
                         m.notes.get().size() * 10 + 6;
@@ -230,20 +238,30 @@ public final class MachineHud {
                     y += m.heroHeight + 4;
                 }
             }
-            int cols = columns(font, cells, w);
-            int cw = (w - 16 - (cols - 1) * 4) / cols;
-            for (int i = 0; i < cells.size(); i++) {
-                int cx = 8 + (i % cols) * (cw + 4);
-                int cy = y + (i / cols) * 32;
-                var c = cells.get(i);
-                g.fill(cx, cy, cx + cw, cy + 30, GuiDraw.withAlpha(T.bgTop(), 0xAA));
-                GuiDraw.drawBorder(g, cx, cy, cw, 30, GuiDraw.withAlpha(T.accent(), 0x55), 1);
-                g.fill(cx, cy, cx + 2, cy + 30, c.color());
-                g.drawString(font, font.plainSubstrByWidth(c.label(), cw - 8), cx + 6, cy + 3, HudModel.DIM, false);
-                g.drawString(font, font.plainSubstrByWidth(c.value(), cw - 8), cx + 6, cy + 13, c.color(), false);
-                g.drawString(font, font.plainSubstrByWidth(c.sub(), cw - 8), cx + 6, cy + 22, HudModel.MID, false);
+            int rowY = y;
+            for (int row = 0; row * cols < cells.size(); row++) {
+                int ch = rowH[row];
+                for (int col = 0; col < cols && row * cols + col < cells.size(); col++) {
+                    var c = cells.get(row * cols + col);
+                    int cx = 8 + col * (cw + 4);
+                    g.fill(cx, rowY, cx + cw, rowY + ch, GuiDraw.withAlpha(T.bgTop(), 0xAA));
+                    GuiDraw.drawBorder(g, cx, rowY, cw, ch, GuiDraw.withAlpha(T.accent(), 0x55), 1);
+                    g.fill(cx, rowY, cx + 2, rowY + ch, c.color());
+                    int ty = rowY + 3;
+                    g.drawString(font, font.plainSubstrByWidth(c.label(), cw - 14), cx + 7, ty, HudModel.DIM, false);
+                    ty += 10;
+                    for (var line : cellLines(font, c.value(), cw - 14)) {
+                        g.drawString(font, line, cx + 7, ty, c.color(), false);
+                        ty += 10;
+                    }
+                    for (var line : cellLines(font, c.sub(), cw - 14)) {
+                        g.drawString(font, line, cx + 7, ty, HudModel.MID, false);
+                        ty += 9;
+                    }
+                }
+                rowY += ch + 2;
             }
-            y += ((cells.size() + cols - 1) / cols) * 32 + 2;
+            y = rowY + 2;
 
             for (var bar : m.bars.get()) {
                 g.drawString(font, font.plainSubstrByWidth(bar.label(), w - 100), 8, y, HudModel.MID, false);
@@ -307,11 +325,29 @@ public final class MachineHud {
 
         /** Three cells across when their text fits, otherwise two, so nothing is cut off. */
         private static int columns(Font font, List<HudModel.Cell> cells, int w) {
-            int room = (w - 16 - 8) / 3 - 8;
+            int room = (w - 16 - 8) / 3 - 14;
             for (var c : cells) {
                 if (font.width(c.label()) > room || font.width(c.value()) > room || font.width(c.sub()) > room) return 2;
             }
             return 3;
+        }
+
+        /** At most two wrapped lines of a cell's text. */
+        private static List<net.minecraft.util.FormattedCharSequence> cellLines(Font font, String text, int width) {
+            if (text.isEmpty()) return List.of();
+            var lines = font.split(net.minecraft.network.chat.Component.literal(text), width);
+            return lines.size() > 2 ? lines.subList(0, 2) : lines;
+        }
+
+        private static int[] rowHeights(Font font, List<HudModel.Cell> cells, int cols, int cw) {
+            int[] heights = new int[(cells.size() + cols - 1) / cols];
+            for (int i = 0; i < cells.size(); i++) {
+                var c = cells.get(i);
+                int hgt = 13 + 10 * Math.max(1, cellLines(font, c.value(), cw - 14).size()) +
+                        9 * cellLines(font, c.sub(), cw - 14).size() + 4;
+                heights[i / cols] = Math.max(heights[i / cols], Math.max(30, hgt));
+            }
+            return heights;
         }
 
         private int[] slider(GuiGraphics g, Font font, HudTheme T, HudModel.Slider s, int y, int mouseX, int mouseY) {

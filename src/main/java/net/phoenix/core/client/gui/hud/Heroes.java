@@ -369,4 +369,45 @@ public final class Heroes {
             }
         };
     }
+
+    // ------------------------------------------------------------------------------------------------ sigil
+
+    /** A drawing seal: turning hexagons over spokes with sparks drawn in towards a pulsing eye (a siphon). */
+    public static Hero sigil(Supplier<Float> power, int color) {
+        return (g, x, y, w, h, t) -> {
+            float cx = x + w / 2.0f;
+            float cy = y + h / 2.0f;
+            float r = Math.min(w, h) / 2.0f - 3;
+            float p = Mth.clamp(power.get(), 0.0f, 1.0f);
+            for (int ring = 0; ring < 2; ring++) {
+                float rr = r - ring * 8;
+                double base = (ring == 0 ? 1 : -1) * t * (0.25 + 0.6 * p);
+                int[] px = new int[6];
+                int[] py = new int[6];
+                for (int i = 0; i < 6; i++) {
+                    double a = base + Math.PI * 2 * i / 6;
+                    px[i] = Math.round(cx + (float) Math.cos(a) * rr * 1.6f);
+                    py[i] = Math.round(cy + (float) Math.sin(a) * rr);
+                }
+                for (int i = 0; i < 6; i++) {
+                    GuiDraw.drawLine(g, px[i], py[i], px[(i + 1) % 6], py[(i + 1) % 6],
+                            GuiDraw.withAlpha(color, 0x50 + (int) (0x70 * p)));
+                }
+            }
+            for (int i = 0; i < 6; i++) {
+                double a = Math.PI * 2 * i / 6 + t * 0.2;
+                float flow = (t * (0.5f + p) + i * 0.17f) % 1.0f;
+                float d = 1.0f - flow;
+                float sx = cx + (float) Math.cos(a) * r * 1.6f * d;
+                float sy = cy + (float) Math.sin(a) * r * d;
+                GuiDraw.drawLine(g, Math.round(cx + (float) Math.cos(a) * 5), Math.round(cy + (float) Math.sin(a) * 3),
+                        Math.round(cx + (float) Math.cos(a) * r * 1.6f), Math.round(cy + (float) Math.sin(a) * r),
+                        GuiDraw.withAlpha(color, 0x20));
+                dot(g, sx, sy, 1, GuiDraw.withAlpha(0xFF_FFFFFF, (int) (0x60 + 0x90 * flow)));
+            }
+            float eye = 0.5f + 0.5f * (float) Math.sin(t * (1.5 + 2 * p));
+            arc(g, cx, cy, 5 + 2 * eye, 3 + eye, 0, Math.PI * 2, GuiDraw.withAlpha(color, 0xC0));
+            dot(g, cx, cy, 1, GuiDraw.withAlpha(0xFF_FFFFFF, (int) (0x80 + 0x7F * eye)));
+        };
+    }
 }
