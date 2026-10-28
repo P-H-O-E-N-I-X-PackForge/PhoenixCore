@@ -124,7 +124,7 @@ public class PhoenixProgressionMaterials {
         UNREFINED_ALUMINFROST = PHOENIX_REGISTRATE.material("unrefined_aluminfrost", builder -> builder
                 .dust()
                 .color(0xA7D1EB)
-                .cableProperties(GTValues.MV, 1, 2, false)
+                .cableProperties(MV, 1, 2, false)
                 .secondaryColor(0x778899)
                 .iconSet(MaterialIconSet.DULL));
 
@@ -139,7 +139,7 @@ public class PhoenixProgressionMaterials {
         SOURCE_IMBUED_TITANIUM = PHOENIX_REGISTRATE.material("source_imbued_titanium", builder -> builder
                 .ingot().fluid()
                 .color(0xc600ff).formula("✨C✨Ti").iconSet(MaterialIconSet.METALLIC)
-                .cableProperties(GTValues.EV, 1, 2, false)
+                .cableProperties(EV, 1, 2, false)
                 .fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_SMALL_GEAR, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
                         GENERATE_LONG_ROD,
@@ -151,7 +151,7 @@ public class PhoenixProgressionMaterials {
                 .color(0xE245F8).secondaryColor(0xA345B0).iconSet(MaterialIconSet.METALLIC)
                 .components(GTMaterials.Rhodium, 3, GTMaterials.Palladium, 4, PhoenixOres.POLARITY_FLIPPED_BISMUTHITE,
                         1, GTMaterials.Cerium, 4)
-                .cableProperties(GTValues.LuV, 1, 2, false)
+                .cableProperties(LuV, 1, 2, false)
                 .blastTemp(3600, HIGH, 480, 400).fluidPipeProperties(2800, 200, true, true, false, false)
                 .flags(GENERATE_PLATE, GENERATE_RING, PHOSPHORESCENT, GENERATE_ROD, GENERATE_LONG_ROD, GENERATE_GEAR,
                         GENERATE_SMALL_GEAR, GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR,
@@ -163,12 +163,12 @@ public class PhoenixProgressionMaterials {
                 .liquid(7400)
                 .color(0x000000)
                 .secondaryColor(0x8B0000)
-                .cableProperties(GTValues.ZPM, 1, 2, false)
+                .cableProperties(ZPM, 1, 2, false)
                 .iconSet(MaterialIconSet.RADIOACTIVE)
                 .fluidPipeProperties(8000, 800, true, true, true, true)
                 .components(GTMaterials.Naquadah, 5, GTMaterials.Trinium, 1, GTMaterials.Technetium, 3,
                         GTMaterials.Strontium, 4, GTMaterials.Iodine, 1)
-                .blastTemp(7200, HIGH, GTValues.VA[GTValues.ZPM], 1950)
+                .blastTemp(7200, HIGH, VA[ZPM], 1950)
                 .flags(GENERATE_PLATE,
                         GENERATE_RING,
                         PHOSPHORESCENT,
@@ -188,9 +188,9 @@ public class PhoenixProgressionMaterials {
                         .fluid()
                         .color(0xB0E0E6).secondaryColor(0x708090)
                         .iconSet(MaterialIconSet.SHINY)
-                        .cableProperties(GTValues.HV, 1, 2, false)
+                        .cableProperties(HV, 1, 2, false)
                         .components(GTMaterials.StainlessSteel, 4, FROST, 2, GTMaterials.Aluminium, 2)
-                        .blastTemp(4500, BlastProperty.GasTier.HIGH, GTValues.VA[GTValues.EV], 1200)
+                        .blastTemp(4500, BlastProperty.GasTier.HIGH, VA[EV], 1200)
                         .flags(
                                 GENERATE_PLATE,
                                 GENERATE_ROD,
@@ -207,7 +207,7 @@ public class PhoenixProgressionMaterials {
                 builder -> builder
                         .ingot().color(0xFFFFE0)
                         .secondaryColor(0xFFD700).iconSet(PhoenixMaterialSet.ALMOST_PURE_NEVONIAN_STEEL_HOLDER)
-                        .blastTemp(3800, MID, GTValues.VA[GTValues.EV], 1200)
+                        .blastTemp(3800, MID, VA[EV], 1200)
                         .flags(GENERATE_PLATE, GENERATE_GEAR, GENERATE_SMALL_GEAR, GENERATE_SPRING, PHOSPHORESCENT,
                                 GENERATE_ROD, GENERATE_DENSE, GENERATE_BOLT_SCREW, GENERATE_FRAME));
         VOID_TOUCHED_TUNGSTEN_STEEL = PHOENIX_REGISTRATE.material("void_touched_tungsten_steel", builder -> builder
@@ -216,9 +216,9 @@ public class PhoenixProgressionMaterials {
                 .liquid(3100)
                 .color(0x4B0082).secondaryColor(0x000000)
                 .iconSet(MaterialIconSet.METALLIC)
-                .cableProperties(GTValues.IV, 1, 2, false)
+                .cableProperties(IV, 1, 2, false)
                 .components(GTMaterials.Tungsten, 4, PhoenixOres.VOIDGLASS_SHARD, 4, GTMaterials.Molybdenum, 2)
-                .blastTemp(4200, BlastProperty.GasTier.MID, GTValues.VA[GTValues.EV], 1000)
+                .blastTemp(4200, BlastProperty.GasTier.MID, VA[EV], 1000)
                 .fluidPipeProperties(3800, 250, true, true, true, true)
                 .flags(
                         GENERATE_PLATE,
@@ -248,18 +248,18 @@ public class PhoenixProgressionMaterials {
 
         MAGMATIC_MANGANESE_LEAD = PHOENIX_REGISTRATE.material("magmatic_manganese_lead",
                 builder -> builder.ingot().fluid()
-                        .color(0x8B4513).cableProperties(GTValues.V[LV], 2, 0, true));
+                        .color(0x8B4513).cableProperties(V[LV], 2, 0, true));
         CRYOGENIC_ALUMINUM_STRAND = PHOENIX_REGISTRATE.material("cryogenic_aluminum_strand",
                 builder -> builder.ingot().fluid()
-                        .color(0xADD8E6).cableProperties(GTValues.V[GTValues.MV], 4, 0, true));
+                        .color(0xADD8E6).cableProperties(V[MV], 4, 0, true));
         ICY_STEEL_MATRIX = PHOENIX_REGISTRATE.material("icy_steel_matrix",
                 builder -> builder.ingot().fluid().color(0xE0FFFF)
                         .secondaryColor(0x696969).element(PhoenixElements.ICY_STEEL_MATRIX)
-                        .cableProperties(GTValues.V[GTValues.HV], 8, 0, true));
+                        .cableProperties(V[HV], 8, 0, true));
         SOURCE_TITANIUM_FILAMENT = PHOENIX_REGISTRATE.material("source_titanium_filament",
                 builder -> builder.ingot().fluid()
                         .color(0x8B008B).secondaryColor(0x454545)
-                        .cableProperties(GTValues.V[GTValues.EV], 16, 0, true));
+                        .cableProperties(V[EV], 16, 0, true));
         BLAZING_DRILLING_FLUID = PHOENIX_REGISTRATE.material("blazing_drilling_fluid", builder -> builder
 
                 .fluid()
@@ -281,21 +281,21 @@ public class PhoenixProgressionMaterials {
 
         PHOENIX_ENRICHED_NAQUADAH = PHOENIX_REGISTRATE.material("phoenix_enriched_naquadah", builder -> builder
                 .ingot()
-                .color(0xFFA500).iconSet(MaterialIconSet.SHINY).cableProperties(GTValues.V[GTValues.ZPM], 64, 8, true)
-                .blastTemp(1500, MID, GTValues.VA[GTValues.ZPM], 750000)
+                .color(0xFFA500).iconSet(MaterialIconSet.SHINY).cableProperties(V[ZPM], 64, 8, true)
+                .blastTemp(1500, MID, VA[ZPM], 750000)
                 .flags(GENERATE_FRAME, PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE));
         PHOENIX_ENRICHED_TRITANIUM = PHOENIX_REGISTRATE.material("phoenix_enriched_tritanium", builder -> builder
                 .ingot()
                 .color(0xFF0000)
                 .iconSet(PhoenixMaterialSet.ALMOST_PURE_NEVONIAN_STEEL_HOLDER)
-                .cableProperties(GTValues.V[GTValues.ZPM], 64, 8, true)
-                .blastTemp(1800, MID, GTValues.VA[GTValues.ZPM], 900000)
+                .cableProperties(V[ZPM], 64, 8, true)
+                .blastTemp(1800, MID, VA[ZPM], 900000)
                 .flags(GENERATE_FRAME, PhoenixMaterialFlags.GENERATE_CRYSTAL_ROSE));
 
         AETHERIUM_STEEL = PHOENIX_REGISTRATE.material("aetherium_steel",
                 builder -> builder.ingot().fluid().color(0xADD8E6)
-                        .cableProperties(GTValues.V[GTValues.ZPM], 32, 4, true)
-                        .blastTemp(1300, MID, GTValues.VA[GTValues.ZPM], 600000).flags(GENERATE_PLATE));
+                        .cableProperties(V[ZPM], 32, 4, true)
+                        .blastTemp(1300, MID, VA[ZPM], 600000).flags(GENERATE_PLATE));
 
         NAQUADATITE_ACIDIC = PHOENIX_REGISTRATE.material("naquadatite_acidic", builder -> builder
                 .dust()
