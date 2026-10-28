@@ -315,4 +315,58 @@ public final class Heroes {
             g.fill(x, mid, x + w, mid + 1, GuiDraw.withAlpha(color, 0x20));
         };
     }
+
+    // ------------------------------------------------------------------------------------------------ radar
+
+    /** A radar sweep over rings; each contact shows as a blip that flares when the beam passes it. */
+    public static Hero radar(Supplier<Integer> contacts, int color) {
+        return (g, x, y, w, h, t) -> {
+            float cx = x + w / 2.0f;
+            float cy = y + h / 2.0f;
+            float rx = w / 2.0f - 3;
+            float ry = h / 2.0f - 2;
+            for (int i = 1; i <= 3; i++) arc(g, cx, cy, rx * i / 3, ry * i / 3, 0, Math.PI * 2, GuiDraw.withAlpha(color, 0x30));
+            g.fill(Math.round(cx - rx), Math.round(cy), Math.round(cx + rx), Math.round(cy) + 1, GuiDraw.withAlpha(color, 0x20));
+            double sweep = (t * 1.1) % (Math.PI * 2);
+            for (int i = 0; i < 14; i++) {
+                double a = sweep - i * 0.045;
+                GuiDraw.drawLine(g, Math.round(cx), Math.round(cy), Math.round(cx + (float) Math.cos(a) * rx),
+                        Math.round(cy + (float) Math.sin(a) * ry), GuiDraw.withAlpha(color, Math.max(0, 0x90 - i * 10)));
+            }
+            int n = Math.min(24, contacts.get());
+            long s = 99;
+            for (int i = 0; i < n; i++) {
+                s = s * 6364136223846793005L + 1442695040888963407L;
+                double a = ((s >>> 33) % 6283) / 1000.0;
+                s = s * 6364136223846793005L + 1442695040888963407L;
+                float d = 0.2f + 0.75f * ((s >>> 33) % 1000) / 1000.0f;
+                double since = ((sweep - a) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                int alpha = (int) (0x40 + 0xBF * Math.max(0.0, 1.0 - since / 3.0));
+                dot(g, cx + (float) Math.cos(a) * rx * d, cy + (float) Math.sin(a) * ry * d, 1, GuiDraw.withAlpha(0xFF_FFFFFF, alpha));
+            }
+        };
+    }
+
+    // ------------------------------------------------------------------------------------------------ embers
+
+    /** Sparks rising off a glowing bed; a hotter level throws more of them, higher. */
+    public static Hero embers(Supplier<Float> heat, int color, int hot) {
+        return (g, x, y, w, h, t) -> {
+            float l = Mth.clamp(heat.get(), 0.0f, 1.0f);
+            for (int i = 0; i < 4; i++) {
+                int a = (int) ((0x20 + 0x50 * l) * (1 - i / 4.0f));
+                g.fill(x, y + h - 2 - i * 2, x + w, y + h - i * 2, GuiDraw.withAlpha(GuiDraw.mix(hot, color, i / 4.0f), a));
+            }
+            int n = 10 + (int) (28 * l);
+            for (int i = 0; i < n; i++) {
+                float seed = (i * 0.6180339f) % 1.0f;
+                float life = (t * (0.18f + 0.35f * seed) * (0.6f + l) + seed * 7) % 1.0f;
+                float px = x + seed * w + (float) Math.sin(t * 1.3 + i) * 5 * life;
+                float py = y + h - 3 - life * (h - 4) * (0.5f + 0.5f * l);
+                int a = (int) (0xE0 * (1 - life) * (0.4f + 0.6f * l));
+                g.fill(Math.round(px), Math.round(py), Math.round(px) + 1, Math.round(py) + (life < 0.3f ? 2 : 1),
+                        GuiDraw.withAlpha(GuiDraw.mix(0xFF_FFF0B0, color, life), a));
+            }
+        };
+    }
 }

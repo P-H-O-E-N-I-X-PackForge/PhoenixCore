@@ -250,6 +250,48 @@ public class VaultInterfacePart extends MultiblockPartMachine implements IMuiMac
     }
 
     @Override
+    public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
+                                                           UISettings settings) {
+        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel, new net.phoenix.core.client.gui.hud.MachineHud.Classic("IO", 100, 100,
+                        content -> buildMainUI(content, data, syncManager, settings)));
+    }
+
+    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
+        var T = net.phoenix.core.client.gui.hud.HudTheme.VAULT;
+        return net.phoenix.core.client.gui.hud.HudModel.of("Vault Interface")
+                .theme(T)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> {
+                    VaultMachine vault = getVault();
+                    return vault == null ? 0.0f : Math.min(1.0f, vault.getAvailableSlots() / 64.0f);
+                }, T.accent()), 40)
+                .formed(this::isFormed)
+                .badge(() -> itemIoMode == ItemIoMode.DISABLED ?
+                        new net.phoenix.core.client.gui.hud.HudModel.Badge("DISABLED",
+                                net.phoenix.core.client.gui.hud.HudModel.DIM) :
+                        new net.phoenix.core.client.gui.hud.HudModel.Badge(itemIoMode.displayName().toUpperCase(),
+                                itemIoMode == ItemIoMode.INPUT ? net.phoenix.core.client.gui.hud.HudModel.GREEN :
+                                        net.phoenix.core.client.gui.hud.HudModel.ORANGE))
+                .subtitle(() -> "Lets pipes and hoppers reach the vault's items")
+                .cells(() -> {
+                    VaultMachine vault = getVault();
+                    var cells = new java.util.ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("SIDE", itemFacing == null ? "-" :
+                            itemFacing.getName(), "item face", net.phoenix.core.client.gui.hud.HudModel.CYAN));
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("MODE", itemIoMode.displayName(),
+                            isAutoTransferItems() ? "auto transfer on" : "auto transfer off",
+                            net.phoenix.core.client.gui.hud.HudModel.GOLD));
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("VAULT", vault == null ? "none" : "linked",
+                            vault == null ? "no formed vault" : vault.getAvailableSlots() + " slots free",
+                            vault == null ? net.phoenix.core.client.gui.hud.HudModel.RED :
+                                    net.phoenix.core.client.gui.hud.HudModel.GREEN));
+                    return cells;
+                })
+                .notes(() -> java.util.List.of(net.phoenix.core.client.gui.hud.HudModel.line(
+                        "Set the side and mode on the IO tab.", net.phoenix.core.client.gui.hud.HudModel.MID)));
+    }
+
+    @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         mainWidget.child(Text.str("Vault Interface").asWidget().pos(10, 6));

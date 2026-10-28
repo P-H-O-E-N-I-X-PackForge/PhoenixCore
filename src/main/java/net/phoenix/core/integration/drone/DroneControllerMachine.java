@@ -170,6 +170,58 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     }
 
     @Override
+    public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
+                                                           UISettings settings) {
+        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel, new net.phoenix.core.client.gui.hud.MachineHud.Classic("C", 308, 144,
+                        content -> buildMainUI(content, data, syncManager, settings)));
+    }
+
+    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
+        var T = net.phoenix.core.client.gui.hud.HudTheme.DRONE;
+        return net.phoenix.core.client.gui.hud.HudModel.of("Drone Control")
+                .theme(T)
+                .hero(net.phoenix.core.client.gui.hud.Heroes.radar(() -> targets().size(), T.accent()), 40)
+                .formed(this::isFormed)
+                .badge(() -> targets().isEmpty() ? new net.phoenix.core.client.gui.hud.HudModel.Badge("NO TARGETS",
+                        net.phoenix.core.client.gui.hud.HudModel.DIM) :
+                        new net.phoenix.core.client.gui.hud.HudModel.Badge("LINKED",
+                                net.phoenix.core.client.gui.hud.HudModel.GREEN))
+                .subtitle(() -> "Watches formed multiblocks within " + RADIUS + " blocks")
+                .cells(() -> {
+                    var list = targets();
+                    long running = list.stream().filter(v -> v.controllable() && v.workingEnabled()).count();
+                    long paused = list.stream().filter(v -> v.controllable() && !v.workingEnabled()).count();
+                    var cells = new ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TARGETS", String.valueOf(list.size()),
+                            "in range", net.phoenix.core.client.gui.hud.HudModel.CYAN));
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("ENABLED", String.valueOf(running),
+                            "working allowed", net.phoenix.core.client.gui.hud.HudModel.GREEN));
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("DISABLED", String.valueOf(paused),
+                            "switched off", paused > 0 ? net.phoenix.core.client.gui.hud.HudModel.GOLD :
+                                    net.phoenix.core.client.gui.hud.HudModel.DIM));
+                    return cells;
+                })
+                .bars(() -> {
+                    var list = targets();
+                    long controllable = list.stream().filter(DroneTargetView::controllable).count();
+                    long running = list.stream().filter(v -> v.controllable() && v.workingEnabled()).count();
+                    return List.of(new net.phoenix.core.client.gui.hud.HudModel.Bar("Enabled share",
+                            controllable == 0 ? 0.0f : running / (float) controllable, running + " / " + controllable,
+                            net.phoenix.core.client.gui.hud.HudModel.GREEN));
+                })
+                .notes(() -> List.of(net.phoenix.core.client.gui.hud.HudModel.line(
+                        "Cut power below priority " + cutoffPriority + "; rows are on the C tab.",
+                        net.phoenix.core.client.gui.hud.HudModel.MID)));
+    }
+
+    private List<DroneTargetView> targets() {
+        return clientList != null ? clientList.getTargets() : currentTargets;
+    }
+
+    private DroneTargetListSyncHandler clientList;
+
+    @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         if (!isRemote()) rescan();
@@ -183,6 +235,7 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                     return dirty;
                 }, () -> currentTargets));
 
+        if (isRemote()) clientList = listSync;
         List<BooleanSyncValue> toggleSlots = new ArrayList<>(MAX_ROWS);
         List<BooleanSyncValue> cycleSlots = new ArrayList<>(MAX_ROWS);
         for (int i = 0; i < MAX_ROWS; i++) {

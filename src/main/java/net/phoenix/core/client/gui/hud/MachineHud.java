@@ -46,11 +46,25 @@ public final class MachineHud {
     public static ModularPanel<?> build(com.gregtechceu.gtceu.api.machine.MetaMachine machine, PosGuiData data,
                                         PanelSyncManager sync, UISettings settings, Actions actions,
                                         java.util.function.Supplier<HudModel> model) {
+        return build(machine, data, sync, settings, actions, model, null);
+    }
+
+    /**
+     * An existing ModularUI screen kept as one tab of the HUD: {@code content} fills a container the size of the page
+     * and is built on both sides (so its slots and syncs work), but only shown while that tab is open.
+     */
+    public record Classic(String label, int width, int height,
+                          java.util.function.Consumer<brachy.modularui.widget.ParentWidget<?>> content) {}
+
+    public static ModularPanel<?> build(com.gregtechceu.gtceu.api.machine.MetaMachine machine, PosGuiData data,
+                                        PanelSyncManager sync, UISettings settings, Actions actions,
+                                        java.util.function.Supplier<HudModel> model, Classic classic) {
         sync.registerServerSyncedAction("hud_control", buf -> {
             int id = buf.readVarInt();
             int value = buf.readVarInt();
             actions.run(id, value);
         });
+        int classicIndex = -1;
         TabStrip screen = null;
         if (machine.getLevel() != null && machine.getLevel().isClientSide) {
             HudModel m = model.get();
@@ -64,17 +78,42 @@ public final class MachineHud {
             tabs.add(new TabStrip.Tab("H", new Sampled(sampler, new ProgressPage(m, sender))));
             if (m.hasMath) tabs.add(new TabStrip.Tab("M", new Sampled(sampler, new MathPage(m))));
             if (!m.series.isEmpty()) tabs.add(new TabStrip.Tab("~", new Sampled(sampler, new GraphPage(m, history))));
+            if (classic != null) {
+                classicIndex = tabs.size();
+                tabs.add(new TabStrip.Tab(classic.label(), new BackdropPage(m.theme)));
+            }
             screen = new TabStrip(tabs, m.theme);
         }
         final TabStrip tabs = screen;
+        final int classicTab = classicIndex;
+        final int width = classic == null ? WIDTH : Math.max(WIDTH, classic.width());
+        final int height = classic == null ? HEIGHT : Math.max(HEIGHT, classic.height());
         var panel = MachineUIPanelBuilder.panelBuilder(machine).attachInventory(false).addTitleBar(false)
                 .drawGTLogo(false)
                 .mainContents(main -> {
-                    if (tabs != null) main.child(new CanvasWidget(tabs).size(WIDTH, HEIGHT));
-                    else main.size(WIDTH, HEIGHT);
+                    if (tabs != null) main.child(new CanvasWidget(tabs).size(width, height));
+                    else main.size(width, height);
+                    if (classic != null) {
+                        var container = new brachy.modularui.widget.ParentWidget<>();
+                        container.pos(0, 0).size(width, height);
+                        if (tabs != null) container.setEnabledIf(w -> tabs.activeIndex() == classicTab);
+                        classic.content().accept(container);
+                        main.child(container);
+                    }
                 }).build(sync, settings);
         if (tabs != null) HudPanel.apply(panel, tabs);
         return panel;
+    }
+
+    /** The page behind a hosted screen: just the theme's panel. */
+    private record BackdropPage(HudTheme theme) implements CanvasPainter {
+
+        @Override
+        public void render(GuiGraphics g, int w, int h, int mouseX, int mouseY) {
+            g.fill(0, 0, w, h, GuiDraw.withAlpha(theme.bgBottom(), 0xEE));
+            theme.pattern(g, 0, 0, w, h);
+            GuiDraw.drawBorder(g, 0, 0, w, h, theme.line(), 1);
+        }
     }
 
     // ------------------------------------------------------------------------------------------------ sampling

@@ -51,6 +51,13 @@ public record HudTheme(int bgTop, int bgBottom, int accent, int accent2, Pattern
     public static final HudTheme DEEP_SPACE = new HudTheme(0xFF_02030A, 0xFF_000002, 0xFF_FFD27A, 0xFF_8CA8FF,
             Pattern.STARS, TabStyle.SIDE);
 
+    public static final HudTheme DRONE = new HudTheme(0xFF_04141A, 0xFF_010708, 0xFF_5CF0D0, 0xFF_2A8F8A, Pattern.HEX,
+            TabStyle.SIDE);
+    public static final HudTheme EMBER = new HudTheme(0xFF_1C0A04, 0xFF_080201, 0xFF_FFB347, 0xFF_C4501A,
+            Pattern.DOTS, TabStyle.DIAMOND);
+    public static final HudTheme VAULT = new HudTheme(0xFF_0B1014, 0xFF_030506, 0xFF_9FB8C8, 0xFF_566B79,
+            Pattern.GRID, TabStyle.TOP);
+
     public int line() {
         return GuiDraw.withAlpha(accent, 0x33);
     }
