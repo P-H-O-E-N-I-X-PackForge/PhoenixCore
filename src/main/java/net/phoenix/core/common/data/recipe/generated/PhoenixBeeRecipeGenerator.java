@@ -151,9 +151,13 @@ public class PhoenixBeeRecipeGenerator {
             Material mat = getMaterial(beeId);
             if (mat == null) continue;
 
-            ItemStack combIn = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat);
-            Material honeyedMat = PhoenixBeeMaterials.HONEYED_MATERIALS.get(beeId);
-            Material rawWaxMat = PhoenixBeeMaterials.RAW_WAX_MATERIALS.get(beeId);
+            ItemStack combIn = ChemicalHelper.get(PhoenixMaterialFlags.honeycomb, mat.get());
+            // a bee can have a comb material without honeyed or wax ones registered: skip it rather than crash
+            var honeyedEntry = PhoenixBeeMaterials.HONEYED_MATERIALS.get(beeId);
+            var rawWaxEntry = PhoenixBeeMaterials.RAW_WAX_MATERIALS.get(beeId);
+            if (honeyedEntry == null || rawWaxEntry == null) continue;
+            Material honeyedMat = honeyedEntry.get();
+            Material rawWaxMat = rawWaxEntry.get();
 
             if (combIn.isEmpty() || honeyedMat == null || rawWaxMat == null) continue;
 
