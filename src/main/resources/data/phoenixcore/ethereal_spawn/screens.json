@@ -187,6 +187,22 @@
     },
     {
       "pos": [
+        12,
+        67,
+        -14
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 5,
+      "color": "#FFE9B0",
+      "background": "void_galaxy",
+      "pages": [
+        "THE POEM OF THE CONFLUX\n@scroll 0.28\n@if no_discipline\n\nThere was a hearth before there was a fire.\n\nThere was a hollow before there was a song.\n\nAnd you, {player}, came walking\ndown a road nobody had laid,\ncarrying nothing but the question.\n\nThe Phoenix said: burn, and be unmade, and be made again.\n\nThe Sculk said: listen. Everything that dies is kept.\n\nThe Void said: be still. Be the place where things are put.\n\nThree doors, and one of you.\n\nChoose, and be chosen.\n\nThe Conflux is listening.\n@nohint",
+        "THE POEM OF {discipline}\n@scroll 0.28\n@if has_discipline\n\nYou walked in with a question, {player}.\n\nYou chose {discipline}, and it answered.\n\nEvery machine you build is a sentence.\nEvery node you finish is a verse.\n\nThe ones who came before left their work in the walls.\nRead it. Add to it.\n\nAnd when you are done,\nsomeone will stand where you stood,\nand find the road already laid.\n\nThe Conflux remembers you.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
         0,
         67,
         6

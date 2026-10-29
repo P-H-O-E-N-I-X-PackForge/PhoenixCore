@@ -25,6 +25,9 @@ import java.util.List;
  * {@code gas_cloud} or {@code protostar}, then an optional colour) that turns to follow the player looking at it; it is
  * kept as a picture whose id is {@code continuum:<body>:<colour>}.
  * <p>
+ * {@code @scroll} (or {@code @scroll 0.4}, in blocks a second) makes the body rise slowly through the free part of the screen
+ * and fade out at the top, like the poem at the end of a game, then start again. The title, pictures and buttons stay put.
+ * <p>
  * The first page of a screen says "right-click to turn the page" under its arrows; a {@code @nohint} line takes that away
  * (for all but the first screen someone sees, say).
  * <p>
@@ -32,7 +35,7 @@ import java.util.List;
  * {@code @if no_discipline}, {@code @if discipline:phoenix}, {@code @if !committed}, {@code @if flag:px_awakened}.
  */
 public record CinemaPage(String title, String body, List<Button> buttons, String condition, List<Picture> pictures,
-                         boolean hint) {
+                         boolean hint, float scroll) {
 
     public record Button(String label, String action) {}
 
@@ -48,9 +51,15 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
         String condition = "";
         List<Picture> pictures = new ArrayList<>();
         boolean hint = true;
+        float scroll = 0.0f;
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (part.equals("@nohint")) {
+            if (part.equals("@scroll") || part.startsWith("@scroll ")) {
+                scroll = 0.3f;
+                try {
+                    if (part.length() > 8) scroll = Float.parseFloat(part.substring(8).trim());
+                } catch (NumberFormatException ignored) {}
+            } else if (part.equals("@nohint")) {
                 hint = false;
             } else if (part.startsWith("@continuum ")) {
                 String spec = part.substring("@continuum ".length());
@@ -87,6 +96,6 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
                 body.append(part);
             }
         }
-        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition, pictures, hint);
+        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition, pictures, hint, scroll);
     }
 }

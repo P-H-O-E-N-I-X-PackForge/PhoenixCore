@@ -24,12 +24,21 @@ public final class CinemaRenderTarget {
 
     private CinemaRenderTarget() {}
 
+    /** Pixels along a block at most, and along either side of a whole screen: a big screen is not four times as sharp. */
     private static final int SIZE = 256;
-    private static final long REFRESH_INTERVAL_MS = 50;
+    private static final int MAX_SIDE = 640;
+    /** A shader picture is redrawn this often, nearer or farther than 16 blocks, and not at all beyond the far distance. */
+    private static final long NEAR_INTERVAL_MS = 66;
+    private static final long FAR_INTERVAL_MS = 200;
+    private static final double FAR_RANGE_SQ = 64.0 * 64.0;
+    /** Only this many pictures are redrawn in one frame: with a dozen screens in view they take turns. */
+    private static final int PER_FRAME = 1;
+    private static long frameStamp;
+    private static int drawnThisFrame;
 
     private record GroupKey(BlockPos anchor, int width, int height, Background background) {}
 
-    private record CacheEntry(RenderTarget target, long[] lastRenderTime) {}
+    private record CacheEntry(RenderTarget target, long[] lastRenderTime, int px) {}
 
     private static final Map<GroupKey, CacheEntry> cache = new HashMap<>();
 
@@ -37,19 +46,35 @@ public final class CinemaRenderTarget {
         int width = layout.width();
         int height = layout.height();
         GroupKey key = new GroupKey(layout.anchor(), width, height, background);
+        int px = Math.max(64, Math.min(SIZE, MAX_SIDE / Math.max(width, height)));
         CacheEntry entry = cache.computeIfAbsent(key,
-                k -> new CacheEntry(new MainTarget(SIZE * width, SIZE * height), new long[] { -1 }));
+                k -> new CacheEntry(new MainTarget(px * width, px * height), new long[] { -1 }, px));
 
         long now = System.currentTimeMillis();
-        if (now - entry.lastRenderTime()[0] >= REFRESH_INTERVAL_MS) {
-            entry.lastRenderTime()[0] = now;
-            renderShader(entry.target(), width, height, background);
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        double dx = camera.x - (layout.anchor() != null ? layout.anchor().getX() : camera.x);
+        double dy = camera.y - (layout.anchor() != null ? layout.anchor().getY() : camera.y);
+        double dz = camera.z - (layout.anchor() != null ? layout.anchor().getZ() : camera.z);
+        double distSq = dx * dx + dy * dy + dz * dz;
+        long interval = distSq < 16.0 * 16.0 ? NEAR_INTERVAL_MS : FAR_INTERVAL_MS;
+        boolean first = entry.lastRenderTime()[0] < 0;
+        if (first || (distSq < FAR_RANGE_SQ && now - entry.lastRenderTime()[0] >= interval)) {
+            long stamp = System.nanoTime() / 4_000_000L;
+            if (stamp != frameStamp) {
+                frameStamp = stamp;
+                drawnThisFrame = 0;
+            }
+            if (drawnThisFrame < PER_FRAME || first) {
+                drawnThisFrame++;
+                entry.lastRenderTime()[0] = now;
+                renderShader(entry.target(), width, height, entry.px(), background);
+            }
         }
 
         return entry.target().getColorTextureId();
     }
 
-    private static void renderShader(RenderTarget target, int width, int height, Background background) {
+    private static void renderShader(RenderTarget target, int width, int height, int px, Background background) {
         ShaderInstance shader = switch (background) {
 
             case VOID_GALAXY -> WorldFXShaders.CINEMA_VOID_GALAXY;
@@ -73,8 +98,8 @@ public final class CinemaRenderTarget {
         RenderSystem.enableBlend();
         RenderSystem.setShader(() -> shader);
 
-        float outW = SIZE * width;
-        float outH = SIZE * height;
+        float outW = px * width;
+        float outH = px * height;
         float time = (float) (System.currentTimeMillis() % 10000000L) / 10000.0f;
 
         Matrix4f projection = new Matrix4f().perspective(

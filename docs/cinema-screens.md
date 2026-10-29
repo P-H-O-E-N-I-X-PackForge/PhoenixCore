@@ -56,3 +56,12 @@ Add a second `|` and an action to make a picture clickable: `@image phoenixcore:
 
 Several of these lines on one page make a row under the title, each with its caption under it. Textures that do not
 exist show as the purple-and-black missing texture, so check the id.
+
+## Scrolling text (the end poem)
+Put `@scroll` (or `@scroll 0.4`, the speed in blocks a second) on a page and its body rises slowly through the free part of
+the screen, fading in at the bottom and out at the top, then starts again. The title, pictures and buttons stay where they
+are. Blank lines in the body are kept, so verses can be separated.
+
+Because pages can have `@if` conditions and the tokens `{player}`, `{discipline}` and `{stat:...}`, a poem can change with
+the player: give each discipline (or each stage of progress) its own page with `@if discipline:phoenix`, `@if flag:...` and so on.
+The poem screen in the starting place (east wall, north end) is an example: one page before a path is chosen, another after.

@@ -18,9 +18,9 @@ import java.util.Map;
 final class CinemaContinuumPictures {
 
     private static final int MAX_PREVIEWS = 8;
-    private static final long INTERVAL_MS = 66L;
+    private static final long INTERVAL_MS = 100L;
     private static final long KEEP_MS = 10_000L;
-    private static final int PER_FRAME = 2;
+    private static final int PER_FRAME = 1;
     private static final double RANGE_SQ = 24.0 * 24.0;
 
     private record Key(BlockPos pos, int index) {}

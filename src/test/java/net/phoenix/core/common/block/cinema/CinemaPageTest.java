@@ -76,4 +76,13 @@ class CinemaPageTest {
         assertEquals(false, page.hint());
         assertEquals("B", page.body());
     }
+
+    @Test
+    void scrollTakesAnOptionalSpeed() {
+        assertEquals(0.0f, CinemaPage.parse("A\nB").scroll());
+        assertEquals(0.3f, CinemaPage.parse("A\nB\n@scroll").scroll());
+        var fast = CinemaPage.parse("A\nB\n@scroll 0.5");
+        assertEquals(0.5f, fast.scroll());
+        assertEquals("B", fast.body());
+    }
 }

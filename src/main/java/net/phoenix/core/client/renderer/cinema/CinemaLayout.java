@@ -45,6 +45,12 @@ public final class CinemaLayout {
     public final List<TextLine> titleLines = new ArrayList<>();
     public final List<TextLine> bodyLines = new ArrayList<>();
     public final List<Hit> hits = new ArrayList<>();
+    /** For a page that scrolls: its body lines, placed from 0 downwards, and the free part of the screen they rise through. */
+    public final List<TextLine> scrollLines = new ArrayList<>();
+    public float scrollHeight;
+    public float viewTop;
+    public float viewBottom;
+    public float scrollSpeed;
     public TextLine counter;
     public TextLine hint;
     /** Whether everything fit above the footer and the buttons. */
@@ -163,6 +169,21 @@ public final class CinemaLayout {
                 body.addAll(font.split(Component.literal(paragraph), (int) (innerW / textScale)));
             }
             float total = body.size() * lineH;
+            if (page.scroll() > 0) {
+                float cy0 = 0;
+                for (FormattedCharSequence seq : body) {
+                    if (seq != null) {
+                        l.scrollLines.add(new TextLine(seq, centredText ? 0 : left, cy0 - lineH / 2, textScale,
+                                centredText));
+                    }
+                    cy0 -= lineH;
+                }
+                l.scrollHeight = total;
+                l.viewTop = y;
+                l.viewBottom = bottom;
+                l.scrollSpeed = page.scroll();
+                return l;
+            }
             // with no title and no pictures the text sits in the middle of what is free
             boolean centre = page.title().isEmpty() && page.pictures().isEmpty();
             float start = centre ? (y + bottom) / 2 + total / 2 : y;

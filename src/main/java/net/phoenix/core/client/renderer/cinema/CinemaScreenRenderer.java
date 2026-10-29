@@ -204,6 +204,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.disableCull();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Clip clip = new Clip(du, dv, half + 0.002f);
+        beginBatch();
         // pulled towards the viewer by the depth buffer itself, so it holds at any distance
 
         // solid under the title strip, see-through in it so the screen's own background shows there
@@ -231,6 +232,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             fill(m, hit.rect(), PLATE_Z + LAYER, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
             border(m, hit.rect(), PLATE_Z + 2 * LAYER, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
+        flushBatch();
         // pictures: textures here, cut to this block; items are drawn with the text, by the middle block
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         for (int i = 0; i < layout.pictures.size(); i++) {
@@ -270,6 +272,21 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         float scale = shown.getTextScale();
         for (CinemaLayout.TextLine line : layout.titleLines) drawLine(font, poseStack, bufferSource, line, accent);
         for (CinemaLayout.TextLine line : layout.bodyLines) drawLine(font, poseStack, bufferSource, line, 0xFFDCE2F2);
+        if (!layout.scrollLines.isEmpty()) {
+            // like the poem at the end of a game: rises from the bottom of the free part, fades at both edges, and starts again
+            float viewH = layout.viewTop - layout.viewBottom;
+            float cycle = viewH + layout.scrollHeight;
+            float s = (float) (((System.nanoTime() / 1.0e9) * layout.scrollSpeed) % cycle);
+            float fade = Math.min(0.3f, viewH / 4);
+            for (CinemaLayout.TextLine line : layout.scrollLines) {
+                float y = layout.viewBottom + line.y() + s;
+                float a = Math.min(y - layout.viewBottom, layout.viewTop - y) / fade;
+                if (a <= 0.02f) continue;
+                int alpha = Math.max(4, Math.min(255, (int) (a * 255)));
+                drawLine(font, poseStack, bufferSource, new CinemaLayout.TextLine(line.text(), line.x(), y, line.scale(),
+                        line.centred()), (alpha << 24) | 0xDCE2F2);
+            }
+        }
         if (layout.counter != null) drawLine(font, poseStack, bufferSource, layout.counter, 0xFFAAB4CC);
         if (layout.hint != null) drawLine(font, poseStack, bufferSource, layout.hint, 0xFF7C869E);
         for (CinemaLayout.Hit hit : layout.hits) {
@@ -313,12 +330,24 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         x1 -= c.du();
         y0 -= c.dv();
         y1 -= c.dv();
-        BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder b = batch;
         b.addVertex(m, x0, y0, z).setColor(argb);
         b.addVertex(m, x1, y0, z).setColor(argb);
         b.addVertex(m, x1, y1, z).setColor(argb);
         b.addVertex(m, x0, y1, z).setColor(argb);
-        BufferUploader.drawWithShader(b.buildOrThrow());
+    }
+
+    /** All the flat colour of a block (plate, tiles, buttons, borders) goes out as one draw instead of dozens. */
+    private static BufferBuilder batch;
+
+    private static void beginBatch() {
+        batch = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+    }
+
+    private static void flushBatch() {
+        var mesh = batch.build();
+        batch = null;
+        if (mesh != null) BufferUploader.drawWithShader(mesh);
     }
 
     /** The whole of the texture on a rectangle, cut to the block being drawn (the picture is cut the same way). */

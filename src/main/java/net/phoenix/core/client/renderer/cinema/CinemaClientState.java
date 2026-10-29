@@ -52,7 +52,7 @@ public final class CinemaClientState {
     }
 
     /** The lines of the screen the player sees as pages: all of them, or on a screen with its own pages those whose {@code @if} holds. */
-    public static List<Integer> visible(Target t) {
+    private static List<Integer> visibleLines(Target t) {
         var lines = t.centre().getLines();
         List<Integer> out = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
@@ -65,32 +65,64 @@ public final class CinemaClientState {
         return out;
     }
 
+    /**
+     * Everything worked out about the screen's current page (its pages, the page, its layout): every block of a screen asks
+     * for it every frame, and parsing and wrapping the text is far too much work to repeat that often, so it is kept for a
+     * moment.
+     */
+    private record Cached(long at, CinemaScreenBlockEntity centre, int count, int index, CinemaPage page,
+                          CinemaLayout layout) {}
+
+    private static final Map<BlockPos, Cached> CACHE = new HashMap<>();
+    private static final long KEEP_MS = 250L;
+
+    private static Cached cached(Target t) {
+        long now = net.minecraft.Util.getMillis();
+        Cached c = CACHE.get(t.key());
+        if (c != null && c.centre() == t.centre() && now - c.at() < KEEP_MS) return c;
+        int count = visibleLines(t).size();
+        int index = rawIndex(t, count);
+        CinemaPage page = rawPage(t, index);
+        CinemaLayout layout = CinemaLayout.of(Minecraft.getInstance().font, page, t.centre().getTextScale(), t.width(),
+                t.height(), index, count, true);
+        c = new Cached(now, t.centre(), count, index, page, layout);
+        CACHE.put(t.key(), c);
+        return c;
+    }
+
     public static int pageCount(Target t) {
-        return visible(t).size();
+        return cached(t).count();
     }
 
     /** Which of the visible pages is shown (counting from 0). */
     public static int pageIndex(Target t) {
-        int count = pageCount(t);
+        return cached(t).index();
+    }
+
+    private static int rawIndex(Target t, int count) {
         int index = t.centre().isLocalPages() ? PAGES.getOrDefault(t.key(), 0) : t.centre().getCurrentLineIndex();
         return Math.floorMod(index, count);
     }
 
     public static void setPage(Target t, int index) {
         PAGES.put(t.key(), Math.floorMod(index, pageCount(t)));
+        CACHE.remove(t.key());
     }
 
     public static CinemaPage pageOf(Target t) {
+        return cached(t).page();
+    }
+
+    private static CinemaPage rawPage(Target t, int index) {
         var lines = t.centre().getLines();
-        int line = visible(t).get(pageIndex(t));
+        int line = visibleLines(t).get(index);
         String raw = lines.isEmpty() || line >= lines.size() ? "" : lines.get(line).getString();
         return CinemaPage.parse(CinemaStatTokens.resolve(raw, Minecraft.getInstance().player));
     }
 
     /** The layout of the screen's current page. */
     public static CinemaLayout layout(Target t) {
-        return CinemaLayout.of(Minecraft.getInstance().font, pageOf(t), t.centre().getTextScale(), t.width(), t.height(),
-                pageIndex(t), pageCount(t), true);
+        return cached(t).layout();
     }
 
     /** A point in the world on the screen, as blocks from its middle: x to the viewer's right, y up. */
@@ -103,5 +135,6 @@ public final class CinemaClientState {
 
     public static void forget() {
         PAGES.clear();
+        CACHE.clear();
     }
 }
