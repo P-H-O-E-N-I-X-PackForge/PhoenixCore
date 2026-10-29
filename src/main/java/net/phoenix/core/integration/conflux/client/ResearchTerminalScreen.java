@@ -54,6 +54,9 @@ public class ResearchTerminalScreen extends Screen {
     private ResearchNode pendingFocus = null;
     private int sidebarScroll = 0;
     private int sidebarMax = 0;
+    /** When the Abandon button was clicked once, until when a second click confirms it. */
+    private long abandonArmedUntil = 0L;
+    private static final long ABANDON_CONFIRM_MS = 5000L;
 
     private static final float MIN_ZOOM = 0.08f;
     private float zoom = 1.0f;
@@ -165,6 +168,57 @@ public class ResearchTerminalScreen extends Screen {
 
     private int sideW() {
         return sidebarOpen ? sideOpenW() : RAIL_W;
+    }
+
+    private int[] abandonBounds() {
+        int w = sideOpenW();
+        return new int[] { w - 62, 5, w - 8, 17 };
+    }
+
+    /** The terminal can give up a discipline for a team that has one; it asks for a second click first. */
+    private boolean canAbandon() {
+        return terminal != null && sidebarOpen && ClientResearchCache.getDisciplineInfo().canSwitch();
+    }
+
+    private void renderAbandonButton(GuiGraphics g, int mx, int my) {
+        if (!canAbandon()) return;
+        var info = ClientResearchCache.getDisciplineInfo();
+        int[] b = abandonBounds();
+        boolean armed = System.currentTimeMillis() < abandonArmedUntil;
+        boolean hover = mx >= b[0] && mx < b[2] && my >= b[1] && my < b[3];
+        g.fill(b[0], b[1], b[2], b[3], armed ? 0xFF5A1818 : hover ? 0xFF2A1A1A : 0xFF1A1212);
+        g.renderOutline(b[0], b[1], b[2] - b[0], b[3] - b[1], armed || hover ? 0xFFCC4444 : 0xFF663333);
+        g.drawCenteredString(font, armed ? "Confirm?" : "Abandon", (b[0] + b[2]) / 2, b[1] + 2,
+                armed ? 0xFFFFAAAA : 0xFFDD8888);
+        if (!hover) return;
+
+        List<Component> tip = new ArrayList<>();
+        String name = info.disciplineTitle() != null ? info.disciplineTitle() : "your discipline";
+        tip.add(Component.literal(armed ? "\u00a7cClick again to abandon " + name : "\u00a7cAbandon " + name));
+        tip.add(Component.literal("\u00a77You lose its research and can choose again."));
+        if (info.committed()) {
+            tip.add(Component.literal("\u00a76You have committed: it costs ten times as much."));
+        }
+        if (!info.switchCost().isEmpty()) {
+            tip.add(Component.literal("\u00a77Cost:"));
+            info.switchCost().forEach((type, amount) -> {
+                long have = ClientResearchCache.dataStored(type);
+                tip.add(Component.literal(" ").append(type.displayComponent()).append(Component.literal(
+                        (have >= amount ? " \u00a7a" : " \u00a7c") + amount + " \u00a78(you have " + have + ")")));
+            });
+        }
+        g.renderComponentTooltip(font, tip, mx, my);
+    }
+
+    private void clickAbandon() {
+        long now = System.currentTimeMillis();
+        if (now < abandonArmedUntil && terminal != null) {
+            abandonArmedUntil = 0L;
+            PacketDistributor.sendToServer(
+                    new net.phoenix.core.integration.conflux.network.C2SAbandonDisciplinePacket(terminal.getBlockPos()));
+        } else {
+            abandonArmedUntil = now + ABANDON_CONFIRM_MS;
+        }
     }
 
     private int[] toggleBounds() {
@@ -435,6 +489,7 @@ public class ResearchTerminalScreen extends Screen {
                 false);
         g.fill(8, 33, sideOpenW() - 8, 34, ConfluxTheme.BORDER);
         renderToggle(g, mx, my);
+        renderAbandonButton(g, mx, my);
 
         for (int c = 0; c < 2; c++) {
             int[] cb = chipBounds(c);
@@ -902,6 +957,13 @@ public class ResearchTerminalScreen extends Screen {
         }
         if (mx < sideW()) {
             if (!sidebarOpen) return true;
+            if (canAbandon()) {
+                int[] ab = abandonBounds();
+                if (mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3]) {
+                    clickAbandon();
+                    return true;
+                }
+            }
             for (int c = 0; c < 2; c++) {
                 int[] cb = chipBounds(c);
                 if (mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3]) {

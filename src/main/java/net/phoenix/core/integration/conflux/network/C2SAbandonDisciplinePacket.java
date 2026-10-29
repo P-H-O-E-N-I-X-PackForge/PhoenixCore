@@ -56,6 +56,10 @@ public class C2SAbandonDisciplinePacket implements CustomPacketPayload {
             UUID teamId = ResearchTeamHelper.getTeamId(player);
             boolean success = WorldResearchData.get(level).abandonDiscipline(teamId, terminal,
                     ResearchTreeRegistry.INSTANCE);
+            if (!success) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                        "\u00a7cNot enough research data to abandon your discipline."), true);
+            }
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
                 net.phoenix.core.api.event.ConfluxEvents.teamChanged(player.server, teamId);
