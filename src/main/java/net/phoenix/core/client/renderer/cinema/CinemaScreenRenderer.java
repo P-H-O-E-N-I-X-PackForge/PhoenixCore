@@ -56,7 +56,8 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(Axis.YP.rotationDegrees(facing.toYRot()));
+        // the front faces the way the block does: a block turned to the east (a yaw of 270) is rotated back by that
+        poseStack.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
         poseStack.translate(0.0, 0.0, FACE_OFFSET);
 
         Matrix4f matrix = poseStack.last().pose();
@@ -78,10 +79,14 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_TEX);
-        buffer.addVertex(matrix, -halfSize, -halfSize, 0).setUv(u0, v1);
-        buffer.addVertex(matrix, halfSize, -halfSize, 0).setUv(u1, v1);
-        buffer.addVertex(matrix, halfSize, halfSize, 0).setUv(u1, v0);
-        buffer.addVertex(matrix, -halfSize, halfSize, 0).setUv(u0, v0);
+        // the picture's top is at v = 1 (it was drawn into a framebuffer, which starts at the bottom), and the top row of
+        // the screen is row 0: without this the rows of a tall screen are in the wrong order and the seams show
+        float vTop = 1.0f - v0;
+        float vBottom = 1.0f - v1;
+        buffer.addVertex(matrix, -halfSize, -halfSize, 0).setUv(u0, vBottom);
+        buffer.addVertex(matrix, halfSize, -halfSize, 0).setUv(u1, vBottom);
+        buffer.addVertex(matrix, halfSize, halfSize, 0).setUv(u1, vTop);
+        buffer.addVertex(matrix, -halfSize, halfSize, 0).setUv(u0, vTop);
         BufferUploader.drawWithShader(buffer.buildOrThrow());
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -89,9 +94,12 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.enableBlend();
         RenderSystem.enableCull();
 
-        if (solo || layout.isCenterCell()) {
-            renderPage(blockEntity, level, poseStack, bufferSource);
-        }
+        // every block draws its own part of the plate and buttons (so it is drawn over its own part of the background,
+        // whatever order the blocks are drawn in); the text is drawn once, by the middle block
+        float du = layout.col() - (layout.width() - 1) / 2.0f;
+        float dv = (layout.height() - 1) / 2.0f - layout.row();
+        renderPage(blockEntity, level, poseStack, bufferSource, solo ? 0.0f : du, solo ? 0.0f : dv, halfSize,
+                solo || layout.isCenterCell());
 
         poseStack.popPose();
     }
@@ -105,10 +113,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
     /** The page the screen shows now, on a solid plate: title, body, buttons and the page arrows. */
     private void renderPage(CinemaScreenBlockEntity be, Level level, PoseStack poseStack,
-                            MultiBufferSource bufferSource) {
+                            MultiBufferSource bufferSource, float du, float dv, float half, boolean drawText) {
         Minecraft mc = Minecraft.getInstance();
         boolean editing = CinemaEditState.isEditing(be.getBlockPos());
         CinemaClientState.Target target = level != null ? CinemaClientState.target(level, be.getBlockPos()) : null;
+        CinemaScreenBlockEntity shown = target != null ? target.centre() : be;
         CinemaLayout layout;
         if (editing || target == null) {
             float unit = 1.0f;
@@ -119,34 +128,36 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         }
 
         CinemaLayout.Hit hovered = null;
-        if (target != null && target.centre() == be && mc.hitResult instanceof BlockHitResult bhr &&
+        if (target != null && mc.hitResult instanceof BlockHitResult bhr &&
                 bhr.getType() == HitResult.Type.BLOCK) {
             CinemaClientState.Target looked = CinemaClientState.target(level, bhr.getBlockPos());
-            if (looked != null && looked.centre() == be) {
+            if (looked != null && looked.centre() == target.centre()) {
                 float[] at = CinemaClientState.local(looked, bhr.getLocation());
                 hovered = layout.hitAt(at[0], at[1]);
             }
         }
 
         Matrix4f m = poseStack.last().pose();
-        int accent = be.getTextColor() | 0xFF000000;
+        int accent = shown.getTextColor() | 0xFF000000;
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        fill(m, layout.plate, 0.0004f, 0xEB090C16);
-        border(m, layout.plate, 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xC0000000);
+        Clip clip = new Clip(du, dv, half);
+        fill(m, layout.plate, 0.0004f, 0xF2090C16, clip);
+        border(m, layout.plate, 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xE0000000, clip);
         for (CinemaLayout.Hit hit : layout.hits) {
             boolean nav = hit.action().equals("next") || hit.action().equals("prev");
             boolean hot = hit == hovered;
-            fill(m, hit.rect(), 0.0007f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A);
-            border(m, hit.rect(), 0.0008f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF);
+            fill(m, hit.rect(), 0.0007f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
+            border(m, hit.rect(), 0.0008f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
         RenderSystem.enableCull();
+        if (!drawText) return;
 
         Font font = mc.font;
-        float scale = be.getTextScale();
+        float scale = shown.getTextScale();
         for (CinemaLayout.TextLine line : layout.titleLines) drawLine(font, poseStack, bufferSource, line, accent);
         for (CinemaLayout.TextLine line : layout.bodyLines) drawLine(font, poseStack, bufferSource, line, 0xFFDCE2F2);
         if (layout.counter != null) drawLine(font, poseStack, bufferSource, layout.counter, 0xFFAAB4CC);
@@ -177,19 +188,32 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         poseStack.popPose();
     }
 
-    private static void fill(Matrix4f m, CinemaLayout.Rect r, float z, int argb) {
+    /** The part of the whole screen that one block shows, in blocks from the middle of the screen. */
+    private record Clip(float du, float dv, float half) {}
+
+    /** A rectangle given from the middle of the screen, cut to the block being drawn and moved to that block's own middle. */
+    private static void fill(Matrix4f m, CinemaLayout.Rect r, float z, int argb, Clip c) {
+        float x0 = Math.max(r.x0(), c.du() - c.half());
+        float x1 = Math.min(r.x1(), c.du() + c.half());
+        float y0 = Math.max(r.y0(), c.dv() - c.half());
+        float y1 = Math.min(r.y1(), c.dv() + c.half());
+        if (x1 <= x0 || y1 <= y0) return;
+        x0 -= c.du();
+        x1 -= c.du();
+        y0 -= c.dv();
+        y1 -= c.dv();
         BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        b.addVertex(m, r.x0(), r.y0(), z).setColor(argb);
-        b.addVertex(m, r.x1(), r.y0(), z).setColor(argb);
-        b.addVertex(m, r.x1(), r.y1(), z).setColor(argb);
-        b.addVertex(m, r.x0(), r.y1(), z).setColor(argb);
+        b.addVertex(m, x0, y0, z).setColor(argb);
+        b.addVertex(m, x1, y0, z).setColor(argb);
+        b.addVertex(m, x1, y1, z).setColor(argb);
+        b.addVertex(m, x0, y1, z).setColor(argb);
         BufferUploader.drawWithShader(b.buildOrThrow());
     }
 
-    private static void border(Matrix4f m, CinemaLayout.Rect r, float z, float t, int argb) {
-        fill(m, new CinemaLayout.Rect(r.x0(), r.y1() - t, r.x1(), r.y1()), z, argb);
-        fill(m, new CinemaLayout.Rect(r.x0(), r.y0(), r.x1(), r.y0() + t), z, argb);
-        fill(m, new CinemaLayout.Rect(r.x0(), r.y0() + t, r.x0() + t, r.y1() - t), z, argb);
-        fill(m, new CinemaLayout.Rect(r.x1() - t, r.y0() + t, r.x1(), r.y1() - t), z, argb);
+    private static void border(Matrix4f m, CinemaLayout.Rect r, float z, float t, int argb, Clip c) {
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y1() - t, r.x1(), r.y1()), z, argb, c);
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y0(), r.x1(), r.y0() + t), z, argb, c);
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y0() + t, r.x0() + t, r.y1() - t), z, argb, c);
+        fill(m, new CinemaLayout.Rect(r.x1() - t, r.y0() + t, r.x1(), r.y1() - t), z, argb, c);
     }
 }
