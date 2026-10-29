@@ -49,7 +49,7 @@
       "color": "#6FA8FF",
       "background": "nebula",
       "pages": [
-        "RESEARCH IS PAID IN DATA\nThere are five kinds: Material, Biological, Energetic, Computational and Arcane.",
+        "RESEARCH IS PAID IN DATA\nThere are five kinds of it.\n@item minecraft:iron_ingot | Material\n@item minecraft:slime_ball | Biological\n@item minecraft:redstone | Energetic\n@item minecraft:comparator | Computational\n@item minecraft:amethyst_shard | Arcane",
         "ARCANE DATA\nArcane data only exists when Ars Nouveau is installed.",
         "MAKING DATA\nData-producer machines make it. Spend it at a research terminal, on the nodes of your path.",
         "WHAT YOU NEED\nEach discipline leans on different kinds, so what you build first depends on what you choose."
@@ -67,7 +67,7 @@
       "color": "#FFC66B",
       "background": "sunflare",
       "pages": [
-        "THE PHOENIX\nRebirth through consumption. Every ending is an ignition.\n@button Next | next",
+        "THE PHOENIX\nRebirth through consumption. Every ending is an ignition.\n@item minecraft:blaze_powder | Heat\n@item minecraft:fire_charge | Reactions\n@item minecraft:lava_bucket | Power\n@button Next | next",
         "WHAT YOU DO\nYou work with fire, heat and raw energy: forges, reactors, and reactions that burn hot.",
         "ITS RESEARCH\nIt opens through Ember Awakening and leads to The Pyre, where you commit.",
         "CHOOSE IT IF\nYou want power and speed, and do not mind handling a lot of heat.",
@@ -86,7 +86,7 @@
       "color": "#6FE0D0",
       "background": "sculk_abyss",
       "pages": [
-        "THE SCULK\nA network that remembers every death that fed it. Not a parasite: a library.\n@button Next | next",
+        "THE SCULK\nA network that remembers every death that fed it. Not a parasite: a library.\n@item minecraft:sculk_catalyst | Growth\n@item minecraft:sculk_sensor | Sensing\n@item minecraft:echo_shard | Memory\n@button Next | next",
         "WHAT YOU DO\nYou work with living systems: growth, sensing, signals, and information that spreads.",
         "ITS RESEARCH\nIt opens through First Contact and leads to The Joining, where you commit.",
         "CHOOSE IT IF\nYou like patient, sprawling builds and machines that sense and respond.",
@@ -105,7 +105,7 @@
       "color": "#B983FF",
       "background": "void_galaxy",
       "pages": [
-        "THE VOID\nBefore the first thing there was the space between things. It was patient.\n@button Next | next",
+        "THE VOID\nBefore the first thing there was the space between things. It was patient.\n@item minecraft:ender_eye | Sight\n@item minecraft:ender_chest | Storage\n@item minecraft:ender_pearl | Distance\n@button Next | next",
         "WHAT YOU DO\nYou work with space and computation: storage, distance, odd geometry and the arcane.",
         "ITS RESEARCH\nIt opens through First Silence and leads to The Inversion, where you commit.",
         "CHOOSE IT IF\nYou like logistics, dimensions and precise control.",
@@ -146,6 +146,24 @@
         "YOUR QUESTBOOK\nIt has a chapter for your path, and the first quests tell you where to begin.",
         "COMING BACK\nReturn here any time with /conflux dimension return.",
         "GOOD LUCK\nThe Conflux is listening."
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        66,
+        14
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 3,
+      "color": "#9ED0FF",
+      "background": "nebula",
+      "pages": [
+        "THE HUD BAR\nOpen your inventory: a row of small buttons runs along the top of the screen. Each opens a screen of one of the mods. Hover one to see its name.\n@image phoenix_chronicles:textures/gui/chronicles_quest_book_icon.png | Quest book\n@image solaris:textures/gui/suite_bar_icon.png | Map\n@image phoenixcore:textures/gui/suite_conflux.png | Research\n@image phoenix_continuum:textures/gui/suite_continuum.png | Star map",
+        "WHAT EACH ONE DOES\nThe quest book: your quests and what to do next. The map: your surroundings and waypoints. Research: your tree of research and your data. The star map: bodies, missions and personal dimensions.",
+        "MOVING THEM\nYou can drag the buttons to where you like. The settings button at the end of the bar lets you show or hide each one, change their size, and put them all back where they started.",
+        "TRY IT\nOpen your inventory now (E) and find them. The quest book is the best first stop: it has a chapter for the path you choose."
       ]
     },
     {

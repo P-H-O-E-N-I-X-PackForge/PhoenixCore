@@ -41,4 +41,14 @@ class CinemaPageTest {
         assertEquals("has_discipline", page.condition());
         assertEquals("You follow it.", page.body());
     }
+
+    @Test
+    void picturesAreCollectedWithTheirCaptions() {
+        var page = CinemaPage.parse("HUD\nBody\n@image mod:textures/gui/a.png | The map\n@item minecraft:blaze_rod | Fire");
+        assertEquals(2, page.pictures().size());
+        assertEquals("mod:textures/gui/a.png", page.pictures().get(0).id());
+        assertEquals("The map", page.pictures().get(0).caption());
+        assertTrue(page.pictures().get(1).item());
+        assertEquals("Body", page.body());
+    }
 }

@@ -44,3 +44,12 @@ resources): each screen has `pos` (its middle block), `facing` (which way the fr
 `sunflare`) and `pages`. After changing it, run **`/conflux dimension spawndecor`** (it clears the old screens and builds
 the new ones); `/conflux dimension spawndecor clear` only removes them. A screen you place by hand and edit in the game
 works the same way.
+
+## Pictures
+| line | meaning |
+| --- | --- |
+| `@image namespace:textures/path.png \| caption` | a texture from a mod or resource pack (a 16x16 icon is fine) |
+| `@item minecraft:blaze_rod \| caption` | an item's icon |
+
+Several of these lines on one page make a row under the title, each with its caption under it. Textures that do not
+exist show as the purple-and-black missing texture, so check the id.

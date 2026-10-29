@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -39,6 +40,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     @Override
     public void render(CinemaScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        // whatever was drawn before may have left the depth test off or the depth buffer unwritten: a screen must hide the
+        // ones behind it
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthFunc(515);
+        RenderSystem.depthMask(true);
         Level level = blockEntity.getLevel();
         CinemaGroupUtil.GroupLayout layout = level != null ?
                 CinemaGroupUtil.getLayout(level, blockEntity.getBlockPos()) :
@@ -52,6 +58,10 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             backgroundSource = anchorBE;
         }
         int textureId = CinemaRenderTarget.getOrRenderTexture(layout, backgroundSource.getBackground());
+        // drawing the picture into its framebuffer changes the state again
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthFunc(515);
+        RenderSystem.depthMask(true);
         Direction facing = blockEntity.getBlockState().getValue(CinemaScreenBlock.FACING);
 
         poseStack.pushPose();
@@ -170,9 +180,34 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             fill(m, hit.rect(), PLATE_Z + 0.001f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
             border(m, hit.rect(), PLATE_Z + 0.0015f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
+        // pictures: textures here, cut to this block; items are drawn with the text, by the middle block
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        for (CinemaLayout.Slot slot : layout.pictures) {
+            if (slot.picture().item()) continue;
+            ResourceLocation texture = ResourceLocation.tryParse(slot.picture().id());
+            if (texture == null) continue;
+            RenderSystem.setShaderTexture(0, texture);
+            drawTexture(m, slot.rect(), PLATE_Z + 0.002f, clip);
+        }
         RenderSystem.disablePolygonOffset();
         RenderSystem.enableCull();
         if (!drawText) return;
+        for (CinemaLayout.Slot slot : layout.pictures) {
+            if (!slot.picture().item()) continue;
+            ResourceLocation id = ResourceLocation.tryParse(slot.picture().id());
+            if (id == null) continue;
+            var stack = new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id));
+            if (stack.isEmpty()) continue;
+            float size = slot.rect().x1() - slot.rect().x0();
+            poseStack.pushPose();
+            poseStack.translate((slot.rect().x0() + slot.rect().x1()) / 2, (slot.rect().y0() + slot.rect().y1()) / 2,
+                    PLATE_Z + 0.02);
+            // flattened, so a block does not bulge off the screen
+            poseStack.scale(size, size, size * 0.1f);
+            mc.getItemRenderer().renderStatic(stack, net.minecraft.world.item.ItemDisplayContext.GUI, FULL_BRIGHT,
+                    net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, poseStack, bufferSource, level, 0);
+            poseStack.popPose();
+        }
 
         Font font = mc.font;
         float scale = shown.getTextScale();
@@ -225,6 +260,31 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         b.addVertex(m, x1, y0, z).setColor(argb);
         b.addVertex(m, x1, y1, z).setColor(argb);
         b.addVertex(m, x0, y1, z).setColor(argb);
+        BufferUploader.drawWithShader(b.buildOrThrow());
+    }
+
+    /** The whole of the texture on a rectangle, cut to the block being drawn (the picture is cut the same way). */
+    private static void drawTexture(Matrix4f m, CinemaLayout.Rect r, float z, Clip c) {
+        float x0 = Math.max(r.x0(), c.du() - c.half());
+        float x1 = Math.min(r.x1(), c.du() + c.half());
+        float y0 = Math.max(r.y0(), c.dv() - c.half());
+        float y1 = Math.min(r.y1(), c.dv() + c.half());
+        if (x1 <= x0 || y1 <= y0) return;
+        float w = r.x1() - r.x0();
+        float h = r.y1() - r.y0();
+        float u0 = (x0 - r.x0()) / w;
+        float u1 = (x1 - r.x0()) / w;
+        float vTop = (r.y1() - y1) / h;
+        float vBottom = (r.y1() - y0) / h;
+        x0 -= c.du();
+        x1 -= c.du();
+        y0 -= c.dv();
+        y1 -= c.dv();
+        BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        b.addVertex(m, x0, y0, z).setUv(u0, vBottom);
+        b.addVertex(m, x1, y0, z).setUv(u1, vBottom);
+        b.addVertex(m, x1, y1, z).setUv(u1, vTop);
+        b.addVertex(m, x0, y1, z).setUv(u0, vTop);
         BufferUploader.drawWithShader(b.buildOrThrow());
     }
 

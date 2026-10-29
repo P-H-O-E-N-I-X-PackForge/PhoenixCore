@@ -28,7 +28,11 @@ public final class CinemaLayout {
     /** A line of text at a position: {@code x} is its middle (centred) or its left edge, {@code y} its middle. */
     public record TextLine(FormattedCharSequence text, float x, float y, float scale, boolean centred) {}
 
+    /** A picture and the square it fills. */
+    public record Slot(CinemaPage.Picture picture, Rect rect) {}
+
     public static final float PAD = 0.2f;
+    public final List<Slot> pictures = new ArrayList<>();
 
     public Rect plate;
     public final List<TextLine> titleLines = new ArrayList<>();
@@ -94,6 +98,32 @@ public final class CinemaLayout {
                 y -= th;
             }
             y -= 0.1f;
+        }
+        // a row of pictures, each with its caption under it
+        if (!page.pictures().isEmpty()) {
+            int n = page.pictures().size();
+            float gap = 0.3f;
+            float size = Math.min(1.0f, (innerW - gap * (n - 1)) / n);
+            float capScale = textScale * 0.9f;
+            float capH = (font.lineHeight + 2) * capScale;
+            int capWidth = Math.max(8, (int) ((size + gap) / capScale));
+            float rowW = n * size + (n - 1) * gap;
+            float x = -rowW / 2;
+            int capLines = 0;
+            for (CinemaPage.Picture picture : page.pictures()) {
+                l.pictures.add(new Slot(picture, new Rect(x, y - size, x + size, y)));
+                if (!picture.caption().isEmpty()) {
+                    List<FormattedCharSequence> lines = font.split(Component.literal(picture.caption()), capWidth);
+                    int shown = Math.min(2, lines.size());
+                    capLines = Math.max(capLines, shown);
+                    for (int i = 0; i < shown; i++) {
+                        l.bodyLines.add(new TextLine(lines.get(i), x + size / 2, y - size - capH * (i + 0.8f), capScale,
+                                true));
+                    }
+                }
+                x += size + gap;
+            }
+            y -= size + capLines * capH + 0.15f;
         }
         if (!page.body().isEmpty()) {
             List<FormattedCharSequence> body = new ArrayList<>();

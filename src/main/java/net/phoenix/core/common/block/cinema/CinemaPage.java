@@ -15,12 +15,19 @@ import java.util.List;
  * one even when it does not, and each {@code @button Label | action} line is a button (see CinemaClientActions for what an
  * action can be). A page of one plain line is just its text.
  * <p>
+ * {@code @image namespace:path/to/texture.png | caption} puts a picture (a texture from a resource pack or mod) in a row
+ * under the title, {@code @item minecraft:blaze_rod | caption} an item's icon; several lines make a row, each with its
+ * caption under it.
+ * <p>
  * An {@code @if} line makes the page show only when its condition holds for the player looking (see CinemaConditions):
  * {@code @if no_discipline}, {@code @if discipline:phoenix}, {@code @if !committed}, {@code @if flag:px_awakened}.
  */
-public record CinemaPage(String title, String body, List<Button> buttons, String condition) {
+public record CinemaPage(String title, String body, List<Button> buttons, String condition, List<Picture> pictures) {
 
     public record Button(String label, String action) {}
+
+    /** A picture on the page: a texture ({@code item} false) or an item's icon, and what it is captioned. */
+    public record Picture(boolean item, String id, String caption) {}
 
     public static CinemaPage parse(String raw) {
         String text = raw == null ? "" : raw.replace("\\n", "\n");
@@ -29,9 +36,17 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
         StringBuilder body = new StringBuilder();
         List<Button> buttons = new ArrayList<>();
         String condition = "";
+        List<Picture> pictures = new ArrayList<>();
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (part.startsWith("@if ")) {
+            if (part.startsWith("@image ") || part.startsWith("@item ")) {
+                boolean item = part.startsWith("@item ");
+                String spec = part.substring(part.indexOf(' ') + 1);
+                int bar = spec.indexOf('|');
+                String id = (bar < 0 ? spec : spec.substring(0, bar)).trim();
+                String caption = bar < 0 ? "" : spec.substring(bar + 1).trim();
+                if (!id.isEmpty()) pictures.add(new Picture(item, id, caption));
+            } else if (part.startsWith("@if ")) {
                 condition = part.substring("@if ".length()).trim();
             } else if (part.startsWith("@button ")) {
                 String spec = part.substring("@button ".length());
@@ -46,6 +61,6 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
                 body.append(part);
             }
         }
-        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition);
+        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition, pictures);
     }
 }
