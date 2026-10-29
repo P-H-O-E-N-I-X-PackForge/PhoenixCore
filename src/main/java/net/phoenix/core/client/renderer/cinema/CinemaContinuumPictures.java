@@ -21,13 +21,13 @@ final class CinemaContinuumPictures {
     private static final long INTERVAL_MS = 100L;
     private static final long KEEP_MS = 10_000L;
     private static final int PER_FRAME = 1;
-    private static final double RANGE_SQ = 24.0 * 24.0;
+    private static final double RANGE_SQ = 20.0 * 20.0;
 
     private record Key(BlockPos pos, int index) {}
 
     private static final class Entry {
 
-        final ContinuumRender.Preview preview = ContinuumRender.newPreview();
+        final ContinuumRender.Preview preview = ContinuumRender.newCheapPreview(256);
         long rendered;
         long used;
         int texture = -1;
@@ -51,7 +51,8 @@ final class CinemaContinuumPictures {
      * @param yaw   how far round the body the viewer is, degrees (0 in front of the screen)
      * @param pitch how far above it, degrees
      */
-    static int texture(BlockPos centre, int index, String pictureId, float yaw, float pitch, double distanceSq) {
+    static int texture(BlockPos centre, int index, String pictureId, float yaw, float pitch, double distanceSq,
+                       double lookDot) {
         long now = net.minecraft.Util.getMillis();
         Key key = new Key(centre, index);
         Entry entry = ENTRIES.get(key);
@@ -62,8 +63,12 @@ final class CinemaContinuumPictures {
             evict(now);
         }
         entry.used = now;
-        boolean due = now - entry.rendered >= INTERVAL_MS || Math.abs(yaw - entry.yaw) > 6.0f ||
-                Math.abs(pitch - entry.pitch) > 6.0f;
+        // nearer is smoother; out of the corner of the eye, or far off, it is only refreshed now and then
+        long interval = distanceSq < 36.0 ? INTERVAL_MS : distanceSq < 144.0 ? 2 * INTERVAL_MS : 5 * INTERVAL_MS;
+        boolean looked = lookDot > 0.35;
+        boolean due = entry.texture < 0 || (looked && (now - entry.rendered >= interval ||
+                Math.abs(yaw - entry.yaw) > 10.0f || Math.abs(pitch - entry.pitch) > 10.0f)) ||
+                now - entry.rendered >= 4000L;
         if (!due || distanceSq > RANGE_SQ) return entry.texture;
         long stamp = System.nanoTime() / 4_000_000L;
         if (stamp != frameStamp) {

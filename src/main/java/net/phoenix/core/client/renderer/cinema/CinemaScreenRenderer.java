@@ -123,6 +123,12 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         poseStack.popPose();
     }
 
+    /** How squarely the player is looking at something {@code (-dx, -dy, -dz)} away: 1 straight at it, 0 sideways on. */
+    private static double lookDot(net.minecraft.world.phys.Vec3 look, double dx, double dy, double dz) {
+        double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        return len < 1.0e-4 ? 1.0 : -(look.x * dx + look.y * dy + look.z * dz) / len;
+    }
+
     private String liveTypedText() {
         boolean cursorOn = (System.currentTimeMillis() / 500L) % 2 == 0;
         return CinemaEditState.getBuffer() + (cursorOn ? "_" : "");
@@ -188,7 +194,8 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             float yaw = (float) Math.max(-80, Math.min(80, -Math.toDegrees(Math.atan2(lateral, Math.max(0.05, depth)))));
             float pitch = (float) Math.max(-60, Math.min(60, Math.toDegrees(Math.atan2(dy, Math.hypot(lateral, depth)))));
             live[i] = CinemaContinuumPictures.texture(target != null ? target.centre().getBlockPos() : be.getBlockPos(), i,
-                    slot.picture().id(), yaw, pitch, dx * dx + dy * dy + dz * dz);
+                    slot.picture().id(), yaw, pitch, dx * dx + dy * dy + dz * dz,
+                    lookDot(mc.player.getLookAngle(), dx, dy, dz));
         }
         if (anyLive) {
             RenderSystem.enableDepthTest();
