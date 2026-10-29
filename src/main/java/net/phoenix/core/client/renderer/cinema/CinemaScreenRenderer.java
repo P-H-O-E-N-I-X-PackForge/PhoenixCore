@@ -117,8 +117,10 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         // whatever order the blocks are drawn in); the text is drawn once, by the middle block
         float du = layout.col() - (layout.width() - 1) / 2.0f;
         float dv = (layout.height() - 1) / 2.0f - layout.row();
-        renderPage(blockEntity, level, poseStack, bufferSource, solo ? 0.0f : du, solo ? 0.0f : dv, halfSize,
-                solo || layout.isCenterCell());
+        try (var ignored = net.phoenix.continuum.client.ContinuumProfiler.scope("cinema:page")) {
+            renderPage(blockEntity, level, poseStack, bufferSource, solo ? 0.0f : du, solo ? 0.0f : dv, halfSize,
+                    solo || layout.isCenterCell());
+        }
 
         poseStack.popPose();
     }

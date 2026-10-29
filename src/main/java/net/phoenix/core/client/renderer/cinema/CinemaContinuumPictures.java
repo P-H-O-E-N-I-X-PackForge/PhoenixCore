@@ -111,7 +111,10 @@ final class CinemaContinuumPictures {
             }
         }
         int hole = body == ContinuumRender.Body.BLACK_HOLE ? colour : -1;
-        int id = entry.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch);
+        int id;
+        try (var ignored = net.phoenix.continuum.client.ContinuumProfiler.scope("cinema:live")) {
+            id = entry.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch);
+        }
         entry.rendered = now;
         entry.yaw = yaw;
         entry.pitch = pitch;

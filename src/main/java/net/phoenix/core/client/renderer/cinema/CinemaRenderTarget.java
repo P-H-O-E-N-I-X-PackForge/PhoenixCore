@@ -67,7 +67,9 @@ public final class CinemaRenderTarget {
             if (drawnThisFrame < PER_FRAME || first) {
                 drawnThisFrame++;
                 entry.lastRenderTime()[0] = now;
-                renderShader(entry.target(), width, height, entry.px(), background);
+                try (var ignored = net.phoenix.continuum.client.ContinuumProfiler.scope("cinema:background")) {
+                    renderShader(entry.target(), width, height, entry.px(), background);
+                }
             }
         }
 
