@@ -30,6 +30,7 @@ public final class CinemaRenderTarget {
     /** A shader picture is redrawn this often, nearer or farther than 16 blocks, and not at all beyond the far distance. */
     private static final long NEAR_INTERVAL_MS = 66;
     private static final long FAR_INTERVAL_MS = 200;
+    private static final long STILL_INTERVAL_MS = 3000;
     private static final double FAR_RANGE_SQ = 64.0 * 64.0;
     /** Only this many pictures are redrawn in one frame: with a dozen screens in view they take turns. */
     private static final int PER_FRAME = 1;
@@ -57,6 +58,8 @@ public final class CinemaRenderTarget {
         double dz = camera.z - (layout.anchor() != null ? layout.anchor().getZ() : camera.z);
         double distSq = dx * dx + dy * dy + dz * dz;
         long interval = distSq < 16.0 * 16.0 ? NEAR_INTERVAL_MS : FAR_INTERVAL_MS;
+        // the nebula and the galaxy only drift (a fraction of a pixel a minute) but cost a few hundred noise lookups a pixel
+        if (background == Background.NEBULA || background == Background.VOID_GALAXY) interval = STILL_INTERVAL_MS;
         boolean first = entry.lastRenderTime()[0] < 0;
         if (first || (distSq < FAR_RANGE_SQ && now - entry.lastRenderTime()[0] >= interval)) {
             long stamp = System.nanoTime() / 4_000_000L;
