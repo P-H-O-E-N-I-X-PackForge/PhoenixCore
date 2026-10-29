@@ -25,10 +25,14 @@ import java.util.List;
  * {@code gas_cloud} or {@code protostar}, then an optional colour) that turns to follow the player looking at it; it is
  * kept as a picture whose id is {@code continuum:<body>:<colour>}.
  * <p>
+ * The first page of a screen says "right-click to turn the page" under its arrows; a {@code @nohint} line takes that away
+ * (for all but the first screen someone sees, say).
+ * <p>
  * An {@code @if} line makes the page show only when its condition holds for the player looking (see CinemaConditions):
  * {@code @if no_discipline}, {@code @if discipline:phoenix}, {@code @if !committed}, {@code @if flag:px_awakened}.
  */
-public record CinemaPage(String title, String body, List<Button> buttons, String condition, List<Picture> pictures) {
+public record CinemaPage(String title, String body, List<Button> buttons, String condition, List<Picture> pictures,
+                         boolean hint) {
 
     public record Button(String label, String action) {}
 
@@ -43,9 +47,12 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
         List<Button> buttons = new ArrayList<>();
         String condition = "";
         List<Picture> pictures = new ArrayList<>();
+        boolean hint = true;
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (part.startsWith("@continuum ")) {
+            if (part.equals("@nohint")) {
+                hint = false;
+            } else if (part.startsWith("@continuum ")) {
                 String spec = part.substring("@continuum ".length());
                 int bar = spec.indexOf('|');
                 String[] words = (bar < 0 ? spec : spec.substring(0, bar)).trim().split("\\s+");
@@ -80,6 +87,6 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
                 body.append(part);
             }
         }
-        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition, pictures);
+        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition, pictures, hint);
     }
 }

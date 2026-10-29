@@ -68,4 +68,12 @@ class CinemaPageTest {
         assertEquals("hud:solaris", page.pictures().get(0).action());
         assertEquals("", page.pictures().get(1).action());
     }
+
+    @Test
+    void noHintTurnsTheHintOff() {
+        assertTrue(CinemaPage.parse("A\nB").hint());
+        var page = CinemaPage.parse("A\nB\n@nohint");
+        assertEquals(false, page.hint());
+        assertEquals("B", page.body());
+    }
 }

@@ -84,7 +84,7 @@ public final class CinemaLayout {
             l.counter = new TextLine(Component.literal((pageIndex + 1) + " / " + pageCount).getVisualOrderText(), 0,
                     (navY0 + navY1) / 2, textScale, true);
             bottom = navY1 + 0.14f;
-            if (pageIndex == 0) {
+            if (pageIndex == 0 && page.hint()) {
                 l.hint = new TextLine(Component.literal("right-click to turn the page").getVisualOrderText(), 0,
                         bottom + lineH * 0.5f, textScale * 0.8f, true);
                 bottom += lineH + 0.04f;
