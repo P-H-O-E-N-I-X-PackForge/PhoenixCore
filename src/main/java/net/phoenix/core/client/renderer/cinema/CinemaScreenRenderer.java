@@ -71,7 +71,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, textureId);
-        RenderSystem.disableCull();
+        RenderSystem.enableCull();
 
         RenderSystem.disableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -92,6 +92,15 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableBlend();
+
+        // seen from behind: a plain dark face, not the picture and not the text backwards
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder back = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        back.addVertex(matrix, -halfSize, -halfSize, -PLATE_Z).setColor(0xFF0B0E16);
+        back.addVertex(matrix, -halfSize, halfSize, -PLATE_Z).setColor(0xFF0B0E16);
+        back.addVertex(matrix, halfSize, halfSize, -PLATE_Z).setColor(0xFF0B0E16);
+        back.addVertex(matrix, halfSize, -halfSize, -PLATE_Z).setColor(0xFF0B0E16);
+        BufferUploader.drawWithShader(back.buildOrThrow());
         RenderSystem.enableCull();
 
         // every block draws its own part of the plate and buttons (so it is drawn over its own part of the background,
@@ -110,6 +119,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     }
 
     private static final int FULL_BRIGHT = 0xF000F0;
+    /**
+     * How far in front of the picture the plate is: a few millimetres, because at a distance the depth buffer cannot tell
+     * surfaces a fraction of a millimetre apart (they fought, and the plate showed torn).
+     */
+    private static final float PLATE_Z = 0.003f;
 
     /** The page the screen shows now, on a solid plate: title, body, buttons and the page arrows. */
     private void renderPage(CinemaScreenBlockEntity be, Level level, PoseStack poseStack,
@@ -145,13 +159,13 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.disableCull();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Clip clip = new Clip(du, dv, half);
-        fill(m, layout.plate, 0.0004f, 0xF2090C16, clip);
-        border(m, layout.plate, 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xE0000000, clip);
+        fill(m, layout.plate, PLATE_Z, 0xF2090C16, clip);
+        border(m, layout.plate, PLATE_Z + 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xE0000000, clip);
         for (CinemaLayout.Hit hit : layout.hits) {
             boolean nav = hit.action().equals("next") || hit.action().equals("prev");
             boolean hot = hit == hovered;
-            fill(m, hit.rect(), 0.0007f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
-            border(m, hit.rect(), 0.0008f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
+            fill(m, hit.rect(), PLATE_Z + 0.001f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
+            border(m, hit.rect(), PLATE_Z + 0.0015f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
         RenderSystem.enableCull();
         if (!drawText) return;
@@ -179,7 +193,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     private static void drawLine(Font font, PoseStack poseStack, MultiBufferSource bufferSource,
                                  CinemaLayout.TextLine line, int color) {
         poseStack.pushPose();
-        poseStack.translate(line.x(), line.y(), 0.0012);
+        poseStack.translate(line.x(), line.y(), PLATE_Z + 0.003);
         poseStack.scale(line.scale(), -line.scale(), line.scale());
         Matrix4f matrix = poseStack.last().pose();
         float x = line.centred() ? -font.width(line.text()) / 2.0f : 0.0f;
