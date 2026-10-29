@@ -14,6 +14,9 @@ import net.phoenix.core.network.packet.C2SCinemaActionPacket;
  * <ul>
  * <li>{@code next}, {@code prev}: turn the page; {@code goto:N}: go to page N (screens whose pages are local);</li>
  * <li>{@code open_discipline_picker}: open the discipline picker (or say which path the player follows);</li>
+ * <li>{@code first}, {@code last}: the first or last page;</li>
+ * <li>{@code command:<command>}: run a command as the player (with the player's own permissions);</li>
+ * <li>{@code sound:<id>}: play a sound;</li>
  * <li>{@code cutscene:<id>}: play a cutscene, e.g. {@code cutscene:phoenixcore:dream}.</li>
  * </ul>
  */
@@ -33,7 +36,18 @@ public final class CinemaClientActions {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || action == null) return;
         String a = action.trim();
+        // a click makes the usual button sound
+        mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance
+                .forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0f));
         switch (a) {
+            case "first" -> {
+                if (target != null && target.centre().isLocalPages()) CinemaClientState.setPage(target, 0);
+            }
+            case "last" -> {
+                if (target != null && target.centre().isLocalPages()) {
+                    CinemaClientState.setPage(target, CinemaClientState.pageCount(target) - 1);
+                }
+            }
             case "next" -> turn(target, 1);
             case "prev" -> turn(target, -1);
             case "open_discipline_picker", OPEN_DISCIPLINE_PICKER -> openPicker(mc);
@@ -42,6 +56,16 @@ public final class CinemaClientActions {
                     try {
                         CinemaClientState.setPage(target, Integer.parseInt(a.substring(5).trim()) - 1);
                     } catch (NumberFormatException ignored) {}
+                } else if (a.startsWith("command:")) {
+                    // as if the player had typed it: with their own permissions
+                    String command = a.substring(8).trim();
+                    if (command.startsWith("/")) command = command.substring(1);
+                    if (!command.isEmpty()) mc.player.connection.sendCommand(command);
+                } else if (a.startsWith("sound:")) {
+                    ResourceLocation id = ResourceLocation.tryParse(a.substring(6).trim());
+                    var sound = id == null ? null : net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(id);
+                    if (sound != null) mc.getSoundManager().play(
+                            net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(sound, 1.0f));
                 } else if (a.startsWith("cutscene:")) {
                     ResourceLocation id = ResourceLocation.tryParse(a.substring(9).trim());
                     if (id != null) CutsceneManager.play(id);

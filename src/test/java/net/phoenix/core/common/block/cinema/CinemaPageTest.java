@@ -27,11 +27,18 @@ class CinemaPageTest {
 
     @Test
     void backslashNIsALineBreakAndHashMakesATitle() {
-        var typed = CinemaPage.parse("Title\nBody text");
+        var typed = CinemaPage.parse("Title\\nBody text");
         assertEquals("Title", typed.title());
         assertEquals("Body text", typed.body());
         var hashed = CinemaPage.parse("# Only a title");
         assertEquals("Only a title", hashed.title());
         assertEquals("", hashed.body());
+    }
+
+    @Test
+    void aConditionIsCollectedAndIsNotShown() {
+        var page = CinemaPage.parse("YOUR PATH\nYou follow it.\n@if has_discipline");
+        assertEquals("has_discipline", page.condition());
+        assertEquals("You follow it.", page.body());
     }
 }

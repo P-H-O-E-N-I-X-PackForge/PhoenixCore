@@ -47,7 +47,18 @@ public class ConfluxDimensionCommands {
                                             ctx.getSource().sendSuccess(
                                                     () -> Component.literal("Rebuilt the ethereal spawn's screens."), true);
                                             return Command.SINGLE_SUCCESS;
-                                        }))
+                                        })
+                                        .then(Commands.literal("clear").executes(ctx -> {
+                                            ServerLevel spawn = ctx.getSource().getServer()
+                                                    .getLevel(EtherealSpawnDimension.DIMENSION_KEY);
+                                            if (spawn == null) return 0;
+                                            int removed = EtherealSpawnDecor.clear(spawn);
+                                            ctx.getSource().sendSuccess(() -> Component
+                                                    .literal("Removed " + removed + " screen block(s) from the spawn."), true);
+                                            return Command.SINGLE_SUCCESS;
+                                        })))
+                                .then(Commands.literal("enter")
+                                        .executes(ctx -> enterDiscipline(ctx.getSource())))
                                 .then(Commands.literal("info")
                                         .executes(ctx -> dimensionInfo(ctx.getSource())))
                                 .then(Commands.literal("benchmarkworldgen")
@@ -112,6 +123,22 @@ public class ConfluxDimensionCommands {
                 () -> Component.literal("§6[Axiom] §7Returning to the ethereal spawn..."),
                 false);
 
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int enterDiscipline(CommandSourceStack source) {
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
+            source.sendFailure(Component.literal("Only players can use this command"));
+            return 0;
+        }
+        UUID teamId = ResearchTeamHelper.getTeamId(player);
+        String discipline = teamId == null ? null :
+                WorldResearchData.get(player.getServer().overworld()).getDiscipline(teamId);
+        if (discipline == null) {
+            source.sendFailure(Component.literal("You have not chosen a discipline yet."));
+            return 0;
+        }
+        ConfluxDimensionFactory.enterDisciplineDimension(player, teamId, discipline);
         return Command.SINGLE_SUCCESS;
     }
 

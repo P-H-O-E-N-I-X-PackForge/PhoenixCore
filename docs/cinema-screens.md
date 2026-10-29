@@ -1,0 +1,46 @@
+# Cinema screens
+
+A cinema screen is a block (place several next to each other, facing the same way, to make one big screen; use odd
+sizes such as 3x3 or 5x3). It shows one **page** at a time over a shader background, on a solid plate so the text is
+always readable.
+
+## Using one
+- Click a **button** (or the `<` `>` arrows at the bottom) to use it. A button lights up when your crosshair is on it.
+- **Right-click** anywhere else on a screen with its own pages to go to the next page.
+- **Shift + right-click** edits the current page; **Ctrl + right-click** adds a page; **Alt + right-click** cycles the
+  text colour; **Shift + scroll** changes the text size (add **Alt** to change the background); **Shift + left-click**
+  removes the page. The edit box is one line: type `\n` for a line break.
+
+## Writing a page
+A page is plain text. `\n` (or a real line break) starts a new line.
+
+```
+THE CHOICE\nYour first choice is free.\n@button Choose your path | open_discipline_picker
+```
+
+| line | meaning |
+| --- | --- |
+| first line (when the page has more than one) | the title; `# Title` also makes a title |
+| other lines | the body: it wraps to the screen |
+| `@button Label \| action` | a button |
+| `@if condition` | show this page only when the condition holds (put it last) |
+
+Text can use the usual `§` colour codes, and these tokens: `{player}`, `{discipline}`, and `{stat:playtime}` (also
+`deaths`, `mobkills`, `jumps`, `walked`, `flown`, `trades`, ...).
+
+### Button actions
+`next`, `prev`, `first`, `last`, `goto:N` (a page number), `open_discipline_picker`, `command:<command>` (run as the
+player, with their own permissions), `sound:<sound id>`, `cutscene:<cutscene id>` (for example
+`cutscene:phoenixcore:dream`).
+
+### Conditions
+Separate several with spaces (all must hold); `!` reverses one: `no_discipline`, `has_discipline`, `committed`,
+`discipline:<id>`, `flag:<research flag>`. For example `@if has_discipline !committed`.
+
+## The screens in the starting place
+They are described by `data/phoenixcore/ethereal_spawn/screens.json` (a data pack can replace it, or edit it in the
+resources): each screen has `pos` (its middle block), `facing` (which way the front points: north, south, east or west),
+`cols` and `rows`, `color`, `background` (`void_galaxy`, `nebula`, `sculk_abyss`, `sealed_industrial`, `sealed_chaos`,
+`sunflare`) and `pages`. After changing it, run **`/conflux dimension spawndecor`** (it clears the old screens and builds
+the new ones); `/conflux dimension spawndecor clear` only removes them. A screen you place by hand and edit in the game
+works the same way.

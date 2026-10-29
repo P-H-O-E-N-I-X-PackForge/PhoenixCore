@@ -158,7 +158,10 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        Clip clip = new Clip(du, dv, half);
+        Clip clip = new Clip(du, dv, half + 0.002f);
+        // pulled towards the viewer by the depth buffer itself, so it holds at any distance
+        RenderSystem.enablePolygonOffset();
+        RenderSystem.polygonOffset(-2.0f, -2.0f);
         fill(m, layout.plate, PLATE_Z, 0xF2090C16, clip);
         border(m, layout.plate, PLATE_Z + 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xE0000000, clip);
         for (CinemaLayout.Hit hit : layout.hits) {
@@ -167,6 +170,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             fill(m, hit.rect(), PLATE_Z + 0.001f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
             border(m, hit.rect(), PLATE_Z + 0.0015f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
+        RenderSystem.disablePolygonOffset();
         RenderSystem.enableCull();
         if (!drawText) return;
 

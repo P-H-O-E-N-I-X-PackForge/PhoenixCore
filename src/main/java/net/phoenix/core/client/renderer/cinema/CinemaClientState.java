@@ -9,7 +9,9 @@ import net.phoenix.core.common.block.cinema.CinemaPage;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlock;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,10 +51,25 @@ public final class CinemaClientState {
         return new Target(centre, key, right, layout.width() * unit, layout.height() * unit);
     }
 
-    public static int pageCount(Target t) {
-        return Math.max(1, t.centre().getLines().size());
+    /** The lines of the screen the player sees as pages: all of them, or on a screen with its own pages those whose {@code @if} holds. */
+    public static List<Integer> visible(Target t) {
+        var lines = t.centre().getLines();
+        List<Integer> out = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            if (!t.centre().isLocalPages() ||
+                    CinemaConditions.test(CinemaPage.parse(lines.get(i).getString()).condition())) {
+                out.add(i);
+            }
+        }
+        if (out.isEmpty()) out.add(0);
+        return out;
     }
 
+    public static int pageCount(Target t) {
+        return visible(t).size();
+    }
+
+    /** Which of the visible pages is shown (counting from 0). */
     public static int pageIndex(Target t) {
         int count = pageCount(t);
         int index = t.centre().isLocalPages() ? PAGES.getOrDefault(t.key(), 0) : t.centre().getCurrentLineIndex();
@@ -65,7 +82,8 @@ public final class CinemaClientState {
 
     public static CinemaPage pageOf(Target t) {
         var lines = t.centre().getLines();
-        String raw = lines.isEmpty() ? "" : lines.get(pageIndex(t)).getString();
+        int line = visible(t).get(pageIndex(t));
+        String raw = lines.isEmpty() || line >= lines.size() ? "" : lines.get(line).getString();
         return CinemaPage.parse(CinemaStatTokens.resolve(raw, Minecraft.getInstance().player));
     }
 

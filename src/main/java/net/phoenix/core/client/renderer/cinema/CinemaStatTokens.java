@@ -60,6 +60,13 @@ public final class CinemaStatTokens {
 
     public static String resolve(String text, LocalPlayer player) {
         if (player == null || text.indexOf('{') < 0) return text;
+        // names: {player}, {discipline} (the title of the team's path, or "none yet")
+        if (text.contains("{player}")) text = text.replace("{player}", player.getGameProfile().getName());
+        if (text.contains("{discipline}")) {
+            var info = net.phoenix.core.integration.conflux.client.ClientResearchCache.getDisciplineInfo();
+            text = text.replace("{discipline}", !info.hasDiscipline() ? "none yet" :
+                    info.disciplineTitle() != null ? info.disciplineTitle() : info.disciplineId());
+        }
 
         Matcher matcher = TOKEN.matcher(text);
         if (!matcher.find()) return text;

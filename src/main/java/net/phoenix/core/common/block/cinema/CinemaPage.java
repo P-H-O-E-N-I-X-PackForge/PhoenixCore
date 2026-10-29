@@ -14,8 +14,11 @@ import java.util.List;
  * The first line is the title when the page has more than one line, {@code # } at the start of the first line makes it
  * one even when it does not, and each {@code @button Label | action} line is a button (see CinemaClientActions for what an
  * action can be). A page of one plain line is just its text.
+ * <p>
+ * An {@code @if} line makes the page show only when its condition holds for the player looking (see CinemaConditions):
+ * {@code @if no_discipline}, {@code @if discipline:phoenix}, {@code @if !committed}, {@code @if flag:px_awakened}.
  */
-public record CinemaPage(String title, String body, List<Button> buttons) {
+public record CinemaPage(String title, String body, List<Button> buttons, String condition) {
 
     public record Button(String label, String action) {}
 
@@ -25,9 +28,12 @@ public record CinemaPage(String title, String body, List<Button> buttons) {
         String title = "";
         StringBuilder body = new StringBuilder();
         List<Button> buttons = new ArrayList<>();
+        String condition = "";
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (part.startsWith("@button ")) {
+            if (part.startsWith("@if ")) {
+                condition = part.substring("@if ".length()).trim();
+            } else if (part.startsWith("@button ")) {
                 String spec = part.substring("@button ".length());
                 int bar = spec.indexOf('|');
                 String label = (bar < 0 ? spec : spec.substring(0, bar)).trim();
@@ -40,6 +46,6 @@ public record CinemaPage(String title, String body, List<Button> buttons) {
                 body.append(part);
             }
         }
-        return new CinemaPage(title.trim(), body.toString().trim(), buttons);
+        return new CinemaPage(title.trim(), body.toString().trim(), buttons, condition);
     }
 }

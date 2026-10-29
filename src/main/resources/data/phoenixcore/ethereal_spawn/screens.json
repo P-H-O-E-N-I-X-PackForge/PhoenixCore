@@ -1,0 +1,171 @@
+{
+  "_comment": "The screens of the ethereal spawn. pos is the middle block; facing is the way the front points (towards the middle of the platform); pages are text (see docs/cinema-screens.md). After editing, run /conflux dimension spawndecor to rebuild them.",
+  "screens": [
+    {
+      "pos": [
+        -12,
+        66,
+        0
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FFFFFF",
+      "background": "void_galaxy",
+      "pages": [
+        "WELCOME TO THE CONFLUX\nThis is a threshold. What you become next is a choice, and you make it once.\n@button Begin | next",
+        "THREE PATHS\nThree disciplines are open to you. Each is a way of working, and each shapes the machines, materials and research you will have.",
+        "HOW THESE SCREENS WORK\nClick a button to use it, or the arrows to turn the page. Right-click anywhere else on a screen to go to the next page.",
+        "WHERE TO GO\nRead the screens on each side: what the Conflux is, what research costs, and the three paths. When you are ready, use the choosing screen in front of you."
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        66,
+        -7
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FFFFFF",
+      "background": "nebula",
+      "pages": [
+        "THE CONFLUX\nA body of knowledge that grows as you work, and a place that answers to it.",
+        "ONE FOR YOUR TEAM\nYour team has one Conflux. Whatever one of you researches, all of you have.",
+        "TREES OF RESEARCH\nEach discipline is a tree. Finishing a node opens new recipes, machines or abilities for your whole team.",
+        "GATES\nSome things stay locked until the Conflux teaches them: a recipe, or a multiblock you cannot form yet."
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        66,
+        7
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 3,
+      "color": "#6FA8FF",
+      "background": "nebula",
+      "pages": [
+        "RESEARCH IS PAID IN DATA\nThere are five kinds: Material, Biological, Energetic, Computational and Arcane.",
+        "ARCANE DATA\nArcane data only exists when Ars Nouveau is installed.",
+        "MAKING DATA\nData-producer machines make it. Spend it at a research terminal, on the nodes of your path.",
+        "WHAT YOU NEED\nEach discipline leans on different kinds, so what you build first depends on what you choose."
+      ]
+    },
+    {
+      "pos": [
+        0,
+        66,
+        -12
+      ],
+      "facing": "south",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FFC66B",
+      "background": "sunflare",
+      "pages": [
+        "THE PHOENIX\nRebirth through consumption. Every ending is an ignition.\n@button Next | next",
+        "WHAT YOU DO\nYou work with fire, heat and raw energy: forges, reactors, and reactions that burn hot.",
+        "ITS RESEARCH\nIt opens through Ember Awakening and leads to The Pyre, where you commit.",
+        "CHOOSE IT IF\nYou want power and speed, and do not mind handling a lot of heat.",
+        "CHANGING YOUR MIND\nCosts energetic and material data."
+      ]
+    },
+    {
+      "pos": [
+        12,
+        66,
+        0
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 3,
+      "color": "#6FE0D0",
+      "background": "sculk_abyss",
+      "pages": [
+        "THE SCULK\nA network that remembers every death that fed it. Not a parasite: a library.\n@button Next | next",
+        "WHAT YOU DO\nYou work with living systems: growth, sensing, signals, and information that spreads.",
+        "ITS RESEARCH\nIt opens through First Contact and leads to The Joining, where you commit.",
+        "CHOOSE IT IF\nYou like patient, sprawling builds and machines that sense and respond.",
+        "CHANGING YOUR MIND\nCosts biological and material data."
+      ]
+    },
+    {
+      "pos": [
+        0,
+        66,
+        12
+      ],
+      "facing": "north",
+      "cols": 5,
+      "rows": 3,
+      "color": "#B983FF",
+      "background": "void_galaxy",
+      "pages": [
+        "THE VOID\nBefore the first thing there was the space between things. It was patient.\n@button Next | next",
+        "WHAT YOU DO\nYou work with space and computation: storage, distance, odd geometry and the arcane.",
+        "ITS RESEARCH\nIt opens through First Silence and leads to The Inversion, where you commit.",
+        "CHOOSE IT IF\nYou like logistics, dimensions and precise control.",
+        "CHANGING YOUR MIND\nCosts computational and arcane data."
+      ]
+    },
+    {
+      "pos": [
+        12,
+        66,
+        -7
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FF9A6B",
+      "background": "sunflare",
+      "pages": [
+        "COMMITTING\nEvery path has a commitment node: The Pyre, The Joining, The Inversion.",
+        "WHAT IT DOES\nResearching it commits you to the path, and the research that follows it is built on that.",
+        "CHANGING AFTERWARDS\nYou can still change path, but it costs ten times the data of changing before you commit, and you lose the research of the path you leave.",
+        "BE SURE\nRead the paths again if you are not."
+      ]
+    },
+    {
+      "pos": [
+        12,
+        66,
+        7
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 3,
+      "color": "#5CFF8F",
+      "background": "nebula",
+      "pages": [
+        "AFTER YOU CHOOSE\nYou are taken to the realm of your discipline.",
+        "YOUR QUESTBOOK\nIt has a chapter for your path, and the first quests tell you where to begin.",
+        "COMING BACK\nReturn here any time with /conflux dimension return.",
+        "GOOD LUCK\nThe Conflux is listening."
+      ]
+    },
+    {
+      "pos": [
+        0,
+        66,
+        6
+      ],
+      "facing": "north",
+      "cols": 3,
+      "rows": 3,
+      "color": "#FFFFFF",
+      "background": "nebula",
+      "pages": [
+        "THE CHOICE\nYour first choice is free.\n@button Choose your path | open_discipline_picker\n@if no_discipline",
+        "CHANGING IT LATER\nYou can change your path by abandoning it at a research terminal, for a cost in research data. Once you have committed it is ten times as much.\n@button Choose your path | open_discipline_picker\n@if no_discipline",
+        "READY?\nRead the screens around you first if you have not.\n@button Choose your path | open_discipline_picker\n@if no_discipline",
+        "YOUR PATH\nYou follow {discipline}.\n@button Enter your realm | command:conflux dimension enter\n@if has_discipline",
+        "CHANGING YOUR PATH\nAbandon it at a research terminal. It costs research data, and ten times as much once you have committed.\n@if has_discipline"
+      ]
+    }
+  ]
+}
