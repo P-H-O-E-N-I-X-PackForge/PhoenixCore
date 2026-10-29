@@ -195,8 +195,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             // the body turns away from a viewer who is off to one side, so that side of it is the one they see
             float yaw = (float) Math.max(-80, Math.min(80, -Math.toDegrees(Math.atan2(lateral, Math.max(0.05, depth)))));
             float pitch = (float) Math.max(-60, Math.min(60, Math.toDegrees(Math.atan2(dy, Math.hypot(lateral, depth)))));
-            live[i] = CinemaContinuumPictures.texture(target != null ? target.centre().getBlockPos() : be.getBlockPos(), i,
-                    slot.picture().id(), yaw, pitch, dx * dx + dy * dy + dz * dz,
+            live[i] = CinemaContinuumPictures.texture(slot.picture().id(), yaw, pitch, dx * dx + dy * dy + dz * dz,
                     lookDot(mc.player.getLookAngle(), dx, dy, dz));
         }
         if (anyLive) {

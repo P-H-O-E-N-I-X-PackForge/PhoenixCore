@@ -1,43 +1,42 @@
 package net.phoenix.core.client.renderer.cinema;
 
-import net.minecraft.core.BlockPos;
 import net.phoenix.continuum.api.client.ContinuumRender;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * The live Continuum pictures on cinema screens ({@code @continuum star ffcc66}): each is drawn by its own Continuum
- * preview into an offscreen texture, seen from the angle the player looks at the screen from, so walking round a screen
- * turns the star on it. They are redrawn a few times a second (a couple per frame at most) and the ones nobody has looked
- * at for a while are freed.
+ * The Continuum pictures on cinema screens ({@code @continuum star ffcc66}). A body costs a lot to draw (a black hole is
+ * around 20 ms of GPU on a modest card), so a screen does not redraw it every frame: each view of a body (from one of a
+ * handful of angles) is drawn once into its own small texture and kept, and the screen shows the view nearest to where the
+ * player stands. Walking round a screen therefore turns the body in steps, and a new angle is drawn the first time someone
+ * looks from it, at most one every {@value #BUDGET_MS} ms. A view is drawn again now and then so the star still churns.
  */
 final class CinemaContinuumPictures {
 
-    private static final int MAX_PREVIEWS = 8;
-    private static final long INTERVAL_MS = 100L;
-    private static final long KEEP_MS = 10_000L;
-    private static final int PER_FRAME = 1;
+    private static final int PIXELS = 256;
+    private static final float YAW_STEP = 24.0f;
+    private static final float PITCH_STEP = 30.0f;
+    private static final int MAX_VIEWS = 40;
+    /** The least time between two views being drawn. */
+    private static final long BUDGET_MS = 90L;
+    private static final long REFRESH_MS = 6_000L;
+    private static final long HOLE_REFRESH_MS = 20_000L;
     private static final double RANGE_SQ = 20.0 * 20.0;
 
-    private record Key(BlockPos pos, int index) {}
+    private record Key(String picture, int yaw, int pitch) {}
 
-    private static final class Entry {
+    private static final class View {
 
-        final ContinuumRender.Preview preview = ContinuumRender.newCheapPreview(256);
-        long rendered;
-        long used;
+        final ContinuumRender.Preview preview = ContinuumRender.newCheapPreview(PIXELS);
         int texture = -1;
-        float yaw;
-        float pitch;
+        long drawn;
     }
 
-    private static final Map<Key, Entry> ENTRIES = new LinkedHashMap<>(16, 0.75f, true);
-    private static long frameStamp;
-    private static int rendersThisFrame;
+    private static final Map<Key, View> VIEWS = new LinkedHashMap<>(64, 0.75f, true);
+    private static long lastDrawn;
 
     private CinemaContinuumPictures() {}
 
@@ -46,38 +45,48 @@ final class CinemaContinuumPictures {
     }
 
     /**
-     * The colour texture of the picture, or -1 when there is none yet.
+     * The colour texture to show, or -1 when there is none yet.
      *
      * @param yaw   how far round the body the viewer is, degrees (0 in front of the screen)
      * @param pitch how far above it, degrees
      */
-    static int texture(BlockPos centre, int index, String pictureId, float yaw, float pitch, double distanceSq,
-                       double lookDot) {
+    static int texture(String pictureId, float yaw, float pitch, double distanceSq, double lookDot) {
+        int yawBucket = Math.round(yaw / YAW_STEP);
+        int pitchBucket = Math.round(pitch / PITCH_STEP);
+        Key key = new Key(pictureId, yawBucket, pitchBucket);
+        View view = VIEWS.get(key);
         long now = net.minecraft.Util.getMillis();
-        Key key = new Key(centre, index);
-        Entry entry = ENTRIES.get(key);
-        if (entry == null) {
-            if (distanceSq > RANGE_SQ) return -1;
-            entry = new Entry();
-            ENTRIES.put(key, entry);
-            evict(now);
+        boolean hole = pictureId.startsWith("continuum:black_hole");
+        boolean wanted = distanceSq <= RANGE_SQ && lookDot > 0.35;
+        boolean stale = view != null && now - view.drawn >= (hole ? HOLE_REFRESH_MS : REFRESH_MS);
+        if ((view == null || stale) && wanted && now - lastDrawn >= BUDGET_MS) {
+            if (view == null) {
+                view = new View();
+                VIEWS.put(key, view);
+                trim();
+            }
+            int id = draw(view, pictureId, yawBucket * YAW_STEP, pitchBucket * PITCH_STEP);
+            lastDrawn = now;
+            view.drawn = now;
+            if (id >= 0) view.texture = id;
         }
-        entry.used = now;
-        // nearer is smoother; out of the corner of the eye, or far off, it is only refreshed now and then
-        long interval = distanceSq < 36.0 ? INTERVAL_MS : distanceSq < 144.0 ? 2 * INTERVAL_MS : 5 * INTERVAL_MS;
-        boolean looked = lookDot > 0.35;
-        boolean due = entry.texture < 0 || (looked && (now - entry.rendered >= interval ||
-                Math.abs(yaw - entry.yaw) > 10.0f || Math.abs(pitch - entry.pitch) > 10.0f)) ||
-                now - entry.rendered >= 4000L;
-        if (!due || distanceSq > RANGE_SQ) return entry.texture;
-        long stamp = System.nanoTime() / 4_000_000L;
-        if (stamp != frameStamp) {
-            frameStamp = stamp;
-            rendersThisFrame = 0;
+        if (view != null && view.texture >= 0) return view.texture;
+        // nothing drawn from this angle yet: the nearest view of the same body will do until it is
+        View near = null;
+        int best = Integer.MAX_VALUE;
+        for (Map.Entry<Key, View> e : VIEWS.entrySet()) {
+            Key k = e.getKey();
+            if (!k.picture().equals(pictureId) || e.getValue().texture < 0) continue;
+            int d = Math.abs(k.yaw() - yawBucket) + Math.abs(k.pitch() - pitchBucket);
+            if (d < best) {
+                best = d;
+                near = e.getValue();
+            }
         }
-        if (rendersThisFrame >= PER_FRAME && entry.texture >= 0) return entry.texture;
-        rendersThisFrame++;
+        return near != null ? near.texture : -1;
+    }
 
+    private static int draw(View view, String pictureId, float yaw, float pitch) {
         String[] words = pictureId.split(":");
         String name = words.length > 1 ? words[1] : "star";
         int colour = -1;
@@ -111,27 +120,20 @@ final class CinemaContinuumPictures {
             }
         }
         int hole = body == ContinuumRender.Body.BLACK_HOLE ? colour : -1;
-        int id;
         try (var ignored = net.phoenix.continuum.client.ContinuumProfiler.scope("cinema:live")) {
-            id = entry.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch);
+            return view.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch);
         }
-        entry.rendered = now;
-        entry.yaw = yaw;
-        entry.pitch = pitch;
-        if (id >= 0) entry.texture = id;
-        return entry.texture;
     }
 
-    private static void evict(long now) {
+    /** Frees the views used longest ago once there are too many. */
+    private static void trim() {
+        if (VIEWS.size() <= MAX_VIEWS) return;
         List<Key> gone = new ArrayList<>();
-        for (Map.Entry<Key, Entry> e : ENTRIES.entrySet()) {
-            if (now - e.getValue().used > KEEP_MS) gone.add(e.getKey());
+        int over = VIEWS.size() - MAX_VIEWS;
+        for (Key k : VIEWS.keySet()) {
+            if (gone.size() >= over) break;
+            gone.add(k);
         }
-        for (Key k : gone) ENTRIES.remove(k).preview.release();
-        Iterator<Map.Entry<Key, Entry>> it = ENTRIES.entrySet().iterator();
-        while (ENTRIES.size() > MAX_PREVIEWS && it.hasNext()) {
-            it.next().getValue().preview.release();
-            it.remove();
-        }
+        for (Key k : gone) VIEWS.remove(k).preview.release();
     }
 }
