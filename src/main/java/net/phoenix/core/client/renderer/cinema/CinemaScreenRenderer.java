@@ -223,6 +223,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         for (CinemaLayout.Hit hit : layout.hits) {
             boolean nav = hit.action().equals("next") || hit.action().equals("prev");
             boolean hot = hit == hovered;
+            if (hit.label().isEmpty() && !nav) {
+                // a picture: only lit up when pointed at
+                if (hot) border(m, hit.rect(), PLATE_Z + 4 * LAYER, 0.02f, 0xFFFFFFFF, clip);
+                continue;
+            }
             fill(m, hit.rect(), PLATE_Z + LAYER, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A, clip);
             border(m, hit.rect(), PLATE_Z + 2 * LAYER, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF, clip);
         }
@@ -269,6 +274,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         if (layout.hint != null) drawLine(font, poseStack, bufferSource, layout.hint, 0xFF7C869E);
         for (CinemaLayout.Hit hit : layout.hits) {
             boolean nav = hit.action().equals("next") || hit.action().equals("prev");
+            if (hit.label().isEmpty() && !nav) continue;
             float s = scale * (nav ? 1.7f : 1.15f);
             float cx = (hit.rect().x0() + hit.rect().x1()) / 2;
             float cy = (hit.rect().y0() + hit.rect().y1()) / 2;

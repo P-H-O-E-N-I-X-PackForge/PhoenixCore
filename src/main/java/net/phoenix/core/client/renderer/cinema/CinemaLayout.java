@@ -27,7 +27,7 @@ public final class CinemaLayout {
         }
     }
 
-    /** A clickable area: its action ({@code next}, {@code prev} or what the page's button names) and what it says. */
+    /** A clickable area (a button, or a picture when its label is empty): its action ({@code next}, {@code prev} or what the page's button names) and what it says. */
     public record Hit(Rect rect, String action, String label) {}
 
     /** A line of text at a position: {@code x} is its middle (centred) or its left edge, {@code y} its middle. */
@@ -133,6 +133,11 @@ public final class CinemaLayout {
             int capLines = 0;
             for (CinemaPage.Picture picture : page.pictures()) {
                 l.pictures.add(new Slot(picture, new Rect(x, y - size, x + size, y)));
+                // a picture with an action is clickable, and so is its caption
+                if (!picture.action().isEmpty()) {
+                    l.hits.add(new Hit(new Rect(x - 0.07f, y - size - 0.07f, x + size + 0.07f, y + 0.07f),
+                            picture.action(), ""));
+                }
                 if (!picture.caption().isEmpty()) {
                     List<FormattedCharSequence> lines = font.split(Component.literal(picture.caption()), capWidth);
                     int shown = Math.min(2, lines.size());

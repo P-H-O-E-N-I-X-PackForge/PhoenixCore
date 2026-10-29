@@ -60,4 +60,12 @@ class CinemaPageTest {
         assertEquals("A star", page.pictures().get(0).caption());
         assertEquals("continuum:black_hole:-", page.pictures().get(1).id());
     }
+
+    @Test
+    void aPictureCanHaveAClickAction() {
+        var page = CinemaPage.parse("HUD\n@image mod:textures/a.png | The map | hud:solaris\n@item minecraft:stick | Stick");
+        assertEquals("The map", page.pictures().get(0).caption());
+        assertEquals("hud:solaris", page.pictures().get(0).action());
+        assertEquals("", page.pictures().get(1).action());
+    }
 }

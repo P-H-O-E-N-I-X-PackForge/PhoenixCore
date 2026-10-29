@@ -17,6 +17,8 @@ import net.phoenix.core.network.packet.C2SCinemaActionPacket;
  * <li>{@code first}, {@code last}: the first or last page;</li>
  * <li>{@code command:<command>}: run a command as the player (with the player's own permissions);</li>
  * <li>{@code sound:<id>}: play a sound;</li>
+ * <li>{@code hud:<name>}: open what a button of the HUD bar opens: {@code hud:solaris} (the map), {@code hud:chronicles}
+ * (the quest book), {@code hud:conflux} (research) or {@code hud:continuum} (the star map);</li>
  * <li>{@code cutscene:<id>}: play a cutscene, e.g. {@code cutscene:phoenixcore:dream}.</li>
  * </ul>
  */
@@ -66,6 +68,8 @@ public final class CinemaClientActions {
                     var sound = id == null ? null : net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(id);
                     if (sound != null) mc.getSoundManager().play(
                             net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(sound, 1.0f));
+                } else if (a.startsWith("hud:")) {
+                    CinemaHudTargets.open(a.substring(4).trim());
                 } else if (a.startsWith("cutscene:")) {
                     ResourceLocation id = ResourceLocation.tryParse(a.substring(9).trim());
                     if (id != null) CutsceneManager.play(id);

@@ -19,6 +19,8 @@ import java.util.List;
  * under the title, {@code @item minecraft:blaze_rod | caption} an item's icon; several lines make a row, each with its
  * caption under it.
  * <p>
+ * A second {@code |} after the caption gives the action of a click on the picture ({@code @image mod:tex.png | Map | hud:solaris}).
+ * <p>
  * {@code @continuum star ffcc66 | caption} is a live picture of a Continuum body ({@code star}, {@code black_hole},
  * {@code gas_cloud} or {@code protostar}, then an optional colour) that turns to follow the player looking at it; it is
  * kept as a picture whose id is {@code continuum:<body>:<colour>}.
@@ -30,8 +32,8 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
 
     public record Button(String label, String action) {}
 
-    /** A picture on the page: a texture ({@code item} false) or an item's icon, and what it is captioned. */
-    public record Picture(boolean item, String id, String caption) {}
+    /** A picture on the page: a texture ({@code item} false) or an item's icon, what it is captioned, and what clicking it does (may be empty). */
+    public record Picture(boolean item, String id, String caption, String action) {}
 
     public static CinemaPage parse(String raw) {
         String text = raw == null ? "" : raw.replace("\\n", "\n");
@@ -47,18 +49,22 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
                 String spec = part.substring("@continuum ".length());
                 int bar = spec.indexOf('|');
                 String[] words = (bar < 0 ? spec : spec.substring(0, bar)).trim().split("\\s+");
-                String caption = bar < 0 ? "" : spec.substring(bar + 1).trim();
+                String[] tail = bar < 0 ? new String[] { "" } : spec.substring(bar + 1).split("\\|", 2);
+                String caption = tail[0].trim();
+                String action = tail.length > 1 ? tail[1].trim() : "";
                 if (!words[0].isEmpty()) {
                     String colour = words.length > 1 ? words[1].replace("#", "") : "-";
-                    pictures.add(new Picture(false, "continuum:" + words[0].toLowerCase() + ":" + colour, caption));
+                    pictures.add(new Picture(false, "continuum:" + words[0].toLowerCase() + ":" + colour, caption, action));
                 }
             } else if (part.startsWith("@image ") || part.startsWith("@item ")) {
                 boolean item = part.startsWith("@item ");
                 String spec = part.substring(part.indexOf(' ') + 1);
                 int bar = spec.indexOf('|');
                 String id = (bar < 0 ? spec : spec.substring(0, bar)).trim();
-                String caption = bar < 0 ? "" : spec.substring(bar + 1).trim();
-                if (!id.isEmpty()) pictures.add(new Picture(item, id, caption));
+                String[] tail = bar < 0 ? new String[] { "" } : spec.substring(bar + 1).split("\\|", 2);
+                String caption = tail[0].trim();
+                String action = tail.length > 1 ? tail[1].trim() : "";
+                if (!id.isEmpty()) pictures.add(new Picture(item, id, caption, action));
             } else if (part.startsWith("@if ")) {
                 condition = part.substring("@if ".length()).trim();
             } else if (part.startsWith("@button ")) {

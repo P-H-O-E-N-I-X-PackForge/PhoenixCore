@@ -160,7 +160,7 @@
       "color": "#9ED0FF",
       "background": "nebula",
       "pages": [
-        "THE HUD BAR\nOpen your inventory: a row of small buttons runs along the top of the screen. Each opens a screen of one of the mods. Hover one to see its name.\n@image phoenix_chronicles:textures/gui/chronicles_quest_book_icon.png | Quest book\n@image solaris:textures/gui/suite_bar_icon.png | Map\n@image phoenixcore:textures/gui/suite_conflux.png | Research\n@image phoenix_continuum:textures/gui/suite_continuum.png | Star map",
+        "THE HUD BAR\nOpen your inventory: a row of small buttons runs along the top of the screen. Each opens a screen of one of the mods. Hover one to see its name. Click an icon below to open it.\n@image phoenix_chronicles:textures/gui/chronicles_quest_book_icon.png | Quest book | hud:chronicles\n@image solaris:textures/gui/suite_bar_icon.png | Map | hud:solaris\n@image phoenixcore:textures/gui/suite_conflux.png | Research | hud:conflux\n@image phoenix_continuum:textures/gui/suite_continuum.png | Star map | hud:continuum",
         "WHAT EACH ONE DOES\nThe quest book: your quests and what to do next. The map: your surroundings and waypoints. Research: your tree of research and your data. The star map: bodies, missions and personal dimensions.",
         "MOVING THEM\nYou can drag the buttons to where you like. The settings button at the end of the bar lets you show or hide each one, change their size, and put them all back where they started.",
         "TRY IT\nOpen your inventory now (E) and find them. The quest book is the best first stop: it has a chapter for the path you choose."
