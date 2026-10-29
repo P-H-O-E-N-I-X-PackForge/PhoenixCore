@@ -28,10 +28,13 @@ public final class EtherealSpawnDecor {
     private EtherealSpawnDecor() {}
 
     private static final BlockPos CHOOSE = new BlockPos(0, Y, 6);
+    /** The last screen added: if it is there, so are the rest. */
+    private static final BlockPos LAST = new BlockPos(12, Y, 7);
 
     /** Builds the screens unless the choosing screen is already there. */
     public static void ensure(ServerLevel level) {
-        if (level.getBlockState(CHOOSE).getBlock() == CinemaBlocks.CINEMA_SCREEN.get()) return;
+        var screen = CinemaBlocks.CINEMA_SCREEN.get();
+        if (level.getBlockState(CHOOSE).getBlock() == screen && level.getBlockState(LAST).getBlock() == screen) return;
         build(level);
     }
 
@@ -73,6 +76,39 @@ public final class EtherealSpawnDecor {
                         "Its research opens through First Silence and leads to The Inversion, where you commit.",
                         "Choose it if you like logistics, dimensions and precise control.",
                         "Changing your mind later costs computational and arcane data."));
+        // beside the welcome: what the Conflux is, and what research and data are
+        screen(level, new BlockPos(-12, Y, -7), Direction.EAST, WIDE, HIGH, 0xFFFFFFFF,
+                CinemaScreenBlockEntity.Background.NEBULA, "", List.of(
+                        "THE CONFLUX",
+                        "The Conflux is a body of knowledge that grows as you work, and a place that answers to it.",
+                        "Your team has one Conflux. Whatever one of you researches, all of you have.",
+                        "Each discipline is a tree of research. Finishing a node opens new recipes, machines or "
+                                + "abilities for your whole team.",
+                        "Some research is gated: a recipe or a multiblock stays locked until the Conflux teaches it."));
+        screen(level, new BlockPos(-12, Y, 7), Direction.EAST, WIDE, HIGH, 0xFF6FA8FF,
+                CinemaScreenBlockEntity.Background.NEBULA, "", List.of(
+                        "RESEARCH AND DATA",
+                        "Research is paid for in data. There are five kinds: Material, Biological, Energetic, "
+                                + "Computational and Arcane.",
+                        "Arcane data only exists when Ars Nouveau is installed.",
+                        "Data-producer machines make it. Spend it at a research terminal, on the nodes of your path.",
+                        "Each discipline leans on different kinds, so what you build first depends on what you choose."));
+        // beside the Sculk: committing, and what comes after
+        screen(level, new BlockPos(12, Y, -7), Direction.WEST, WIDE, HIGH, 0xFFFF9A6B,
+                CinemaScreenBlockEntity.Background.SUNFLARE, "", List.of(
+                        "COMMITTING",
+                        "Every path has a commitment node: The Pyre, The Joining, The Inversion.",
+                        "Researching it commits you to the path, and the research that follows it is built on that.",
+                        "You can still change path afterwards, but it costs ten times the data of changing before "
+                                + "you commit, and you lose the research of the path you leave.",
+                        "Be sure before you commit, and read the paths again if you are not."));
+        screen(level, LAST, Direction.WEST, WIDE, HIGH, 0xFF5CFF8F, CinemaScreenBlockEntity.Background.NEBULA, "",
+                List.of(
+                        "AFTER YOU CHOOSE",
+                        "When you choose, you are taken to the realm of your discipline.",
+                        "Your questbook has a chapter for your path, and the first quests tell you where to begin.",
+                        "Return here any time with /conflux dimension return.",
+                        "Good luck."));
         // in front of where a new player arrives: the choice
         screen(level, CHOOSE, Direction.NORTH, 3, HIGH, 0xFFFFFFFF, CinemaScreenBlockEntity.Background.NEBULA,
                 CinemaClientActions.OPEN_DISCIPLINE_PICKER, List.of(

@@ -17,6 +17,8 @@ public class CinemaInputHandler {
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
+        // this also fires on the integrated server's thread: opening a screen from there is not allowed
+        if (!event.getLevel().isClientSide()) return;
         if (!(event.getLevel().getBlockEntity(event.getPos()) instanceof CinemaScreenBlockEntity screen)) return;
 
         if (!screen.getAction().isEmpty() && !Screen.hasAltDown() && !Screen.hasControlDown() &&

@@ -404,6 +404,7 @@ public class DisciplinePickerScreen extends Screen {
     }
 
     private float maxScroll(int idx, int face, float ease) {
+        if (blocks[face][idx] == null) buildBlocks();
         int[] b = cardBounds(idx, ease);
         int[] r = contentRegion(b[1], b[3], cardScale[idx] * ease);
         return Math.max(0f, blocks[face][idx].height - (r[1] - r[0]));
