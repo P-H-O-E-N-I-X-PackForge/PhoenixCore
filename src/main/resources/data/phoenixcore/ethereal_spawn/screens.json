@@ -168,6 +168,24 @@
     },
     {
       "pos": [
+        -12,
+        67,
+        -14
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 5,
+      "color": "#9ED0FF",
+      "background": "void_galaxy",
+      "pages": [
+        "CONTINUUM\nA map of the sky that is really there: stars, clouds and black holes you can fly to. These pictures are live, and turn as you walk round the screen.\n@continuum star ffcc66 | Stars\n@continuum black_hole | Black holes\n@continuum gas_cloud 66aaff | Gas clouds",
+        "BODIES\nEvery body is drawn by shaders, not a flat picture: a star burns, a cloud glows, and a black hole bends the light behind it.\n@continuum protostar ff8855 | A star being born\n@continuum star 9fc4ff | A hot blue star",
+        "THE STAR MAP\nOpen it from the HUD bar. Pick a body, see its details, and send a mission there.",
+        "PERSONAL DIMENSIONS\nSpace you make yourself: the Continuum builds a pocket world around the body you choose."
+      ]
+    },
+    {
+      "pos": [
         0,
         67,
         6

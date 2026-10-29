@@ -19,6 +19,10 @@ import java.util.List;
  * under the title, {@code @item minecraft:blaze_rod | caption} an item's icon; several lines make a row, each with its
  * caption under it.
  * <p>
+ * {@code @continuum star ffcc66 | caption} is a live picture of a Continuum body ({@code star}, {@code black_hole},
+ * {@code gas_cloud} or {@code protostar}, then an optional colour) that turns to follow the player looking at it; it is
+ * kept as a picture whose id is {@code continuum:<body>:<colour>}.
+ * <p>
  * An {@code @if} line makes the page show only when its condition holds for the player looking (see CinemaConditions):
  * {@code @if no_discipline}, {@code @if discipline:phoenix}, {@code @if !committed}, {@code @if flag:px_awakened}.
  */
@@ -39,7 +43,16 @@ public record CinemaPage(String title, String body, List<Button> buttons, String
         List<Picture> pictures = new ArrayList<>();
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (part.startsWith("@image ") || part.startsWith("@item ")) {
+            if (part.startsWith("@continuum ")) {
+                String spec = part.substring("@continuum ".length());
+                int bar = spec.indexOf('|');
+                String[] words = (bar < 0 ? spec : spec.substring(0, bar)).trim().split("\\s+");
+                String caption = bar < 0 ? "" : spec.substring(bar + 1).trim();
+                if (!words[0].isEmpty()) {
+                    String colour = words.length > 1 ? words[1].replace("#", "") : "-";
+                    pictures.add(new Picture(false, "continuum:" + words[0].toLowerCase() + ":" + colour, caption));
+                }
+            } else if (part.startsWith("@image ") || part.startsWith("@item ")) {
                 boolean item = part.startsWith("@item ");
                 String spec = part.substring(part.indexOf(' ') + 1);
                 int bar = spec.indexOf('|');

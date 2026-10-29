@@ -50,6 +50,7 @@ works the same way.
 | --- | --- |
 | `@image namespace:textures/path.png \| caption` | a texture from a mod or resource pack (a 16x16 icon is fine) |
 | `@item minecraft:blaze_rod \| caption` | an item's icon |
+| `@continuum star ffcc66 \| caption` | a live Continuum body (`star`, `black_hole`, `gas_cloud`, `protostar`; the colour is optional). It is drawn by Continuum's shaders and **turns to follow the player looking at it**: walk round the screen and you see the other side. Redrawn about 15 times a second, a few at a time, and only within 24 blocks. |
 
 Several of these lines on one page make a row under the title, each with its caption under it. Textures that do not
 exist show as the purple-and-black missing texture, so check the id.

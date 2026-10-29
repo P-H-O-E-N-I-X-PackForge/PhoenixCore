@@ -51,4 +51,13 @@ class CinemaPageTest {
         assertTrue(page.pictures().get(1).item());
         assertEquals("Body", page.body());
     }
+
+    @Test
+    void aContinuumBodyIsAPictureWithItsColour() {
+        var page = CinemaPage.parse("SKY\nBody\n@continuum Star #ffcc66 | A star\n@continuum black_hole | Hole");
+        assertEquals(2, page.pictures().size());
+        assertEquals("continuum:star:ffcc66", page.pictures().get(0).id());
+        assertEquals("A star", page.pictures().get(0).caption());
+        assertEquals("continuum:black_hole:-", page.pictures().get(1).id());
+    }
 }

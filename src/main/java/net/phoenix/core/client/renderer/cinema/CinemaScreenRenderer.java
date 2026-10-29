@@ -162,6 +162,40 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
             }
         }
 
+        // live Continuum pictures, turned to the way the player looks at them (drawn first: it changes the render target)
+        int[] live = new int[layout.pictures.size()];
+        boolean anyLive = false;
+        for (int i = 0; i < live.length; i++) {
+            live[i] = -1;
+            CinemaLayout.Slot slot = layout.pictures.get(i);
+            if (slot.picture().item() || !CinemaContinuumPictures.is(slot.picture().id()) || mc.player == null) continue;
+            anyLive = true;
+            Direction face = be.getBlockState().getValue(CinemaScreenBlock.FACING);
+            double nx = face.getStepX();
+            double nz = face.getStepZ();
+            double rx = nz;
+            double rz = -nx;
+            var eye = mc.player.getEyePosition();
+            double cx = be.getBlockPos().getX() + 0.5 + rx * ((slot.rect().x0() + slot.rect().x1()) / 2 - du) + nx * FACE_OFFSET;
+            double cy = be.getBlockPos().getY() + 0.5 + ((slot.rect().y0() + slot.rect().y1()) / 2 - dv);
+            double cz = be.getBlockPos().getZ() + 0.5 + rz * ((slot.rect().x0() + slot.rect().x1()) / 2 - du) + nz * FACE_OFFSET;
+            double dx = eye.x - cx;
+            double dy = eye.y - cy;
+            double dz = eye.z - cz;
+            double lateral = dx * rx + dz * rz;
+            double depth = dx * nx + dz * nz;
+            // the body turns away from a viewer who is off to one side, so that side of it is the one they see
+            float yaw = (float) Math.max(-80, Math.min(80, -Math.toDegrees(Math.atan2(lateral, Math.max(0.05, depth)))));
+            float pitch = (float) Math.max(-60, Math.min(60, Math.toDegrees(Math.atan2(dy, Math.hypot(lateral, depth)))));
+            live[i] = CinemaContinuumPictures.texture(target != null ? target.centre().getBlockPos() : be.getBlockPos(), i,
+                    slot.picture().id(), yaw, pitch, dx * dx + dy * dy + dz * dz);
+        }
+        if (anyLive) {
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthFunc(515);
+            RenderSystem.depthMask(true);
+        }
+
         Matrix4f m = poseStack.last().pose();
         int accent = shown.getTextColor() | 0xFF000000;
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -194,12 +228,19 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         }
         // pictures: textures here, cut to this block; items are drawn with the text, by the middle block
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        for (CinemaLayout.Slot slot : layout.pictures) {
+        for (int i = 0; i < layout.pictures.size(); i++) {
+            CinemaLayout.Slot slot = layout.pictures.get(i);
             if (slot.picture().item()) continue;
+            if (CinemaContinuumPictures.is(slot.picture().id())) {
+                if (live[i] < 0) continue;
+                RenderSystem.setShaderTexture(0, live[i]);
+                drawTexture(m, slot.rect(), PLATE_Z + 3 * LAYER, clip, true);
+                continue;
+            }
             ResourceLocation texture = ResourceLocation.tryParse(slot.picture().id());
             if (texture == null) continue;
             RenderSystem.setShaderTexture(0, texture);
-            drawTexture(m, slot.rect(), PLATE_Z + 3 * LAYER, clip);
+            drawTexture(m, slot.rect(), PLATE_Z + 3 * LAYER, clip, false);
         }
         RenderSystem.enableCull();
         if (!drawText) return;
@@ -275,7 +316,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     }
 
     /** The whole of the texture on a rectangle, cut to the block being drawn (the picture is cut the same way). */
-    private static void drawTexture(Matrix4f m, CinemaLayout.Rect r, float z, Clip c) {
+    private static void drawTexture(Matrix4f m, CinemaLayout.Rect r, float z, Clip c, boolean flip) {
         float x0 = Math.max(r.x0(), c.du() - c.half());
         float x1 = Math.min(r.x1(), c.du() + c.half());
         float y0 = Math.max(r.y0(), c.dv() - c.half());
@@ -287,6 +328,11 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         float u1 = (x1 - r.x0()) / w;
         float vTop = (r.y1() - y1) / h;
         float vBottom = (r.y1() - y0) / h;
+        // a render target is stored with its bottom row first
+        if (flip) {
+            vTop = 1.0f - vTop;
+            vBottom = 1.0f - vBottom;
+        }
         x0 -= c.du();
         x1 -= c.du();
         y0 -= c.dv();
