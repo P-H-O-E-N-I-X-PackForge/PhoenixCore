@@ -98,21 +98,26 @@ final class CinemaContinuumPictures {
         ContinuumRender.Body body;
         int rgb;
         float size = 0.6f;
+        // pulled back so the body fills only part of the picture: the shaders cost in proportion to the pixels they cover
+        float zoom = 1.5f;
         switch (name) {
             case "black_hole", "blackhole", "hole" -> {
                 body = ContinuumRender.Body.BLACK_HOLE;
                 rgb = 0xFFFFFF;
                 size = 0.7f;
+                zoom = 1.9f;
             }
             case "gas_cloud", "cloud", "nebula" -> {
                 body = ContinuumRender.Body.GAS_CLOUD;
                 rgb = colour >= 0 ? colour : 0x66AAFF;
                 size = 0.8f;
+                zoom = 1.0f;
             }
             case "protostar" -> {
                 body = ContinuumRender.Body.PROTOSTAR;
                 rgb = colour >= 0 ? colour : 0xFF8855;
                 size = 0.7f;
+                zoom = 1.0f;
             }
             default -> {
                 body = ContinuumRender.Body.STAR;
@@ -121,7 +126,7 @@ final class CinemaContinuumPictures {
         }
         int hole = body == ContinuumRender.Body.BLACK_HOLE ? colour : -1;
         try (var ignored = net.phoenix.continuum.client.ContinuumProfiler.scope("cinema:live")) {
-            return view.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch);
+            return view.preview.renderTexture(body, rgb, size, false, hole, yaw, pitch, zoom);
         }
     }
 
