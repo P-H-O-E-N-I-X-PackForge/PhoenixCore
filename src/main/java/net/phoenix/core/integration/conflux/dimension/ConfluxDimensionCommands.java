@@ -34,6 +34,20 @@ public class ConfluxDimensionCommands {
                         .then(Commands.literal("dimension")
                                 .then(Commands.literal("return")
                                         .executes(ctx -> returnToEtherealSpawn(ctx.getSource())))
+                                .then(Commands.literal("spawndecor")
+                                        .requires(source -> source.hasPermission(2))
+                                        .executes(ctx -> {
+                                            ServerLevel spawn = ctx.getSource().getServer()
+                                                    .getLevel(EtherealSpawnDimension.DIMENSION_KEY);
+                                            if (spawn == null) {
+                                                ctx.getSource().sendFailure(Component.literal("No ethereal spawn dimension."));
+                                                return 0;
+                                            }
+                                            EtherealSpawnDecor.build(spawn);
+                                            ctx.getSource().sendSuccess(
+                                                    () -> Component.literal("Rebuilt the ethereal spawn's screens."), true);
+                                            return Command.SINGLE_SUCCESS;
+                                        }))
                                 .then(Commands.literal("info")
                                         .executes(ctx -> dimensionInfo(ctx.getSource())))
                                 .then(Commands.literal("benchmarkworldgen")

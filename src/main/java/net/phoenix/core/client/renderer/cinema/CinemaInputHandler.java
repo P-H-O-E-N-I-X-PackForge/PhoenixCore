@@ -19,6 +19,12 @@ public class CinemaInputHandler {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
         if (!(event.getLevel().getBlockEntity(event.getPos()) instanceof CinemaScreenBlockEntity screen)) return;
 
+        if (!screen.getAction().isEmpty() && !Screen.hasAltDown() && !Screen.hasControlDown() &&
+                !event.getEntity().isShiftKeyDown()) {
+            consume(event);
+            CinemaClientActions.run(screen.getAction());
+            return;
+        }
         if (Screen.hasAltDown()) {
             consume(event);
             PacketDistributor.sendToServer(

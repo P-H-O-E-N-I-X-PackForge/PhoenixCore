@@ -15,6 +15,12 @@ public class EtherealSpawnManager {
         initializeEtherealSpawnDimension(server);
     }
 
+    @SubscribeEvent
+    public static void onServerStarted(net.neoforged.neoforge.event.server.ServerStartedEvent event) {
+        ServerLevel etherealDim = event.getServer().getLevel(EtherealSpawnDimension.DIMENSION_KEY);
+        if (etherealDim != null) EtherealSpawnDecor.ensure(etherealDim);
+    }
+
     public static void initializeEtherealSpawnDimension(MinecraftServer server) {
         ServerLevel etherealDim = server.getLevel(EtherealSpawnDimension.DIMENSION_KEY);
 

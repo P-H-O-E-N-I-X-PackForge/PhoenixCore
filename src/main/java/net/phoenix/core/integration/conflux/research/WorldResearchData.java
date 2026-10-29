@@ -71,6 +71,8 @@ public class WorldResearchData extends SavedData {
 
     public boolean chooseDiscipline(UUID team, String disciplineId, ResearchTreeRegistry registry) {
         if (isCommitted(team)) return false;
+        // the first choice is free; after it only abandoning at a research terminal (which costs data) opens another
+        if (discipline.get(team) != null) return false;
 
         boolean known = registry.getAllTrees().stream()
                 .filter(ResearchTree::isDisciplineTree)

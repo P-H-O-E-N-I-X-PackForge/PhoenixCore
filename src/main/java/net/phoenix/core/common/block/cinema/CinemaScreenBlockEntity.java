@@ -48,6 +48,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     private float textScale = DEFAULT_SCALE;
     private TextAlign textAlign = TextAlign.CENTER;
     private Background background = Background.VOID_GALAXY;
+    /** What a click on this screen does instead of turning the page ("" for turning it): see CinemaClientActions. */
+    private String action = "";
 
     public CinemaScreenBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -131,6 +133,15 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         return background;
     }
 
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action == null ? "" : action;
+        syncToClients();
+    }
+
     private void syncToClients() {
         setChanged();
         if (level != null && !level.isClientSide) {
@@ -146,6 +157,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         tag.putFloat("TextScale", textScale);
         tag.putString("TextAlign", textAlign.name());
         tag.putString("Background", background.name());
+        if (!action.isEmpty()) tag.putString("Action", action);
         ListTag linesTag = new ListTag();
         for (Component line : lines) {
             linesTag.add(
@@ -174,6 +186,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
                 background = Background.VOID_GALAXY;
             }
         }
+        action = tag.getString("Action");
         lines.clear();
         if (tag.contains("Lines", Tag.TAG_LIST)) {
             ListTag linesTag = tag.getList("Lines", Tag.TAG_STRING);

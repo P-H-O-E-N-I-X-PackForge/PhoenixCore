@@ -6,7 +6,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.phoenix.core.integration.conflux.client.DisciplinePickerScreen;
 import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
 
 @EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
@@ -21,10 +20,7 @@ public class EtherealSpawnClientEvents {
             pickerShown = false;
             return;
         }
-        if (!pickerShown && mc.screen == null) {
-            pickerShown = true;
-            mc.setScreen(new DisciplinePickerScreen());
-        }
+        // the picker used to open here; it now waits for a click on the choosing screen in the spawn (CinemaClientActions)
     }
 
     @SubscribeEvent

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.Level;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlock;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
@@ -22,6 +23,8 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
+
+import java.util.List;
 
 public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlockEntity> {
 
@@ -93,7 +96,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
                 text = CinemaStatTokens.resolve(text, Minecraft.getInstance().player);
             }
             if (!text.isEmpty()) {
-                renderText(text, blockEntity, poseStack, bufferSource, packedLight, halfSize);
+                renderText(text, blockEntity, poseStack, bufferSource, packedLight, halfSize, layout.width());
             }
         }
 
@@ -106,30 +109,37 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
     }
 
     private void renderText(String text, CinemaScreenBlockEntity blockEntity, PoseStack poseStack,
-                            MultiBufferSource bufferSource, int packedLight, float halfSize) {
+                            MultiBufferSource bufferSource, int packedLight, float halfSize, int widthCells) {
         Component line = Component.literal(text);
         float scale = blockEntity.getTextScale();
+        Font font = Minecraft.getInstance().font;
+
+        float margin = 4.0f;
+        // the whole screen is the room the text has, so a long line wraps instead of running off the edge
+        float halfWidthFontSpace = widthCells * halfSize / scale;
+        int maxWidth = Math.max(16, (int) (halfWidthFontSpace * 2.0f - margin * 2.0f));
+        List<FormattedCharSequence> lines = font.split(line, maxWidth);
+        if (lines.isEmpty()) return;
 
         poseStack.pushPose();
-
-        poseStack.translate(0.0, halfSize * 0.7, 0.001);
+        // one line sits a little above the middle as it always did; several are centred on it
+        poseStack.translate(0.0, lines.size() == 1 ? halfSize * 0.7 : 0.0, 0.001);
         poseStack.scale(scale, -scale, scale);
-
-        Font font = Minecraft.getInstance().font;
         Matrix4f matrix = poseStack.last().pose();
 
-        int width = font.width(line);
-
-        float halfWidthFontSpace = halfSize / scale;
-        float margin = 4.0f;
-        float x = switch (blockEntity.getTextAlign()) {
-            case LEFT -> -halfWidthFontSpace + margin;
-            case RIGHT -> halfWidthFontSpace - width - margin;
-            case CENTER -> -width / 2f;
-        };
-
-        font.drawInBatch(line, x, 0, blockEntity.getTextColor(), false, matrix, bufferSource,
-                Font.DisplayMode.NORMAL, 0, packedLight);
+        int lineHeight = font.lineHeight + 2;
+        float top = -(lines.size() - 1) * lineHeight / 2.0f;
+        for (int i = 0; i < lines.size(); i++) {
+            FormattedCharSequence part = lines.get(i);
+            int width = font.width(part);
+            float x = switch (blockEntity.getTextAlign()) {
+                case LEFT -> -halfWidthFontSpace + margin;
+                case RIGHT -> halfWidthFontSpace - width - margin;
+                case CENTER -> -width / 2f;
+            };
+            font.drawInBatch(part, x, top + i * lineHeight, blockEntity.getTextColor(), false, matrix, bufferSource,
+                    Font.DisplayMode.NORMAL, 0, packedLight);
+        }
 
         poseStack.popPose();
     }

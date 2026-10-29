@@ -51,6 +51,16 @@ public class C2SChooseDisciplinePacket implements CustomPacketPayload {
 
             boolean success = WorldResearchData.get(level)
                     .chooseDiscipline(teamId, pkt.disciplineId, ResearchTreeRegistry.INSTANCE);
+            if (!success) {
+                String current = WorldResearchData.get(level).getDiscipline(teamId);
+                if (current != null) {
+                    player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                            "\u00a76[Axiom] \u00a77You already follow \u00a7r" + current + "\u00a77. A path is changed by " +
+                                    "abandoning it at a research terminal, which costs research data (and is not possible " +
+                                    "once you have committed)."),
+                            false);
+                }
+            }
             if (success) {
                 ConfluxNetwork.syncResearchToPlayer(player);
                 net.phoenix.core.integration.chronicles.ChroniclesLink.fireTeam(player.server, teamId,
