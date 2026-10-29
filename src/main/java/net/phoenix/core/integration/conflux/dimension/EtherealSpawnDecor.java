@@ -78,8 +78,8 @@ public final class EtherealSpawnDecor {
                 CinemaClientActions.OPEN_DISCIPLINE_PICKER, List.of(
                         "THE CHOICE",
                         "Your first choice is free.",
-                        "A path is not final until you commit to it in its research. Until then you can abandon it at "
-                                + "a research terminal, for a cost in research data.",
+                        "You can change your path later by abandoning it at a research terminal, for a cost in research "
+                                + "data. Once you have committed to it in its research, the cost is ten times as much.",
                         "Click here to choose."));
         PhoenixCore.LOGGER.info("[Conflux] Built the ethereal spawn's screens");
     }

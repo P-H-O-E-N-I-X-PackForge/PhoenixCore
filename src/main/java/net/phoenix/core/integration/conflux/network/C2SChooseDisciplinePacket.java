@@ -56,7 +56,7 @@ public class C2SChooseDisciplinePacket implements CustomPacketPayload {
                 if (current != null) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                             "\u00a76[Axiom] \u00a77You already follow \u00a7r" + current + "\u00a77. A path is changed by " +
-                                    "abandoning it at a research terminal, which costs research data (and is not possible " +
+                                    "abandoning it at a research terminal, which costs research data (a great deal more " +
                                     "once you have committed)."),
                             false);
                 }

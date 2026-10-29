@@ -110,7 +110,7 @@ public class WorldResearchData extends SavedData {
                 .orElse(null);
 
         boolean isCommitted = isCommitted(team);
-        Map<ConfluxDataType, Long> switchCost = (tree != null && !isCommitted) ? tree.switchCost : Map.of();
+        Map<ConfluxDataType, Long> switchCost = tree != null ? abandonCost(tree, isCommitted) : Map.of();
         String title = tree != null ? tree.title : discId;
 
         return new DisciplineInfo(discId, title, isCommitted, switchCost);
@@ -202,10 +202,19 @@ public class WorldResearchData extends SavedData {
         setDirty();
     }
 
+    /** What a team that has committed pays, times what one that has not does, to abandon its discipline. */
+    public static final long COMMITTED_SWITCH_MULTIPLIER = 10L;
+
+    /** The data it costs the team to abandon its discipline: much more once it has committed to it. */
+    private static Map<ConfluxDataType, Long> abandonCost(ResearchTree tree, boolean committed) {
+        if (!committed) return tree.switchCost;
+        Map<ConfluxDataType, Long> scaled = new java.util.EnumMap<>(ConfluxDataType.class);
+        tree.switchCost.forEach((type, amount) -> scaled.put(type, amount * COMMITTED_SWITCH_MULTIPLIER));
+        return scaled;
+    }
+
     public boolean abandonDiscipline(UUID team, ResearchTerminalBlockEntity terminal,
                                      ResearchTreeRegistry registry) {
-        if (isCommitted(team)) return false;
-
         String discId = discipline.get(team);
         if (discId == null) return false;
 
@@ -217,7 +226,7 @@ public class WorldResearchData extends SavedData {
         if (tree != null && !tree.switchCost.isEmpty()) {
             if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
                     !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
-                            .trySpend(team, tree.switchCost)) {
+                            .trySpend(team, abandonCost(tree, isCommitted(team)))) {
                 return false;
             }
         }

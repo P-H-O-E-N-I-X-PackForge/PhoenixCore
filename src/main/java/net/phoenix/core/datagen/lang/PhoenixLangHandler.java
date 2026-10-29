@@ -143,11 +143,11 @@ public class PhoenixLangHandler {
         provider.add("phoenixcore.research.discipline.committed", "Committed");
         provider.add("phoenixcore.research.discipline.can_switch", "Switch Discipline");
         provider.add("phoenixcore.research.discipline.switch_cost", "Cost to abandon:");
-        provider.add("phoenixcore.research.discipline.locked", "You are permanently committed to your Discipline.");
+        provider.add("phoenixcore.research.discipline.locked", "You are committed to your Discipline: abandoning it now costs ten times the data.");
         provider.add("phoenixcore.research.discipline.abandon_success",
                 "Discipline abandoned. You may now choose a new path.");
         provider.add("phoenixcore.research.discipline.abandon_failed",
-                "Cannot abandon Discipline: insufficient resources or already committed.");
+                "Cannot abandon Discipline: not enough research data.");
     }
 
     public static void multiLang(RegistrateLangProvider provider, String key, String... values) {
