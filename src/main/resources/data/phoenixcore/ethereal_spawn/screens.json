@@ -4,12 +4,12 @@
     {
       "pos": [
         -12,
-        66,
+        67,
         0
       ],
       "facing": "east",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#FFFFFF",
       "background": "void_galaxy",
       "pages": [
@@ -22,12 +22,12 @@
     {
       "pos": [
         -12,
-        66,
+        67,
         -7
       ],
       "facing": "east",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#FFFFFF",
       "background": "nebula",
       "pages": [
@@ -40,12 +40,12 @@
     {
       "pos": [
         -12,
-        66,
+        67,
         7
       ],
       "facing": "east",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#6FA8FF",
       "background": "nebula",
       "pages": [
@@ -58,12 +58,12 @@
     {
       "pos": [
         0,
-        66,
+        67,
         -12
       ],
       "facing": "south",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#FFC66B",
       "background": "sunflare",
       "pages": [
@@ -77,12 +77,12 @@
     {
       "pos": [
         12,
-        66,
+        67,
         0
       ],
       "facing": "west",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#6FE0D0",
       "background": "sculk_abyss",
       "pages": [
@@ -96,12 +96,12 @@
     {
       "pos": [
         0,
-        66,
+        67,
         12
       ],
       "facing": "north",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#B983FF",
       "background": "void_galaxy",
       "pages": [
@@ -115,12 +115,12 @@
     {
       "pos": [
         12,
-        66,
+        67,
         -7
       ],
       "facing": "west",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#FF9A6B",
       "background": "sunflare",
       "pages": [
@@ -133,12 +133,12 @@
     {
       "pos": [
         12,
-        66,
+        67,
         7
       ],
       "facing": "west",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#5CFF8F",
       "background": "nebula",
       "pages": [
@@ -151,12 +151,12 @@
     {
       "pos": [
         -12,
-        66,
+        67,
         14
       ],
       "facing": "east",
       "cols": 5,
-      "rows": 3,
+      "rows": 5,
       "color": "#9ED0FF",
       "background": "nebula",
       "pages": [
@@ -169,12 +169,12 @@
     {
       "pos": [
         0,
-        66,
+        67,
         6
       ],
       "facing": "north",
       "cols": 3,
-      "rows": 3,
+      "rows": 5,
       "color": "#FFFFFF",
       "background": "nebula",
       "pages": [
