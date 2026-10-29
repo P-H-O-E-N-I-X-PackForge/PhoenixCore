@@ -8,8 +8,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.phoenix.core.common.block.cinema.CinemaPage;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlock;
 import net.phoenix.core.common.block.cinema.CinemaScreenBlockEntity;
 
@@ -24,7 +26,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 
-import java.util.List;
 
 public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlockEntity> {
 
@@ -89,15 +90,7 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         RenderSystem.enableCull();
 
         if (solo || layout.isCenterCell()) {
-            boolean editingThis = CinemaEditState.isEditing(blockEntity.getBlockPos());
-            String text = editingThis ? liveTypedText() : blockEntity.getCurrentLine().getString();
-
-            if (!editingThis) {
-                text = CinemaStatTokens.resolve(text, Minecraft.getInstance().player);
-            }
-            if (!text.isEmpty()) {
-                renderText(text, blockEntity, poseStack, bufferSource, packedLight, halfSize, layout.width());
-            }
+            renderPage(blockEntity, level, poseStack, bufferSource);
         }
 
         poseStack.popPose();
@@ -108,39 +101,95 @@ public class CinemaScreenRenderer implements BlockEntityRenderer<CinemaScreenBlo
         return CinemaEditState.getBuffer() + (cursorOn ? "_" : "");
     }
 
-    private void renderText(String text, CinemaScreenBlockEntity blockEntity, PoseStack poseStack,
-                            MultiBufferSource bufferSource, int packedLight, float halfSize, int widthCells) {
-        Component line = Component.literal(text);
-        float scale = blockEntity.getTextScale();
-        Font font = Minecraft.getInstance().font;
+    private static final int FULL_BRIGHT = 0xF000F0;
 
-        float margin = 4.0f;
-        // the whole screen is the room the text has, so a long line wraps instead of running off the edge
-        float halfWidthFontSpace = widthCells * halfSize / scale;
-        int maxWidth = Math.max(16, (int) (halfWidthFontSpace * 2.0f - margin * 2.0f));
-        List<FormattedCharSequence> lines = font.split(line, maxWidth);
-        if (lines.isEmpty()) return;
-
-        poseStack.pushPose();
-        // one line sits a little above the middle as it always did; several are centred on it
-        poseStack.translate(0.0, lines.size() == 1 ? halfSize * 0.7 : 0.0, 0.001);
-        poseStack.scale(scale, -scale, scale);
-        Matrix4f matrix = poseStack.last().pose();
-
-        int lineHeight = font.lineHeight + 2;
-        float top = -(lines.size() - 1) * lineHeight / 2.0f;
-        for (int i = 0; i < lines.size(); i++) {
-            FormattedCharSequence part = lines.get(i);
-            int width = font.width(part);
-            float x = switch (blockEntity.getTextAlign()) {
-                case LEFT -> -halfWidthFontSpace + margin;
-                case RIGHT -> halfWidthFontSpace - width - margin;
-                case CENTER -> -width / 2f;
-            };
-            font.drawInBatch(part, x, top + i * lineHeight, blockEntity.getTextColor(), false, matrix, bufferSource,
-                    Font.DisplayMode.NORMAL, 0, packedLight);
+    /** The page the screen shows now, on a solid plate: title, body, buttons and the page arrows. */
+    private void renderPage(CinemaScreenBlockEntity be, Level level, PoseStack poseStack,
+                            MultiBufferSource bufferSource) {
+        Minecraft mc = Minecraft.getInstance();
+        boolean editing = CinemaEditState.isEditing(be.getBlockPos());
+        CinemaClientState.Target target = level != null ? CinemaClientState.target(level, be.getBlockPos()) : null;
+        CinemaLayout layout;
+        if (editing || target == null) {
+            float unit = 1.0f;
+            layout = CinemaLayout.of(mc.font, CinemaPage.parse(editing ? liveTypedText() : be.getCurrentLine().getString()),
+                    be.getTextScale(), unit, unit, 0, 1, true);
+        } else {
+            layout = CinemaClientState.layout(target);
         }
 
+        CinemaLayout.Hit hovered = null;
+        if (target != null && target.centre() == be && mc.hitResult instanceof BlockHitResult bhr &&
+                bhr.getType() == HitResult.Type.BLOCK) {
+            CinemaClientState.Target looked = CinemaClientState.target(level, bhr.getBlockPos());
+            if (looked != null && looked.centre() == be) {
+                float[] at = CinemaClientState.local(looked, bhr.getLocation());
+                hovered = layout.hitAt(at[0], at[1]);
+            }
+        }
+
+        Matrix4f m = poseStack.last().pose();
+        int accent = be.getTextColor() | 0xFF000000;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableCull();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        fill(m, layout.plate, 0.0004f, 0xEB090C16);
+        border(m, layout.plate, 0.0005f, 0.014f, (accent & 0xFFFFFF) | 0xC0000000);
+        for (CinemaLayout.Hit hit : layout.hits) {
+            boolean nav = hit.action().equals("next") || hit.action().equals("prev");
+            boolean hot = hit == hovered;
+            fill(m, hit.rect(), 0.0007f, hot ? 0xFF2F5C9E : nav ? 0xFF1E2638 : 0xFF182B4A);
+            border(m, hit.rect(), 0.0008f, 0.012f, hot ? 0xFFBFD9FF : 0xFF6FA8FF);
+        }
+        RenderSystem.enableCull();
+
+        Font font = mc.font;
+        float scale = be.getTextScale();
+        for (CinemaLayout.TextLine line : layout.titleLines) drawLine(font, poseStack, bufferSource, line, accent);
+        for (CinemaLayout.TextLine line : layout.bodyLines) drawLine(font, poseStack, bufferSource, line, 0xFFDCE2F2);
+        if (layout.counter != null) drawLine(font, poseStack, bufferSource, layout.counter, 0xFFAAB4CC);
+        if (layout.hint != null) drawLine(font, poseStack, bufferSource, layout.hint, 0xFF7C869E);
+        for (CinemaLayout.Hit hit : layout.hits) {
+            boolean nav = hit.action().equals("next") || hit.action().equals("prev");
+            float s = scale * (nav ? 1.7f : 1.15f);
+            float cx = (hit.rect().x0() + hit.rect().x1()) / 2;
+            float cy = (hit.rect().y0() + hit.rect().y1()) / 2;
+            String label = nav ? (hit.action().equals("next") ? ">" : "<") : hit.label();
+            // a long label shrinks to fit its button
+            int width = font.width(label);
+            float fit = (hit.rect().x1() - hit.rect().x0() - 0.12f) / Math.max(1, width);
+            drawLine(font, poseStack, bufferSource, new CinemaLayout.TextLine(
+                    Component.literal(label).getVisualOrderText(), cx, cy, Math.min(s, fit), true), 0xFFFFFFFF);
+        }
+    }
+
+    private static void drawLine(Font font, PoseStack poseStack, MultiBufferSource bufferSource,
+                                 CinemaLayout.TextLine line, int color) {
+        poseStack.pushPose();
+        poseStack.translate(line.x(), line.y(), 0.0012);
+        poseStack.scale(line.scale(), -line.scale(), line.scale());
+        Matrix4f matrix = poseStack.last().pose();
+        float x = line.centred() ? -font.width(line.text()) / 2.0f : 0.0f;
+        font.drawInBatch(line.text(), x, -4.0f, color, false, matrix, bufferSource, Font.DisplayMode.NORMAL, 0,
+                FULL_BRIGHT);
         poseStack.popPose();
+    }
+
+    private static void fill(Matrix4f m, CinemaLayout.Rect r, float z, int argb) {
+        BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        b.addVertex(m, r.x0(), r.y0(), z).setColor(argb);
+        b.addVertex(m, r.x1(), r.y0(), z).setColor(argb);
+        b.addVertex(m, r.x1(), r.y1(), z).setColor(argb);
+        b.addVertex(m, r.x0(), r.y1(), z).setColor(argb);
+        BufferUploader.drawWithShader(b.buildOrThrow());
+    }
+
+    private static void border(Matrix4f m, CinemaLayout.Rect r, float z, float t, int argb) {
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y1() - t, r.x1(), r.y1()), z, argb);
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y0(), r.x1(), r.y0() + t), z, argb);
+        fill(m, new CinemaLayout.Rect(r.x0(), r.y0() + t, r.x0() + t, r.y1() - t), z, argb);
+        fill(m, new CinemaLayout.Rect(r.x1() - t, r.y0() + t, r.x1(), r.y1() - t), z, argb);
     }
 }

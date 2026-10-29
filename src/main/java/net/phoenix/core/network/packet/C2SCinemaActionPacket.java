@@ -24,7 +24,9 @@ public class C2SCinemaActionPacket implements CustomPacketPayload {
 
     public enum Action {
         CYCLE_COLOR,
-        REMOVE_CURRENT_LINE
+        REMOVE_CURRENT_LINE,
+        NEXT_LINE,
+        PREVIOUS_LINE
     }
 
     private static final double MAX_DISTANCE_SQ = 64.0 * 64.0;
@@ -62,6 +64,8 @@ public class C2SCinemaActionPacket implements CustomPacketPayload {
             switch (msg.action) {
                 case CYCLE_COLOR -> screen.cycleColor();
                 case REMOVE_CURRENT_LINE -> screen.removeCurrentLine();
+                case NEXT_LINE -> screen.advanceLine();
+                case PREVIOUS_LINE -> screen.retreatLine();
             }
         });
     }

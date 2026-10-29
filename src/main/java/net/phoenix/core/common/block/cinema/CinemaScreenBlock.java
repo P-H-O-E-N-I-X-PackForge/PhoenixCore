@@ -103,7 +103,7 @@ public class CinemaScreenBlock extends BaseEntityBlock {
         }
 
         // a screen with an action does it (on the client, see CinemaInputHandler) instead of turning the page
-        if (!level.isClientSide && screen.getAction().isEmpty()) {
+        if (!level.isClientSide && screen.getAction().isEmpty() && !screen.isLocalPages()) {
             screen.advanceLine();
         }
         return InteractionResult.sidedSuccess(level.isClientSide);

@@ -50,6 +50,8 @@ public class CinemaScreenBlockEntity extends BlockEntity {
     private Background background = Background.VOID_GALAXY;
     /** What a click on this screen does instead of turning the page ("" for turning it): see CinemaClientActions. */
     private String action = "";
+    /** Each player turns the pages of this screen for themselves (nothing is shared or saved): for screens that explain. */
+    private boolean localPages = false;
 
     public CinemaScreenBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -133,6 +135,21 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         return background;
     }
 
+    public boolean isLocalPages() {
+        return localPages;
+    }
+
+    public void setLocalPages(boolean localPages) {
+        this.localPages = localPages;
+        syncToClients();
+    }
+
+    public void retreatLine() {
+        if (lines.isEmpty()) return;
+        currentLine = (currentLine - 1 + lines.size()) % lines.size();
+        syncToClients();
+    }
+
     public String getAction() {
         return action;
     }
@@ -158,6 +175,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
         tag.putString("TextAlign", textAlign.name());
         tag.putString("Background", background.name());
         if (!action.isEmpty()) tag.putString("Action", action);
+        if (localPages) tag.putBoolean("LocalPages", true);
         ListTag linesTag = new ListTag();
         for (Component line : lines) {
             linesTag.add(
@@ -187,6 +205,7 @@ public class CinemaScreenBlockEntity extends BlockEntity {
             }
         }
         action = tag.getString("Action");
+        localPages = tag.getBoolean("LocalPages");
         lines.clear();
         if (tag.contains("Lines", Tag.TAG_LIST)) {
             ListTag linesTag = tag.getList("Lines", Tag.TAG_STRING);

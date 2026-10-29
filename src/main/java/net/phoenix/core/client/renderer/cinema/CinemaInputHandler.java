@@ -21,11 +21,30 @@ public class CinemaInputHandler {
         if (!event.getLevel().isClientSide()) return;
         if (!(event.getLevel().getBlockEntity(event.getPos()) instanceof CinemaScreenBlockEntity screen)) return;
 
-        if (!screen.getAction().isEmpty() && !Screen.hasAltDown() && !Screen.hasControlDown() &&
-                !event.getEntity().isShiftKeyDown()) {
-            consume(event);
-            CinemaClientActions.run(screen.getAction());
-            return;
+        if (!Screen.hasAltDown() && !Screen.hasControlDown() && !event.getEntity().isShiftKeyDown()) {
+            var target = CinemaClientState.target(event.getLevel(), event.getPos());
+            if (target != null) {
+                // a button or an arrow under the cursor does its action
+                float[] at = CinemaClientState.local(target, event.getHitVec().getLocation());
+                var hit = CinemaClientState.layout(target).hitAt(at[0], at[1]);
+                if (hit != null) {
+                    consume(event);
+                    CinemaClientActions.run(hit.action(), target);
+                    return;
+                }
+                // the screen's own action, if it has one
+                if (!screen.getAction().isEmpty()) {
+                    consume(event);
+                    CinemaClientActions.run(screen.getAction(), target);
+                    return;
+                }
+                // anywhere else turns the page, for a screen whose pages are each player's own
+                if (target.centre().isLocalPages()) {
+                    consume(event);
+                    CinemaClientActions.run("next", target);
+                    return;
+                }
+            }
         }
         if (Screen.hasAltDown()) {
             consume(event);
