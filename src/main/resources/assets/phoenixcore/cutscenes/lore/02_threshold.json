@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "Five paths out of the nothing. Three of them open. Two of them look back.",
+    [
+      "Fire. Root. Dark. And two doors with no names on them, only ",
+      {
+        "text": "██████",
+        "color": "#8B0000"
+      },
+      " where names used to be."
+    ],
+    [
+      "The terminal asks me to ",
+      {
+        "text": "commit",
+        "color": "#FFB347"
+      },
+      ". It says it like it already knows my answer."
+    ],
+    "The world did not break here. It was split. Cleanly. Like something measured the cut first.",
+    "Whoever split it knew exactly where to stand."
+  ],
+  "chars_per_second": 20,
+  "background": "phoenixcore:void_galaxy",
+  "sound": {
+    "id": "minecraft:block.note_block.hat",
+    "volume": 0.1,
+    "pitch": 1.2,
+    "pitch_variance": 0.15,
+    "every_n_letters": 2
+  },
+  "music": {
+    "sound": "phoenixcore:cutscene/threshold",
+    "volume": 0.9,
+    "fade_in": 5.0
+  }
+}

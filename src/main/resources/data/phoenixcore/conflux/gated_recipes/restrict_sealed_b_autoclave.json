@@ -1,0 +1,12 @@
+{
+  "flag": "sb_vigil_clause",
+  "only_disciplines": [
+    "sealed_b"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:autoclave",
+      "min_tier": "ev"
+    }
+  ]
+}

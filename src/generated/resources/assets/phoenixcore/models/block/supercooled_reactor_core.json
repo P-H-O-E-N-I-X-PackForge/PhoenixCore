@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "phoenixcore:block/supercooled_reactor_core"
+  }
+}

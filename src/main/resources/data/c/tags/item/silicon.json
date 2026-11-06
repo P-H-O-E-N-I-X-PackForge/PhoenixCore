@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "gtceu:silicon_plate",
+      "required": false
+    }
+  ],
+  "remove": [
+    {
+      "id": "ae2:silicon",
+      "required": false
+    }
+  ]
+}

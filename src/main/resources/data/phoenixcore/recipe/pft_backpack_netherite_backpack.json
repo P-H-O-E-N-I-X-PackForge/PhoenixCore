@@ -1,0 +1,34 @@
+{
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "pattern": [
+    "SLS",
+    "LBL",
+    "FPF"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:screws/titanium"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:diamond_backpack"
+    },
+    "F": {
+      "item": "gtceu:carbon_fibers"
+    },
+    "P": {
+      "tag": "c:plates/epoxy"
+    }
+  },
+  "result": {
+    "id": "sophisticatedbackpacks:netherite_backpack"
+  },
+  "neoforge:conditions": [
+    {
+      "itemRegistryName": "netherite_backpack",
+      "type": "sophisticatedbackpacks:item_enabled"
+    }
+  ]
+}

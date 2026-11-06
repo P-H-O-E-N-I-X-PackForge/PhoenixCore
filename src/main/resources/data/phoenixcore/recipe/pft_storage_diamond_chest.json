@@ -1,0 +1,28 @@
+{
+  "type": "sophisticatedstorage:storage_tier_upgrade",
+  "pattern": [
+    "IPI",
+    "ICI",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/aluminfrost"
+    },
+    "P": {
+      "tag": "c:plates/copper"
+    },
+    "C": {
+      "item": "sophisticatedstorage:gold_chest"
+    }
+  },
+  "result": {
+    "id": "sophisticatedstorage:diamond_chest"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedstorage:diamond_chest"
+    }
+  ]
+}

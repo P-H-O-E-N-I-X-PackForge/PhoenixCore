@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "phoenixcore:item/componets/empty_hostile_mob_essence_canister"
+  }
+}

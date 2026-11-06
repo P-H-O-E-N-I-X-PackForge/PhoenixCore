@@ -1,0 +1,7 @@
+{
+  "cutscene": "phoenixcore:lore/08_who_i_was",
+  "exclusive_group": "finale",
+  "commands": [
+    "tag @s add phoenixcore.chose_to_forget"
+  ]
+}

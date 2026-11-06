@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "phoenixcore:block/supercooled_reactor_core"
+    }
+  }
+}

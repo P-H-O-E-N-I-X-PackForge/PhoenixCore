@@ -1,0 +1,80 @@
+package net.phoenix.core.client.gui.hud;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
+import brachy.modularui.api.widget.Interactable;
+import brachy.modularui.screen.viewport.ModularGuiContext;
+import brachy.modularui.theme.WidgetThemeEntry;
+import brachy.modularui.widget.Widget;
+
+@OnlyIn(Dist.CLIENT)
+public class CanvasWidget extends Widget<CanvasWidget> implements Interactable {
+
+    private final CanvasPainter painter;
+    private int fitWidth = 0;
+    private int fitHeight = 0;
+
+    public CanvasWidget(CanvasPainter painter) {
+        this.painter = painter;
+    }
+
+    public CanvasWidget fittedTo(int panelWidth, int panelHeight) {
+        this.fitWidth = panelWidth;
+        this.fitHeight = panelHeight;
+        return this;
+    }
+
+    private int localX(ModularGuiContext ctx) {
+        if (fitWidth > 0) {
+            return net.phoenix.core.client.gui.PanelFit.localMouse(this, ctx.getAbsMouseX(), ctx.getAbsMouseY(),
+                    fitWidth,
+                    fitHeight)[0];
+        }
+        return ctx.getAbsMouseX() - getArea().x;
+    }
+
+    private int localY(ModularGuiContext ctx) {
+        if (fitWidth > 0) {
+            return net.phoenix.core.client.gui.PanelFit.localMouse(this, ctx.getAbsMouseX(), ctx.getAbsMouseY(),
+                    fitWidth,
+                    fitHeight)[1];
+        }
+        return ctx.getAbsMouseY() - getArea().y;
+    }
+
+    @Override
+    public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        var g = context.getGraphics();
+        GuiDraw.enableScissor(g, 0, 0, getArea().width, getArea().height);
+        painter.render(g, getArea().width, getArea().height, localX(context), localY(context));
+        g.disableScissor();
+    }
+
+    @Override
+    public Result onMousePressed(int mouseButton) {
+        ModularGuiContext ctx = getContext();
+        boolean used = painter.click(localX(ctx), localY(ctx), mouseButton);
+        net.phoenix.core.PhoenixCore.LOGGER.debug("[HUD] press {} at {},{} in {}x{}: {}", mouseButton, localX(ctx),
+                localY(ctx), getArea().width, getArea().height, used ? "used" : "ignored");
+        return used ? Result.SUCCESS : Result.IGNORE;
+    }
+
+    @Override
+    public void onMouseDrag(int mouseButton, double dragX, double dragY) {
+        ModularGuiContext ctx = getContext();
+        painter.drag(localX(ctx), localY(ctx), mouseButton);
+    }
+
+    @Override
+    public boolean onMouseReleased(int mouseButton) {
+        painter.release(mouseButton);
+        return false;
+    }
+
+    @Override
+    public boolean onMouseScrolled(double scrollX, double scrollY) {
+        ModularGuiContext ctx = getContext();
+        return painter.scroll(localX(ctx), localY(ctx), scrollY);
+    }
+}

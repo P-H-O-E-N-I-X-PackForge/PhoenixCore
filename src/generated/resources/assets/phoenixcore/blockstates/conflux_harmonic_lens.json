@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "phoenixcore:block/machine/conflux_harmonic_lens",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/conflux_harmonic_lens"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/conflux_harmonic_lens",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/conflux_harmonic_lens",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "phoenixcore:block/quantified_alloy_block"
+    }
+  }
+}

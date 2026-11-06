@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "phoenixcore:block/astral_rune_block"
+    }
+  }
+}

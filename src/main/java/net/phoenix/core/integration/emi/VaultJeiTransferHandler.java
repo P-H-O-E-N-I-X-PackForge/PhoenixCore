@@ -1,0 +1,68 @@
+package net.phoenix.core.integration.emi;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.phoenix.core.integration.gregvaults.mui.VaultMenu;
+import net.phoenix.core.integration.gregvaults.network.CPacketFillCraftingGrid;
+
+import brachy.modularui.ModularUIMenuTypes;
+import brachy.modularui.screen.ModularContainerMenu;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+@SuppressWarnings("all")
+public class VaultJeiTransferHandler implements IUniversalRecipeTransferHandler<ModularContainerMenu> {
+
+    private final IRecipeTransferHandlerHelper helper;
+
+    public VaultJeiTransferHandler(IRecipeTransferHandlerHelper helper) {
+        this.helper = helper;
+    }
+
+    @Override
+    public Class<? extends ModularContainerMenu> getContainerClass() {
+        return ModularContainerMenu.class;
+    }
+
+    @Override
+    public Optional<MenuType<ModularContainerMenu>> getMenuType() {
+        return Optional.of(ModularUIMenuTypes.MODULAR_CONTAINER.get());
+    }
+
+    @Override
+    public @Nullable IRecipeTransferError transferRecipe(ModularContainerMenu menu, Object recipe,
+                                                         IRecipeSlotsView recipeSlots, Player player,
+                                                         boolean maxTransfer, boolean doTransfer) {
+        if (!(menu instanceof VaultMenu)) return helper.createInternalError();
+        if (!doTransfer) return null;
+
+        ItemStack[] template = new ItemStack[9];
+        Arrays.fill(template, ItemStack.EMPTY);
+
+        List<? extends mezz.jei.api.gui.ingredient.IRecipeSlotView> inputs = recipeSlots
+                .getSlotViews(RecipeIngredientRole.INPUT);
+
+        for (int i = 0; i < Math.min(inputs.size(), 9); i++) {
+            final int idx = i;
+            inputs.get(i).getItemStacks()
+                    .findFirst()
+                    .ifPresent(stack -> template[idx] = stack.copy());
+        }
+
+        ResourceLocation recipeId = recipe instanceof net.minecraft.world.item.crafting.RecipeHolder<?> h ? h.id() :
+                null;
+        PacketDistributor.sendToServer(new CPacketFillCraftingGrid(recipeId, template));
+        return null;
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "phoenixcore:block/akashic_zeronium_casing",
+    "down": "phoenixcore:block/akashic_zeronium_casing",
+    "up": "phoenixcore:block/advanced_logic2",
+    "north": "phoenixcore:block/advanced_logic2",
+    "south": "phoenixcore:block/advanced_logic2",
+    "east": "phoenixcore:block/advanced_logic2",
+    "west": "phoenixcore:block/advanced_logic2"
+  }
+}

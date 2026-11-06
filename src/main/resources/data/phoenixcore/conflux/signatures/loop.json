@@ -1,0 +1,17 @@
+{
+  "discipline": "sculk",
+  "title": "Loop",
+  "description": "A cycle that closes feeds the next one. Break it and what had grown starts over.",
+  "color": "2FD6B4",
+  "icon": "minecraft:sculk_catalyst",
+  "max": 1000,
+  "start": 0,
+  "gain_per_minute": 0,
+  "decay_per_minute": 0,
+  "levels": [
+    { "at": 0, "name": "Dormant" },
+    { "at": 100, "name": "Seeded" },
+    { "at": 350, "name": "Thriving" },
+    { "at": 700, "name": "Self-sustaining" }
+  ]
+}

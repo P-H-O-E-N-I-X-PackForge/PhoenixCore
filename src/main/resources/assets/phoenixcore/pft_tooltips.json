@@ -1,0 +1,1159 @@
+{
+ "sophisticatedbackpacks:inception_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "sophisticatedbackpacks:battery_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:redstone_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:min_redstone_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:max_redstone_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:compacting_drawers_3": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:fill_level_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "storagedrawers:illumination_upgrade": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "extendedae:caner": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "ae2:inscriber": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "extendedae:ex_inscriber": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "extendedae:ingredient_buffer": [
+  "§c§lDisabled in this modpack!"
+ ],
+ "gtceu:greenhouse": [
+  "§7Two green thumbs up!"
+ ],
+ "phoenixcore:greenhouse": [
+  "§7Two green thumbs up!"
+ ],
+ "gtceu:construction_core": [
+  "§7Offers cheaper recipes for building blocks!",
+  "§8Requires Construction Foam to operate."
+ ],
+ "phoenixcore:construction_core": [
+  "§7Offers cheaper recipes for building blocks!",
+  "§8Requires Construction Foam to operate."
+ ],
+ "ae2:controller": [
+  "§7Channels are §cdisabled§7."
+ ],
+ "extendedae:fishbig": [
+  "§7Congratulations! You won Minecraft."
+ ],
+ "phoenixcore:honey_comb_base_mold": [
+  "§6Finally, your first honeycomb is in your grasp."
+ ],
+ "phoenixcore:honey_comb_base": [
+  "§6Your foray into the world of bees starts now!"
+ ],
+ "gtceu:hot_antimatter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_antimatter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_aurum_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_aurum_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_stabilized_antimatter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_stabilized_antimatter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_fiery_bronze_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_fiery_bronze_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_space_grade_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_space_grade_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_infinity_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_infinity_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_source_imbued_titanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_source_imbued_titanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_zircon_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_zircon_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_aluminfrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_aluminfrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_superconductive_honey_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_superconductive_honey_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_magmatic_manganese_lead_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_magmatic_manganese_lead_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_cryogenic_aluminum_strand_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_cryogenic_aluminum_strand_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_zircalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_zircalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_icy_steel_matrix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_icy_steel_matrix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_source_titanium_filament_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_source_titanium_filament_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_low_level_radioactive_waste_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_low_level_radioactive_waste_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_hafnium_chloride_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_hafnium_chloride_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_argentum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_argentum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_unrefined_aluminfrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_unrefined_aluminfrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_permafrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_permafrost_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_dormant_ember_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_dormant_ember_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_uranium_oxide_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_uranium_oxide_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_frost_reinforced_stained_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_frost_reinforced_stained_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_gold_iron_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_gold_iron_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_85_percent_pure_nevonian_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_85_percent_pure_nevonian_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_blazing_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_blazing_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_energized_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_energized_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_niotic_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_niotic_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_spirited_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_spirited_crystal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_nitro_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_nitro_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_honey_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_honey_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_fluix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_fluix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_conductive_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_conductive_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_energetic_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_energetic_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_vibrant_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_vibrant_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_end_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_end_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_lumium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_lumium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_signalum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_signalum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_enderium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_enderium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_dark_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_dark_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_soularium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_soularium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_electrical_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_electrical_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_voidglass_shard_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_voidglass_shard_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_uranium_233_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_uranium_233_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_uranium_236_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_uranium_236_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_irradiated_thorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_irradiated_thorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_spent_uranium_233_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_spent_uranium_233_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_spent_uranium_235_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_spent_uranium_235_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_depleted_uranium_reactor_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_depleted_uranium_reactor_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_fissile_ash_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_fissile_ash_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_fission_products_fluid_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_fission_products_fluid_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_depleted_thorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_depleted_thorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_resonant_rhodium_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_resonant_rhodium_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_akashic_zeronium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_akashic_zeronium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_phoenix_enriched_naquad_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_phoenix_enriched_naquad_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_phoenix_enriched_tritanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_phoenix_enriched_tritanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_aetherium_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_aetherium_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_void_touched_tungsten_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_void_touched_tungsten_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_subspace_cobalt_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_subspace_cobalt_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_singularity_forged_titanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_singularity_forged_titanium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_exotic_vanadium_composite_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_exotic_vanadium_composite_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_dark_matter_plated_iridium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_dark_matter_plated_iridium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_corrupted_hyperalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_corrupted_hyperalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_reality_bound_osmium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_reality_bound_osmium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_void_stitched_neodymium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_void_stitched_neodymium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_celestial_aurorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_celestial_aurorium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_primordial_flux_metal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_primordial_flux_metal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_eternal_starforged_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_eternal_starforged_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_dimensional_reflection_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_dimensional_reflection_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_timewoven_platinum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_timewoven_platinum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_soulbound_ethersteel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_soulbound_ethersteel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_tachyon_infused_chromium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_tachyon_infused_chromium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_echo_crystal_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_echo_crystal_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_nebular_resonance_ingot_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_nebular_resonance_ingot_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_paradoxium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_paradoxium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_phoenix_tempered_mithril_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_phoenix_tempered_mithril_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_void_sung_adamantite_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_void_sung_adamantite_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_entangled_palladium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_entangled_palladium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_entangled_neutron_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_entangled_neutron_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_superposition_tungsten_matrix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_superposition_tungsten_matrix_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_exo_temporal_orichalcum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_exo_temporal_orichalcum_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_galactic_heart_matter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_galactic_heart_matter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_dark_nebula_infused_iridium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_dark_nebula_infused_iridium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_eldritch_voidsteel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_eldritch_voidsteel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_akashic_chrono_metal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_akashic_chrono_metal_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_absolute_zero_zeronium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_absolute_zero_zeronium_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_multiversal_hyperalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_multiversal_hyperalloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_glitched_corruption_substrate_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_glitched_corruption_substrate_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_event_horizon_matter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_event_horizon_matter_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_advanced_quin_naquadian_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_advanced_quin_naquadian_alloy_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "gtceu:hot_extremely_modified_space_grade_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:hot_extremely_modified_space_grade_steel_ingot": [
+  "§c§lThis ingot is scalding hot! Requires immediate cooling."
+ ],
+ "phoenixcore:grass_water_bucket": [
+  "§aA strange elemental liquid, full of natural essence."
+ ],
+ "phoenixcore:dimensional_flux_resin_bucket": [
+  "§5A volatile resin that distorts space-time."
+ ],
+ "phoenixcore:plasma_stabilized_mercury_bucket": [
+  "§bMercury at extreme temperatures, stabilized by plasma fields."
+ ],
+ "phoenixcore:aetheric_conductive_gel_bucket": [
+  "§dA mystical gel that enhances magical conductivity."
+ ],
+ "phoenixcore:void_reactive_coolant_bucket": [
+  "§8A coolant that reacts intensely with void energy."
+ ],
+ "phoenixcore:quantum_adhesive_solution_bucket": [
+  "§9A solution that binds at a quantum level, incredibly strong."
+ ],
+ "phoenixcore:multi_phase_dimensional_gel_bucket": [
+  "§5A complex gel that exists across multiple dimensions."
+ ],
+ "phoenixcore:neutrino_laced_superfluid_bucket": [
+  "§6A superfluid infused with neutrinos, capable of defying gravity."
+ ],
+ "phoenixcore:exo_temporal_stabilizer_bucket": [
+  "§dStabilizes localized temporal distortions."
+ ],
+ "phoenixcore:hypercharged_void_extract_bucket": [
+  "§8A highly concentrated extract from the void, brimming with energy."
+ ],
+ "phoenixcore:reality_woven_nanotubes_bucket": [
+  "§aNanotubes crafted from the fabric of reality itself."
+ ],
+ "phoenixcore:cryo_ember_fluid_bucket": [
+  "§4Liquidized embers, supercooled for unique reactions."
+ ],
+ "phoenixcore:phoenix_fire_solution_bucket": [
+  "§cA solution born from phoenix flames, capable of immense heat."
+ ],
+ "phoenixcore:eldritch_catalytic_mist_bucket": [
+  "§dA spectral mist that accelerates arcane reactions."
+ ],
+ "phoenixcore:quantum_locked_fluid_bucket": [
+  "§9A fluid whose state is fixed by quantum entanglement."
+ ],
+ "phoenixcore:void_charged_ionic_gel_bucket": [
+  "§8A gel infused with void energy, highly conductive."
+ ],
+ "phoenixcore:glitched_anomalous_resin_bucket": [
+  "§7A resin with unstable properties, prone to strange behaviors."
+ ],
+ "phoenixcore:entropy_diffusion_mist_bucket": [
+  "§8A mist that accelerates the decay of complex structures."
+ ],
+ "phoenixcore:dark_matter_suspension_bucket": [
+  "§0A mysterious suspension of dark matter, dense with potential."
+ ],
+ "phoenixcore:reality_fractured_isotope_bucket": [
+  "§dA isotope with unstable atomic bonds, hinting at fractured realities."
+ ],
+ "phoenixcore:cosmic_flux_liquid_bucket": [
+  "§6A liquid infusion of cosmic energies, highly reactive."
+ ],
+ "phoenixcore:stellar_compression_dust_bucket": [
+  "§7Dust formed under immense stellar pressures, incredibly dense."
+ ],
+ "phoenixcore:graviton_dense_slurry_bucket": [
+  "§5A slurry concentrated with gravitons, warping local gravity."
+ ],
+ "phoenixcore:event_horizon_condensate_bucket": [
+  "§0Matter condensed to the edge of a black hole, extremely rare."
+ ],
+ "phoenixcore:quantum_star_infusion_bucket": [
+  "§eAn infusion drawing power from quantum stars, volatile but potent."
+ ],
+ "phoenixcore:eon_fused_catalyst_bucket": [
+  "§2A catalyst that has experienced millennia, accelerating ancient processes."
+ ],
+ "phoenixcore:singularity_condensed_matter_bucket": [
+  "§0Matter compressed to a singularity, holding infinite density."
+ ],
+ "phoenixcore:primordial_chaos_fluid_bucket": [
+  "§cA fluid from the dawn of creation, embodying pure chaos."
+ ],
+ "phoenixcore:multiversal_binding_agent_bucket": [
+  "§9An agent capable of linking disparate universes."
+ ],
+ "phoenixcore:absolute_zero_etherium_bucket": [
+  "§bEtherium chilled to absolute zero, perfect for cryogenic experiments."
+ ],
+ "phoenixcore:cognitive_dissonance_compound_bucket": [
+  "§8A compound that disrupts mental stability."
+ ],
+ "phoenixcore:memory_scrambler_toxin_bucket": [
+  "§cA potent toxin designed to erase or corrupt memories."
+ ],
+ "phoenixcore:emotional_override_agent_bucket": [
+  "§5An agent that can manipulate or suppress emotions."
+ ],
+ "phoenixcore:sensory_distortion_fluid_bucket": [
+  "§7A fluid that alters perception and sensory input."
+ ],
+ "phoenixcore:neural_decay_catalyst_bucket": [
+  "§0A catalyst that accelerates the breakdown of neural pathways."
+ ],
+ "phoenixcore:chimeric_integration_fluid_corrupted": [
+  "§cA fluid meant for integration, now corrupted and unstable."
+ ],
+ "phoenixcore:bio_electric_discharge_amplifier_bucket": [
+  "§9Amplifies natural bio-electric currents for powerful surges."
+ ],
+ "phoenixcore:synaptic_corrosion_agent_bucket": [
+  "§4An agent that erodes synaptic connections in biological systems."
+ ],
+ "phoenixcore:wetware_integration_disruptor_bucket": [
+  "§cDisrupts the seamless integration of biological and mechanical components."
+ ],
+ "phoenixcore:nanite_aggregation_catalyst_bucket": [
+  "§aPromotes the rapid assembly of nanites into complex structures."
+ ],
+ "phoenixcore:accelerated_cellular_degenerate_bucket": [
+  "§4Causes rapid deterioration of cellular structures."
+ ],
+ "phoenixcore:uncontrolled_growth_stimulant_bucket": [
+  "§aStimulates unchecked and rapid biological growth."
+ ],
+ "phoenixcore:genetic_corruption_fluid_bucket": [
+  "§2A fluid that introduces harmful mutations into genetic code."
+ ],
+ "phoenixcore:neural_binding_compound_bucket": [
+  "§dA compound that forms new, powerful neural connections."
+ ],
+ "phoenixcore:behavioral_imprinting_solution_bucket": [
+  "§9Imprints specific behaviors onto biological or synthetic entities."
+ ],
+ "phoenixcore:pain_amplification_serum_bucket": [
+  "§cA serum that magnifies pain signals to extreme levels."
+ ],
+ "phoenixcore:bio_iridescent_decay_bucket": [
+  "§dA biological decay process that emits beautiful, eerie light."
+ ],
+ "phoenixcore:crystalline_proliferation_bucket": [
+  "§bPromotes rapid and uncontrolled crystal growth."
+ ],
+ "phoenixcore:pulsating_organic_slime_bucket": [
+  "§aA living slime that throbs with an inner energy."
+ ],
+ "phoenixcore:entangled_state_conduit_fluid_bucket": [
+  "§9A fluid that maintains quantum entanglement across distances."
+ ],
+ "phoenixcore:cryogenic_processing_gel_bucket": [
+  "§bA gel designed for extreme cold processing, preserving delicate materials."
+ ],
+ "phoenixcore:adaptive_logic_matrix_fluid_bucket": [
+  "§7A fluid that forms adaptable logical pathways for advanced AI."
+ ],
+ "phoenixcore:resonant_frequency_amplifier_fluid_bucket": [
+  "§5Amplifies specific energy frequencies, useful for communication or destruction."
+ ],
+ "phoenixcore:cognitive_interface_alloy_fluid_bucket": [
+  "§dA alloy in fluid form, allowing direct thought-to-machine interfaces."
+ ],
+ "phoenixcore:akashic_resonance_stream_bucket": [
+  "§6A stream of pure information, connected to the Akashic Records."
+ ],
+ "phoenixcore:zeronium_temporal_essence_bucket": [
+  "§9Essence of Zeronium, capable of minor temporal manipulation."
+ ],
+ "phoenixcore:multiversal_singularity_catalyst_bucket": [
+  "§0A catalyst for creating miniature singularities that bridge realities."
+ ],
+ "phoenixcore:chronarium_infusion_fluid_bucket": [
+  "§9A fluid infused with Chronarium, slowing or accelerating local time."
+ ],
+ "phoenixcore:ethereal_knowledge_nexus_bucket": [
+  "§6A nexus of pure knowledge, accessible through thought."
+ ],
+ "phoenixcore:fading_ember_residue_bucket": [
+  "§4The last vestiges of powerful embers, retaining latent heat."
+ ],
+ "phoenixcore:true_heat_conductor_unstable_bucket": [
+  "§cAn unstable material that conducts heat with almost no loss."
+ ],
+ "phoenixcore:frost_bucket": [
+  "§bIntense cold, crystallized into a material form."
+ ],
+ "phoenixcore:phoenix_ash_suspension_bucket": [
+  "§6Ashes of a phoenix suspended in liquid, holding regenerative properties."
+ ],
+ "phoenixcore:infernal_overload_emulsion_bucket": [
+  "§4A volatile emulsion that causes immense energy overloads."
+ ],
+ "phoenixcore:scorched_matrix_fluid_bucket": [
+  "§cA fluid that forms a superheated, durable matrix."
+ ],
+ "phoenixcore:phase_instability_fluid_bucket": [
+  "§7A fluid that induces instability in material phases, useful for transformations."
+ ],
+ "phoenixcore:echoes_of_the_past_resonance_fluid_bucket": [
+  "§7A fluid that resonates with historical events, aiding in reconstruction."
+ ],
+ "phoenixcore:multi_spectral_sensor_array_fluid_bucket": [
+  "§9A fluid forming advanced sensors, detecting across many spectrums."
+ ],
+ "phoenixcore:information_processor_fluid_sensory_bucket": [
+  "§7A fluid that processes sensory data at incredible speeds."
+ ],
+ "phoenixcore:adaptive_camouflage_coating_tech_bucket": [
+  "§aA technological coating that adapts to surroundings for perfect camouflage."
+ ],
+ "phoenixcore:directional_energy_receiver_fluid_bucket": [
+  "§eA fluid capable of absorbing and focusing energy from specific directions."
+ ],
+ "phoenixcore:neural_interface_emulator_digital_fluid_bucket": [
+  "§dA fluid that emulates neural interfaces digitally, for AI minds."
+ ],
+ "phoenixcore:blazing_drilling_fluid_bucket": [
+  "§c§lA superheated fluid used for rapidly melting and drilling through solid rock."
+ ],
+ "phoenixcore:voidic_drilling_fluid_bucket": [
+  "§8§lA void-infused fluid that dissolves matter, creating tunnels effortlessly."
+ ],
+ "phoenixcore:magma_bucket": [
+  "§4§lMolten rock from deep within the earth, source of immense heat."
+ ],
+ "phoenixcore:aurum_steel_drilling_kit": [
+  "§6§oA kit imbued with ancient power, capable of penetrating some stubborn materials.",
+  "§9Forged from Aurum Steel, its strength is matched by its inherent, volatile mystery."
+ ],
+ "phoenixcore:aurum_steel_drill_head": [
+  "§6§lThe head of an ancient drill, shimmering with a golden, arcane glow.",
+  "§8§lIt can carve through dimensions, but is prone to unexpected failures if its power is mishandled."
+ ],
+ "phoenixcore:space_miner_module": [
+  "§d§oDesigned for deep-space resource extraction.",
+  "§5Enables efficient mining on celestial bodies and asteroids, far from terrestrial interference."
+ ],
+ "gtceu:ulv_water_source": [
+  "§o§7A Great Source of Water!",
+  "§o§7This machine does not require power to operate."
+ ],
+ "phoenixcore:ulv_water_source": [
+  "§o§7A Great Source of Water!",
+  "§o§7This machine does not require power to operate."
+ ],
+ "gtceu:iv_confectionery_fabricator": [
+  "§7A sophisticated machine for creating delightful treats.",
+  "§fUsed for:",
+  "§6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "phoenixcore:iv_confectionery_fabricator": [
+  "§7A sophisticated machine for creating delightful treats.",
+  "§fUsed for:",
+  "§6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "gtceu:luv_confectionery_fabricator": [
+  "§7An advanced confectionary marvel, processing ingredients with immense power.",
+  "§fUsed for:",
+  "§6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)",
+  "from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "phoenixcore:luv_confectionery_fabricator": [
+  "§7An advanced confectionary marvel, processing ingredients with immense power.",
+  "§fUsed for:",
+  "§6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)",
+  "from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "gtceu:zpm_confectionery_fabricator": [
+  "§7The pinnacle of sweet creation, synthesizing treats at incredible speeds.",
+  "§fUsed for:",
+  " §6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "phoenixcore:zpm_confectionery_fabricator": [
+  "§7The pinnacle of sweet creation, synthesizing treats at incredible speeds.",
+  "§fUsed for:",
+  " §6Honey Treats §7(from §eCream, §6Honey, §fPeanut Butter§7, etc)"
+ ],
+ "gtceu:emberwake_alloy_hearth": [
+  "§7A formidable Alloy Blast Smelter of immense power.",
+  "§fCapable of §eParallel Processing §ffor accelerated production.",
+  "§cUtilizes the legendary §6Phoenix Force §cfor extreme temperatures."
+ ],
+ "phoenixcore:emberwake_alloy_hearth": [
+  "§7A formidable Alloy Blast Smelter of immense power.",
+  "§fCapable of §eParallel Processing §ffor accelerated production.",
+  "§cUtilizes the legendary §6Phoenix Force §cfor extreme temperatures."
+ ],
+ "phoenixcore:earthbound_miner_module": [
+  "§e§oA versatile mining module, adaptable to multiple dimensions.",
+  "§6Optimized for resource gathering in the Overworld, Nether, and End, maximizing terrestrial yields."
+ ],
+ "phoenixcore:aluminfrost_drilling_kit": [
+  "§b§oA drilling kit designed for precision in the most frigid, brittle environments.",
+  "§9Its components remain perfectly chilled, preventing overheating and material degradation."
+ ],
+ "phoenixcore:aluminfrost_drill_head": [
+  "§b§lAn icy drill head, its surface supercooled to reduce friction to almost nothing.",
+  "§9It carves through rock and ice alike with unnerving silence, leaving a trail of frost."
+ ],
+ "phoenixcore:frost_reinforced_stained_steel_drilling_kit": [
+  "§f§oA heavy-duty drilling kit, reinforced with cryogenic alloys.",
+  "§9Its components are exceptionally durable and resistant to extreme temperature fluctuations."
+ ],
+ "phoenixcore:thorium_fuel_pellet": [
+  "§6A compacted pellet of fertile thorium.",
+  "§6Designed for efficient neutron capture and U-233 breeding in reactor blankets."
+ ],
+ "phoenixcore:uranium_233_fuel_pellet": [
+  "§aA highly concentrated pellet of bred Uranium-233.",
+  "§aDelivers exceptional energy output as primary fissile fuel."
+ ],
+ "phoenixcore:uranium_236_fuel_pellet": [
+  "§aA highly concentrated pellet of bred Uranium-236.",
+  "§6Designed for efficient neutron capture and Pu-241 breeding reactions as a blanket."
+ ],
+ "phoenixcore:plutonium_241_fuel_pellet": [
+  "§6A compacted pellet of Plutonium-241.",
+  "§aDelivers exceptional energy output as primary fissile fuel."
+ ],
+ "gtceu:uranium_235_fuel_pellet": [
+  "§2A compacted pellet of Uranium-235.",
+  "§2Serves as the primary driver fuel for fission reactors."
+ ],
+ "phoenixcore:uranium_235_fuel_pellet": [
+  "§2A compacted pellet of Uranium-235.",
+  "§2Serves as the primary driver fuel for fission reactors."
+ ],
+ "phoenixcore:frost_reinforced_stained_steel_drill_head": [
+  "§f§lThis drill head bears a subtle, frozen pattern, a testament to its resilience.",
+  "§9Capable of breaking through solidified barriers while maintaining its integrity in the cold."
+ ],
+ "phoenixcore:space_grade_steel_drilling_kit": [
+  "§d§oA state-of-the-art drilling kit, engineered for extraterrestrial exploration.",
+  "§5Its components are hermetically sealed and radiation-hardened for deep space operations."
+ ],
+ "phoenixcore:space_grade_steel_drill_head": [
+  "§d§lAn orbital-grade drill head, designed to pierce lunar regolith or asteroid cores.",
+  "§5Extremely strong in its ability to withstand vacuum, extreme temperatures, and cosmic radiation."
+ ],
+ "gtceu:compact_draconic_fusion_reactor_mk1": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Large Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "phoenixcore:compact_draconic_fusion_reactor_mk1": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Large Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "gtceu:compact_draconic_fusion_reactor_mk2": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Immense Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "phoenixcore:compact_draconic_fusion_reactor_mk2": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Immense Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "gtceu:compact_draconic_fusion_reactor_mk3": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Excessive Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "phoenixcore:compact_draconic_fusion_reactor_mk3": [
+  "§6Draconic Reactor Without The Explosions!",
+  "§7Allows Exactly 1 Source Laser Hatch.",
+  "§7Creates Excessive Amounts Of Power Through Draconic Fusion.",
+  "§bAdd large Chaos Shards For 3x The EU Output For Half The Duration."
+ ],
+ "__forms": [
+  "${materialName}",
+  "${materialName}_ingot",
+  "${materialName}_dust",
+  "${materialName}_block",
+  "${materialName}_fluid_bucket",
+  "${materialName}_turbine_rotor",
+  "${materialName}_plate",
+  "dense_${materialName}_plate",
+  "double_${materialName}_plate",
+  "tiny_${materialName}_dust",
+  "small_${materialName}_dust",
+  "${materialName}_foil",
+  "${materialName}_rod",
+  "long_${materialName}_rod",
+  "${materialName}_ring",
+  "${materialName}_round",
+  "${materialName}_gear",
+  "small_${materialName}_gear",
+  "${materialName}_spring",
+  "${materialName}_bolt",
+  "${materialName}_screw",
+  "${materialName}_frame",
+  "${materialName}_nugget",
+  "${materialName}_rotor",
+  "${materialName}turbine__rotor",
+  "crushed_${materialName}_ore",
+  "refined_${materialName}_ore",
+  "purified_${materialName}_ore",
+  "deepslate_${materialName}_ore",
+  "${materialName}_wire",
+  "fine_${materialName}_wire",
+  "${materialName}_single_wire",
+  "${materialName}_double_wire",
+  "${materialName}_quadruple_wire",
+  "${materialName}_octal_wire",
+  "${materialName}_hex_wire",
+  "${materialName}_cable",
+  "${materialName}_single_cable",
+  "${materialName}_double_cable",
+  "${materialName}_quadruple_cable",
+  "${materialName}_octal_cable",
+  "${materialName}_hex_cable",
+  "${materialName}_sword",
+  "${materialName}_pickaxe",
+  "${materialName}_drill_lv",
+  "${materialName}_drill_mv",
+  "${materialName}_drill_hv",
+  "${materialName}_drill_ev",
+  "${materialName}_drill_iv",
+  "${materialName}_axe",
+  "${materialName}_chainsaw_lv",
+  "${materialName}_shovel",
+  "${materialName}_spade",
+  "${materialName}_hoe",
+  "${materialName}_scythe",
+  "${materialName}_shears",
+  "${materialName}_wrench",
+  "${materialName}_wrench_lv",
+  "${materialName}_wrench_hv",
+  "${materialName}_wrench_iv",
+  "${materialName}_screwdriver",
+  "${materialName}_screwdriver_lv",
+  "${materialName}_wire_cutter",
+  "${materialName}_wire_cutter_lv",
+  "${materialName}_wire_cutter_hv",
+  "${materialName}_wire_cutter_iv",
+  "${materialName}_mortar",
+  "${materialName}_hard_hammer",
+  "${materialName}_mining_hammer",
+  "${materialName}_saw",
+  "${materialName}_buzzsaw",
+  "${materialName}_knife",
+  "${materialName}_butchery_knife",
+  "${materialName}_file",
+  "${materialName}_crowbar",
+  "${materialName}_gem",
+  "flawless_${materialName}_gem",
+  "exquisite_${materialName}_gem",
+  "${materialName}_nugget"
+ ],
+ "__materials": {
+  "antimatter": "§cPure antimatter, capable of immense destruction upon contact with normal matter. Handle with extreme caution.",
+  "aurum_steel": "§6A golden-hued steel, known for its resilience and unique properties.",
+  "stabilized_antimatter": "§6A highly energetic and dangerous material, tamed for industrial use.",
+  "fiery_bronze": "§cBronze imbued with intense heat, resistant to extreme temperatures.",
+  "space_grade_steel": "§3Steel designed for the harsh vacuum of space, incredibly tough.",
+  "infinity": "§dA material said to hold limitless potential.",
+  "source_imbued_titanium": "§5Titanium infused with magical energy, granting new capabilities.",
+  "zircon": "§fA durable mineral, often used in high-temperature applications.",
+  "aluminfrost": "§9An aluminum alloy with unique cryogenic properties.",
+  "superconductive_honey": "§eA miraculous golden substance imbued with exotic cryogenic properties, capable of conducting energy with almost zero resistance.",
+  "magmatic_manganese_lead": "§6A lead alloy forged in extreme heat, with conductive properties.",
+  "cryogenic_aluminum_strand": "§9Aluminum refined for extreme cold, excellent for superconductivity.",
+  "zircalloy": "§7A zirconium alloy, primarily used in nuclear applications.",
+  "icy_steel_matrix": "§bSteel interwoven with cryogenic elements, forming a stable matrix.",
+  "source_titanium_filament": "§5Titanium processed into fine threads, infused with magical energy.",
+  "low_level_radioactive_waste": "§2Radioactive by-product, requiring careful recyling.",
+  "hafnium_chloride": "§7A reactive compound, often used in chemical processes.",
+  "argentum": "§1A silvery material, often associated with magical conductivity.",
+  "unrefined_aluminfrost": "§9AluminFrost ore, yet to be purified for use.",
+  "permafrost": "§9Extremely cold ground, useful for cryogenic research.",
+  "dormant_ember": "§cThe last remmants of a great fire that once ravaged the world.",
+  "uranium_oxide": "§aThe primary fuel for early fission reactors.",
+  "frost_reinforced_stained_steel": "§bSteel hardened by extreme cold, with improved durability.",
+  "gold_iron_alloy": "§6A common alloy, combining the properties of gold and iron.",
+  "85_percent_pure_nevonian_steel": "§7A high-purity steel from Nevon that is seen throughout many worlds. It is prized for its exceptional strength and magical capabilities.",
+  "blazing_crystal": "§cA crystal radiating intense heat, charged with fiery energy.",
+  "energized_steel": "§9Steel imbued with electrical energy, enhancing its properties.",
+  "niotic_crystal": "§5A powerful crystal, often used in advanced magical or energy applications.",
+  "spirited_crystal": "§dA vibrant crystal, humming with an ethereal or lively essence.",
+  "nitro": "§4A volatile and highly reactive compound, often used for explosive power.",
+  "honey": "§6A sweet, viscous substance, often used in organic or alchemical processes.",
+  "fluix": "§9A versatile crystal, fundamental for AE2 technologies.",
+  "conductive_alloy": "§8An alloy designed for superior electrical conductivity.",
+  "energetic_alloy": "§eAn alloy storing latent energy, often used in power generation.",
+  "vibrant_alloy": "§aA highly energized alloy, glowing with stored power.",
+  "end_steel": "§5Steel from the End, exceptionally durable.",
+  "lumium": "§eA luminous alloy, capable of emitting light.",
+  "signalum": "§cA redstone-infused alloy, used for signal transmission.",
+  "enderium": "§3A rare alloy, highly resistant and dimensionally stable.",
+  "dark_steel": "§0A reinforced steel from the darkness, exceptionally strong.",
+  "soularium": "§8An alloy imbued with souls, often used in necromantic arts.",
+  "electrical_steel": "§7Steel enhanced for electrical applications, common in circuits.",
+  "voidglass_shard": "§5A physical manifestation of the Void. It boasts a tiny fraction of its power, and you can hear the Void's power pulse through it.",
+  "uranium_233": "§aA highly efficient fissile isotope, bred from thorium. Ideal for sustainable energy generation.",
+  "uranium_236": "§bA neutron-rich uranium isotope, often a byproduct of U-235 fission.",
+  "irradiated_thorium": "§6Thorium exposed to intense neutron flux, containing newly bred fissile materials.",
+  "spent_uranium_233": "§4Uranium-233 fuel depleted from reactor operation, still highly radioactive.",
+  "spent_uranium_235": "§4Uranium-235 fuel depleted from reactor operation, rich in valuable byproducts.",
+  "depleted_uranium_reactor": "§8Depleted uranium specifically processed from reactor spent fuel, ideal for breeding advanced actinides.",
+  "fissile_ash": "§7A dense, highly radioactive ash containing trace heavy elements, byproduct of fission product separation.",
+  "fission_products_fluid": "§2A highly complex and dangerous liquid mixture of various radioactive fission byproducts.",
+  "depleted_thorium": "§8Thorium exhausted of its breeding potential, primarily used for radiation shielding or disposal.",
+  "resonant_rhodium_alloy": "§bAn advanced rhodium-based alloy, infused with the power of inverting polarity for enhanced conductivity and stability in LuV applications.",
+  "akashic_zeronium": "§6A transcendental material, bridging the gap between reality and the Akasha.",
+  "phoenix_enriched_naquad": "§cNaquadah, infused with the regenerative power of the Phoenix Force, for your first taste of ultimate power.",
+  "phoenix_enriched_tritanium": "§cTritanium, supercharged by phoenix energy, offering unmatched resilience and conductivity.",
+  "aetherium_steel": "§9Steel alloyed with ethereal Aetherium, granting lightweight strength and magical resonance.",
+  "void_touched_tungsten_steel": "§6A rare and potent alloy: tungsten, meticulously gilded with the essence of the void. Its unique composition grants it unparalleled strength and an unsettling shimmer.",
+  "subspace_cobalt": "§3Cobalt existing partially in subspace, allowing for unique dimensional interactions.",
+  "singularity_forged_titanium": "§7Titanium forged at the edge of a singularity, imbued with impossible durability.",
+  "exotic_vanadium_composite": "§6A composite of exotic vanadium, pushing the limits of material science with its unique properties.",
+  "dark_matter_plated_iridium": "§0Iridium coated with a layer of stable dark matter, offering unparalleled protection.",
+  "corrupted_hyperalloy": "§dA powerful alloy twisted by unknown corruption, exhibiting unpredictable but immense power.",
+  "reality_bound_osmium": "§aOsmium anchored to the fabric of reality, providing a stable foundation for dimension-spanning devices.",
+  "void_stitched_neodymium": "§5Neodymium interwoven with void energy, enabling strange interactions with spatial fabric.",
+  "celestial_aurorium": "§6A radiant metal from celestial origins, humming with cosmic power and extraordinary properties.",
+  "primordial_flux_metal": "§9A metal born from primordial energies, capable of channeling raw flux and power.",
+  "eternal_starforged_steel": "§7Steel forged in the heart of dying stars, possessing enduring strength and resilience.",
+  "dimensional_reflection_alloy": "§9An alloy that mirrors dimensional properties, useful for interdimensional travel.",
+  "timewoven_platinum": "§fPlatinum interlaced with temporal strands, allowing for subtle manipulation of localized time.",
+  "soulbound_ethersteel": "§9Steel imbued with captured souls and ethereal energy, making it unnaturally resilient.",
+  "tachyon_infused_chromium": "§9Chromium infused with tachyons, capable of exceeding light speed in certain applications.",
+  "echo_crystal_alloy": "§5An alloy resonating with latent echoes of past events, used in reality manipulation.",
+  "nebular_resonance_ingot": "§7An ingot that vibrates with nebular energy, crucial for cosmic machinery.",
+  "paradoxium": "§dA material that defies conventional physics, existing in a state of paradox.",
+  "phoenix_tempered_mithril": "§bMithril strengthened by the Phoenix Force, granting it legendary durability and light.",
+  "void_sung_adamantite": "§8Adamantite blessed by the void, impervious to nearly all forms of damage.",
+  "entangled_palladium": "§ePalladium entangled at a quantum level, allowing for instant communication across vast distances.",
+  "entangled_neutron_alloy": "§8An alloy of entangled neutrons, possessing extreme density and unique spatial properties.",
+  "superposition_tungsten_matrix": "§7Tungsten matrix existing in multiple states simultaneously, offering unparalleled adaptability.",
+  "exo_temporal_orichalcum": "§6Orichalcum with external temporal properties, allowing for time-related constructs.",
+  "galactic_heart_matter": "§cMatter from the core of a galaxy, radiating immense power and cosmic energy.",
+  "dark_nebula_infused_iridium": "§5Iridium infused with the essence of a dark nebula, granting it stealth and gravitational control.",
+  "eldritch_voidsteel": "§0Steel forged in the void, empowered by eldritch energies and resisting arcane forces.",
+  "akashic_chrono_metal": "§6A metal that exists beyond time, connected to the Akashic Records, holding infinite history.",
+  "absolute_zero_zeronium": "§3Zeronium cooled to absolute zero, used in technologies that defy conventional thermodynamics.",
+  "multiversal_hyperalloy": "§fAn alloy capable of existing across multiple universes, essential for multiversal transport.",
+  "glitched_corruption_substrate": "§dA substrate corrupted by glitches in reality, leading to unpredictable but immense properties.",
+  "event_horizon_matter": "§0Matter condensed at an event horizon, possessing extreme density and gravitational pull.",
+  "advanced_quin_naquadian_alloy": "§4An incredibly dense and volatile alloy, forged from exotic fission products and Naquadah, hinting at power beyond current understanding.",
+  "extremely_modified_space_grade_steel": "§dAn ultra-engineered variant of space grade steel, boasting extreme durability and resilience for the harshest environments."
+ }
+}

@@ -1,0 +1,34 @@
+{
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "pattern": [
+    "SLS",
+    "LBL",
+    "FPF"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:screws/steel"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:copper_backpack"
+    },
+    "F": {
+      "item": "minecraft:string"
+    },
+    "P": {
+      "tag": "c:plates/rose_gold"
+    }
+  },
+  "result": {
+    "id": "sophisticatedbackpacks:iron_backpack"
+  },
+  "neoforge:conditions": [
+    {
+      "itemRegistryName": "iron_backpack",
+      "type": "sophisticatedbackpacks:item_enabled"
+    }
+  ]
+}

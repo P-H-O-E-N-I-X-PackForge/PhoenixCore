@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "phoenixcore:block/machine/iv_confectionery_fabricator",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/iv_confectionery_fabricator"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/iv_confectionery_fabricator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/iv_confectionery_fabricator",
+      "y": 270
+    }
+  }
+}

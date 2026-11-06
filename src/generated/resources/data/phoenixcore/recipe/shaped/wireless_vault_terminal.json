@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:plates/steel"
+    },
+    "B": {
+      "tag": "c:plates/glass"
+    },
+    "C": {
+      "item": "gtceu:lv_emitter"
+    },
+    "D": {
+      "item": "gtceu:lv_sensor"
+    },
+    "E": {
+      "tag": "c:screws/steel"
+    },
+    "d": {
+      "tag": "gtceu:crafting_tools/screwdriver"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "CBD",
+    "EdE"
+  ],
+  "result": {
+    "count": 1,
+    "id": "phoenixcore:wireless_vault_terminal"
+  },
+  "show_notification": false
+}

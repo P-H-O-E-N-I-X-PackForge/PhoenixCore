@@ -1,0 +1,14 @@
+{
+  "name": "The Prism Cloud",
+  "center": [
+    9.5,
+    -0.2,
+    0.5
+  ],
+  "radius": 5.5,
+  "color1": "#ff60d0",
+  "color2": "#40d0ff",
+  "density": 0.8,
+  "seed": 27,
+  "puffs": 4
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "phoenixcore:hsla_steel_long_rod",
+      "required": false
+    }
+  ]
+}

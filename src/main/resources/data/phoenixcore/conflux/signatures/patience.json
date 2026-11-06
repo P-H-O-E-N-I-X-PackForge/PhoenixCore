@@ -1,0 +1,17 @@
+{
+  "discipline": "void",
+  "title": "Patience",
+  "description": "The Void gives without end, but only to those who wait. It gathers while you are away.",
+  "color": "9A6CFF",
+  "icon": "minecraft:ender_eye",
+  "max": 1000,
+  "start": 0,
+  "gain_per_minute": 1,
+  "decay_per_minute": 0,
+  "levels": [
+    { "at": 0, "name": "Restless" },
+    { "at": 100, "name": "Still" },
+    { "at": 350, "name": "Patient" },
+    { "at": 700, "name": "Timeless" }
+  ]
+}

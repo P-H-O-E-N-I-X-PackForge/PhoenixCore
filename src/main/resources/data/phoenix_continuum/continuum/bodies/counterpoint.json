@@ -1,0 +1,66 @@
+{
+  "system": "phoenix_continuum:duet",
+  "type": "black_hole",
+  "name": "Counterpoint",
+  "description": "Two black holes circling each other. Observation only; nothing lands here.",
+  "orbit": {
+    "radius_au": 0.0,
+    "period_days": 1,
+    "phase": 0.0
+  },
+  "radius": 1.5,
+  "gas_giant": false,
+  "axial_tilt": 0,
+  "spin_deg_per_sec": 0,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 1,
+    "scale": 1.0,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.0,
+    "bump": 0.7,
+    "low": "#000000",
+    "mid": "#050505",
+    "high": "#0a0a0a",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#b45cff",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#6aa8ff",
+    "density": 0.0
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_tenebrae_lensing",
+    "surveyed_research": "phoenixcore:space_survey_event"
+  },
+  "trip_minutes": 105,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:crying_obsidian",
+      "min": 4,
+      "max": 8,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 3,
+      "max": 6,
+      "chance": 0.6
+    },
+    {
+      "item": "minecraft:nether_star",
+      "min": 1,
+      "max": 1,
+      "chance": 0.02
+    }
+  ],
+  "lore": {
+    "detected": "Two shadows where there should be one, trading places every few moments, and something bright caught between them.",
+    "surveyed": "Counterpoint is a pair of black holes in a slow orbit, each one dragging a thin disk behind it through a wide violet halo of gas. They will merge. Not in any lifetime we can count, but the arithmetic is unambiguous."
+  }
+}

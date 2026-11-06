@@ -1,0 +1,101 @@
+package net.phoenix.core.common.item.cinder;
+
+import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.capabilities.Capabilities;
+
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+
+import java.util.Optional;
+
+public class CinderCoreForgeRecipe extends CustomRecipe {
+
+    public CinderCoreForgeRecipe(CraftingBookCategory category) {
+        super(category);
+    }
+
+    @Override
+    public boolean matches(CraftingInput container, Level level) {
+        ItemStack template = ItemStack.EMPTY;
+        Reference2IntMap<Block> available = new Reference2IntOpenHashMap<>();
+
+        for (int i = 0; i < container.size(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.isEmpty()) continue;
+
+            if (stack.getItem() instanceof CinderCoreItem) {
+                if (!template.isEmpty()) return false;
+                if (CinderSchemaData.getTargetId(stack) == null) return false;
+
+                if (!CinderSchemaData.tallyStocked(stack).isEmpty()) return false;
+                template = stack;
+            } else if (stack.getItem() instanceof BlockItem blockItem) {
+                available.merge(blockItem.getBlock(), stack.getCount(), Integer::sum);
+            } else {
+                return false;
+            }
+        }
+        if (template.isEmpty()) return false;
+
+        MultiblockSchemaInfo schemaInfo = CinderSchemaData.resolveSchema(template);
+        if (schemaInfo == null) return false;
+        var required = schemaInfo.getBlockCounts();
+        if (required.isEmpty()) return false;
+
+        for (var entry : required.reference2IntEntrySet()) {
+            if (available.getOrDefault(entry.getKey(), 0) < entry.getIntValue()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
+        ItemStack template = ItemStack.EMPTY;
+        for (int i = 0; i < container.size(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.getItem() instanceof CinderCoreItem) {
+                template = stack;
+                break;
+            }
+        }
+        if (template.isEmpty()) return ItemStack.EMPTY;
+
+        MultiblockSchemaInfo schemaInfo = CinderSchemaData.resolveSchema(template);
+        if (schemaInfo == null) return ItemStack.EMPTY;
+        var required = schemaInfo.getBlockCounts();
+
+        ItemStack output = template.copy();
+        Optional.ofNullable(output.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(handler -> {
+            int slot = 0;
+            for (var entry : required.reference2IntEntrySet()) {
+                handler.insertItem(slot++, new ItemStack(entry.getKey().asItem(), entry.getIntValue()), false);
+            }
+        });
+        return output;
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= 2;
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
+        return new ItemStack(CinderItems.CINDER_CORE.get());
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return CinderRecipes.CINDER_FORGE_CRAFTING.get();
+    }
+}

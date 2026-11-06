@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "phoenixcore:block/machine/ulv_water_source",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/ulv_water_source"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/ulv_water_source",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/ulv_water_source",
+      "y": 270
+    }
+  }
+}

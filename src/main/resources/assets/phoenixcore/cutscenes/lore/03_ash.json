@@ -1,0 +1,95 @@
+{
+  "pages": [
+    "The ash here is warm. It has been warm for a very long time.",
+    "Ash remembers what it was. When I touch it, I see shapes. Desks. Glass. A long hall full of instruments, all humming the same note.",
+    {
+      "content": [
+        "Under the cinders, a notebook. The pages burned, but the cover did not. On it, in my handwriting: ",
+        {
+          "text": "\"Ignition confirmed. Proceed.\"",
+          "color": "#FF7043",
+          "italic": true
+        }
+      ],
+      "text_y": 0.62,
+      "images": [
+        {
+          "item": "minecraft:writable_book",
+          "x": 0.5,
+          "y": 0.3,
+          "scale": 4,
+          "animation": {
+            "delay": 0.4,
+            "fade_in": 1.6,
+            "slide_y": 10,
+            "bob": 2
+          }
+        }
+      ]
+    },
+    {
+      "content": "I do not remember writing it. My hand does. It is shaking.",
+      "text_y": 0.62,
+      "images": [
+        {
+          "item": "minecraft:writable_book",
+          "x": 0.5,
+          "y": 0.3,
+          "scale": 4,
+          "animation": {
+            "fade_in": 0.01,
+            "slide_y": 0,
+            "bob": 2
+          }
+        }
+      ],
+      "choices": [
+        {
+          "text": "Keep the notebook.",
+          "actions": [
+            "phoenixcore:lore/ash_keep_notebook"
+          ],
+          "goto": "kept"
+        },
+        {
+          "text": "Let it burn.",
+          "actions": [
+            "phoenixcore:lore/ash_burn_notebook"
+          ],
+          "goto": "burned"
+        }
+      ]
+    },
+    {
+      "id": "kept",
+      "content": "I close it before I can read any further. Whatever I was, I should find out slowly.",
+      "end": true
+    },
+    {
+      "id": "burned",
+      "content": [
+        "The pages curl. For a moment the ink glows, and every word is legible. ",
+        {
+          "text": "I read them anyway.",
+          "italic": true,
+          "color": "#FF7043"
+        }
+      ],
+      "end": true
+    }
+  ],
+  "chars_per_second": 20,
+  "background": "phoenixcore:pyre",
+  "sound": {
+    "id": "minecraft:block.campfire.crackle",
+    "volume": 0.25,
+    "pitch": 1.0,
+    "pitch_variance": 0.3,
+    "every_n_letters": 3
+  },
+  "music": {
+    "sound": "phoenixcore:cutscene/pyre",
+    "volume": 0.9,
+    "fade_in": 5.0
+  }
+}

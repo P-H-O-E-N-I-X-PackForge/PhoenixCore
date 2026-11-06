@@ -1,0 +1,40 @@
+{
+  "type": "layered",
+  "layers": [
+    {
+      "type": "solid",
+      "color": "#04141C"
+    },
+    {
+      "type": "noise",
+      "color": "#2E8B9E",
+      "scale": 1.8,
+      "speed": 0.05,
+      "contrast": 1.5,
+      "opacity": 0.5,
+      "blend": "add"
+    },
+    {
+      "type": "pulse",
+      "inner": "#804DD0E1",
+      "outer": "#0000363F",
+      "speed": 0.25,
+      "opacity": 0.6,
+      "blend": "add"
+    },
+    {
+      "type": "sparkle",
+      "color": "#7FFFD4",
+      "density": 0.3,
+      "speed": 1.2,
+      "opacity": 0.4,
+      "blend": "add"
+    },
+    {
+      "type": "radial_gradient",
+      "inner": "#00000000",
+      "outer": "#C0000000",
+      "radius": 1.6
+    }
+  ]
+}

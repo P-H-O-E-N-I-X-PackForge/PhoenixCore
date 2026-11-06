@@ -1,0 +1,22 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "gtceu:machine",
+  "machine": "phoenixcore:uv_energetic_data_producer",
+  "replaceable_textures": [
+    "bottom",
+    "top",
+    "side"
+  ],
+  "variants": {
+    "": {
+      "model": {
+        "parent": "phoenixcore:block/machine/part/conflux_energetic_data_producer",
+        "textures": {
+          "bottom": "gtceu:block/casings/voltage/uv/bottom",
+          "side": "gtceu:block/casings/voltage/uv/side",
+          "top": "gtceu:block/casings/voltage/uv/top"
+        }
+      }
+    }
+  }
+}

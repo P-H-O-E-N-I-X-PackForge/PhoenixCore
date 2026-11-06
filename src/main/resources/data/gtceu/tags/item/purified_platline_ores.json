@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "gtceu:purified_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_cooperite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_bornite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_chalcocite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_tetrahedrite_ore",
+      "required": false
+    }
+  ]
+}

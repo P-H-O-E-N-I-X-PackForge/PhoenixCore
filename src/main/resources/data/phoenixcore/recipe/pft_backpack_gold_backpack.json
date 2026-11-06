@@ -1,0 +1,34 @@
+{
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "pattern": [
+    "SLS",
+    "LBL",
+    "FPF"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:screws/aluminium"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:iron_backpack"
+    },
+    "F": {
+      "item": "gtceu:carbon_fibers"
+    },
+    "P": {
+      "tag": "c:plates/blue_alloy"
+    }
+  },
+  "result": {
+    "id": "sophisticatedbackpacks:gold_backpack"
+  },
+  "neoforge:conditions": [
+    {
+      "itemRegistryName": "gold_backpack",
+      "type": "sophisticatedbackpacks:item_enabled"
+    }
+  ]
+}

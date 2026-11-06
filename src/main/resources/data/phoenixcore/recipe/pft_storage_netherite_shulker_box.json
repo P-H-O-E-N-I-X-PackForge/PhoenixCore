@@ -1,0 +1,28 @@
+{
+  "type": "sophisticatedstorage:storage_tier_upgrade",
+  "pattern": [
+    "IPI",
+    "ICI",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/stainless_steel"
+    },
+    "P": {
+      "tag": "c:plates/gold"
+    },
+    "C": {
+      "item": "sophisticatedstorage:diamond_shulker_box"
+    }
+  },
+  "result": {
+    "id": "sophisticatedstorage:netherite_shulker_box"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedstorage:netherite_shulker_box"
+    }
+  ]
+}

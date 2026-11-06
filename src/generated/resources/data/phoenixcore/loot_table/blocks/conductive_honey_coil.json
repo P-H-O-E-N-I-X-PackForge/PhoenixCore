@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "phoenixcore:conductive_honey_coil"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "phoenixcore:blocks/conductive_honey_coil"
+}

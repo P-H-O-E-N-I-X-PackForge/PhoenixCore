@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "phoenixcore:block/volatile_plasma_chamber"
+    }
+  }
+}

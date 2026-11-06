@@ -1,0 +1,28 @@
+{
+  "type": "sophisticatedstorage:storage_tier_upgrade",
+  "pattern": [
+    "IPI",
+    "ICI",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/stainless_steel"
+    },
+    "P": {
+      "tag": "c:plates/gold"
+    },
+    "C": {
+      "item": "sophisticatedstorage:diamond_barrel"
+    }
+  },
+  "result": {
+    "id": "sophisticatedstorage:netherite_barrel"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedstorage:netherite_barrel"
+    }
+  ]
+}

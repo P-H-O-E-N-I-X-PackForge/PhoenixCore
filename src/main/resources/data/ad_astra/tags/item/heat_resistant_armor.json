@@ -1,0 +1,41 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "gtceu:quarktech_helmet",
+      "required": false
+    },
+    {
+      "id": "gtceu:quarktech_chestplate",
+      "required": false
+    },
+    {
+      "id": "gtceu:advanced_quarktech_chestplate",
+      "required": false
+    },
+    {
+      "id": "gtceu:quarktech_leggings",
+      "required": false
+    },
+    {
+      "id": "gtceu:quarktech_boots",
+      "required": false
+    },
+    {
+      "id": "phoenixcore:phoenix_helmet",
+      "required": false
+    },
+    {
+      "id": "phoenixcore:phoenix_chestplate",
+      "required": false
+    },
+    {
+      "id": "phoenixcore:phoenix_leggings",
+      "required": false
+    },
+    {
+      "id": "phoenixcore:phoenix_boots",
+      "required": false
+    }
+  ]
+}

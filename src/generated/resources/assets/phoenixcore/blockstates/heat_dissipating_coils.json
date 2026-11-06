@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "phoenixcore:block/heat_dissipating_coils"
+    }
+  }
+}

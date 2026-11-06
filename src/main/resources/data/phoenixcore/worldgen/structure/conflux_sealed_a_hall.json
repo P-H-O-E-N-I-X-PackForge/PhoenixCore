@@ -1,0 +1,9 @@
+{
+  "type": "phoenixcore:conflux_structure",
+  "biomes": "phoenixcore:sealed_a",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "kind": "hall",
+  "theme": "sealed_a"
+}

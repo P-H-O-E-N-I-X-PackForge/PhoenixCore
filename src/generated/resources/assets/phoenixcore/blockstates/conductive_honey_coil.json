@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "phoenixcore:block/conductive_honey_coil"
+    },
+    "active=true": {
+      "model": "phoenixcore:block/conductive_honey_coil_active"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "type": "sophisticatedstorage:storage_tier_upgrade",
+  "pattern": [
+    "IPI",
+    "ICI",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/fiery_bronze"
+    },
+    "P": {
+      "tag": "c:plates/lead"
+    },
+    "C": {
+      "item": "sophisticatedstorage:barrel"
+    }
+  },
+  "result": {
+    "id": "sophisticatedstorage:iron_barrel"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedstorage:iron_barrel"
+    }
+  ]
+}

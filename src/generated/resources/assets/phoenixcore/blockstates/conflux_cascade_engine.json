@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "phoenixcore:block/machine/conflux_cascade_engine",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/conflux_cascade_engine"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/conflux_cascade_engine",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/conflux_cascade_engine",
+      "y": 270
+    }
+  }
+}

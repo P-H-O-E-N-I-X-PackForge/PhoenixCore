@@ -1,0 +1,331 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.143'
+    id 'com.diffplug.spotless' version '7.0.2'
+}
+
+version = mod_version
+group = mod_group_id
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'GTCEu Maven'
+        url = 'https://maven.gtceu.com/'
+        content {
+            includeGroup 'com.gregtechceu.gtceu'
+            includeGroup 'brachy.modularui'
+        }
+    }
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+    maven {
+        name = 'BlameJared Maven'
+        url = 'https://maven.blamejared.com/'
+    }
+    maven {
+        name = 'Devos Snapshot Maven'
+        url = 'https://mvn.devos.one/snapshots/'
+        content {
+            includeGroup 'com.tterrag.registrate'
+        }
+    }
+    maven {
+        name = 'LatvianDev Maven'
+        url = 'https://maven.latvian.dev/releases/'
+        content {
+            includeGroup 'dev.latvian.mods'
+            includeGroup 'dev.latvian.apps'
+        }
+    }
+    maven {
+        name = 'Sleeping Town'
+        url = 'https://repo.sleeping.town/'
+        content {
+            includeGroup 'dev.emi'
+        }
+    }
+    maven {
+        name = 'TheIllusiveC4 Maven'
+        url = 'https://maven.theillusivec4.top/'
+    }
+    maven {
+        name = 'Architectury Maven'
+        url = 'https://maven.architectury.dev/'
+        content {
+            includeGroup 'dev.architectury'
+        }
+    }
+    maven {
+        name = 'FTB Maven'
+        url = 'https://maven.ftb.dev/releases'
+    }
+    maven {
+        name = 'ModMaven'
+        url = 'https://maven.modmaven.dev/'
+        content {
+            includeGroup 'org.appliedenergistics'
+        }
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com/'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven {
+        name = 'Sleeping Town'
+        url = 'https://repo.sleeping.town/'
+        content {
+            includeGroup 'dev.emi'
+        }
+    }
+    maven {
+        name = 'Repsy'
+        url = uri('https://repo.repsy.io/mvn/user75142941/phoenixsuite')
+    }
+    exclusiveContent { // Configuration
+        forRepositories(
+                maven { url = 'https://repo.repsy.io/mvn/toma/public/' },
+                maven { url = 'https://api.repsy.io/mvn/toma/public' }
+        )
+        filter { includeGroup('dev.toma.configuration') }
+    }
+    maven { // Geckolib
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
+    flatDir {
+        dir 'libs'
+    }
+}
+
+base {
+    archivesName = archives_base_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    accessTransformers.from('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        configureEach {
+            gameDirectory = file('run-1211')
+            systemProperty 'neoforge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        client1 {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArgument '--username'
+            programArgument 'Player1'
+        }
+
+        client2 {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArgument '--username'
+            programArgument 'Player2'
+        }
+
+        server {
+            server()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll('--nogui', '--world', 'world-extra')
+        }
+
+        data {
+            data()
+            programArguments.addAll('--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath())
+            programArguments.addAll('--existing-mod', 'gtceu')
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+apply from: "$rootDir/gradle/scripts/spotless.gradle"
+
+dependencies {
+    compileOnly 'org.jetbrains:annotations:26.0.2'
+    implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.8.4"
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    implementation("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtm_version}") { transitive = false }
+    implementation("brachy.modularui:modularui-mc${minecraft_version}:${mui_version}") { transitive = false }
+    implementation "com.tterrag.registrate:Registrate:${registrate_version}"
+
+    // Phoenix suite
+    jarJar(implementation("net.phoenixvine.wiki:neoforge:${phoenix_wiki_version}")) {
+        version { strictly "[${phoenix_wiki_version},)"; prefer phoenix_wiki_version }
+    }
+    compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
+    implementation("net.phoenix_tesla_network.tesla:phoenix_tesla_network:${phoenix_tesla_version}") {
+        transitive = false
+    }
+    implementation("net.phoenix.continuum:phoenix_continuum:${phoenix_continuum_version}") { transitive = false }
+    if (!project.hasProperty('noPhantasia')) runtimeOnly("net.phoenix.core:phantasia_neoforge:${phantasia_version}") { transitive = false }
+    compileOnly files("libs/solaris-neoforge-1.6.5.jar")
+    if (!project.hasProperty('noSolaris')) runtimeOnly files("libs/solaris-neoforge-1.6.5.jar")
+    implementation files("libs/chromatic_codes-0.1.0-neoforge.jar")
+    compileOnly("net.phoenixvine.chronicles:phoenix_chronicles-neoforge:${phoenix_chronicles_version}") { transitive = false }
+    if (!project.hasProperty('noChronicles')) runtimeOnly("net.phoenixvine.chronicles:phoenix_chronicles-neoforge:${phoenix_chronicles_version}") { transitive = false }
+    // spark: /spark profiler start, /spark healthreport, /spark tps (pass -PnoSpark to leave it out)
+    if (!project.hasProperty('noSpark')) runtimeOnly "maven.modrinth:spark:${spark_version}"
+    if (!project.hasProperty('noArchive')) runtimeOnly("net.phoenix.phoenix_archive:phoenix_archive_neoforge:${phoenix_archive_version}") { transitive = false }
+    implementation "maven.modrinth:extended-ae:1.21-2.2.35-neoforge"
+    implementation "maven.modrinth:glodium:1.21-2.2-neoforge"
+
+    // Mods PhoenixCore builds on
+    implementation("com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${ars_nouveau_version}") { transitive = false }
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    implementation "dev.toma.configuration:configuration-${minecraft_version}:${configuration_version}"
+
+    compileOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
+    runtimeOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
+
+    // Custom menus (title screen and so on); dev runs only, the pack ships its own copy
+    runtimeOnly "maven.modrinth:fancymenu:${fancymenu_version}"
+    runtimeOnly "maven.modrinth:melody:${melody_version}"
+    runtimeOnly "maven.modrinth:konkrete:${konkrete_version}"
+
+    // Optional integrations
+    implementation "maven.modrinth:jade:15.10.6+neoforge"
+    implementation "org.appliedenergistics:appliedenergistics2:${ae2_version}"
+    compileOnly "dev.ftb.mods:ftb-teams-neoforge:${ftbteams_version}"
+    compileOnly "dev.ftb.mods:ftb-library-neoforge:${ftblibrary_version}"
+    compileOnly "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+
+    // Pure non-mod Java libraries, shipped inside the jar
+    implementation 'javazoom:jlayer:1.0.1'
+    jarJar('javazoom:jlayer:1.0.1') { transitive = false }
+
+    implementation 'org.jcodec:jcodec:0.2.5'
+    jarJar('org.jcodec:jcodec:0.2.5') { transitive = false }
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    test {
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_author             : mod_author,
+            mod_url                : mod_url,
+            gtm_version_min        : gtm_version_min,
+    ]
+    inputs.properties replaceProperties
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replaceProperties
+    }
+    // the starter Chronicles chapters, copied into config/phoenix_chronicles/quests the first time (ChroniclesScaffold)
+    from('questlines') {
+        into 'phoenixcore_questlines'
+        exclude 'README.md'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xmaxerrs' << '10000' << '-Xlint:-deprecation'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'Repsy'
+            url = uri('https://repo.repsy.io/mvn/user75142941/phoenixsuite')
+            credentials {
+                username = project.findProperty('repsyUsername') ?: System.getenv('REPSY_USERNAME')
+                password = project.findProperty('repsyPassword') ?: System.getenv('REPSY_PASSWORD')
+            }
+        }
+    }
+}
+
+// Axiom sprite baker
+tasks.register('exportAxiomSprites', JavaExec) {
+    group = 'phoenixcore'
+    description = 'Pre-bake Axiom Research Terminal background sprites to textures/gui/axiom/'
+    dependsOn compileJava
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'net.phoenix.core.integration.conflux.tools.AxiomSpriteExporter'
+    args = ["${projectDir}/src/main/resources/assets/phoenixcore/textures/gui/axiom"]
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

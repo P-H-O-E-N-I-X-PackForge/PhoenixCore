@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "on": "region_entered",
+  "conditions": { "discipline": "sculk", "region": "sculk_marsh" },
+  "once": "team",
+  "actions": [
+    { "type": "message", "value": "The ground here is soft, and it remembers your steps." },
+    { "type": "flag", "value": "sculk_marsh_found" },
+    { "type": "archive", "value": "sculk_marsh" }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "Dark again... that same endless dark.",
+    "I remember fire. I remember iron singing under the hammer, and a voice that called my name like it already owned it.",
+    [
+      { "text": "Something followed me out of that dream. It is " },
+      { "text": "still here", "color": "#FF6B6B", "italic": true },
+      { "text": ", waiting beneath my skin." }
+    ],
+    "Wake up. Before it decides to wake for you."
+  ],
+  "black_duration": 2.0,
+  "fade_in": 4.0,
+  "fade_out": 2.5,
+  "chars_per_second": 20,
+  "punctuation_pause": 0.4,
+  "text": {
+    "scale": 1.5,
+    "max_width": 0.55,
+    "wave_amplitude": 1.2
+  },
+  "background": {
+    "type": "layered",
+    "layers": [
+      { "type": "hue_cycle", "speed": 0.03, "saturation": 0.55, "brightness": 0.28, "spread": 0.15 },
+      { "type": "sparkle", "density": 0.25, "speed": 1.0, "opacity": 0.35, "blend": "add" },
+      { "type": "radial_gradient", "inner": "#00000000", "outer": "#A0000000", "radius": 1.6 }
+    ]
+  },
+  "sound": {
+    "id": "minecraft:block.note_block.hat",
+    "volume": 0.15,
+    "pitch": 1.4,
+    "pitch_variance": 0.15,
+    "every_n_letters": 2
+  },
+  "music": {"sound": "minecraft:music_disc.11", "volume": 0.9, "fade_in": 6.0, "loop": false}
+}

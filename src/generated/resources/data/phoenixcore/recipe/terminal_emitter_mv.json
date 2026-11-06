@@ -1,0 +1,5 @@
+{
+  "type": "phoenixcore:emitter_upgrade",
+  "emitter": "gtceu:mv_emitter",
+  "tier": 2
+}

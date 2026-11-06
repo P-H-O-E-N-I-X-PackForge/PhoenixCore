@@ -1,0 +1,224 @@
+{
+  "_comment": "The screens of the ethereal spawn. pos is the middle block; facing is the way the front points (towards the middle of the platform); pages are text (see docs/cinema-screens.md). After editing, run /conflux dimension spawndecor to rebuild them.",
+  "screens": [
+    {
+      "pos": [
+        -12,
+        67,
+        0
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 5,
+      "color": "#FFFFFF",
+      "background": "void_galaxy",
+      "pages": [
+        "WELCOME TO THE CONFLUX\nThis is a threshold. What you become next is a choice, and you make it once.\n@button Begin | next",
+        "HOW THESE SCREENS WORK\nClick a button, or an icon with an outline, to use it. Use the arrows to turn the page, or right-click anywhere else on a screen to go to the next one. A page that shows a picture of something can be clicked to open it.",
+        "WHAT TO LOOK FOR\nThis wall, west of the middle: what the Conflux is, what research costs and the five kinds of data, the HUD bar, and Continuum, the sky.",
+        "AND ON THE OTHER SIDES\nNorth: the Phoenix. East: the Sculk, what committing means, and what happens after you choose. South: the Void and the choosing screen. Read the three paths before you pick one.",
+        "WHEN YOU ARE READY\nUse the choosing screen to the south. Your first choice is free."
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        67,
+        -7
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FFFFFF",
+      "background": "nebula",
+      "pages": [
+        "THE CONFLUX\nA body of knowledge that grows as you work, and a place that answers to it.\n@nohint",
+        "ONE FOR YOUR TEAM\nYour team has one Conflux. Whatever one of you researches, all of you have.\n@nohint",
+        "TREES OF RESEARCH\nEach discipline is a tree. Finishing a node opens new recipes, machines or abilities for your whole team.\n@nohint",
+        "GATES\nSome things stay locked until the Conflux teaches them: a recipe, or a multiblock you cannot form yet.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        67,
+        7
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 5,
+      "color": "#6FA8FF",
+      "background": "nebula",
+      "pages": [
+        "RESEARCH IS PAID IN DATA\nThere are five kinds of it.\n@item minecraft:iron_ingot | Material\n@item minecraft:slime_ball | Biological\n@item minecraft:redstone | Energetic\n@item minecraft:comparator | Computational\n@item minecraft:amethyst_shard | Arcane\n@nohint",
+        "ARCANE DATA\nArcane data only exists when Ars Nouveau is installed.\n@nohint",
+        "MAKING DATA\nData-producer machines make it. Spend it at a research terminal, on the nodes of your path.\n@nohint",
+        "WHAT YOU NEED\nEach discipline leans on different kinds, so what you build first depends on what you choose.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        0,
+        67,
+        -12
+      ],
+      "facing": "south",
+      "cols": 5,
+      "rows": 4,
+      "color": "#FFC66B",
+      "background": "sunflare",
+      "pages": [
+        "THE PHOENIX\nRebirth through consumption. Every ending is an ignition.\n@item minecraft:blaze_powder | Heat\n@item minecraft:fire_charge | Reactions\n@item minecraft:lava_bucket | Power\n@button Next | next\n@nohint",
+        "WHAT YOU DO\nYou work with fire, heat and raw energy: forges, reactors, and reactions that burn hot.\n@nohint",
+        "ITS RESEARCH\nIt opens through Ember Awakening and leads to The Pyre, where you commit.\n@nohint",
+        "CHOOSE IT IF\nYou want power and speed, and do not mind handling a lot of heat.\n@nohint",
+        "CHANGING YOUR MIND\nCosts energetic and material data.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        12,
+        67,
+        0
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 4,
+      "color": "#6FE0D0",
+      "background": "sculk_abyss",
+      "pages": [
+        "THE SCULK\nA network that remembers every death that fed it. Not a parasite: a library.\n@item minecraft:sculk_catalyst | Growth\n@item minecraft:sculk_sensor | Sensing\n@item minecraft:echo_shard | Memory\n@button Next | next\n@nohint",
+        "WHAT YOU DO\nYou work with living systems: growth, sensing, signals, and information that spreads.\n@nohint",
+        "ITS RESEARCH\nIt opens through First Contact and leads to The Joining, where you commit.\n@nohint",
+        "CHOOSE IT IF\nYou like patient, sprawling builds and machines that sense and respond.\n@nohint",
+        "CHANGING YOUR MIND\nCosts biological and material data.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        0,
+        67,
+        12
+      ],
+      "facing": "north",
+      "cols": 5,
+      "rows": 4,
+      "color": "#B983FF",
+      "background": "void_galaxy",
+      "pages": [
+        "THE VOID\nBefore the first thing there was the space between things. It was patient.\n@item minecraft:ender_eye | Sight\n@item minecraft:ender_chest | Storage\n@item minecraft:ender_pearl | Distance\n@button Next | next\n@nohint",
+        "WHAT YOU DO\nYou work with space and computation: storage, distance, odd geometry and the arcane.\n@nohint",
+        "ITS RESEARCH\nIt opens through First Silence and leads to The Inversion, where you commit.\n@nohint",
+        "CHOOSE IT IF\nYou like logistics, dimensions and precise control.\n@nohint",
+        "CHANGING YOUR MIND\nCosts computational and arcane data.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        12,
+        67,
+        -7
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 3,
+      "color": "#FF9A6B",
+      "background": "sunflare",
+      "pages": [
+        "COMMITTING\nEvery path has a commitment node: The Pyre, The Joining, The Inversion.\n@nohint",
+        "WHAT IT DOES\nResearching it commits you to the path, and the research that follows it is built on that.\n@nohint",
+        "CHANGING AFTERWARDS\nYou can still change path, but it costs ten times the data of changing before you commit, and you lose the research of the path you leave.\n@nohint",
+        "BE SURE\nRead the paths again if you are not.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        12,
+        67,
+        7
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 3,
+      "color": "#5CFF8F",
+      "background": "nebula",
+      "pages": [
+        "AFTER YOU CHOOSE\nYou are taken to the realm of your discipline.\n@nohint",
+        "YOUR QUESTBOOK\nIt has a chapter for your path, and the first quests tell you where to begin.\n@nohint",
+        "COMING BACK\nReturn here any time with /conflux dimension return.\n@nohint",
+        "GOOD LUCK\nThe Conflux is listening.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        67,
+        14
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 5,
+      "color": "#9ED0FF",
+      "background": "nebula",
+      "pages": [
+        "THE HUD BAR\nOpen your inventory: a row of small buttons runs along the top of the screen. Each opens a screen of one of the mods. Hover one to see its name. Click an icon below to open it.\n@image phoenix_chronicles:textures/gui/chronicles_quest_book_icon.png | Quest book | hud:chronicles\n@image solaris:textures/gui/suite_bar_icon.png | Map | hud:solaris\n@image phoenixcore:textures/gui/suite_conflux.png | Research | hud:conflux\n@image phoenix_continuum:textures/gui/suite_continuum.png | Star map | hud:continuum\n@nohint",
+        "WHAT EACH ONE DOES\nThe quest book: your quests and what to do next. The map: your surroundings and waypoints. Research: your tree of research and your data. The star map: bodies, missions and personal dimensions.\n@nohint",
+        "MOVING THEM\nYou can drag the buttons to where you like. The settings button at the end of the bar lets you show or hide each one, change their size, and put them all back where they started.\n@nohint",
+        "TRY IT\nOpen your inventory now (E) and find them. The quest book is the best first stop: it has a chapter for the path you choose.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        -12,
+        67,
+        -14
+      ],
+      "facing": "east",
+      "cols": 5,
+      "rows": 4,
+      "color": "#9ED0FF",
+      "background": "void_galaxy",
+      "pages": [
+        "CONTINUUM\nA map of the sky that is really there: stars, clouds and black holes you can fly to. These pictures are live, and turn as you walk round the screen.\n@continuum star ffcc66 | Stars\n@continuum black_hole | Black holes\n@continuum gas_cloud 66aaff | Gas clouds\n@nohint",
+        "BODIES\nEvery body is drawn by shaders, not a flat picture: a star burns, a cloud glows, and a black hole bends the light behind it.\n@continuum protostar ff8855 | A star being born\n@continuum star 9fc4ff | A hot blue star\n@nohint",
+        "THE STAR MAP\nOpen it from the HUD bar. Pick a body, see its details, and send a mission there.\n@nohint",
+        "PERSONAL DIMENSIONS\nSpace you make yourself: the Continuum builds a pocket world around the body you choose.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        12,
+        67,
+        -14
+      ],
+      "facing": "west",
+      "cols": 5,
+      "rows": 5,
+      "color": "#FFE9B0",
+      "background": "void_galaxy",
+      "pages": [
+        "THE POEM OF THE CONFLUX\n@scroll 0.28\n@if no_discipline\n\nThere was a hearth before there was a fire.\n\nThere was a hollow before there was a song.\n\nAnd you, {player}, came walking\ndown a road nobody had laid,\ncarrying nothing but the question.\n\nThe Phoenix said: burn, and be unmade, and be made again.\n\nThe Sculk said: listen. Everything that dies is kept.\n\nThe Void said: be still. Be the place where things are put.\n\nThree doors, and one of you.\n\nChoose, and be chosen.\n\nThe Conflux is listening.\n@nohint",
+        "THE POEM OF {discipline}\n@scroll 0.28\n@if has_discipline\n\nYou walked in with a question, {player}.\n\nYou chose {discipline}, and it answered.\n\nEvery machine you build is a sentence.\nEvery node you finish is a verse.\n\nThe ones who came before left their work in the walls.\nRead it. Add to it.\n\nAnd when you are done,\nsomeone will stand where you stood,\nand find the road already laid.\n\nThe Conflux remembers you.\n@nohint"
+      ]
+    },
+    {
+      "pos": [
+        0,
+        67,
+        6
+      ],
+      "facing": "north",
+      "cols": 3,
+      "rows": 3,
+      "color": "#FFFFFF",
+      "background": "nebula",
+      "pages": [
+        "THE CHOICE\nYour first choice is free.\n@button Choose your path | open_discipline_picker\n@if no_discipline\n@nohint",
+        "CHANGING IT LATER\nYou can change your path by abandoning it at a research terminal, for a cost in research data. Once you have committed it is ten times as much.\n@button Choose your path | open_discipline_picker\n@if no_discipline\n@nohint",
+        "READY?\nRead the screens around you first if you have not.\n@button Choose your path | open_discipline_picker\n@if no_discipline\n@nohint",
+        "YOUR PATH\nYou follow {discipline}.\n@button Enter your realm | command:conflux dimension enter\n@if has_discipline\n@nohint",
+        "CHANGING YOUR PATH\nAbandon it at a research terminal. It costs research data, and ten times as much once you have committed.\n@if has_discipline\n@nohint"
+      ]
+    }
+  ]
+}

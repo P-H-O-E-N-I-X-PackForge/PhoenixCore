@@ -1,0 +1,60 @@
+{
+  "system": "phoenix_continuum:duet",
+  "type": "planet",
+  "name": "Orchid",
+  "description": "A violet rock that sees two suns set and neither of them is a sun.",
+  "orbit": {
+    "radius_au": 1.6,
+    "period_days": 520,
+    "phase": 0.3
+  },
+  "radius": 0.85,
+  "gas_giant": false,
+  "axial_tilt": 14,
+  "spin_deg_per_sec": 4,
+  "cloud_spin_deg_per_sec": 0,
+  "surface": {
+    "seed": 61,
+    "scale": 3.2,
+    "ocean_level": 0.0,
+    "polar_ice": 0.0,
+    "cloud_cover": 0.25,
+    "bump": 0.9,
+    "low": "#240f3a",
+    "mid": "#6a2fa8",
+    "high": "#d6a0ff",
+    "ocean_deep": "#03123a",
+    "ocean_shallow": "#1a6f8f",
+    "emissive": "#ff5a14",
+    "emissive_amount": 0.0
+  },
+  "atmosphere": {
+    "color": "#9b5cff",
+    "density": 0.55
+  },
+  "gate": {
+    "min_tier": "late",
+    "detected_research": "phoenixcore:space_tenebrae_lensing",
+    "surveyed_research": "phoenixcore:space_survey_umbra"
+  },
+  "trip_minutes": 85,
+  "initial_stage": "unknown",
+  "yields": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "min": 3,
+      "max": 7,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:purpur_block",
+      "min": 2,
+      "max": 5,
+      "chance": 0.5
+    }
+  ],
+  "lore": {
+    "detected": "A world with an atmosphere the colour of a bruise, lit from two directions at once.",
+    "surveyed": "The sky on Orchid is violet by day, and the light comes from two moving points that circle each other every half hour. Dawn lasts a long time. Dusk is worse, and prettier."
+  }
+}

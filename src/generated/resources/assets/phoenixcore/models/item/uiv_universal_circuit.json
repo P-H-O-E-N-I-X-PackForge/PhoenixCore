@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "phoenixcore:item/universal_circuits/uiv_universal_circuit"
+  }
+}

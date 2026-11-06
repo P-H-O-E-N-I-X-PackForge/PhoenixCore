@@ -1,0 +1,33 @@
+package net.phoenix.core.integration.conflux.dimension.physics;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+@EventBusSubscriber(modid = "phoenixcore", value = Dist.CLIENT)
+public class ClientPhysicsHook {
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        Level level = mc.level;
+
+        if (level == null || mc.player == null) {
+            return;
+        }
+
+        if (PhysicsRegistry.getInstance().getTotalGravityZones() == 0 &&
+                PhysicsRegistry.getInstance().getTotalPlatforms() == 0) {
+            return;
+        }
+
+        PhysicsHook.applyPhysicsToEntity(mc.player, level);
+
+        level.getEntitiesOfClass(Entity.class, mc.player.getBoundingBox().inflate(32))
+                .forEach(entity -> PhysicsHook.applyPhysicsToEntity(entity, level));
+    }
+}

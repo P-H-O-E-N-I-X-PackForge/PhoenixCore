@@ -1,0 +1,50 @@
+package net.phoenix.core.common.entity;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.phoenix.core.PhoenixCore;
+
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+public final class PhoenixEntities {
+
+    private PhoenixEntities() {}
+
+    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister
+            .create(BuiltInRegistries.ENTITY_TYPE, PhoenixCore.MOD_ID);
+    private static final DeferredRegister<Item> SPAWN_EGGS = DeferredRegister.create(Registries.ITEM,
+            PhoenixCore.MOD_ID);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<TetoSlime>> TETO_SLIME = ENTITY_TYPES.register(
+            "teto_slime",
+            () -> EntityType.Builder.<TetoSlime>of(TetoSlime::new, MobCategory.CREATURE).sized(2.04f, 2.04f)
+                    .clientTrackingRange(10).build("teto_slime"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<PlacedItemEntity>> PLACED_ITEM = ENTITY_TYPES.register(
+            "placed_item",
+            () -> EntityType.Builder.<PlacedItemEntity>of(PlacedItemEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
+                    .clientTrackingRange(8).updateInterval(Integer.MAX_VALUE).noSummon().build("placed_item"));
+
+    public static final DeferredHolder<Item, Item> TETO_SLIME_SPAWN_EGG = SPAWN_EGGS.register("teto_slime_spawn_egg",
+            () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(TETO_SLIME, 0xC8283C, 0xFFB3C0,
+                    new Item.Properties()));
+
+    public static void init(IEventBus modEventBus) {
+        ENTITY_TYPES.register(modEventBus);
+        SPAWN_EGGS.register(modEventBus);
+    }
+
+    @SubscribeEvent
+    public static void attributes(EntityAttributeCreationEvent event) {
+        event.put(TETO_SLIME.get(), Monster.createMonsterAttributes().build());
+    }
+}

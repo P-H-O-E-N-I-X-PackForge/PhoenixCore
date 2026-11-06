@@ -1,0 +1,17 @@
+package net.phoenix.core.integration.conflux.dimension.physics;
+
+import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
+@OnlyIn(Dist.CLIENT)
+public final class ClientImpulses {
+
+    private ClientImpulses() {}
+
+    public static void apply(PhysicsImpulse impulse) {
+        var player = Minecraft.getInstance().player;
+        if (player == null || player.isSpectator() || player.getAbilities().flying || player.isPassenger()) return;
+        impulse.apply(player);
+    }
+}

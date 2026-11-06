@@ -1,0 +1,18 @@
+{
+  "body": "phoenix_continuum:halo",
+  "type": "flat",
+  "biome": "minecraft:stony_peaks",
+  "layers": [
+    "minecraft:bedrock",
+    "minecraft:deepslate*30",
+    "minecraft:stone*28",
+    "minecraft:tuff*2",
+    "minecraft:gravel"
+  ],
+  "oxygen": "#phoenixcore_examples:breathing_gear",
+  "mobs": false,
+  "weather": "clear",
+  "plot_radius": 300,
+  "protect_plots": true,
+  "gt_ores": "minecraft:overworld"
+}

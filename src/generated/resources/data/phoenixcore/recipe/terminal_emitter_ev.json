@@ -1,0 +1,5 @@
+{
+  "type": "phoenixcore:emitter_upgrade",
+  "emitter": "gtceu:ev_emitter",
+  "tier": 4
+}

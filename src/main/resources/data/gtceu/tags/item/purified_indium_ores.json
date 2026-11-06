@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "gtceu:purified_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "gtceu:purified_galena_ore",
+      "required": false
+    }
+  ]
+}

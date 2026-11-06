@@ -1,0 +1,16 @@
+{
+  "fluid": "gtceu:argon_plasma",
+  "name": "Argon plasma",
+  "body": "star",
+  "heat": {
+    "min": 55,
+    "max": 85
+  },
+  "min_mass": 800,
+  "rate": 5.0,
+  "damage": {
+    "stability": 0.18,
+    "mass": 0.02,
+    "heat": 0.0
+  }
+}

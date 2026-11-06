@@ -1,0 +1,12 @@
+{
+  "flag": "vd_stable_geometry",
+  "only_disciplines": [
+    "void"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:assembler",
+      "min_tier": "ev"
+    }
+  ]
+}

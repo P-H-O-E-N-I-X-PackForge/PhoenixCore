@@ -1,0 +1,17 @@
+{
+  "discipline": "phoenix",
+  "title": "Ember",
+  "description": "Nothing here is kept for free. What you build and burn keeps the fire up; left alone it gutters out.",
+  "color": "FF7A2E",
+  "icon": "minecraft:blaze_powder",
+  "max": 1000,
+  "start": 100,
+  "gain_per_minute": 0,
+  "decay_per_minute": 3,
+  "levels": [
+    { "at": 0, "name": "Cold" },
+    { "at": 100, "name": "Kindled" },
+    { "at": 350, "name": "Blazing" },
+    { "at": 700, "name": "Inferno" }
+  ]
+}

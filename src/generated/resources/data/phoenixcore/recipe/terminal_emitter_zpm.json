@@ -1,0 +1,5 @@
+{
+  "type": "phoenixcore:emitter_upgrade",
+  "emitter": "gtceu:zpm_emitter",
+  "tier": 7
+}

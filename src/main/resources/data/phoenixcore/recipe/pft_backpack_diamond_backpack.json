@@ -1,0 +1,34 @@
+{
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "pattern": [
+    "SLS",
+    "LBL",
+    "FPF"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:screws/stainless_steel"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:gold_backpack"
+    },
+    "F": {
+      "item": "gtceu:carbon_fibers"
+    },
+    "P": {
+      "tag": "c:plates/polytetrafluoroethylene"
+    }
+  },
+  "result": {
+    "id": "sophisticatedbackpacks:diamond_backpack"
+  },
+  "neoforge:conditions": [
+    {
+      "itemRegistryName": "diamond_backpack",
+      "type": "sophisticatedbackpacks:item_enabled"
+    }
+  ]
+}

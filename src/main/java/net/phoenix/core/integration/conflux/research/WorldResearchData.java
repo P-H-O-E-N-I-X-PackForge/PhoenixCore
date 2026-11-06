@@ -1,0 +1,385 @@
+package net.phoenix.core.integration.conflux.research;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.phoenix.core.integration.conflux.ConfluxDataType;
+import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+
+public class WorldResearchData extends SavedData {
+
+    private static final String ID = "conflux_team_research";
+
+    private final Map<UUID, Set<ResourceLocation>> unlocked = new HashMap<>();
+
+    private final Map<UUID, Set<ResourceLocation>> lockedOut = new HashMap<>();
+
+    private final Map<UUID, Set<String>> flags = new HashMap<>();
+
+    private final Map<UUID, Set<ResourceLocation>> multiblocks = new HashMap<>();
+
+    private final Map<UUID, String> discipline = new HashMap<>();
+
+    private final Map<UUID, Boolean> committed = new HashMap<>();
+
+    public static WorldResearchData get(ServerLevel level) {
+        return level.getServer().overworld().getDataStorage()
+                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldResearchData::new,
+                        (tag, provider) -> WorldResearchData.load(tag), null), ID);
+    }
+
+    public boolean isUnlocked(UUID team, ResourceLocation nodeId) {
+        return teamSet(unlocked, team).contains(nodeId);
+    }
+
+    public void grantUnlock(UUID team, ResourceLocation nodeId) {
+        teamSet(unlocked, team).add(nodeId);
+        setDirty();
+    }
+
+    public void grantFlag(UUID team, String flag) {
+        teamSet(flags, team).add(flag);
+        setDirty();
+    }
+
+    public boolean isLockedOut(UUID team, ResourceLocation nodeId) {
+        return teamSet(lockedOut, team).contains(nodeId);
+    }
+
+    public boolean hasFlag(UUID team, String flag) {
+        if (flag.startsWith("sig:"))
+            return net.phoenix.core.integration.conflux.signature.Signatures.reached(team, flag);
+        return teamSet(flags, team).contains(flag);
+    }
+
+    public Map<UUID, String> disciplines() {
+        return Collections.unmodifiableMap(discipline);
+    }
+
+    public boolean canFormMultiblock(UUID team, ResourceLocation machineId) {
+        Set<ResourceLocation> gated = ResearchTreeRegistry.INSTANCE.getGatedMultiblocks();
+        if (!gated.contains(machineId)) return true;
+        return teamSet(multiblocks, team).contains(machineId);
+    }
+
+    public @Nullable String getDiscipline(UUID team) {
+        return discipline.get(team);
+    }
+
+    public boolean chooseDiscipline(UUID team, String disciplineId, ResearchTreeRegistry registry) {
+        if (isCommitted(team)) return false;
+
+        if (discipline.get(team) != null) return false;
+
+        boolean known = registry.getAllTrees().stream()
+                .filter(ResearchTree::isDisciplineTree)
+                .anyMatch(t -> disciplineId.equals(t.discipline));
+        if (!known) return false;
+
+        if (!canEnter(team, disciplineId, registry)) return false;
+
+        discipline.put(team, disciplineId);
+        setDirty();
+        return true;
+    }
+
+    public boolean hasMilestone(UUID team, String milestone, ResearchTreeRegistry registry) {
+        if (teamSet(flags, team).contains(MILESTONE_PREFIX + milestone)) return true;
+        for (ResourceLocation nodeId : teamSet(unlocked, team)) {
+            ResearchNode node = registry.getNode(nodeId).orElse(null);
+            if (node != null && milestone.equals(node.milestone)) return true;
+        }
+        return false;
+    }
+
+    public boolean canEnter(UUID team, String disciplineId, ResearchTreeRegistry registry) {
+        for (ResearchTree tree : registry.getAllTrees()) {
+            if (!tree.isDisciplineTree() || !disciplineId.equals(tree.discipline)) continue;
+            if (!tree.isOpenTo(m -> hasMilestone(team, m, registry))) return false;
+        }
+        return true;
+    }
+
+    public boolean hasResearched(UUID team) {
+        return !teamSet(unlocked, team).isEmpty();
+    }
+
+    public static final String MILESTONE_PREFIX = "ms:";
+
+    public boolean isCommitted(UUID team) {
+        return Boolean.TRUE.equals(committed.get(team));
+    }
+
+    public Set<ResourceLocation> getUnlocked(UUID team) {
+        return Collections.unmodifiableSet(teamSet(unlocked, team));
+    }
+
+    public Set<ResourceLocation> getLockedOut(UUID team) {
+        return Collections.unmodifiableSet(teamSet(lockedOut, team));
+    }
+
+    public Set<String> getFlags(UUID team) {
+        Set<String> derived = net.phoenix.core.integration.conflux.signature.Signatures.flagsOf(team,
+                discipline.get(team));
+        if (derived.isEmpty()) return Collections.unmodifiableSet(teamSet(flags, team));
+        Set<String> all = new HashSet<>(teamSet(flags, team));
+        all.addAll(derived);
+        return Collections.unmodifiableSet(all);
+    }
+
+    public DisciplineInfo getDisciplineInfo(UUID team, ResearchTreeRegistry registry) {
+        String discId = discipline.get(team);
+        if (discId == null) return DisciplineInfo.NONE;
+
+        ResearchTree tree = registry.getAllTrees().stream()
+                .filter(t -> discId.equals(t.discipline))
+                .findFirst()
+                .orElse(null);
+
+        boolean isCommitted = isCommitted(team);
+        Map<ConfluxDataType, Long> switchCost = tree != null ? abandonCost(tree, isCommitted, hasResearched(team)) :
+                Map.of();
+        String title = tree != null ? tree.title : discId;
+
+        return new DisciplineInfo(discId, title, isCommitted, switchCost);
+    }
+
+    public boolean tryUnlock(UUID team, ResearchNode node,
+                             ResearchTerminalBlockEntity terminal,
+                             ResearchTreeRegistry registry) {
+        return tryUnlock(team, node, terminal, registry, null);
+    }
+
+    public boolean tryUnlock(UUID team, ResearchNode node,
+                             ResearchTerminalBlockEntity terminal,
+                             ResearchTreeRegistry registry, @Nullable ServerPlayer player) {
+        if (!node.canUnlock(getUnlocked(team), getLockedOut(team), f -> hasFlag(team, f))) return false;
+        for (ResearchTree tree : registry.getAllTrees()) {
+            if (tree.getNode(node.id).isPresent() && !tree.isVisibleTo(getDiscipline(team))) return false;
+            if (tree.getNode(node.id).isPresent() && !tree.isOpenTo(m -> hasMilestone(team, m, registry))) {
+                return false;
+            }
+        }
+        if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
+                !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
+                        .trySpend(team, node.cost)) {
+            return false;
+        }
+
+        applyUnlock(team, node, registry, terminal.getLevel() instanceof ServerLevel sl ? sl : null);
+        if (player != null) ConfluxRewards.give(player, node);
+        setDirty();
+        return true;
+    }
+
+    private void applyUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry,
+                             @Nullable ServerLevel level) {
+        var server = level != null ? level.getServer() : null;
+        var eventContext = server != null ?
+                net.phoenix.core.api.event.ConfluxEvents.preResearch(server, team, node.id) : null;
+        teamSet(unlocked, team).add(node.id);
+        if (node.milestone != null) teamSet(flags, team).add(MILESTONE_PREFIX + node.milestone);
+
+        registry.getAllTrees().stream()
+                .filter(ResearchTree::isDisciplineTree)
+                .filter(t -> t.getNode(node.id).isPresent())
+                .findFirst()
+                .ifPresent(tree -> {
+                    discipline.putIfAbsent(team, tree.discipline);
+                    if (node.isCommitmentNode) committed.put(team, true);
+                });
+
+        for (ResearchUnlock unlock : node.unlocks) {
+            switch (unlock.type()) {
+                case "flag" -> teamSet(flags, team).add(unlock.value());
+                case "recipe" -> teamSet(flags, team).add(ResearchTreeRegistry.recipeFlag(unlock.value()));
+                case "multiblock" -> {
+                    ResourceLocation machineId = ResourceLocation.tryParse(unlock.value());
+                    if (machineId != null) teamSet(multiblocks, team).add(machineId);
+                }
+                case "world_stage" -> {
+                    if (level != null) {
+                        net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData progData = net.phoenix.core.integration.conflux.dimension.DisciplineProgressionData
+                                .get(level);
+                        progData.unlockWorldStage(team, unlock.value());
+                    }
+                }
+            }
+        }
+
+        if (node.exclusionGroup != null) {
+            registry.getAllNodes().stream()
+                    .filter(n -> node.exclusionGroup.equals(n.exclusionGroup))
+                    .filter(n -> !n.id.equals(node.id))
+                    .forEach(n -> teamSet(lockedOut, team).add(n.id));
+        }
+
+        if (eventContext != null) {
+            net.phoenix.core.api.event.ConfluxEvents.postResearch(server, team, node.id, eventContext);
+        }
+    }
+
+    public void devUnlock(UUID team, ResearchNode node, ResearchTreeRegistry registry, ServerLevel level) {
+        if (teamSet(unlocked, team).contains(node.id)) return;
+        applyUnlock(team, node, registry, level);
+        setDirty();
+    }
+
+    public void devReset(UUID team) {
+        unlocked.remove(team);
+        lockedOut.remove(team);
+        flags.remove(team);
+        multiblocks.remove(team);
+        discipline.remove(team);
+        committed.remove(team);
+        setDirty();
+    }
+
+    public static final long COMMITTED_SWITCH_MULTIPLIER = 10L;
+
+    private static Map<ConfluxDataType, Long> abandonCost(ResearchTree tree, boolean committed,
+                                                          boolean researched) {
+        if (!researched) return Map.of();
+        if (!committed) return tree.switchCost;
+        Map<ConfluxDataType, Long> scaled = new java.util.EnumMap<>(ConfluxDataType.class);
+        tree.switchCost.forEach((type, amount) -> scaled.put(type, amount * COMMITTED_SWITCH_MULTIPLIER));
+        return scaled;
+    }
+
+    public boolean abandonDiscipline(UUID team, ResearchTerminalBlockEntity terminal,
+                                     ResearchTreeRegistry registry) {
+        String discId = discipline.get(team);
+        if (discId == null) return false;
+
+        ResearchTree tree = registry.getAllTrees().stream()
+                .filter(t -> discId.equals(t.discipline))
+                .findFirst()
+                .orElse(null);
+
+        if (tree != null && !abandonCost(tree, isCommitted(team), hasResearched(team)).isEmpty()) {
+            if (!(terminal.getLevel() instanceof ServerLevel spendLevel) ||
+                    !net.phoenix.core.integration.conflux.terminal.ConfluxDataStore.get(spendLevel)
+                            .trySpend(team, abandonCost(tree, isCommitted(team), hasResearched(team)))) {
+                return false;
+            }
+        }
+
+        if (tree != null) {
+            Set<ResourceLocation> disciplineNodeIds = new HashSet<>();
+            tree.getNodes().forEach(n -> disciplineNodeIds.add(n.id));
+
+            teamSet(unlocked, team).removeAll(disciplineNodeIds);
+            teamSet(lockedOut, team).removeAll(disciplineNodeIds);
+
+            for (ResearchNode node : tree.getNodes()) {
+                for (ResearchUnlock unlock : node.unlocks) {
+                    switch (unlock.type()) {
+                        case "flag" -> teamSet(flags, team).remove(unlock.value());
+                        case "recipe" -> teamSet(flags, team).remove(ResearchTreeRegistry.recipeFlag(unlock.value()));
+                        case "multiblock" -> {
+                            ResourceLocation ml = ResourceLocation.tryParse(unlock.value());
+                            if (ml != null) teamSet(multiblocks, team).remove(ml);
+                        }
+                    }
+                }
+            }
+        }
+
+        discipline.remove(team);
+        committed.remove(team);
+        setDirty();
+        return true;
+    }
+
+    public boolean hasRecipeTag(UUID team, String recipeTag, ResearchTreeRegistry registry) {
+        for (ResourceLocation nodeId : getUnlocked(team)) {
+            ResearchNode node = registry.getNode(nodeId).orElse(null);
+            if (node == null) continue;
+            for (ResearchUnlock unlock : node.unlocks) {
+                if ("recipe_tag".equals(unlock.type()) && recipeTag.equals(unlock.value())) return true;
+            }
+        }
+        return false;
+    }
+
+    public static WorldResearchData load(CompoundTag tag) {
+        WorldResearchData d = new WorldResearchData();
+        if (tag.contains("teams", Tag.TAG_LIST)) {
+            tag.getList("teams", Tag.TAG_COMPOUND).forEach(e -> {
+                CompoundTag t = (CompoundTag) e;
+                UUID id = t.getUUID("id");
+                readRLSet(t, "unlocked").forEach(rl -> d.teamSet(d.unlocked, id).add(rl));
+                readRLSet(t, "lockedOut").forEach(rl -> d.teamSet(d.lockedOut, id).add(rl));
+                readRLSet(t, "multiblocks").forEach(rl -> d.teamSet(d.multiblocks, id).add(rl));
+                readStringList(t, "flags").forEach(f -> d.teamSet(d.flags, id).add(f));
+                if (t.contains("discipline", Tag.TAG_STRING)) d.discipline.put(id, t.getString("discipline"));
+                if (t.contains("committed", Tag.TAG_BYTE)) d.committed.put(id, t.getBoolean("committed"));
+            });
+        }
+        return d;
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        ListTag teams = new ListTag();
+        Set<UUID> allTeams = new HashSet<>();
+        allTeams.addAll(unlocked.keySet());
+        allTeams.addAll(flags.keySet());
+        allTeams.addAll(multiblocks.keySet());
+        allTeams.addAll(discipline.keySet());
+
+        for (UUID id : allTeams) {
+            CompoundTag t = new CompoundTag();
+            t.putUUID("id", id);
+            writeRLSet(t, "unlocked", teamSet(unlocked, id));
+            writeRLSet(t, "lockedOut", teamSet(lockedOut, id));
+            writeRLSet(t, "multiblocks", teamSet(multiblocks, id));
+            writeStringList(t, "flags", teamSet(flags, id));
+            String disc = discipline.get(id);
+            if (disc != null) t.putString("discipline", disc);
+            if (Boolean.TRUE.equals(committed.get(id))) t.putBoolean("committed", true);
+            teams.add(t);
+        }
+        tag.put("teams", teams);
+        return tag;
+    }
+
+    private <V> Set<V> teamSet(Map<UUID, Set<V>> map, UUID team) {
+        return map.computeIfAbsent(team, k -> new HashSet<>());
+    }
+
+    private static void writeRLSet(CompoundTag tag, String key, Set<ResourceLocation> set) {
+        ListTag list = new ListTag();
+        set.forEach(rl -> list.add(StringTag.valueOf(rl.toString())));
+        tag.put(key, list);
+    }
+
+    private static Set<ResourceLocation> readRLSet(CompoundTag tag, String key) {
+        Set<ResourceLocation> set = new HashSet<>();
+        if (tag.contains(key, Tag.TAG_LIST))
+            tag.getList(key, Tag.TAG_STRING).forEach(t -> set.add(ResourceLocation.parse(t.getAsString())));
+        return set;
+    }
+
+    private static void writeStringList(CompoundTag tag, String key, Set<String> set) {
+        ListTag list = new ListTag();
+        set.forEach(s -> list.add(StringTag.valueOf(s)));
+        tag.put(key, list);
+    }
+
+    private static Set<String> readStringList(CompoundTag tag, String key) {
+        Set<String> set = new HashSet<>();
+        if (tag.contains(key, Tag.TAG_LIST))
+            tag.getList(key, Tag.TAG_STRING).forEach(t -> set.add(t.getAsString()));
+        return set;
+    }
+}

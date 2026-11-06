@@ -1,0 +1,108 @@
+package net.phoenix.core.client.tooltips;
+
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
+
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.phoenix.core.PhoenixCore;
+
+@EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
+public class PhoenixTooltips {
+
+    private static final java.util.regex.Pattern GT_COVER_ITEM = java.util.regex.Pattern
+            .compile(
+                    "(lv|mv|hv|ev|iv|luv|zpm|uv|uhv|uev|uiv|uxv|opv|max)_(electric_pump|conveyor_module|fluid_regulator|robot_arm)");
+
+    private static void scaleCoverRate(java.util.List<Component> tooltip) {
+        for (int i = 0; i < tooltip.size(); i++) {
+            if (!(tooltip.get(i).getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents tc))
+                continue;
+            if (!tc.getKey().equals("gtceu.universal.tooltip.item_transfer_rate") &&
+                    !tc.getKey().equals("gtceu.universal.tooltip.fluid_transfer_rate"))
+                continue;
+            Object[] args = tc.getArgs();
+            if (args.length == 0) continue;
+            try {
+                String raw = args[0] instanceof Component c ? c.getString() : String.valueOf(args[0]);
+                long rate = Long.parseLong(raw.replaceAll("[^0-9]", ""));
+                tooltip.set(i, Component.translatable(tc.getKey(),
+                        com.gregtechceu.gtceu.utils.FormattingUtil
+                                .formatNumbers(rate * net.phoenix.core.common.data.CoverRates.GT_MULTIPLIER))
+                        .withStyle(tooltip.get(i).getStyle()));
+            } catch (NumberFormatException ignored) {}
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTooltip(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        var item = stack.getItem();
+
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+        if (id == null) return;
+
+        String namespace = id.getNamespace();
+        if (!namespace.equals("phoenixcore") && !namespace.equals("gtceu")) return;
+
+        String path = id.getPath();
+
+        if (namespace.equals("gtceu") && GT_COVER_ITEM.matcher(path).matches()) {
+            scaleCoverRate(event.getToolTip());
+        }
+
+        MaterialStack matStack = ChemicalHelper.getMaterialStack(stack);
+        Material mat = !matStack.isEmpty() ? matStack.material() : null;
+
+        if (path.endsWith("_crystal_rose")) {
+            Component generic = Component.translatable("tooltip.phoenixcore.crystal_rose.generic");
+            if (mat != null) {
+                generic = generic.copy().setStyle(Style.EMPTY.withColor(TextColor.fromRgb(mat.getMaterialARGB())));
+            }
+            event.getToolTip().add(generic);
+
+            if (mat != null) {
+                if (Screen.hasShiftDown()) {
+                    Component materialName = mat.getLocalizedName()
+                            .copy()
+                            .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(mat.getMaterialARGB())));
+                    Component madeFrom = Component.translatable("tooltip.phoenixcore.crystal_rose.made_from",
+                            materialName);
+                    event.getToolTip().add(madeFrom);
+                } else {
+                    event.getToolTip().add(Component.literal("§7Hold §eShift§7 to see what it's forged from."));
+                }
+            }
+        }
+
+        if (path.endsWith("_nanites")) {
+            Component generic = Component.translatable("tooltip.phoenixcore.nanites.generic");
+            if (mat != null) {
+                generic = generic.copy().setStyle(Style.EMPTY.withColor(TextColor.fromRgb(mat.getMaterialARGB())));
+            }
+            event.getToolTip().add(generic);
+
+            if (mat != null) {
+                if (Screen.hasShiftDown()) {
+                    Component materialName = mat.getLocalizedName()
+                            .copy()
+                            .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(mat.getMaterialARGB())));
+                    Component madeFrom = Component.translatable("tooltip.phoenixcore.nanites.made_from", materialName);
+                    event.getToolTip().add(madeFrom);
+                } else {
+                    event.getToolTip().add(Component.literal("§7Hold §eShift§7 to see what they're constructed from."));
+                }
+            }
+        }
+    }
+}

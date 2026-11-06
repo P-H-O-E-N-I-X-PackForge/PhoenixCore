@@ -1,0 +1,9 @@
+{
+  "type": "phoenixcore:conflux_structure",
+  "biomes": "phoenixcore:sealed_b",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "kind": "compound",
+  "theme": "sealed_b"
+}

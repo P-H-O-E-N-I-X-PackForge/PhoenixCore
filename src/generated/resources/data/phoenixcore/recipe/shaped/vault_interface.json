@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "gtceu:bronze_machine_casing"
+    },
+    "B": {
+      "item": "gtceu:bronze_normal_fluid_pipe"
+    },
+    "w": {
+      "tag": "gtceu:crafting_tools/wrench"
+    }
+  },
+  "pattern": [
+    "w",
+    "B",
+    "A"
+  ],
+  "result": {
+    "count": 1,
+    "id": "phoenixcore:vault_interface"
+  },
+  "show_notification": false
+}

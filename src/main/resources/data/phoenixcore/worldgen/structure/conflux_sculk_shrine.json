@@ -1,0 +1,9 @@
+{
+  "type": "phoenixcore:conflux_structure",
+  "biomes": "phoenixcore:sculk",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "kind": "shrine",
+  "theme": "sculk"
+}

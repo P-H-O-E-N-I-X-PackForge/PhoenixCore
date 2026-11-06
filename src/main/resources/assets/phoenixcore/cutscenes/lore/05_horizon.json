@@ -1,0 +1,34 @@
+{
+  "pages": [
+    "There is a boundary past which information cannot return. I have found it. I am standing on it.",
+    "Behind the stars, another sky. Behind that, a ceiling. On the ceiling, a schematic.",
+    "The schematic is of a machine with no outside. It is labelled in my handwriting too.",
+    [
+      "I was not lost in the Conflux. I have been ",
+      {
+        "text": "inside it",
+        "color": "#B388FF"
+      },
+      " since before I found the terminal. Since before I woke."
+    ],
+    "The Void is patient. It kept my place."
+  ],
+  "chars_per_second": 17,
+  "punctuation_pause": 0.5,
+  "text": {
+    "color": "#E6DDFF"
+  },
+  "background": "phoenixcore:void_galaxy",
+  "sound": {
+    "id": "minecraft:block.amethyst_block.resonate",
+    "volume": 0.06,
+    "pitch": 0.8,
+    "pitch_variance": 0.1,
+    "every_n_letters": 3
+  },
+  "music": {
+    "sound": "phoenixcore:cutscene/horizon",
+    "volume": 1.0,
+    "fade_in": 5.0
+  }
+}

@@ -1,0 +1,6 @@
+{
+    "parent": "gtceu:block/cube/tinted/all_0",
+    "textures": {
+      "all": "phoenixcore:block/material_sets/almost_pure_nevonian_steel/frame_gt"
+    }
+  }

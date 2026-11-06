@@ -1,0 +1,8 @@
+{
+  "cutscene": "phoenixcore:lore/03_ash",
+  "exclusive_group": "ash_notebook",
+  "commands": [
+    "give @s minecraft:written_book{title:\"Field Notes\",author:\"████████\",pages:['{\"text\": \"Day 1. The Conflux holds. Five vessels, five doors. Nobody else has noticed that the doors only open inward.\"}','{\"text\": \"Day 40. The lower levels have stopped answering. The Sculk readings have never been clearer.\"}','{\"text\": \"Day 41. Ignition confirmed. Proceed.\"}']}",
+    "playsound minecraft:item.book.page_turn master @s ~ ~ ~ 1 0.8"
+  ]
+}

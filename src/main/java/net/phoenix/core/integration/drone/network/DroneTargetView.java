@@ -1,0 +1,68 @@
+package net.phoenix.core.integration.drone.network;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public record DroneTargetView(BlockPos pos, String name, ItemStack icon, boolean controllable,
+                              boolean workingEnabled, String status, int progress, int duration, String recipeTypeName,
+                              boolean multiRecipe, boolean electric, long inputVoltage, long outputVoltage,
+                              String groupName,
+                              int priority,
+
+                              long euPerTick,
+
+                              int bufferPercent) {
+
+    public static void encodeList(List<DroneTargetView> views, RegistryFriendlyByteBuf buf) {
+        buf.writeVarInt(views.size());
+        for (DroneTargetView view : views) {
+            buf.writeBlockPos(view.pos());
+            buf.writeUtf(view.name());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, view.icon());
+            buf.writeBoolean(view.controllable());
+            buf.writeBoolean(view.workingEnabled());
+            buf.writeUtf(view.status());
+            buf.writeVarInt(view.progress());
+            buf.writeVarInt(view.duration());
+            buf.writeUtf(view.recipeTypeName());
+            buf.writeBoolean(view.multiRecipe());
+            buf.writeBoolean(view.electric());
+            buf.writeVarLong(view.inputVoltage());
+            buf.writeVarLong(view.outputVoltage());
+            buf.writeUtf(view.groupName());
+            buf.writeVarInt(view.priority());
+            buf.writeLong(view.euPerTick());
+            buf.writeInt(view.bufferPercent());
+        }
+    }
+
+    public static List<DroneTargetView> decodeList(RegistryFriendlyByteBuf buf) {
+        int count = buf.readVarInt();
+        List<DroneTargetView> views = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            views.add(new DroneTargetView(
+                    buf.readBlockPos(),
+                    buf.readUtf(),
+                    ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
+                    buf.readBoolean(),
+                    buf.readBoolean(),
+                    buf.readUtf(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readUtf(),
+                    buf.readBoolean(),
+                    buf.readBoolean(),
+                    buf.readVarLong(),
+                    buf.readVarLong(),
+                    buf.readUtf(),
+                    buf.readVarInt(),
+                    buf.readLong(),
+                    buf.readInt()));
+        }
+        return views;
+    }
+}

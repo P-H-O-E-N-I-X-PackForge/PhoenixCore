@@ -1,0 +1,196 @@
+package net.phoenix.core.client.renderer.cinema;
+
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import net.phoenix.core.common.block.cinema.CinemaPage;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class CinemaLayout {
+
+    public record Rect(float x0, float y0, float x1, float y1) {
+
+        public boolean contains(float x, float y) {
+            return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+        }
+
+        public Rect grow(float by) {
+            return new Rect(x0 - by, y0 - by, x1 + by, y1 + by);
+        }
+    }
+
+    public record Hit(Rect rect, String action, String label) {}
+
+    public record TextLine(FormattedCharSequence text, float x, float y, float scale, boolean centred) {}
+
+    public record Slot(CinemaPage.Picture picture, Rect rect) {}
+
+    public static final float PAD = 0.2f;
+
+    public Rect plate;
+
+    public Rect header;
+    public final List<Slot> pictures = new ArrayList<>();
+    public final List<TextLine> titleLines = new ArrayList<>();
+    public final List<TextLine> bodyLines = new ArrayList<>();
+    public final List<Hit> hits = new ArrayList<>();
+
+    public final List<TextLine> scrollLines = new ArrayList<>();
+    public float scrollHeight;
+    public float viewTop;
+    public float viewBottom;
+    public float scrollSpeed;
+    public TextLine counter;
+    public TextLine hint;
+
+    private boolean fits = true;
+
+    private CinemaLayout() {}
+
+    public static CinemaLayout of(Font font, CinemaPage page, float textScale, float width, float height, int pageIndex,
+                                  int pageCount, boolean centredText) {
+        CinemaLayout last = null;
+        for (float shrink : new float[] { 1.0f, 0.85f, 0.72f, 0.6f, 0.5f }) {
+            last = build(font, page, textScale * Math.max(0.65f, shrink), shrink, width, height, pageIndex, pageCount,
+                    centredText);
+            if (last.fits) return last;
+        }
+        return last;
+    }
+
+    private static CinemaLayout build(Font font, CinemaPage page, float textScale, float pictureFactor, float w,
+                                      float h,
+                                      int pageIndex, int pageCount, boolean centredText) {
+        CinemaLayout l = new CinemaLayout();
+        l.plate = new Rect(-w / 2, -h / 2, w / 2, h / 2);
+        float innerW = w - 2 * PAD;
+        float left = -w / 2 + PAD;
+        float top = h / 2 - PAD;
+        float bottom = -h / 2 + PAD;
+        float lineH = (font.lineHeight + 2) * textScale;
+
+        if (pageCount > 1) {
+            float navH = 0.3f;
+            float navY0 = bottom;
+            float navY1 = bottom + navH;
+            l.hits.add(new Hit(new Rect(left, navY0, left + 0.7f, navY1), "prev", "<"));
+            l.hits.add(new Hit(new Rect(left + innerW - 0.7f, navY0, left + innerW, navY1), "next", ">"));
+            l.counter = new TextLine(Component.literal((pageIndex + 1) + " / " + pageCount).getVisualOrderText(), 0,
+                    (navY0 + navY1) / 2, textScale, true);
+            bottom = navY1 + 0.14f;
+            if (pageIndex == 0 && page.hint()) {
+                l.hint = new TextLine(Component.literal("right-click to turn the page").getVisualOrderText(), 0,
+                        bottom + lineH * 0.5f, textScale * 0.8f, true);
+                bottom += lineH + 0.04f;
+            }
+        }
+
+        List<CinemaPage.Button> buttons = page.buttons();
+        if (!buttons.isEmpty()) {
+            float gap = 0.15f;
+            float btnH = 0.36f;
+            float btnW = Math.min(2.2f, (innerW - gap * (buttons.size() - 1)) / buttons.size());
+            float rowW = btnW * buttons.size() + gap * (buttons.size() - 1);
+            float x = -rowW / 2;
+            for (CinemaPage.Button b : buttons) {
+                l.hits.add(new Hit(new Rect(x, bottom, x + btnW, bottom + btnH), b.action(), b.label()));
+                x += btnW + gap;
+            }
+            bottom += btnH + 0.15f;
+        }
+
+        float y = top;
+        if (!page.title().isEmpty()) {
+            float ts = textScale * 1.4f;
+            float th = (font.lineHeight + 3) * ts;
+            for (FormattedCharSequence seq : font.split(Component.literal(page.title()), (int) (innerW / ts))) {
+                l.titleLines.add(new TextLine(seq, 0, y - th / 2, ts, true));
+                y -= th;
+            }
+            y -= 0.08f;
+            l.header = new Rect(l.plate.x0(), y, l.plate.x1(), l.plate.y1());
+            y -= 0.1f;
+        }
+
+        if (!page.pictures().isEmpty()) {
+            int n = page.pictures().size();
+            float gap = 0.3f;
+            float size = Math.min(1.0f, (innerW - gap * (n - 1)) / n) * pictureFactor;
+            float capScale = textScale * 0.9f;
+            float capH = (font.lineHeight + 2) * capScale;
+            int capWidth = Math.max(8, (int) ((size + gap) / capScale));
+            float rowW = n * size + (n - 1) * gap;
+            float x = -rowW / 2;
+            int capLines = 0;
+            for (CinemaPage.Picture picture : page.pictures()) {
+                l.pictures.add(new Slot(picture, new Rect(x, y - size, x + size, y)));
+
+                if (!picture.action().isEmpty()) {
+                    l.hits.add(new Hit(new Rect(x - 0.07f, y - size - 0.07f, x + size + 0.07f, y + 0.07f),
+                            picture.action(), ""));
+                }
+                if (!picture.caption().isEmpty()) {
+                    List<FormattedCharSequence> lines = font.split(Component.literal(picture.caption()), capWidth);
+                    int shown = Math.min(2, lines.size());
+                    capLines = Math.max(capLines, shown);
+                    for (int i = 0; i < shown; i++) {
+                        l.bodyLines.add(new TextLine(lines.get(i), x + size / 2, y - size - capH * (i + 0.8f), capScale,
+                                true));
+                    }
+                }
+                x += size + gap;
+            }
+            y -= size + capLines * capH + 0.18f;
+        }
+
+        if (!page.body().isEmpty()) {
+            List<FormattedCharSequence> body = new ArrayList<>();
+            for (String paragraph : page.body().split("\n", -1)) {
+                if (paragraph.isEmpty()) {
+                    body.add(null);
+                    continue;
+                }
+                body.addAll(font.split(Component.literal(paragraph), (int) (innerW / textScale)));
+            }
+            float total = body.size() * lineH;
+            if (page.scroll() > 0) {
+                float cy0 = 0;
+                for (FormattedCharSequence seq : body) {
+                    if (seq != null) {
+                        l.scrollLines.add(new TextLine(seq, centredText ? 0 : left, cy0 - lineH / 2, textScale,
+                                centredText));
+                    }
+                    cy0 -= lineH;
+                }
+                l.scrollHeight = total;
+                l.viewTop = y;
+                l.viewBottom = bottom;
+                l.scrollSpeed = page.scroll();
+                return l;
+            }
+
+            boolean centre = page.title().isEmpty() && page.pictures().isEmpty();
+            float start = centre ? (y + bottom) / 2 + total / 2 : y;
+            float cy = start;
+            for (FormattedCharSequence seq : body) {
+                if (seq != null) {
+                    l.bodyLines.add(new TextLine(seq, centredText ? 0 : left, cy - lineH / 2, textScale, centredText));
+                }
+                cy -= lineH;
+            }
+            l.fits = start - total >= bottom - 0.02f;
+        } else {
+            l.fits = y >= bottom - 0.02f;
+        }
+        return l;
+    }
+
+    public Hit hitAt(float x, float y) {
+        for (Hit hit : hits) {
+            if (hit.rect().contains(x, y)) return hit;
+        }
+        return null;
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "body": "phoenix_continuum:ember",
+  "type": "noise",
+  "settings": "minecraft:nether",
+  "biome_source": {
+    "type": "minecraft:multi_noise",
+    "preset": "minecraft:nether"
+  },
+  "gt_ores": "minecraft:the_nether",
+  "fall_damage": true,
+  "weather": "clear"
+}

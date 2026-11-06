@@ -1,0 +1,14 @@
+{
+  "name": "The Hollow",
+  "center": [
+    -7.5,
+    0.5,
+    -2.5
+  ],
+  "radius": 7.0,
+  "color1": "#6a40ff",
+  "color2": "#102060",
+  "density": 0.8,
+  "seed": 11,
+  "puffs": 5
+}

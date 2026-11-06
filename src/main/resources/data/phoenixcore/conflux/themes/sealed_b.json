@@ -1,0 +1,68 @@
+{
+  "display_name": "Sealed B - Extinction",
+  "biome_palette": {
+    "stages": [
+      {
+        "stage": "initial",
+        "biomes": ["minecraft:mushroom_fields", "minecraft:roofed_forest", "minecraft:jungle"]
+      },
+      {
+        "stage": "extinction_protocol",
+        "biomes": ["minecraft:mushroom_fields", "minecraft:swamp", "minecraft:jungle"]
+      },
+      {
+        "stage": "bio_collapse",
+        "biomes": ["minecraft:swamp", "minecraft:soul_sand_valley", "minecraft:swamp"]
+      },
+      {
+        "stage": "desolation",
+        "biomes": ["minecraft:soul_sand_valley", "minecraft:basalt_deltas", "minecraft:soul_sand_valley"]
+      }
+    ],
+    "default_biomes": {
+      "mushroom": "minecraft:mushroom_fields",
+      "swamp": "minecraft:swamp",
+      "jungle": "minecraft:jungle"
+    }
+  },
+  "structures": {
+    "texture_overrides": {
+      "soul_sand": "minecraft:soul_sand",
+      "soul_soil": "minecraft:soul_soil",
+      "nether_wart_block": "minecraft:nether_wart_block"
+    },
+    "particle_density": 1.1
+  },
+  "skybox": {
+    "sky_color": "#2F1F4D",
+    "fog_color": "#4A3566",
+    "fog_density": 0.8,
+    "render_mode": "extinction"
+  },
+  "color_progression": [
+    {
+      "milestone": "initial",
+      "grass_color": "#5C7F5C",
+      "water_color": "#7B8E8B",
+      "foliage_color": "#6B8E23"
+    },
+    {
+      "milestone": "extinction_protocol",
+      "grass_color": "#4D5A4D",
+      "water_color": "#5C7A7A",
+      "foliage_color": "#3D5C2D"
+    },
+    {
+      "milestone": "bio_collapse",
+      "grass_color": "#3D4A3D",
+      "water_color": "#4A6A6A",
+      "foliage_color": "#2D4C1D"
+    },
+    {
+      "milestone": "desolation",
+      "grass_color": "#2D3A2D",
+      "water_color": "#3A5A5A",
+      "foliage_color": "#1D3C0D"
+    }
+  ]
+}

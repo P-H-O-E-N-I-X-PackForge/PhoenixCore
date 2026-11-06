@@ -1,0 +1,44 @@
+package net.phoenix.core.integration.conflux.dimension;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+
+import java.util.UUID;
+
+public class ConfluxDimensionFactory {
+
+    public static ResourceKey<Level> getDimensionKey(String disciplineId) {
+        return ResourceKey.create(Registries.DIMENSION,
+                ResourceLocation.fromNamespaceAndPath("phoenixcore", "conflux/" + disciplineId.toLowerCase()));
+    }
+
+    public static void enterDisciplineDimension(ServerPlayer player, UUID teamId, String discipline) {
+        MinecraftServer server = player.getServer();
+        ServerLevel dimensionLevel = server.getLevel(getDimensionKey(discipline));
+        if (dimensionLevel == null) return;
+
+        ServerLevel overworld = server.overworld();
+        DisciplineProgressionData.get(overworld).getProgression(teamId);
+
+        BlockPos stand = DisciplineStartingArea.ensure(dimensionLevel, discipline);
+        player.fallDistance = 0.0f;
+        player.teleportTo(dimensionLevel, stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, 0, 0);
+        player.setRespawnPosition(getDimensionKey(discipline), stand, 0f, true, false);
+    }
+
+    public static boolean visitDisciplineDimension(ServerPlayer player, String discipline) {
+        ServerLevel dimensionLevel = player.getServer().getLevel(getDimensionKey(discipline));
+        if (dimensionLevel == null) return false;
+        BlockPos stand = DisciplineStartingArea.ensure(dimensionLevel, discipline);
+        player.fallDistance = 0.0f;
+        player.teleportTo(dimensionLevel, stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, player.getYRot(),
+                player.getXRot());
+        return true;
+    }
+}

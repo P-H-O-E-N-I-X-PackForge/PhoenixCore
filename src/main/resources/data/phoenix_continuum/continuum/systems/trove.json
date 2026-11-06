@@ -1,0 +1,13 @@
+{
+  "name": "Trove",
+  "description": "A golden star and the worlds it hoards.",
+  "galaxy": [6.0, -0.6, 14.2],
+  "star_color": "#ffd860",
+  "star_radius": 1.0,
+  "star_kind": "protostar",
+  "initial_stage": "unknown",
+  "gate": {
+    "detected_research": "phoenixcore:space_trove_signal",
+    "surveyed_research": "phoenixcore:space_trove_decode"
+  }
+}

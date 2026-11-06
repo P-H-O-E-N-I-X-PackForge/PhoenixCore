@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "phoenixcore:item/material_sets/almost_pure_nevonian_steel/crystal_rose"
+  }
+}

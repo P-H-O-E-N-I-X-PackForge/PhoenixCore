@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "phoenixcore:item/phoenixware/circuits/unstable_processing_unit"
+  }
+}

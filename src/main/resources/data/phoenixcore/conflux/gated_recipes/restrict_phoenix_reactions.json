@@ -1,0 +1,12 @@
+{
+  "flag": "px_contained_reactions",
+  "only_disciplines": [
+    "phoenix"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:chemical_reactor",
+      "min_tier": "hv"
+    }
+  ]
+}

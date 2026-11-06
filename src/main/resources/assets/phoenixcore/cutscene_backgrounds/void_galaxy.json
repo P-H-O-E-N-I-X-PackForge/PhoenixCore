@@ -1,0 +1,13 @@
+{
+  "type": "shader",
+  "shader": "phoenixcore:void_galaxy",
+  "uniforms": {
+    "PrimaryColor": [0.7, 0.15, 0.9],
+    "SecondaryColor": [0.15, 0.35, 1.0],
+    "GalaxyDir": [0.3, 0.5, 0.8],
+    "Density": 0.55,
+    "Scale": 1.1,
+    "Seed": 0.0
+  },
+  "fallback": "phoenixcore:void"
+}

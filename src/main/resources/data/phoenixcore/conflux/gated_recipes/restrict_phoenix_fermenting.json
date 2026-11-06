@@ -1,0 +1,16 @@
+{
+  "flag": "px_cold_work",
+  "only_disciplines": [
+    "phoenix"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:fermenter",
+      "min_tier": "mv"
+    },
+    {
+      "type": "gtceu:brewery",
+      "min_tier": "mv"
+    }
+  ]
+}

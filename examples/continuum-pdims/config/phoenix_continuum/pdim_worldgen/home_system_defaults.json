@@ -1,0 +1,5 @@
+{
+  "match": { "system": "phoenix_continuum:home" },
+  "type": "auto",
+  "weather": { "clear_min": 600, "clear_max": 3600, "rain_min": 120, "rain_max": 300, "storm_chance": 0.2 }
+}

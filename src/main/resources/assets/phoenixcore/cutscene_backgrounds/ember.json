@@ -1,0 +1,10 @@
+{
+  "type": "layered",
+  "resolution": 64,
+  "layers": [
+    { "type": "linear_gradient", "from": "#1A0503", "to": "#3D0F05", "angle": 90 },
+    { "type": "noise", "color": "#FF5A1F", "scale": 1.6, "speed": 0.08, "contrast": 1.4, "opacity": 0.35, "blend": "add" },
+    { "type": "sparkle", "color": "#FFB347", "density": 0.35, "speed": 3.0, "opacity": 0.6, "blend": "add" },
+    { "type": "radial_gradient", "inner": "#00000000", "outer": "#D0000000", "radius": 1.5 }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "phoenixcore:block/strongest_rhodium_plated_machne_casing"
+  }
+}

@@ -1,0 +1,1563 @@
+package net.phoenix.core.integration.conflux.client;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.phoenix.core.integration.conflux.ConfluxDataType;
+import net.phoenix.core.integration.conflux.client.render.*;
+import net.phoenix.core.integration.conflux.client.render.discipline.DisciplineRendererRegistry;
+import net.phoenix.core.integration.conflux.research.ResearchNode;
+import net.phoenix.core.integration.conflux.research.ResearchTree;
+import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
+import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
+import net.phoenixvine.wiki.PhoenixWikiAPI;
+import net.phoenixvine.wiki.client.rich.RichBlock;
+import net.phoenixvine.wiki.client.rich.WikiMarkdownParser;
+import net.phoenixvine.wiki.client.rich.WikiRichTextRenderer;
+import net.phoenixvine.wiki.theme.PhoenixThemeEditorScreen;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+@OnlyIn(Dist.CLIENT)
+public class ResearchTerminalScreen extends Screen {
+
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
+
+    private static final int TAB_H = 36;
+    private static final int BOTTOM_H = 48;
+    private static final int NODE_R = 22;
+
+    @Nullable
+    private final ResearchTerminalBlockEntity terminal;
+
+    private float panX = 0, panY = 0;
+    private boolean panCentred = false;
+    private static final int ROW_H = 30;
+    private static final int TEXT_PIN = 0xFFFFDD55;
+    private static final int GROUP_H = 16;
+    private EditBox searchBox;
+
+    private final TerminalEditor editor = new TerminalEditor();
+    private int seenVersion = -1;
+    private int lastMx, lastMy;
+    private ResearchNode dragNode = null;
+    private int dragButton = 0;
+    private int dragGx, dragGy;
+    private boolean readyOnly = false;
+    private boolean skipChar = false;
+    private ResearchNode pendingFocus = null;
+    private int sidebarScroll = 0;
+    private int sidebarMax = 0;
+
+    private long abandonArmedUntil = 0L;
+    private static final long ABANDON_CONFIRM_MS = 5000L;
+
+    private static final float MIN_ZOOM = 0.08f;
+    private float zoom = 1.0f;
+    private boolean dragging = false;
+    private double lastDragX, lastDragY;
+
+    private ResearchNode selected = null;
+    private int activeTreeIdx = 0;
+    private List<ResearchTree> trees = new ArrayList<>();
+
+    private final MotionClock clock = new MotionClock();
+    private final IntensityController intensity = new IntensityController();
+    private DisciplineRenderer activeRenderer = DisciplineRendererRegistry.getDefault();
+    private String lastDisciplineId = null;
+    private String shownDiscipline = null;
+    private final Set<ResourceLocation> preloaded = new java.util.HashSet<>();
+    private long lastFrameNanos = -1;
+
+    private static final int MIN_CANVAS_W = 320;
+    private static final int MIN_CANVAS_H = 240;
+    private float uiScale = 1f;
+    private int vw, vh;
+
+    public ResearchTerminalScreen(ResearchTerminalBlockEntity terminal) {
+        super(Component.literal("Conflux Research Terminal"));
+        this.terminal = terminal;
+    }
+
+    public ResearchTerminalScreen() {
+        this(null);
+    }
+
+    @Override
+    protected void init() {
+        float neededW = sideOpenW() + MIN_CANVAS_W;
+        float neededH = TAB_H + BOTTOM_H + MIN_CANVAS_H;
+        uiScale = (width < neededW || height < neededH) ?
+                Math.min(width / neededW, height / neededH) : 1f;
+        uiScale = Math.max(0.1f, uiScale);
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
+
+        String keep = searchBox == null ? "" : searchBox.getValue();
+        searchBox = new EditBox(font, 8, 38, sideOpenW() - 16, 14, Component.literal("Search"));
+        searchBox.setMaxLength(40);
+        searchBox.setHint(Component.empty());
+        searchBox.setBordered(true);
+        searchBox.setValue(keep);
+        searchBox.setResponder(v -> sidebarScroll = 0);
+        addRenderableWidget(searchBox);
+
+        rebuildTrees();
+
+        if (!panCentred) {
+            resetPan();
+            panCentred = true;
+        }
+        lastFrameNanos = -1;
+
+        syncRenderer();
+    }
+
+    private void rebuildTrees() {
+        String chosen = ClientResearchCache.getDisciplineInfo().disciplineId();
+        ResourceLocation activeId = trees.isEmpty() || activeTreeIdx >= trees.size() ? null :
+                trees.get(activeTreeIdx).id;
+
+        List<ResearchTree> visible = new ArrayList<>();
+        for (ResearchTree tree : ResearchTreeRegistry.INSTANCE.getAllTrees()) {
+            if (!tree.isVisibleTo(chosen)) continue;
+            visible.add(tree);
+        }
+        trees = visible;
+        shownDiscipline = chosen;
+
+        activeTreeIdx = 0;
+        if (activeId != null) {
+            for (int i = 0; i < trees.size(); i++) {
+                if (trees.get(i).id.equals(activeId)) activeTreeIdx = i;
+            }
+        }
+    }
+
+    @Override
+    public void onClose() {
+        ConfluxShaderManager.release();
+        super.onClose();
+    }
+
+    private void resetPan() {
+        panX = canvasW() / 2f;
+        panY = canvasH() / 2f;
+    }
+
+    private int canvasW() {
+        return vw - sideW();
+    }
+
+    private int accent() {
+        return ConfluxTheme.accent();
+    }
+
+    private boolean sidebarOpen = true;
+    private static final int RAIL_W = 18;
+
+    private int sideOpenW() {
+        return Math.max(104, Math.min(150, Math.round(vw * 0.17f)));
+    }
+
+    private int sideW() {
+        return sidebarOpen ? sideOpenW() : RAIL_W;
+    }
+
+    private void renderSignature(GuiGraphics g, int mx, int my) {
+        var entries = net.phoenix.core.integration.conflux.signature.ClientSignatureCache.entries();
+        if (entries.isEmpty()) return;
+        var entry = entries.get(0);
+        var def = entry.definition();
+        int x0 = 10, x1 = sideOpenW() - 10, y0 = 29, y1 = 32;
+        float share = (float) Math.max(0.0, Math.min(1.0, entry.value() / def.max()));
+        g.fill(x0, y0, x1, y1, 0xFF0C0C18);
+        g.fill(x0, y0, x0 + Math.round((x1 - x0) * share), y1, def.color());
+        for (var level : def.levels()) {
+            int tick = x0 + Math.round((float) ((x1 - x0) * Math.min(1.0, level.at() / def.max())));
+            if (level.at() > 0) g.fill(tick, y0 - 1, tick + 1, y1 + 1, 0x66FFFFFF);
+        }
+        if (mx >= x0 && mx < x1 && my >= y0 - 12 && my < y1 + 3) {
+            List<Component> tip = new ArrayList<>();
+            tip.add(Component.literal(def.title() + "  " + (int) entry.value() + " / " + (int) def.max()));
+            tip.add(Component.literal("\u00a77" + def.levelName(entry.value())));
+            if (!def.description().isEmpty()) tip.add(Component.literal("\u00a78" + def.description()));
+            g.renderComponentTooltip(font, tip, mx, my);
+        }
+    }
+
+    private int[] abandonBounds() {
+        int w = sideOpenW();
+        int bottom = bottomTop();
+        return new int[] { 8, bottom - 18, w - 8, bottom - 6 };
+    }
+
+    private boolean canAbandon() {
+        return terminal != null && sidebarOpen && ClientResearchCache.getDisciplineInfo().canSwitch();
+    }
+
+    private void renderAbandonButton(GuiGraphics g, int mx, int my) {
+        if (!canAbandon()) return;
+        var info = ClientResearchCache.getDisciplineInfo();
+        int[] b = abandonBounds();
+        boolean armed = System.currentTimeMillis() < abandonArmedUntil;
+        boolean hover = mx >= b[0] && mx < b[2] && my >= b[1] && my < b[3];
+        g.fill(b[0], b[1], b[2], b[3], armed ? 0xFF5A1818 : hover ? 0xFF2A1A1A : 0xFF1A1212);
+        g.renderOutline(b[0], b[1], b[2] - b[0], b[3] - b[1], armed || hover ? 0xFFCC4444 : 0xFF663333);
+        g.drawCenteredString(font, armed ? "Confirm?" : "Abandon", (b[0] + b[2]) / 2, b[1] + 2,
+                armed ? 0xFFFFAAAA : 0xFFDD8888);
+        if (!hover) return;
+
+        List<Component> tip = new ArrayList<>();
+        String name = info.disciplineTitle() != null ? info.disciplineTitle() : "your discipline";
+        tip.add(Component.literal(armed ? "\u00a7cClick again to abandon " + name : "\u00a7cAbandon " + name));
+        tip.add(Component.literal("\u00a77You lose its research and can choose again."));
+        if (info.committed()) {
+            tip.add(Component.literal("\u00a76You have committed: it costs ten times as much."));
+        }
+        if (info.switchCost().isEmpty()) {
+            tip.add(Component
+                    .literal("\u00a7aFree: you have not researched anything yet. Once you do, leaving costs data."));
+        }
+        if (!info.switchCost().isEmpty()) {
+            tip.add(Component.literal("\u00a77Cost:"));
+            info.switchCost().forEach((type, amount) -> {
+                long have = ClientResearchCache.dataStored(type);
+                tip.add(Component.literal(" ").append(type.displayComponent()).append(Component.literal(
+                        (have >= amount ? " \u00a7a" : " \u00a7c") + amount + " \u00a78(you have " + have + ")")));
+            });
+        }
+        g.renderComponentTooltip(font, tip, mx, my);
+    }
+
+    private void clickAbandon() {
+        long now = System.currentTimeMillis();
+        if (now < abandonArmedUntil && terminal != null) {
+            abandonArmedUntil = 0L;
+            PacketDistributor.sendToServer(
+                    new net.phoenix.core.integration.conflux.network.C2SAbandonDisciplinePacket(
+                            terminal.getBlockPos()));
+        } else {
+            abandonArmedUntil = now + ABANDON_CONFIRM_MS;
+        }
+    }
+
+    private int[] toggleBounds() {
+        return sidebarOpen ? new int[] { sideOpenW() - 19, 5, sideOpenW() - 6, 18 } : new int[] { 3, 5, 15, 18 };
+    }
+
+    private void toggleSidebar() {
+        int before = canvasLeft();
+        sidebarOpen = !sidebarOpen;
+
+        panX += before - canvasLeft();
+        if (searchBox != null) {
+            searchBox.visible = sidebarOpen;
+            if (!sidebarOpen) searchBox.setFocused(false);
+        }
+    }
+
+    private int canvasLeft() {
+        return sideW();
+    }
+
+    private int canvasH() {
+        return vh - TAB_H - BOTTOM_H;
+    }
+
+    private int canvasTop() {
+        return TAB_H;
+    }
+
+    private int bottomTop() {
+        return vh - BOTTOM_H;
+    }
+
+    @Override
+    public void render(GuiGraphics g, int rmx, int rmy, float pt) {
+        ConfluxTheme.refresh();
+        long now = System.nanoTime();
+        float dt = lastFrameNanos < 0 ? 0.016f : (float) ((now - lastFrameNanos) / 1_000_000_000.0);
+        lastFrameNanos = now;
+        dt = Math.min(dt, 0.1f);
+
+        if (!java.util.Objects.equals(shownDiscipline, ClientResearchCache.getDisciplineInfo().disciplineId())) {
+            rebuildTrees();
+        }
+        if (seenVersion != ResearchTreeRegistry.INSTANCE.version()) {
+            seenVersion = ResearchTreeRegistry.INSTANCE.version();
+            rebuildTrees();
+            if (pendingTreeId != null) {
+                for (int i = 0; i < trees.size(); i++) {
+                    if (trees.get(i).id.toString().equals(pendingTreeId)) {
+                        activeTreeIdx = i;
+                        resetPan();
+                        pendingTreeId = null;
+                    }
+                }
+            }
+        }
+        preloadNextShader();
+
+        syncRenderer();
+
+        clock.tick(dt);
+        intensity.tick(dt);
+        ConfluxShaderManager.tick(dt);
+        pushShaderData(rmx, rmy);
+
+        int mx = Math.round(rmx / uiScale);
+        int my = Math.round(rmy / uiScale);
+        lastMx = mx;
+        lastMy = my;
+        editor.setTree(trees.isEmpty() ? null : trees.get(Math.min(activeTreeIdx, trees.size() - 1)));
+
+        g.pose().pushPose();
+        g.pose().scale(uiScale, uiScale, 1f);
+
+        int cw = canvasW(), ct = canvasTop(), cl = canvasLeft();
+        boolean hoveringCanvas = mx >= cl && mx < cl + cw && my >= ct && my < ct + canvasH();
+        if (hoveringCanvas) intensity.onHover();
+        else intensity.onHoverEnd();
+
+        RenderContext ctx = buildContext(mx, my);
+        if (ctx == null) {
+            g.fill(0, 0, vw, vh, ConfluxTheme.BG);
+            renderSidebar(g, mx, my);
+            renderTopBar(g, mx, my);
+            renderBottomBar(g);
+            super.render(g, mx, my, pt);
+            g.pose().popPose();
+            return;
+        }
+
+        if (pendingFocus != null) {
+            float[] fp = activeRenderer.nodePos(pendingFocus, ctx);
+            panX = canvasW() / 2f - fp[0] * zoom;
+            panY = canvasH() / 2f - fp[1] * zoom;
+            pendingFocus = null;
+        }
+
+        activeRenderer.tick(dt, ctx);
+
+        g.fill(0, 0, vw, vh, ConfluxTheme.BG);
+        renderCanvas(g, mx, my, ctx);
+        ConfluxShaderManager.applyPostChain();
+
+        g.flush();
+        renderSidebar(g, mx, my);
+        renderTopBar(g, mx, my);
+        renderBottomBar(g);
+
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 600);
+        if (dragNode != null) renderDragGhost(g, ctx);
+        editor.renderBackdrop(g, font, mx, my, accent());
+        super.render(g, mx, my, pt);
+        g.pose().popPose();
+        if (sidebarOpen && searchBox != null && !searchBox.isFocused() && mx >= searchBox.getX() &&
+                mx < searchBox.getX() + searchBox.getWidth() && my >= searchBox.getY() &&
+                my < searchBox.getY() + searchBox.getHeight()) {
+            g.pose().pushPose();
+            g.pose().translate(0, 0, 400);
+            g.renderTooltip(font, Component.literal("Search research  ( / or Ctrl+F )"), mx, my);
+            g.pose().popPose();
+        }
+
+        g.pose().popPose();
+
+        g.flush();
+        renderTreeCard(g, rmx, rmy);
+        g.flush();
+    }
+
+    private void preloadNextShader() {
+        for (ResearchTree tree : trees) {
+            String disc = tree.isDisciplineTree() ? tree.discipline : null;
+            ResourceLocation location = DisciplineRendererRegistry.get(disc).shaderLocation();
+            if (location == null || preloaded.contains(location)) continue;
+            preloaded.add(location);
+            ConfluxShaderManager.preload(location);
+            return;
+        }
+    }
+
+    private void syncRenderer() {
+        if (trees.isEmpty()) return;
+        ResearchTree tree = trees.get(activeTreeIdx);
+        String discId = tree.isDisciplineTree() ? tree.discipline : null;
+        if (!java.util.Objects.equals(discId, lastDisciplineId)) {
+            lastDisciplineId = discId;
+            activeRenderer = DisciplineRendererRegistry.get(discId);
+            activeRenderer.onActivate(clock);
+            ConfluxShaderManager.activate(activeRenderer.shaderLocation());
+        }
+    }
+
+    private RenderContext buildContext(int mx, int my) {
+        if (trees.isEmpty()) return null;
+        ResearchTree tree = trees.get(activeTreeIdx);
+        Set<ResourceLocation> unlocked = ClientResearchCache.unlocked;
+        Set<ResourceLocation> lockedOut = ClientResearchCache.lockedOut;
+        int ct = canvasTop();
+        float cmx = (float) ((mx - canvasLeft() - panX) / zoom);
+        float cmy = (float) ((my - ct - panY) / zoom);
+        return new RenderContext(tree, unlocked, lockedOut, selected,
+                cmx, cmy, canvasW(), canvasH(), clock, intensity);
+    }
+
+    private record SideRow(String header, int treeIdx, ResearchNode pinNode, int depth, String path, boolean collapsed,
+                           List<Integer> inside) {
+
+        SideRow(String header, int treeIdx) {
+            this(header, treeIdx, null, 0, null, false, List.of());
+        }
+
+        SideRow(String header, int treeIdx, ResearchNode pinNode) {
+            this(header, treeIdx, pinNode, 0, null, false, List.of());
+        }
+
+        boolean isCategory() {
+            return header != null && path != null;
+        }
+    }
+
+    private static final Set<String> COLLAPSED = new java.util.HashSet<>();
+    private static final int INDENT = 8;
+
+    private List<SideRow> sideRows() {
+        List<String> order = List.of("Foundations", "Discipline", "Dispensations", "Chronicle", "Space");
+        List<SideRow> rows = new ArrayList<>();
+        List<SideRow> pinned = new ArrayList<>();
+        for (int i = 0; i < trees.size(); i++) {
+            for (ResearchNode n : trees.get(i).getNodes()) {
+                if (!ConfluxPins.isPinned(n.id)) continue;
+                if (n.hidden && !ClientResearchCache.isUnlocked(n.id)) continue;
+                pinned.add(new SideRow(null, i, n));
+            }
+        }
+        if (!pinned.isEmpty()) {
+            rows.add(new SideRow("Pinned", -1));
+            rows.addAll(pinned);
+        }
+        List<net.phoenix.core.integration.conflux.research.ResearchCategories.Item> items = new ArrayList<>();
+        for (int i = 0; i < trees.size(); i++) {
+            ResearchTree t = trees.get(i);
+            items.add(new net.phoenix.core.integration.conflux.research.ResearchCategories.Item(i, t.group, t.order,
+                    t.title));
+        }
+        for (var entry : net.phoenix.core.integration.conflux.research.ResearchCategories.layout(items, order,
+                COLLAPSED)) {
+            if (entry.isHeader()) {
+                rows.add(new SideRow(entry.name(), -1, null, entry.depth(), entry.path(), entry.collapsed(),
+                        entry.trees()));
+            } else {
+                rows.add(new SideRow(null, entry.treeIndex(), null, entry.depth(), null, false, List.of()));
+            }
+        }
+        return rows;
+    }
+
+    private int[] progress(ResearchTree tree) {
+        int done = 0, total = 0, avail = 0;
+        for (ResearchNode n : tree.getNodes()) {
+            total++;
+            if (ClientResearchCache.isUnlocked(n.id)) done++;
+            else if (!ClientResearchCache.isLockedOut(n.id) && n.isVisible(ClientResearchCache.unlocked) &&
+                    n.canUnlock(ClientResearchCache.unlocked, ClientResearchCache.lockedOut,
+                            ClientResearchCache::hasFlag))
+                avail = 1;
+        }
+        return new int[] { done, total, avail };
+    }
+
+    private int sideListTop() {
+        return 72;
+    }
+
+    private boolean resultsMode() {
+        return readyOnly || (searchBox != null && !searchBox.getValue().isBlank());
+    }
+
+    private record Hit(int treeIdx, ResearchNode node, boolean affordable, boolean done) {}
+
+    private List<Hit> hits() {
+        String q = searchBox == null ? "" : searchBox.getValue().trim().toLowerCase();
+        Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
+        List<Hit> out = new ArrayList<>();
+        for (int i = 0; i < trees.size(); i++) {
+            ResearchTree tree = trees.get(i);
+            for (ResearchNode n : tree.getNodes()) {
+                boolean done = ClientResearchCache.isUnlocked(n.id);
+                if (n.hidden && !done) continue;
+                if (!n.isVisible(unlockedSet)) continue;
+                if (readyOnly && (done || ClientResearchCache.isLockedOut(n.id) ||
+                        !n.canUnlock(unlockedSet, ClientResearchCache.lockedOut, ClientResearchCache::hasFlag)))
+                    continue;
+                if (!q.isEmpty() && !(n.title + " " + n.lore + " " + tree.title).toLowerCase().contains(q)) continue;
+                out.add(new Hit(i, n, costsAffordable(n), done));
+            }
+        }
+        out.sort((a, b) -> Boolean.compare(b.affordable(), a.affordable()));
+        return out.size() > 150 ? out.subList(0, 150) : out;
+    }
+
+    private void focusHit(Hit hit) {
+        activeTreeIdx = hit.treeIdx();
+        selected = hit.node();
+        pendingFocus = hit.node();
+    }
+
+    private int[] chipBounds(int which) {
+        int w = (sideOpenW() - 22) / 2;
+        int x = 8 + which * (w + 6);
+        return new int[] { x, 55, x + w, 67 };
+    }
+
+    private int sideListBottom() {
+        return bottomTop() - 4 - (canAbandon() ? 20 : 0);
+    }
+
+    private void renderToggle(GuiGraphics g, int mx, int my) {
+        int[] tb = toggleBounds();
+        boolean hov = mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3];
+        g.fill(tb[0], tb[1], tb[2], tb[3], hov ? 0x33FFFFFF : 0x14FFFFFF);
+        g.drawCenteredString(font, sidebarOpen ? "\u25c0" : "\u25b6", (tb[0] + tb[2]) / 2, tb[1] + 3,
+                hov ? ConfluxTheme.TEXT : accent());
+    }
+
+    private void renderSidebar(GuiGraphics g, int mx, int my) {
+        int h = bottomTop();
+        if (searchBox != null) searchBox.visible = sidebarOpen;
+        if (!sidebarOpen) {
+            g.fill(0, 0, RAIL_W, h, ConfluxTheme.PANEL);
+            g.fill(RAIL_W - 1, 0, RAIL_W, h, ConfluxTheme.BORDER);
+            g.fillGradient(0, 0, RAIL_W - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
+            renderToggle(g, mx, my);
+            return;
+        }
+        g.fill(0, 0, sideOpenW(), h, 0xFF000000);
+        g.fill(0, 0, sideOpenW(), h, ConfluxTheme.PANEL);
+        g.fill(sideOpenW() - 1, 0, sideOpenW(), h, ConfluxTheme.BORDER);
+
+        g.fillGradient(0, 0, sideOpenW() - 1, 34, (accent() & 0xFFFFFF) | 0x40000000, 0x00000000);
+        g.drawString(font, "\u00a7lCONFLUX", 10, 7, ConfluxTheme.TEXT, false);
+        String disc = ClientResearchCache.getDisciplineInfo().disciplineTitle();
+        g.drawString(font, disc == null ? "\u00a78No discipline chosen" : "\u00a77" + disc, 10, 19, ConfluxTheme.DIM,
+                false);
+        renderSignature(g, mx, my);
+        g.fill(8, 33, sideOpenW() - 8, 34, ConfluxTheme.BORDER);
+        renderToggle(g, mx, my);
+        renderAbandonButton(g, mx, my);
+
+        for (int c = 0; c < 2; c++) {
+            int[] cb = chipBounds(c);
+            boolean on = (c == 1) == readyOnly;
+            boolean hv = mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3];
+            g.fill(cb[0], cb[1], cb[2], cb[3], on ? (accent() & 0xFFFFFF) | 0x55000000 : hv ? 0xFF14142A : 0xFF0C0C18);
+            g.renderOutline(cb[0], cb[1], cb[2] - cb[0], cb[3] - cb[1], on ? accent() : ConfluxTheme.BORDER);
+            g.drawCenteredString(font, c == 0 ? "All" : "\u00a7a\u25cf\u00a7r Ready", (cb[0] + cb[2]) / 2, cb[1] + 2,
+                    on ? ConfluxTheme.TEXT : ConfluxTheme.DIM);
+        }
+
+        int top = sideListTop(), bot = sideListBottom();
+        g.enableScissor(0, top, sideOpenW() - 1, bot);
+        int y = top - sidebarScroll;
+        int start = y;
+        if (resultsMode()) {
+            List<Hit> hits = hits();
+            if (hits.isEmpty()) g.drawString(font, "\u00a78No matches.", 12, y + 6, ConfluxTheme.DIM, false);
+            for (Hit hit : hits) {
+                boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                        my < Math.min(bot, y + ROW_H);
+                boolean current = selected != null && selected.id.equals(hit.node().id);
+                if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (hover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
+                int col = hit.done() ? 0xFF88BBFF : hit.affordable() ? 0xFF88EE88 : ConfluxTheme.TEXT;
+                g.drawString(font, font.plainSubstrByWidth(hit.node().title, sideOpenW() - 26), 12, y + 4, col, false);
+                g.drawString(font, "\u00a78" + font.plainSubstrByWidth(trees.get(hit.treeIdx()).title,
+                        sideOpenW() - 26), 12, y + 15, ConfluxTheme.DIM, false);
+                y += ROW_H;
+            }
+            sidebarMax = Math.max(0, (y - start) - (bot - top));
+            sidebarScroll = Math.min(sidebarScroll, sidebarMax);
+            g.disableScissor();
+            return;
+        }
+        for (SideRow row : sideRows()) {
+            if (row.header() != null) {
+                int ind = row.depth() * INDENT;
+                if (row.isCategory()) {
+                    boolean hv = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                            my < Math.min(bot, y + GROUP_H);
+                    if (hv) g.fill(4 + ind, y, sideOpenW() - 5, y + GROUP_H - 1, 0xFF11111F);
+                    int done = 0, total = 0;
+                    for (int ti : row.inside()) {
+                        for (ResearchNode n : trees.get(ti).getNodes()) {
+                            total++;
+                            if (ClientResearchCache.isUnlocked(n.id)) done++;
+                        }
+                    }
+                    String count = done + "/" + total;
+                    int room = sideOpenW() - 36 - ind - font.width(count);
+                    g.drawString(font, (row.collapsed() ? "\u00a77\u25b8 " : "\u00a77\u25be ") + "\u00a78" +
+                            font.plainSubstrByWidth(row.header().toUpperCase(), Math.max(20, room)), 8 + ind, y + 5,
+                            ConfluxTheme.DIM, false);
+                    g.drawString(font, "\u00a78" + count, sideOpenW() - 8 - font.width(count), y + 5, ConfluxTheme.DIM,
+                            false);
+                } else {
+                    g.drawString(font, "\u00a78" + row.header().toUpperCase(), 10, y + 5, ConfluxTheme.DIM, false);
+                }
+                y += GROUP_H;
+                continue;
+            }
+            if (row.pinNode() != null) {
+                boolean pinHover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                        my < Math.min(bot, y + ROW_H);
+                boolean current = selected != null && selected.id.equals(row.pinNode().id);
+                if (current) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
+                else if (pinHover) g.fill(4, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
+                boolean done = ClientResearchCache.isUnlocked(row.pinNode().id);
+                g.drawString(font, "\u00a7e\u2605", 10, y + 4, TEXT_PIN, false);
+                g.drawString(font, font.plainSubstrByWidth(row.pinNode().title, sideOpenW() - 38), 22, y + 4,
+                        done ? 0xFF88BBFF : ConfluxTheme.TEXT, false);
+                g.drawString(font,
+                        "\u00a78" + font.plainSubstrByWidth(trees.get(row.treeIdx()).title, sideOpenW() - 38), 22,
+                        y + 15, ConfluxTheme.DIM, false);
+                y += ROW_H;
+                continue;
+            }
+            ResearchTree tree = trees.get(row.treeIdx());
+            int ind = Math.max(0, row.depth() - 1) * INDENT;
+            boolean active = row.treeIdx() == activeTreeIdx;
+            boolean hover = mx >= 0 && mx < sideOpenW() - 1 && my >= Math.max(top, y) &&
+                    my < Math.min(bot, y + ROW_H) &&
+                    my >= y && my < y + ROW_H;
+            if (active) {
+                g.fill(4 + ind, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF16162C);
+                g.fill(4 + ind, y, 6 + ind, y + ROW_H - 2, accent());
+            } else if (hover) {
+                g.fill(4 + ind, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
+            }
+            int[] p = progress(tree);
+            String title = font.plainSubstrByWidth(tree.title, sideOpenW() - 38 - ind);
+            g.drawString(font, title, 12 + ind, y + 4, active ? ConfluxTheme.TEXT : hover ? 0xFF9999BB : 0xFF8888AA,
+                    false);
+            if (p[2] == 1) g.drawString(font, "\u00a7a\u25cf", sideOpenW() - 16, y + 4, ConfluxTheme.TEXT, false);
+
+            int barX = 12 + ind, barW = sideOpenW() - 56 - ind, barY = y + 17;
+            g.fill(barX, barY, barX + barW, barY + 3, 0xFF111122);
+            int filled = p[1] == 0 ? 0 : (int) (barW * (p[0] / (float) p[1]));
+            g.fill(barX, barY, barX + filled, barY + 3, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : accent());
+            String count = p[0] + "/" + p[1];
+            g.drawString(font, "\u00a78" + count, sideOpenW() - 8 - font.width(count), y + 13, ConfluxTheme.DIM, false);
+            y += ROW_H;
+        }
+        sidebarMax = Math.max(0, (y - start) - (bot - top));
+        sidebarScroll = Math.min(sidebarScroll, sidebarMax);
+        g.disableScissor();
+    }
+
+    private Hit hitRowAt(double mx, double my) {
+        if (mx < 0 || mx >= sideOpenW() - 1 || my < sideListTop() || my >= sideListBottom()) return null;
+        int y = sideListTop() - sidebarScroll;
+        for (Hit hit : hits()) {
+            if (my >= y && my < y + ROW_H) return hit;
+            y += ROW_H;
+        }
+        return null;
+    }
+
+    private SideRow rowAt(double mx, double my) {
+        if (mx < 0 || mx >= sideOpenW() - 1 || my < sideListTop() || my >= sideListBottom()) return null;
+        int y = sideListTop() - sidebarScroll;
+        for (SideRow row : sideRows()) {
+            if (row.header() != null) {
+                if (row.isCategory() && my >= y && my < y + GROUP_H) return row;
+                y += GROUP_H;
+                continue;
+            }
+            if (my >= y && my < y + ROW_H) return row;
+            y += ROW_H;
+        }
+        return null;
+    }
+
+    private void renderTopBar(GuiGraphics g, int mx, int my) {
+        int cl = canvasLeft(), cw = canvasW();
+        g.fill(cl, 0, cl + cw, TAB_H, ConfluxTheme.HEADER);
+        g.fill(cl, TAB_H - 1, cl + cw, TAB_H, (accent() & 0xFFFFFF) | 0x88000000);
+
+        int[] tb = themeButtonBounds();
+        int[] ab = researchAllBounds();
+        if (!trees.isEmpty()) {
+            ResearchTree tree = trees.get(activeTreeIdx);
+            int avail = tb[0] - (cl + 10) - 8;
+            g.drawString(font, font.plainSubstrByWidth(tree.title, avail), cl + 10, 4, ConfluxTheme.TEXT, false);
+            String desc = tree.description.replaceAll("[*_`#>]", "").replace('\n', ' ');
+            List<net.minecraft.util.FormattedCharSequence> lines = font.split(Component.literal(desc),
+                    Math.max(40, avail));
+            for (int i = 0; i < Math.min(2, lines.size()); i++) {
+                if (i == 1 && lines.size() > 2) {
+                    g.drawString(font, font.plainSubstrByWidth(plain(lines.get(1)), avail - font.width("...")) + "...",
+                            cl + 10,
+                            14 + i * 10, ConfluxTheme.DIM, false);
+                } else {
+                    g.drawString(font, lines.get(i), cl + 10, 14 + i * 10, ConfluxTheme.DIM, false);
+                }
+            }
+        }
+
+        boolean themeHover = mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3];
+        g.fill(tb[0], tb[1], tb[2], tb[3], themeHover ? 0xFF2A2A4A : ConfluxTheme.HEADER);
+        g.renderOutline(tb[0], tb[1], tb[2] - tb[0], tb[3] - tb[1], themeHover ? accent() : ConfluxTheme.BORDER);
+        g.drawCenteredString(font, "Theme", (tb[0] + tb[2]) / 2, tb[1] + (tb[3] - tb[1] - 8) / 2, ConfluxTheme.DIM);
+
+        boolean allHover = terminal != null && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3];
+        g.fill(ab[0], ab[1], ab[2], ab[3], terminal == null ? ConfluxTheme.HEADER : allHover ? 0xFF1A3A1A : 0xFF112211);
+        g.renderOutline(ab[0], ab[1], ab[2] - ab[0], ab[3] - ab[1],
+                terminal == null ? ConfluxTheme.BORDER : 0xFF338833);
+        g.drawCenteredString(font, "Research All", (ab[0] + ab[2]) / 2, ab[1] + (ab[3] - ab[1] - 8) / 2,
+                terminal == null ? ConfluxTheme.DIM : 0xFF88EE88);
+
+        int[] wb = wikiButtonBounds();
+        boolean wikiHover = mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3];
+        g.fill(wb[0], wb[1], wb[2], wb[3], wikiHover ? 0xFF2A2A4A : ConfluxTheme.HEADER);
+        g.renderOutline(wb[0], wb[1], wb[2] - wb[0], wb[3] - wb[1], wikiHover ? accent() : ConfluxTheme.BORDER);
+        g.drawCenteredString(font, "?", (wb[0] + wb[2]) / 2, wb[1] + (wb[3] - wb[1] - 8) / 2,
+                wikiHover ? ConfluxTheme.TEXT : accent());
+    }
+
+    private static String plain(net.minecraft.util.FormattedCharSequence seq) {
+        StringBuilder sb = new StringBuilder();
+        seq.accept((i, style, cp) -> {
+            sb.appendCodePoint(cp);
+            return true;
+        });
+        return sb.toString();
+    }
+
+    private int[] themeButtonBounds() {
+        int[] ab = researchAllBounds();
+        int w = font.width("Theme") + 12;
+        return new int[] { ab[0] - 6 - w, 8, ab[0] - 6, 22 };
+    }
+
+    private int[] researchAllBounds() {
+        int w = font.width("Research All") + 12;
+        int right = canvasLeft() + canvasW() - 22;
+        return new int[] { right - w, 8, right, 22 };
+    }
+
+    private int[] wikiButtonBounds() {
+        int right = canvasLeft() + canvasW();
+        return new int[] { right - 18, 8, right - 2, 22 };
+    }
+
+    private void renderCanvas(GuiGraphics g, int mx, int my, RenderContext ctx) {
+        int cw = canvasW(), ch = canvasH(), ct = canvasTop(), cl = canvasLeft();
+        g.pose().pushPose();
+        g.pose().translate(cl, 0, 0);
+        g.fill(0, ct, cw, ct + ch, ConfluxTheme.CANVAS);
+        g.fill(cw - 1, ct, cw, ct + ch, ConfluxTheme.BORDER);
+
+        if (trees.isEmpty()) {
+            g.drawCenteredString(font, "\u00a77No research trees loaded.", cw / 2, ct + ch / 2 - 4, ConfluxTheme.TEXT);
+            g.pose().popPose();
+            return;
+        }
+
+        double guiScale = minecraft.getWindow().getGuiScale();
+        double realCt = ct * uiScale, realCh = ch * uiScale, realCw = cw * uiScale, realCl = cl * uiScale;
+        RenderSystem.enableScissor(
+                (int) (realCl * guiScale),
+                (int) ((height - realCt - realCh) * guiScale),
+                (int) (realCw * guiScale),
+                (int) (realCh * guiScale));
+
+        g.pose().pushPose();
+        g.pose().translate(0, ct, 0);
+        activeRenderer.renderBackground(g, ctx);
+        g.pose().popPose();
+
+        g.pose().pushPose();
+        g.pose().translate(panX, ct + panY, 0);
+        g.pose().scale(zoom, zoom, 1);
+
+        float deviceScale = zoom * uiScale * (float) guiScale;
+        boolean overview = deviceScale < 0.8f;
+        if (overview) {
+            renderOverview(g, ctx, deviceScale);
+        } else {
+            activeRenderer.renderEdges(g, ctx);
+            activeRenderer.renderNodes(g, ctx);
+
+            for (ResearchNode node : ctx.tree().getNodes()) {
+                if (!node.isVisible(ctx.unlocked())) continue;
+                float[] pos = activeRenderer.nodePos(node, ctx);
+                drawNodeLabel(g, node, (int) pos[0], (int) pos[1], ctx);
+                if (ConfluxPins.isPinned(node.id)) {
+                    g.drawCenteredString(font, "\u00a7e\u2605", (int) pos[0], (int) pos[1] - NODE_R - 12, TEXT_PIN);
+                }
+            }
+        }
+
+        g.pose().popPose();
+
+        if (!overview) {
+            g.pose().pushPose();
+            g.pose().translate(panX, ct + panY, 0);
+            g.pose().scale(zoom, zoom, 1);
+            activeRenderer.renderForeground(g, ctx);
+            g.pose().popPose();
+        }
+
+        RenderSystem.disableScissor();
+        g.pose().popPose();
+    }
+
+    private int cardW() {
+        return Math.max(112, Math.min(176, Math.round(width * 0.15f)));
+    }
+
+    private boolean cardOpen = true;
+    private float cardScroll = 0;
+    private int cardMax = 0;
+    private int[] cardRect = new int[4];
+    private String cardSource = null;
+    private List<RichBlock> cardBlocks = List.of();
+
+    private void renderTreeCard(GuiGraphics g, int lx, int my) {
+        cardRect = new int[4];
+
+        if (true) return;
+        if (trees.isEmpty()) return;
+        ResearchTree tree = trees.get(activeTreeIdx);
+        int[] p = progress(tree);
+
+        int x = Math.round(canvasLeft() * uiScale) + 8, y = Math.round(canvasTop() * uiScale) + 8;
+        int acc = accent();
+        boolean headerHover = lx >= x && lx < x + cardW() && my >= y && my < y + 18;
+
+        if (!cardOpen) {
+            g.fill(x, y, x + cardW(), y + 18, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
+            g.renderOutline(x, y, cardW(), 18, headerHover ? acc : ConfluxTheme.BORDER);
+            g.drawString(font, "\u00a77\u25b8 " + font.plainSubstrByWidth(tree.title, cardW() - 70), x + 6, y + 5,
+                    ConfluxTheme.TEXT, false);
+            String c = p[0] + "/" + p[1];
+            g.drawString(font, "\u00a78" + c, x + cardW() - 6 - font.width(c), y + 5, ConfluxTheme.DIM, false);
+            cardRect = new int[] { x, y, x + cardW(), y + 18 };
+            return;
+        }
+
+        int bodyMax = Math.max(26, Math.min(56, Math.round(height * 0.06f)));
+        List<RichBlock> blocks = cardBlocksFor(tree.description);
+        int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, cardW() - 20, new java.util.HashSet<>());
+        int bodyH = Math.min(bodyMax, contentH);
+        cardMax = Math.max(0, contentH - bodyH);
+        cardScroll = Math.min(cardScroll, cardMax);
+
+        String count = p[0] + "/" + p[1] + " researched";
+        String ready = "\u25cf ready";
+        boolean split = p[2] == 1 && font.width(count + "  " + ready) > cardW() - 20;
+        int total = 18 + 8 + bodyH + 8 + 14 + (split ? 10 : 0) + 6;
+        g.fill(x, y, x + cardW(), y + total, 0xFF000000 | (ConfluxTheme.PANEL_DEEP & 0xFFFFFF));
+        g.renderOutline(x, y, cardW(), total, (acc & 0xFFFFFF) | 0xAA000000);
+        g.fillGradient(x + 1, y + 1, x + cardW() - 1, y + 18, (acc & 0xFFFFFF) | 0x40000000, 0x00000000);
+        g.drawString(font, "\u00a7f\u25be " + font.plainSubstrByWidth(tree.title, cardW() - 20), x + 6, y + 5,
+                ConfluxTheme.TEXT, false);
+
+        int by = y + 22;
+        g.enableScissor(x + 1, by, x + cardW() - 1, by + bodyH);
+        WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, cardW() - 20, (int) cardScroll, by, by + bodyH,
+                acc,
+                new java.util.HashSet<>());
+        g.disableScissor();
+        if (cardMax > 0) {
+            int th = Math.max(10, bodyH * bodyH / (bodyH + cardMax));
+            int ty = by + (int) ((bodyH - th) * (cardScroll / cardMax));
+            g.fill(x + cardW() - 4, by, x + cardW() - 2, by + bodyH, 0xFF111122);
+            g.fill(x + cardW() - 4, ty, x + cardW() - 2, ty + th, acc);
+        }
+
+        int py = by + bodyH + 6;
+        g.fill(x + 10, py, x + cardW() - 10, py + 4, 0xFF111122);
+        int filled = p[1] == 0 ? 0 : (int) ((cardW() - 20) * (p[0] / (float) p[1]));
+        g.fill(x + 10, py, x + 10 + filled, py + 4, p[0] == p[1] && p[1] > 0 ? 0xFF55CC88 : acc);
+        int textW = cardW() - 20;
+        g.drawString(font, "\u00a77" + font.plainSubstrByWidth(count, textW), x + 10, py + 8, ConfluxTheme.TEXT, false);
+        if (p[2] == 1) {
+            if (split) {
+                g.drawString(font, "\u00a7a" + ready, x + 10, py + 18, ConfluxTheme.TEXT, false);
+            } else {
+                g.drawString(font, "\u00a7a" + ready, x + 10 + textW - font.width(ready), py + 8, ConfluxTheme.TEXT,
+                        false);
+            }
+        }
+        cardRect = new int[] { x, y, x + cardW(), y + total };
+    }
+
+    private List<RichBlock> cardBlocksFor(String text) {
+        if (!text.equals(cardSource)) {
+            cardSource = text;
+            cardBlocks = text.isEmpty() ? List.of() : WikiMarkdownParser.parse(text, false, true);
+        }
+        return cardBlocks;
+    }
+
+    private void renderOverview(GuiGraphics g, RenderContext ctx, float deviceScale) {
+        int line = Math.max(2, (int) Math.ceil(1.6f / deviceScale));
+        int half = Math.max(NODE_R / 2, (int) Math.ceil(3.0f / deviceScale));
+
+        for (ResearchNode node : ctx.tree().getNodes()) {
+            if (!node.isVisible(ctx.unlocked())) continue;
+            float[] dst = activeRenderer.nodePos(node, ctx);
+            for (ResourceLocation prereqId : node.prerequisites) {
+                var prereq = ctx.tree().getNode(prereqId).orElse(null);
+                if (prereq == null || !prereq.isVisible(ctx.unlocked())) continue;
+                float[] src = activeRenderer.nodePos(prereq, ctx);
+                int lineColor = ctx.isUnlocked(prereqId) ? 0xFF4A6FA8 : 0xFF2E3550;
+                int x1 = Math.round(src[0]), y1 = Math.round(src[1]);
+                int x2 = Math.round(dst[0]), y2 = Math.round(dst[1]);
+                int midY = (y1 + y2) / 2;
+                int h = line / 2;
+                g.fill(x1 - h, Math.min(y1, midY), x1 - h + line, Math.max(y1, midY) + line, lineColor);
+                g.fill(Math.min(x1, x2), midY - h, Math.max(x1, x2) + line, midY - h + line, lineColor);
+                g.fill(x2 - h, Math.min(midY, y2), x2 - h + line, Math.max(midY, y2) + line, lineColor);
+            }
+        }
+
+        for (ResearchNode node : ctx.tree().getNodes()) {
+            if (!node.isVisible(ctx.unlocked())) continue;
+            float[] pos = activeRenderer.nodePos(node, ctx);
+            boolean unlocked = ctx.isUnlocked(node.id);
+            boolean lockedOut = ctx.isLockedOut(node.id);
+            boolean mystery = node.hidden && !unlocked;
+            int color = lockedOut ? 0xFF8A3030 : mystery ? 0xFF555566 : unlocked ? 0xFF5A9AE0 :
+                    ctx.isAvailable(node) ? 0xFF66CC66 : 0xFF3A4560;
+            if (ctx.isSelected(node)) color = 0xFFFFFFFF;
+            int cx = Math.round(pos[0]), cy = Math.round(pos[1]);
+            g.fill(cx - half, cy - half, cx + half, cy + half, color);
+        }
+    }
+
+    private void drawNodeLabel(GuiGraphics g, ResearchNode node, int cx, int cy, RenderContext ctx) {
+        boolean unlocked = ctx.isUnlocked(node.id);
+        boolean lockedOut = ctx.isLockedOut(node.id);
+        boolean available = ctx.isAvailable(node);
+        boolean isMystery = node.hidden && !unlocked;
+
+        int r = NODE_R;
+        String rawLabel = isMystery ? "§8???" : lockedOut ? "§c" + node.title : node.title;
+        String stripped = rawLabel.replaceAll("§.", "");
+        String label = stripped.length() > 16 ? rawLabel.substring(0, rawLabel.startsWith("§") ? 17 : 15) + "…" :
+                rawLabel;
+        int lw = font.width(label);
+
+        g.drawString(font, label, cx - lw / 2 + 1, cy + r + 4, 0xFF000000, false);
+        g.drawString(font, label, cx - lw / 2, cy + r + 3,
+                unlocked ? ConfluxTheme.TEXT : available ? 0xFF88CC88 : ConfluxTheme.DIM, false);
+    }
+
+    private void renderBottomBar(GuiGraphics g) {
+        int y0 = bottomTop();
+        g.fill(0, y0, vw, vh, ConfluxTheme.HEADER);
+        g.fill(0, y0, vw, y0 + 1, ConfluxTheme.BORDER);
+
+        List<ConfluxDataType> available = new ArrayList<>();
+        for (ConfluxDataType t : ConfluxDataType.values())
+            if (t.isAvailable()) available.add(t);
+        if (available.isEmpty()) return;
+
+        int padding = 10;
+        int gap = 12;
+        int slotW = (vw - padding * 2 + gap) / available.size();
+        int barW = slotW - gap;
+        int barH = 6;
+        int x = padding;
+        int textY = y0 + 6;
+        int barY = textY + 11;
+
+        for (ConfluxDataType type : available) {
+            long stored = terminal != null ? ClientResearchCache.dataStored(type) : 0L;
+            long capacity = terminal != null ? terminal.getCapacity(type) : 1_000_000L;
+            int col = typeBarColor(type);
+
+            String amt = formatAmount(stored);
+            Component label = type.displayComponent();
+
+            if (font.width(label) + font.width(amt) + 8 > barW) {
+                String name = label.getString();
+                label = Component.literal(name.substring(0, Math.min(3, name.length()))).withStyle(label.getStyle());
+            }
+            g.drawString(font, label, x, textY, ConfluxTheme.TEXT, false);
+            if (font.width(label) + font.width(amt) + 4 <= barW) {
+                g.drawString(font, "\u00a77" + amt, x + barW - font.width(amt), textY, ConfluxTheme.TEXT, false);
+            }
+
+            int filled = capacity > 0 ? (int) (barW * Math.min(1f, stored / (float) capacity)) : 0;
+            g.fill(x, barY, x + barW, barY + barH, 0xFF111122);
+            if (filled > 0) g.fill(x, barY, x + filled, barY + barH, col);
+            g.renderOutline(x, barY, barW, barH, ConfluxTheme.BORDER);
+
+            x += slotW;
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double rmx, double rmy, int btn) {
+        double mx = rmx / uiScale;
+        double my = rmy / uiScale;
+        if (editor.menuOpen()) return editor.clickMenu(mx, my, btn);
+        if (super.mouseClicked(mx, my, btn)) return true;
+
+        int cw = canvasW(), ct = canvasTop(), ch = canvasH(), cl = canvasLeft();
+
+        if (my < TAB_H && mx >= cl && mx < cl + cw) {
+            int[] wb = wikiButtonBounds();
+            if (mx >= wb[0] && mx < wb[2] && my >= wb[1] && my < wb[3]) {
+                PhoenixWikiAPI.open(this, ConfluxTheme.MOD_ID, "wiki", ConfluxTheme.wikiTheme());
+                return true;
+            }
+
+            int[] thb = themeButtonBounds();
+            if (mx >= thb[0] && mx < thb[2] && my >= thb[1] && my < thb[3]) {
+                Minecraft.getInstance().setScreen(new PhoenixThemeEditorScreen(this));
+                return true;
+            }
+
+            int[] ab = researchAllBounds();
+            if (terminal != null && !trees.isEmpty() && mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3]) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                        new net.phoenix.core.integration.conflux.network.C2SResearchAllPacket(
+                                trees.get(activeTreeIdx).id, terminal.getBlockPos()));
+                return true;
+            }
+            return false;
+        }
+
+        int[] tb = toggleBounds();
+        if (mx >= tb[0] && mx < tb[2] && my >= tb[1] && my < tb[3]) {
+            toggleSidebar();
+            return true;
+        }
+        if (mx < sideW()) {
+            if (!sidebarOpen) return true;
+            if (btn == 1 && TerminalEditor.allowed()) {
+                if (my >= sideListTop() && my < sideListBottom()) openSidebarMenu(mx, my);
+                return true;
+            }
+            if (canAbandon()) {
+                int[] ab = abandonBounds();
+                if (mx >= ab[0] && mx < ab[2] && my >= ab[1] && my < ab[3]) {
+                    clickAbandon();
+                    return true;
+                }
+            }
+            for (int c = 0; c < 2; c++) {
+                int[] cb = chipBounds(c);
+                if (mx >= cb[0] && mx < cb[2] && my >= cb[1] && my < cb[3]) {
+                    readyOnly = c == 1;
+                    sidebarScroll = 0;
+                    return true;
+                }
+            }
+            if (resultsMode()) {
+                Hit hit = hitRowAt(mx, my);
+                if (hit != null) focusHit(hit);
+                return true;
+            }
+            SideRow row = rowAt(mx, my);
+            if (row == null) return true;
+            if (row.isCategory()) {
+                if (!COLLAPSED.remove(row.path())) COLLAPSED.add(row.path());
+                return true;
+            }
+            if (row.pinNode() != null) {
+                focusHit(new Hit(row.treeIdx(), row.pinNode(), false, false));
+            } else if (row.treeIdx() != activeTreeIdx) {
+                activeTreeIdx = row.treeIdx();
+                cardScroll = 0;
+                selected = null;
+                resetPan();
+            }
+            return true;
+        }
+
+        if (cardRect[2] > 0 && rmx >= cardRect[0] && rmx < cardRect[2] && rmy >= cardRect[1] && rmy < cardRect[3]) {
+            if (rmy < cardRect[1] + 18) cardOpen = !cardOpen;
+            return true;
+        }
+        if (mx >= cl && mx < cl + cw && my >= ct && my < ct + ch && !trees.isEmpty()) {
+            ResearchTree tree = trees.get(activeTreeIdx);
+            Set<ResourceLocation> unlockedSet = ClientResearchCache.unlocked;
+            float cx = (float) ((mx - cl - panX) / zoom);
+            float cy = (float) ((my - ct - panY) / zoom);
+            RenderContext ctx = buildContext((int) mx, (int) my);
+            ResearchNode hit = null;
+            if (ctx != null) {
+                for (ResearchNode node : tree.getNodes()) {
+                    if (!node.isVisible(unlockedSet)) continue;
+                    if (activeRenderer.hitsNode(node, cx, cy, ctx)) {
+                        hit = node;
+                        break;
+                    }
+                }
+            }
+            if (TerminalEditor.allowed()) {
+                if (editor.linking() && btn == 0) {
+                    if (hit != null) editor.finishLink(hit);
+                    else editor.close();
+                    return true;
+                }
+                if (btn == 1) {
+                    if (hit != null) {
+                        editor.openNodeMenu(tree, hit, (int) mx, (int) my, cl + cw, ct + ch);
+                    } else if (ctx != null) {
+                        int[] grid = gridAt(cx, cy, ctx);
+                        if (grid != null) {
+                            editor.openCanvasMenu(tree, (int) mx, (int) my, grid[0], grid[1], cl + cw, ct + ch);
+                        }
+                    }
+                    return true;
+                }
+                if (hit != null && (btn == 2 || (btn == 0 && hasShiftDown()))) {
+                    dragNode = hit;
+                    dragButton = btn;
+                    dragGx = hit.posX;
+                    dragGy = hit.posY;
+                    return true;
+                }
+            }
+            if (hit != null) {
+                selected = hit;
+                Minecraft.getInstance().setScreen(new ResearchNodeScreen(this, tree, hit, terminal));
+            } else {
+                selected = null;
+                if (btn == 0) {
+                    dragging = true;
+                    lastDragX = mx;
+                    lastDragY = my;
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    private String pendingTreeId = null;
+
+    private void openNewChapter(double mx, double my) {
+        String group = "Research";
+        SideRow row = rowAt(mx, my);
+        if (row != null) {
+            if (row.isCategory() && row.path() != null) group = row.path();
+            else if (row.treeIdx() >= 0 && row.treeIdx() < trees.size()) group = trees.get(row.treeIdx()).group;
+        } else if (!trees.isEmpty()) {
+            group = trees.get(Math.min(activeTreeIdx, trees.size() - 1)).group;
+        }
+        Minecraft.getInstance().setScreen(new NewChapterScreen(this, false,
+                new NewChapterScreen.Result("", group, "", "", 0), this::createChapter));
+    }
+
+    private void openSidebarMenu(double mx, double my) {
+        SideRow row = rowAt(mx, my);
+        java.util.List<TerminalEditor.Item> items = new java.util.ArrayList<>();
+        items.add(new TerminalEditor.Item("§a+ New chapter", true, () -> openNewChapter(mx, my)));
+        String inside = row != null && row.isCategory() && row.path() != null ? row.path() + "/" : "";
+        items.add(new TerminalEditor.Item("§a+ New category…", true, () -> newCategory(inside)));
+        if (row != null && row.header() == null && row.treeIdx() >= 0 && row.treeIdx() < trees.size()) {
+            ResearchTree tree = trees.get(row.treeIdx());
+            items.add(new TerminalEditor.Item("Edit chapter…", true, () -> editChapter(tree)));
+            items.add(new TerminalEditor.Item("§cDelete chapter…", true, () -> deleteChapter(tree)));
+        } else if (row != null && row.isCategory() && row.path() != null) {
+            String path = row.path();
+            items.add(new TerminalEditor.Item("Rename category…", true, () -> renameCategory(path)));
+            items.add(new TerminalEditor.Item("§cDelete category…", true, () -> deleteCategory(path)));
+        }
+        editor.openCustomMenu(items, (int) mx, (int) my, vw, vh);
+    }
+
+    private void editChapter(ResearchTree tree) {
+        var initial = new NewChapterScreen.Result(tree.title, tree.group,
+                tree.discipline == null ? "" : tree.discipline, tree.description, tree.order);
+        Minecraft.getInstance().setScreen(new NewChapterScreen(this, true, initial, result -> sendTree(tree, json -> {
+            json.addProperty("title", result.title());
+            json.addProperty("group", result.group());
+            if (result.discipline().isEmpty()) json.remove("discipline");
+            else json.addProperty("discipline", result.discipline());
+            json.addProperty("description", result.description());
+            if (result.order() == 0) json.remove("order");
+            else json.addProperty("order", result.order());
+        })));
+    }
+
+    private void deleteChapter(ResearchTree tree) {
+        var mc = Minecraft.getInstance();
+        mc.setScreen(new net.minecraft.client.gui.screens.ConfirmScreen(yes -> {
+            mc.setScreen(this);
+            if (yes) editor.deleteTree(tree);
+        }, Component.literal("Delete \"" + tree.title + "\"?"),
+                Component.literal("The chapter and all its nodes are deleted for everyone.")));
+    }
+
+    private void newCategory(String prefix) {
+        Minecraft.getInstance().setScreen(new PromptScreen(this, "New category",
+                "Name (use / for nested categories, such as Discipline/Tier 1)", prefix,
+                path -> createChapter(new NewChapterScreen.Result("Overview", path, "", "", 0))));
+    }
+
+    private void deleteCategory(String path) {
+        java.util.List<ResearchTree> inside = new java.util.ArrayList<>();
+        for (ResearchTree tree : trees) {
+            if (tree.group.equals(path) || tree.group.startsWith(path + "/")) inside.add(tree);
+        }
+        var mc = Minecraft.getInstance();
+        mc.setScreen(new net.minecraft.client.gui.screens.ConfirmScreen(yes -> {
+            mc.setScreen(this);
+            if (yes) editor.deleteTrees(inside);
+        }, Component.literal("Delete the category \"" + path + "\"?"),
+                Component.literal("Its " + inside.size() +
+                        " chapter(s) and all their nodes are deleted for everyone. " + "Ctrl+Z brings them back.")));
+    }
+
+    private void renameCategory(String path) {
+        Minecraft.getInstance()
+                .setScreen(new PromptScreen(this, "Rename category", "New name (use / for nested categories)",
+                        path, newPath -> {
+                            java.util.List<ResearchTree> inside = new java.util.ArrayList<>();
+                            for (ResearchTree tree : trees) {
+                                if (tree.group.equals(path) || tree.group.startsWith(path + "/")) inside.add(tree);
+                            }
+                            editor.editTrees(inside, (tree, json) -> json.addProperty("group",
+                                    newPath + tree.group.substring(path.length())));
+                        }));
+    }
+
+    private void sendTree(ResearchTree tree, java.util.function.Consumer<com.google.gson.JsonObject> change) {
+        editor.editTrees(java.util.List.of(tree), (t, json) -> change.accept(json));
+    }
+
+    private void createChapter(NewChapterScreen.Result result) {
+        String slug = result.title().toLowerCase().replaceAll("[^a-z0-9]+", "_").replaceAll("^_+|_+$", "");
+        if (slug.isEmpty()) slug = "chapter";
+        String ns = trees.isEmpty() ? "phoenixcore" : trees.get(0).id.getNamespace();
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ns, slug);
+        int n = 2;
+        while (ResearchTreeRegistry.INSTANCE.getTree(id).isPresent()) {
+            id = ResourceLocation.fromNamespaceAndPath(ns, slug + "_" + n++);
+        }
+        com.google.gson.JsonObject json = new com.google.gson.JsonObject();
+        json.addProperty("title", result.title());
+        json.addProperty("description", result.description());
+        json.addProperty("group", result.group());
+        if (result.order() != 0) json.addProperty("order", result.order());
+        if (!result.discipline().isEmpty()) json.addProperty("discipline", result.discipline());
+        com.google.gson.JsonArray nodes = new com.google.gson.JsonArray();
+        com.google.gson.JsonObject start = new com.google.gson.JsonObject();
+        start.addProperty("id", id.getNamespace() + ":" + id.getPath() + "_start");
+        start.addProperty("title", "Start");
+        start.addProperty("icon", "minecraft:book");
+        com.google.gson.JsonArray position = new com.google.gson.JsonArray();
+        position.add(0);
+        position.add(0);
+        start.add("position", position);
+        nodes.add(start);
+        json.add("nodes", nodes);
+        pendingTreeId = id.toString();
+        editor.createTree(id, json);
+    }
+
+    @Nullable
+    private int[] gridAt(float cx, float cy, RenderContext ctx) {
+        float[] origin = activeRenderer.nodePos(probe(0, 0), ctx);
+        float[] right = activeRenderer.nodePos(probe(1, 0), ctx);
+        float[] down = activeRenderer.nodePos(probe(0, 1), ctx);
+        float stepX = right[0] - origin[0];
+        float stepY = down[1] - origin[1];
+        if (Math.abs(stepX) < 0.01f || Math.abs(stepY) < 0.01f) return null;
+        return new int[] { Math.round((cx - origin[0]) / stepX), Math.round((cy - origin[1]) / stepY) };
+    }
+
+    private static ResearchNode probe(int x, int y) {
+        return new ResearchNode(ResourceLocation.fromNamespaceAndPath("phoenixcore", "probe"), "", "", "",
+                "minecraft:book", x, y, java.util.List.of(), java.util.List.of(), null, java.util.Map.of(),
+                java.util.List.of(), false, false);
+    }
+
+    private void renderDragGhost(GuiGraphics g, RenderContext ctx) {
+        float[] p = activeRenderer.nodePos(probe(dragGx, dragGy), ctx);
+        float[] o = activeRenderer.nodePos(dragNode, ctx);
+        int cl = canvasLeft(), ct = canvasTop();
+        int x = (int) (cl + panX + p[0] * zoom), y = (int) (ct + panY + p[1] * zoom);
+        int ox = (int) (cl + panX + o[0] * zoom), oy = (int) (ct + panY + o[1] * zoom);
+        int r = Math.max(6, (int) (NODE_R * zoom));
+        g.renderOutline(x - r, y - r, r * 2, r * 2, 0xFFFFDD55);
+        g.renderOutline(ox - r, oy - r, r * 2, r * 2, 0x66FFFFFF);
+    }
+
+    @Override
+    public boolean mouseReleased(double rmx, double rmy, int btn) {
+        if (dragNode != null && btn == dragButton) {
+            ResearchNode moved = dragNode;
+            dragNode = null;
+            if (!trees.isEmpty()) editor.moveNode(trees.get(activeTreeIdx), moved, dragGx, dragGy);
+            return true;
+        }
+        if (btn == 0) dragging = false;
+        return super.mouseReleased(rmx / uiScale, rmy / uiScale, btn);
+    }
+
+    @Override
+    public boolean mouseDragged(double rmx, double rmy, int btn, double dragX, double dragY) {
+        double mx = rmx / uiScale;
+        double my = rmy / uiScale;
+        if (dragNode != null && btn == dragButton) {
+            RenderContext ctx = buildContext((int) mx, (int) my);
+            if (ctx != null) {
+                int[] grid = gridAt((float) ((mx - canvasLeft() - panX) / zoom),
+                        (float) ((my - canvasTop() - panY) / zoom), ctx);
+                if (grid != null) {
+                    dragGx = grid[0];
+                    dragGy = grid[1];
+                }
+            }
+            return true;
+        }
+        if (dragging && btn == 0) {
+            panX += (float) (mx - lastDragX);
+            panY += (float) (my - lastDragY);
+            lastDragX = mx;
+            lastDragY = my;
+            return true;
+        }
+        return super.mouseDragged(mx, my, btn, dragX / uiScale, dragY / uiScale);
+    }
+
+    @Override
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
+        double mx = rmx / uiScale;
+        double my = rmy / uiScale;
+        if (mx < sideW()) {
+            if (!sidebarOpen) return true;
+            sidebarScroll = (int) Math.max(0, Math.min(sidebarMax, sidebarScroll - delta * 24));
+            return true;
+        }
+        if (cardOpen && cardMax > 0 && cardRect[2] > 0 && rmx >= cardRect[0] &&
+                rmx < cardRect[2] && rmy >= cardRect[1] && rmy < cardRect[3]) {
+            cardScroll = (float) Math.max(0, Math.min(cardMax, cardScroll - delta * 14));
+            return true;
+        }
+        if (mx >= canvasLeft() && mx < canvasLeft() + canvasW() && my >= canvasTop()) {
+            float oldZoom = zoom;
+            zoom = Math.max(MIN_ZOOM, Math.min(2.5f, zoom * (float) Math.pow(1.15, delta)));
+            float factor = zoom / oldZoom;
+            double lx = mx - canvasLeft();
+            panX = (float) (lx - factor * (lx - panX));
+            panY = (float) (my - canvasTop() - factor * (my - canvasTop() - panY));
+            return true;
+        }
+        return super.mouseScrolled(mx, my, 0.0, delta);
+    }
+
+    @Override
+    public boolean keyPressed(int kc, int sc, int mod) {
+        if (kc == GLFW.GLFW_KEY_ESCAPE && (editor.menuOpen() || editor.linking())) {
+            editor.close();
+            return true;
+        }
+        if (TerminalEditor.allowed() && !trees.isEmpty() && (hasControlDown())) {
+            RenderContext ctx = buildContext(lastMx, lastMy);
+            ResearchNode under = null;
+            int[] grid = null;
+            if (ctx != null) {
+                float cx = (float) ((lastMx - canvasLeft() - panX) / zoom);
+                float cy = (float) ((lastMy - canvasTop() - panY) / zoom);
+                for (ResearchNode n : trees.get(activeTreeIdx).getNodes()) {
+                    if (activeRenderer.hitsNode(n, cx, cy, ctx)) {
+                        under = n;
+                        break;
+                    }
+                }
+                grid = gridAt(cx, cy, ctx);
+            }
+            if (editor.keyPressed(kc, true, hasShiftDown(), under, grid == null ? 0 : grid[0],
+                    grid == null ? 0 : grid[1], grid != null)) {
+                return true;
+            }
+        }
+        if (searchBox != null && searchBox.isFocused()) {
+            if (kc == GLFW.GLFW_KEY_ESCAPE) {
+                if (!searchBox.getValue().isEmpty()) searchBox.setValue("");
+                else searchBox.setFocused(false);
+                return true;
+            }
+            searchBox.keyPressed(kc, sc, mod);
+            return true;
+        }
+        if (searchBox != null &&
+                (kc == GLFW.GLFW_KEY_SLASH || (kc == GLFW.GLFW_KEY_F && (mod & GLFW.GLFW_MOD_CONTROL) != 0))) {
+            setFocused(searchBox);
+            searchBox.setFocused(true);
+            skipChar = kc == GLFW.GLFW_KEY_SLASH;
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_ESCAPE) {
+            onClose();
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_TAB) {
+            toggleSidebar();
+            return true;
+        }
+        float step = 30f / zoom;
+        if (kc == GLFW.GLFW_KEY_W || kc == GLFW.GLFW_KEY_UP) {
+            panY += step;
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_S || kc == GLFW.GLFW_KEY_DOWN) {
+            panY -= step;
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_A || kc == GLFW.GLFW_KEY_LEFT) {
+            panX += step;
+            return true;
+        }
+        if (kc == GLFW.GLFW_KEY_D || kc == GLFW.GLFW_KEY_RIGHT) {
+            panX -= step;
+            return true;
+        }
+        return super.keyPressed(kc, sc, mod);
+    }
+
+    @Override
+    public boolean charTyped(char c, int mods) {
+        if (skipChar) {
+            skipChar = false;
+            return true;
+        }
+        return super.charTyped(c, mods);
+    }
+
+    private boolean costsAffordable(ResearchNode node) {
+        if (terminal == null) return false;
+        return node.cost.entrySet().stream()
+                .allMatch(e -> ClientResearchCache.dataStored(e.getKey()) >= e.getValue());
+    }
+
+    public boolean hasTerminal() {
+        return terminal != null;
+    }
+
+    private void pushShaderData(int rmx, int rmy) {
+        if (!ConfluxShaderManager.isActive() || trees.isEmpty()) return;
+        ResearchTree tree = trees.get(activeTreeIdx);
+
+        float sw = (float) width;
+        float sh = (float) height;
+        int ct = canvasTop();
+
+        int mx = Math.round(rmx / uiScale);
+        int my = Math.round(rmy / uiScale);
+
+        RenderContext sCtx = buildContext(mx, my);
+        if (sCtx == null) return;
+        java.util.List<float[]> nodePosScreen = new java.util.ArrayList<>();
+        java.util.List<Float> heatStrList = new java.util.ArrayList<>();
+        float[] heatStrAll = activeRenderer.nodeHeatStrength(sCtx);
+        int nodeIdx = 0;
+        for (ResearchNode node : tree.getNodes()) {
+            if (!node.isVisible(ClientResearchCache.unlocked)) continue;
+            if (nodePosScreen.size() >= 8) break;
+            float[] cp = activeRenderer.nodePos(node, sCtx);
+
+            float sx = (canvasLeft() + panX + cp[0] * zoom) * uiScale;
+            float sy = (ct + panY + cp[1] * zoom) * uiScale;
+            nodePosScreen.add(new float[] { sx, sy });
+            float str = (heatStrAll != null && nodeIdx < heatStrAll.length) ? heatStrAll[nodeIdx] : 1f;
+            heatStrList.add(str);
+            nodeIdx++;
+        }
+
+        int nc = nodePosScreen.size();
+        float[] flatNodes = new float[16];
+        float[] flatStr = new float[8];
+        for (int i = 0; i < nc; i++) {
+            flatNodes[i * 2] = nodePosScreen.get(i)[0];
+            flatNodes[i * 2 + 1] = nodePosScreen.get(i)[1];
+            flatStr[i] = heatStrList.get(i);
+        }
+
+        float[] ripOrig = new float[8];
+        float[] ripAge = new float[0];
+        int ripCount = activeRenderer.rippleCount();
+        if (ripCount > 0) {
+            float[] origCanvas = activeRenderer.rippleOriginsCanvas();
+            ripAge = activeRenderer.rippleAges();
+            for (int i = 0; i < Math.min(ripCount, 4); i++) {
+                ripOrig[i * 2] = (canvasLeft() + panX + origCanvas[i * 2] * zoom) * uiScale;
+                ripOrig[i * 2 + 1] = (ct + panY + origCanvas[i * 2 + 1] * zoom) * uiScale;
+            }
+        }
+
+        ConfluxShaderManager.pushFrameData(
+                sw, sh, (float) rmx, (float) rmy,
+                flatNodes, nc, flatStr,
+                ripOrig, ripAge, ripCount);
+    }
+
+    private int typeBarColor(ConfluxDataType type) {
+        return switch (type) {
+            case MATERIAL -> 0xFFCC8800;
+            case BIOLOGICAL -> 0xFF22AA44;
+            case ENERGETIC -> 0xFF2299CC;
+            case COMPUTATIONAL -> 0xFF9933CC;
+            case ARCANE -> 0xFF660099;
+        };
+    }
+
+    private String formatAmount(long v) {
+        if (v >= 1_000_000) return String.format("%.1fM", v / 1_000_000.0);
+        if (v >= 1_000) return String.format("%.1fk", v / 1_000.0);
+        return String.valueOf(v);
+    }
+
+    private List<String> wrapText(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        String stripped = text.replaceAll("§.", "");
+        String[] words = stripped.split(" ");
+        String[] colored = text.split(" ");
+        StringBuilder cur = new StringBuilder();
+        int wi = 0;
+        for (String word : words) {
+            String coloredWord = wi < colored.length ? colored[wi] : word;
+            if (font.width(cur + coloredWord) > maxWidth && !cur.isEmpty()) {
+                lines.add(cur.toString().trim());
+                cur.setLength(0);
+            }
+            cur.append(coloredWord).append(" ");
+            wi++;
+        }
+        if (!cur.isEmpty()) lines.add(cur.toString().trim());
+        return lines;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+}

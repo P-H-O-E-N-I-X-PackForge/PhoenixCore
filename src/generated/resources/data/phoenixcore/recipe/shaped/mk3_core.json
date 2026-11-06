@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:plates/titanium"
+    },
+    "B": {
+      "tag": "c:rods/long/titanium"
+    },
+    "C": {
+      "item": "gtceu:titanium_crate"
+    },
+    "h": {
+      "tag": "gtceu:crafting_tools/hammer"
+    },
+    "w": {
+      "tag": "gtceu:crafting_tools/wrench"
+    }
+  },
+  "pattern": [
+    "AhA",
+    "BCB",
+    "AwA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "phoenixcore:vault_core_mk3"
+  },
+  "show_notification": false
+}

@@ -1,0 +1,7 @@
+{
+    "gtceu": {
+        "connection_texture": "gtceu:block/casings/coils/heat_dissipating_coils_ctm",
+        "emissive": true,
+        "bloom": true
+    }
+}

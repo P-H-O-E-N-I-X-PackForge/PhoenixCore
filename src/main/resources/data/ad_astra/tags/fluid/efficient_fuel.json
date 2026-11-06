@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "gtceu:high_octane_gasoline",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "display_name": "Sealed A - Catalyst",
+  "biome_palette": {
+    "stages": [
+      {
+        "stage": "initial",
+        "biomes": ["minecraft:birch_forest", "minecraft:old_growth_birch_forest", "minecraft:forest"]
+      },
+      {
+        "stage": "catalyst_infusion",
+        "biomes": ["minecraft:dark_forest", "minecraft:dark_forest", "minecraft:forest"]
+      },
+      {
+        "stage": "reality_instability",
+        "biomes": ["minecraft:dark_forest", "minecraft:warped_forest", "minecraft:dark_forest"]
+      },
+      {
+        "stage": "dimensional_rift",
+        "biomes": ["minecraft:warped_forest", "minecraft:warped_forest", "minecraft:dark_forest"]
+      }
+    ],
+    "default_biomes": {
+      "forest": "minecraft:forest",
+      "dark": "minecraft:dark_forest",
+      "warped": "minecraft:warped_forest"
+    }
+  },
+  "structures": {
+    "texture_overrides": {
+      "warped_wood": "minecraft:warped_wood",
+      "warped_planks": "minecraft:warped_planks",
+      "warped_nylium": "minecraft:warped_nylium"
+    },
+    "particle_density": 1.3
+  },
+  "skybox": {
+    "sky_color": "#4B0082",
+    "fog_color": "#8B008B",
+    "fog_density": 0.75,
+    "render_mode": "glitch"
+  },
+  "color_progression": [
+    {
+      "milestone": "initial",
+      "grass_color": "#5C7F5C",
+      "water_color": "#5C7FBF",
+      "foliage_color": "#6B8E23"
+    },
+    {
+      "milestone": "catalyst_infusion",
+      "grass_color": "#3D4D5C",
+      "water_color": "#6F4FB3",
+      "foliage_color": "#1A1A2E"
+    },
+    {
+      "milestone": "reality_instability",
+      "grass_color": "#2D1F4D",
+      "water_color": "#9D4EDD",
+      "foliage_color": "#0F0A1F"
+    },
+    {
+      "milestone": "dimensional_rift",
+      "grass_color": "#1A0F3F",
+      "water_color": "#BB86FC",
+      "foliage_color": "#08050F"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "type": "sophisticatedstorage:storage_tier_upgrade",
+  "pattern": [
+    "IPI",
+    "ICI",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/aurum_steel"
+    },
+    "P": {
+      "tag": "c:plates/tin"
+    },
+    "C": {
+      "item": "sophisticatedstorage:iron_barrel"
+    }
+  },
+  "result": {
+    "id": "sophisticatedstorage:gold_barrel"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedstorage:gold_barrel"
+    }
+  ]
+}

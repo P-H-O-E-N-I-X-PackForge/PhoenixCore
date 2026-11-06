@@ -1,0 +1,12 @@
+{
+  "flag": "sk_heat_tolerance",
+  "only_disciplines": [
+    "sculk"
+  ],
+  "recipe_types": [
+    {
+      "type": "gtceu:electric_blast_furnace",
+      "min_tier": "hv"
+    }
+  ]
+}
