@@ -57,7 +57,6 @@ public final class ConfluxRegistry {
             PIPES.put(dt, block);
             PIPE_BES.put(dt, be);
 
-            // GregTech's pipe item: it connects the pipe to whatever it is placed against, like any GT pipe
             ITEMS.register(id, () -> new com.gregtechceu.gtceu.api.item.PipeBlockItem(block.get(),
                     new Item.Properties()));
         }

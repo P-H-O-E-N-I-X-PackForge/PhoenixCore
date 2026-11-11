@@ -353,6 +353,7 @@ public class PhoenixCore {
         net.phoenix.core.common.machine.PftChargers.init();
         PhoenixBeeMachines.init();
         ConfluxProducerMachines.init();
+        net.phoenix.core.integration.conflux.hatch.ConfluxHatches.init();
         ConfluxMultiblockRegistry.init();
         GrowthMachines.init();
         AstralMachines.init();

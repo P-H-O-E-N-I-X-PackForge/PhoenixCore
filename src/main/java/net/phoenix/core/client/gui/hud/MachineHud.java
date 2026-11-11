@@ -62,7 +62,8 @@ public final class MachineHud {
             ArrayDeque<float[]> history = HISTORY.computeIfAbsent(machine, k -> new ArrayDeque<>());
             Sampler sampler = new Sampler(m, history);
             var tabs = new java.util.ArrayList<TabStrip.Tab>();
-            tabs.add(new TabStrip.Tab("H", new Sampled(sampler, new ProgressPage(m, sender))));
+            tabs.add(new TabStrip.Tab("H", new Sampled(sampler, m.customPage != null ? m.customPage :
+                    new ProgressPage(m, sender))));
             if (m.hasMath) tabs.add(new TabStrip.Tab("M", new Sampled(sampler, new MathPage(m))));
             if (!m.series.isEmpty()) tabs.add(new TabStrip.Tab("~", new Sampled(sampler, new GraphPage(m, history))));
             if (classic != null) {

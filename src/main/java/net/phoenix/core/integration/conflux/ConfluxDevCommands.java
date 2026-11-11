@@ -76,6 +76,23 @@ public final class ConfluxDevCommands {
                                                         com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c,
                                                                 "amount"),
                                                         false))))))
+                        .then(Commands.literal("panoptic")
+                                .then(Commands.literal("set")
+                                        .then(Commands.argument("stage",
+                                                com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 7))
+                                                .executes(c -> panopticSet(c.getSource(),
+                                                        com.mojang.brigadier.arguments.IntegerArgumentType
+                                                                .getInteger(c, "stage"),
+                                                        0f))
+                                                .then(Commands.argument("progress",
+                                                        com.mojang.brigadier.arguments.FloatArgumentType.floatArg(0f,
+                                                                1f))
+                                                        .executes(c -> panopticSet(c.getSource(),
+                                                                com.mojang.brigadier.arguments.IntegerArgumentType
+                                                                        .getInteger(c, "stage"),
+                                                                com.mojang.brigadier.arguments.FloatArgumentType
+                                                                        .getFloat(c, "progress"))))))
+                                .then(Commands.literal("reset").executes(c -> panopticSet(c.getSource(), 0, 0f))))
                         .then(Commands.literal("reset").executes(c -> reset(c.getSource())))));
     }
 
@@ -142,6 +159,22 @@ public final class ConfluxDevCommands {
         int unlocked = count;
         source.sendSuccess(() -> Component.literal("Unlocked " + unlocked + " research node(s)."), true);
         return unlocked;
+    }
+
+    private static int panopticSet(CommandSourceStack source, int stage, float progress) {
+        ServerPlayer player;
+        try {
+            player = source.getPlayerOrException();
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Players only."));
+            return 0;
+        }
+        UUID team = ResearchTeamHelper.getTeamId(player);
+        var data = net.phoenix.core.integration.conflux.panoptic.PanopticData.get(player.serverLevel());
+        data.devSet(team, stage, progress);
+        source.sendSuccess(() -> Component.literal("Panoptic tree for your team: stage " + stage + ", progress " +
+                progress + " (growth " + String.format("%.2f", data.growth(team)) + ")."), true);
+        return 1;
     }
 
     private static int reset(CommandSourceStack source) {

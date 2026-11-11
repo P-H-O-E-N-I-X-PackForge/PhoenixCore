@@ -12,9 +12,6 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 import static com.hollingsworth.arsnouveau.setup.registry.ItemsRegistry.SOURCE_GEM;
 
-/**
- * Recipes for the Source pipes and relays. Each pipe tier is made from the one below it, so the way up is clear.
- */
 public final class SourceLogisticsRecipes {
 
     private SourceLogisticsRecipes() {}

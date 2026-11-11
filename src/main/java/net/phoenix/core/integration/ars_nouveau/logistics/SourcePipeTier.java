@@ -8,9 +8,6 @@ import net.phoenix.core.PhoenixCore;
 
 import java.util.Locale;
 
-/**
- * The tiers of Source pipe. A better pipe passes more Source in a tick and wastes less of it over a long run.
- */
 public enum SourcePipeTier implements IPipeType<SourcePipeData>, StringRepresentable {
 
     BASIC("source_pipe", "Source Pipe", 0.25f, 256, 0.005f, 0xFFB070FF),
@@ -42,17 +39,14 @@ public enum SourcePipeTier implements IPipeType<SourcePipeData>, StringRepresent
         return displayName;
     }
 
-    /** Source passed in one tick. */
     public int throughput() {
         return throughput;
     }
 
-    /** The share of Source lost for each pipe it passes through. */
     public float lossPerBlock() {
         return lossPerBlock;
     }
 
-    /** ARGB. */
     public int color() {
         return color;
     }

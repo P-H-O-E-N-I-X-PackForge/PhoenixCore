@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public final class UnlockPickerScreen extends Screen {
+public final class UnlockPickerScreen extends ScaledScreen {
 
     private static final String[] TYPES = { "item", "multiblock", "recipe", "recipe_tag", "flag", "archive",
             "world_stage", "recipe_modifier" };
@@ -49,10 +49,9 @@ public final class UnlockPickerScreen extends Screen {
     private List<String> candidates = List.of();
     private EditBox search;
     private int scroll = 0;
-    private int px, py;
 
     public UnlockPickerScreen(Screen parent, Consumer<ResearchUnlock> onPick) {
-        super(Component.literal("Pick an unlock"));
+        super(Component.literal("Pick an unlock"), PANEL_W, PANEL_H);
         this.parent = parent;
         this.onPick = onPick;
         refresh();
@@ -60,8 +59,7 @@ public final class UnlockPickerScreen extends Screen {
 
     @Override
     protected void init() {
-        px = (width - PANEL_W) / 2;
-        py = (height - PANEL_H) / 2;
+        layout();
         String keep = search == null ? "" : search.getValue();
         search = new EditBox(font, px + 10, py + 52, PANEL_W - 20, 14, Component.empty());
         search.setHint(Component.literal("search, or type a value"));
@@ -147,11 +145,7 @@ public final class UnlockPickerScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
-        g.fill(0, 0, width, height, 0xC0000000);
+    protected void renderPanel(GuiGraphics g, int mx, int my, float pt) {
         g.fill(px - 1, py - 1, px + PANEL_W + 1, py + PANEL_H + 1, ConfluxTheme.accent());
         g.fill(px, py, px + PANEL_W, py + PANEL_H, C_BG);
         g.drawString(font, "§ePick what this node unlocks", px + 10, py + 8, 0xFFFFFF, false);
@@ -164,7 +158,8 @@ public final class UnlockPickerScreen extends Screen {
             g.renderOutline(b[0], b[1], b[2] - b[0], b[3] - b[1], active ? ConfluxTheme.accent() : C_BORDER);
             g.drawCenteredString(font, (active ? "§f" : "§7") + LABELS[i], (b[0] + b[2]) / 2, b[1] + 5, 0xFFFFFF);
         }
-        g.drawString(font, "§8" + HELP[typeIdx], px + 10, py + 43, 0xFFFFFF, false);
+        g.drawString(font, "§8" + font.plainSubstrByWidth(HELP[typeIdx], PANEL_W - 20), px + 10, py + 43,
+                0xFFFFFF, false);
 
         List<String> list = matches();
         String typed = search.getValue().trim();
@@ -205,12 +200,12 @@ public final class UnlockPickerScreen extends Screen {
         g.drawString(font, "§8" + total + " entries · click to add · Esc to cancel", px + 10, py + PANEL_H - 16,
                 0xFFFFFF, false);
 
-        super.render(g, mx, my, pt);
+        renderWidgets(g, mx, my, pt);
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
-        if (super.mouseClicked(mx, my, btn)) return true;
+    protected boolean click(double mx, double my, int btn) {
+        if (super.click(mx, my, btn)) return true;
         if (btn != 0) return false;
         for (int i = 0; i < TYPES.length; i++) {
             int[] b = tabBounds(i);
@@ -242,7 +237,7 @@ public final class UnlockPickerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double sx, double delta) {
+    protected boolean scrolled(double mx, double my, double sx, double delta) {
         scroll = Math.max(0, scroll - (int) Math.signum(delta) * 3);
         return true;
     }

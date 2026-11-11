@@ -47,6 +47,22 @@ public final class ConfluxNetwork {
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.TYPE,
                 net.phoenix.core.integration.conflux.dimension.network.S2CDisciplineProgressionSyncPacket.STREAM_CODEC,
                 (msg, ctx) -> msg.handle(ctx));
+
+        registrar.playToClient(net.phoenix.core.integration.conflux.panoptic.S2CPanopticStatePacket.TYPE,
+                net.phoenix.core.integration.conflux.panoptic.S2CPanopticStatePacket.STREAM_CODEC,
+                net.phoenix.core.integration.conflux.panoptic.S2CPanopticStatePacket::handle);
+        registrar.playToClient(net.phoenix.core.integration.conflux.panoptic.S2CPanopticSolutionPacket.TYPE,
+                net.phoenix.core.integration.conflux.panoptic.S2CPanopticSolutionPacket.STREAM_CODEC,
+                net.phoenix.core.integration.conflux.panoptic.S2CPanopticSolutionPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.conflux.panoptic.C2SPanopticDevDisciplinePacket.TYPE,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticDevDisciplinePacket.STREAM_CODEC,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticDevDisciplinePacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.conflux.panoptic.C2SPanopticRevealPacket.TYPE,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticRevealPacket.STREAM_CODEC,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticRevealPacket::handle);
+        registrar.playToServer(net.phoenix.core.integration.conflux.panoptic.C2SPanopticAnswerPacket.TYPE,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticAnswerPacket.STREAM_CODEC,
+                net.phoenix.core.integration.conflux.panoptic.C2SPanopticAnswerPacket::handle);
     }
 
     public static void sendDefinitions(ServerPlayer player) {

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public final class IconPickerScreen extends Screen {
+public final class IconPickerScreen extends ScaledScreen {
 
     private static final String[] TABS = { "Items", "Fluids", "Pictures" };
     private static final int CELL = 22;
@@ -35,11 +35,10 @@ public final class IconPickerScreen extends Screen {
     private List<String> all = List.of();
     private List<String> shown = List.of();
     private int scrollRows = 0;
-    private int px, py;
     private String hoverName = "";
 
     public IconPickerScreen(Screen parent, Consumer<String> onPick, int accent) {
-        super(Component.literal("Pick an icon"));
+        super(Component.literal("Pick an icon"), PANEL_W, PANEL_H);
         this.parent = parent;
         this.onPick = onPick;
         this.accent = accent;
@@ -48,8 +47,7 @@ public final class IconPickerScreen extends Screen {
 
     @Override
     protected void init() {
-        px = (width - PANEL_W) / 2;
-        py = (height - PANEL_H) / 2;
+        layout();
         String keep = search == null ? "" : search.getValue();
         search = new EditBox(font, px + 10, py + 50, PANEL_W - 20, 14, Component.empty());
         search.setHint(Component.literal("search"));
@@ -103,12 +101,8 @@ public final class IconPickerScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
+    protected void renderPanel(GuiGraphics g, int mx, int my, float pt) {
         ConfluxTheme.refresh();
-        g.fill(0, 0, width, height, 0xC0000000);
         g.fill(px - 1, py - 1, px + PANEL_W + 1, py + PANEL_H + 1, accent);
         g.fill(px, py, px + PANEL_W, py + PANEL_H, C_BG);
         g.fillGradient(px, py, px + PANEL_W, py + 24, ConfluxTheme.withAlpha(accent, 50), 0x00000000);
@@ -151,16 +145,17 @@ public final class IconPickerScreen extends Screen {
         g.drawString(font, "§8" + font.plainSubstrByWidth(footer, PANEL_W - 20), px + 10, py + PANEL_H - 16, 0xFFFFFF,
                 false);
         if (tab == 2) {
-            g.drawString(font, "§8Pictures: any .png in a mod or resource pack (assets/<namespace>/textures/…)",
+            g.drawString(font, "§8" + font.plainSubstrByWidth(
+                    "Pictures: any .png in a mod or resource pack (assets/<namespace>/textures/…)", PANEL_W - 20),
                     px + 10, py + 38 + 28, 0xFFFFFF, false);
         }
 
-        super.render(g, mx, my, pt);
+        renderWidgets(g, mx, my, pt);
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
-        if (super.mouseClicked(mx, my, btn)) return true;
+    protected boolean click(double mx, double my, int btn) {
+        if (super.click(mx, my, btn)) return true;
         if (btn != 0) return false;
         for (int i = 0; i < TABS.length; i++) {
             int w = PANEL_W / TABS.length;
@@ -187,7 +182,7 @@ public final class IconPickerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double sx, double delta) {
+    protected boolean scrolled(double mx, double my, double sx, double delta) {
         scrollRows = Math.max(0, scrollRows - (int) Math.signum(delta) * 2);
         return true;
     }

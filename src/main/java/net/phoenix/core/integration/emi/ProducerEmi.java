@@ -28,10 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * The Conflux data producers: one page per type with the machines of every tier, what the type eats and how much, and
- * how to carry what it makes. Each type eats its own thing, so the page is where that is said.
- */
 public final class ProducerEmi {
 
     private ProducerEmi() {}
@@ -70,7 +66,6 @@ public final class ProducerEmi {
         }
     }
 
-    /** Things that show what the type eats: a few real items, or a tag that cycles through its members. */
     private static List<EmiIngredient> examples(ConfluxDataType type) {
         List<EmiIngredient> out = new ArrayList<>();
         switch (type) {
@@ -114,7 +109,6 @@ public final class ProducerEmi {
             this.height = 82 + needHeight() + 3 + 12 + 20;
         }
 
-        /** What the type eats is told in words that wrap, beside the example items if there are any. */
         private int textWidth() {
             return examples.isEmpty() ? W : W - examples.size() * 18 - 4;
         }
@@ -140,7 +134,6 @@ public final class ProducerEmi {
             EmiPage.row(widgets, "Makes " + type.displayName.toLowerCase(Locale.ROOT) + " data from " +
                     ConfluxProducerMachine.needTitle(type).toLowerCase(Locale.ROOT), 0, 12, W, EmiPage.DIM, null);
 
-            // the machines, every tier in a row
             int y = EmiPage.section(widgets, "Machines", 0, 24, W, accent);
             int x = 0;
             for (int tier : TIERS) {
@@ -153,7 +146,6 @@ public final class ProducerEmi {
                     List.of(Component.literal(
                             "Output is 4 x the tier, every tick it is running. The buffer and push rate grow with the tier too.")));
 
-            // what it eats
             y = EmiPage.section(widgets, "Needs", 0, y + 34, W, accent);
             int row = y;
             int textX = 0;
@@ -167,7 +159,6 @@ public final class ProducerEmi {
             EmiPage.wrap(widgets, needDetail(), textX, row + 1 + ROW, textWidth(), EmiPage.DIM);
             row += needHeight();
 
-            // where it goes
             row = EmiPage.section(widgets, "Carry it", 0, row + 3, W, accent);
             widgets.addSlot(EmiStack.of(ConfluxRegistry.PIPES.get(type).get()), 0, row).drawBack(false);
             widgets.addSlot(EmiStack.of(ConfluxTerminalRegistry.TERMINAL_ITEM.get()), 20, row).drawBack(false);

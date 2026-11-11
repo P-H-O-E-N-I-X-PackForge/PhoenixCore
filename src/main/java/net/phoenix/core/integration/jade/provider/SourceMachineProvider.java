@@ -40,6 +40,10 @@ public class SourceMachineProvider implements IBlockComponentProvider, IServerDa
 
         if (machine instanceof SourceMultiblockTankMachine) return;
 
+        if (machine instanceof net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine) {
+            return;
+        }
+
         if (machine instanceof IRecipeLogicMachine rlm) {
             var logic = rlm.getRecipeLogic();
             if (logic != null && logic.isWorking()) {
@@ -118,6 +122,10 @@ public class SourceMachineProvider implements IBlockComponentProvider, IServerDa
         if (!config.get(UID)) return;
 
         if (!(accessor.getBlockEntity() instanceof MetaMachine)) return;
+        if (accessor
+                .getBlockEntity() instanceof net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine) {
+            return;
+        }
 
         CompoundTag data = accessor.getServerData();
         if (data == null || data.isEmpty()) return;

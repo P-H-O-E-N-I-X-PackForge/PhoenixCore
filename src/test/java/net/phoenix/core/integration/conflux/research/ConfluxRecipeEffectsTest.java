@@ -17,7 +17,7 @@ class ConfluxRecipeEffectsTest {
         assertEquals("*", ConfluxRecipeEffects.parse("duration 0.8").selector());
         assertEquals(0.8, ConfluxRecipeEffects.parse("time -20%").multiplier(), 1e-9);
         assertEquals(1.1, ConfluxRecipeEffects.parse("eut +10% *").multiplier(), 1e-9);
-        // speed is the time the other way round
+
         var speed = ConfluxRecipeEffects.parse("speed 2 *");
         assertEquals(ConfluxRecipeEffects.Stat.DURATION, speed.stat());
         assertEquals(0.5, speed.multiplier(), 1e-9);

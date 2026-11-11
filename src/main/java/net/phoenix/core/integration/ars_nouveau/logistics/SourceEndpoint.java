@@ -12,19 +12,14 @@ import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.sour
 import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Whatever holds Source beside a pipe: an Ars jar, one of our hatches, or a relay. What it is decides which way Source
- * may go: an output hatch or a receiving relay only gives, an input hatch or a sending relay only takes, and a jar does
- * both.
- */
 public final class SourceEndpoint {
 
     public enum Kind {
-        /** Only takes Source in. */
+
         RECEIVER,
-        /** Only gives Source out. */
+
         PROVIDER,
-        /** Holds Source and does either. */
+
         BUFFER
     }
 
@@ -38,7 +33,6 @@ public final class SourceEndpoint {
         this.kind = kind;
     }
 
-    /** The endpoint at {@code pos}, or null when nothing there holds Source. */
     @Nullable
     public static SourceEndpoint find(Level level, BlockPos pos) {
         BlockEntity be = level.getBlockEntity(pos);
@@ -49,7 +43,7 @@ public final class SourceEndpoint {
         }
         if (be instanceof net.phoenix.core.integration.conflux.producer.ConfluxProducerMachine producer &&
                 producer.takesSource()) {
-            // an arcane data producer eats Source: it only takes it
+
             return new SourceEndpoint(be, producer.getSource(), Kind.RECEIVER);
         }
         if (be instanceof SourceHatchPartMachine hatch) {
@@ -88,13 +82,11 @@ public final class SourceEndpoint {
         return Math.max(0, tile.getMaxSource() - tile.getSource());
     }
 
-    /** How full it is, 0 to 1. */
     public float fill() {
         int max = tile.getMaxSource();
         return max <= 0 ? 0f : tile.getSource() / (float) max;
     }
 
-    /** Takes up to {@code amount} out; returns what came out. */
     public int give(int amount) {
         int before = tile.getSource();
         tile.removeSource(amount);
@@ -103,7 +95,6 @@ public final class SourceEndpoint {
         return taken;
     }
 
-    /** Puts up to {@code amount} in; returns what went in. */
     public int take(int amount) {
         int before = tile.getSource();
         tile.addSource(amount);
@@ -120,7 +111,6 @@ public final class SourceEndpoint {
         }
     }
 
-    /** Which side of the endpoint faces the pipe at {@code from}, for the particles. */
     public static Direction facing(BlockPos from, BlockPos to) {
         for (Direction d : Direction.values()) if (from.relative(d).equals(to)) return d;
         return Direction.UP;

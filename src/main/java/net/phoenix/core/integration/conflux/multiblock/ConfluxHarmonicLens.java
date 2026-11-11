@@ -5,10 +5,10 @@ import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -16,16 +16,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.phoenix.core.client.gui.hud.HudModel;
 import net.phoenix.core.client.gui.hud.HudRecipes;
 import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
+import net.phoenix.core.integration.conflux.hatch.ConfluxDataHatchPartMachine;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
-import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
-import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 import net.phoenix.core.integration.conflux.research.PlayerResearchCapability;
 
 import brachy.modularui.value.sync.BooleanSyncValue;
@@ -46,7 +44,7 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
     private static final double BONUS_PER_NODE = 0.005 / 50.0;
     private static final long INPUT_BUFFER = 200_000L;
     private static final long OUTPUT_BUFFER = 200_000L;
-    private static final long EU_PER_TICK = 524_288L;
+    private static final long EU_PER_TICK = com.gregtechceu.gtceu.api.GTValues.V[com.gregtechceu.gtceu.api.GTValues.IV];
     private static final long THROUGHPUT = 2_048L;
     private static final int RESEARCH_SCAN_INTERVAL = 100;
 
@@ -98,6 +96,7 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
             researchScanCooldown = RESEARCH_SCAN_INTERVAL;
         }
 
+        drawInput();
         long canConvert = Math.min(inputBuffer, THROUGHPUT);
         if (canConvert > 0) {
             long converted = (long) (canConvert * currentEfficiency);
@@ -122,32 +121,28 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
     }
 
     private void pushOutput() {
-        BlockPos pos = getBlockPos();
         long budget = Math.min(outputBuffer, THROUGHPUT);
-
-        for (Direction dir : Direction.values()) {
+        for (MultiblockPartMachine part : getParts()) {
             if (budget <= 0) break;
-            BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
-            if (be == null) continue;
-
-            IConfluxDataHandler h = ConfluxDataCapability.find(be, dir.getOpposite());
-            if (h != null) {
-                if (h.getDataType() == outputType) {
-                    long sent = h.insert(budget);
-                    outputBuffer -= sent;
-                    budget -= sent;
-                }
-                continue;
-            }
-
-            IConfluxMultiHandler multi = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
-            if (multi != null) {
-                long sent = multi.insert(outputType, budget);
-                outputBuffer -= sent;
-                budget -= sent;
+            if (part instanceof ConfluxDataHatchPartMachine hatch && hatch.getIo() == IO.OUT) {
+                long kept = hatch.deposit(outputType, budget);
+                outputBuffer -= kept;
+                budget -= kept;
             }
         }
         if (budget < THROUGHPUT) setChanged();
+    }
+
+    private void drawInput() {
+        long room = Math.min(INPUT_BUFFER - inputBuffer, THROUGHPUT);
+        for (MultiblockPartMachine part : getParts()) {
+            if (room <= 0) break;
+            if (part instanceof ConfluxDataHatchPartMachine hatch && hatch.getIo() == IO.IN) {
+                long taken = hatch.withdraw(inputType, room);
+                inputBuffer += taken;
+                room -= taken;
+            }
+        }
     }
 
     @Override
@@ -230,6 +225,12 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
     public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
+        syncManager.syncValue("input_type", 0, new brachy.modularui.value.sync.IntSyncValue(
+                () -> this.inputType.ordinal(),
+                v -> this.inputType = ConfluxDataType.values()[Math.floorMod(v, ConfluxDataType.values().length)]));
+        syncManager.syncValue("output_type", 0, new brachy.modularui.value.sync.IntSyncValue(
+                () -> this.outputType.ordinal(),
+                v -> this.outputType = ConfluxDataType.values()[Math.floorMod(v, ConfluxDataType.values().length)]));
         syncManager.syncValue("lens_active", 0, new BooleanSyncValue(() -> this.lensActive, v -> this.lensActive = v));
         syncManager.syncValue("input_buffer", 0, new LongSyncValue(() -> this.inputBuffer, v -> this.inputBuffer = v));
         syncManager.syncValue("output_buffer", 0,
@@ -335,10 +336,6 @@ public class ConfluxHarmonicLens extends WorkableElectricMultiblockMachine
         return lensActive;
     }
 
-    /**
-     * Shows the machine's front lit and animated while it works: these run their own logic, so the recipe status the
-     * model reads is set here (GregTech does not move it without a recipe, and does not reset it while one is idle).
-     */
     private void showActive(boolean on) {
         var logic = getRecipeLogic();
         if (logic == null || getLevel() == null || getLevel().isClientSide) return;

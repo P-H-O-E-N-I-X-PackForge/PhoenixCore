@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "phoenixcore:block/research_terminal"
+    },
+    "facing=east": {
+      "model": "phoenixcore:block/research_terminal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/research_terminal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/research_terminal",
+      "y": 270
     }
   }
 }

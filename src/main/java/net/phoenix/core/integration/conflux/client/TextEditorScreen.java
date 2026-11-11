@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public final class TextEditorScreen extends Screen {
+public final class TextEditorScreen extends FitScreen {
 
     private static final int C_BTN = 0xFF1A1A24;
     private static final int C_BTN_HOV = 0xFF22222E;
@@ -60,7 +60,7 @@ public final class TextEditorScreen extends Screen {
     private int previewScroll = 0;
 
     public TextEditorScreen(Screen parent, String heading, String initial, Consumer<String> onConfirm, int accent) {
-        super(Component.literal(heading));
+        super(Component.literal(heading), 560, 340);
         this.parent = parent;
         this.heading = heading;
         this.initial = initial;
@@ -69,17 +69,15 @@ public final class TextEditorScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
-
-    @Override
     protected void init() {
+        fit();
         String keptText = inputBox != null ? inputBox.getValue() : initial;
         String keptHex = hexBox != null ? hexBox.getValue() : "";
 
-        pw = Math.min(1000, width - 60);
-        ph = Math.min(700, height - 60);
-        px = (width - pw) / 2;
-        py = (height - ph) / 2;
+        pw = Math.min(1000, vw - 60);
+        ph = Math.min(700, vh - 60);
+        px = (vw - pw) / 2;
+        py = (vh - ph) / 2;
         btnY = py + ph - 24;
         editorW = pw * 11 / 20;
 
@@ -98,9 +96,9 @@ public final class TextEditorScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
+    protected void renderScaled(GuiGraphics g, int mx, int my, float pt) {
         ConfluxTheme.refresh();
-        g.fill(0, 0, width, height, ConfluxTheme.BG);
+        g.fill(0, 0, vw, vh, ConfluxTheme.BG);
         g.fill(px, py, px + pw, py + ph, ConfluxTheme.PANEL);
         g.renderOutline(px, py, pw, ph, ConfluxTheme.BORDER);
         g.fill(px + 1, py, px + pw - 1, py + 2, accent);
@@ -112,7 +110,7 @@ public final class TextEditorScreen extends Screen {
         g.drawString(font, (used >= MAX_LENGTH ? "§c" : "§8") + count, px + editorW - 8 - font.width(count), py + 9,
                 0xFFFFFF, false);
 
-        super.render(g, mx, my, pt);
+        renderWidgets(g, mx, my, pt);
 
         renderPreview(g);
         renderHexRow(g);
@@ -143,7 +141,7 @@ public final class TextEditorScreen extends Screen {
         }
         int contentH = WikiRichTextRenderer.measureBlocksHeight(font, previewBlocks, w - 12, new HashSet<>());
         previewScroll = Math.max(0, Math.min(previewScroll, Math.max(0, contentH - (h - 8))));
-        g.enableScissor(x + 1, top + 1, x + w - 1, top + h - 1);
+        GuiScissor.enable(g, x + 1, top + 1, x + w - 1, top + h - 1);
         WikiRichTextRenderer.renderBlocks(g, font, previewBlocks, x + 6, top + 4, w - 12, previewScroll, top + 1,
                 top + h - 1, accent, new HashSet<>());
         g.disableScissor();
@@ -169,7 +167,7 @@ public final class TextEditorScreen extends Screen {
             boolean hov = mx >= cx && mx < cx + 11 && my >= rowY && my < rowY + 11;
             g.fill(cx, rowY, cx + 11, rowY + 11, COLOR_VALUES[i]);
             g.renderOutline(cx, rowY, 11, 11, hov ? accent : 0xFF333333);
-            if (hov) g.renderTooltip(font, Component.literal("§" + COLOR_CODES[i] + "§" + COLOR_CODES[i]), mx, my);
+            if (hov) tip(Component.literal("§" + COLOR_CODES[i] + "§" + COLOR_CODES[i]));
         }
         for (int i = 0; i < MD_LABELS.length; i++) {
             int bx = fmtX(i);
@@ -177,7 +175,7 @@ public final class TextEditorScreen extends Screen {
             g.fill(bx, rowY, bx + 18, rowY + 12, hov ? C_BTN_HOV : C_BTN);
             if (hov) {
                 g.fill(bx, rowY, bx + 18, rowY + 1, accent);
-                g.renderTooltip(font, Component.literal(MD_TIPS[i]), mx, my);
+                tip(Component.literal(MD_TIPS[i]));
             }
             String label = i == 0 ? "§l" + MD_LABELS[i] : i == 1 ? "§o" + MD_LABELS[i] : MD_LABELS[i];
             g.drawCenteredString(font, label, bx + 9, rowY + 2, hov ? 0xFFFFFFFF : 0xFFAAAAAA);
@@ -197,7 +195,7 @@ public final class TextEditorScreen extends Screen {
             g.fill(bx, rowY, bx + bw, rowY + 12, hov ? C_BTN_HOV : C_BTN);
             if (hov) {
                 g.fill(bx, rowY, bx + bw, rowY + 1, accent);
-                g.renderTooltip(font, Component.literal(MD2_TIPS[i]), mx, my);
+                tip(Component.literal(MD2_TIPS[i]));
             }
             g.drawCenteredString(font, MD2_LABELS[i], bx + bw / 2, rowY + 2, hov ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
@@ -221,8 +219,8 @@ public final class TextEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
-        if (super.mouseClicked(mx, my, btn)) return true;
+    protected boolean click(double mx, double my, int btn) {
+        if (super.click(mx, my, btn)) return true;
         int half = pw / 2 - 6;
         if (mx >= px + 6 && mx < px + 6 + half && my >= btnY && my < btnY + 16) {
             confirm();
@@ -280,13 +278,13 @@ public final class TextEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double sx, double delta) {
+    protected boolean scrolled(double mx, double my, double sx, double delta) {
         if (mx >= px + editorW) {
             previewScroll = Math.max(0, previewScroll - (int) (delta * 18));
             return true;
         }
         if (inputBox.scrollBy(delta)) return true;
-        return super.mouseScrolled(mx, my, 0.0, delta);
+        return super.scrolled(mx, my, 0.0, delta);
     }
 
     @Override

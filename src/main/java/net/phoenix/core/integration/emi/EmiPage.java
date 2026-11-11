@@ -19,7 +19,7 @@ final class EmiPage {
     }
 
     static final int LINE_H = 10;
-    /** The smallest a line is shrunk to before it is cut. */
+
     static final float MIN_SCALE = 0.72f;
     static final int ROW_H = 11;
 
@@ -84,8 +84,7 @@ final class EmiPage {
         if (width <= maxW) {
             widgets.addText(text.getVisualOrderText(), x, y, color, false);
         } else {
-            // a line that is too wide shrinks to fit first; only when that is not enough is it cut, and its full text
-            // is the tooltip either way
+
             float scale = Math.max(MIN_SCALE, maxW / (float) width);
             FormattedCharSequence shown = text.getVisualOrderText();
             if (width * scale > maxW + 0.5f) {
@@ -105,7 +104,6 @@ final class EmiPage {
         if (!lines.isEmpty()) widgets.addTooltipText(lines, x, y - 1, maxW, ROW_H);
     }
 
-    /** Text that wraps onto as many lines as it needs; returns the y below it. */
     static int wrap(WidgetHolder widgets, String text, int x, int y, int maxW, int color) {
         Font font = Minecraft.getInstance().font;
         for (FormattedCharSequence part : font.split(Component.literal(text), maxW)) {
@@ -115,7 +113,6 @@ final class EmiPage {
         return y;
     }
 
-    /** How tall {@link #wrap} makes the text. */
     static int wrapHeight(String text, int maxW) {
         return Minecraft.getInstance().font.split(Component.literal(text), maxW).size() * LINE_H;
     }

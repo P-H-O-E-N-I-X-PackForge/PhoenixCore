@@ -27,11 +27,6 @@ import java.util.Map;
 import static net.phoenix.core.common.machine.PhoenixMachines.registerTieredMachines;
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/**
- * Source logistics beyond jars: tiered pipes that carry Source between jars, hatches and relays, and wireless relays
- * that
- * move it between channels.
- */
 public final class SourceLogistics {
 
     private SourceLogistics() {}
@@ -83,11 +78,8 @@ public final class SourceLogistics {
         }
     }
 
-    // ------------------------------------------------------------------------------------------ the relays
-
     public static MachineEntry<MachineDefinition>[] RELAY;
 
-    /** Registers the relays; called with the other machines. */
     public static void init() {
         REGISTRATE.creativeModeTab(() -> PhoenixCore.PHOENIX_CREATIVE_TAB);
         RELAY = registerTieredMachines("source_relay",

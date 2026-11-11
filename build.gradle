@@ -170,6 +170,9 @@ neoForge {
 
         data {
             data()
+            // Run the data providers one at a time: several of them (the Registrate tag providers, GTCEu's material / tag-prefix tags) add to the same block
+            // tag maps, and in parallel that sometimes dies with a ConcurrentModificationException in HashMap.computeIfAbsent.
+            systemProperty 'max.bg.threads', '1'
             programArguments.addAll('--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath())
             programArguments.addAll('--existing-mod', 'gtceu')
         }

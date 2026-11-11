@@ -190,7 +190,7 @@ public class MultilineTextArea extends AbstractWidget {
 
         updateHoverWord(mx, my, textX, textY, disp);
 
-        g.enableScissor(getX(), getY(), getX() + width, getY() + height);
+        GuiScissor.enable(g, getX(), getY(), getX() + width, getY() + height);
 
         if (!textField.hasSelection() && hoverWordStart >= 0 && hoverWordEnd > hoverWordStart) {
             for (int i = 0; i < lines.size(); i++) {

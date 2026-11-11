@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
-public final class NodeEditorScreen extends Screen {
+public final class NodeEditorScreen extends FitScreen {
 
     private static final int HEADER_H = 32;
     private static final int FOOTER_H = 32;
@@ -92,7 +92,7 @@ public final class NodeEditorScreen extends Screen {
     private final List<Pencil> pencils = new ArrayList<>();
 
     public NodeEditorScreen(Screen parent, TerminalEditor editor, ResearchTree tree, ResearchNode node) {
-        super(Component.literal("Edit node"));
+        super(Component.literal("Edit node"), 380, 240);
         this.parent = parent;
         this.editor = editor;
         this.tree = tree;
@@ -136,6 +136,7 @@ public final class NodeEditorScreen extends Screen {
 
     @Override
     protected void init() {
+        fit();
         for (EditBox b : allBoxes) addRenderableWidget(b);
     }
 
@@ -144,11 +145,11 @@ public final class NodeEditorScreen extends Screen {
     }
 
     private int colW() {
-        return Math.min(MAX_W, width - MARGIN * 2);
+        return Math.min(MAX_W, vw - MARGIN * 2);
     }
 
     private int colX() {
-        return (width - colW()) / 2;
+        return (vw - colW()) / 2;
     }
 
     private int viewTop() {
@@ -156,16 +157,13 @@ public final class NodeEditorScreen extends Screen {
     }
 
     private int viewBottom() {
-        return height - FOOTER_H - 1;
+        return vh - FOOTER_H - 1;
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
+    protected void renderScaled(GuiGraphics g, int mx, int my, float pt) {
         ConfluxTheme.refresh();
-        g.fill(0, 0, width, height, ConfluxTheme.BG);
+        g.fill(0, 0, vw, vh, ConfluxTheme.BG);
         int accent = accent();
 
         for (EditBox b : allBoxes) {
@@ -187,7 +185,7 @@ public final class NodeEditorScreen extends Screen {
         int y = viewTop() + 8 - scroll;
         int top = viewTop(), bottom = viewBottom();
 
-        g.enableScissor(0, top, width, bottom);
+        GuiScissor.enable(g, 0, top, vw, bottom);
 
         y = sectionHeader(g, Section.BASIC, x, y, w, mx, my, accent);
         if (!collapsed.contains(Section.BASIC)) {
@@ -316,23 +314,23 @@ public final class NodeEditorScreen extends Screen {
         contentH = y + scroll - viewTop() + 8;
         g.disableScissor();
 
-        g.enableScissor(0, top, width, bottom);
-        super.render(g, mx, my, pt);
+        GuiScissor.enable(g, 0, top, vw, bottom);
+        renderWidgets(g, mx, my, pt);
         g.disableScissor();
 
         scroll = Math.max(0, Math.min(scroll, Math.max(0, contentH - (bottom - top))));
 
-        g.fill(0, 0, width, HEADER_H, ConfluxTheme.HEADER);
-        g.fillGradient(0, 0, width, HEADER_H, ConfluxTheme.withAlpha(accent, 70), 0x00000000);
-        g.fill(0, HEADER_H, width, HEADER_H + 1, accent);
+        g.fill(0, 0, vw, HEADER_H, ConfluxTheme.HEADER);
+        g.fillGradient(0, 0, vw, HEADER_H, ConfluxTheme.withAlpha(accent, 70), 0x00000000);
+        g.fill(0, HEADER_H, vw, HEADER_H + 1, accent);
         g.fill(0, 0, 3, HEADER_H, accent);
         g.drawString(font, "§eEditing §f" + node.title, MARGIN, 8, 0xFFFFFF, false);
         g.drawString(font, "§8" + node.id + "  ·  " + tree.title, MARGIN, 19, 0xFFFFFF, false);
-        Rect close = new Rect(width - 26, 8, 16, 16);
-        g.drawString(font, close.has(mx, my) ? "§c×" : "§7×", width - 20, 12, 0xFFFFFF, false);
+        Rect close = new Rect(vw - 26, 8, 16, 16);
+        g.drawString(font, close.has(mx, my) ? "§c×" : "§7×", vw - 20, 12, 0xFFFFFF, false);
 
-        g.fill(0, height - FOOTER_H, width, height, ConfluxTheme.HEADER);
-        g.fill(0, height - FOOTER_H - 1, width, height - FOOTER_H, accent);
+        g.fill(0, vh - FOOTER_H, vw, vh, ConfluxTheme.HEADER);
+        g.fill(0, vh - FOOTER_H - 1, vw, vh - FOOTER_H, accent);
         Rect delete = deleteButton(), cancel = cancelButton(), save = saveButton();
         button(g, delete, confirmDelete ? "§cClick again to delete" : "§cDelete node", mx, my, 0xFF330A0A,
                 0xFF551111);
@@ -422,21 +420,21 @@ public final class NodeEditorScreen extends Screen {
     }
 
     private Rect saveButton() {
-        return new Rect(width - MARGIN - 90, height - FOOTER_H + 8, 90, 16);
+        return new Rect(vw - MARGIN - 90, vh - FOOTER_H + 8, 90, 16);
     }
 
     private Rect cancelButton() {
-        return new Rect(width - MARGIN - 90 - 8 - 90, height - FOOTER_H + 8, 90, 16);
+        return new Rect(vw - MARGIN - 90 - 8 - 90, vh - FOOTER_H + 8, 90, 16);
     }
 
     private Rect deleteButton() {
-        return new Rect(MARGIN, height - FOOTER_H + 8, 140, 16);
+        return new Rect(MARGIN, vh - FOOTER_H + 8, 140, 16);
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
+    protected boolean click(double mx, double my, int btn) {
         if (btn == 0) {
-            if (my < HEADER_H && mx >= width - 26 && mx < width - 10) {
+            if (my < HEADER_H && mx >= vw - 26 && mx < vw - 10) {
                 onClose();
                 return true;
             }
@@ -456,7 +454,7 @@ public final class NodeEditorScreen extends Screen {
             confirmDelete = false;
         }
         if (my >= viewTop() && my < viewBottom()) {
-            if (super.mouseClicked(mx, my, btn)) return true;
+            if (super.click(mx, my, btn)) return true;
             if (btn != 0) return false;
             for (var entry : headers.entrySet()) {
                 if (entry.getValue().has(mx, my)) {
@@ -537,11 +535,11 @@ public final class NodeEditorScreen extends Screen {
             }
             return false;
         }
-        return super.mouseClicked(mx, my, btn);
+        return super.click(mx, my, btn);
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double sx, double delta) {
+    protected boolean scrolled(double mx, double my, double sx, double delta) {
         scroll = (int) Math.max(0, Math.min(Math.max(0, contentH - (viewBottom() - viewTop())), scroll - delta * 24));
         return true;
     }

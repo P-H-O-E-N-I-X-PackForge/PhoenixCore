@@ -20,15 +20,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * The network of Source pipes, built the way GregTech builds its own: the nodes live in a per-dimension saved store, a
- * walker lists every endpoint reachable from a pipe, and the routes are kept until the network changes.
- */
 public final class SourceNetwork {
 
     private SourceNetwork() {}
 
-    /** One way out from a pipe: the last pipe, the side that touches the endpoint, and the pipes on the way. */
     public static class Route implements IRoutePath<SourceEndpoint> {
 
         private final BlockPos targetPipePos;
@@ -68,14 +63,12 @@ public final class SourceNetwork {
             return SourceEndpoint.find(level, targetPipePos.relative(targetFacing));
         }
 
-        /** The share of Source this route wastes: every pipe on it costs its tier's loss. */
         public float loss() {
             float kept = 1f;
             for (SourcePipeBlockEntity pipe : path) kept *= 1f - pipe.getPipeType().lossPerBlock();
             return Math.min(0.9f, 1f - kept);
         }
 
-        /** What the route can still pass this tick. */
         public int room(long gameTime) {
             int room = Integer.MAX_VALUE;
             for (SourcePipeBlockEntity pipe : path) room = Math.min(room, pipe.capacityLeft(gameTime));
@@ -95,7 +88,6 @@ public final class SourceNetwork {
             super(world);
         }
 
-        /** The ways out from this pipe, nearest first. */
         public List<Route> getNetData(BlockPos pipePos) {
             List<Route> data = routes.get(pipePos);
             if (data == null) {

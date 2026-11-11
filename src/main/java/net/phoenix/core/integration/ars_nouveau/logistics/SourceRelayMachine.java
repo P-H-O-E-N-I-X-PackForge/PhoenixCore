@@ -32,12 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * A wireless Source relay. Set it to a channel and to sending or receiving: every sender on a team's channel gives its
- * Source to the receivers on the same channel, wherever they are. A sender takes Source from a jar or output hatch
- * beside it (or from a pipe that ends at it); a receiver hands it to whatever beside it takes Source, or lets a pipe
- * draw it out. The trip costs a little Source that grows with the distance, and more across dimensions.
- */
 public class SourceRelayMachine extends TieredMachine implements ISourceProviderCapability, IMuiMachine {
 
     public static final int MAX_CHANNEL = 99;
@@ -72,7 +66,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         return 4000 * tier;
     }
 
-    /** Source a relay moves in one tick. */
     public static int rate(int tier) {
         return 1000 * tier;
     }
@@ -89,8 +82,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
     public int getChannel() {
         return channel;
     }
-
-    // ------------------------------------------------------------------------------------------ the channel
 
     UUID team() {
         UUID owner = getOwnerUUID();
@@ -133,7 +124,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         setChanged();
     }
 
-    /** Relays on the same team and channel, found by those that are loaded. */
     static final class Channels {
 
         private record Key(UUID team, int channel) {}
@@ -164,8 +154,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         }
     }
 
-    // ------------------------------------------------------------------------------------------ moving Source
-
     private void tick() {
         if (!(getLevel() instanceof ServerLevel level) || isRemote()) return;
         if (sender) {
@@ -176,7 +164,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         }
     }
 
-    /** A sender takes from whatever beside it can give. */
     private void drawFromNeighbours(ServerLevel level) {
         int room = Math.min(container.getMaxSource() - container.getSource(), rate(tier));
         if (room <= 0) return;
@@ -192,7 +179,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         }
     }
 
-    /** A receiver hands its Source to whatever beside it takes Source in. */
     private void giveToNeighbours(ServerLevel level) {
         int budget = Math.min(container.getSource(), rate(tier));
         if (budget <= 0) return;
@@ -220,7 +206,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         return Math.min(MAX_LOSS, loss);
     }
 
-    /** Sends Source to the receivers on this channel, emptiest first. */
     private void beam(ServerLevel level) {
         List<SourceRelayMachine> receivers = new ArrayList<>();
         for (SourceRelayMachine other : Channels.on(this)) {
@@ -257,8 +242,6 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
             }
         }
     }
-
-    // ------------------------------------------------------------------------------------------ the screen
 
     private static final int ID_CHANNEL = 1;
     private static final int ID_MODE = 2;

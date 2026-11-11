@@ -14,21 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Research that makes machines run faster or slower, or draw more or less power. A node gives it as an unlock of type
- * {@code recipe_modifier}, and its value reads
- *
- * <pre>
- *     &lt;stat&gt; &lt;amount&gt; [&lt;selector&gt;]
- * </pre>
- *
- * where the stat is {@code duration} (how long a recipe takes), {@code speed} (the same, the other way round: speed 2
- * halves the time) or {@code eut} (the power it draws); the amount is a multiplier ({@code 0.8}, {@code x0.8}) or a
- * change in percent ({@code -20%}); and the selector is a machine id, a recipe type id, a namespace followed by
- * {@code :*}, or {@code *} for everything (the default). So {@code "duration 0.8 gtceu:macerator"} makes macerators
- * 20% quicker and {@code "eut 0.9 *"} takes a tenth off every machine's power draw. Effects from every node a team has
- * researched stack by multiplying, and apply to the machines the team's members placed.
- */
 public final class ConfluxRecipeEffects {
 
     private ConfluxRecipeEffects() {}
@@ -50,7 +35,6 @@ public final class ConfluxRecipeEffects {
         }
     }
 
-    /** Reads an unlock's value; null when it does not make sense. */
     @Nullable
     public static Effect parse(String value) {
         if (value == null) return null;
@@ -80,7 +64,6 @@ public final class ConfluxRecipeEffects {
         };
     }
 
-    /** A sentence for the research screen: "Macerator recipes 20% faster". */
     public static String describe(String value) {
         Effect e = parse(value);
         if (e == null) return value;
@@ -101,13 +84,10 @@ public final class ConfluxRecipeEffects {
         return spaced.isEmpty() ? selector : Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
     }
 
-    // ------------------------------------------------------------------------------------------ for a team
-
     private record Cached(int signature, List<Effect> effects) {}
 
     private static final Map<UUID, Cached> CACHE = new ConcurrentHashMap<>();
 
-    /** Forget what was worked out, when the research trees reload. */
     public static void invalidate() {
         CACHE.clear();
     }
@@ -116,7 +96,7 @@ public final class ConfluxRecipeEffects {
         WorldResearchData data = WorldResearchData.get(level);
         Set<ResourceLocation> unlocked = data.getUnlocked(team);
         if (unlocked.isEmpty()) return List.of();
-        // the same set of nodes gives the same effects, so only work them out again when the set changes
+
         int signature = unlocked.hashCode() * 31 + ResearchTreeRegistry.INSTANCE.getAllNodes().size();
         Cached cached = CACHE.get(team);
         if (cached != null && cached.signature == signature) return cached.effects;
@@ -136,7 +116,6 @@ public final class ConfluxRecipeEffects {
         return result;
     }
 
-    /** The combined multiplier of a stat for this team on this machine and recipe type. */
     public static double multiplier(UUID team, ServerLevel level, Stat stat, String machineId, String recipeTypeId) {
         double result = 1.0;
         for (Effect e : effectsOf(team, level)) {
@@ -145,9 +124,6 @@ public final class ConfluxRecipeEffects {
         return result;
     }
 
-    // ------------------------------------------------------------------------------------------ in the machines
-
-    /** Hooked onto every machine's own recipe modifier, so research reaches every recipe GregTech runs. */
     public static final RecipeModifier MODIFIER = (MetaMachine machine, GTRecipe recipe) -> {
         if (!(machine.getLevel() instanceof ServerLevel level)) return ModifierFunction.IDENTITY;
         UUID owner = machine.getOwnerUUID();

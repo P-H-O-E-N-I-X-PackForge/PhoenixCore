@@ -62,6 +62,13 @@ public final class HudModel {
     Heroes.Hero hero;
     int heroHeight = 36;
 
+    CanvasPainter customPage;
+
+    public HudModel page(CanvasPainter page) {
+        this.customPage = page;
+        return this;
+    }
+
     public static HudModel of(String title) {
         HudModel m = new HudModel();
         m.title = title;

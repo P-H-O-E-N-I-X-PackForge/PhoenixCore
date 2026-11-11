@@ -3,25 +3,27 @@ package net.phoenix.core.integration.conflux.multiblock;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.client.gui.hud.HudModel;
 import net.phoenix.core.client.gui.hud.HudRecipes;
 import net.phoenix.core.client.gui.hud.MachineHud;
+import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
+import net.phoenix.core.integration.conflux.hatch.ConfluxDataHatchPartMachine;
 import net.phoenix.core.integration.conflux.pipe.ConfluxDataCapability;
-import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
 import net.phoenix.core.integration.conflux.pipe.IConfluxDataHandler;
-import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
+import net.phoenix.core.integration.conflux.producer.ConfluxFuels;
+import net.phoenix.core.integration.conflux.producer.ConfluxProducerMachine;
 
 import brachy.modularui.value.sync.FloatSyncValue;
 import brachy.modularui.value.sync.IntSyncValue;
@@ -34,10 +36,13 @@ import java.util.List;
 public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
                                   implements ConfluxDataCapability.Holder {
 
-    private static final int FUEL_TICKS = 400;
+    private static final int FUEL_TICKS_MULTIPLE = 2;
+    private static final int SOURCE_PER_TICK = 40;
     private static final long BASE_RATE = 200L;
     private static final float MAX_MULT = 10f;
-    private static final long EU_PER_TICK = 524_288L;
+
+    private static final long EU_PER_TICK = 2L *
+            com.gregtechceu.gtceu.api.GTValues.V[com.gregtechceu.gtceu.api.GTValues.IV];
     private static final long BUFFER = 100_000L;
     private static final long PUSH_RATE = 4_096L;
     private static final float MOMENTUM_GAIN = 1f / 500f;
@@ -62,13 +67,12 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
     private boolean engineActive = false;
 
     @SaveField
-    private final NotifiableItemStackHandler fuelSlot;
+    private float quality = 1.0f;
 
     private final IConfluxDataHandler outputHandler;
 
     public ConfluxCascadeEngine(BlockEntityCreationInfo holder) {
         super(holder);
-        this.fuelSlot = new NotifiableItemStackHandler(1, IO.IN);
         this.outputHandler = makeOutputHandler();
         subscribeServerTick(this::engineTick);
     }
@@ -76,27 +80,24 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
     private void engineTick() {
         if (!isFormed() || getLevel() == null || isRemote()) return;
 
-        var energy = getEnergyContainer();
-        if (energy == null || energy.getEnergyStored() < EU_PER_TICK) {
-            stall();
-            return;
-        }
-        energy.removeEnergy(EU_PER_TICK);
-
-        if (fuelTicks <= 0) {
-            var stack = fuelSlot.getStackInSlot(0);
-            if (!stack.isEmpty()) {
-                fuelSlot.extractItem(0, 1, false);
-                fuelTicks = FUEL_TICKS;
-                setChanged();
+        boolean running;
+        switch (outputType) {
+            case ENERGETIC -> {
+                var energy = getEnergyContainer();
+                running = energy != null && energy.getEnergyStored() >= EU_PER_TICK;
+                if (running) energy.removeEnergy(EU_PER_TICK);
+            }
+            case ARCANE -> running = takeSource(SOURCE_PER_TICK);
+            default -> {
+                if (fuelTicks <= 0) burnNextItem();
+                running = fuelTicks > 0;
+                if (running) fuelTicks--;
             }
         }
-
-        if (fuelTicks <= 0) {
+        if (!running) {
             stall();
             return;
         }
-        fuelTicks--;
 
         momentum = Math.min(1f, momentum + MOMENTUM_GAIN);
         engineActive = true;
@@ -104,11 +105,49 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
         setChanged();
 
         float multiplier = 1f + (MAX_MULT - 1f) * momentum;
-        long produced = (long) (BASE_RATE * multiplier);
+        long produced = (long) (BASE_RATE * multiplier * quality);
         long space = BUFFER - dataBuffer;
         if (space > 0) dataBuffer += Math.min(produced, space);
 
         if (dataBuffer > 0) pushToNetwork();
+    }
+
+    private void burnNextItem() {
+        for (MultiblockPartMachine part : getParts()) {
+            for (NotifiableItemStackHandler inventory : part.getTraits(NotifiableItemStackHandler.class)) {
+                if (inventory.handlerIO != IO.IN && inventory.handlerIO != IO.BOTH) continue;
+                for (int slot = 0; slot < inventory.getSlots(); slot++) {
+                    ItemStack stack = inventory.getStackInSlot(slot);
+                    if (!ConfluxFuels.isFuel(outputType, stack)) continue;
+                    int ticks = ConfluxFuels.ticks(outputType, stack) * FUEL_TICKS_MULTIPLE;
+                    float itemQuality = ConfluxFuels.quality(outputType, stack);
+                    if (inventory.extractItemInternal(slot, 1, false).isEmpty()) continue;
+                    fuelTicks = ticks;
+                    quality = itemQuality;
+                    setChanged();
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean takeSource(int amount) {
+        int available = 0;
+        for (MultiblockPartMachine part : getParts()) {
+            if (part instanceof SourceHatchPartMachine hatch && hatch.getIo() == IO.IN) {
+                available += hatch.getSource().getSource();
+            }
+        }
+        if (available < amount) return false;
+        int remaining = amount;
+        for (MultiblockPartMachine part : getParts()) {
+            if (remaining <= 0) break;
+            if (part instanceof SourceHatchPartMachine hatch && hatch.getIo() == IO.IN) {
+                int taken = hatch.getSource().removeSource(Math.min(remaining, hatch.getSource().getSource()));
+                remaining -= taken;
+            }
+        }
+        return true;
     }
 
     private void stall() {
@@ -125,29 +164,13 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
     }
 
     private void pushToNetwork() {
-        BlockPos pos = getBlockPos();
         long budget = Math.min(dataBuffer, PUSH_RATE);
-
-        for (Direction dir : Direction.values()) {
+        for (MultiblockPartMachine part : getParts()) {
             if (budget <= 0) break;
-            BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
-            if (be == null) continue;
-
-            IConfluxDataHandler h = ConfluxDataCapability.find(be, dir.getOpposite());
-            if (h != null) {
-                if (h.getDataType() == outputType) {
-                    long sent = h.insert(budget);
-                    dataBuffer -= sent;
-                    budget -= sent;
-                }
-                continue;
-            }
-
-            IConfluxMultiHandler multiCap = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
-            if (multiCap != null) {
-                long sent = multiCap.insert(outputType, budget);
-                dataBuffer -= sent;
-                budget -= sent;
+            if (part instanceof ConfluxDataHatchPartMachine hatch && hatch.getIo() == IO.OUT) {
+                long kept = hatch.deposit(outputType, budget);
+                dataBuffer -= kept;
+                budget -= kept;
             }
         }
         if (budget < PUSH_RATE) setChanged();
@@ -212,6 +235,10 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
         syncManager.syncValue("momentum", 0, new FloatSyncValue(() -> this.momentum, v -> this.momentum = v));
+
+        syncManager.syncValue("output_type", 0, new IntSyncValue(() -> this.outputType.ordinal(),
+                v -> this.outputType = ConfluxDataType.values()[Math.floorMod(v, ConfluxDataType.values().length)]));
+        syncManager.syncValue("quality", 0, new FloatSyncValue(() -> this.quality, v -> this.quality = v));
         syncManager.syncValue("fuel_ticks", 0, new IntSyncValue(() -> this.fuelTicks, v -> this.fuelTicks = v));
         syncManager.syncValue("engine_active", 0,
                 new brachy.modularui.value.sync.BooleanSyncValue(() -> this.engineActive, v -> this.engineActive = v));
@@ -234,7 +261,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
                         net.phoenix.core.client.gui.hud.HudTheme.DATA.accent()), 30)
                 .badge(() -> engineActive ? new HudModel.Badge("RUNNING", HudModel.GREEN) :
                         new HudModel.Badge("STALLED", HudModel.RED))
-                .subtitle(() -> "Spins up on fuel and pushes " + outputType.displayName + " data")
+                .subtitle(() -> "Spins up on " + ConfluxProducerMachine.needTitle(outputType).toLowerCase(
+                        java.util.Locale.ROOT) + " and pushes " + outputType.displayName + " data")
                 .cells(() -> {
                     var cells = new java.util.ArrayList<HudModel.Cell>();
                     cells.add(HudModel.cell("MOMENTUM", String.format(java.util.Locale.ROOT, "%.1f%%", momentum * 100f),
@@ -245,8 +273,18 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
                             "max x" + MAX_MULT, HudModel.PURPLE));
                     cells.add(HudModel.cell("BUFFER", String.format(java.util.Locale.ROOT, "%,d", dataBuffer),
                             String.format(java.util.Locale.ROOT, "of %,d", (long) BUFFER), HudModel.BLUE));
-                    cells.add(HudModel.cell("FUEL", fuelTicks + " ticks", fuelTicks > 0 ? "burning" : "none",
-                            fuelTicks > 0 ? HudModel.GREEN : HudModel.RED));
+                    cells.add(HudModel.cell("NEEDS", ConfluxProducerMachine.needTitle(outputType), outputType ==
+                            ConfluxDataType.ENERGETIC ? String.format(java.util.Locale.ROOT, "%,d EU/t", EU_PER_TICK) :
+                                    outputType == ConfluxDataType.ARCANE ? SOURCE_PER_TICK + " Source per tick" :
+                                            "from the input buses",
+                            engineActive ? HudModel.GREEN : HudModel.RED));
+                    if (ConfluxFuels.usesItems(outputType)) {
+                        cells.add(HudModel.cell("BURNING", fuelTicks > 0 ? fuelTicks / 20 + " s" : "nothing",
+                                outputType == ConfluxDataType.COMPUTATIONAL ?
+                                        String.format(java.util.Locale.ROOT, "x%.2f data", quality) :
+                                        "left on this item",
+                                fuelTicks > 0 ? HudModel.GREEN : HudModel.RED));
+                    }
                     return cells;
                 })
                 .bars(() -> java.util.List.of(
@@ -292,10 +330,6 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
         return engineActive;
     }
 
-    /**
-     * Shows the machine's front lit and animated while it works: these run their own logic, so the recipe status the
-     * model reads is set here (GregTech does not move it without a recipe, and does not reset it while one is idle).
-     */
     private void showActive(boolean on) {
         var logic = getRecipeLogic();
         if (logic == null || getLevel() == null || getLevel().isClientSide) return;

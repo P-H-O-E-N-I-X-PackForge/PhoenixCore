@@ -49,6 +49,8 @@ public class ResearchNodeScreen extends Screen {
     @Nullable
     private final ResearchTerminalBlockEntity terminal;
 
+    private float uiScale = 1f;
+    private int vw, vh;
     private boolean fullscreen = rememberFullscreen;
     private boolean connectionsOpen = false;
 
@@ -139,9 +141,20 @@ public class ResearchNodeScreen extends Screen {
         return node.lore;
     }
 
+    private void updateScale() {
+        float minW = fullscreen ? 480f : 600f;
+        float minH = fullscreen ? 260f : 340f;
+        uiScale = Math.max(0.1f, Math.min(1f, Math.min(width / minW, height / minH)));
+        vw = Math.round(width / uiScale);
+        vh = Math.round(height / uiScale);
+    }
+
     @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
+    public void render(GuiGraphics g, int rmx, int rmy, float pt) {
         ConfluxTheme.refresh();
+        updateScale();
+        int mx = Math.round(rmx / uiScale);
+        int my = Math.round(rmy / uiScale);
         refreshState();
         buttons.clear();
         hoveredStack = ItemStack.EMPTY;
@@ -150,7 +163,10 @@ public class ResearchNodeScreen extends Screen {
 
         if (fullscreen) {
             g.fill(0, 0, width, height, BG);
+            g.pose().pushPose();
+            g.pose().scale(uiScale, uiScale, 1f);
             renderFull(g, mx, my);
+            g.pose().popPose();
         } else {
             parent.render(g, -10000, -10000, pt);
             g.flush();
@@ -158,6 +174,7 @@ public class ResearchNodeScreen extends Screen {
             g.pose().pushPose();
             g.pose().translate(0, 0, 600);
             g.fill(0, 0, width, height, 0xB0000008);
+            g.pose().scale(uiScale, uiScale, 1f);
             renderCompact(g, mx, my);
             g.flush();
             g.pose().popPose();
@@ -166,19 +183,24 @@ public class ResearchNodeScreen extends Screen {
         g.flush();
         g.pose().pushPose();
         g.pose().translate(0, 0, 1000);
-        if (connectionsOpen) renderConnections(g, mx, my);
+        if (connectionsOpen) {
+            g.pose().pushPose();
+            g.pose().scale(uiScale, uiScale, 1f);
+            renderConnections(g, mx, my);
+            g.pose().popPose();
+        }
         if (!hoveredStack.isEmpty()) {
-            g.renderTooltip(font, hoveredStack, mx, my);
+            g.renderTooltip(font, hoveredStack, rmx, rmy);
         } else if (hoveredTip != null) {
-            g.renderTooltip(font, Component.literal(hoveredTip), mx, my);
+            g.renderTooltip(font, Component.literal(hoveredTip), rmx, rmy);
         } else {
             for (RichSpan.Region r : regions) {
                 if (!r.contains(mx, my)) continue;
                 if (r.span() instanceof RichSpan.Tip t) {
-                    g.renderTooltip(font, font.split(Component.literal(t.tooltip()), 240), mx, my);
+                    g.renderTooltip(font, font.split(Component.literal(t.tooltip()), 240), rmx, rmy);
                 } else if (r.span() instanceof RichSpan.ItemIcon icon) {
                     var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(icon.itemId());
-                    if (item != null) g.renderTooltip(font, new ItemStack(item).getHoverName(), mx, my);
+                    if (item != null) g.renderTooltip(font, new ItemStack(item).getHoverName(), rmx, rmy);
                 }
                 break;
             }
@@ -406,7 +428,7 @@ public class ResearchNodeScreen extends Screen {
         int contentH = WikiRichTextRenderer.measureBlocksHeight(font, blocks, w - 6, expanded);
         loreMax = Math.max(0, contentH - h);
         loreScroll = Math.min(loreScroll, loreMax);
-        g.enableScissor(x, y, x + w, y + h);
+        GuiScissor.enable(g, x, y, x + w, y + h);
         regions = WikiRichTextRenderer.renderBlocks(g, font, blocks, x, y, w - 6, (int) loreScroll, y, y + h, accent(),
                 expanded);
         g.disableScissor();
@@ -468,7 +490,7 @@ public class ResearchNodeScreen extends Screen {
     }
 
     private void renderCompact(GuiGraphics g, int mx, int my) {
-        cardW = Math.min(340, width - 24);
+        cardW = Math.min(340, vw - 24);
         int pad = 10;
         int inner = cardW - pad * 2;
         int headerH = 36;
@@ -483,13 +505,13 @@ public class ResearchNodeScreen extends Screen {
         }
         int yieldH = drawYield(null, 0, 0, inner, 0, 0, true);
 
-        int maxCardH = height - 30;
+        int maxCardH = vh - 30;
         int fixed = headerH + footerH + costH + prereqH + yieldH + (yieldH > 0 ? 4 : 0) + 12;
         int loreFull = measureCompactBody(inner);
         int loreView = Math.max(30, Math.min(loreFull, maxCardH - fixed));
         cardH = fixed + loreView;
-        cardX = (width - cardW) / 2;
-        cardY = (height - cardH) / 2;
+        cardX = (vw - cardW) / 2;
+        cardY = (vh - cardH) / 2;
 
         int acc = accent();
         int borderA = canResearch ?
@@ -534,15 +556,15 @@ public class ResearchNodeScreen extends Screen {
     private void renderFull(GuiGraphics g, int mx, int my) {
         int margin = 8;
         int headerH = 36;
-        renderHeader(g, 0, 0, width, mx, my);
+        renderHeader(g, 0, 0, vw, mx, my);
 
         int top = headerH + margin;
         int footerH = 30;
-        int bottom = height - footerH - margin;
+        int bottom = vh - footerH - margin;
         int h = bottom - top;
-        int midW = Math.min(220, width / 4);
-        int rightW = Math.min(240, width / 4);
-        int leftW = width - midW - rightW - margin * 4;
+        int midW = Math.min(220, vw / 4);
+        int rightW = Math.min(240, vw / 4);
+        int leftW = vw - midW - rightW - margin * 4;
 
         panel(g, margin, top, leftW, h, "Record");
         drawLore(g, margin + 10, top + 22, leftW - 20, h - 30, false);
@@ -550,7 +572,7 @@ public class ResearchNodeScreen extends Screen {
         int mxp = margin + leftW + margin;
         panel(g, mxp, top, midW, h, "Requirements");
         sideRect = new int[] { mxp, top, mxp + midW, bottom };
-        g.enableScissor(mxp + 1, top + 15, mxp + midW - 1, bottom - 1);
+        GuiScissor.enable(g, mxp + 1, top + 15, mxp + midW - 1, bottom - 1);
         int y = top + 22 - (int) sideScroll;
         int sy = y;
         y = drawPrereqs(g, mxp + 8, y, midW - 16);
@@ -566,7 +588,7 @@ public class ResearchNodeScreen extends Screen {
         int rx = mxp + midW + margin;
         panel(g, rx, top, rightW, h, "Yield");
         yieldRect = new int[] { rx, top, rx + rightW, bottom };
-        g.enableScissor(rx + 1, top + 15, rx + rightW - 1, bottom - 1);
+        GuiScissor.enable(g, rx + 1, top + 15, rx + rightW - 1, bottom - 1);
         int ry0 = top + 22 - (int) yieldScroll;
         int ry = drawYield(g, rx + 8, ry0, rightW - 16, mx, my, false);
         if (cachedYield == null || cachedYield.isEmpty()) {
@@ -578,9 +600,9 @@ public class ResearchNodeScreen extends Screen {
         yieldScroll = Math.min(yieldScroll, yieldMax);
         if (yieldMax > 0) scrollbar(g, rx + rightW - 4, top + 15, h - 17, yieldScroll, yieldMax);
 
-        int fy = height - footerH + 6;
-        drawResearchButton(g, width / 2 - 110, fy, 220, 18, mx, my);
-        drawLoreButton(g, width / 2 + 116, fy, 90, 18, mx, my);
+        int fy = vh - footerH + 6;
+        drawResearchButton(g, vw / 2 - 110, fy, 220, 18, mx, my);
+        drawLoreButton(g, vw / 2 + 116, fy, 90, 18, mx, my);
         g.drawString(font, "§8[F] shrink   [R] research   [Esc] close", margin + 2, fy + 5, DIM, false);
     }
 
@@ -606,7 +628,7 @@ public class ResearchNodeScreen extends Screen {
         int sections = (requires.isEmpty() ? 0 : 1) + (unlocks.isEmpty() ? 0 : 1);
         int h = 8 + sections * 12 + rows * rowH + 4;
         if (rows == 0) h = 26;
-        int px = fullscreen ? width - w - 8 : Math.min(width - w - 4, cardX + cardW - w);
+        int px = fullscreen ? vw - w - 8 : Math.min(vw - w - 4, cardX + cardW - w);
         int py = fullscreen ? 40 : cardY + 38;
 
         g.fill(px, py, px + w, py + h, 0xFF0A0A12);
@@ -649,7 +671,8 @@ public class ResearchNodeScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
+    public boolean mouseClicked(double rmx, double rmy, int btn) {
+        double mx = rmx / uiScale, my = rmy / uiScale;
         if (btn == 0) {
 
             for (int i = buttons.size() - 1; i >= 0; i--) {
@@ -672,7 +695,8 @@ public class ResearchNodeScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
+    public boolean mouseScrolled(double rmx, double rmy, double scrollX, double delta) {
+        double mx = rmx / uiScale, my = rmy / uiScale;
         if (inside(loreRect, mx, my)) {
             loreScroll = (float) Math.max(0, Math.min(loreMax, loreScroll - delta * 18));
             return true;

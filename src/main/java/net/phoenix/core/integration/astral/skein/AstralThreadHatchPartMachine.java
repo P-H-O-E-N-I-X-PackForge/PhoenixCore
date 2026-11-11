@@ -6,22 +6,17 @@ import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.phoenix.core.integration.ars_nouveau.client.gui.SourceHatchBackground;
 import net.phoenix.core.integration.astral.api.machine.trait.NotifiableAstralThreadContainer;
 import net.phoenix.core.integration.astral.item.AstralThreadCellItem;
 import net.phoenix.core.integration.astral.item.AstralWandItem;
 
-import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widget.ParentWidget;
-import brachy.modularui.widgets.layout.Flow;
 import lombok.Getter;
 
 @Getter
@@ -68,32 +63,62 @@ public class AstralThreadHatchPartMachine extends TieredIOPartMachine implements
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
-                            UISettings settings) {
-        if (isRemote()) {
-            mainWidget.background(new SourceHatchBackground(getAccentColor()));
-        }
+    public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
+                                                           UISettings settings) {
+        syncManager.syncValue("thread", 0, new brachy.modularui.value.sync.IntSyncValue(
+                () -> threadContainer.getThread(), v -> {
+                    int delta = v - threadContainer.getThread();
+                    if (delta > 0) threadContainer.addThread(delta);
+                    else if (delta < 0) threadContainer.removeThread(-delta);
+                }));
+        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel);
+    }
 
-        mainWidget.child(Flow.col()
-                .coverChildren()
-                .margin(8, 6)
-                .child(Text.dynamic(() -> Component.literal("ASTRAL THREAD HATCH")
-                        .withStyle(style -> style.withColor(getAccentColor())))
-                        .asWidget()
-                        .marginBottom(8))
-                .child(Text.dynamic(() -> Component.literal("MODE: " + threadContainer.getHandlerIO().name())
-                        .withStyle(ChatFormatting.WHITE))
-                        .asWidget())
-                .child(Text.dynamic(() -> {
-                    int cur = threadContainer.getThread();
-                    int max = Math.max(1, threadContainer.getMaxThread());
-                    int pct = (int) ((cur * 100L) / max);
-                    return Component.literal("THREAD: " + cur + " / " + max + " (" + pct + "%)")
-                            .withStyle(ChatFormatting.WHITE);
-                }).asWidget())
-                .child(Text.dynamic(() -> Component.literal("RATE: " + threadContainer.getTransferRate() + "/s")
-                        .withStyle(ChatFormatting.WHITE))
-                        .asWidget()));
+    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
+        boolean output = threadContainer.getHandlerIO() == IO.OUT;
+        return net.phoenix.core.client.gui.hud.HudModel
+                .of(com.gregtechceu.gtceu.api.GTValues.VNF[tier] + " Astral Thread " + (output ? "Output" : "Input") +
+                        " Hatch")
+                .theme(net.phoenix.core.client.gui.hud.HudTheme.ASTRAL)
+                .formed(() -> true)
+                .page(net.phoenix.core.client.gui.hud.ExoticPages.threadHatch(
+                        com.gregtechceu.gtceu.api.GTValues.VNF[tier] + " Astral Thread " +
+                                (output ? "Output" : "Input") + " Hatch",
+                        output, () -> threadContainer.getThread(), () -> threadContainer.getMaxThread(),
+                        () -> threadContainer.getTransferRate(), getAccentColor(), 0xFFE8D27A,
+                        () -> "Astral Wand: " + (output ? "draw its thread into a Thread Cell." :
+                                "feed a Thread Cell into it.")))
+                .hero(net.phoenix.core.client.gui.hud.ExoticHeroes.threadLoom(
+                        net.phoenix.core.client.gui.hud.Heroes.eased(
+                                () -> threadContainer.getThread() /
+                                        (float) Math.max(1, threadContainer.getMaxThread())),
+                        !output, getAccentColor(), 0xFFE8D27A), 62)
+                .badge(() -> output ?
+                        new net.phoenix.core.client.gui.hud.HudModel.Badge("OUTPUT",
+                                net.phoenix.core.client.gui.hud.HudModel.CYAN) :
+                        new net.phoenix.core.client.gui.hud.HudModel.Badge("INPUT",
+                                net.phoenix.core.client.gui.hud.HudModel.PURPLE))
+                .subtitle(() -> output ? "Holds the thread a machine spins" : "Feeds thread to a machine")
+                .cells(() -> {
+                    var cells = new java.util.ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("THREAD",
+                            String.format(java.util.Locale.ROOT, "%,d", threadContainer.getThread()),
+                            "of " + String.format(java.util.Locale.ROOT, "%,d", threadContainer.getMaxThread()),
+                            net.phoenix.core.client.gui.hud.HudModel.PURPLE));
+                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("RATE",
+                            String.format(java.util.Locale.ROOT, "%,d /t", threadContainer.getTransferRate()),
+                            "most it moves", net.phoenix.core.client.gui.hud.HudModel.CYAN));
+                    return cells;
+                })
+                .bars(() -> java.util.List.of(new net.phoenix.core.client.gui.hud.HudModel.Bar("Thread",
+                        threadContainer.getThread() / (float) Math.max(1, threadContainer.getMaxThread()),
+                        String.format(java.util.Locale.ROOT, "%,d / %,d", threadContainer.getThread(),
+                                threadContainer.getMaxThread()),
+                        net.phoenix.core.client.gui.hud.HudModel.PURPLE)))
+                .notes(() -> java.util.List.of(net.phoenix.core.client.gui.hud.HudModel.line(output ?
+                        "Astral Wand: draw its thread into a Thread Cell." :
+                        "Astral Wand: feed a Thread Cell into it.", net.phoenix.core.client.gui.hud.HudModel.MID)));
     }
 
     private int getAccentColor() {

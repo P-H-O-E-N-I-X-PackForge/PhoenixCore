@@ -13,10 +13,6 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.Copper;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Steel;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
-/**
- * Data pipes: an assembler recipe for each type. The programmed circuit picks the type (1 to 5, in the order of the
- * types), the same way GregTech tells apart recipes that share their ingredients.
- */
 public final class ConfluxPipeRecipes {
 
     private ConfluxPipeRecipes() {}
@@ -32,5 +28,27 @@ public final class ConfluxPipeRecipes {
                     .EUt(VA[LV])
                     .save(provider);
         }
+
+        hatch(provider, "conflux_data_input_hatch",
+                net.phoenix.core.integration.conflux.hatch.ConfluxHatches.DATA_INPUT);
+        hatch(provider, "conflux_data_output_hatch",
+                net.phoenix.core.integration.conflux.hatch.ConfluxHatches.DATA_OUTPUT);
+    }
+
+    private static void hatch(RecipeOutput provider, String id,
+                              com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry<com.gregtechceu.gtceu.api.machine.MachineDefinition>[] entries) {
+        var machine = entries == null ? null : entries[com.gregtechceu.gtceu.api.GTValues.IV];
+        if (machine == null) return;
+        var builder = ASSEMBLER_RECIPES.recipeBuilder(id)
+                .inputItems(com.gregtechceu.gtceu.common.data.GTMachines.HULL[com.gregtechceu.gtceu.api.GTValues.IV]
+                        .asStack())
+                .inputItems(com.gregtechceu.gtceu.data.recipe.CustomTags.IV_CIRCUITS, 2);
+        for (ConfluxDataType type : ConfluxDataType.values()) {
+            builder = builder.inputItems(ConfluxRegistry.PIPES.get(type).get(), 1);
+        }
+        builder.outputItems(machine.asStack())
+                .duration(300)
+                .EUt(VA[com.gregtechceu.gtceu.api.GTValues.IV])
+                .save(provider);
     }
 }

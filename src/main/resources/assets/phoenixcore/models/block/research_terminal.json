@@ -1,12 +1,76 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/block",
   "textures": {
     "particle": "phoenixcore:block/akashic_zeronium_casing",
-    "down": "phoenixcore:block/akashic_zeronium_casing",
-    "up": "phoenixcore:block/advanced_logic2",
-    "north": "phoenixcore:block/advanced_logic2",
-    "south": "phoenixcore:block/advanced_logic2",
-    "east": "phoenixcore:block/advanced_logic2",
-    "west": "phoenixcore:block/advanced_logic2"
-  }
+    "casing": "phoenixcore:block/akashic_zeronium_casing",
+    "side": "phoenixcore:block/advanced_logic2",
+    "screen": "phoenixcore:block/conflux_terminal_screen"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#casing",
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#side",
+          "cullface": "up"
+        },
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        -0.02
+      ],
+      "to": [
+        16,
+        16,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      }
+    }
+  ]
 }

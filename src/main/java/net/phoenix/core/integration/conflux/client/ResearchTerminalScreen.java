@@ -170,7 +170,7 @@ public class ResearchTerminalScreen extends Screen {
     private static final int RAIL_W = 18;
 
     private int sideOpenW() {
-        return Math.max(104, Math.min(150, Math.round(vw * 0.17f)));
+        return Math.max(128, Math.min(176, Math.round(vw * 0.2f)));
     }
 
     private int sideW() {
@@ -574,7 +574,7 @@ public class ResearchTerminalScreen extends Screen {
         }
 
         int top = sideListTop(), bot = sideListBottom();
-        g.enableScissor(0, top, sideOpenW() - 1, bot);
+        GuiScissor.enable(g, 0, top, sideOpenW() - 1, bot);
         int y = top - sidebarScroll;
         int start = y;
         if (resultsMode()) {
@@ -612,7 +612,8 @@ public class ResearchTerminalScreen extends Screen {
                         }
                     }
                     String count = done + "/" + total;
-                    int room = sideOpenW() - 36 - ind - font.width(count);
+                    int arrowW = font.width("\u25be ");
+                    int room = sideOpenW() - 8 - ind - arrowW - 8 - font.width(count) - 4;
                     g.drawString(font, (row.collapsed() ? "\u00a77\u25b8 " : "\u00a77\u25be ") + "\u00a78" +
                             font.plainSubstrByWidth(row.header().toUpperCase(), Math.max(20, room)), 8 + ind, y + 5,
                             ConfluxTheme.DIM, false);
@@ -653,7 +654,7 @@ public class ResearchTerminalScreen extends Screen {
                 g.fill(4 + ind, y, sideOpenW() - 5, y + ROW_H - 2, 0xFF11111F);
             }
             int[] p = progress(tree);
-            String title = font.plainSubstrByWidth(tree.title, sideOpenW() - 38 - ind);
+            String title = font.plainSubstrByWidth(tree.title, sideOpenW() - 32 - ind);
             g.drawString(font, title, 12 + ind, y + 4, active ? ConfluxTheme.TEXT : hover ? 0xFF9999BB : 0xFF8888AA,
                     false);
             if (p[2] == 1) g.drawString(font, "\u00a7a\u25cf", sideOpenW() - 16, y + 4, ConfluxTheme.TEXT, false);
@@ -881,7 +882,7 @@ public class ResearchTerminalScreen extends Screen {
                 ConfluxTheme.TEXT, false);
 
         int by = y + 22;
-        g.enableScissor(x + 1, by, x + cardW() - 1, by + bodyH);
+        GuiScissor.enable(g, x + 1, by, x + cardW() - 1, by + bodyH);
         WikiRichTextRenderer.renderBlocks(g, font, blocks, x + 10, by, cardW() - 20, (int) cardScroll, by, by + bodyH,
                 acc,
                 new java.util.HashSet<>());

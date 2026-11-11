@@ -3,7 +3,6 @@ package net.phoenix.core.integration.conflux.producer;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
@@ -12,16 +11,13 @@ import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableEnergyContai
 import com.gregtechceu.gtceu.api.machine.trait.notifiable.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.client.gui.hud.Heroes;
 import net.phoenix.core.client.gui.hud.HudModel;
 import net.phoenix.core.client.gui.hud.HudTheme;
@@ -54,36 +50,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Makes one kind of Conflux data, and each kind eats its own resource:
- * <ul>
- * <li>Material: any item made of a GregTech material (an ingot, a dust, a gem...), longer for more of it</li>
- * <li>Biological: biomaterial: plants, seeds, bio chaff and the like</li>
- * <li>Energetic: electricity, and nothing else</li>
- * <li>Computational: circuits</li>
- * <li>Arcane: Source, from a Source pipe or relay</li>
- * </ul>
- * Only the energetic producer takes EU.
- */
 public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiMachine, ISourceProviderCapability {
 
-    /** Items that count as biomaterial (a tag, so packs can add to it). */
-    public static final TagKey<Item> BIOMATERIAL = TagKey.create(Registries.ITEM,
-            PhoenixCore.id("conflux_biomaterial"));
-
-    /** Circuit tiers, worst to best: the better the circuit, the more data it makes. */
-    private static final List<TagKey<Item>> CIRCUIT_TIERS = List.of(CustomTags.ULV_CIRCUITS, CustomTags.LV_CIRCUITS,
-            CustomTags.MV_CIRCUITS, CustomTags.HV_CIRCUITS, CustomTags.EV_CIRCUITS, CustomTags.IV_CIRCUITS,
-            CustomTags.LuV_CIRCUITS, CustomTags.ZPM_CIRCUITS, CustomTags.UV_CIRCUITS, CustomTags.UHV_CIRCUITS,
-            CustomTags.UEV_CIRCUITS, CustomTags.UIV_CIRCUITS, CustomTags.UXV_CIRCUITS, CustomTags.OpV_CIRCUITS,
-            CustomTags.MAX_CIRCUITS);
-
-    /** Each step up in circuit adds this much to the data made: a ULV circuit is x1, an IV one x4.75. */
-    private static final float CIRCUIT_STEP = 0.75f;
+    public static final TagKey<Item> BIOMATERIAL = ConfluxFuels.BIOMATERIAL;
 
     private static final long BASE_RATE = 4L;
-    private static final int FUEL_TICKS = 200;
-    /** What a producer holds and passes on scales with its tier. */
+
     private static final long BUFFER_PER_TIER = 1024L;
     private static final long PUSH_PER_TIER = 32L;
 
@@ -103,13 +75,12 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
     @Nullable
     private TickableSubscription tickSub;
 
-    /** Whether it had what it needs on its last tick; the screen shows it. */
     private boolean supplied = false;
 
     public ConfluxProducerMachine(BlockEntityCreationInfo holder, int tier, ConfluxDataType dataType) {
         super(holder, tier, dataType == ConfluxDataType.ENERGETIC ?
                 NotifiableEnergyContainer.receiverContainer(GTValues.V[tier] * 64L, GTValues.V[tier], 1L) :
-                // the others take no electricity at all
+
                 NotifiableEnergyContainer.receiverContainer(0L, GTValues.V[tier], 0L));
 
         this.dataType = dataType;
@@ -133,43 +104,14 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
         this.dataHandler = this.buildDataHandler();
     }
 
-    // ------------------------------------------------------------------------------------------ what it eats
-
-    /** Whether this type of producer burns items at all. */
     public static boolean usesItems(ConfluxDataType type) {
-        return type == ConfluxDataType.MATERIAL || type == ConfluxDataType.BIOLOGICAL ||
-                type == ConfluxDataType.COMPUTATIONAL;
+        return ConfluxFuels.usesItems(type);
     }
 
     public boolean isFuel(ItemStack stack) {
-        if (stack.isEmpty()) return false;
-        return switch (dataType) {
-            case MATERIAL -> !ChemicalHelper.getMaterialStack(stack).isEmpty();
-            case BIOLOGICAL -> stack.is(BIOMATERIAL);
-            case COMPUTATIONAL -> stack.is(CustomTags.CIRCUITS);
-            default -> false;
-        };
+        return ConfluxFuels.isFuel(dataType, stack);
     }
 
-    /** How long one of the item runs the producer: a material item for as many ingots' worth as it holds. */
-    private int fuelTicksFor(ItemStack stack) {
-        if (dataType == ConfluxDataType.MATERIAL) {
-            long units = Math.round(ChemicalHelper.getMaterialStack(stack).amount() / (double) GTValues.M);
-            return FUEL_TICKS * (int) Math.max(1L, Math.min(9L, units));
-        }
-        return dataType == ConfluxDataType.COMPUTATIONAL ? FUEL_TICKS * 2 : FUEL_TICKS;
-    }
-
-    /** How much more data the item makes while it burns: only circuits do, by how good they are. */
-    private float qualityOf(ItemStack stack) {
-        if (dataType != ConfluxDataType.COMPUTATIONAL) return 1.0f;
-        for (int i = CIRCUIT_TIERS.size() - 1; i >= 0; i--) {
-            if (stack.is(CIRCUIT_TIERS.get(i))) return 1.0f + i * CIRCUIT_STEP;
-        }
-        return 1.0f;
-    }
-
-    /** How much data it holds: more at a higher tier. */
     private long buffer() {
         return BUFFER_PER_TIER * tier;
     }
@@ -192,12 +134,9 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
         return sourceContainer;
     }
 
-    /** Whether Source pipes should feed this producer. */
     public boolean takesSource() {
         return sourceContainer != null;
     }
-
-    // ------------------------------------------------------------------------------------------ running
 
     @Override
     public void onLoad() {
@@ -240,12 +179,11 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
         }
     }
 
-    /** Takes one item from the slot; the slot's own extract is for automation and refuses, so this goes round it. */
     protected void consumeFuel() {
         ItemStack stack = fuelSlot.getStackInSlot(0);
         if (stack.isEmpty() || !isFuel(stack)) return;
-        int ticks = fuelTicksFor(stack);
-        float quality = qualityOf(stack);
+        int ticks = ConfluxFuels.ticks(dataType, stack);
+        float quality = ConfluxFuels.quality(dataType, stack);
         ItemStack taken = fuelSlot.extractItemInternal(0, 1, false);
         if (taken.isEmpty()) return;
         storageTrait.setFuelTicks(ticks);
@@ -326,9 +264,6 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
         return storageTrait.isActive();
     }
 
-    // ------------------------------------------------------------------------------------------ the screen
-
-    /** What this producer needs, in a few words, for its screen and tooltip. */
     public static String needTitle(ConfluxDataType type) {
         return switch (type) {
             case MATERIAL -> "Any material item";
@@ -352,7 +287,6 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        // the screen is built on the client from a copy of the machine, so what it shows has to be synced to it by hand
         syncManager.syncValue("stored", 0, new LongSyncValue(() -> storageTrait.getStored(),
                 v -> storageTrait.stored = v));
         syncManager.syncValue("fuel_ticks", 0, new IntSyncValue(() -> storageTrait.getFuelTicks(),
@@ -413,7 +347,6 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
                         HudModel.MID)));
     }
 
-    /** The input tab: what it needs, centred, with a slot for it when it eats items. */
     private void buildInputTab(ParentWidget<?> main) {
         Flow column = Flow.col()
                 .widthRel(1f)

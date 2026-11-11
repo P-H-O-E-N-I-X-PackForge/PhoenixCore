@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-/** A Source pipe of one tier. Pipes of different tiers join; the weakest pipe on a run is its limit. */
 public class SourcePipeBlock extends PipeBlock<SourcePipeTier, SourcePipeData, SourceNetwork.LevelNet> {
 
     private final Supplier<BlockEntityType<SourcePipeBlockEntity>> beType;

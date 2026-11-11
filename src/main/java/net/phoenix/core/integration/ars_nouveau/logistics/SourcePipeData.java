@@ -1,6 +1,5 @@
 package net.phoenix.core.integration.ars_nouveau.logistics;
 
-/** What a node of the Source pipe network remembers: which tier of pipe it is. */
 public final class SourcePipeData {
 
     private static final SourcePipeData[] DATA = new SourcePipeData[SourcePipeTier.values().length];

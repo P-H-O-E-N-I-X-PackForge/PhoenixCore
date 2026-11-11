@@ -31,7 +31,11 @@ public final class ConfluxMultiblockRegistry {
                     Component.literal("§bMomentum-based Conflux data generator.§r"),
                     Component.literal("Builds momentum over time — full power takes ~25 seconds."),
                     Component.literal("§cAny power loss resets momentum rapidly!§r"),
-                    Component.literal("Screwdriver to cycle output data type."))
+                    Component.literal("Screwdriver to cycle output data type."),
+                    Component.literal("Sends its data out through a Conflux Data Output Hatch."),
+                    Component
+                            .literal("§7Eats what its type is made from: material items, biomaterial or circuits from" +
+                                    " an input bus, Source from a Source hatch, or EU for Energetic.§r"))
             .appearanceBlock(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST)
 
             .pattern(def -> MultiblockPatternBuilder.start()
@@ -50,9 +54,14 @@ public final class ConfluxMultiblockRegistry {
                     .where('E', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
                             .or(abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1).setMaxGlobalLimited(4)))
                     .where('S', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
-                            .or(abilities(PartAbility.IMPORT_ITEMS).setMinGlobalLimited(1).setMaxGlobalLimited(2)))
+                            .or(abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(2))
+                            .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.SOURCE_INPUT)
+                                    .setMaxGlobalLimited(1)))
                     .where('M', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
-                            .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1)))
+                            .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1))
+                            .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.CONFLUX_DATA_OUTPUT)
+                                    .setMinGlobalLimited(1)
+                                    .setMaxGlobalLimited(1)))
                     .where(' ', Predicates.air())
                     .build())
             .workableCasingModel(
@@ -69,6 +78,7 @@ public final class ConfluxMultiblockRegistry {
             .tooltips(
                     Component.literal("§bPassive all-type data generator.§r"),
                     Component.literal("Scans nearby Conflux pipes and scales output with network size."),
+                    Component.literal("Sends its data out through a Conflux Data Output Hatch."),
                     Component.literal("§eDiversity bonus: +25% per distinct pipe type in range.§r"),
                     Component.literal("§7Scan radius: 24 blocks every 5 seconds.§r"))
             .appearanceBlock(GTBlocks.CASING_HSSE_STURDY)
@@ -99,7 +109,10 @@ public final class ConfluxMultiblockRegistry {
                     .where('E', blocks(GTBlocks.CASING_HSSE_STURDY.get())
                             .or(abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1).setMaxGlobalLimited(6)))
                     .where('M', blocks(GTBlocks.CASING_HSSE_STURDY.get())
-                            .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1)))
+                            .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1))
+                            .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.CONFLUX_DATA_OUTPUT)
+                                    .setMinGlobalLimited(1)
+                                    .setMaxGlobalLimited(1)))
                     .where(' ', Predicates.air())
                     .build())
             .workableCasingModel(
@@ -116,6 +129,7 @@ public final class ConfluxMultiblockRegistry {
             .tooltips(
                     Component.literal("§bConflux data type transmuter.§r"),
                     Component.literal("Converts one Conflux data type to another at 70% base efficiency."),
+                    Component.literal("Takes data from a Conflux Data Input Hatch and sends it to an Output Hatch."),
                     Component.literal("§eNearby researchers increase conversion efficiency (+0.5% / 50 nodes).§r"),
                     Component.literal("§7Screwdriver: cycle types. Shift+Screwdriver: cycle input type.§r"))
             .appearanceBlock(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST)
@@ -138,9 +152,14 @@ public final class ConfluxMultiblockRegistry {
                     .where('H', controller(def))
                     .where('X', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get()))
                     .where('E', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
-                            .or(abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1).setMaxGlobalLimited(4)))
+                            .or(abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1).setMaxGlobalLimited(4))
+                            .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.CONFLUX_DATA_OUTPUT)
+                                    .setMinGlobalLimited(1)
+                                    .setMaxGlobalLimited(1)))
                     .where('S', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
-                            .or(abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(1)))
+                            .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.CONFLUX_DATA_INPUT)
+                                    .setMinGlobalLimited(1)
+                                    .setMaxGlobalLimited(1)))
                     .where('M', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
                             .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1)))
                     .where(' ', Predicates.air())
@@ -148,6 +167,58 @@ public final class ConfluxMultiblockRegistry {
             .workableCasingModel(
                     com.gregtechceu.gtceu.GTCEu.id("block/casings/solid/machine_casing_robust_tungstensteel"),
                     PhoenixCore.id("block/multiblock/conflux_harmonic_lens"))
+            .register();
+
+    public static final MachineEntry<MultiblockMachineDefinition> PANOPTIC_ENGINE = REGISTRATE
+            .multiblock("conflux_panoptic_engine",
+                    net.phoenix.core.integration.conflux.panoptic.PanopticEngineMachine::new)
+            .recipeType(com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES)
+            .langValue("Panoptic Engine")
+            .tier(GTValues.UHV)
+            .rotationState(RotationState.NON_Y_AXIS)
+            .tooltips(
+                    Component.literal("§bThe engine that sees everything, including whoever is using it.§r"),
+                    Component.literal(
+                            "Its puzzle is built from your own research and is different for each discipline."),
+                    Component.literal("A tree grows in the open well of the structure as the puzzle is solved."),
+                    Component.literal("§7Progress belongs to your team and survives the machine being rebuilt.§r"))
+            .appearanceBlock(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST)
+            .pattern(def -> {
+                String top = "CCCCCCCCCCC";
+                String edge = "CGGGGGGGGGC";
+                String floor = "CCCCCCCCCCC";
+                String ringTop = "C         C";
+                String ringMid = "G         G";
+
+                MultiblockPatternBuilder b = MultiblockPatternBuilder.start()
+                        .slice(top, edge, edge, edge, edge, edge, floor);
+                for (int i = 0; i < 9; i++) {
+                    b = b.slice(ringTop, ringMid, ringMid, ringMid, ringMid, ringMid, floor);
+                }
+                return b.slice(top, edge, edge, edge, edge, "CGGGGHGGGGC", "CEEMDFFFFCC")
+                        .where('H', controller(def))
+                        .where('C', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get()))
+                        .where('G', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
+                                .or(blocks(GTBlocks.CASING_LAMINATED_GLASS.get())))
+                        .where('E', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
+                                .or(abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1)
+                                        .setMaxGlobalLimited(4)))
+                        .where('M', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
+                                .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1)))
+                        .where('D', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
+                                .or(abilities(net.phoenix.core.api.machine.PhoenixPartAbility.CONFLUX_DATA_INPUT)
+                                        .setMinGlobalLimited(1).setMaxGlobalLimited(1)))
+                        .where('F', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
+                                .or(abilities(PartAbility.IMPORT_FLUIDS).setMaxGlobalLimited(6)))
+                        .where(' ', Predicates.air())
+                        .build();
+            })
+
+            .modelProperty(com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.RECIPE_LOGIC_STATUS,
+                    com.gregtechceu.gtceu.api.machine.trait.recipe.RecipeLogic.Status.IDLE)
+            .model(com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel(
+                    com.gregtechceu.gtceu.GTCEu.id("block/casings/solid/machine_casing_robust_tungstensteel"),
+                    PhoenixCore.id("block/multiblock/conflux_panoptic_engine")))
             .register();
 
     public static void init() {}

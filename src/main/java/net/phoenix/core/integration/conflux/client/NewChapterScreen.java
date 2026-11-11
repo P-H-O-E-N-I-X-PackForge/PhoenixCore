@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public final class NewChapterScreen extends Screen {
+public final class NewChapterScreen extends ScaledScreen {
 
     public record Result(String title, String group, String discipline, String description, int order) {}
 
@@ -25,11 +25,10 @@ public final class NewChapterScreen extends Screen {
     private final boolean editing;
     private final Result initial;
     private EditBox title, group, discipline, description, order;
-    private int px, py;
     private Result kept;
 
     public NewChapterScreen(Screen parent, boolean editing, Result initial, Consumer<Result> onDone) {
-        super(Component.literal(editing ? "Edit chapter" : "New chapter"));
+        super(Component.literal(editing ? "Edit chapter" : "New chapter"), PANEL_W, PANEL_H);
         this.parent = parent;
         this.editing = editing;
         this.initial = initial;
@@ -39,9 +38,8 @@ public final class NewChapterScreen extends Screen {
 
     @Override
     protected void init() {
+        layout();
         if (title != null) kept = read();
-        px = (width - PANEL_W) / 2;
-        py = (height - PANEL_H) / 2;
         title = box(py + 38, "chapter title", kept.title());
         group = box(py + 74, "category, such as Discipline/Tier 1", kept.group());
         discipline = box(py + 110, "discipline id (empty = every discipline)", kept.discipline());
@@ -72,13 +70,9 @@ public final class NewChapterScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
+    protected void renderPanel(GuiGraphics g, int mx, int my, float pt) {
         ConfluxTheme.refresh();
         int accent = ConfluxTheme.accent();
-        g.fill(0, 0, width, height, 0xC0000000);
         g.fill(px - 1, py - 1, px + PANEL_W + 1, py + PANEL_H + 1, accent);
         g.fill(px, py, px + PANEL_W, py + PANEL_H, ConfluxTheme.PANEL);
         g.fillGradient(px, py, px + PANEL_W, py + 24, ConfluxTheme.withAlpha(accent, 50), 0x00000000);
@@ -92,7 +86,7 @@ public final class NewChapterScreen extends Screen {
                     0xFFFFFF, false);
         }
 
-        super.render(g, mx, my, pt);
+        renderWidgets(g, mx, my, pt);
 
         boolean ready = !title.getValue().isBlank();
         button(g, px + PANEL_W - 190, py + PANEL_H - 28, 86, ready ? (editing ? "§aSave" : "§aCreate") :
@@ -108,8 +102,8 @@ public final class NewChapterScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int btn) {
-        if (super.mouseClicked(mx, my, btn)) return true;
+    protected boolean click(double mx, double my, int btn) {
+        if (super.click(mx, my, btn)) return true;
         int y = py + PANEL_H - 28;
         if (btn == 0 && my >= y && my < y + 16) {
             if (mx >= px + PANEL_W - 190 && mx < px + PANEL_W - 104) {

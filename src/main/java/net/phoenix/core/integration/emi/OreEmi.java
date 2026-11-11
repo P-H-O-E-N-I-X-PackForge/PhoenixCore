@@ -91,7 +91,7 @@ public final class OreEmi {
             this.layers = layers;
             this.ores = ores;
             this.accent = accent(dimension);
-            // looking up any of an ore's stone variants (stone, deepslate, netherrack...) finds the region
+
             this.outputs = new ArrayList<>(everyVariant);
             this.inputs = List.<EmiIngredient>of();
             this.height = 26 + 12 + ((layers.size() + 1) / 2) * 18 + 4 + 2 * EmiPage.LINE_H;
@@ -104,7 +104,7 @@ public final class OreEmi {
             for (var layer : template.layers()) {
                 Material m = layer.material();
                 if (m == null) continue;
-                // the ore comes in a variant for each kind of stone: the generator picks one by what it replaces
+
                 EmiStack shown = null;
                 for (TagPrefix prefix : TagPrefix.ORES.keySet()) {
                     ItemStack stack = ChemicalHelper.get(prefix, m, 1);

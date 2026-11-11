@@ -5,18 +5,17 @@ import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.phoenix.core.client.gui.hud.HudModel;
 import net.phoenix.core.client.gui.hud.HudRecipes;
 import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.conflux.ConfluxDataType;
-import net.phoenix.core.integration.conflux.pipe.ConfluxMultiHandlerCapability;
+import net.phoenix.core.integration.conflux.hatch.ConfluxDataHatchPartMachine;
 import net.phoenix.core.integration.conflux.pipe.ConfluxPipeBlockEntity;
-import net.phoenix.core.integration.conflux.pipe.IConfluxMultiHandler;
 
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.IntSyncValue;
@@ -119,22 +118,18 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
     }
 
     private void pushAllTypes() {
-        BlockPos pos = getBlockPos();
-        for (Direction dir : Direction.values()) {
-            BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
-            if (be == null) continue;
-
-            IConfluxMultiHandler handler = ConfluxMultiHandlerCapability.find(be, dir.getOpposite());
-            if (handler == null) continue;
-
-            for (ConfluxDataType type : ConfluxDataType.values()) {
-                long stored = buffer.get(type);
-                if (stored <= 0) continue;
-                long toSend = Math.min(stored, PUSH_RATE);
-                long sent = handler.insert(type, toSend);
-                if (sent > 0) {
-                    buffer.merge(type, -sent, Long::sum);
-                    setChanged();
+        for (ConfluxDataType type : ConfluxDataType.values()) {
+            long budget = Math.min(buffer.get(type), PUSH_RATE);
+            if (budget <= 0) continue;
+            for (MultiblockPartMachine part : getParts()) {
+                if (budget <= 0) break;
+                if (part instanceof ConfluxDataHatchPartMachine hatch && hatch.getIo() == IO.OUT) {
+                    long kept = hatch.deposit(type, budget);
+                    if (kept > 0) {
+                        buffer.merge(type, -kept, Long::sum);
+                        budget -= kept;
+                        setChanged();
+                    }
                 }
             }
         }
@@ -239,10 +234,6 @@ public class ConfluxResonanceWeb extends WorkableElectricMultiblockMachine {
         return webActive;
     }
 
-    /**
-     * Shows the machine's front lit and animated while it works: these run their own logic, so the recipe status the
-     * model reads is set here (GregTech does not move it without a recipe, and does not reset it while one is idle).
-     */
     private void showActive(boolean on) {
         var logic = getRecipeLogic();
         if (logic == null || getLevel() == null || getLevel().isClientSide) return;

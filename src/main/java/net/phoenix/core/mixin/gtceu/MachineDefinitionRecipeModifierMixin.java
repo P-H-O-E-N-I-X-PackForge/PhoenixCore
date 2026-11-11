@@ -12,10 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Puts Conflux research in every machine's recipe modifier, so research that speeds a machine up (or slows it down, or
- * changes its power draw) reaches every recipe it runs, whatever kind of machine it is.
- */
 @Mixin(value = MachineDefinition.class, remap = false)
 public abstract class MachineDefinitionRecipeModifierMixin {
 

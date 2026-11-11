@@ -247,10 +247,6 @@ public final class Heroes {
         };
     }
 
-    /**
-     * A value that eases toward its target a little each time it is read, so a dial that should drop when a machine
-     * stops runs down instead of jumping, and rises as it starts. Make one for each screen.
-     */
     public static Supplier<Float> eased(Supplier<Float> target) {
         float[] shown = { 0.0f };
         return () -> {
