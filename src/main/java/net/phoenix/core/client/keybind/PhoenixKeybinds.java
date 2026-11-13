@@ -9,12 +9,6 @@ import org.lwjgl.glfw.GLFW;
 
 public class PhoenixKeybinds {
 
-    public static final KeyMapping MANIPULATOR_MENU = new KeyMapping(
-            "key.phoenixcore.manipulator_menu",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
-            "key.categories.phoenixcore");
-
     public static final KeyMapping OPEN_RECIPE_BUILDER = new KeyMapping(
             "key.phoenixcore.recipe_builder",
             InputConstants.Type.KEYSYM,
@@ -65,7 +59,6 @@ public class PhoenixKeybinds {
 
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
-        event.register(MANIPULATOR_MENU);
         event.register(OPEN_RECIPE_BUILDER);
         event.register(SPRAY_CAN_MENU);
         event.register(OPEN_EMI_FAVORITE_PAGES);

@@ -36,6 +36,10 @@ public class HoneyChamberDynamicRender extends
                                        DynamicRender<HoneyCrystallizationChamberMachine, HoneyChamberDynamicRender> {
 
     public static final HoneyChamberDynamicRender INSTANCE = new HoneyChamberDynamicRender();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .standard("honey_chamber", "Honey Crystallization Chamber")
+            .machine("phoenixcore:honey_crystallization_chamber");
     public static final MapCodec<HoneyChamberDynamicRender> CODEC = MapCodec.unit(HoneyChamberDynamicRender.INSTANCE);
     public static final DynamicRenderType<HoneyCrystallizationChamberMachine, HoneyChamberDynamicRender> TYPE = new DynamicRenderType<>(
             CODEC);
@@ -75,9 +79,9 @@ public class HoneyChamberDynamicRender extends
     public void render(@NotNull HoneyCrystallizationChamberMachine machine, float partialTick,
                        @NotNull PoseStack stack, @NotNull MultiBufferSource buffer,
                        int packedLight, int packedOverlay) {
-        if (!machine.isFormed()) return;
+        if (!machine.isFormed() && !net.phoenix.core.client.fx.FxHook.preview(machine)) return;
 
-        float time = (machine.getOffsetTimer() + partialTick) * 0.02f;
+        float time = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) * 0.02f);
         RecipeLogic logic = machine.getRecipeLogic();
         float progress = (logic != null && logic.isWorking()) ? (float) logic.getProgressPercent() : 0f;
 
@@ -86,10 +90,15 @@ public class HoneyChamberDynamicRender extends
         renderFluid(machine, stack, buffer, packedLight, packedOverlay);
 
         stack.translate(0.5, 0.5, 0.5);
+        net.phoenix.core.client.fx.FxHook.scale(FX, stack, net.minecraft.world.phys.Vec3.ZERO);
 
-        renderHoneyFog(stack, buffer.getBuffer(PhoenixRenderTypes.HONEY_FOG()), time, progress);
+        renderHoneyFog(stack,
+                net.phoenix.core.client.fx.FxHook.glow(FX, stack.last().pose(),
+                        buffer.getBuffer(PhoenixRenderTypes.HONEY_FOG()), net.minecraft.world.phys.Vec3.ZERO, time),
+                time, progress);
 
-        VertexConsumer additiveVc = buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING());
+        VertexConsumer additiveVc = net.phoenix.core.client.fx.FxHook.glow(FX, stack.last().pose(),
+                buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING()), net.minecraft.world.phys.Vec3.ZERO, time);
         renderHoneyStrands(stack, additiveVc, time, progress);
         renderMotes(stack, additiveVc, time, progress);
         renderBees(stack, additiveVc, time, progress);
@@ -117,7 +126,9 @@ public class HoneyChamberDynamicRender extends
         if (cachedFluid == null) return;
 
         var fluidLayer = ItemBlockRenderTypes.getRenderLayer(cachedFluid.defaultFluidState());
-        var consumer = buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidLayer, false));
+        var consumer = net.phoenix.core.client.fx.FxHook.glow(FX, stack.last().pose(),
+                buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidLayer, false)),
+                net.minecraft.world.phys.Vec3.ZERO, 0f);
 
         for (RelativeDirection face : fluidFaces) {
             stack.pushPose();
@@ -246,7 +257,7 @@ public class HoneyChamberDynamicRender extends
 
     @Override
     public @NotNull AABB getRenderBoundingBox(HoneyCrystallizationChamberMachine m) {
-        return new AABB(m.getBlockPos()).inflate(FIELD_RADIUS + 5);
+        return new AABB(m.getBlockPos()).inflate(FIELD_RADIUS + 16);
     }
 
     private static class BeeParticle {

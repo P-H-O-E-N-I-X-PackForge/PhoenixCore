@@ -1,6 +1,6 @@
 package net.phoenix.core.integration.drone.network;
 
-import net.phoenix.core.client.gui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudModel;
 
 public final class DronePowerCell {
 

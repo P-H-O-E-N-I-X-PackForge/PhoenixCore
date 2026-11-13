@@ -18,12 +18,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.worldfx.IWorldFXEmitter;
-import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
-import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
-import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.integration.ars_nouveau.common.data.item.SoulLensItem;
 import net.phoenix.core.util.StackNbt;
+import net.phoenixvine.wiki.fx.IWorldFXEmitter;
+import net.phoenixvine.wiki.fx.PhoenixScreenEffect;
+import net.phoenixvine.wiki.fx.PhoenixSkyLayer;
+import net.phoenixvine.wiki.fx.WorldFXManager;
 
 import org.joml.Matrix4f;
 

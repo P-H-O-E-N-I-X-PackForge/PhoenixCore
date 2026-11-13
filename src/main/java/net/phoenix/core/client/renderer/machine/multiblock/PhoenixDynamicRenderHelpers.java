@@ -22,6 +22,11 @@ public class PhoenixDynamicRenderHelpers {
         DynamicRenderManager.register(PhoenixCore.id("honey_chamber"), HoneyChamberDynamicRender.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("engine_gearbox"), EngineGearboxRenderer.TYPE);
         DynamicRenderManager.register(PhoenixCore.id("sanctum_ward"), SanctumWardRender.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("null_well"), NullWellRender.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("sculk_cortex"), SculkCortexRender.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("phoenix_infuser"), InfuserRender.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("antimatter_collider"), ColliderRender.TYPE);
+        DynamicRenderManager.register(PhoenixCore.id("aether_crucible"), CrucibleRender.TYPE);
     }
 
     public static DynamicRender<?, ?> getEyeOfHarmonyRender() {
@@ -54,5 +59,25 @@ public class PhoenixDynamicRenderHelpers {
 
     public static DynamicRender<?, ?> getSanctumWardRenderer() {
         return SanctumWardRender.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getNullWellRenderer() {
+        return NullWellRender.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getCortexRenderer() {
+        return SculkCortexRender.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getInfuserRenderer() {
+        return InfuserRender.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getColliderRenderer() {
+        return ColliderRender.INSTANCE;
+    }
+
+    public static DynamicRender<?, ?> getCrucibleRenderer() {
+        return CrucibleRender.INSTANCE;
     }
 }

@@ -18,13 +18,13 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.machine.multiblock.Shield;
 import net.phoenix.core.common.machine.multiblock.ShieldedMachine;
 import net.phoenix.core.common.machine.multiblock.part.fluid.PlasmaHatchPartMachine;
 import net.phoenix.core.common.machine.trait.NotifiableShieldContainer;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.ModularPanel;
@@ -41,6 +41,8 @@ import java.util.Map;
 public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultiblockMachine implements ShieldedMachine {
 
     private static final int DECAY_TICK_RATE = 20;
+
+    private static final int RING_COOLDOWN_TICKS = 20 * 30;
 
     @SaveField
     @SyncToClient
@@ -71,6 +73,21 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
 
     private int consumptionTimer = 0;
 
+    @SaveField
+    private int ringState;
+
+    @SaveField
+    private int ringPar;
+
+    @SaveField
+    private int ringMoves;
+
+    @SaveField
+    private int ringSolves;
+
+    @SaveField
+    private long ringSeed;
+
     public HighPressurePlasmaArcFurnaceMachine(BlockEntityCreationInfo holder) {
         super(holder, new RecipeLogic());
 
@@ -83,15 +100,22 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
         return this.shieldType;
     }
 
+    private void markShieldDirty() {
+        var holder = getSyncDataHolder();
+        if (holder == null) return;
+        holder.markClientSyncFieldDirty("shieldType");
+        holder.markClientSyncFieldDirty("shieldHealth");
+        holder.markClientSyncFieldDirty("shieldCooldownTimer");
+        holder.markClientSyncFieldDirty("shieldDecayTimer");
+    }
+
     public void updateShield(int pKey, boolean setCooldown) {
         this.shieldType = Shield.ShieldTypes.getShieldFromKey(pKey);
         this.shieldHealth = this.shieldType.shieldHealth;
         if (setCooldown) {
             this.shieldCooldownTimer = this.shieldType.shieldCooldownTicks;
         }
-        if (this.getSyncDataHolder() != null) {
-            this.getSyncDataHolder().markClientSyncFieldDirty("boundTeam");
-        }
+        markShieldDirty();
     }
 
     @Override
@@ -118,14 +142,10 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
                 if (this.shieldHealth <= 0) {
                     this.shieldType = Shield.ShieldTypes.DECAYED;
                     this.shieldHealth = 0;
-                    this.shieldCooldownTimer = this.shieldType.shieldCooldownTicks;
-                    if (this.getSyncDataHolder() != null) {
-                        this.getSyncDataHolder().markClientSyncFieldDirty("boundTeam");
-                    }
+                    this.shieldCooldownTimer = RING_COOLDOWN_TICKS;
+                    markShieldDirty();
                 }
-                if (this.getSyncDataHolder() != null) {
-                    this.getSyncDataHolder().markClientSyncFieldDirty("boundTeam");
-                }
+                markShieldDirty();
             }
         } else {
             this.shieldDecayTimer = DECAY_TICK_RATE;
@@ -133,15 +153,101 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
 
         if (this.shieldCooldownTimer > 0) {
             this.shieldCooldownTimer--;
-            if (this.getSyncDataHolder() != null) {
-                this.getSyncDataHolder().markClientSyncFieldDirty("boundTeam");
-            }
+            markShieldDirty();
         }
+    }
+
+    public static @Nullable HighPressurePlasmaArcFurnaceMachine at(net.minecraft.world.level.Level level,
+                                                                   net.minecraft.core.BlockPos pos) {
+        return MetaMachine.getMachine(level, pos) instanceof HighPressurePlasmaArcFurnaceMachine m ? m : null;
+    }
+
+    public int getRingState() {
+        ensureRing();
+        return ringState;
+    }
+
+    public int getRingPar() {
+        ensureRing();
+        return ringPar;
+    }
+
+    public int getRingMoves() {
+        return ringMoves;
+    }
+
+    public int getRingSolves() {
+        return ringSolves;
+    }
+
+    private void ensureRing() {
+        if (ringPar == 0) ringNewPattern();
+    }
+
+    public void ringNewPattern() {
+        long time = getLevel() == null ? 0 : getLevel().getGameTime();
+        ringSeed = ringSeed * 6364136223846793005L + 1442695040888963407L + time + getBlockPos().asLong();
+        var pattern = net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.generate(ringSeed,
+                ringSolves);
+        ringState = pattern.state();
+        ringPar = pattern.par();
+        ringMoves = 0;
+        setChanged();
+    }
+
+    public record RingResult(boolean solved, String message) {}
+
+    public RingResult ringTune(int cell) {
+        ensureRing();
+        if (cell < 0 || cell >= net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.CELLS) {
+            return new RingResult(false, "");
+        }
+        if (shieldCooldownTimer > 0 && shieldType != Shield.ShieldTypes.NORMAL) {
+            return new RingResult(false, "The coils are still cooling: " + (shieldCooldownTimer + 19) / 20 + "s.");
+        }
+        ringState = net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.tune(ringState, cell);
+        ringMoves++;
+        setChanged();
+        if (!net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.locked(ringState)) {
+            return new RingResult(false, "");
+        }
+        int moves = ringMoves;
+        int par = ringPar;
+        int percent = net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.shieldPercent(moves, par);
+        String grade = net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaRing.grade(moves, par);
+        updateShield(Shield.ShieldTypes.NORMAL.key, false);
+        this.shieldHealth = Shield.ShieldTypes.NORMAL.shieldHealth * percent / 100;
+        this.shieldDecayTimer = DECAY_TICK_RATE;
+        markShieldDirty();
+        shieldHandler.updateSubscription();
+        ringSolves++;
+        ringNewPattern();
+        return new RingResult(true, grade + ": " + moves + " tunings against a par of " + par + ". Shield at " +
+                percent + "%.");
+    }
+
+    public void ringReset() {
+        ringNewPattern();
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResult onUse(com.gregtechceu.gtceu.utils.ExtendedUseOnContext context) {
+        if (isFormed() && context.getPlayer().isShiftKeyDown() &&
+                net.phoenix.core.common.machine.multiblock.ScreenUse.opens(context.getItemInHand())) {
+            if (context.getPlayer() instanceof net.minecraft.server.level.ServerPlayer player) {
+                net.phoenix.core.common.machine.multiblock.electric.plasma.S2CPlasmaRingPacket.send(player,
+                        net.phoenix.core.common.machine.multiblock.electric.plasma.S2CPlasmaRingPacket.of(this, true,
+                                "", false));
+            }
+            return net.minecraft.world.InteractionResult.sidedSuccess(isRemote());
+        }
+        return super.onUse(context);
     }
 
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe == null) return false;
+        if (!net.phoenix.core.rebirth.RebirthNetwork.allows(this)) return false;
 
         boolean isActivationRecipe = recipe.data.contains("shield_activation");
 
@@ -274,11 +380,11 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
     private HudModel hudModel() {
         return HudModel.of("High-Pressure Plasma Arc Furnace")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.FURNACE)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.shieldRing(
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.FURNACE)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.shieldRing(
                         () -> shieldType == Shield.ShieldTypes.NORMAL ?
                                 shieldHealth / (float) Math.max(1, Shield.ShieldTypes.NORMAL.shieldHealth) : 0.0f,
-                        net.phoenix.core.client.gui.hud.HudTheme.FURNACE.accent()), 44)
+                        net.phoenixvine.wiki.ui.hud.HudTheme.FURNACE.accent()), 44)
                 .badge(() -> HudRecipes.badge(this))
                 .subtitle(() -> shieldType == Shield.ShieldTypes.NORMAL ? "Shield up" :
                         shieldType == Shield.ShieldTypes.DECAYED ? "Shield decayed: needs an activation recipe" :

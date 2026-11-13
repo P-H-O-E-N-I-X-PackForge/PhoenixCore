@@ -14,10 +14,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.saveddata.SoulSavedData;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.PanelSyncManager;
 import lombok.Getter;
@@ -135,9 +135,9 @@ public class SourceReactorMachine extends WorkableElectricMultiblockMachine {
     private HudModel hudModel() {
         return HudModel.of("Source Reactor")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.REACTOR)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> reactorStability / 2.5f,
-                        net.phoenix.core.client.gui.hud.HudTheme.REACTOR.accent()), 38)
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.REACTOR)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.arcGauge(() -> reactorStability / 2.5f,
+                        net.phoenixvine.wiki.ui.hud.HudTheme.REACTOR.accent()), 38)
                 .badge(() -> reactorStability < 1.1f && isFormed() ? new HudModel.Badge("LOW STABILITY", HudModel.RED) :
                         reactorStability > 2.2f ? new HudModel.Badge("CRITICAL EFFICIENCY", HudModel.CYAN) :
                                 HudRecipes.badge(this))

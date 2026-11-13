@@ -55,11 +55,11 @@ public class OmniPackScreen extends AbstractContainerScreen<OmniPackMenu> {
         int neededW = imageWidth + BAR_GAP + BAR_W + BAR_SEP + BAR_W + 40;
         int neededH = imageHeight + TAB_H + 40;
 
-        float reserve = net.phoenix.core.client.gui.PixelScale.bottomReserve();
+        float reserve = net.phoenixvine.wiki.ui.PixelScale.bottomReserve();
         float usableH = height - reserve;
         uiScale = (width < neededW || usableH < neededH) ?
                 Math.min((float) width / neededW, usableH / neededH) : 1f;
-        uiScale = net.phoenix.core.client.gui.PixelScale.snap(Math.max(0.1f, uiScale));
+        uiScale = net.phoenixvine.wiki.ui.PixelScale.snap(Math.max(0.1f, uiScale));
         vw = Math.round(width / uiScale);
         vh = Math.round(height / uiScale);
         leftPos = (vw - imageWidth) / 2;

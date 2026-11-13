@@ -2,8 +2,8 @@ package net.phoenix.core.integration.chronicles;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.phoenix.conflux.api.event.ConfluxResearchEvent;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.api.event.ConfluxResearchEvent;
 
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class ChroniclesEvents {

@@ -3,8 +3,8 @@ package net.phoenix.core.integration.solaris;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.phoenix.core.utils.TeamUtils;
 import net.phoenix_tesla_network.tesla.saveddata.TeslaTeamEnergyData;
+import net.phoenixvine.wiki.util.TeamUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -28,18 +28,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
-import net.phoenix.core.client.worldfx.IWorldFXEmitter;
-import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
-import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
-import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.client.worldfx.builtin.NebulaSkyLayer;
 import net.phoenix.core.common.machine.multiblock.unique.UniqueWorkableElectricMultiblockMachine;
 import net.phoenix.core.integration.growth.tendril.GrowthWardBlock;
 import net.phoenix.core.integration.growth.tendril.TendrilShape;
 import net.phoenix.core.integration.growth.tendril.TendrilShapeRegistry;
+import net.phoenixvine.wiki.fx.IWorldFXEmitter;
+import net.phoenixvine.wiki.fx.PhoenixScreenEffect;
+import net.phoenixvine.wiki.fx.PhoenixSkyLayer;
+import net.phoenixvine.wiki.fx.WorldFXManager;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.PanelSyncManager;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -724,10 +724,10 @@ public abstract class GrowthMultiblockMachine extends UniqueWorkableElectricMult
     private HudModel hudModel() {
         return HudModel.of("Growth Chamber")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.ORGANIC)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.vines(() -> growthStage / (float) Math.max(1, maxStage()),
-                        () -> growthStage + 1, net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent(),
-                        net.phoenix.core.client.gui.hud.HudTheme.ORGANIC.accent2()), 40)
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.ORGANIC)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.vines(() -> growthStage / (float) Math.max(1, maxStage()),
+                        () -> growthStage + 1, net.phoenixvine.wiki.ui.hud.HudTheme.ORGANIC.accent(),
+                        net.phoenixvine.wiki.ui.hud.HudTheme.ORGANIC.accent2()), 40)
                 .badge(this::growthBadge)
                 .subtitle(() -> isControlled() ? "Growth control hatch fitted" :
                         "No growth control hatch: growth is wild and breaks what is in its way")

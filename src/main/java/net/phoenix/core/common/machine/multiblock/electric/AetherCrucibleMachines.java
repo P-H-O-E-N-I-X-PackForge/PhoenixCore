@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.MultiblockPatternBuilder;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.registry.registrate.entry.MachineEntry;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
-import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
 import net.minecraft.network.chat.Component;
 import net.phoenix.core.common.block.PhoenixBlocks;
@@ -35,9 +34,9 @@ public final class AetherCrucibleMachines {
                 .rotationState(RotationState.ALL)
                 .abilities(AETHER_CATALYST_ABILITY)
                 .tooltips(
-                        Component.literal("Enables §bResonant§r mode on the Aether Crucible."),
-                        Component.literal("§730% faster processing, 2× parallel.§r"))
-                .overlayTieredHullModel("aether_catalyst_hatch")
+                        Component.literal("Lets the Aether Crucible resonate with an attuned catalyst."),
+                        Component.literal("§7Resonant: 30% faster, 2× parallel, for as long as the catalyst lasts.§r"))
+                .colorOverlayTieredHullModel(net.phoenix.core.PhoenixCore.id("block/machine/ae2/me_tag_input_hatch"))
                 .register();
     }
 
@@ -45,7 +44,7 @@ public final class AetherCrucibleMachines {
             .multiblock("aether_crucible", AetherCrucibleMachine::new)
             .langValue("Aether Crucible")
             .rotationState(RotationState.NON_Y_AXIS)
-            .recipeType(GTRecipeTypes.ASSEMBLER_RECIPES)
+            .recipeType(net.phoenix.core.common.data.PhoenixRecipeTypes.AETHER_CRUCIBLE_RECIPES)
             .recipeModifiers(
                     GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT,
@@ -59,17 +58,20 @@ public final class AetherCrucibleMachines {
                     .build(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING))
             .tooltips(
                     Component.literal("Transmutes materials through aetheric resonance."),
-                    Component.literal("§7Upgrade to Aetheric§r: Place a Fluid Input Hatch in the structure"),
-                    Component.literal("§7Upgrade to Resonant§r: Replace it with an Aether Catalyst Hatch"),
+                    Component.literal(
+                            "§7Aetheric§r: a Fluid Input Hatch makes recipes that burn a drilling fluid 15% faster"),
+                    Component.literal(
+                            "§7Resonant§r: an Aether Catalyst Hatch lets you attune a catalyst from an input hatch: 30% faster and 2× parallel for a while"),
+                    Component.literal("§7Better catalysts last longer but ask for a harder code§r"),
                     Component.literal("§8Bonuses unlock when the structure is re-formed.§r"))
             .pattern(definition -> MultiblockPatternBuilder
                     .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
 
                     .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
 
-                    .slice("CCCCC", "C   C", "CSCCC", "C   C", "CCCCC")
+                    .slice("CCCCC", "G   G", "G   G", "G   G", "CCCCC")
 
-                    .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
+                    .slice("CCCCC", "CCCCC", "CCSCC", "CCCCC", "CCCCC")
                     .where('S', Predicates.controller(definition))
                     .where('C', Predicates.blocks(PhoenixBlocks.SOURCE_FIBER_MACHINE_CASING.get())
 
@@ -81,12 +83,15 @@ public final class AetherCrucibleMachines {
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
 
                             .or(Predicates.abilities(AETHER_CATALYST_ABILITY).setMaxGlobalLimited(1)))
+                    .where('G', Predicates.blocks(com.gregtechceu.gtceu.common.data.GTBlocks.FUSION_GLASS.get()))
                     .where(' ', Predicates.air())
                     .build())
-            .workableCasingModel(
-                    net.minecraft.resources.ResourceLocation
-                            .parse("phoenixcore:block/casings/multiblock/aether_casing"),
-                    net.minecraft.resources.ResourceLocation.parse("phoenixcore:block/multiblock/aether_crucible"))
+            .model(com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel(
+                    net.phoenix.core.PhoenixCore.id("block/casings/multiblock/machine_casing_source_fiber_mesh"),
+                    com.gregtechceu.gtceu.GTCEu.id("block/multiblock/pyrolyse_oven")).andThen(
+                            b -> b.addDynamicRenderer(
+                                    net.phoenix.core.client.renderer.machine.multiblock.PhoenixDynamicRenderHelpers::getCrucibleRenderer)))
+            .hasBER(true)
             .register();
 
     public static void init() {}

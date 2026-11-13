@@ -221,6 +221,11 @@ public final class PftRecipe {
         return this;
     }
 
+    public PftRecipe condition(com.gregtechceu.gtceu.api.recipe.RecipeCondition<?> condition) {
+        if (builder != null) builder.addCondition(condition);
+        return this;
+    }
+
     public PftRecipe dimension(String dimension) {
         if (builder != null) builder.dimension(ResourceLocation.parse(dimension));
         return this;

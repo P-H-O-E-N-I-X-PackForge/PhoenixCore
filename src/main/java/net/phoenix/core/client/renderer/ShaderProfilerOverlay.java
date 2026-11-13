@@ -2,7 +2,7 @@ package net.phoenix.core.client.renderer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.LayeredDraw;
-import net.phoenix.core.client.worldfx.ShaderProfiler;
+import net.phoenixvine.wiki.fx.ShaderProfiler;
 
 import java.util.Map;
 

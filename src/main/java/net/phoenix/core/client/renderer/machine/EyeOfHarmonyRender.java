@@ -25,6 +25,11 @@ import java.util.List;
 public class EyeOfHarmonyRender extends DynamicRender<WorkableElectricMultiblockMachine, EyeOfHarmonyRender> {
 
     public static final EyeOfHarmonyRender INSTANCE = new EyeOfHarmonyRender();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .standard("eye_of_harmony", "Eye of Harmony");
+
+    private float fxT;
     public static final MapCodec<EyeOfHarmonyRender> CODEC = MapCodec.unit(EyeOfHarmonyRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, EyeOfHarmonyRender> TYPE = new DynamicRenderType<>(
             EyeOfHarmonyRender.CODEC);
@@ -79,7 +84,8 @@ public class EyeOfHarmonyRender extends DynamicRender<WorkableElectricMultiblock
             return;
         }
 
-        float tick = (machine.getOffsetTimer() + partialTick);
+        float tick = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) / 20f) * 20f;
+        fxT = tick / 20f;
         VertexConsumer consumer = buffer.getBuffer(Sheets.translucentCullBlockSheet());
 
         double x = 0.5, y = 0.5, z = 0.5;
@@ -92,6 +98,7 @@ public class EyeOfHarmonyRender extends DynamicRender<WorkableElectricMultiblock
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
+        net.phoenix.core.client.fx.FxHook.scale(FX, poseStack, net.minecraft.world.phys.Vec3.ZERO);
 
         renderStar(tick, poseStack, consumer, packedLight, packedOverlay);
         renderOrbitObjects(tick, poseStack, consumer, packedLight, packedOverlay);
@@ -175,9 +182,10 @@ public class EyeOfHarmonyRender extends DynamicRender<WorkableElectricMultiblock
     private void renderModel(PoseStack poseStack, VertexConsumer consumer, BakedModel model, float r, float g, float b,
                              float a, int light, int overlay) {
         PoseStack.Pose pose = poseStack.last();
+        float[] tinted = net.phoenix.core.client.fx.FxHook.tint(FX, r, g, b, a, 0.5f, fxT);
         List<BakedQuad> quads = model.getQuads(null, null, random, ModelData.EMPTY, null);
         for (BakedQuad quad : quads) {
-            consumer.putBulkData(pose, quad, r, g, b, a, light, overlay, false);
+            consumer.putBulkData(pose, quad, tinted[0], tinted[1], tinted[2], tinted[3], light, overlay, false);
         }
     }
 

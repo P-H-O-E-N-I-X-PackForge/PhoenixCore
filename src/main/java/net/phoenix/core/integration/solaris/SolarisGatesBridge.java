@@ -3,11 +3,11 @@ package net.phoenix.core.integration.solaris;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.phoenix.core.api.ConfluxApi;
-import net.phoenix.core.integration.conflux.research.ResearchNode;
-import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
-import net.phoenix.core.integration.conflux.research.ResearchTree;
-import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
+import net.phoenix.conflux.api.ConfluxApi;
+import net.phoenix.conflux.research.ResearchNode;
+import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.research.ResearchTree;
+import net.phoenix.conflux.research.ResearchTreeRegistry;
 import net.phoenixvine.solaris.api.SolarisAPI;
 import net.phoenixvine.solaris.api.SolarisGatesAPI;
 

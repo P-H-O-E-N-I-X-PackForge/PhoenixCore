@@ -122,7 +122,6 @@ public class PhoenixLangHandler {
         provider.add("key.phoenixcore.wing_flight_gui", "Wing Flight Settings");
         provider.add("key.phoenixcore.tesla_mode", "Enable Tesla Mode");
         provider.add("key.phoenixcore.tesla_discharge", "Activate Tesla Discharge");
-        provider.add("key.phoenixcore.manipulator_menu", "Matter Manipulator Menu");
         provider.add("key.phoenixcore.open_ponder", "View Structure Guide");
         provider.add("key.phoenixcore.phantasia_menu", "Open Phantasia Menu");
         provider.add("key.phoenixcore.recipe_builder", "Open Recipe Builder");
@@ -163,7 +162,7 @@ public class PhoenixLangHandler {
                 .values()) {
             provider.add("block.phoenixcore." + tier.blockId(), tier.displayName());
         }
-        for (net.phoenix.core.integration.conflux.ConfluxDataType type : net.phoenix.core.integration.conflux.ConfluxDataType
+        for (net.phoenix.conflux.ConfluxDataType type : net.phoenix.conflux.ConfluxDataType
                 .values()) {
             provider.add("block.phoenixcore." + type.id() + "_data_pipe", type.displayName + " Data Pipe");
         }

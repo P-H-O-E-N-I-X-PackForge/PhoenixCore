@@ -2,9 +2,9 @@ package net.phoenix.core.client.worldfx.builtin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
-import net.phoenix.core.client.worldfx.SkyRenderContext;
-import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenix.conflux.client.ConfluxShaders;
+import net.phoenixvine.wiki.fx.PhoenixSkyLayer;
+import net.phoenixvine.wiki.fx.SkyRenderContext;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -38,7 +38,7 @@ public class NebulaSkyLayer extends PhoenixSkyLayer {
 
     @Override
     public void render(SkyRenderContext ctx) {
-        ShaderInstance shader = WorldFXShaders.NEBULA;
+        ShaderInstance shader = ConfluxShaders.NEBULA;
         if (shader == null) return;
 
         Minecraft mc = Minecraft.getInstance();

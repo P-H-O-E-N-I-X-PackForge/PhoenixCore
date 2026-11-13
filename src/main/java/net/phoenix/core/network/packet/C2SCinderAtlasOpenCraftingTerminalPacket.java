@@ -1,6 +1,5 @@
 package net.phoenix.core.network.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,31 +12,20 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
+import net.phoenix.core.network.PacketCodecs;
 
-public class C2SCinderAtlasOpenCraftingTerminalPacket implements CustomPacketPayload {
+public record C2SCinderAtlasOpenCraftingTerminalPacket(InteractionHand hand) implements CustomPacketPayload {
 
     public static final Type<C2SCinderAtlasOpenCraftingTerminalPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_atlas_open_crafting_terminal_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasOpenCraftingTerminalPacket> STREAM_CODEC = StreamCodec
-            .ofMember(C2SCinderAtlasOpenCraftingTerminalPacket::encode, C2SCinderAtlasOpenCraftingTerminalPacket::new);
+            .composite(
+                    PacketCodecs.enumOrdinal(InteractionHand.class), C2SCinderAtlasOpenCraftingTerminalPacket::hand,
+                    C2SCinderAtlasOpenCraftingTerminalPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    private final InteractionHand hand;
-
-    public C2SCinderAtlasOpenCraftingTerminalPacket(InteractionHand hand) {
-        this.hand = hand;
-    }
-
-    public C2SCinderAtlasOpenCraftingTerminalPacket(FriendlyByteBuf buf) {
-        this.hand = buf.readEnum(InteractionHand.class);
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeEnum(hand);
     }
 
     public static void handle(C2SCinderAtlasOpenCraftingTerminalPacket msg, IPayloadContext ctxGetter) {
@@ -45,7 +33,7 @@ public class C2SCinderAtlasOpenCraftingTerminalPacket implements CustomPacketPay
         ctx.enqueueWork(() -> {
             ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
-            ItemStack stack = player.getItemInHand(msg.hand);
+            ItemStack stack = player.getItemInHand(msg.hand());
             if (!(stack.getItem() instanceof CinderAtlasItem)) return;
             if (!(player.level() instanceof ServerLevel level)) return;
 
@@ -65,7 +53,7 @@ public class C2SCinderAtlasOpenCraftingTerminalPacket implements CustomPacketPay
                 return;
             }
 
-            CinderAtlasItem.openCraftingTerminal(player, msg.hand);
+            CinderAtlasItem.openCraftingTerminal(player, msg.hand());
         });
     }
 }

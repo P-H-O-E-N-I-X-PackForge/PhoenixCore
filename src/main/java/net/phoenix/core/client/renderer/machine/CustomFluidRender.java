@@ -30,6 +30,9 @@ import java.util.Set;
 public class CustomFluidRender extends DynamicRender<WorkableMultiblockMachine, CustomFluidRender> {
 
     public static final CustomFluidRender INSTANCE = new CustomFluidRender();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .tintOnly("custom_fluid", "Multiblock fluid");
     public static final MapCodec<CustomFluidRender> CODEC = MapCodec.unit(CustomFluidRender::new);
     public static final DynamicRenderType<WorkableMultiblockMachine, CustomFluidRender> TYPE = new DynamicRenderType<>(
             CODEC);
@@ -84,7 +87,9 @@ public class CustomFluidRender extends DynamicRender<WorkableMultiblockMachine, 
         if (cachedFluid == null) return;
 
         var fluidRenderType = ItemBlockRenderTypes.getRenderLayer(cachedFluid.defaultFluidState());
-        var consumer = buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidRenderType, false));
+        var consumer = net.phoenix.core.client.fx.FxHook.glow(FX, poseStack.last().pose(),
+                buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidRenderType, false)),
+                net.minecraft.world.phys.Vec3.ZERO, 0f);
 
         for (RelativeDirection face : drawFaces) {
             poseStack.pushPose();

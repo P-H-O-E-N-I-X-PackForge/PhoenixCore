@@ -250,8 +250,8 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel, new net.phoenix.core.client.gui.hud.MachineHud.Classic("C", 400, 270,
+        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 400, 270,
                         content -> buildMainUI(content, data, syncManager, settings)));
     }
 
@@ -264,44 +264,44 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return inventory == null ? ItemStack.EMPTY : inventory.getStackInSlot(CinderForgeHatchPartMachine.CORE_SLOT);
     }
 
-    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
-        var T = net.phoenix.core.client.gui.hud.HudTheme.EMBER;
-        return net.phoenix.core.client.gui.hud.HudModel.of("Cinder Forge")
+    private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {
+        var T = net.phoenixvine.wiki.ui.hud.HudTheme.EMBER;
+        return net.phoenixvine.wiki.ui.hud.HudModel.of("Cinder Forge")
                 .theme(T)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.embers(() -> {
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.embers(() -> {
                     BadgeState b = badgeState(coreStack());
                     return b.label().equals("READY") ? 1.0f : b.label().equals("GATHERING") ? 0.55f : 0.12f;
                 }, T.accent(), T.accent2()), 38)
                 .formed(this::isFormed)
                 .badge(() -> {
                     BadgeState b = badgeState(coreStack());
-                    return new net.phoenix.core.client.gui.hud.HudModel.Badge(b.label(), 0xFF_000000 | b.color());
+                    return new net.phoenixvine.wiki.ui.hud.HudModel.Badge(b.label(), 0xFF_000000 | b.color());
                 })
                 .subtitle(() -> statusLine(coreStack()))
                 .cells(() -> {
-                    var cells = new ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
+                    var cells = new ArrayList<net.phoenixvine.wiki.ui.hud.HudModel.Cell>();
                     CinderForgeTier tier = currentTier();
                     ItemStack core = coreStack();
                     var def = core.getItem() instanceof CinderCoreItem ? CinderSchemaData.getTargetDefinition(core) :
                             null;
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TIER", tier == null ? "-" :
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("TIER", tier == null ? "-" :
                             tier.name().replace("TIER", "Tier "),
                             tier != null && tier.automated ? "automated" : "manual",
-                            net.phoenix.core.client.gui.hud.HudModel.GOLD));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TARGET", def == null ? "none" :
+                            net.phoenixvine.wiki.ui.hud.HudModel.GOLD));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("TARGET", def == null ? "none" :
                             def.getBlock().getName().getString(), def == null ? "no Core configured" : "being packaged",
-                            def == null ? net.phoenix.core.client.gui.hud.HudModel.DIM :
-                                    net.phoenix.core.client.gui.hud.HudModel.CYAN));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("STOCKED",
+                            def == null ? net.phoenixvine.wiki.ui.hud.HudModel.DIM :
+                                    net.phoenixvine.wiki.ui.hud.HudModel.CYAN));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("STOCKED",
                             core.getItem() instanceof CinderCoreItem ?
                                     String.valueOf(CinderSchemaData.tallyStocked(core).size()) : "-",
                             "kinds of part",
-                            net.phoenix.core.client.gui.hud.HudModel.GREEN));
+                            net.phoenixvine.wiki.ui.hud.HudModel.GREEN));
                     return cells;
                 })
-                .notes(() -> List.of(net.phoenix.core.client.gui.hud.HudModel.line(
+                .notes(() -> List.of(net.phoenixvine.wiki.ui.hud.HudModel.line(
                         "Pick targets and configure the Core on the C tab.",
-                        net.phoenix.core.client.gui.hud.HudModel.MID)));
+                        net.phoenixvine.wiki.ui.hud.HudModel.MID)));
     }
 
     @Override

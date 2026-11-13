@@ -1,6 +1,5 @@
 package net.phoenix.core.network.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,31 +10,20 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.item.cinder.CinderCoreItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
+import net.phoenix.core.network.PacketCodecs;
 
-public class C2SCinderClearTargetPacket implements CustomPacketPayload {
+public record C2SCinderClearTargetPacket(InteractionHand hand) implements CustomPacketPayload {
 
     public static final Type<C2SCinderClearTargetPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_clear_target_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderClearTargetPacket> STREAM_CODEC = StreamCodec
-            .ofMember(C2SCinderClearTargetPacket::encode, C2SCinderClearTargetPacket::new);
+            .composite(
+                    PacketCodecs.enumOrdinal(InteractionHand.class), C2SCinderClearTargetPacket::hand,
+                    C2SCinderClearTargetPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    private final InteractionHand hand;
-
-    public C2SCinderClearTargetPacket(InteractionHand hand) {
-        this.hand = hand;
-    }
-
-    public C2SCinderClearTargetPacket(FriendlyByteBuf buf) {
-        this.hand = buf.readEnum(InteractionHand.class);
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeEnum(hand);
     }
 
     public static void handle(C2SCinderClearTargetPacket msg, IPayloadContext ctxGetter) {
@@ -43,7 +31,7 @@ public class C2SCinderClearTargetPacket implements CustomPacketPayload {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
-            ItemStack stack = player.getItemInHand(msg.hand);
+            ItemStack stack = player.getItemInHand(msg.hand());
             if (!(stack.getItem() instanceof CinderCoreItem)) return;
             CinderSchemaData.clearTarget(stack);
         });

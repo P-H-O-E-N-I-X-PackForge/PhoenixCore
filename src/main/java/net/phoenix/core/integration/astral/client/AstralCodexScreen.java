@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.chromatic_codes.api.ChromaticEffectsRegistry;
-import net.phoenix.core.integration.conflux.client.render.MotionClock;
+import net.phoenix.conflux.client.render.MotionClock;
 import net.phoenixvine.wiki.theme.PhoenixTheme;
 
 import java.util.ArrayList;

@@ -9,15 +9,15 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.phoenix.conflux.api.ConfluxNodeNotes;
+import net.phoenix.conflux.api.event.ConfluxResearchEvent;
+import net.phoenix.conflux.api.event.ConfluxTeamChangedEvent;
+import net.phoenix.conflux.dimension.ConfluxDimensionFactory;
+import net.phoenix.conflux.research.WorldResearchData;
 import net.phoenix.continuum.api.ContinuumHost;
 import net.phoenix.continuum.client.ContinuumNodeNotes;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.api.client.ConfluxNodeNotes;
-import net.phoenix.core.api.event.ConfluxResearchEvent;
-import net.phoenix.core.api.event.ConfluxTeamChangedEvent;
-import net.phoenix.core.integration.conflux.dimension.ConfluxDimensionFactory;
-import net.phoenix.core.integration.conflux.research.WorldResearchData;
-import net.phoenix.core.utils.TeamUtils;
+import net.phoenixvine.wiki.util.TeamUtils;
 
 import org.jetbrains.annotations.Nullable;
 

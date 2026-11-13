@@ -71,54 +71,54 @@ public class AstralThreadHatchPartMachine extends TieredIOPartMachine implements
                     if (delta > 0) threadContainer.addThread(delta);
                     else if (delta < 0) threadContainer.removeThread(-delta);
                 }));
-        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
                 this::hudModel);
     }
 
-    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
+    private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {
         boolean output = threadContainer.getHandlerIO() == IO.OUT;
-        return net.phoenix.core.client.gui.hud.HudModel
+        return net.phoenixvine.wiki.ui.hud.HudModel
                 .of(com.gregtechceu.gtceu.api.GTValues.VNF[tier] + " Astral Thread " + (output ? "Output" : "Input") +
                         " Hatch")
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.ASTRAL)
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.ASTRAL)
                 .formed(() -> true)
-                .page(net.phoenix.core.client.gui.hud.ExoticPages.threadHatch(
+                .page(net.phoenixvine.wiki.ui.hud.ExoticPages.threadHatch(
                         com.gregtechceu.gtceu.api.GTValues.VNF[tier] + " Astral Thread " +
                                 (output ? "Output" : "Input") + " Hatch",
                         output, () -> threadContainer.getThread(), () -> threadContainer.getMaxThread(),
                         () -> threadContainer.getTransferRate(), getAccentColor(), 0xFFE8D27A,
                         () -> "Astral Wand: " + (output ? "draw its thread into a Thread Cell." :
                                 "feed a Thread Cell into it.")))
-                .hero(net.phoenix.core.client.gui.hud.ExoticHeroes.threadLoom(
-                        net.phoenix.core.client.gui.hud.Heroes.eased(
+                .hero(net.phoenixvine.wiki.ui.hud.ExoticHeroes.threadLoom(
+                        net.phoenixvine.wiki.ui.hud.Heroes.eased(
                                 () -> threadContainer.getThread() /
                                         (float) Math.max(1, threadContainer.getMaxThread())),
                         !output, getAccentColor(), 0xFFE8D27A), 62)
                 .badge(() -> output ?
-                        new net.phoenix.core.client.gui.hud.HudModel.Badge("OUTPUT",
-                                net.phoenix.core.client.gui.hud.HudModel.CYAN) :
-                        new net.phoenix.core.client.gui.hud.HudModel.Badge("INPUT",
-                                net.phoenix.core.client.gui.hud.HudModel.PURPLE))
+                        new net.phoenixvine.wiki.ui.hud.HudModel.Badge("OUTPUT",
+                                net.phoenixvine.wiki.ui.hud.HudModel.CYAN) :
+                        new net.phoenixvine.wiki.ui.hud.HudModel.Badge("INPUT",
+                                net.phoenixvine.wiki.ui.hud.HudModel.PURPLE))
                 .subtitle(() -> output ? "Holds the thread a machine spins" : "Feeds thread to a machine")
                 .cells(() -> {
-                    var cells = new java.util.ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("THREAD",
+                    var cells = new java.util.ArrayList<net.phoenixvine.wiki.ui.hud.HudModel.Cell>();
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("THREAD",
                             String.format(java.util.Locale.ROOT, "%,d", threadContainer.getThread()),
                             "of " + String.format(java.util.Locale.ROOT, "%,d", threadContainer.getMaxThread()),
-                            net.phoenix.core.client.gui.hud.HudModel.PURPLE));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("RATE",
+                            net.phoenixvine.wiki.ui.hud.HudModel.PURPLE));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("RATE",
                             String.format(java.util.Locale.ROOT, "%,d /t", threadContainer.getTransferRate()),
-                            "most it moves", net.phoenix.core.client.gui.hud.HudModel.CYAN));
+                            "most it moves", net.phoenixvine.wiki.ui.hud.HudModel.CYAN));
                     return cells;
                 })
-                .bars(() -> java.util.List.of(new net.phoenix.core.client.gui.hud.HudModel.Bar("Thread",
+                .bars(() -> java.util.List.of(new net.phoenixvine.wiki.ui.hud.HudModel.Bar("Thread",
                         threadContainer.getThread() / (float) Math.max(1, threadContainer.getMaxThread()),
                         String.format(java.util.Locale.ROOT, "%,d / %,d", threadContainer.getThread(),
                                 threadContainer.getMaxThread()),
-                        net.phoenix.core.client.gui.hud.HudModel.PURPLE)))
-                .notes(() -> java.util.List.of(net.phoenix.core.client.gui.hud.HudModel.line(output ?
+                        net.phoenixvine.wiki.ui.hud.HudModel.PURPLE)))
+                .notes(() -> java.util.List.of(net.phoenixvine.wiki.ui.hud.HudModel.line(output ?
                         "Astral Wand: draw its thread into a Thread Cell." :
-                        "Astral Wand: feed a Thread Cell into it.", net.phoenix.core.client.gui.hud.HudModel.MID)));
+                        "Astral Wand: feed a Thread Cell into it.", net.phoenixvine.wiki.ui.hud.HudModel.MID)));
     }
 
     private int getAccentColor() {

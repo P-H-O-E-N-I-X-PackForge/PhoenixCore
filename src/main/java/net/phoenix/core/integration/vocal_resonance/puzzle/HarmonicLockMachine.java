@@ -13,10 +13,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.network.packet.S2CAttuneResultPacket;
 import net.phoenix.core.network.packet.S2CAttuneStartPacket;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
@@ -354,10 +354,10 @@ public class HarmonicLockMachine extends MultiblockControllerMachine implements 
     private HudModel hudModel() {
         return HudModel.of("Harmonic Lock")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.LOCK)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.tumblers(() -> attuneState == ATTUNED ? step : 0,
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.LOCK)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.tumblers(() -> attuneState == ATTUNED ? step : 0,
                         () -> getPuzzle() == null ? 5 : getPuzzle().steps().size(),
-                        net.phoenix.core.client.gui.hud.HudTheme.LOCK.accent()), 26)
+                        net.phoenixvine.wiki.ui.hud.HudTheme.LOCK.accent()), 26)
                 .badge(() -> switch (attuneState) {
                     case ATTUNING -> new HudModel.Badge("ATTUNING", HudModel.GOLD);
                     case ATTUNED -> new HudModel.Badge("ATTUNED", HudModel.GREEN);

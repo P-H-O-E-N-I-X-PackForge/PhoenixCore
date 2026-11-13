@@ -13,6 +13,7 @@ public final class PftGtRecipes {
         PftHvEvRecipes.init(provider);
         PftIvRecipes.init(provider);
         PftMinerRecipes.init(provider);
+        PftCrucibleRecipes.init(provider);
         PftSteamAgeRecipes.init(provider);
         PftSterileHatchRecipes.init(provider);
         PftGreenhouseRecipes.init(provider);

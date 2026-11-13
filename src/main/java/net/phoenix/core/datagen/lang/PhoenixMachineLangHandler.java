@@ -274,8 +274,6 @@ public class PhoenixMachineLangHandler {
         provider.add("multiblock.tooltip.pch", "\u00A0\u00A0\u00A0Parallel Control Hatch: %s");
 
         provider.add("gtultimate.custom.tooltip_one_energy_hatch", "§fAccepts §lEXACTLY §61 energy hatch.");
-        provider.add("gtultimate.custom.tooltip_dimensional_anchor",
-                "§9§oOpens stable rifts to other dimensions, determined by its placement.\\n§7These gateways allow for accelerated resource extraction unique to each realm.\\n§7Requires distinct recipes for Overworld, Nether, and End configurations.");
 
         String anchorDesc = """
                 §9§oOpens stable rifts to other dimensions, determined by its placement.
@@ -302,8 +300,6 @@ public class PhoenixMachineLangHandler {
 
         PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_large_steam_sifter",
                 largeSteamSifterDesc);
-        PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_dimensional_anchor", anchorDesc);
-        PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_aetherial_fabricator", fabricatorDesc);
         PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_alchemical_imbuer", alchemicalImbuerDesc);
         PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_source_reactor", sourceReactorDesc);
         PhoenixLangHandler.multilineLang(provider, "gtultimate.custom.tooltip_bio_engine", bioEngineDesc);

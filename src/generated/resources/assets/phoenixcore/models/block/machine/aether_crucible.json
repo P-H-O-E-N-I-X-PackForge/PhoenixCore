@@ -1,0 +1,335 @@
+{
+  "parent": "minecraft:block/block",
+  "dynamic_renders": [
+    {
+      "type": "phoenixcore:aether_crucible"
+    }
+  ],
+  "loader": "gtceu:machine",
+  "machine": "phoenixcore:aether_crucible",
+  "texture_overrides": {
+    "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh"
+  },
+  "variants": {
+    "formation_tier=0,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=0,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=0,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=0,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=1,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=1,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=1,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=1,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=2,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=2,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=2,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=2,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=3,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=3,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=3,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=3,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=4,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=4,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=4,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=4,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=5,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=5,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=5,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=5,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=6,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=6,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=6,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=6,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=7,recipe_logic_status=idle": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_emissive"
+        }
+      }
+    },
+    "formation_tier=7,recipe_logic_status=suspend": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_paused_emissive"
+        }
+      }
+    },
+    "formation_tier=7,recipe_logic_status=waiting": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    },
+    "formation_tier=7,recipe_logic_status=working": {
+      "model": {
+        "parent": "gtceu:block/machine/template/cube_all/sided",
+        "textures": {
+          "all": "phoenixcore:block/casings/multiblock/machine_casing_source_fiber_mesh",
+          "overlay_front": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active",
+          "overlay_front_emissive": "gtceu:block/multiblock/pyrolyse_oven/overlay_front_active_emissive"
+        }
+      }
+    }
+  }
+}

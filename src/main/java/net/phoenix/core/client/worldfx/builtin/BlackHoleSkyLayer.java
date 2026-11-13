@@ -3,10 +3,10 @@ package net.phoenix.core.client.worldfx.builtin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.world.phys.Vec3;
-import net.phoenix.core.client.worldfx.PhoenixSkyLayer;
-import net.phoenix.core.client.worldfx.SkyRenderContext;
-import net.phoenix.core.client.worldfx.WorldFXManager;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenixvine.wiki.fx.PhoenixSkyLayer;
+import net.phoenixvine.wiki.fx.SkyRenderContext;
+import net.phoenixvine.wiki.fx.WorldFXManager;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;

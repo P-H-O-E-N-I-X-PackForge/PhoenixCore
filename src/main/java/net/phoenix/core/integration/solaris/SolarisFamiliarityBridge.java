@@ -5,7 +5,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.conflux.ConfluxConfigs;
+import net.phoenix.conflux.client.ClientFamiliarity;
 import net.phoenixvine.solaris.client.render.MapLayer;
 import net.phoenixvine.solaris.client.render.MapLayers;
 import net.phoenixvine.solaris.client.render.MapProjection;
@@ -32,7 +33,7 @@ final class SolarisFamiliarityBridge implements MapLayer {
 
     @Override
     public void render(GuiGraphics g, ResourceLocation dimension, MapProjection projection, float partialTick) {
-        if (!SCULK.equals(dimension) || !PhoenixConfigs.INSTANCE.confluxSolaris.familiarityOverlay) return;
+        if (!SCULK.equals(dimension) || !ConfluxConfigs.INSTANCE.solaris.familiarityOverlay) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 

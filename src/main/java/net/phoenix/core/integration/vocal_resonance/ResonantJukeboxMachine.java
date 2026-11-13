@@ -13,15 +13,15 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.vocal_resonance.ingredient.NotifiableSoundHandler;
 import net.phoenix.core.integration.vocal_resonance.puzzle.HarmonicLockMachine;
 import net.phoenix.core.integration.vocal_vibrancy.WorldAcousticSensor;
 import net.phoenix.core.network.packet.C2SSelectSoundPacket;
 import net.phoenix.core.network.packet.S2CPlaySoundPacket;
 import net.phoenix.core.network.packet.S2CPlayStreamPacket;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.IntSyncValue;
@@ -319,11 +319,11 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
     private HudModel hudModel() {
         return HudModel.of("Resonant Jukebox")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.NEON)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.equaliser(
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.NEON)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.equaliser(
                         () -> playing() ? Math.max(0.35f, currentLiveBass) : 0.04f, () -> (float) currentLiveBPM,
-                        net.phoenix.core.client.gui.hud.HudTheme.NEON.accent(),
-                        net.phoenix.core.client.gui.hud.HudTheme.NEON.accent2()), 36)
+                        net.phoenixvine.wiki.ui.hud.HudTheme.NEON.accent(),
+                        net.phoenixvine.wiki.ui.hud.HudTheme.NEON.accent2()), 36)
                 .badge(() -> playing() ? new HudModel.Badge("PLAYING", HudModel.GREEN) : HudRecipes.badge(this))
                 .subtitle(() -> !currentStreamUrl.isEmpty() ? streamTitle : !selectedLibrarySound.isEmpty() ?
                         selectedLibrarySound : "Nothing playing")
@@ -359,9 +359,5 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
                         HudModel.line("music costs " + MUSIC_ENERGY_DRAIN + " EU/t while playing", HudModel.MID)))
                 .graph("bass %", HudModel.PURPLE, () -> currentLiveBass * 100.0f, 100.0f)
                 .graph("BPM", HudModel.CYAN, () -> (float) currentLiveBPM, 0.0f);
-    }
-
-    private String getGateStatus(String name, boolean active) {
-        return (active ? "  §a✔ " : "  §c✘ ") + "§7" + name;
     }
 }

@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -80,12 +79,15 @@ public class PhoenixEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
         hideFromScripts(registry);
-        registry.removeRecipes(net.phoenix.core.integration.conflux.client.ConfluxEmiRefresh::hide);
-        net.phoenix.core.integration.conflux.client.ConfluxRecipeVisibility.builtNow();
-        registry.addRecipeDecorator(net.phoenix.core.integration.conflux.client.ConfluxEmiRefresh::decorate);
+        registry.removeRecipes(net.phoenix.conflux.client.ConfluxEmiRefresh::hide);
+        registry.removeRecipes(DisciplineRecipeVisibility::hide);
+        registry.removeRecipes(CrucibleEmi::replaced);
+        net.phoenix.conflux.client.ConfluxRecipeVisibility.builtNow();
+        registry.addRecipeDecorator(net.phoenix.conflux.client.ConfluxEmiRefresh::decorate);
         guarded("Conflux research pages", () -> ConfluxEmi.register(registry));
         guarded("lapidary pages", () -> LapidaryEmi.register(registry));
         guarded("Cinder Forge pages", () -> CinderEmi.register(registry));
+        guarded("Aether Crucible pages", () -> CrucibleEmi.register(registry));
         guarded("chunk soul pages", () -> SoulEmi.register(registry));
         guarded("Tesla Network pages", () -> TeslaEmi.register(registry));
         guarded("Astral weaving pages", () -> AstralEmi.register(registry));
@@ -144,12 +146,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             if (fluidStack.isEmpty()) continue;
 
             registry.addAlias(fluidStack, material.getLocalizedName());
-        }
-    }
-
-    private static void addFormulaAliases(EmiRegistry registry, EmiStack stack, String... terms) {
-        for (String term : terms) {
-            registry.addAlias(stack, Component.literal(term));
         }
     }
 

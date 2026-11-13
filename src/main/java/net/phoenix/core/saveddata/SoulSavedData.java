@@ -1,6 +1,5 @@
 package net.phoenix.core.saveddata;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,7 +7,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.phoenix.core.integration.ars_nouveau.common.data.worldgen.soul.SoulBalance;
 import net.phoenix.core.integration.ars_nouveau.common.data.worldgen.soul.SoulChunkEntry;
@@ -145,20 +143,6 @@ public class SoulSavedData extends SavedData {
         soulMap.put(pos, new SoulChunkEntry(baseSoul, baseSoul, level.getGameTime()));
         this.setDirty();
         return baseSoul;
-    }
-
-    private void tickRegen(ChunkPos pos, SoulChunkEntry entry) {
-        long ticksPassed = level.getGameTime() - entry.lastUpdateTime;
-        if (ticksPassed <= 0) return;
-
-        Holder<Biome> biomeHolder = level.getBiome(pos.getMiddleBlockPosition(64));
-        SoulBalance.SoulProfile profile = SoulBalance.get(biomeHolder, level);
-
-        float updatedSoul = entry.currentSoul + (ticksPassed * profile.regenPerTick());
-        entry.currentSoul = Math.min(entry.maxCapacity, updatedSoul);
-
-        entry.lastUpdateTime = level.getGameTime();
-        setDirty();
     }
 
     public Map<ChunkPos, SoulChunkEntry> getSoulMap() {

@@ -13,15 +13,6 @@ public class PhoenixNetwork {
     public static void register(PayloadRegistrar registrar) {
         registrar.playToServer(SelectColorPacket.TYPE, SelectColorPacket.STREAM_CODEC, SelectColorPacket::handle);
 
-        registrar.playToServer(PacketPhoenixModeSync.TYPE, PacketPhoenixModeSync.STREAM_CODEC,
-                PacketPhoenixModeSync::handle);
-
-        registrar.playToServer(CPacketChangeManipulatorMode.TYPE, CPacketChangeManipulatorMode.STREAM_CODEC,
-                CPacketChangeManipulatorMode::handle);
-
-        registrar.playToServer(CPacketManipulatorAction.TYPE, CPacketManipulatorAction.STREAM_CODEC,
-                CPacketManipulatorAction::handle);
-
         registrar.playToServer(PacketRecipeBuilderGenerate.TYPE, PacketRecipeBuilderGenerate.STREAM_CODEC,
                 PacketRecipeBuilderGenerate::handle);
 
@@ -53,15 +44,6 @@ public class PhoenixNetwork {
 
         registrar.playToServer(C2SRemoveShopEntryPacket.TYPE, C2SRemoveShopEntryPacket.STREAM_CODEC,
                 C2SRemoveShopEntryPacket::handle);
-
-        registrar.playToServer(C2SCinemaScreenConfigPacket.TYPE, C2SCinemaScreenConfigPacket.STREAM_CODEC,
-                C2SCinemaScreenConfigPacket::handle);
-
-        registrar.playToServer(C2SCinemaActionPacket.TYPE, C2SCinemaActionPacket.STREAM_CODEC,
-                C2SCinemaActionPacket::handle);
-        registrar.playToServer(net.phoenix.core.network.packet.C2SCinemaGivePacket.TYPE,
-                net.phoenix.core.network.packet.C2SCinemaGivePacket.STREAM_CODEC,
-                net.phoenix.core.network.packet.C2SCinemaGivePacket::handle);
 
         registrar.playToServer(C2SCinderConfigPacket.TYPE, C2SCinderConfigPacket.STREAM_CODEC,
                 C2SCinderConfigPacket::handle);
@@ -100,14 +82,6 @@ public class PhoenixNetwork {
         registrar.playToServer(C2SCinderAtlasRequestMaterialsPacket.TYPE,
                 C2SCinderAtlasRequestMaterialsPacket.STREAM_CODEC, C2SCinderAtlasRequestMaterialsPacket::handle);
 
-        registrar.playToClient(S2CPlayCutscenePacket.TYPE, S2CPlayCutscenePacket.STREAM_CODEC,
-                S2CPlayCutscenePacket::handle);
-
-        registrar.playToServer(C2SCutsceneActionPacket.TYPE, C2SCutsceneActionPacket.STREAM_CODEC,
-                C2SCutsceneActionPacket::handle);
-
-        registrar.playToServer(C2SCutsceneRequestPacket.TYPE, C2SCutsceneRequestPacket.STREAM_CODEC,
-                C2SCutsceneRequestPacket::handle);
         registerResonanceAndPhysics(registrar);
     }
 
@@ -120,13 +94,8 @@ public class PhoenixNetwork {
                 S2CAttuneStartPacket::handle);
         registrar.playToClient(S2CAttuneResultPacket.TYPE, S2CAttuneResultPacket.STREAM_CODEC,
                 S2CAttuneResultPacket::handle);
-        registrar.playToClient(S2CPhysicsImpulsePacket.TYPE, S2CPhysicsImpulsePacket.STREAM_CODEC,
-                S2CPhysicsImpulsePacket::handle);
         registrar.playToClient(S2CLandformZonesPacket.TYPE, S2CLandformZonesPacket.STREAM_CODEC,
                 S2CLandformZonesPacket::handle);
-        registrar.playToClient(net.phoenix.core.network.packet.S2CFamiliarityPacket.TYPE,
-                net.phoenix.core.network.packet.S2CFamiliarityPacket.STREAM_CODEC,
-                net.phoenix.core.network.packet.S2CFamiliarityPacket::handle);
         registrar.playToServer(C2SOpenCalibrationPacket.TYPE, C2SOpenCalibrationPacket.STREAM_CODEC,
                 C2SOpenCalibrationPacket::handle);
         registrar.playToServer(C2SCalibratePacket.TYPE, C2SCalibratePacket.STREAM_CODEC, C2SCalibratePacket::handle);

@@ -564,34 +564,34 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel, new net.phoenix.core.client.gui.hud.MachineHud.Classic("C", 308, 144,
+        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 308, 144,
                         content -> buildMainUI(content, data, syncManager, settings)));
     }
 
-    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
-        var T = net.phoenix.core.client.gui.hud.HudTheme.DRONE;
-        return net.phoenix.core.client.gui.hud.HudModel.of("Drone Control")
+    private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {
+        var T = net.phoenixvine.wiki.ui.hud.HudTheme.DRONE;
+        return net.phoenixvine.wiki.ui.hud.HudModel.of("Drone Control")
                 .theme(T)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.radar(() -> targets().size(), T.accent()), 40)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.radar(() -> targets().size(), T.accent()), 40)
                 .formed(this::isFormed)
-                .badge(() -> targets().isEmpty() ? new net.phoenix.core.client.gui.hud.HudModel.Badge("NO TARGETS",
-                        net.phoenix.core.client.gui.hud.HudModel.DIM) :
-                        new net.phoenix.core.client.gui.hud.HudModel.Badge("LINKED",
-                                net.phoenix.core.client.gui.hud.HudModel.GREEN))
+                .badge(() -> targets().isEmpty() ? new net.phoenixvine.wiki.ui.hud.HudModel.Badge("NO TARGETS",
+                        net.phoenixvine.wiki.ui.hud.HudModel.DIM) :
+                        new net.phoenixvine.wiki.ui.hud.HudModel.Badge("LINKED",
+                                net.phoenixvine.wiki.ui.hud.HudModel.GREEN))
                 .subtitle(() -> "Watches formed multiblocks within " + range() + " blocks")
                 .cells(() -> {
                     var list = targets();
                     long running = list.stream().filter(v -> v.controllable() && v.workingEnabled()).count();
                     long paused = list.stream().filter(v -> v.controllable() && !v.workingEnabled()).count();
-                    var cells = new ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("TARGETS", String.valueOf(list.size()),
-                            "in range", net.phoenix.core.client.gui.hud.HudModel.CYAN));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("ENABLED", String.valueOf(running),
-                            "working allowed", net.phoenix.core.client.gui.hud.HudModel.GREEN));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("DISABLED", String.valueOf(paused),
-                            "switched off", paused > 0 ? net.phoenix.core.client.gui.hud.HudModel.GOLD :
-                                    net.phoenix.core.client.gui.hud.HudModel.DIM));
+                    var cells = new ArrayList<net.phoenixvine.wiki.ui.hud.HudModel.Cell>();
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("TARGETS", String.valueOf(list.size()),
+                            "in range", net.phoenixvine.wiki.ui.hud.HudModel.CYAN));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("ENABLED", String.valueOf(running),
+                            "working allowed", net.phoenixvine.wiki.ui.hud.HudModel.GREEN));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("DISABLED", String.valueOf(paused),
+                            "switched off", paused > 0 ? net.phoenixvine.wiki.ui.hud.HudModel.GOLD :
+                                    net.phoenixvine.wiki.ui.hud.HudModel.DIM));
                     long draw = 0, gen = 0;
                     for (DroneTargetView v : list) {
                         if (v.euPerTick() > 0) draw += v.euPerTick();
@@ -608,17 +608,17 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
                             .mapToInt(DroneTargetView::bufferPercent)
                             .toArray();
                     int avg = bufs.length == 0 ? 0 : (int) java.util.Arrays.stream(bufs).average().orElse(0);
-                    return List.of(new net.phoenix.core.client.gui.hud.HudModel.Bar("Enabled share",
+                    return List.of(new net.phoenixvine.wiki.ui.hud.HudModel.Bar("Enabled share",
                             controllable == 0 ? 0.0f : running / (float) controllable, running + " / " + controllable,
-                            net.phoenix.core.client.gui.hud.HudModel.GREEN),
-                            new net.phoenix.core.client.gui.hud.HudModel.Bar("Power buffers", avg / 100f,
+                            net.phoenixvine.wiki.ui.hud.HudModel.GREEN),
+                            new net.phoenixvine.wiki.ui.hud.HudModel.Bar("Power buffers", avg / 100f,
                                     bufs.length == 0 ? "none" : avg + "%",
-                                    avg < 15 ? net.phoenix.core.client.gui.hud.HudModel.GOLD :
-                                            net.phoenix.core.client.gui.hud.HudModel.CYAN));
+                                    avg < 15 ? net.phoenixvine.wiki.ui.hud.HudModel.GOLD :
+                                            net.phoenixvine.wiki.ui.hud.HudModel.CYAN));
                 })
-                .notes(() -> List.of(net.phoenix.core.client.gui.hud.HudModel.line(
+                .notes(() -> List.of(net.phoenixvine.wiki.ui.hud.HudModel.line(
                         "Cut power below priority " + cutoffPriority + "; rows are on the C tab.",
-                        net.phoenix.core.client.gui.hud.HudModel.MID)));
+                        net.phoenixvine.wiki.ui.hud.HudModel.MID)));
     }
 
     private List<DroneTargetView> targets() {

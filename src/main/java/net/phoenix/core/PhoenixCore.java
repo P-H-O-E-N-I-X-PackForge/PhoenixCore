@@ -39,7 +39,6 @@ import net.phoenix.core.client.keybind.PhoenixKeybinds;
 import net.phoenix.core.client.particle.PhoenixParticles;
 import net.phoenix.core.common.block.PhoenixBlocks;
 import net.phoenix.core.common.block.cinder.CinderBlocks;
-import net.phoenix.core.common.block.cinema.CinemaBlocks;
 import net.phoenix.core.common.data.PhoenixCovers;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.common.data.item.PhoenixItems;
@@ -66,17 +65,6 @@ import net.phoenix.core.integration.ars_nouveau.common.event.SourceHatchJarTrans
 import net.phoenix.core.integration.astral.AstralBlocks;
 import net.phoenix.core.integration.astral.AstralItems;
 import net.phoenix.core.integration.astral.AstralMachines;
-import net.phoenix.core.integration.conflux.ConfluxRegistry;
-import net.phoenix.core.integration.conflux.dimension.*;
-import net.phoenix.core.integration.conflux.dimension.particles.DimensionParticleTypes;
-import net.phoenix.core.integration.conflux.dimension.worldgen.ConfluxWorldGenLayers;
-import net.phoenix.core.integration.conflux.multiblock.ConfluxMultiblockRegistry;
-import net.phoenix.core.integration.conflux.network.ConfluxNetwork;
-import net.phoenix.core.integration.conflux.producer.ConfluxProducerMachines;
-import net.phoenix.core.integration.conflux.research.ConfluxResearchCondition;
-import net.phoenix.core.integration.conflux.research.GatedRecipeRegistry;
-import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
-import net.phoenix.core.integration.conflux.structure.ConfluxStructures;
 import net.phoenix.core.integration.drone.DroneItems;
 import net.phoenix.core.integration.gregpacks.client.OmniPackCurioRenderer;
 import net.phoenix.core.integration.gregpacks.common.fluid.GregPacksCapabilityHandler;
@@ -98,7 +86,6 @@ import net.phoenix.core.integration.gregvaults.network.VaultNetwork;
 import net.phoenix.core.integration.growth.GrowthBlocks;
 import net.phoenix.core.integration.growth.GrowthItems;
 import net.phoenix.core.integration.growth.GrowthMachines;
-import net.phoenix.core.integration.matter_manipulater.common.data.item.ManipulaterItems;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderMenu;
 import net.phoenix.core.network.PhoenixNetwork;
 
@@ -141,7 +128,6 @@ public class PhoenixCore {
 
         PhoenixParticles.init(modEventBus);
         PhoenixEntities.init(modEventBus);
-        ConfluxStructures.init(modEventBus);
         if (FMLEnvironment.dist.isClient()) {
             modEventBus.addListener(PhoenixKeybinds::register);
             PhoenixClient.init(modEventBus);
@@ -163,7 +149,6 @@ public class PhoenixCore {
         registerSounds();
         registerConditions();
         registerRecipeTypes();
-        registerWorldGenLayers();
         onRegisterBlocksAndItems();
         registerMachines();
 
@@ -179,8 +164,6 @@ public class PhoenixCore {
 
         MENUS.register(modEventBus);
 
-        ConfluxRegistry.register(modEventBus);
-        modEventBus.addListener(ConfluxRegistry::registerCapabilities);
         net.phoenix.core.integration.ars_nouveau.logistics.SourceLogistics.register(modEventBus);
         modEventBus
                 .addListener(net.phoenix.core.integration.ars_nouveau.logistics.SourceLogistics::registerCapabilities);
@@ -188,30 +171,19 @@ public class PhoenixCore {
                 .addListener(GregPacksCapabilityHandler::register);
         modEventBus.addListener(
                 ISourceProviderCapability::register);
-        ConfluxDimensionRegistry.register(modEventBus);
-        DimensionParticleTypes.register(modEventBus);
-        ConfluxGenerators.register(modEventBus);
         AstralBlocks.registerDeferred(modEventBus);
-        PhoenixAttachments.register(modEventBus);
         PhoenixItemCaps.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(SourceHatchJarTransferTick.class);
-        NeoForge.EVENT_BUS
-                .register(ConfluxProgressionEvents.class);
-        NeoForge.EVENT_BUS.register(EtherealSpawnManager.class);
-        NeoForge.EVENT_BUS.register(PlayerSpawnHandler.class);
-        NeoForge.EVENT_BUS.addListener(ResearchTreeRegistry::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(CrystalRoseVeinHook::onAddReloadListeners);
-        NeoForge.EVENT_BUS.addListener(
-                GatedRecipeRegistry::onAddReloadListeners);
 
         GregPacksBlockEntities.init();
     }
 
     private void onRegisterBlocksAndItems() {
         PhoenixBlocks.init();
-        CinemaBlocks.init();
+        net.phoenix.core.common.block.PrismariteBlocks.init();
         GrowthBlocks.init();
         GrowthItems.init();
         AstralBlocks.init();
@@ -219,7 +191,6 @@ public class PhoenixCore {
         PhoenixItems.init();
         net.phoenix.core.common.data.item.PftItems.init();
         net.phoenix.core.common.data.item.PftCircuits.init();
-        ManipulaterItems.init();
         DroneItems.init();
         CinderItems.init();
         CinderBlocks.init();
@@ -262,19 +233,26 @@ public class PhoenixCore {
                 GTRegistries.Keys.RECIPE_CONDITION,
                 () -> new RecipeConditionType<>(FluidInHatchCondition::new, FluidInHatchCondition.CODEC));
 
+        net.phoenix.core.common.data.recipeConditions.DisciplineCondition.TYPE = REGISTRATE.simple("discipline",
+                GTRegistries.Keys.RECIPE_CONDITION,
+                () -> new RecipeConditionType<>(net.phoenix.core.common.data.recipeConditions.DisciplineCondition::new,
+                        net.phoenix.core.common.data.recipeConditions.DisciplineCondition.CODEC));
+
         SoulCondition.TYPE = REGISTRATE.simple("soul_resonance",
                 GTRegistries.Keys.RECIPE_CONDITION,
                 () -> new RecipeConditionType<>(SoulCondition::new, SoulCondition.CODEC));
-
-        ConfluxResearchCondition.TYPE = REGISTRATE.simple("conflux_research",
-                GTRegistries.Keys.RECIPE_CONDITION,
-                () -> new RecipeConditionType<>(ConfluxResearchCondition::new, ConfluxResearchCondition.CODEC));
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
         PhoenixNetwork.register(registrar);
-        ConfluxNetwork.register(registrar);
+        net.phoenix.core.rebirth.RebirthRegistry.registerPackets(registrar);
+        net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaArcFurnaceMachines.registerPackets(registrar);
+        net.phoenix.core.common.machine.multiblock.electric.honey.HoneyNetwork.register(registrar);
+        net.phoenix.core.common.machine.multiblock.nullwell.NullWellNetwork.register(registrar);
+        net.phoenix.core.common.machine.multiblock.cortex.S2CCortexOpenPacket.register(registrar);
+        net.phoenix.core.common.machine.multiblock.infuser.InfuserPackets.register(registrar);
+        net.phoenix.core.common.machine.multiblock.collider.ColliderPackets.register(registrar);
         VaultNetwork.register(registrar);
         GregPacksNetwork.register(registrar);
     }
@@ -282,7 +260,7 @@ public class PhoenixCore {
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             PhoenixRecipeTypes.postInit();
-            net.phoenix.core.integration.conflux.ConfluxGates.register();
+            net.phoenix.core.integration.conflux.ConfluxBridge.init();
             VaultRegistry.registerLinkables();
             CinderAtlasWirelessLink.register();
             net.phoenix.core.integration.chronicles.ChroniclesLink.setup();
@@ -300,11 +278,6 @@ public class PhoenixCore {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey().equals(PHOENIX_CREATIVE_TAB.getKey())) {
-            event.accept(net.phoenix.core.integration.conflux.terminal.ConfluxTerminalRegistry.TERMINAL_ITEM.get());
-            for (net.phoenix.core.integration.conflux.ConfluxDataType type : net.phoenix.core.integration.conflux.ConfluxDataType
-                    .values()) {
-                event.accept(net.phoenix.core.integration.conflux.ConfluxRegistry.PIPES.get(type).get());
-            }
             for (net.phoenix.core.integration.ars_nouveau.logistics.SourcePipeTier tier : net.phoenix.core.integration.ars_nouveau.logistics.SourcePipeTier
                     .values()) {
                 event.accept(net.phoenix.core.integration.ars_nouveau.logistics.SourceLogistics.PIPES.get(tier).get());
@@ -343,18 +316,13 @@ public class PhoenixCore {
         PhoenixSounds.init();
     }
 
-    private void registerWorldGenLayers() {
-        ConfluxWorldGenLayers.init();
-    }
-
     private void registerMachines() {
         PhoenixMachines.init();
         net.phoenix.core.common.machine.PftMachines.init();
         net.phoenix.core.common.machine.PftChargers.init();
         PhoenixBeeMachines.init();
-        ConfluxProducerMachines.init();
-        net.phoenix.core.integration.conflux.hatch.ConfluxHatches.init();
-        ConfluxMultiblockRegistry.init();
+        net.phoenix.core.integration.ars_nouveau.conflux.ConfluxArcaneMachines.init();
+        net.phoenix.core.integration.ars_nouveau.conflux.ConfluxProducerMachines.init();
         GrowthMachines.init();
         AstralMachines.init();
         net.phoenix.core.integration.ars_nouveau.logistics.SourceLogistics.init();
@@ -362,6 +330,15 @@ public class PhoenixCore {
         VaultMachineDefinition.init();
         CinderForgeMachines.init();
         net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.nullwell.NullWellMachines.init();
+        net.phoenix.core.common.machine.multiblock.cortex.SculkCortexMachines.init();
+        net.phoenix.core.common.machine.multiblock.infuser.PhoenixInfuserMachines.init();
+        net.phoenix.core.common.machine.multiblock.collider.AntimatterColliderMachines.init();
+        net.phoenix.core.common.machine.multiblock.forge.PhoenixForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.electric.AetherCrucibleMachines.init();
+        net.phoenix.core.common.machine.PhoenixAEMachines.init();
+        net.phoenix.core.common.machine.multiblock.electric.plasma.PlasmaArcFurnaceMachines.init();
+        net.phoenix.core.rebirth.RebirthRegistry.init();
         SanctumWardMachines.init();
     }
 

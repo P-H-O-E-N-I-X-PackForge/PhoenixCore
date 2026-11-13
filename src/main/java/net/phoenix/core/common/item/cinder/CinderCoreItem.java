@@ -216,14 +216,14 @@ public class CinderCoreItem extends Item {
             this.owner = owner;
             CompoundTag all = StackNbt.getTag(owner);
             if (all != null && all.contains(TAG_KEY)) {
-                deserializeNBT(net.phoenix.core.util.NbtRegistries.PROVIDER, all.getCompound(TAG_KEY));
+                deserializeNBT(net.phoenix.conflux.util.NbtRegistries.PROVIDER, all.getCompound(TAG_KEY));
             }
         }
 
         @Override
         protected void onContentsChanged(int slot) {
             CompoundTag all = StackNbt.getOrCreateTag(owner);
-            all.put(TAG_KEY, serializeNBT(net.phoenix.core.util.NbtRegistries.PROVIDER));
+            all.put(TAG_KEY, serializeNBT(net.phoenix.conflux.util.NbtRegistries.PROVIDER));
         }
     }
 }

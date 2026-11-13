@@ -21,14 +21,14 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.data.materials.AstralMaterials;
 import net.phoenix.core.integration.astral.skein.AstralThreadHatchPartMachine;
 import net.phoenix.core.network.packet.C2SOpenCalibrationPacket;
 import net.phoenix.core.network.packet.S2CCalibrationResultPacket;
 import net.phoenix.core.network.packet.S2COpenCalibrationPacket;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.PanelSyncManager;
 import org.jetbrains.annotations.Nullable;
@@ -225,10 +225,10 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
     private HudModel hudModel() {
         return HudModel.of("Astral Machine")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.ASTRAL)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.constellation(getBlockPos().asLong(),
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.ASTRAL)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.constellation(getBlockPos().asLong(),
                         () -> !calibrated ? 0.15f : aligned ? 1.0f : 0.6f,
-                        net.phoenix.core.client.gui.hud.HudTheme.ASTRAL.accent()), 40)
+                        net.phoenixvine.wiki.ui.hud.HudTheme.ASTRAL.accent()), 40)
                 .badge(() -> !calibrated ? new HudModel.Badge("UNCALIBRATED", HudModel.RED) : aligned ?
                         new HudModel.Badge("ALIGNED", HudModel.CYAN) : HudRecipes.badge(this))
                 .subtitle(() -> calibrated ? (aligned ? "Aligned: runs faster" : "Calibrated") :

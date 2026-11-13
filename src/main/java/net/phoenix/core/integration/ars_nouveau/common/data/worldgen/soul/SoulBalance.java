@@ -36,11 +36,11 @@ public class SoulBalance {
     private static final Map<ResourceLocation, Float> DIMENSION_BASE = new HashMap<>();
 
     static {
-        dimension("phoenixcore:conflux/phoenix", 1.8f);
-        dimension("phoenixcore:conflux/sculk", 3.0f);
-        dimension("phoenixcore:conflux/void", 0.4f);
-        dimension("phoenixcore:conflux/sealed_a", 1.0f);
-        dimension("phoenixcore:conflux/sealed_b", 1.0f);
+        dimension("phoenixconflux:conflux/phoenix", 1.8f);
+        dimension("phoenixconflux:conflux/sculk", 3.0f);
+        dimension("phoenixconflux:conflux/void", 0.4f);
+        dimension("phoenixconflux:conflux/sealed_a", 1.0f);
+        dimension("phoenixconflux:conflux/sealed_b", 1.0f);
     }
 
     private static void dimension(String id, float base) {

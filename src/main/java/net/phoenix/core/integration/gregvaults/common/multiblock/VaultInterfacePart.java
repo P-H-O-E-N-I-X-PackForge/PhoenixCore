@@ -247,43 +247,43 @@ public class VaultInterfacePart extends MultiblockPartMachine implements IMuiMac
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        return net.phoenix.core.client.gui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel, new net.phoenix.core.client.gui.hud.MachineHud.Classic("IO", 100, 100,
+        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("IO", 100, 100,
                         content -> buildMainUI(content, data, syncManager, settings)));
     }
 
-    private net.phoenix.core.client.gui.hud.HudModel hudModel() {
-        var T = net.phoenix.core.client.gui.hud.HudTheme.VAULT;
-        return net.phoenix.core.client.gui.hud.HudModel.of("Vault Interface")
+    private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {
+        var T = net.phoenixvine.wiki.ui.hud.HudTheme.VAULT;
+        return net.phoenixvine.wiki.ui.hud.HudModel.of("Vault Interface")
                 .theme(T)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.arcGauge(() -> {
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.arcGauge(() -> {
                     VaultMachine vault = getVault();
                     return vault == null ? 0.0f : Math.min(1.0f, vault.getAvailableSlots() / 64.0f);
                 }, T.accent()), 40)
                 .formed(this::isFormed)
                 .badge(() -> itemIoMode == ItemIoMode.DISABLED ?
-                        new net.phoenix.core.client.gui.hud.HudModel.Badge("DISABLED",
-                                net.phoenix.core.client.gui.hud.HudModel.DIM) :
-                        new net.phoenix.core.client.gui.hud.HudModel.Badge(itemIoMode.displayName().toUpperCase(),
-                                itemIoMode == ItemIoMode.INPUT ? net.phoenix.core.client.gui.hud.HudModel.GREEN :
-                                        net.phoenix.core.client.gui.hud.HudModel.ORANGE))
+                        new net.phoenixvine.wiki.ui.hud.HudModel.Badge("DISABLED",
+                                net.phoenixvine.wiki.ui.hud.HudModel.DIM) :
+                        new net.phoenixvine.wiki.ui.hud.HudModel.Badge(itemIoMode.displayName().toUpperCase(),
+                                itemIoMode == ItemIoMode.INPUT ? net.phoenixvine.wiki.ui.hud.HudModel.GREEN :
+                                        net.phoenixvine.wiki.ui.hud.HudModel.ORANGE))
                 .subtitle(() -> "Lets pipes and hoppers reach the vault's items")
                 .cells(() -> {
                     VaultMachine vault = getVault();
-                    var cells = new java.util.ArrayList<net.phoenix.core.client.gui.hud.HudModel.Cell>();
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("SIDE", itemFacing == null ? "-" :
-                            itemFacing.getName(), "item face", net.phoenix.core.client.gui.hud.HudModel.CYAN));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("MODE", itemIoMode.displayName(),
+                    var cells = new java.util.ArrayList<net.phoenixvine.wiki.ui.hud.HudModel.Cell>();
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("SIDE", itemFacing == null ? "-" :
+                            itemFacing.getName(), "item face", net.phoenixvine.wiki.ui.hud.HudModel.CYAN));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("MODE", itemIoMode.displayName(),
                             isAutoTransferItems() ? "auto transfer on" : "auto transfer off",
-                            net.phoenix.core.client.gui.hud.HudModel.GOLD));
-                    cells.add(net.phoenix.core.client.gui.hud.HudModel.cell("VAULT", vault == null ? "none" : "linked",
+                            net.phoenixvine.wiki.ui.hud.HudModel.GOLD));
+                    cells.add(net.phoenixvine.wiki.ui.hud.HudModel.cell("VAULT", vault == null ? "none" : "linked",
                             vault == null ? "no formed vault" : vault.getAvailableSlots() + " slots free",
-                            vault == null ? net.phoenix.core.client.gui.hud.HudModel.RED :
-                                    net.phoenix.core.client.gui.hud.HudModel.GREEN));
+                            vault == null ? net.phoenixvine.wiki.ui.hud.HudModel.RED :
+                                    net.phoenixvine.wiki.ui.hud.HudModel.GREEN));
                     return cells;
                 })
-                .notes(() -> java.util.List.of(net.phoenix.core.client.gui.hud.HudModel.line(
-                        "Set the side and mode on the IO tab.", net.phoenix.core.client.gui.hud.HudModel.MID)));
+                .notes(() -> java.util.List.of(net.phoenixvine.wiki.ui.hud.HudModel.line(
+                        "Set the side and mode on the IO tab.", net.phoenixvine.wiki.ui.hud.HudModel.MID)));
     }
 
     @Override

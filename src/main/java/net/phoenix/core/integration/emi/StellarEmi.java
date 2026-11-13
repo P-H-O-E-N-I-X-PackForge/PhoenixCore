@@ -10,12 +10,12 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.client.stellar.ui.Stellar2D;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarPlasma;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarTint;
+import net.phoenixvine.wiki.ui.hud.GuiDraw;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.BasicEmiRecipe;

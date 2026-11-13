@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.conflux.ConfluxConfigs;
 import net.phoenix_tesla_network.tesla.client.coverage.ClientCoverageData;
 import net.phoenix_tesla_network.tesla.network.packet.S2CCoverageSyncPacket;
 import net.phoenixvine.solaris.client.render.MapLayer;
@@ -39,7 +39,7 @@ final class SolarisCoverageBridge implements MapLayer {
 
     @Override
     public void render(GuiGraphics g, ResourceLocation dimension, MapProjection projection, float partialTick) {
-        if (!PhoenixConfigs.INSTANCE.confluxSolaris.networkSiteMarkers) return;
+        if (!ConfluxConfigs.INSTANCE.solaris.networkSiteMarkers) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 

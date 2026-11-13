@@ -8,10 +8,10 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.phoenix.conflux.client.ConfluxTheme;
+import net.phoenix.conflux.dimension.DisciplineChunkGenerator;
+import net.phoenix.conflux.dimension.worldgen.ProvinceVeinTemplates;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.integration.conflux.client.ConfluxTheme;
-import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
-import net.phoenix.core.integration.conflux.dimension.worldgen.ProvinceVeinTemplates;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.BasicEmiRecipe;
@@ -22,7 +22,6 @@ import dev.emi.emi.api.widget.WidgetHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public final class OreEmi {
@@ -182,10 +181,5 @@ public final class OreEmi {
             EmiPage.row(widgets, "In every Conflux dimension", 0, 12, W, EmiPage.DIM, null);
             EmiPage.draw(widgets, lines, 0, 26, W);
         }
-    }
-
-    @SuppressWarnings("unused")
-    private static String lower(String s) {
-        return s.toLowerCase(Locale.ROOT);
     }
 }

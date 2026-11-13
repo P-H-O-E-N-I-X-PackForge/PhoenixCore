@@ -41,7 +41,7 @@ public final class SourceEndpoint {
         if (be instanceof SourceRelayMachine relay) {
             return new SourceEndpoint(be, relay.getSource(), relay.isSender() ? Kind.RECEIVER : Kind.PROVIDER);
         }
-        if (be instanceof net.phoenix.core.integration.conflux.producer.ConfluxProducerMachine producer &&
+        if (be instanceof net.phoenix.core.integration.ars_nouveau.conflux.ConfluxProducerMachine producer &&
                 producer.takesSource()) {
 
             return new SourceEndpoint(be, producer.getSource(), Kind.RECEIVER);

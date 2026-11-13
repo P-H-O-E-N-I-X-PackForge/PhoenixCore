@@ -13,9 +13,9 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.phoenix.continuum.api.client.ContinuumRender;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
+import net.phoenixvine.wiki.ui.hud.GuiDraw;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;

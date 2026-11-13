@@ -1,6 +1,7 @@
 package net.phoenix.core.integration.solaris;
 
 import net.neoforged.fml.ModList;
+import net.phoenix.conflux.ConfluxConfigs;
 import net.phoenix.core.configs.PhoenixConfigs;
 
 public final class SolarisSupport {
@@ -14,6 +15,6 @@ public final class SolarisSupport {
     }
 
     public static boolean isActive() {
-        return isLoaded() && PhoenixConfigs.INSTANCE != null && PhoenixConfigs.INSTANCE.confluxSolaris.enabled;
+        return isLoaded() && PhoenixConfigs.INSTANCE != null && ConfluxConfigs.INSTANCE.solaris.enabled;
     }
 }

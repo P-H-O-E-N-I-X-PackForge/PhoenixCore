@@ -17,7 +17,6 @@ public class TeslaMultiAmpHatchRecipes {
     public static void init(@NotNull RecipeOutput provider) {
         final long[] V = GTValues.V;
         for (int tier = LV; tier <= OpV; tier++) {
-
             processMultiAmpAssemblerHatch(provider, tier, V);
         }
     }
@@ -25,7 +24,9 @@ public class TeslaMultiAmpHatchRecipes {
     private static void processMultiAmpAssemblerHatch(RecipeOutput provider, int tier, long[] V) {
         if (getQuadWireForTier(tier).isEmpty()) return;
 
-        if (PhoenixTeslaMachines.TESLA_INPUT_4A[tier] != null && PhoenixTeslaMachines.TESLA_INPUT_2A[tier] != null) {
+        if (PhoenixTeslaMachines.TESLA_INPUT_4A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_INPUT_2A[tier] != null &&
+                getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_4a_" + VN[tier].toLowerCase())
                     .inputItems(PhoenixTeslaMachines.TESLA_INPUT_2A[tier])
                     .inputItems(getQuadWireForTier(tier), 2)
@@ -34,7 +35,9 @@ public class TeslaMultiAmpHatchRecipes {
                     .EUt(V[tier]).duration(100).save(provider);
         }
 
-        if (PhoenixTeslaMachines.TESLA_OUTPUT_4A[tier] != null && PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier] != null) {
+        if (PhoenixTeslaMachines.TESLA_OUTPUT_4A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier] != null &&
+                getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_4a_" + VN[tier].toLowerCase())
                     .inputItems(PhoenixTeslaMachines.TESLA_OUTPUT_2A[tier])
                     .inputItems(getQuadWireForTier(tier), 2)
@@ -43,8 +46,10 @@ public class TeslaMultiAmpHatchRecipes {
                     .EUt(V[tier]).duration(100).save(provider);
         }
 
-        if (PhoenixTeslaMachines.TESLA_INPUT_16A[tier] != null && PhoenixTeslaMachines.TESLA_INPUT_4A[tier] != null &&
-                GTMachines.TRANSFORMER[tier] != null && getOctalWireForTier(tier) != null &&
+        if (PhoenixTeslaMachines.TESLA_INPUT_16A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_INPUT_4A[tier] != null &&
+                GTMachines.TRANSFORMER[tier] != null &&
+                getOctalWireForTier(tier) != null &&
                 getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_16a_" + VN[tier].toLowerCase())
                     .inputItems(GTMachines.TRANSFORMER[tier])
@@ -55,7 +60,11 @@ public class TeslaMultiAmpHatchRecipes {
                     .EUt(V[tier]).duration(100).save(provider);
         }
 
-        if (PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null && PhoenixTeslaMachines.TESLA_OUTPUT_4A[tier] != null) {
+        if (PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_OUTPUT_4A[tier] != null &&
+                GTMachines.TRANSFORMER[tier] != null &&
+                getOctalWireForTier(tier) != null &&
+                getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_16a_" + VN[tier].toLowerCase())
                     .inputItems(GTMachines.TRANSFORMER[tier])
                     .inputItems(PhoenixTeslaMachines.TESLA_OUTPUT_4A[tier])
@@ -65,7 +74,10 @@ public class TeslaMultiAmpHatchRecipes {
                     .EUt(V[tier]).duration(100).save(provider);
         }
 
-        if (PhoenixTeslaMachines.TESLA_INPUT_64A[tier] != null && PhoenixTeslaMachines.TESLA_INPUT_16A[tier] != null) {
+        if (PhoenixTeslaMachines.TESLA_INPUT_64A[tier] != null &&
+                PhoenixTeslaMachines.TESLA_INPUT_16A[tier] != null &&
+                GTMachines.HI_AMP_TRANSFORMER_2A[tier] != null &&
+                getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_input_hatch_64a_" + VN[tier].toLowerCase())
                     .inputItems(GTMachines.HI_AMP_TRANSFORMER_2A[tier], 1)
                     .inputItems(PhoenixTeslaMachines.TESLA_INPUT_16A[tier])
@@ -75,7 +87,9 @@ public class TeslaMultiAmpHatchRecipes {
         }
 
         if (PhoenixTeslaMachines.TESLA_OUTPUT_64A[tier] != null &&
-                PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null) {
+                PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier] != null &&
+                GTMachines.HI_AMP_TRANSFORMER_2A[tier] != null &&
+                getPlateForTier(tier) != null) {
             GTRecipeTypes.ASSEMBLER_RECIPES.recipeBuilder("tesla_output_hatch_64a_" + VN[tier].toLowerCase())
                     .inputItems(GTMachines.HI_AMP_TRANSFORMER_2A[tier], 1)
                     .inputItems(PhoenixTeslaMachines.TESLA_OUTPUT_16A[tier])

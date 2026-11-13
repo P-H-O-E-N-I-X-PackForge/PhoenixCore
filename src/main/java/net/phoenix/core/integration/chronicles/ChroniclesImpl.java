@@ -3,8 +3,8 @@ package net.phoenix.core.integration.chronicles;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.phoenix.conflux.api.ConfluxApi;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.api.ConfluxApi;
 import net.phoenixvine.chronicles.QuestAPI;
 import net.phoenixvine.chronicles.common.registry.PhoenixTaskRegistry;
 

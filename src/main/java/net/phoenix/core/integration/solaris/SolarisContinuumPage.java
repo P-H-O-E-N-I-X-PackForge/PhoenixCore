@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.phoenix.conflux.ConfluxConfigs;
 import net.phoenix.continuum.PhoenixContinuum;
 import net.phoenix.continuum.client.ContinuumClientState;
 import net.phoenix.continuum.client.pdim.PdimClientState;
@@ -20,7 +21,6 @@ import net.phoenix.continuum.data.ContinuumBody;
 import net.phoenix.continuum.data.ContinuumData;
 import net.phoenix.continuum.data.ContinuumSystem;
 import net.phoenix.continuum.data.DiscoveryStage;
-import net.phoenix.core.configs.PhoenixConfigs;
 import net.phoenixvine.solaris.client.render.MapPage;
 import net.phoenixvine.solaris.client.render.MapPages;
 import net.phoenixvine.solaris.client.render.MapProjection;
@@ -57,7 +57,7 @@ final class SolarisContinuumPage implements MapPage {
         List<ContinuumBody> out = new ArrayList<>();
         for (ContinuumBody body : ContinuumData.allBodies()) {
             if (ContinuumClientState.isHidden(body.id())) continue;
-            if (!PhoenixConfigs.INSTANCE.confluxSolaris.continuumPageShowUndiscovered &&
+            if (!ConfluxConfigs.INSTANCE.solaris.continuumPageShowUndiscovered &&
                     !ContinuumClientState.stage(body.id()).atLeast(DiscoveryStage.DETECTED)) {
                 continue;
             }
@@ -91,7 +91,7 @@ final class SolarisContinuumPage implements MapPage {
 
     @Override
     public boolean available() {
-        return PhoenixConfigs.INSTANCE.confluxSolaris.continuumPage && !bodies().isEmpty();
+        return ConfluxConfigs.INSTANCE.solaris.continuumPage && !bodies().isEmpty();
     }
 
     @Override

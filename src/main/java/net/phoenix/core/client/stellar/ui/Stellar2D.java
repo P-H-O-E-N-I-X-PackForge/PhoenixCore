@@ -4,8 +4,8 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
-import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
+import net.phoenixvine.wiki.ui.hud.GuiDraw;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;

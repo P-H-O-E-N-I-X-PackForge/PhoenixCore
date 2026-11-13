@@ -13,24 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class S2CStellarDataPacket implements CustomPacketPayload {
+public record S2CStellarDataPacket(List<StellarPlasma.Recipe> plasmas,
+                                   List<Map.Entry<ResourceLocation, StellarTint.Tint>> tints)
+        implements CustomPacketPayload {
 
     public static final Type<S2CStellarDataPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2c_stellar_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CStellarDataPacket> STREAM_CODEC = StreamCodec
-            .ofMember(S2CStellarDataPacket::encode, S2CStellarDataPacket::new);
+            .of(S2CStellarDataPacket::encode, S2CStellarDataPacket::decode);
 
-    private final List<StellarPlasma.Recipe> plasmas;
-    private final List<Map.Entry<ResourceLocation, StellarTint.Tint>> tints;
-
-    public S2CStellarDataPacket(List<StellarPlasma.Recipe> plasmas,
-                                List<Map.Entry<ResourceLocation, StellarTint.Tint>> tints) {
-        this.plasmas = plasmas;
-        this.tints = tints;
-    }
-
-    public S2CStellarDataPacket(RegistryFriendlyByteBuf buf) {
-        this.plasmas = new ArrayList<>();
+    private static S2CStellarDataPacket decode(RegistryFriendlyByteBuf buf) {
+        List<StellarPlasma.Recipe> plasmas = new ArrayList<>();
         int n = buf.readVarInt();
         for (int i = 0; i < n; i++) {
             plasmas.add(new StellarPlasma.Recipe(buf.readResourceLocation(), buf.readResourceLocation(), buf.readUtf(),
@@ -38,7 +31,7 @@ public class S2CStellarDataPacket implements CustomPacketPayload {
                     buf.readDouble(),
                     buf.readDouble(), buf.readFloat(), buf.readDouble(), buf.readFloat()));
         }
-        this.tints = new ArrayList<>();
+        List<Map.Entry<ResourceLocation, StellarTint.Tint>> tints = new ArrayList<>();
         int m = buf.readVarInt();
         for (int i = 0; i < m; i++) {
             ResourceLocation id = buf.readResourceLocation();
@@ -47,9 +40,12 @@ public class S2CStellarDataPacket implements CustomPacketPayload {
             tints.add(Map.entry(id, new StellarTint.Tint(fluid, tag, buf.readVarInt(), buf.readInt(), buf.readBoolean(),
                     buf.readBoolean())));
         }
+        return new S2CStellarDataPacket(plasmas, tints);
     }
 
-    public void encode(RegistryFriendlyByteBuf buf) {
+    private static void encode(RegistryFriendlyByteBuf buf, S2CStellarDataPacket pkt) {
+        var plasmas = pkt.plasmas;
+        var tints = pkt.tints;
         buf.writeVarInt(plasmas.size());
         for (var r : plasmas) {
             buf.writeResourceLocation(r.id());

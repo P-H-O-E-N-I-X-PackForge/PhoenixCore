@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class C2SAddShopEntryPacket implements CustomPacketPayload {
+public record C2SAddShopEntryPacket(String name, ItemStack icon, int cost, List<RewardSpec> rewardSpecs,
+                                    String category,
+                                    UUID editId)
+        implements CustomPacketPayload {
 
     public static final Type<C2SAddShopEntryPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_add_shop_entry_packet"));
@@ -35,26 +38,9 @@ public class C2SAddShopEntryPacket implements CustomPacketPayload {
         return TYPE;
     }
 
-    private final String name;
-    private final ItemStack icon;
-    private final int cost;
-    private final List<RewardSpec> rewardSpecs;
-    private final String category;
-    private final UUID editId;
-
     public C2SAddShopEntryPacket(String name, ItemStack icon, int cost, List<RewardSpec> rewardSpecs,
                                  String category) {
         this(name, icon, cost, rewardSpecs, category, null);
-    }
-
-    public C2SAddShopEntryPacket(String name, ItemStack icon, int cost, List<RewardSpec> rewardSpecs,
-                                 String category, UUID editId) {
-        this.name = name;
-        this.icon = icon;
-        this.cost = cost;
-        this.rewardSpecs = rewardSpecs;
-        this.category = category;
-        this.editId = editId;
     }
 
     public static void encode(C2SAddShopEntryPacket packet, RegistryFriendlyByteBuf buf) {

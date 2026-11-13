@@ -1,0 +1,18 @@
+package net.phoenix.core.client.cortex;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
+@OnlyIn(Dist.CLIENT)
+public final class CortexClientHandler {
+
+    private CortexClientHandler() {}
+
+    public static void open(BlockPos pos) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof CortexScreen open && open.pos().equals(pos)) return;
+        mc.setScreen(new CortexScreen(pos));
+    }
+}

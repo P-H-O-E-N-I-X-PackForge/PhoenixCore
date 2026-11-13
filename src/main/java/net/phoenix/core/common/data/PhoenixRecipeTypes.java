@@ -35,11 +35,12 @@ public class PhoenixRecipeTypes {
     public static GTRecipeTypeEntry SOURCE_EXTRACTION_RECIPES;
     public static GTRecipeTypeEntry HIGH_PRESSURE_ARC_FURNACE;
     public static GTRecipeTypeEntry PHOENIXWARE_FUSION_MK1;
-    public static GTRecipeTypeEntry DIMENSIONAL_ANCHORING_RECIPES, AETHERIAL_FABIRCATION_RECIPES;
+    public static GTRecipeTypeEntry AETHER_CRUCIBLE_RECIPES;
 
     public static GTRecipeTypeEntry GROWTH_RECIPES, BOTANICAL_GROWTH_RECIPES, VINE_GROWTH_RECIPES;
     public static GTRecipeTypeEntry ASTRAL_WEAVING_RECIPES;
     public static GTRecipeTypeEntry SANCTUM_WARD_RECIPES;
+    public static GTRecipeTypeEntry PHOENIX_FORGE_RECIPES;
 
     public static void init() {
         GROWTH_RECIPES = REGISTRATE.recipeType("growth", MULTIBLOCK)
@@ -73,9 +74,9 @@ public class PhoenixRecipeTypes {
                 .setSound(GTSoundEntries.MIXER)
                 .register();
 
-        AETHERIAL_FABIRCATION_RECIPES = REGISTRATE.recipeType("aetherial_fabrication", MULTIBLOCK)
+        AETHER_CRUCIBLE_RECIPES = REGISTRATE.recipeType("aether_crucible", MULTIBLOCK)
                 .setEUIO(IO.IN)
-                .setMaxIOSize(3, 25, 1, 0)
+                .setMaxIOSize(3, 30, 2, 1)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
                 .setSound(GTSoundEntries.ARC)
                 .register();
@@ -83,13 +84,6 @@ public class PhoenixRecipeTypes {
         JUKEBLOCK = REGISTRATE.recipeType("jukeblock", MULTIBLOCK)
                 .setEUIO(IO.IN)
                 .setMaxIOSize(3, 25, 1, 0)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
-                .setSound(GTSoundEntries.ARC)
-                .register();
-
-        DIMENSIONAL_ANCHORING_RECIPES = REGISTRATE.recipeType("dimensional_anchoring", MULTIBLOCK)
-                .setEUIO(IO.IN)
-                .setMaxIOSize(3, 30, 1, 0)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
                 .setSound(GTSoundEntries.ARC)
                 .register();
@@ -126,6 +120,13 @@ public class PhoenixRecipeTypes {
                 .setEUIO(IO.IN)
                 .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_COMPRESS))
                 .setSound(GTSoundEntries.BATH)
+                .register();
+
+        PHOENIX_FORGE_RECIPES = REGISTRATE.recipeType("phoenix_forge", MULTIBLOCK)
+                .setMaxIOSize(6, 6, 6, 6)
+                .setEUIO(IO.IN)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_EXTRACT))
+                .setSound(GTSoundEntries.FURNACE)
                 .register();
 
         SANCTUM_WARD_RECIPES = REGISTRATE.recipeType("sanctum_ward", MULTIBLOCK)

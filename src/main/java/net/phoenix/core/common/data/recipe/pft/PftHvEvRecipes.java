@@ -195,28 +195,6 @@ public final class PftHvEvRecipes {
                 .EUt(GTValues.VA[GTValues.HV] / 2)
                 .save();
 
-        PftRecipe.gt(provider, "assembler", "dimensional_anchor")
-                .itemInputs("4x phoenixcore:frost_reinforced_stained_steel_drilling_kit",
-                        "2x phoenixcore:frost_reinforced_stained_steel_gear",
-                        "8x phoenixcore:dense_frost_reinforced_stained_steel_plate", "3x #gtceu:circuits/ev",
-                        "3x phoenixcore:dense_zircalloy_plate", "4x phoenixcore:icy_steel_matrix_single_wire")
-                .inputFluids("gtceu:soldering_alloy 4200")
-                .itemOutputs("1x phoenixcore:dimensional_anchor")
-                .duration(150)
-                .EUt(GTValues.VA[GTValues.EV] / 2)
-                .save();
-
-        PftRecipe.gt(provider, "assembler", "aetherial_fabricator")
-                .itemInputs("4x phoenixcore:source_imbued_titanium_drill_head",
-                        "2x phoenixcore:source_imbued_titanium_gear",
-                        "8x phoenixcore:source_imbued_titanium_plate", "5x #gtceu:circuits/ev",
-                        "3x phoenixcore:dense_zircalloy_plate", "4x phoenixcore:source_titanium_filament_single_wire")
-                .inputFluids("gtceu:soldering_alloy 4200")
-                .itemOutputs("1x phoenixcore:aetherical_fabricator")
-                .duration(150)
-                .EUt(GTValues.VA[GTValues.EV] / 2)
-                .save();
-
         PftRecipe.gt(provider, "compressor", "budding_amethyst_assembly")
                 .itemInputs("16x minecraft:amethyst_block")
                 .itemOutputs("minecraft:budding_amethyst")

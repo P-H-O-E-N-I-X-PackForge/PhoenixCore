@@ -5,8 +5,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.integration.conflux.dimension.worldgen.Landforms;
+import net.phoenix.conflux.ConfluxConfigs;
+import net.phoenix.conflux.dimension.worldgen.Landforms;
 import net.phoenix.core.network.packet.S2CLandformZonesPacket;
 import net.phoenixvine.solaris.client.render.LineRenderer;
 import net.phoenixvine.solaris.client.render.MapLayer;
@@ -36,7 +36,7 @@ final class SolarisZoneBridge implements MapLayer {
 
     @Override
     public void render(GuiGraphics g, ResourceLocation dimension, MapProjection projection, float partialTick) {
-        if (!PhoenixConfigs.INSTANCE.confluxSolaris.landformZones) return;
+        if (!ConfluxConfigs.INSTANCE.solaris.landformZones) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;

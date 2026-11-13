@@ -69,7 +69,7 @@ public final class VaultPanel {
         }
 
         ModularPanel<?> panel = ModularPanel.defaultPanel("vault", WIDTH, HEIGHT);
-        net.phoenix.core.client.gui.PanelFit.apply(panel, WIDTH, HEIGHT);
+        net.phoenixvine.wiki.ui.PanelFit.apply(panel, WIDTH, HEIGHT);
         ChosenState chosen = new ChosenState(session);
         if (!session.server) {
             sync.addCloseListener(player -> VaultScreenState.save(session.displayMode, chosen.sortMode,

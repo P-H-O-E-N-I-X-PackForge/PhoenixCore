@@ -1,7 +1,6 @@
 package net.phoenix.core.network.packet;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,33 +15,22 @@ import net.phoenix.core.common.item.cinder.CinderAtlasData;
 import net.phoenix.core.common.item.cinder.CinderAtlasItem;
 import net.phoenix.core.common.item.cinder.CinderSchemaData;
 import net.phoenix.core.integration.ae2.CinderAtlasWirelessLink;
+import net.phoenix.core.network.PacketCodecs;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 
-public class C2SCinderAtlasRequestMaterialsPacket implements CustomPacketPayload {
+public record C2SCinderAtlasRequestMaterialsPacket(InteractionHand hand) implements CustomPacketPayload {
 
     public static final Type<C2SCinderAtlasRequestMaterialsPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2_s_cinder_atlas_request_materials_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SCinderAtlasRequestMaterialsPacket> STREAM_CODEC = StreamCodec
-            .ofMember(C2SCinderAtlasRequestMaterialsPacket::encode, C2SCinderAtlasRequestMaterialsPacket::new);
+            .composite(
+                    PacketCodecs.enumOrdinal(InteractionHand.class), C2SCinderAtlasRequestMaterialsPacket::hand,
+                    C2SCinderAtlasRequestMaterialsPacket::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    private final InteractionHand hand;
-
-    public C2SCinderAtlasRequestMaterialsPacket(InteractionHand hand) {
-        this.hand = hand;
-    }
-
-    public C2SCinderAtlasRequestMaterialsPacket(FriendlyByteBuf buf) {
-        this.hand = buf.readEnum(InteractionHand.class);
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeEnum(hand);
     }
 
     public static void handle(C2SCinderAtlasRequestMaterialsPacket msg, IPayloadContext ctxGetter) {
@@ -50,7 +38,7 @@ public class C2SCinderAtlasRequestMaterialsPacket implements CustomPacketPayload
         ctx.enqueueWork(() -> {
             ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) ctx.player());
             if (player == null) return;
-            ItemStack stack = player.getItemInHand(msg.hand);
+            ItemStack stack = player.getItemInHand(msg.hand());
             if (!(stack.getItem() instanceof CinderAtlasItem)) return;
             if (!(player.level() instanceof ServerLevel level)) return;
 

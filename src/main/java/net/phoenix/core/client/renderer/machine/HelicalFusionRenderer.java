@@ -22,6 +22,9 @@ import org.joml.Matrix4f;
 public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, HelicalFusionRenderer> {
 
     public static final HelicalFusionRenderer INSTANCE = new HelicalFusionRenderer();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .standard("helical_fusion", "Helical Fusion Ring");
     public static final MapCodec<HelicalFusionRenderer> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<FusionReactorMachine, HelicalFusionRenderer> TYPE = new DynamicRenderType<>(
             CODEC);
@@ -103,7 +106,7 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
         int gBase = (int) (gf * 255f);
         int bBase = (int) (bf * 255f);
 
-        float time = (machine.getOffsetTimer() + partialTick) * 0.02f;
+        float time = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) * 0.02f);
 
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         Vec3 center = Vec3.atCenterOf(machine.getBlockPos());
@@ -129,7 +132,9 @@ public class HelicalFusionRenderer extends DynamicRender<FusionReactorMachine, H
         poseStack.pushPose();
         poseStack.translate(frontStep.x + 0.5, frontStep.y + 0.5, frontStep.z + 0.5);
 
-        VertexConsumer vc = buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING());
+        net.phoenix.core.client.fx.FxHook.scale(FX, poseStack, net.minecraft.world.phys.Vec3.ZERO);
+        VertexConsumer vc = net.phoenix.core.client.fx.FxHook.glow(FX, poseStack.last().pose(),
+                buffer.getBuffer(PhoenixRenderTypes.LIGHT_RING()), net.minecraft.world.phys.Vec3.ZERO, time);
 
         renderHelix(poseStack, vc, time, 0f,
                 rBase, gBase, bBase, alpha,

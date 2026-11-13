@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifierList;
 
-import net.phoenix.core.integration.conflux.research.ConfluxRecipeEffects;
+import net.phoenix.conflux.research.ConfluxRecipeEffects;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

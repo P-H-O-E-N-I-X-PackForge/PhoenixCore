@@ -4,9 +4,9 @@ public final class PhoenixChroniclesTriggers {
 
     private PhoenixChroniclesTriggers() {}
 
-    public static final String CONFLUX_DISCIPLINE_CHOSEN = "phoenixcore:conflux/discipline_chosen";
-    public static final String CONFLUX_RESEARCH = "phoenixcore:conflux/research";
-    public static final String CONFLUX_FLAG = "phoenixcore:conflux/flag";
+    public static final String CONFLUX_DISCIPLINE_CHOSEN = net.phoenix.conflux.api.ConfluxHooks.CONFLUX_DISCIPLINE_CHOSEN;
+    public static final String CONFLUX_RESEARCH = net.phoenix.conflux.api.ConfluxHooks.CONFLUX_RESEARCH;
+    public static final String CONFLUX_FLAG = net.phoenix.conflux.api.ConfluxHooks.CONFLUX_FLAG;
 
     public static final String STELLAR_GAS_CLOUD = "phoenixcore:stellar/gas_cloud";
     public static final String STELLAR_PROTOSTAR = "phoenixcore:stellar/protostar";

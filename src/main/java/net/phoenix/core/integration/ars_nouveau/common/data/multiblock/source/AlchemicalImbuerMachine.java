@@ -16,11 +16,11 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.common.data.PhoenixRecipeTypes;
 import net.phoenix.core.saveddata.SoulSavedData;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.PanelSyncManager;
 import lombok.Getter;
@@ -168,11 +168,11 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
         return isRemote() ? extractMode : getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get();
     }
 
-    private final net.phoenix.core.client.gui.hud.Heroes.Hero IMBUE_HERO = net.phoenix.core.client.gui.hud.Heroes.runes(
+    private final net.phoenixvine.wiki.ui.hud.Heroes.Hero IMBUE_HERO = net.phoenixvine.wiki.ui.hud.Heroes.runes(
             () -> (float) Math.min(1.0,
                     totalWorkTicks / (double) HARMONIZATION_THRESHOLD),
-            net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent());
-    private final net.phoenix.core.client.gui.hud.Heroes.Hero EXTRACT_HERO = net.phoenix.core.client.gui.hud.Heroes
+            net.phoenixvine.wiki.ui.hud.HudTheme.ARCANE.accent());
+    private final net.phoenixvine.wiki.ui.hud.Heroes.Hero EXTRACT_HERO = net.phoenixvine.wiki.ui.hud.Heroes
             .sigil(() -> Math.min(1.0f, cachedSoulDensity / 2.0f),
                     0xFF_FFC44D);
 
@@ -200,7 +200,7 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
     private HudModel hudModel() {
         return HudModel.of("Alchemical Imbuer")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.ARCANE)
                 .hero((g, x, y, w, h, t) -> (extracting() ? EXTRACT_HERO : IMBUE_HERO).draw(g, x, y, w, h, t), 44)
                 .badge(() -> HudRecipes.badge(this))
                 .subtitle(() -> (extracting() ? "Siphoning source from the chunk: " : "Imbuing: ") +

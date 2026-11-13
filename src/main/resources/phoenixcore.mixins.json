@@ -29,8 +29,6 @@
     "minecraft.RecipeManagerMixin",
   ],
   "client": [
-    "accessor.GameRendererAccessor",
-    "accessor.PostChainAccessor",
     "ars.RelayTileMixin",
     "client.MixinMachineModel",
     "emi.EmiRenderHelperMixin",
@@ -41,11 +39,11 @@
     "minecraft.CreateWorldScreenMixin",
     "minecraft.FeatureFlagsMixin",
     "minecraft.GuiGraphicsCountSuffixMixin",
-    "minecraft.LevelRendererMixin",
     "minecraft.MixinOggAudioStream",
     "minecraft.RenderTargetMixin",
     "minecraft.WindowTitleMixin",
     "minecraft.SoundEngineMixin",
+    "minecraft.VertexBufferUploadGuardMixin",
     "modularui.ItemDisplayWidgetMixin",
     "modularui.OverlayStackMixin"
   ],

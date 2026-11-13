@@ -10,10 +10,10 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.phoenix.conflux.ConfluxConfigs;
+import net.phoenix.conflux.api.event.ConfluxResearchEvent;
+import net.phoenix.conflux.api.event.ConfluxTeamChangedEvent;
 import net.phoenix.core.PhoenixCore;
-import net.phoenix.core.api.event.ConfluxResearchEvent;
-import net.phoenix.core.api.event.ConfluxTeamChangedEvent;
-import net.phoenix.core.configs.PhoenixConfigs;
 
 public final class SolarisEvents {
 
@@ -30,7 +30,7 @@ public final class SolarisEvents {
         public static void onServerStarted(ServerStartedEvent event) {
             if (!SolarisSupport.isActive()) return;
             SolarisGatesBridge.registerGates();
-            if (PhoenixConfigs.INSTANCE.confluxSolaris.gateMapFeatures) SolarisGatesBridge.bindDefaults();
+            if (ConfluxConfigs.INSTANCE.solaris.gateMapFeatures) SolarisGatesBridge.bindDefaults();
             SolarisLandmarkBridge.init();
         }
 
@@ -55,7 +55,7 @@ public final class SolarisEvents {
             if (!(event.getEntity() instanceof ServerPlayer player)) return;
             if (!SolarisSupport.isActive()) return;
 
-            var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+            var config = ConfluxConfigs.INSTANCE.solaris;
             if (config.landformMarkers && player.tickCount % DISCOVER_INTERVAL_TICKS == 0) {
                 SolarisLandmarkBridge.discover(player);
             }
@@ -83,7 +83,7 @@ public final class SolarisEvents {
         public static void onClientTick(ClientTickEvent.Post event) {
             if (++ticks < SKIN_INTERVAL_TICKS) return;
             ticks = 0;
-            if (!SolarisSupport.isActive() || !PhoenixConfigs.INSTANCE.confluxSolaris.disciplineSkin) return;
+            if (!SolarisSupport.isActive() || !ConfluxConfigs.INSTANCE.solaris.disciplineSkin) return;
             SolarisSkinBridge.update();
         }
 

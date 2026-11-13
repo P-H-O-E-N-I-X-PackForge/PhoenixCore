@@ -4,8 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
-import net.phoenix.core.integration.conflux.research.WorldResearchData;
+import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.research.WorldResearchData;
 import net.phoenix.core.shop.RewardSpec;
 
 public class ResearchUnlockShopReward implements ShopReward {

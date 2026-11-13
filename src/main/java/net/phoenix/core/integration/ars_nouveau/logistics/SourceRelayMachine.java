@@ -11,13 +11,13 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.phoenix.core.client.gui.hud.Heroes;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudTheme;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability;
 import net.phoenix.core.integration.ars_nouveau.api.machine.trait.NotifiableSourceContainer;
-import net.phoenix.core.utils.TeamUtils;
+import net.phoenixvine.wiki.ui.hud.Heroes;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudTheme;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
+import net.phoenixvine.wiki.util.TeamUtils;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;

@@ -1,8 +1,8 @@
 package net.phoenix.core.integration.ars_nouveau.client;
 
 import net.minecraft.client.renderer.ShaderInstance;
-import net.phoenix.core.client.worldfx.PhoenixScreenEffect;
 import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenixvine.wiki.fx.PhoenixScreenEffect;
 
 public class SoulVisionScreenEffect extends PhoenixScreenEffect {
 

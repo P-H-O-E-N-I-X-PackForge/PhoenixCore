@@ -27,6 +27,9 @@ import static com.mojang.math.Axis.YP;
 public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachine, EngineGearboxRenderer> {
 
     public static final EngineGearboxRenderer INSTANCE = new EngineGearboxRenderer();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .sizePower("engine_gearbox", "Bio-Aetheric Engine stream");
     public static final MapCodec<EngineGearboxRenderer> CODEC = MapCodec.unit(INSTANCE);
     public static final DynamicRenderType<BioAethericEngineMachine, EngineGearboxRenderer> TYPE = new DynamicRenderType<>(
             CODEC);
@@ -68,7 +71,9 @@ public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachin
 
         stack.translate(3, 0, 0.0);
 
-        renderEnergyStream(stack, vc, progress);
+        net.phoenix.core.client.fx.FxHook.scale(FX, stack, net.minecraft.world.phys.Vec3.ZERO);
+        renderEnergyStream(stack, net.phoenix.core.client.fx.FxHook.glow(FX, stack.last().pose(), vc,
+                net.minecraft.world.phys.Vec3.ZERO, 0f), progress);
 
         stack.popPose();
     }
@@ -107,7 +112,7 @@ public class EngineGearboxRenderer extends DynamicRender<BioAethericEngineMachin
 
     @Override
     public @NotNull AABB getRenderBoundingBox(BioAethericEngineMachine m) {
-        return new AABB(m.getBlockPos()).inflate(5.0);
+        return new AABB(m.getBlockPos()).inflate(16.0);
     }
 
     private static class GearParticle {

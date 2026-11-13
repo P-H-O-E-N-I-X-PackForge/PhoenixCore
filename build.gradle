@@ -206,6 +206,10 @@ dependencies {
         version { strictly "[${phoenix_wiki_version},)"; prefer phoenix_wiki_version }
     }
     compileOnly "net.phoenixvine.guilds:phoenix-guilds-neoforge:${phoenix_guilds_version}"
+    implementation("net.phoenix.conflux:phoenix-conflux-neoforge:${phoenix_conflux_version}") { transitive = false }
+    implementation("net.phoenix.phoenix_fission:phoenix-fission-neoforge:${phoenix_fission_version}") {
+        transitive = false
+    }
     implementation("net.phoenix_tesla_network.tesla:phoenix_tesla_network:${phoenix_tesla_version}") {
         transitive = false
     }

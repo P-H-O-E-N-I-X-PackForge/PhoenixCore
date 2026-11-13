@@ -64,7 +64,7 @@ public class ClientTickHandler {
         }
 
         while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
-            net.phoenix.core.integration.conflux.dimension.sky.SkyManager manager = net.phoenix.core.integration.conflux.dimension.sky.SkyManager
+            net.phoenix.conflux.dimension.sky.SkyManager manager = net.phoenix.conflux.dimension.sky.SkyManager
                     .getInstance();
             manager.toggleSkyRendering();
             mc.player.displayClientMessage(Component.literal(
@@ -72,12 +72,12 @@ public class ClientTickHandler {
         }
 
         while (PhoenixKeybinds.SHOW_SHADER_PROFILER.consumeClick()) {
-            net.phoenix.core.client.worldfx.ShaderProfiler.enabled = !net.phoenix.core.client.worldfx.ShaderProfiler.enabled;
-            if (!net.phoenix.core.client.worldfx.ShaderProfiler.enabled) {
-                net.phoenix.core.client.worldfx.ShaderProfiler.clear();
+            net.phoenixvine.wiki.fx.ShaderProfiler.enabled = !net.phoenixvine.wiki.fx.ShaderProfiler.enabled;
+            if (!net.phoenixvine.wiki.fx.ShaderProfiler.enabled) {
+                net.phoenixvine.wiki.fx.ShaderProfiler.clear();
             }
             mc.player.displayClientMessage(Component.literal("[PhoenixCore] Shader profiler HUD: " +
-                    (net.phoenix.core.client.worldfx.ShaderProfiler.enabled ? "ON" : "OFF")), true);
+                    (net.phoenixvine.wiki.fx.ShaderProfiler.enabled ? "ON" : "OFF")), true);
         }
 
         while (PhoenixKeybinds.OPEN_RECIPE_BUILDER.consumeClick()) {

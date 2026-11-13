@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer",
+      "y": 180
+    },
+    "facing=up": {
+      "gtceu:z": 180,
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/expanded_me_pattern_buffer",
+      "y": 270
+    }
+  }
+}

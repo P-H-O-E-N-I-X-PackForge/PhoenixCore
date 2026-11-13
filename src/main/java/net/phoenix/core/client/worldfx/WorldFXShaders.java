@@ -17,41 +17,19 @@ public final class WorldFXShaders {
 
     public static ShaderInstance BLACK_HOLE;
 
-    public static ShaderInstance NEBULA;
-
     public static ShaderInstance ATMOSPHERE_GRADE;
-
-    public static ShaderInstance VOID_GALAXY;
-
-    public static ShaderInstance CINEMA_VOID_GALAXY;
-
-    public static ShaderInstance PHOENIX_SUNFLARE;
-
-    public static ShaderInstance SCULK_ABYSS;
-
-    public static ShaderInstance SEALED_A_INDUSTRIAL;
-
-    public static ShaderInstance SEALED_B_CHAOS;
-
-    public static ShaderInstance VOID_BLACK_HOLE;
 
     public static ShaderInstance SOUL_VISION_COMPOSITE;
 
+    public static ShaderInstance REBIRTH_GALAXY;
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         register(event, "phoenixcore:phoenix_black_hole", DefaultVertexFormat.POSITION, s -> BLACK_HOLE = s);
-        register(event, "phoenixcore:phoenix_nebula", DefaultVertexFormat.POSITION, s -> NEBULA = s);
         register(event, "phoenixcore:phoenix_atmosphere_grade", DefaultVertexFormat.POSITION,
                 s -> ATMOSPHERE_GRADE = s);
-        register(event, "phoenixcore:void_galaxy", DefaultVertexFormat.POSITION, s -> VOID_GALAXY = s);
-        register(event, "phoenixcore:cinema_void_galaxy", DefaultVertexFormat.POSITION,
-                s -> CINEMA_VOID_GALAXY = s);
-        register(event, "phoenixcore:phoenix_sunflare", DefaultVertexFormat.POSITION, s -> PHOENIX_SUNFLARE = s);
-        register(event, "phoenixcore:sculk_abyss", DefaultVertexFormat.POSITION, s -> SCULK_ABYSS = s);
-        register(event, "phoenixcore:sealed_a_industrial", DefaultVertexFormat.POSITION, s -> SEALED_A_INDUSTRIAL = s);
-        register(event, "phoenixcore:sealed_b_chaos", DefaultVertexFormat.POSITION, s -> SEALED_B_CHAOS = s);
-        register(event, "phoenixcore:void_black_hole", DefaultVertexFormat.POSITION, s -> VOID_BLACK_HOLE = s);
         register(event, "phoenixcore:soul_vision_composite", DefaultVertexFormat.POSITION,
                 s -> SOUL_VISION_COMPOSITE = s);
+        register(event, "phoenixcore:rebirth_galaxy", DefaultVertexFormat.POSITION, s -> REBIRTH_GALAXY = s);
     }
 
     private static void register(RegisterShadersEvent event,

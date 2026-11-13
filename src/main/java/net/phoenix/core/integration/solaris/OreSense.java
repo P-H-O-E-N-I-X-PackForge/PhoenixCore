@@ -11,16 +11,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.neoforged.neoforge.common.NeoForge;
-import net.phoenix.core.api.OreSenseApi;
-import net.phoenix.core.api.OreSenseEvent;
-import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.integration.conflux.dimension.DisciplineThemeRegistry;
-import net.phoenix.core.integration.conflux.dimension.worldgen.DisciplineWorldgenConfig;
-import net.phoenix.core.integration.conflux.research.ResearchNode;
-import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
-import net.phoenix.core.integration.conflux.research.ResearchTree;
-import net.phoenix.core.integration.conflux.research.ResearchTreeRegistry;
-import net.phoenix.core.integration.conflux.research.WorldResearchData;
+import net.phoenix.conflux.ConfluxConfigs;
+import net.phoenix.conflux.api.OreMemoryData;
+import net.phoenix.conflux.api.OreSenseApi;
+import net.phoenix.conflux.api.OreSenseEvent;
+import net.phoenix.conflux.dimension.DisciplineThemeRegistry;
+import net.phoenix.conflux.dimension.worldgen.DisciplineWorldgenConfig;
+import net.phoenix.conflux.research.ResearchNode;
+import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.research.ResearchTree;
+import net.phoenix.conflux.research.ResearchTreeRegistry;
+import net.phoenix.conflux.research.WorldResearchData;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +54,7 @@ final class OreSense {
     private OreSense() {}
 
     static int tier(ServerPlayer player) {
-        String discipline = net.phoenix.core.api.ConfluxApi.discipline(player);
+        String discipline = net.phoenix.conflux.api.ConfluxApi.discipline(player);
         if (discipline == null) return 0;
 
         ResearchTree tree = null;
@@ -74,7 +75,7 @@ final class OreSense {
         if (done == 0) return 0;
 
         int percent = done * 100 / tree.getNodes().size();
-        var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+        var config = ConfluxConfigs.INSTANCE.solaris;
         if (percent >= config.oreTier3Percent) return 3;
         if (percent >= config.oreTier2Percent) return 2;
         return 1;
@@ -95,7 +96,7 @@ final class OreSense {
 
         if (CACHE.size() > MAX_CACHE) CACHE.clear();
 
-        int radius = PhoenixConfigs.INSTANCE.confluxSolaris.oreSenseRadiusChunks;
+        int radius = ConfluxConfigs.INSTANCE.solaris.oreSenseRadiusChunks;
         ChunkPos center = player.chunkPosition();
         long now = level.getGameTime();
         int scanned = 0;
@@ -129,7 +130,7 @@ final class OreSense {
                                  List<Reading> found) {
         if (!persistent(discipline) || tier(player) == 0) return;
 
-        var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+        var config = ConfluxConfigs.INSTANCE.solaris;
         UUID team = ResearchTeamHelper.getTeamId(player);
         String dimension = level.dimension().location().toString();
 
@@ -148,7 +149,7 @@ final class OreSense {
 
     static List<Reading> readings(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
-        var config = PhoenixConfigs.INSTANCE.confluxSolaris;
+        var config = ConfluxConfigs.INSTANCE.solaris;
         String discipline = disciplineOf(level);
         if (discipline != null && persistent(discipline)) return remembered(player, level);
         int radius = config.oreSenseRadiusChunks;

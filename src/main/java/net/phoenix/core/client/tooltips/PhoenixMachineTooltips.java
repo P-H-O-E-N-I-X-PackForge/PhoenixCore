@@ -37,30 +37,6 @@ public class PhoenixMachineTooltips {
         }
     }
 
-    public static final BiConsumer<ItemStack, List<Component>> DIMENSIONAL_ANCHOR_TOOLTIPS = (stack, tooltip) -> {
-        if (!Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("multiblock.tooltip.machinetype",
-                    Component.literal("§eDimensional Anchoring")));
-            tooltip.add(Component.translatable("multiblock.yellowline"));
-
-            addMultiline(tooltip, "gtultimate.custom.tooltip_dimensional_anchor");
-        }
-
-        PhoenixMachineTooltips.appendStructure(tooltip, TooltipConstants.STABLE_CASING);
-    };
-    public static final BiConsumer<ItemStack, List<Component>> AETHERIAL_FABRICATOR_TOOLTIPS = (stack, tooltip) -> {
-        if (!Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("multiblock.tooltip.machinetype",
-                    Component.literal("§eAetherial Fabricaton")));
-            tooltip.add(Component.translatable("multiblock.yellowline"));
-
-            addMultiline(tooltip, "gtultimate.custom.tooltip_aetherial_fabricator");
-
-        }
-
-        PhoenixMachineTooltips.appendStructure(tooltip, TooltipConstants.CLEAN_CASING);
-    };
-
     public static final BiConsumer<ItemStack, List<Component>> ALCHEMICAL_IMBUER_TOOLTIPS = (stack, tooltip) -> {
         if (!Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("multiblock.tooltip.machinetype",

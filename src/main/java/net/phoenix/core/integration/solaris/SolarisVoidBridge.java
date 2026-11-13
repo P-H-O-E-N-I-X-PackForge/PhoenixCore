@@ -8,7 +8,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.configs.PhoenixConfigs;
+import net.phoenix.conflux.ConfluxConfigs;
 import net.phoenixvine.solaris.client.color.ChunkColorCache;
 import net.phoenixvine.solaris.client.color.ChunkKey;
 import net.phoenixvine.solaris.client.render.MapLayer;
@@ -49,7 +49,7 @@ final class SolarisVoidBridge implements MapLayer {
 
     @Override
     public void render(GuiGraphics g, ResourceLocation dimension, MapProjection projection, float partialTick) {
-        if (!VOID.equals(dimension) || !PhoenixConfigs.INSTANCE.confluxSolaris.voidChasms) return;
+        if (!VOID.equals(dimension) || !ConfluxConfigs.INSTANCE.solaris.voidChasms) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 

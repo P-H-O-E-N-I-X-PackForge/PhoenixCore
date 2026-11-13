@@ -10,12 +10,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.integration.conflux.dimension.DisciplineChunkGenerator;
-import net.phoenix.core.integration.conflux.dimension.EtherealSpawnDimension;
-import net.phoenix.core.integration.conflux.dimension.worldgen.Landforms;
-import net.phoenix.core.integration.conflux.research.ResearchTeamHelper;
-import net.phoenix.core.integration.conflux.terminal.ResearchTerminalBlockEntity;
+import net.phoenix.conflux.ConfluxConfigs;
+import net.phoenix.conflux.dimension.DisciplineChunkGenerator;
+import net.phoenix.conflux.dimension.EtherealSpawnDimension;
+import net.phoenix.conflux.dimension.worldgen.Landforms;
+import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.terminal.ResearchTerminalBlockEntity;
 import net.phoenix.core.network.packet.S2CLandformZonesPacket;
 import net.phoenixvine.solaris.api.SolarisMarkerSyncEvent;
 import net.phoenixvine.solaris.integration.MarkerSync;
@@ -44,7 +44,7 @@ final class SolarisLandmarkBridge {
         if (!SolarisSupport.isActive()) return;
         forget(event.getPlayer().getUUID());
         sync(event.getPlayer());
-        if (PhoenixConfigs.INSTANCE.confluxSolaris.oreSense) SolarisOreBridge.sync(event.getPlayer());
+        if (ConfluxConfigs.INSTANCE.solaris.oreSense) SolarisOreBridge.sync(event.getPlayer());
     }
 
     static void forget(UUID player) {
@@ -57,7 +57,7 @@ final class SolarisLandmarkBridge {
         ServerLevel level = player.serverLevel();
         if (!(level.getChunkSource().getGenerator() instanceof DisciplineChunkGenerator generator)) return;
 
-        int margin = PhoenixConfigs.INSTANCE.confluxSolaris.discoverMargin;
+        int margin = ConfluxConfigs.INSTANCE.solaris.discoverMargin;
         var sightings = generator.landformSightingsNear(level, player.getBlockX(), player.getBlockZ(), margin);
         if (sightings.isEmpty()) return;
 
@@ -69,9 +69,9 @@ final class SolarisLandmarkBridge {
                     sighting.icon(), sighting.x(), sighting.z(), sighting.baseY(), sighting.zones());
             if (data.discover(team, sighting.key(), entry)) {
                 player.displayClientMessage(Component.literal("Discovered: " + sighting.label()), true);
-                net.phoenix.core.integration.conflux.world.ConfluxWorld.fire(player,
-                        net.phoenix.core.integration.conflux.world.ConfluxWorld.LANDFORM_DISCOVERED,
-                        net.phoenix.core.integration.conflux.world.ConfluxWorld.data("landform", sighting.key(),
+                net.phoenix.conflux.world.ConfluxWorld.fire(player,
+                        net.phoenix.conflux.world.ConfluxWorld.LANDFORM_DISCOVERED,
+                        net.phoenix.conflux.world.ConfluxWorld.data("landform", sighting.key(),
                                 "label", sighting.label(), "x", sighting.x(), "z", sighting.z(), "icon",
                                 sighting.icon()));
             }
@@ -81,7 +81,7 @@ final class SolarisLandmarkBridge {
     static void sync(ServerPlayer player) {
         UUID team = ResearchTeamHelper.getTeamId(player);
         Map<String, MarkerSync.Marker> desired = new HashMap<>();
-        Map<String, LandformDiscoveryData.Entry> landforms = PhoenixConfigs.INSTANCE.confluxSolaris.landformMarkers ?
+        Map<String, LandformDiscoveryData.Entry> landforms = ConfluxConfigs.INSTANCE.solaris.landformMarkers ?
                 LandformDiscoveryData.get(player.serverLevel()).forTeam(team) : Map.of();
         for (Map.Entry<String, LandformDiscoveryData.Entry> known : landforms.entrySet()) {
             LandformDiscoveryData.Entry e = known.getValue();
@@ -89,10 +89,10 @@ final class SolarisLandmarkBridge {
             desired.put(key, new MarkerSync.Marker(e.label(), ResourceLocation.parse(e.dimension()),
                     new BlockPos(e.x(), e.y(), e.z()), e.color(), e.icon(), "Landforms"));
         }
-        if (PhoenixConfigs.INSTANCE.confluxSolaris.researchSiteMarkers) addSites(player, team, desired);
-        if (PhoenixConfigs.INSTANCE.confluxSolaris.networkSiteMarkers) addNetworkSites(player, desired);
+        if (ConfluxConfigs.INSTANCE.solaris.researchSiteMarkers) addSites(player, team, desired);
+        if (ConfluxConfigs.INSTANCE.solaris.networkSiteMarkers) addNetworkSites(player, desired);
         MARKERS.apply(player, desired);
-        if (PhoenixConfigs.INSTANCE.confluxSolaris.landformZones) sendZones(player, team);
+        if (ConfluxConfigs.INSTANCE.solaris.landformZones) sendZones(player, team);
     }
 
     private static void sendZones(ServerPlayer player, UUID team) {

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class S2CShopSyncPacket implements CustomPacketPayload {
+public record S2CShopSyncPacket(List<ShopEntryView> entries) implements CustomPacketPayload {
 
     public static final Type<S2CShopSyncPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "s2_c_shop_sync_packet"));
@@ -29,10 +29,12 @@ public class S2CShopSyncPacket implements CustomPacketPayload {
     public record ShopEntryView(UUID id, String name, ItemStack icon, int cost, List<String> rewardDescriptions,
                                 List<RewardSpec> rewardSpecs, String category, String lockedReason) {}
 
-    private final List<ShopEntryView> entries;
-
     public S2CShopSyncPacket(List<ShopEntry> entries, net.minecraft.server.level.ServerPlayer player) {
-        this.entries = new ArrayList<>();
+        this(views(entries, player));
+    }
+
+    private static List<ShopEntryView> views(List<ShopEntry> entries, net.minecraft.server.level.ServerPlayer player) {
+        List<ShopEntryView> result = new ArrayList<>();
         for (ShopEntry e : entries) {
             List<String> descriptions = e.rewards.stream().map(r -> r.describe().getString())
                     .collect(Collectors.toList());
@@ -41,13 +43,10 @@ public class S2CShopSyncPacket implements CustomPacketPayload {
             if (!player.hasPermissions(2) && !net.phoenixvine.wiki.api.gate.SuiteGates.isOpen(player, e.requires)) {
                 locked = net.phoenixvine.wiki.api.gate.SuiteGates.denialFor(e.requires).getString();
             }
-            this.entries.add(
+            result.add(
                     new ShopEntryView(e.id, e.name, e.icon, e.cost, descriptions, specs, e.category, locked));
         }
-    }
-
-    private S2CShopSyncPacket(List<ShopEntryView> entries, boolean ignored) {
-        this.entries = entries;
+        return result;
     }
 
     public static void encode(S2CShopSyncPacket packet, RegistryFriendlyByteBuf buf) {
@@ -90,7 +89,7 @@ public class S2CShopSyncPacket implements CustomPacketPayload {
             }
             views.add(new ShopEntryView(id, name, icon, cost, descriptions, specs, category, lockedReason));
         }
-        return new S2CShopSyncPacket(views, true);
+        return new S2CShopSyncPacket(views);
     }
 
     public static void handle(S2CShopSyncPacket packet, IPayloadContext contextSupplier) {

@@ -132,6 +132,147 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
 
     private int consumptionTimer = 0;
 
+    @Override
+    public boolean beforeWorking(@org.jetbrains.annotations.Nullable com.gregtechceu.gtceu.api.recipe.GTRecipe recipe) {
+        if (!net.phoenix.core.rebirth.RebirthNetwork.allows(this)) return false;
+        return super.beforeWorking(recipe);
+    }
+
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    @SyncToClient
+    private int latticeState;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    @SyncToClient
+    private int latticeTarget;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    @SyncToClient
+    private int latticeMoves;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    @SyncToClient
+    private int latticePar;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    @SyncToClient
+    private int seedCharges;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    private int latticeSolves;
+    @com.gregtechceu.gtceu.api.sync_system.annotations.SaveField
+    private long latticeSeed;
+
+    private static final double SEED_DURATION = 0.7;
+    private static final double SEED_EUT = 0.9;
+
+    public int getLatticeState() {
+        return latticeState;
+    }
+
+    public int getLatticeTarget() {
+        ensureLattice();
+        return latticeTarget;
+    }
+
+    public int getLatticeMoves() {
+        return latticeMoves;
+    }
+
+    public int getLatticePar() {
+        ensureLattice();
+        return latticePar;
+    }
+
+    public int getSeedCharges() {
+        return seedCharges;
+    }
+
+    public int getLatticeSolves() {
+        return latticeSolves;
+    }
+
+    public static @Nullable HoneyCrystallizationChamberMachine at(net.minecraft.world.level.Level level, BlockPos pos) {
+        return MetaMachine.getMachine(level, pos) instanceof HoneyCrystallizationChamberMachine m ? m : null;
+    }
+
+    private void ensureLattice() {
+        if (latticePar == 0) latticeNewPattern();
+    }
+
+    public void latticeNewPattern() {
+        long time = getLevel() == null ? 0L : getLevel().getGameTime();
+        latticeSeed = latticeSeed * 6364136223846793005L + 1442695040888963407L + time + getBlockPos().asLong();
+        var pattern = net.phoenix.core.common.machine.multiblock.electric.honey.HoneyLattice.generate(latticeSeed,
+                latticeSolves);
+        latticeTarget = pattern.target();
+        latticePar = pattern.par();
+        latticeState = 0;
+        latticeMoves = 0;
+        markDirty();
+    }
+
+    public void latticeClear() {
+        ensureLattice();
+        latticeState = 0;
+        markDirty();
+    }
+
+    public record LatticeResult(boolean solved, String message) {}
+
+    public LatticeResult latticePress(int cell) {
+        ensureLattice();
+        if (cell < 0 || cell >= net.phoenix.core.common.machine.multiblock.electric.honey.HoneyLattice.CELLS) {
+            return new LatticeResult(false, "");
+        }
+        latticeState = net.phoenix.core.common.machine.multiblock.electric.honey.HoneyLattice.press(latticeState,
+                cell);
+        latticeMoves++;
+
+        if ((latticeState & latticeTarget) != latticeTarget) {
+            markDirty();
+            return new LatticeResult(false, "");
+        }
+        int moves = latticeMoves;
+        int par = latticePar;
+        int reward = net.phoenix.core.common.machine.multiblock.electric.honey.HoneyLattice.reward(moves, par);
+        String grade = net.phoenix.core.common.machine.multiblock.electric.honey.HoneyLattice.grade(moves, par);
+        seedCharges = Math.min(60, seedCharges + reward);
+        latticeSolves++;
+        latticeNewPattern();
+        return new LatticeResult(true, grade + ": " + moves + " presses against a par of " + par + ". +" + reward +
+                " seed charges.");
+    }
+
+    private void markDirty() {
+        setChanged();
+        getSyncDataHolder().markClientSyncFieldDirty("latticeState");
+        getSyncDataHolder().markClientSyncFieldDirty("latticeTarget");
+        getSyncDataHolder().markClientSyncFieldDirty("latticeMoves");
+        getSyncDataHolder().markClientSyncFieldDirty("latticePar");
+        getSyncDataHolder().markClientSyncFieldDirty("seedCharges");
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResult onUse(com.gregtechceu.gtceu.utils.ExtendedUseOnContext context) {
+        if (isFormed() && context.getPlayer().isShiftKeyDown() &&
+                net.phoenix.core.common.machine.multiblock.ScreenUse.opens(context.getItemInHand())) {
+            if (context.getPlayer() instanceof net.minecraft.server.level.ServerPlayer player) {
+                ensureLattice();
+                net.phoenix.core.common.machine.multiblock.electric.honey.S2CHoneyLatticePacket.send(player,
+                        net.phoenix.core.common.machine.multiblock.electric.honey.S2CHoneyLatticePacket.of(this, true,
+                                "", false));
+            }
+            return net.minecraft.world.InteractionResult.sidedSuccess(isRemote());
+        }
+        return super.onUse(context);
+    }
+
+    @Override
+    public void afterWorking() {
+        super.afterWorking();
+        if (seedCharges > 0 && !isRemote()) {
+            seedCharges--;
+            getSyncDataHolder().markClientSyncFieldDirty("seedCharges");
+            setChanged();
+        }
+    }
+
     public Set<BlockPos> getFluidOffsets() {
         return this.fluidOffsets;
     }
@@ -183,15 +324,18 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
             return RecipeModifier.nullWrongType(HoneyCrystallizationChamberMachine.class, machine);
         }
 
+        double duration = 1.0;
+        double eut = 1.0;
         if (furnace.isPlasmaBoosted && furnace.activeBoost != null) {
-            HoneyCrystallizationChamberMachine.PlasmaBoost boost = furnace.activeBoost;
-            return ModifierFunction.builder()
-                    .durationMultiplier(boost.durationMultiplier)
-                    .eutMultiplier(boost.eutMultiplier)
-                    .build();
+            duration *= furnace.activeBoost.durationMultiplier;
+            eut *= furnace.activeBoost.eutMultiplier;
         }
-
-        return ModifierFunction.IDENTITY;
+        if (furnace.seedCharges > 0) {
+            duration *= SEED_DURATION;
+            eut *= SEED_EUT;
+        }
+        if (duration == 1.0 && eut == 1.0) return ModifierFunction.IDENTITY;
+        return ModifierFunction.builder().durationMultiplier(duration).eutMultiplier(eut).build();
     }
 
     @Override
@@ -200,6 +344,9 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
         if (!isFormed()) return widgets;
         widgets.add(new TextWidget<>(Text.dynamic(() -> isPlasmaBoosted ? Component.literal("§bPlasma Boost Active§r") :
                 Component.literal("§7No Plasma Catalyst§r"))));
+        widgets.add(new TextWidget<>(Text.dynamic(() -> seedCharges > 0 ?
+                Component.literal("§6Seed crystals: " + seedCharges + " cycles left§r") :
+                Component.literal("§7No seed crystals. Sneak-click with an empty hand to grow some.§r"))));
         return widgets;
     }
 

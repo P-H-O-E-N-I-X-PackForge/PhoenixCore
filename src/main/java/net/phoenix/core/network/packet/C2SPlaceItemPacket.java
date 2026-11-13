@@ -11,39 +11,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.common.entity.PlacedItemEntity;
+import net.phoenix.core.network.PacketCodecs;
 
-public class C2SPlaceItemPacket implements CustomPacketPayload {
+public record C2SPlaceItemPacket(BlockPos pos, Direction face, Vec3 hit) implements CustomPacketPayload {
 
     public static final Type<C2SPlaceItemPacket> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "c2s_place_item"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SPlaceItemPacket> STREAM_CODEC = StreamCodec
-            .ofMember(C2SPlaceItemPacket::encode, C2SPlaceItemPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SPlaceItemPacket> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, C2SPlaceItemPacket::pos,
+            PacketCodecs.enumOrdinal(Direction.class), C2SPlaceItemPacket::face,
+            PacketCodecs.VEC3, C2SPlaceItemPacket::hit,
+            C2SPlaceItemPacket::new);
 
     public static final int MAX_PER_FACE = 3;
-
-    private final BlockPos pos;
-    private final Direction face;
-    private final Vec3 hit;
-
-    public C2SPlaceItemPacket(BlockPos pos, Direction face, Vec3 hit) {
-        this.pos = pos;
-        this.face = face;
-        this.hit = hit;
-    }
-
-    public C2SPlaceItemPacket(RegistryFriendlyByteBuf buf) {
-        this.pos = buf.readBlockPos();
-        this.face = buf.readEnum(Direction.class);
-        this.hit = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    }
-
-    public void encode(RegistryFriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-        buf.writeEnum(face);
-        buf.writeDouble(hit.x);
-        buf.writeDouble(hit.y);
-        buf.writeDouble(hit.z);
-    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

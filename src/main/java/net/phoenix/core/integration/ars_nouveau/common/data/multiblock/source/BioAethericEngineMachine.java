@@ -23,10 +23,10 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.phoenix.core.api.recipe.PhoenixRecipeModifier;
-import net.phoenix.core.client.gui.hud.HudModel;
-import net.phoenix.core.client.gui.hud.HudRecipes;
-import net.phoenix.core.client.gui.hud.MachineHud;
 import net.phoenix.core.saveddata.SoulSavedData;
+import net.phoenixvine.wiki.ui.hud.HudModel;
+import net.phoenixvine.wiki.ui.hud.HudRecipes;
+import net.phoenixvine.wiki.ui.hud.MachineHud;
 
 import brachy.modularui.value.sync.PanelSyncManager;
 import lombok.Getter;
@@ -213,9 +213,9 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
     private HudModel hudModel() {
         return HudModel.of("Bio-Aetheric Engine")
                 .formed(this::isFormed)
-                .theme(net.phoenix.core.client.gui.hud.HudTheme.ARCANE)
-                .hero(net.phoenix.core.client.gui.hud.Heroes.pulseLine(() -> Math.min(1.0f, multiplier() / 4.0f),
-                        net.phoenix.core.client.gui.hud.HudTheme.ARCANE.accent()), 30)
+                .theme(net.phoenixvine.wiki.ui.hud.HudTheme.ARCANE)
+                .hero(net.phoenixvine.wiki.ui.hud.Heroes.pulseLine(() -> Math.min(1.0f, multiplier() / 4.0f),
+                        net.phoenixvine.wiki.ui.hud.HudTheme.ARCANE.accent()), 30)
                 .badge(() -> lastBotanicalBoost > 1.0f && isFormed() ?
                         new HudModel.Badge("SOUL SATURATED", HudModel.CYAN) :
                         HudRecipes.badge(this))

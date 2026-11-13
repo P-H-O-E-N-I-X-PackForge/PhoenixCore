@@ -46,7 +46,7 @@ public final class VaultScrollBar extends Widget<VaultScrollBar> implements Inte
         if (max <= 0 || session.sync == null) return;
         int h = getArea().height;
         int thumbH = thumbHeight();
-        int local = net.phoenix.core.client.gui.PanelFit.localMouse(this, getContext().getAbsMouseX(),
+        int local = net.phoenixvine.wiki.ui.PanelFit.localMouse(this, getContext().getAbsMouseX(),
                 getContext().getAbsMouseY(), VaultPanel.WIDTH, VaultPanel.HEIGHT)[1] - thumbH / 2;
         float ratio = Math.max(0f, Math.min(1f, local / (float) Math.max(1, h - thumbH)));
         session.sync.requestScroll(Math.round(ratio * max));

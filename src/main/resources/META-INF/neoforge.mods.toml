@@ -9,6 +9,7 @@ displayName = "${mod_name}"
 displayURL = "${mod_url}"
 logoFile = "icon.png"
 authors = "${mod_author}"
+credits = "Prismarite crystals from Regions Unexplored by Apollo (MIT), see CREDITS.md"
 description = '''This is the Core mod for Phoenix Forge Technologies'''
 
 [[mixins]]
@@ -32,6 +33,13 @@ side = "BOTH"
 modId = "gtceu"
 type = "required"
 versionRange = "[${gtm_version_min},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "phoenixconflux"
+type = "required"
+versionRange = "[0.1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
@@ -67,6 +75,13 @@ side = "BOTH"
 modId = "phoenix_tesla_network"
 type = "required"
 versionRange = "[0.5.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "phoenix_fission"
+type = "required"
+versionRange = "[0.1.2,)"
 ordering = "NONE"
 side = "BOTH"
 

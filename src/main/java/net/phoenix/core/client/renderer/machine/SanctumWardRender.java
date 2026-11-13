@@ -27,6 +27,9 @@ import java.util.List;
 public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockMachine, SanctumWardRender> {
 
     public static final SanctumWardRender INSTANCE = new SanctumWardRender();
+
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
+            .standard("sanctum_ward", "Sanctum Ward dome").machine("phoenixcore:sanctum_ward");
     public static final MapCodec<SanctumWardRender> CODEC = MapCodec.unit(SanctumWardRender.INSTANCE);
     public static final DynamicRenderType<WorkableElectricMultiblockMachine, SanctumWardRender> TYPE = new DynamicRenderType<>(
             SanctumWardRender.CODEC);
@@ -54,10 +57,11 @@ public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockM
     @Override
     public void render(WorkableElectricMultiblockMachine machine, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
-        if (!(machine instanceof SanctumWardMachine ward) || !ward.isWardActive()) return;
+        if (!(machine instanceof SanctumWardMachine ward)) return;
+        if (!ward.isWardActive() && !net.phoenix.core.client.fx.FxHook.preview(machine)) return;
         if (sphereModel == null) return;
 
-        float tick = machine.getOffsetTimer() + partialTick;
+        float tick = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) / 20f) * 20f;
         float angle = (tick * ROTATION_SPEED) % 360.0F;
 
         double x = 0.5;
@@ -73,16 +77,18 @@ public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockM
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
+        net.phoenix.core.client.fx.FxHook.scale(FX, poseStack, net.minecraft.world.phys.Vec3.ZERO);
         poseStack.mulPose(new Quaternionf().fromAxisAngleDeg(0.0F, 1.0F, 0.0F, angle));
         poseStack.scale(0.1F, 0.1F, 0.1F);
 
         PoseStack.Pose pose = poseStack.last();
 
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
+        float[] tinted = net.phoenix.core.client.fx.FxHook.tint(FX, 0.55F, 0.85F, 1.0F, DOME_ALPHA, 0.5f, tick / 20f);
         List<BakedQuad> quads = sphereModel.getQuads(null, null, random, ModelData.EMPTY, null);
         for (BakedQuad quad : quads) {
-            consumer.putBulkData(pose, quad, 0.55F, 0.85F, 1.0F, DOME_ALPHA, LightTexture.FULL_BRIGHT, packedOverlay,
-                    false);
+            consumer.putBulkData(pose, quad, tinted[0], tinted[1], tinted[2], tinted[3], LightTexture.FULL_BRIGHT,
+                    packedOverlay, false);
         }
 
         poseStack.popPose();

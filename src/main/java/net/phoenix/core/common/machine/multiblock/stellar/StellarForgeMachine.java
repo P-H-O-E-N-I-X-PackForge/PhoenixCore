@@ -17,13 +17,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.phoenix.core.client.gui.hud.CanvasWidget;
-import net.phoenix.core.client.gui.hud.HudPanel;
-import net.phoenix.core.client.gui.hud.TabStrip;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 import net.phoenix.core.client.stellar.ui.StellarGraphsPage;
 import net.phoenix.core.client.stellar.ui.StellarHudPage;
 import net.phoenix.core.client.stellar.ui.StellarMathPage;
+import net.phoenixvine.wiki.ui.hud.CanvasWidget;
+import net.phoenixvine.wiki.ui.hud.HudPanel;
+import net.phoenixvine.wiki.ui.hud.TabStrip;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.ModularPanel;
@@ -641,7 +641,7 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     new TabStrip.Tab("V", new net.phoenix.core.client.stellar.ui.StellarViewPage(this)),
                     new TabStrip.Tab("M", new StellarMathPage(this)),
                     new TabStrip.Tab("~", new StellarGraphsPage(this))),
-                    net.phoenix.core.client.gui.hud.HudTheme.DEEP_SPACE);
+                    net.phoenixvine.wiki.ui.hud.HudTheme.DEEP_SPACE);
         }
         final TabStrip tabs = screen;
         var panel = MachineUIPanelBuilder.panelBuilder(this).attachInventory(false).addTitleBar(false)

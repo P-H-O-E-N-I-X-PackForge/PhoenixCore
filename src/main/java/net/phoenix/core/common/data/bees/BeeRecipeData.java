@@ -359,9 +359,4 @@ public class BeeRecipeData {
     private static ApisProgenitorConfig diamondProg(String target, String item, int eut) {
         return progenitor(target + "_progenitor", "diamond", target, item, 360, eut);
     }
-
-    private static ApisProgenitorConfig fluidProg(String name, String parent, String target, String fluid, int duration,
-                                                  int eut) {
-        return new ApisProgenitorConfig(name, parent, 1, target, 1, List.of(), List.of(fluid), duration, eut);
-    }
 }

@@ -5,12 +5,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.phoenix.continuum.api.client.ContinuumRender;
-import net.phoenix.core.client.gui.hud.CanvasPainter;
-import net.phoenix.core.client.gui.hud.GuiDraw;
-import net.phoenix.core.client.gui.hud.HudTheme;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
+import net.phoenixvine.wiki.ui.hud.CanvasPainter;
+import net.phoenixvine.wiki.ui.hud.GuiDraw;
+import net.phoenixvine.wiki.ui.hud.HudTheme;
 
 import java.util.Locale;
 

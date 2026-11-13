@@ -3,13 +3,13 @@ package net.phoenix.core.client.stellar.ui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.phoenix.core.client.gui.hud.CanvasPainter;
-import net.phoenix.core.client.gui.hud.GuiDraw;
 import net.phoenix.core.client.stellar.StellarForgeClient;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarControls;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachine;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarForgeState;
 import net.phoenix.core.common.machine.multiblock.stellar.StellarPlasma;
+import net.phoenixvine.wiki.ui.hud.CanvasPainter;
+import net.phoenixvine.wiki.ui.hud.GuiDraw;
 
 import java.util.Locale;
 

@@ -116,8 +116,6 @@ public class RecipeTypeDropdown extends AbstractWidget {
         private String searchQuery = "";
         private List<String> filtered;
 
-        private boolean searchFocused = true;
-
         private int cPanel, cBorder, cHeader, cHeaderLine, cText, cSearchBg, cSearchBorder, cSearchText,
                 cRowSel, cRowHov, cTextSel, cTextHov, cTextDim, cScrollTrack, cScrollThumb, cFaint;
 

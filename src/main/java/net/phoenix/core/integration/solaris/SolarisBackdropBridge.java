@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenix.core.client.worldfx.WorldFXShaders;
+import net.phoenix.conflux.client.ConfluxShaders;
 import net.phoenixvine.solaris.api.SolarisAPI;
 import net.phoenixvine.solaris.client.render.UnexploredBackdrops;
 import net.phoenixvine.solaris.client.render.UnexploredStyle;
@@ -31,14 +31,14 @@ final class SolarisBackdropBridge {
     private record Look(Supplier<ShaderInstance> shader, float timeDivisor, Consumer<ShaderInstance> uniforms) {}
 
     private static final Map<String, Look> LOOKS = Map.of(
-            "phoenix", new Look(() -> WorldFXShaders.NEBULA, 10000f, shader -> {
+            "phoenix", new Look(() -> ConfluxShaders.NEBULA, 10000f, shader -> {
                 shader.safeGetUniform("PrimaryColor").set(1.0f, 0.35f, 0.05f);
                 shader.safeGetUniform("SecondaryColor").set(0.9f, 0.1f, 0.0f);
                 shader.safeGetUniform("Density").set(0.5f);
                 shader.safeGetUniform("Scale").set(1.2f);
                 shader.safeGetUniform("Seed").set(0.0f);
             }),
-            "void", new Look(() -> WorldFXShaders.VOID_GALAXY, 10000f, shader -> {
+            "void", new Look(() -> ConfluxShaders.VOID_GALAXY, 10000f, shader -> {
                 shader.safeGetUniform("PrimaryColor").set(0.7f, 0.15f, 0.9f);
                 shader.safeGetUniform("SecondaryColor").set(0.15f, 0.35f, 1.0f);
                 shader.safeGetUniform("GalaxyDir").set(0.3f, 0.5f, 0.8f);
@@ -46,15 +46,15 @@ final class SolarisBackdropBridge {
                 shader.safeGetUniform("Scale").set(1.1f);
                 shader.safeGetUniform("Seed").set(0.0f);
             }),
-            "sculk", new Look(() -> WorldFXShaders.SCULK_ABYSS, 1000f, shader -> {
+            "sculk", new Look(() -> ConfluxShaders.SCULK_ABYSS, 1000f, shader -> {
                 shader.safeGetUniform("VeinColor").set(0.1f, 1.0f, 0.75f);
                 shader.safeGetUniform("GlowColor").set(0.0f, 0.6f, 0.55f);
             }),
-            "sealed_a", new Look(() -> WorldFXShaders.SEALED_A_INDUSTRIAL, 1000f, shader -> {
+            "sealed_a", new Look(() -> ConfluxShaders.SEALED_A_INDUSTRIAL, 1000f, shader -> {
                 shader.safeGetUniform("GridColor").set(1.0f, 0.2f, 0.9f);
                 shader.safeGetUniform("HazeColor").set(0.15f, 0.5f, 0.55f);
             }),
-            "sealed_b", new Look(() -> WorldFXShaders.SEALED_B_CHAOS, 1000f, shader -> {
+            "sealed_b", new Look(() -> ConfluxShaders.SEALED_B_CHAOS, 1000f, shader -> {
                 shader.safeGetUniform("PrimaryColor").set(1.0f, 0.15f, 0.85f);
                 shader.safeGetUniform("SecondaryColor").set(0.85f, 0.85f, 0.1f);
             }));

@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev"
+    },
+    "facing=south": {
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev",
+      "y": 180
+    },
+    "facing=up": {
+      "gtceu:z": 180,
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "phoenixcore:block/machine/aether_catalyst_hatch_ev",
+      "y": 270
+    }
+  }
+}
