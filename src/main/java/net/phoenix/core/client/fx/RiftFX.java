@@ -34,14 +34,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * The rift behind the High-Pressure Plasma Arc Furnace. It is a picture made by a shader, not a model: a tall jagged
- * tear in the sky, starry inside and edged with lightning, which opens wider the longer the furnace runs. The screen
- * around it is bent toward it, and when you come near, the picture glitches and the camera shakes.
- *
- * It is drawn from the level render rather than from the machine, so it does not vanish when the controller block
- * leaves the screen, and it is drawn on a flat square standing at the rift, so blocks in front of it hide it.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class RiftFX {
 
@@ -51,7 +43,6 @@ public final class RiftFX {
     private static final float[] BLUE = { 0.35f, 0.62f, 1.0f };
     private static final float[] WHITE = { 0.88f, 0.95f, 1.0f };
 
-    /** How far away the picture starts to break up and the camera to shake. */
     private static final float NEAR_RANGE = 70f;
 
     private RiftFX() {}
@@ -75,7 +66,6 @@ public final class RiftFX {
         }
     }
 
-    /** Whether the shader is there. If it is not, or a shader pack has taken over, the furnace draws its old star. */
     public static boolean ready() {
         return WorldFXShaders.FX_RIFT != null;
     }
@@ -84,7 +74,6 @@ public final class RiftFX {
         return FxHook.preview(m) || (m.isFormed() && m.getShieldType() == Shield.ShieldTypes.NORMAL);
     }
 
-    /** Where the middle of the rift is. */
     public static Vec3 centre(HighPressurePlasmaArcFurnaceMachine m) {
         double x = m.getBlockPos().getX() + 0.5;
         double y = m.getBlockPos().getY() + 2.5;
@@ -115,7 +104,6 @@ public final class RiftFX {
         return k * k;
     }
 
-    /** Projects a point, relative to the camera, to clip space. Null if it is behind the camera. */
     private static float[] project(Vec3 rel, Matrix4f view, Matrix4f proj) {
         Vector4f clip = new Vector4f((float) rel.x, (float) rel.y, (float) rel.z, 1f).mul(view).mul(proj);
         if (clip.w <= 0.05f) return null;
@@ -173,7 +161,6 @@ public final class RiftFX {
             float halfScreen = Math.abs(top[1] - bottom[1]) / 4f;
             if (halfScreen < 0.002f) continue;
 
-            // everything drawn so far, read back so the shader can bend it
             if (texture < 0) texture = WorldFXManager.captureSkyToTexture();
             mc.getMainRenderTarget().bindWrite(false);
 
@@ -198,9 +185,6 @@ public final class RiftFX {
             shader.safeGetUniform("Seed").set((m.getBlockPos().asLong() & 1023L) / 100f);
             shader.safeGetUniform("Power").set(power);
 
-            // a square at the rift that turns to face you but stays upright, big enough to hold the lensed region. The
-            // tear
-            // itself is worked out in its own plane inside the shader
             float ex = 3.7f * halfHeight;
             float ey = 6.6f * halfHeight;
             float flat = Mth.sqrt(left.x * left.x + left.z * left.z);
@@ -227,13 +211,11 @@ public final class RiftFX {
         RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
     }
 
-    /** How close the camera is to the rift, 0 far away to 1 at its heart. */
     private static float closeness(Vec3 camera, Vec3 centre, float range) {
         float d = (float) camera.distanceTo(centre);
         return 1f - Mth.clamp((d - 3f) / (range - 3f), 0f, 1f);
     }
 
-    /** The strongest pull of any rift on the camera, 0 to about 1, growing sharply as you close in. */
     private static float shake(Vec3 camPos) {
         Minecraft mc = Minecraft.getInstance();
         float strongest = 0f;
@@ -246,9 +228,6 @@ public final class RiftFX {
         return strongest;
     }
 
-    /**
-     * The camera shakes as you come near: a low tremble far off, then a violent rattle with sharp jolts at its edge.
-     */
     @SubscribeEvent
     public static void onCamera(ViewportEvent.ComputeCameraAngles event) {
         if (TRACKED.isEmpty() || Minecraft.getInstance().level == null) return;

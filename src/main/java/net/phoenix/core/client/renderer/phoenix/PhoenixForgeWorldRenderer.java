@@ -52,7 +52,6 @@ public final class PhoenixForgeWorldRenderer {
                         .createCompositeState(false));
     }
 
-    /** The settings of /pftfx for this render. {@code classic 1} brings back the model-built phoenix. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxRender
             .builder("phoenix_forge", "Phoenix Forge phoenix")
             .param("speed", 0f, 10f, "how fast it animates, 1 being as it is")
@@ -63,7 +62,6 @@ public final class PhoenixForgeWorldRenderer {
             .build()
             .spawner(PhoenixForgeWorldRenderer::spawnPreview);
 
-    /** A phoenix put down by {@code /pftfx phoenix_forge spawn}, flying above the spot, until it runs out. */
     private record Preview(double x, double y, double z, Direction front, long until) {}
 
     private static volatile Preview preview;
@@ -76,7 +74,6 @@ public final class PhoenixForgeWorldRenderer {
         return "Phoenix put down for " + seconds + " seconds, flying the way you face. /pftfx clear takes it away.";
     }
 
-    /** Takes a spawned phoenix away. */
     public static void clearPreview() {
         preview = null;
     }
@@ -132,10 +129,7 @@ public final class PhoenixForgeWorldRenderer {
         float clock = net.phoenix.core.client.fx.FxHook.time(FX, (mc.level.getGameTime() + partial) / 20f);
         net.minecraft.client.renderer.ShaderInstance shader = net.phoenix.core.client.worldfx.WorldFXShaders.FX_PHOENIX;
         boolean useShader = shader != null && FX.get("classic", 1f) < 0.5f;
-        // The shader phoenix is drawn after the translucent blocks, from a copy of the depth taken before them, so
-        // water
-        // and glass lie over it and only solid things hide it. The model-built one is drawn before them, as it always
-        // was.
+
         if (useShader && stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             if (!all().isEmpty() || preview != null) net.phoenix.core.client.fx.SceneDepth.capture();
             return;
@@ -202,10 +196,6 @@ public final class PhoenixForgeWorldRenderer {
         if (drew) buffers.endBatch(Types.GLOW);
     }
 
-    /**
-     * The shader phoenix: a box round the bird that the shader marches through. It flies the way the old one does, with
-     * the same slow swing of its heading and the same rise from small to full over the seven seconds after it wakes.
-     */
     private static void drawWithShader(net.minecraft.client.renderer.ShaderInstance shader, Matrix4f m, int phase,
                                        Direction front, float t, float since) {
         float rise = Mth.clamp(since / 7f, 0f, 1f);
@@ -218,7 +208,7 @@ public final class PhoenixForgeWorldRenderer {
         float sn = Mth.sin(yaw);
         float dirX = front.getStepX() * cs - front.getStepZ() * sn;
         float dirZ = front.getStepX() * sn + front.getStepZ() * cs;
-        // the middle of the shader's box is a little up and back from the middle of the bird
+
         float cx = dirX * -0.55f * scale;
         float cz = dirZ * -0.55f * scale;
         float cy = height + 0.2f * scale;

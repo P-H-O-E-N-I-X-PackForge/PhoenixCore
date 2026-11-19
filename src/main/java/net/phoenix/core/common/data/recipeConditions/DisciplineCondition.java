@@ -58,7 +58,6 @@ public class DisciplineCondition extends RecipeCondition<DisciplineCondition> {
         return Component.literal((isReverse ? "§dNot for the discipline: " : "§dOnly for the discipline: ") + name);
     }
 
-    /** The short label for recipe pages, for example "Only for sculk". */
     public String pillText() {
         String name = discipline.isEmpty() ? "?" : discipline.replace('_', ' ');
         return (isReverse ? "Not for " : "Only for ") + name;
@@ -66,7 +65,6 @@ public class DisciplineCondition extends RecipeCondition<DisciplineCondition> {
 
     @Override
     public ViewerPill viewerPill() {
-        // just the discipline's name; the full sentence is in the tooltip
         String name = discipline.isEmpty() ? "?" : discipline.replace('_', ' ');
         return new ViewerPill(name, 0xFFB890FF,
                 java.util.List.of(net.minecraft.network.chat.Component.literal("§dDiscipline recipe"), getTooltips()));

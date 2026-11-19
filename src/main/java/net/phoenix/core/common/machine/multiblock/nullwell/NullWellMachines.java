@@ -15,10 +15,6 @@ import net.phoenix.core.common.block.PhoenixBlocks;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/**
- * The Null Well: a capstone of the Void discipline. It holds a tiny black hole, which is fed matter and gives back
- * Hawking radiation as energy.
- */
 public final class NullWellMachines {
 
     private NullWellMachines() {}

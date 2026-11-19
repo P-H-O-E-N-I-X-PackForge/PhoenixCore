@@ -26,16 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * Draws the shader renders of the machines from the level render instead of from their block entities. A block entity
- * is only drawn while its own block is on screen, so a render that is bigger than the block, as these are, would pop
- * out of existence the moment the controller left the edge of the view. This finds the machines around the player once
- * in a while and draws each every frame no matter where the controller is.
- *
- * A render opts in by registering the machine class and a function that draws it. While that function runs,
- * {@link #active()} is true, so the same render method can tell a call from here from a call from the block-entity
- * pass.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class FxStage {
 
@@ -62,7 +52,6 @@ public final class FxStage {
         ENTRIES.add(new Entry(type, range, drawer));
     }
 
-    /** True while a render is being called from the level render rather than from a block entity. */
     public static boolean active() {
         return active;
     }
@@ -112,10 +101,7 @@ public final class FxStage {
     public static void onRender(RenderLevelStageEvent event) {
         List<Found> list = found;
         Minecraft mc = Minecraft.getInstance();
-        // Right after the solid things are drawn, before water and glass, a copy of the depth is taken. The machines
-        // are
-        // drawn after the translucent blocks, so those lie over them, and stop at that copy, so only solid things hide
-        // them.
+
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             if (!list.isEmpty() && mc.level != null) SceneDepth.capture();
             return;
@@ -133,7 +119,7 @@ public final class FxStage {
         stack.pushMatrix();
         stack.set(new Matrix4f(event.getModelViewMatrix()));
         RenderSystem.applyModelViewMatrix();
-        // the projection is set from the event too, rather than trusting what the render left in place
+
         Matrix4f oldProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
         VertexSorting oldSorting = RenderSystem.getVertexSorting();
         RenderSystem.setProjectionMatrix(new Matrix4f(event.getProjectionMatrix()), VertexSorting.DISTANCE_TO_ORIGIN);

@@ -17,24 +17,6 @@ import com.mojang.brigadier.context.CommandContext;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * {@code /pftfx}: one client command for every render that takes part in the system (see {@link FxRender}). It only
- * changes what this client draws, to tune a look without running the machine.
- *
- * <pre>
- * /pftfx list                          the renders, and the themes
- * /pftfx reset                         put every render back
- * /pftfx &lt;render&gt; status | reset
- * /pftfx &lt;render&gt; spawn [seconds]    put the render's machine under your feet, on this client only
- * /pftfx clear                         take every spawned machine away
- * /pftfx &lt;render&gt; theme &lt;id|none&gt;     for example miku, teto, pft
- * /pftfx &lt;render&gt; colour &lt;hex|auto&gt;   such as ff44aa
- * /pftfx &lt;render&gt; &lt;setting&gt; &lt;value|auto&gt;   speed, size, power and whatever else the render offers
- * </pre>
- *
- * The renders, their settings and the themes are all read when the command is used, so ones added later need nothing
- * changed here.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID, value = Dist.CLIENT)
 public final class FxCommand {
 

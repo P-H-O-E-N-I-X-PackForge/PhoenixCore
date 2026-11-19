@@ -18,21 +18,18 @@ import net.phoenix.core.integration.ars_nouveau.api.recipe.SoulGrowthHook;
 
 import java.util.UUID;
 
-/** Hooks into GT that Firebird provides as events and registries. */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class GtHooks {
 
     private GtHooks() {}
 
-    /** Called once, during setup. */
     public static void registerModifiers() {
         GlobalRecipeModifiers.register(ConfluxRecipeEffects.MODIFIER);
-        // GT's tiered conveyors, robot arms, pumps and regulators move more in the pack
+
         com.gregtechceu.gtceu.api.cover.CoverTransferRates.register(
                 (kind, tier, rate) -> tier < 1 ? rate : rate * net.phoenix.core.common.data.CoverRates.GT_MULTIPLIER);
     }
 
-    /** Keeps research-gated multiblocks from forming for a team that has not unlocked them. */
     @SubscribeEvent
     public static void gateMultiblockFormation(MultiblockFormEvent event) {
         var machine = event.getController();
@@ -47,7 +44,7 @@ public final class GtHooks {
         UUID teamId = nearest != null ? ResearchTeamHelper.getTeamId(nearest) : null;
         if (teamId == null || !WorldResearchData.get(level).canFormMultiblock(teamId, machineId)) {
             event.deny(Component.translatable("phoenixcore.research.multiblock_locked", machineId.getPath()));
-            // the structure itself is fine, so the unformed UI would show nothing; tell it why instead
+
             var state = machine.getPatternState(event.getStructureName());
             if (state != null) {
                 state.setErrors(java.util.List.of(new net.phoenix.core.api.pattern.PhoenixPatternError(

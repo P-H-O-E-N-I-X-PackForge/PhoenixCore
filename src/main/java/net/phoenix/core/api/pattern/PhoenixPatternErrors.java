@@ -9,7 +9,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.phoenix.core.PhoenixCore;
 
-/** The pattern error types Core adds to GT's registry. */
 public final class PhoenixPatternErrors {
 
     private static final DeferredRegister<PatternErrorType> TYPES = DeferredRegister

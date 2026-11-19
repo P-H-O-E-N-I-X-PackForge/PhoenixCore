@@ -25,9 +25,6 @@ import brachy.modularui.api.drawable.Text;
 
 import java.util.List;
 
-/**
- * What Core adds to the recipe viewers through GT's viewer API, so EMI and JEI both get it.
- */
 public final class PhoenixViewer {
 
     public record AstralRitualEntry(Item catalyst, RitualResult result) {}
@@ -52,13 +49,11 @@ public final class PhoenixViewer {
                 .maxSize(130, 60)
                 .build());
 
-        // a hint under the Aether Crucible's multiblock preview, in EMI, JEI and the terminal
         MultiblockPreviewExtensions.register(Slot.BELOW,
                 def -> AetherCrucibleMachines.AETHER_CRUCIBLE != null &&
                         def == AetherCrucibleMachines.AETHER_CRUCIBLE.get(),
                 preview -> Text.str("Makes ores for the discipline you committed to").asWidget());
 
-        // a recipe that needs another discipline is hidden, in EMI and in JEI
         GTViewerVisibility.addRule((category, id, entry) -> !(entry instanceof GTRecipe recipe) ||
                 !DisciplineRecipeVisibility.hidden(recipe));
     }

@@ -7,7 +7,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-/** Tells a player's client to open the Null Well's full screen. */
 public record S2CNullWellOpenPacket(BlockPos pos) implements CustomPacketPayload {
 
     public static final Type<S2CNullWellOpenPacket> TYPE = new Type<>(

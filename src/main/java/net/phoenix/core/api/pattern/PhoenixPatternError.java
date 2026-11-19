@@ -19,19 +19,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * An error for a multiblock's structure with a heading, a hint on how to fix it and, optionally, the place it is about.
- * It is a pattern error like GT's own, so it shows in the unformed UI and can be highlighted in the world.
- */
 public class PhoenixPatternError extends PatternError {
 
-    // spotless:off
     public static final MapCodec<PhoenixPatternError> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ComponentSerialization.CODEC.fieldOf("title").forGetter(e -> e.title),
             ComponentSerialization.CODEC.optionalFieldOf("hint").forGetter(e -> Optional.ofNullable(e.hint)),
-            BlockPos.CODEC.fieldOf("pos").forGetter(PatternError::pos)
-    ).apply(instance, (title, hint, pos) -> new PhoenixPatternError(title, hint.orElse(null), pos)));
-    //spotless:on
+            BlockPos.CODEC.fieldOf("pos").forGetter(PatternError::pos))
+            .apply(instance, (title, hint, pos) -> new PhoenixPatternError(title, hint.orElse(null), pos)));
 
     private final Component title;
     private final @Nullable Component hint;
@@ -42,12 +36,10 @@ public class PhoenixPatternError extends PatternError {
         this.hint = hint;
     }
 
-    /** An error about the controller itself rather than a block of the structure. */
     public PhoenixPatternError(Component title, @Nullable Component hint) {
         this(title, hint, CONTROLLER);
     }
 
-    /** "Expected this at that place", with the blocks that would do as the hint. */
     public static PhoenixPatternError expected(String what, BlockPos pos, List<BlockInfo> candidates) {
         String names = candidates.stream().map(c -> c.getItemStackForm().getHoverName().getString()).distinct()
                 .limit(6).collect(Collectors.joining(", "));

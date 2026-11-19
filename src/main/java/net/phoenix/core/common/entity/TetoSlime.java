@@ -45,7 +45,6 @@ public class TetoSlime extends Slime {
         return data;
     }
 
-    /** A slime only drops its loot when it is the smallest; a Teto Slime drops it at every size. */
     @Override
     protected ResourceKey<LootTable> getDefaultLootTable() {
         return getType().getDefaultLootTable();

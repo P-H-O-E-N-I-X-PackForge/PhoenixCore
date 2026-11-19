@@ -88,10 +88,6 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
     @SaveField
     private long ringSeed;
 
-    /**
-     * How far the rift behind the furnace is open, 0 to 1. It widens a little with every tick a recipe runs, and slowly
-     * closes again while the furnace sits idle.
-     */
     @SaveField
     @SyncToClient
     private float riftGrowth = 0f;

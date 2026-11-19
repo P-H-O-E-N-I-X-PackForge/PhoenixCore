@@ -82,7 +82,7 @@ public final class CinderForgeMachines {
                             .build())
                     .pattern("tier2", definition -> buildHivePattern(definition, "steel_frame",
                             Predicates.blocks(CINDER_FORGE_HATCH.getBlock()).setExactLimit(1).setPreviewCount(1)))
-                    // the same hive in titanium frames, which is how it is told apart from tier 2 at a glance
+
                     .pattern("tier3", definition -> buildHivePattern(definition, "titanium_frame",
                             Predicates.blocks(CINDER_FORGE_HATCH.getBlock()).setMinGlobalLimited(2)
                                     .setMaxGlobalLimited(4).setPreviewCount(2)))

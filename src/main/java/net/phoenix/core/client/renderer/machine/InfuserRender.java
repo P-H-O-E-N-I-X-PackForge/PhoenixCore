@@ -18,16 +18,10 @@ import org.joml.Matrix4f;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The Phoenix Infuser: a column of flame between two wings of fire that open as the heat climbs, with embers rising,
- * ash
- * heaped on the floor, a burst of sparks when something is burned and a golden ring when something is renewed.
- */
 public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserRender> {
 
     public static final InfuserRender INSTANCE = new InfuserRender();
 
-    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("phoenix_infuser", "Phoenix Infuser").machine("phoenixcore:phoenix_infuser");
     public static final MapCodec<InfuserRender> CODEC = MapCodec.unit(INSTANCE);
@@ -87,13 +81,12 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
         GlowDraw.Cam cam = GlowDraw.Cam.now(machine.getBlockPos());
 
         net.minecraft.client.renderer.ShaderInstance sh = net.phoenix.core.client.worldfx.WorldFXShaders.FX_FLAME;
-        // with the shader, the stage hook draws everything, so the block-entity pass draws none of it
+
         if (sh != null && !net.phoenix.core.client.fx.FxStage.active()) {
             poseStack.popPose();
             return;
         }
 
-        // the ash, heaped
         VertexConsumer dark = buffer.getBuffer(GlowDraw.DARK);
         GlowDraw.flatDisc(dark, m, cx, floor + 0.04f * ash, cz, 0.35f + 0.8f * ash, 0.36f, 0.33f, 0.31f, 1f, 1f);
         GlowDraw.flatDisc(dark, m, cx, floor + 0.12f * ash + 0.01f, cz, 0.2f + 0.45f * ash, 0.44f, 0.4f, 0.37f, 1f, 1f);
@@ -114,7 +107,7 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
 
         VertexConsumer vc = net.phoenix.core.client.fx.FxHook.glow(FX, m, buffer.getBuffer(GlowDraw.GLOW), c, t);
         if (on || flame > 0.1f) {
-            // the flame, in layers rising from the ash, flickering
+
             float h = 0.5f + 1.7f * flame;
             for (int i = 0; i < 9; i++) {
                 float f = i / 8f;
@@ -130,7 +123,6 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
             GlowDraw.disc(vc, m, cam, cx, floor + 0.25f, cz, 0.3f * (0.5f + flame), 1f, 0.98f, 0.9f,
                     0.8f * (on ? 1f : 0.3f), 0f);
 
-            // two wings of fire, turning slowly, opening with the heat
             float open = 0.35f + 0.65f * heat;
             float phi = t * 0.3f;
             float[] u = { Mth.cos(phi), 0f, Mth.sin(phi) };
@@ -148,7 +140,6 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
             }
         }
 
-        // embers rising
         int embers = on ? 6 + Math.round(heat * 28f) : 3;
         for (int i = 0; i < embers; i++) {
             float life = (t * (0.18f + 0.22f * GlowDraw.noise(i, 3)) + GlowDraw.noise(i, 5)) % 1f;
@@ -161,7 +152,6 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
                     0.9f * (1f - life), 0f);
         }
 
-        // a burst of sparks when it burns something
         float sinceBurst = t - s.burstAt;
         if (sinceBurst >= 0f && sinceBurst < 0.7f) {
             float f = sinceBurst / 0.7f;
@@ -173,7 +163,7 @@ public class InfuserRender extends DynamicRender<PhoenixInfuserMachine, InfuserR
                         0.9f, 0.5f, 1f - f, 0f);
             }
         }
-        // and a golden ring when it renews something
+
         float sinceRing = t - s.ringAt;
         if (sinceRing >= 0f && sinceRing < 1.1f) {
             float f = sinceRing / 1.1f;

@@ -13,11 +13,6 @@ import java.util.regex.Pattern;
 
 public final class RecipeReplacements {
 
-    /**
-     * Swaps one ingredient for another in the recipes the rule matches. {@code from} and {@code to} are item ids, or
-     * tags when they start with {@code #}: {@code "#c:plates/bronze"} swaps every ingredient that is that tag, for an
-     * item or for another tag. {@code mustContain} is the same kind of id.
-     */
     public record Rule(String mod, Pattern idPattern, String mustContain, String from, String to) {}
 
     public static final List<Rule> RULES = new ArrayList<>();
@@ -71,7 +66,7 @@ public final class RecipeReplacements {
                 if (x.getKey().equals("result") || x.getKey().equals("results")) continue;
                 if (x.getKey().equals(fromKey) && x.getValue().isJsonPrimitive() &&
                         x.getValue().getAsString().equals(fromValue)) {
-                    // an ingredient is {"item": ...} or {"tag": ...}; one can become the other
+
                     o.remove(fromKey);
                     o.addProperty(toKey, toValue);
                 } else {

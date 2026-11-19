@@ -34,7 +34,6 @@ public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultib
             .standard("plasma_arc_furnace", "Plasma Arc Furnace rift")
             .machine("phoenixcore:high_pressure_plasma_arc_furnace");
 
-    /** The settings of /pftfx for this render, shared with the rift that replaces the star. */
     public static net.phoenix.core.client.fx.FxRender fx() {
         return FX;
     }
@@ -81,7 +80,6 @@ public class PlasmaArcFurnaceRender extends DynamicRender<WorkableElectricMultib
             return;
         }
 
-        // the rift drawn by the shader takes the star's place, and the old star only draws if there is no shader
         if (net.phoenix.core.client.fx.RiftFX.ready()) return;
 
         float tick = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) / 20f) * 20f;

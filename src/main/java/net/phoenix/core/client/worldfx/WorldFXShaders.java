@@ -23,10 +23,8 @@ public final class WorldFXShaders {
 
     public static ShaderInstance REBIRTH_GALAXY;
 
-    /** A rift in the world, bending the screen round it: see {@code shaders/core/fx_rift.fsh}. */
     public static ShaderInstance FX_RIFT;
 
-    /** The Null Well seen straight on, drawn flat: see {@code shaders/core/fx_disc.fsh}. */
     public static ShaderInstance FX_DISC;
 
     public static ShaderInstance FX_PHOENIX;

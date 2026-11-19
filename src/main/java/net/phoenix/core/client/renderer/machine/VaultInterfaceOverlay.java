@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** Draws the item input and output overlay on the face of a vault interface that its item mode points at. */
 public final class VaultInterfaceOverlay {
 
     private static final AABB MODE_COLOR_OVERLAY = new AABB(

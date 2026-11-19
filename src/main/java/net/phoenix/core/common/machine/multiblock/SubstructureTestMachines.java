@@ -15,13 +15,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/**
- * A multiblock for trying the substructure support of the previews and the terminal, in a development environment only.
- * <p>
- * Its {@code main} structure is a box of casing. Its {@code extension} structure is declared as an addition: a tower of
- * frames on top of the box. The extension only checks the tower, and ignores the rest, so it forms when the tower is
- * there, whatever is below it. Previews show it with the box from the start, and the terminal builds it with the box.
- */
 public final class SubstructureTestMachines {
 
     public static MachineEntry<MultiblockMachineDefinition> SUBSTRUCTURE_TEST = null;

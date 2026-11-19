@@ -285,8 +285,6 @@ public final class PftSteelAndBronzeRecipes {
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_13", "gtceu:steel_dust",
                 "1x minecraft:charcoal", "minecraft:iron_ingot");
 
-        // *** Bronze casings and singleblocks, made of Fiery Bronze instead of plain bronze ***
-
         PftCrafting.shaped(provider, "bronze_pipe_casing_pftsteelandbronzerecipes", "2x gtceu:bronze_pipe_casing",
                 new String[] { "PIP", "IFI", "PIP" }, "P", "phoenixcore:fiery_bronze_plate", "F",
                 "phoenixcore:fiery_bronze_frame", "I", "phoenixcore:fiery_bronze_normal_fluid_pipe");
@@ -296,7 +294,6 @@ public final class PftSteelAndBronzeRecipes {
                 "phoenixcore:fiery_bronze_frame", "G", "phoenixcore:fiery_bronze_gear", "H", "#c:tools/hammer", "W",
                 "#c:tools/wrench");
 
-        // the casing the old steam machines are built around, `steam_machine_casing`: GT also welds it
         PftRecipe.gt(provider, "welder", "steam_machine_casing_fiery")
                 .itemInputs("6x phoenixcore:fiery_bronze_plate", "1x minecraft:bricks")
                 .circuit(6)

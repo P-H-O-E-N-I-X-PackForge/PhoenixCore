@@ -19,16 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * The Sculk Cortex's mind, as glowing veins over the surface of the sculk at its heart. The more it has grown the more
- * veins there are, a node lights for every kind of item it remembers, a pulse runs along the veins each time it eats,
- * and it goes dim and red as it starves.
- */
 public class SculkCortexRender extends DynamicRender<SculkCortexMachine, SculkCortexRender> {
 
     public static final SculkCortexRender INSTANCE = new SculkCortexRender();
 
-    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("sculk_cortex", "Sculk Cortex").machine("phoenixcore:sculk_cortex");
     public static final MapCodec<SculkCortexRender> CODEC = MapCodec.unit(INSTANCE);
@@ -38,7 +32,6 @@ public class SculkCortexRender extends DynamicRender<SculkCortexMachine, SculkCo
     private static final int POINTS = 9;
     private static final float HALF = 1.53f;
 
-    /** One machine's veins, built once from where it stands, and the last pulse it was shown. */
     private static final class State {
 
         final float[][][] veins = new float[VEINS][POINTS][3];
@@ -69,7 +62,7 @@ public class SculkCortexRender extends DynamicRender<SculkCortexMachine, SculkCo
         if (s != null) return s;
         s = new State();
         Random r = new Random(key * 31L + 7L);
-        // 12 veins on each of the six faces, wandering over the face
+
         float[][] normals = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
         float[][] axisA = { { 0, 1, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 1, 0, 0 }, { 1, 0, 0 }, { 1, 0, 0 } };
         float[][] axisB = { { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 1, 0 }, { 0, 1, 0 } };
@@ -156,14 +149,12 @@ public class SculkCortexRender extends DynamicRender<SculkCortexMachine, SculkCo
             }
         }
 
-        // a node for every kind remembered
         for (int n = 0; n < Math.min(nodes, shown); n++) {
             float[] p = s.veins[n][POINTS / 2];
             float tw = 0.7f + 0.3f * Mth.sin(t * 2.2f + n);
             GlowDraw.disc(vc, m, cam, cx + p[0], cy + p[1], cz + p[2], 0.11f, 0.85f, 1f, 1f, 0.85f * dim * tw, 0f);
         }
 
-        // the pulse after it has eaten: three veins in a row
         float since = t - s.pulseAt;
         if (since >= 0f && since < 2.2f && on) {
             int stage = (int) (since / 0.7f);

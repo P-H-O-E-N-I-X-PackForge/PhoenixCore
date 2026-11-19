@@ -24,10 +24,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.phoenix.core.common.data.PftRecipe;
 import net.phoenix.core.common.data.recipeConditions.DisciplineCondition;
 
-/**
- * A recipe with a lot of conditions, to stress the recipe viewer pages: a tall panel, many text rows, an EMI pill and a
- * wide set of condition kinds at once. Only exists in a development environment.
- */
 public final class PftViewerStressRecipes {
 
     private PftViewerStressRecipes() {}

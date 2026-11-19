@@ -150,7 +150,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return null;
     }
 
-    /** The tier that is built, on the server and on the client: the controller keeps the formed structures in sync. */
     private @Nullable CinderForgeTier currentTier() {
         return computeTier();
     }
@@ -160,11 +159,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             "tier2", "Tier 2: the hive shape with exactly 1 Cinder Forge ME hatch",
             "tier3", "Tier 3: the hive shape in titanium frames, with 2 to 4 Cinder Forge ME hatches");
 
-    /**
-     * The tiers are alternatives, and the errors of all three at once are a wall of missing blocks. While none is built
-     * this reports only the tier closest to being built, under a line that says which tier that is and what it needs.
-     * It reads the tiers' errors without changing them, so nothing is lost when the tiers are checked again.
-     */
     @Override
     public java.util.List<com.gregtechceu.gtceu.api.multiblock.error.PatternError> getReportedPatternErrors() {
         if (computeTier() != null) return java.util.List.of();
@@ -187,7 +181,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             return errors;
         }
         var tierErrors = getPatternState(closest).getErrors();
-        // pointing the heading at the first missing block lets the highlight button find it
+
         net.minecraft.core.BlockPos where = tierErrors.get(0).pos();
         errors.add(new net.phoenix.core.api.pattern.PhoenixPatternError(
                 Component.literal("Closest to " + TIER_RULES.get(closest).split(":")[0]),
@@ -196,17 +190,11 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return errors;
     }
 
-    /** The tiers are alternatives to each other, so these are what the UI reports errors for, not the plain "main". */
     @Override
     public java.util.Collection<String> getErrorReportStructures() {
-        // once a tier is built the other two are not meant to match, so their errors are not errors
         return computeTier() == null ? java.util.List.of("main", "tier2", "tier3") : java.util.List.of();
     }
 
-    /**
-     * The forge is formed when any of its tiers is. The small box is the main structure, but the larger tiers are
-     * structures of their own, and the controller's own flag only follows the main one.
-     */
     @Override
     public boolean isFormed() {
         return computeTier() != null;
@@ -224,7 +212,6 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         syncFormedLook();
     }
 
-    /** Makes the controller's model show the formed look while any tier is formed, not only the main structure. */
     private void syncFormedLook() {
         if (isRemote()) return;
         var state = getRenderState();
@@ -238,7 +225,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
     private @Nullable CinderForgeTier computeTier() {
         if (isStructureFormed("tier3")) return CinderForgeTier.TIER3;
         if (isStructureFormed("tier2")) return CinderForgeTier.TIER2;
-        // the small box is the main structure
+
         if (isStructureFormed(DEFAULT_STRUCTURE)) return CinderForgeTier.TIER1;
         return null;
     }

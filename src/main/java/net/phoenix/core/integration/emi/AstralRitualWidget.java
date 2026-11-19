@@ -13,9 +13,6 @@ import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.widget.ParentWidget;
 
-/**
- * The Astral ritual page: a catalyst, what it makes, and how the ritual is done.
- */
 public class AstralRitualWidget extends ParentWidget<AstralRitualWidget> {
 
     public AstralRitualWidget(PhoenixViewer.AstralRitualEntry entry) {

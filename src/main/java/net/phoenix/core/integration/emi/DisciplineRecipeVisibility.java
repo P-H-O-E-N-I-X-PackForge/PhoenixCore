@@ -6,7 +6,6 @@ public final class DisciplineRecipeVisibility {
 
     private DisciplineRecipeVisibility() {}
 
-    /** For EMI pages that are not GT viewer pages but are backed by a GT recipe, such as the Aether Crucible's. */
     public static boolean hide(dev.emi.emi.api.recipe.EmiRecipe recipe) {
         var backing = recipe.getBackingRecipe();
         return backing != null && backing.value() instanceof GTRecipe gt && hidden(gt);
