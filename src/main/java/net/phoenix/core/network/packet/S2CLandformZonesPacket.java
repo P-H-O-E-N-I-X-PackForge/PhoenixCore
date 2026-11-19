@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.phoenix.conflux.dimension.worldgen.Landforms;
+import net.phoenix.conflux.common.dimension.worldgen.Landforms;
 import net.phoenix.core.integration.solaris.ClientLandformZones;
 
 import java.util.ArrayList;

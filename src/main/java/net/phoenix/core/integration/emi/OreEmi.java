@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.conflux.client.ConfluxTheme;
-import net.phoenix.conflux.dimension.DisciplineChunkGenerator;
-import net.phoenix.conflux.dimension.worldgen.ProvinceVeinTemplates;
+import net.phoenix.conflux.common.dimension.DisciplineChunkGenerator;
+import net.phoenix.conflux.common.dimension.worldgen.ProvinceVeinTemplates;
 import net.phoenix.core.PhoenixCore;
 
 import dev.emi.emi.api.EmiRegistry;

@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.phoenix.conflux.research.WorldResearchData;
+import net.phoenix.conflux.common.research.WorldResearchData;
 import net.phoenixvine.wiki.util.TeamUtils;
 
 import com.mojang.serialization.Codec;
@@ -56,6 +56,27 @@ public class DisciplineCondition extends RecipeCondition<DisciplineCondition> {
     public Component getTooltips() {
         String name = discipline.isEmpty() ? "?" : discipline.replace('_', ' ');
         return Component.literal((isReverse ? "§dNot for the discipline: " : "§dOnly for the discipline: ") + name);
+    }
+
+    /** The short label for recipe pages, for example "Only for sculk". */
+    public String pillText() {
+        String name = discipline.isEmpty() ? "?" : discipline.replace('_', ' ');
+        return (isReverse ? "Not for " : "Only for ") + name;
+    }
+
+    @Override
+    public ViewerPill viewerPill() {
+        // just the discipline's name; the full sentence is in the tooltip
+        String name = discipline.isEmpty() ? "?" : discipline.replace('_', ' ');
+        return new ViewerPill(name, 0xFFB890FF,
+                java.util.List.of(net.minecraft.network.chat.Component.literal("§dDiscipline recipe"), getTooltips()));
+    }
+
+    @Override
+    public boolean hiddenInViewer(com.gregtechceu.gtceu.api.recipe.GTRecipe recipe) {
+        var cfg = net.phoenix.conflux.ConfluxConfigs.INSTANCE;
+        if (cfg != null && cfg.showOtherDisciplineRecipes) return false;
+        return !discipline.equals(net.phoenix.conflux.api.ConfluxApi.clientDiscipline());
     }
 
     @Override

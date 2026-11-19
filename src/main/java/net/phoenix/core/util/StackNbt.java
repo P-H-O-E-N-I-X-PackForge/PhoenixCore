@@ -4,6 +4,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -51,16 +52,16 @@ public final class StackNbt {
         return ItemStack.parseOptional(NbtRegistries.PROVIDER, tag);
     }
 
-    public static CompoundTag saveFluid(net.neoforged.neoforge.fluids.FluidStack fluid) {
+    public static CompoundTag saveFluid(FluidStack fluid) {
         if (fluid.isEmpty()) return new CompoundTag();
         return (CompoundTag) fluid.save(NbtRegistries.PROVIDER);
     }
 
-    public static void saveFluidInto(net.neoforged.neoforge.fluids.FluidStack fluid, CompoundTag into) {
+    public static void saveFluidInto(FluidStack fluid, CompoundTag into) {
         if (!fluid.isEmpty()) fluid.save(NbtRegistries.PROVIDER, into);
     }
 
-    public static net.neoforged.neoforge.fluids.FluidStack loadFluid(CompoundTag tag) {
-        return net.neoforged.neoforge.fluids.FluidStack.parseOptional(NbtRegistries.PROVIDER, tag);
+    public static FluidStack loadFluid(CompoundTag tag) {
+        return FluidStack.parseOptional(NbtRegistries.PROVIDER, tag);
     }
 }

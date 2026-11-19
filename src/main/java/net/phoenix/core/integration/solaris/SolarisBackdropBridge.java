@@ -68,7 +68,7 @@ final class SolarisBackdropBridge {
         registered = true;
 
         for (Map.Entry<String, Look> entry : LOOKS.entrySet()) {
-            ResourceLocation dimension = ResourceLocation.fromNamespaceAndPath("phoenixcore",
+            ResourceLocation dimension = ResourceLocation.fromNamespaceAndPath("phoenixconflux",
                     "conflux/" + entry.getKey());
             Look look = entry.getValue();
             UnexploredBackdrops.set(dimension,

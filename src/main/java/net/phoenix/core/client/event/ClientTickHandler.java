@@ -64,7 +64,7 @@ public class ClientTickHandler {
         }
 
         while (PhoenixKeybinds.TOGGLE_DISCIPLINE_SKY.consumeClick()) {
-            net.phoenix.conflux.dimension.sky.SkyManager manager = net.phoenix.conflux.dimension.sky.SkyManager
+            net.phoenix.conflux.common.dimension.sky.SkyManager manager = net.phoenix.conflux.common.dimension.sky.SkyManager
                     .getInstance();
             manager.toggleSkyRendering();
             mc.player.displayClientMessage(Component.literal(

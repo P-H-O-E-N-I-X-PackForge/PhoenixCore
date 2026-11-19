@@ -150,41 +150,96 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         return null;
     }
 
-    @com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient
-    private int tierOrdinal = -1;
-
+    /** The tier that is built, on the server and on the client: the controller keeps the formed structures in sync. */
     private @Nullable CinderForgeTier currentTier() {
-        if (isRemote()) {
-            return tierOrdinal < 0 || tierOrdinal >= CinderForgeTier.values().length ? null :
-                    CinderForgeTier.values()[tierOrdinal];
-        }
         return computeTier();
+    }
+
+    private static final java.util.Map<String, String> TIER_RULES = java.util.Map.of(
+            "main", "Tier 1: the small casing box, with no ME hatch",
+            "tier2", "Tier 2: the hive shape with exactly 1 Cinder Forge ME hatch",
+            "tier3", "Tier 3: the hive shape in titanium frames, with 2 to 4 Cinder Forge ME hatches");
+
+    /**
+     * The tiers are alternatives, and the errors of all three at once are a wall of missing blocks. While none is built
+     * this reports only the tier closest to being built, under a line that says which tier that is and what it needs.
+     * It reads the tiers' errors without changing them, so nothing is lost when the tiers are checked again.
+     */
+    @Override
+    public java.util.List<com.gregtechceu.gtceu.api.multiblock.error.PatternError> getReportedPatternErrors() {
+        if (computeTier() != null) return java.util.List.of();
+        String closest = null;
+        int fewest = Integer.MAX_VALUE;
+        for (String name : TIER_RULES.keySet().stream().sorted().toList()) {
+            var state = getPatternState(name);
+            if (state == null || state.getErrors().isEmpty()) continue;
+            if (state.getErrors().size() < fewest) {
+                fewest = state.getErrors().size();
+                closest = name;
+            }
+        }
+        var errors = new ArrayList<com.gregtechceu.gtceu.api.multiblock.error.PatternError>();
+        if (closest == null) {
+            errors.add(new net.phoenix.core.api.pattern.PhoenixPatternError(
+                    Component.literal("The Cinder Forge is not formed"),
+                    Component.literal("Build one of the three tiers: " + String.join("; ",
+                            TIER_RULES.keySet().stream().sorted().map(TIER_RULES::get).toList()))));
+            return errors;
+        }
+        var tierErrors = getPatternState(closest).getErrors();
+        // pointing the heading at the first missing block lets the highlight button find it
+        net.minecraft.core.BlockPos where = tierErrors.get(0).pos();
+        errors.add(new net.phoenix.core.api.pattern.PhoenixPatternError(
+                Component.literal("Closest to " + TIER_RULES.get(closest).split(":")[0]),
+                Component.literal(TIER_RULES.get(closest)), where));
+        errors.addAll(tierErrors);
+        return errors;
+    }
+
+    /** The tiers are alternatives to each other, so these are what the UI reports errors for, not the plain "main". */
+    @Override
+    public java.util.Collection<String> getErrorReportStructures() {
+        // once a tier is built the other two are not meant to match, so their errors are not errors
+        return computeTier() == null ? java.util.List.of("main", "tier2", "tier3") : java.util.List.of();
+    }
+
+    /**
+     * The forge is formed when any of its tiers is. The small box is the main structure, but the larger tiers are
+     * structures of their own, and the controller's own flag only follows the main one.
+     */
+    @Override
+    public boolean isFormed() {
+        return computeTier() != null;
     }
 
     @Override
     public void formStructure(@org.jetbrains.annotations.NotNull String substructureName) {
         super.formStructure(substructureName);
-        updateTier();
+        syncFormedLook();
     }
 
     @Override
     public void invalidateStructure(@org.jetbrains.annotations.NotNull String substructureName) {
         super.invalidateStructure(substructureName);
-        updateTier();
+        syncFormedLook();
     }
 
-    private void updateTier() {
-        CinderForgeTier tier = computeTier();
-        tierOrdinal = tier == null ? -1 : tier.ordinal();
+    /** Makes the controller's model show the formed look while any tier is formed, not only the main structure. */
+    private void syncFormedLook() {
+        if (isRemote()) return;
+        var state = getRenderState();
+        boolean formed = computeTier() != null;
+        var property = com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.IS_FORMED;
+        if (state.hasProperty(property) && state.getValue(property) != formed) {
+            setRenderState(state.setValue(property, formed));
+        }
     }
 
     private @Nullable CinderForgeTier computeTier() {
-        var tier3 = getPatternState("tier3");
-        if (tier3 != null && tier3.isFormed()) return CinderForgeTier.TIER3;
-        var tier2 = getPatternState("tier2");
-        if (tier2 != null && tier2.isFormed()) return CinderForgeTier.TIER2;
-        var tier1 = getPatternState("tier1");
-        if (tier1 != null && tier1.isFormed()) return CinderForgeTier.TIER1;
+        if (isStructureFormed("tier3")) return CinderForgeTier.TIER3;
+        if (isStructureFormed("tier2")) return CinderForgeTier.TIER2;
+        // the small box is the main structure
+        if (isStructureFormed(DEFAULT_STRUCTURE)) return CinderForgeTier.TIER1;
         return null;
     }
 
@@ -250,9 +305,10 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 400, 270,
-                        content -> buildMainUI(content, data, syncManager, settings)));
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                        this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 320, 270,
+                                content -> buildMainUI(content, data, syncManager, settings))));
     }
 
     private ItemStack coreStack() {
@@ -272,7 +328,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     BadgeState b = badgeState(coreStack());
                     return b.label().equals("READY") ? 1.0f : b.label().equals("GATHERING") ? 0.55f : 0.12f;
                 }, T.accent(), T.accent2()), 38)
-                .formed(this::isFormed)
+                .formed(() -> computeTier() != null)
                 .badge(() -> {
                     BadgeState b = badgeState(coreStack());
                     return new net.phoenixvine.wiki.ui.hud.HudModel.Badge(b.label(), 0xFF_000000 | b.color());
@@ -323,10 +379,10 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         BadgeState badge = badgeState(badgeCore);
         int badgeW = 8 * badge.label().length() + 10;
         mainWidget.child(new brachy.modularui.widget.Widget<>()
-                .pos(400 - badgeW, 4).size(badgeW, 12)
+                .pos(320 - badgeW, 4).size(badgeW, 12)
                 .background(new StatusBadge(badge.color())));
         mainWidget.child(Text.str(badge.label()).asWidget()
-                .pos(400 - badgeW + 5, 6).size(badgeW - 6, 10).color(badge.color()));
+                .pos(320 - badgeW + 5, 6).size(badgeW - 6, 10).color(badge.color()));
 
         int upgradeBottom = buildUpgradeSection(mainWidget, syncManager);
 
@@ -335,19 +391,19 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
         if (tier == null) {
             body.child(Text.str("Structure not formed.")
-                    .asWidget().pos(8, 24).size(390, 10).color(COLOR_BAD));
+                    .asWidget().pos(8, 24).size(310, 10).color(COLOR_BAD));
 
             body.child(Text.str("Tier 1: small box, casing only, no ME hatch - manual only.")
-                    .asWidget().pos(8, 38).size(390, 10).color(COLOR_LABEL));
+                    .asWidget().pos(8, 38).size(310, 10).color(COLOR_LABEL));
             body.child(Text.str("Tier 2: larger hive shape with exactly 1 ME hatch - auto-packages.")
-                    .asWidget().pos(8, 50).size(390, 10).color(COLOR_LABEL));
+                    .asWidget().pos(8, 50).size(310, 10).color(COLOR_LABEL));
             body.child(Text.str("Tier 3: same hive shape with 2-4 ME hatches - parallel Cores.")
-                    .asWidget().pos(8, 62).size(390, 10).color(COLOR_LABEL));
+                    .asWidget().pos(8, 62).size(310, 10).color(COLOR_LABEL));
             return;
         }
         if (tier != CinderForgeTier.TIER1 && hatch == null) {
             body.child(Text.str("Structure formed but the Cinder Forge hatch is missing - " +
-                    "this shouldn't be reachable, report it.").asWidget().pos(8, 24).size(390, 20).color(COLOR_BAD));
+                    "this shouldn't be reachable, report it.").asWidget().pos(8, 24).size(310, 20).color(COLOR_BAD));
             return;
         }
 
@@ -356,7 +412,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         if (tier == CinderForgeTier.TIER1) {
             contentY = buildTier1SlotSection(body, syncManager);
 
-            Flow wrapper = Flow.col().pos(0, contentY).size(400, 500);
+            Flow wrapper = Flow.col().pos(0, contentY).size(320, 260);
             body.child(wrapper);
             contentContainer = wrapper;
             contentY = 0;
@@ -365,7 +421,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         ItemStack core = inventory.getStackInSlot(CinderForgeHatchPartMachine.CORE_SLOT);
         if (core.isEmpty() || !(core.getItem() instanceof CinderCoreItem)) {
             contentContainer.child(Text.str(tier == CinderForgeTier.TIER1 ? "No Core in the slot above yet." :
-                    "No Core in the hatch right now.").asWidget().pos(8, contentY).size(390, 10).color(COLOR_LABEL));
+                    "No Core in the hatch right now.").asWidget().pos(8, contentY).size(310, 10).color(COLOR_LABEL));
             return;
         }
 
@@ -546,13 +602,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
         mainWidget.child(new ScrollWidget<>(new VerticalScrollData())
                 .pos(4, 42)
-                .size(392, ROW_H * 10)
+                .size(312, ROW_H * 6)
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER))
                 .child(new DynamicWidget<>().clientOnlyHandler(listHandler)));
     }
 
     private Flow buildTargetListWidget(List<MultiblockMachineDefinition> targets, BooleanSyncValue[] pickSlots) {
-        Flow col = Flow.col().size(392, Math.max(1, Math.min(targets.size(), MAX_TARGET_ROWS)) * ROW_H);
+        Flow col = Flow.col().size(312, Math.max(1, Math.min(targets.size(), MAX_TARGET_ROWS)) * ROW_H);
         if (targets.isEmpty()) {
             col.child(Text.str("No matches.").asWidget().pos(2, 2).color(COLOR_LABEL));
             return col;
@@ -560,13 +616,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
         for (int i = 0; i < targets.size() && i < MAX_TARGET_ROWS; i++) {
             MultiblockMachineDefinition def = targets.get(i);
             BooleanSyncValue pick = pickSlots[i];
-            Flow row = Flow.row().pos(0, i * ROW_H).size(392, ROW_H - 1)
+            Flow row = Flow.row().pos(0, i * ROW_H).size(312, ROW_H - 1)
                     .background(new FlatPanel(COLOR_ROW_BG, 0));
             row.child(new brachy.modularui.widget.Widget<>().pos(0, 0).size(2, ROW_H - 1)
                     .background(new FlatPanel(COLOR_TITLE, 0)));
             row.child(new ItemDrawable(def.getBlock().asItem()).asWidget().pos(5, 1).size(16, 16));
             row.child(new ButtonWidget<>()
-                    .pos(24, 0).size(367, ROW_H - 1)
+                    .pos(24, 0).size(287, ROW_H - 1)
                     .overlay(Text.str(def.getBlock().getName().getString()).asIcon())
                     .onMousePressed((ctx, btn) -> {
                         pick.setBoolValue(true, true, true);
@@ -604,17 +660,15 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 }));
 
         if (isRemote()) {
-            mainWidget.child(Text.str("PREVIEW").asWidget().pos(240, 22).size(120, 10).color(COLOR_LABEL));
+            mainWidget.child(Text.str("PREVIEW").asWidget().pos(198, 22).size(120, 10).color(COLOR_LABEL));
             SchemaRenderer renderer = new SchemaRenderer(schemaInfo.getMapSchema());
-            schemaInfo.setRenderer(renderer);
             renderer.camera().setPosAndLookAt(0, 0, -10, schemaInfo.getMapSchema().getCenter());
             SchemaWidget schemaWidget = renderer.asWidget()
                     .enableDragRotation(true)
                     .enableScrollScaling(true)
                     .enableDragTranslation(false)
-                    .pos(240, 36).size(152, 140)
+                    .pos(198, 36).size(122, 140)
                     .background(new FlatPanel(0, COLOR_PANEL_BORDER));
-            schemaInfo.setMultiSchema(schemaWidget);
             mainWidget.child(schemaWidget);
         }
 
@@ -643,13 +697,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     }).allowC2S(true));
         }
 
-        Flow sliceCol = Flow.col().pos(8, 38).size(224, ROW_H * Math.max(1, variableSlices.size()))
+        Flow sliceCol = Flow.col().pos(8, 38).size(184, ROW_H * Math.max(1, variableSlices.size()))
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER));
         for (int row = 0; row < variableSlices.size() && row < MAX_SLICE_ROWS; row++) {
             int sliceIndex = variableSlices.get(row);
             int current = schemaInfo.getUserSliceRepeats().getOrDefault(sliceIndex,
                     pattern.getSlices()[sliceIndex].getMinRepeats());
-            Flow r = Flow.row().pos(0, row * ROW_H).size(224, ROW_H - 1)
+            Flow r = Flow.row().pos(0, row * ROW_H).size(184, ROW_H - 1)
                     .background(new FlatPanel(COLOR_ROW_BG, 0));
             r.child(Text.str("Layer " + (sliceIndex + 1) + " repeats").asWidget().pos(0, 4).size(120, 10)
                     .color(COLOR_LABEL));
@@ -722,13 +776,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
 
         mainWidget.child(new ScrollWidget<>(new VerticalScrollData())
                 .pos(8, 38 + ROW_H * Math.max(1, variableSlices.size()) + 6)
-                .size(224, ROW_H * 8)
+                .size(184, ROW_H * 6)
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER))
                 .child(new DynamicWidget<>().clientOnlyHandler(predRowsHandler)));
 
         var required = schemaInfo.getBlockCounts();
         var stocked = CinderSchemaData.tallyStocked(core);
-        Flow summaryCol = Flow.col().pos(240, 182).size(152, ROW_H * Math.max(1, required.size()))
+        Flow summaryCol = Flow.col().pos(198, 182).size(122, ROW_H * Math.max(1, required.size()))
                 .background(new FlatPanel(COLOR_PANEL_BG, COLOR_PANEL_BORDER));
         int row = 0;
         for (var reqEntry : required.reference2IntEntrySet()) {
@@ -740,13 +794,13 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             int need = reqEntry.getIntValue();
             int have = stocked.getOrDefault(block, 0);
             boolean ok = have >= need;
-            Flow r = Flow.row().pos(0, row * ROW_H).size(152, ROW_H - 1)
+            Flow r = Flow.row().pos(0, row * ROW_H).size(122, ROW_H - 1)
                     .background(new FlatPanel(COLOR_ROW_BG, 0));
             r.child(new brachy.modularui.widget.Widget<>().pos(0, 0).size(2, ROW_H - 1)
                     .background(new FlatPanel(ok ? COLOR_OK : COLOR_BAD, 0)));
             r.child(new ItemDrawable(block.asItem()).asWidget().pos(5, 1).size(16, 16));
             r.child(Text.str(block.getName().getString() + " " + have + "/" + need)
-                    .asWidget().pos(24, 4).size(126, 10).color(ok ? COLOR_OK : COLOR_BAD));
+                    .asWidget().pos(24, 4).size(96, 10).color(ok ? COLOR_OK : COLOR_BAD));
             summaryCol.child(r);
             row++;
         }
@@ -763,7 +817,7 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
             extraH = Math.min(MAX_CANDIDATES_PER_ROW, expandedCandidates.size()) * ROW_H;
         }
 
-        Flow col = Flow.col().size(216, Math.max(1, predicateRows.size()) * ROW_H + extraH);
+        Flow col = Flow.col().size(176, Math.max(1, predicateRows.size()) * ROW_H + extraH);
         if (predicateRows.isEmpty()) {
             col.child(Text.str("No configurable parts for this structure.").asWidget().pos(2, 2).color(COLOR_LABEL));
             return col;
@@ -778,11 +832,11 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                     candidates.get(currentIndex).getItemStackForm().getHoverName().getString() : "?";
             boolean isExpanded = row == expandedPredicateRow;
 
-            Flow r = Flow.row().pos(0, y).size(216, ROW_H - 1).background(new FlatPanel(COLOR_ROW_BG, 0));
-            r.child(Text.str(prow.label()).asWidget().pos(2, 4).size(84, 10).color(COLOR_LABEL));
+            Flow r = Flow.row().pos(0, y).size(176, ROW_H - 1).background(new FlatPanel(COLOR_ROW_BG, 0));
+            r.child(Text.str(prow.label()).asWidget().pos(2, 4).size(66, 10).color(COLOR_LABEL));
             BooleanSyncValue toggle = expandToggle[row];
-            r.child(new ButtonWidget<>().pos(88, 0).size(128, ROW_H - 1)
-                    .overlay(Text.str(truncate(currentLabel, 15) + (isExpanded ? " ▲" : " ▼")).asIcon())
+            r.child(new ButtonWidget<>().pos(70, 0).size(106, ROW_H - 1)
+                    .overlay(Text.str(truncate(currentLabel, 11) + (isExpanded ? " ▲" : " ▼")).asIcon())
                     .onMousePressed((ctx, btn) -> {
                         toggle.setBoolValue(true, true, true);
                         return true;
@@ -795,11 +849,11 @@ public class CinderForgeMachine extends MultiblockControllerMachine implements I
                 var candidate = candidates.get(ci);
                 boolean selected = ci == currentIndex;
                 BooleanSyncValue pick = candidatePick[ci];
-                Flow cr = Flow.row().pos(8, y).size(208, ROW_H - 1)
+                Flow cr = Flow.row().pos(8, y).size(168, ROW_H - 1)
                         .background(new FlatPanel(COLOR_ROW_BG, selected ? COLOR_TITLE : 0));
                 cr.child(new ItemDrawable(candidate.getBlockState().getBlock().asItem()).asWidget()
                         .pos(1, 1).size(16, 16));
-                cr.child(new ButtonWidget<>().pos(20, 0).size(188, ROW_H - 1)
+                cr.child(new ButtonWidget<>().pos(20, 0).size(148, ROW_H - 1)
                         .overlay(Text.str(candidate.getItemStackForm().getHoverName().getString()).asIcon())
                         .onMousePressed((ctx, btn) -> {
                             pick.setBoolValue(true, true, true);

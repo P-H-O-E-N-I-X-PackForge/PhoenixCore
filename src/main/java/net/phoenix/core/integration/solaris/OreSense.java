@@ -15,13 +15,13 @@ import net.phoenix.conflux.ConfluxConfigs;
 import net.phoenix.conflux.api.OreMemoryData;
 import net.phoenix.conflux.api.OreSenseApi;
 import net.phoenix.conflux.api.OreSenseEvent;
-import net.phoenix.conflux.dimension.DisciplineThemeRegistry;
-import net.phoenix.conflux.dimension.worldgen.DisciplineWorldgenConfig;
-import net.phoenix.conflux.research.ResearchNode;
-import net.phoenix.conflux.research.ResearchTeamHelper;
-import net.phoenix.conflux.research.ResearchTree;
-import net.phoenix.conflux.research.ResearchTreeRegistry;
-import net.phoenix.conflux.research.WorldResearchData;
+import net.phoenix.conflux.common.dimension.DisciplineThemeRegistry;
+import net.phoenix.conflux.common.dimension.worldgen.DisciplineWorldgenConfig;
+import net.phoenix.conflux.common.research.ResearchNode;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.research.ResearchTree;
+import net.phoenix.conflux.common.research.ResearchTreeRegistry;
+import net.phoenix.conflux.common.research.WorldResearchData;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +83,8 @@ final class OreSense {
 
     static @Nullable String disciplineOf(ServerLevel level) {
         var location = level.dimension().location();
-        if (!location.getNamespace().equals("phoenixcore") || !location.getPath().startsWith("conflux/")) return null;
+        if (!location.getNamespace().equals("phoenixconflux") || !location.getPath().startsWith("conflux/"))
+            return null;
         return location.getPath().substring("conflux/".length());
     }
 

@@ -39,6 +39,7 @@ public final class FxPreview {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
         if (mc.player == null || level == null) return "not in a world";
+        if (fx.spawner() != null) return fx.spawner().apply(seconds);
         String id = fx.machineId();
         if (id == null) return fx.id() + " has no machine of its own to put down";
         ResourceLocation rl = ResourceLocation.tryParse(id);
@@ -65,6 +66,7 @@ public final class FxPreview {
     }
 
     public static int clear() {
+        net.phoenix.core.client.renderer.phoenix.PhoenixForgeWorldRenderer.clearPreview();
         Level level = Minecraft.getInstance().level;
         int n = ACTIVE.size();
         if (level != null) {

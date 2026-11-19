@@ -20,8 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.phoenix.conflux.ConfluxDataType;
 import net.phoenix.conflux.client.ConfluxTheme;
-import net.phoenix.conflux.pipe.IConfluxDataHandler;
-import net.phoenix.conflux.pipe.IConfluxMultiHandler;
+import net.phoenix.conflux.common.pipe.IConfluxDataHandler;
+import net.phoenix.conflux.common.pipe.IConfluxMultiHandler;
 import net.phoenix.core.integration.ars_nouveau.api.capability.ISourceProviderCapability;
 import net.phoenix.core.integration.ars_nouveau.api.machine.trait.NotifiableSourceContainer;
 import net.phoenixvine.wiki.ui.hud.Heroes;
@@ -199,7 +199,7 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
             BlockEntity be = getLevel().getBlockEntity(pos.relative(dir));
             if (be == null) continue;
 
-            IConfluxDataHandler singleHandler = net.phoenix.conflux.pipe.ConfluxDataCapability
+            IConfluxDataHandler singleHandler = net.phoenix.conflux.common.pipe.ConfluxDataCapability
                     .find(be, dir.getOpposite());
             if (singleHandler != null) {
                 if (singleHandler.getDataType() == dataType) {
@@ -212,7 +212,7 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
                 continue;
             }
 
-            IConfluxMultiHandler multiHandler = net.phoenix.conflux.pipe.ConfluxMultiHandlerCapability
+            IConfluxMultiHandler multiHandler = net.phoenix.conflux.common.pipe.ConfluxMultiHandlerCapability
                     .find(be, dir.getOpposite());
             if (multiHandler != null) {
                 long sent = multiHandler.insert(dataType, budget);
@@ -300,8 +300,9 @@ public class ConfluxProducerMachine extends TieredEnergyMachine implements IMuiM
             syncManager.syncValue("source", 0, new IntSyncValue(() -> sourceContainer.getSource(),
                     v -> sourceContainer.setSource(v)));
         }
-        return MachineHud.build(this, data, syncManager, settings, (id, value) -> {}, this::hudModel,
-                new MachineHud.Classic("F", 176, usesItems(dataType) ? 146 : 70, content -> buildInputTab(content)));
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager, MachineHud.build(this, data, syncManager,
+                settings, (id, value) -> {}, this::hudModel,
+                new MachineHud.Classic("F", 176, usesItems(dataType) ? 146 : 70, content -> buildInputTab(content))));
     }
 
     private HudModel hudModel() {

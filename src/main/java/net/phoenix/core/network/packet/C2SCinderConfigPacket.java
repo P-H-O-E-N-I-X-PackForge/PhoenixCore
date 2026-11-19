@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.mui.MultiblockSchemaInfo;
 import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
-import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -77,26 +76,26 @@ public class C2SCinderConfigPacket implements CustomPacketPayload {
         List<Integer> baseIndices = new ArrayList<>();
         List<Integer> candidateIndices = new ArrayList<>();
 
-        var structureHelper = schemaInfo.getStructureHelper();
-        var blockPreferences = structureHelper != null ? structureHelper.getBlockPreferences() : null;
+        var blockPreferences = schemaInfo.getBlockPreferences();
         var patternSupplier = definition.getStructurePatterns().get(MultiblockControllerMachine.DEFAULT_STRUCTURE);
         Object rawPattern = patternSupplier != null ? patternSupplier.get() : null;
 
-        if (blockPreferences != null && !blockPreferences.isEmpty() && rawPattern instanceof BlockPattern pattern) {
-            for (var cell : blockPreferences.cellSet()) {
-                MultiPredicate predicate = cell.getRowKey();
-                BasePredicate base = cell.getColumnKey();
+        if (!blockPreferences.isEmpty() && rawPattern instanceof BlockPattern pattern) {
+            for (var cell : blockPreferences.char2ObjectEntrySet()) {
+                char predicateChar = cell.getCharKey();
                 BlockInfo chosen = cell.getValue();
-                if (predicate == null || base == null || chosen == null) continue;
+                MultiPredicate predicate = pattern.getPredicates().get(predicateChar);
+                if (predicate == null || chosen == null) continue;
 
-                var charEntry = pattern.getPredicates().char2ObjectEntrySet().stream()
-                        .filter(e -> e.getValue().equals(predicate))
-                        .findFirst().orElse(null);
-                if (charEntry == null) continue;
+                for (int baseIndex = 0; baseIndex < predicate.predicates().size(); baseIndex++) {
+                    int candidateIndex = predicate.predicates().get(baseIndex).getCandidates().indexOf(chosen);
+                    if (candidateIndex < 0) continue;
 
-                chars.add(charEntry.getCharKey());
-                baseIndices.add(predicate.predicates().indexOf(base));
-                candidateIndices.add(base.getCandidates().indexOf(chosen));
+                    chars.add(predicateChar);
+                    baseIndices.add(baseIndex);
+                    candidateIndices.add(candidateIndex);
+                    break;
+                }
             }
         }
 

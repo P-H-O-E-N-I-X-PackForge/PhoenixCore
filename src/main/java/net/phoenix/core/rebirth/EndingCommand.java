@@ -8,8 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.phoenix.conflux.ending.Ending;
-import net.phoenix.conflux.ending.EpilogueService;
+import net.phoenix.conflux.common.ending.Ending;
+import net.phoenix.conflux.common.ending.EpilogueService;
 import net.phoenix.core.PhoenixCore;
 
 import com.mojang.brigadier.arguments.StringArgumentType;

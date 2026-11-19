@@ -28,6 +28,7 @@ public class SanctumWardRender extends DynamicRender<WorkableElectricMultiblockM
 
     public static final SanctumWardRender INSTANCE = new SanctumWardRender();
 
+    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("sanctum_ward", "Sanctum Ward dome").machine("phoenixcore:sanctum_ward");
     public static final MapCodec<SanctumWardRender> CODEC = MapCodec.unit(SanctumWardRender.INSTANCE);

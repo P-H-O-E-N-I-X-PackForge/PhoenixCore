@@ -214,6 +214,18 @@ public final class PftRemovals {
             "gtceu:assembler/casing_bronze_bricks",
             "gtceu:shaped/casing_bronze_bricks",
             "gtceu:shaped/casing_bronze_firebox",
+            "gtceu:welder/casing_bronze_bricks",
+            "gtceu:welder/casing_bronze_firebox",
+            "gtceu:shaped/casing_bronze_pipe",
+            "gtceu:shaped/casing_bronze_gearbox",
+            "gtceu:welder/bronze_gearbox_casing",
+            "gtceu:shaped/charcoal_pile_igniter",
+            "gtceu:shaped/bronze_multiblock_tank",
+            "gtceu:shaped/bronze_tank_valve",
+            "gtceu:shaped/bronze_crate",
+            "gtceu:shaped/bronze_drum",
+            "gtceu:assembler/bronze_crate",
+            "gtceu:assembler/bronze_drum",
             "gtceu:smelting/smelt_dust_aluminfrost_to_ingot",
             "gtceu:shaped/mv_machine_hull",
             "gtceu:shaped/casing_mv",
@@ -331,6 +343,8 @@ public final class PftRemovals {
             "functionalstorage:netherite_upgrade");
 
     private static final List<String> OUTPUTS = List.of(
+            "extendedae:circuit_cutter",
+            "extendedae:crystal_assembler",
             "extendedae:drive_upgrade",
             "extendedae:assembler_matrix_frame",
             "extendedae:assembler_matrix_wall",
@@ -448,6 +462,7 @@ public final class PftRemovals {
 
     private static final List<String> OUTPUT_REGEX = List.of(
             "^sophisticatedstorage:limited_barrel.+$",
+            "^utilitarian:(magnet|well_behaved_dropper|no_raider_block|no_soliciting_banner|restraining_order(_active)?|[a-z_]+soliciting_carpet)$",
             "^sophisticatedstorage:.*copper.*tier_upgrade$",
             "^sophisticatedstorage:.*iron.*tier_upgrade$");
 

@@ -59,7 +59,7 @@ public final class ConfluxArcaneMachines {
                                     .setMaxGlobalLimited(1)))
                     .where('M', blocks(GTBlocks.CASING_TUNGSTENSTEEL_ROBUST.get())
                             .or(abilities(PartAbility.MAINTENANCE).setMinGlobalLimited(1))
-                            .or(abilities(net.phoenix.conflux.hatch.ConfluxPartAbility.CONFLUX_DATA_OUTPUT)
+                            .or(abilities(net.phoenix.conflux.common.hatch.ConfluxPartAbility.CONFLUX_DATA_OUTPUT)
                                     .setMinGlobalLimited(1)
                                     .setMaxGlobalLimited(1)))
                     .where(' ', Predicates.air())

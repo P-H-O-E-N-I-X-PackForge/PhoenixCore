@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.conflux.ConfluxConfigs;
-import net.phoenix.conflux.dimension.worldgen.Landforms;
+import net.phoenix.conflux.common.dimension.worldgen.Landforms;
 import net.phoenix.core.network.packet.S2CLandformZonesPacket;
 import net.phoenixvine.solaris.client.render.LineRenderer;
 import net.phoenixvine.solaris.client.render.MapLayer;

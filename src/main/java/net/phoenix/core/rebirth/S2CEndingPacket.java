@@ -8,9 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.phoenix.conflux.ending.Ending;
-import net.phoenix.conflux.ending.Endings;
-import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.ending.Ending;
+import net.phoenix.conflux.common.ending.Endings;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
 import net.phoenix.core.client.gui.forge.ClientEnding;
 
 import java.util.List;

@@ -1,5 +1,7 @@
 package net.phoenix.core.common.data.recipe.pft;
 
+import com.gregtechceu.gtceu.api.GTValues;
+
 import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.common.data.PftCrafting;
 import net.phoenix.core.common.data.PftRecipe;
@@ -282,5 +284,81 @@ public final class PftSteelAndBronzeRecipes {
 
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_13", "gtceu:steel_dust",
                 "1x minecraft:charcoal", "minecraft:iron_ingot");
+
+        // *** Bronze casings and singleblocks, made of Fiery Bronze instead of plain bronze ***
+
+        PftCrafting.shaped(provider, "bronze_pipe_casing_pftsteelandbronzerecipes", "2x gtceu:bronze_pipe_casing",
+                new String[] { "PIP", "IFI", "PIP" }, "P", "phoenixcore:fiery_bronze_plate", "F",
+                "phoenixcore:fiery_bronze_frame", "I", "phoenixcore:fiery_bronze_normal_fluid_pipe");
+
+        PftCrafting.shaped(provider, "bronze_gearbox_pftsteelandbronzerecipes", "2x gtceu:bronze_gearbox",
+                new String[] { "PHP", "GFG", "PWP" }, "P", "phoenixcore:fiery_bronze_plate", "F",
+                "phoenixcore:fiery_bronze_frame", "G", "phoenixcore:fiery_bronze_gear", "H", "#c:tools/hammer", "W",
+                "#c:tools/wrench");
+
+        // the casing the old steam machines are built around, `steam_machine_casing`: GT also welds it
+        PftRecipe.gt(provider, "welder", "steam_machine_casing_fiery")
+                .itemInputs("6x phoenixcore:fiery_bronze_plate", "1x minecraft:bricks")
+                .circuit(6)
+                .itemOutputs("2x gtceu:steam_machine_casing")
+                .duration(50)
+                .EUt(16)
+                .save();
+
+        PftRecipe.gt(provider, "welder", "bronze_firebox_casing_fiery")
+                .itemInputs("3x phoenixcore:fiery_bronze_rod", "1x phoenixcore:fiery_bronze_frame",
+                        "3x phoenixcore:fiery_bronze_plate")
+                .itemOutputs("2x gtceu:bronze_firebox_casing")
+                .duration(100)
+                .EUt(GTValues.VA[GTValues.LV])
+                .save();
+
+        PftRecipe.gt(provider, "welder", "bronze_gearbox_casing_fiery")
+                .itemInputs("4x phoenixcore:fiery_bronze_plate", "2x phoenixcore:fiery_bronze_gear",
+                        "1x phoenixcore:fiery_bronze_frame")
+                .circuit(4)
+                .itemOutputs("2x gtceu:bronze_gearbox")
+                .duration(50)
+                .EUt(16)
+                .save();
+
+        PftCrafting.shaped(provider, "charcoal_pile_igniter_pftsteelandbronzerecipes",
+                "gtceu:charcoal_pile_igniter", new String[] { "ERE", "EHE", "FFF" }, "E",
+                "phoenixcore:fiery_bronze_plate", "R", "gtceu:iron_rotor", "H", "gtceu:bronze_brick_casing", "F",
+                "minecraft:flint_and_steel");
+
+        PftCrafting.shaped(provider, "bronze_multiblock_tank_pftsteelandbronzerecipes",
+                "gtceu:bronze_multiblock_tank", new String[] { " R ", "HCW", " R " }, "R",
+                "phoenixcore:fiery_bronze_ring", "C", "gtceu:steam_machine_casing", "H", "#c:tools/hammer", "W",
+                "#c:tools/wrench");
+
+        PftCrafting.shaped(provider, "bronze_tank_valve_pftsteelandbronzerecipes", "gtceu:bronze_tank_valve",
+                new String[] { " R ", "HCW", " O " }, "R", "phoenixcore:fiery_bronze_ring", "O",
+                "phoenixcore:fiery_bronze_rotor", "C", "gtceu:steam_machine_casing", "H", "#c:tools/hammer", "W",
+                "#c:tools/wrench");
+
+        PftCrafting.shaped(provider, "bronze_crate_pftsteelandbronzerecipes", "gtceu:bronze_crate",
+                new String[] { "RPR", "PHP", "RPR" }, "P", "phoenixcore:fiery_bronze_plate", "R",
+                "phoenixcore:fiery_bronze_long_rod", "H", "#c:tools/hammer");
+
+        PftCrafting.shaped(provider, "bronze_drum_pftsteelandbronzerecipes", "gtceu:bronze_drum",
+                new String[] { " H ", "PRP", "PRP" }, "P", "phoenixcore:fiery_bronze_plate", "R",
+                "phoenixcore:fiery_bronze_long_rod", "H", "#c:tools/hammer");
+
+        PftRecipe.gt(provider, "assembler", "bronze_crate_fiery")
+                .itemInputs("4x phoenixcore:fiery_bronze_long_rod", "4x phoenixcore:fiery_bronze_plate")
+                .circuit(1)
+                .itemOutputs("gtceu:bronze_crate")
+                .duration(200)
+                .EUt(16)
+                .save();
+
+        PftRecipe.gt(provider, "assembler", "bronze_drum_fiery")
+                .itemInputs("2x phoenixcore:fiery_bronze_long_rod", "4x phoenixcore:fiery_bronze_plate")
+                .circuit(2)
+                .itemOutputs("gtceu:bronze_drum")
+                .duration(200)
+                .EUt(16)
+                .save();
     }
 }

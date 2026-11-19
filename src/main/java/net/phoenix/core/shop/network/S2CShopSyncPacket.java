@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.phoenix.core.shop.RewardSpec;
 import net.phoenix.core.shop.ShopEntry;
+import net.phoenixvine.wiki.api.gate.SuiteGates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +41,8 @@ public record S2CShopSyncPacket(List<ShopEntryView> entries) implements CustomPa
                     .collect(Collectors.toList());
             List<RewardSpec> specs = e.rewards.stream().map(r -> r.toSpec()).collect(Collectors.toList());
             String locked = "";
-            if (!player.hasPermissions(2) && !net.phoenixvine.wiki.api.gate.SuiteGates.isOpen(player, e.requires)) {
-                locked = net.phoenixvine.wiki.api.gate.SuiteGates.denialFor(e.requires).getString();
+            if (!player.hasPermissions(2) && !SuiteGates.isOpen(player, e.requires)) {
+                locked = SuiteGates.denialFor(e.requires).getString();
             }
             result.add(
                     new ShopEntryView(e.id, e.name, e.icon, e.cost, descriptions, specs, e.category, locked));

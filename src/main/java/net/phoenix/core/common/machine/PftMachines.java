@@ -237,16 +237,8 @@ public final class PftMachines {
                                 .where('C', Predicates.blocks(PhoenixBlocks.CONDUCTIVE_HONEY_COIL.get()))
                                 .build());
 
-                try {
-                    java.util.Map<String, java.util.function.Supplier<com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern>> replaced = new java.util.LinkedHashMap<>();
-                    definition.getStructurePatterns().keySet().forEach(key -> replaced.put(key, pattern));
-                    java.lang.reflect.Field field = MultiblockMachineDefinition.class
-                            .getDeclaredField("structurePatterns");
-                    field.setAccessible(true);
-                    field.set(definition, java.util.Collections.unmodifiableMap(replaced));
-                } catch (ReflectiveOperationException e) {
-                    PhoenixCore.LOGGER.error("[PFT] could not replace the Active Transformer structure", e);
-                }
+                new java.util.ArrayList<>(definition.getStructurePatterns().keySet())
+                        .forEach(key -> definition.setStructurePattern(key, def -> pattern.get()));
             });
         }
     }

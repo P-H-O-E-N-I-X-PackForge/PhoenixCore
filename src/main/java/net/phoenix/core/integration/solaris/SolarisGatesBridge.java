@@ -4,10 +4,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.phoenix.conflux.api.ConfluxApi;
-import net.phoenix.conflux.research.ResearchNode;
-import net.phoenix.conflux.research.ResearchTeamHelper;
-import net.phoenix.conflux.research.ResearchTree;
-import net.phoenix.conflux.research.ResearchTreeRegistry;
+import net.phoenix.conflux.common.research.ResearchNode;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.research.ResearchTree;
+import net.phoenix.conflux.common.research.ResearchTreeRegistry;
 import net.phoenixvine.solaris.api.SolarisAPI;
 import net.phoenixvine.solaris.api.SolarisGatesAPI;
 
@@ -46,7 +46,7 @@ final class SolarisGatesBridge {
         defaultsBound = true;
 
         for (String discipline : DISCIPLINES) {
-            ResourceLocation dimension = ResourceLocation.fromNamespaceAndPath("phoenixcore",
+            ResourceLocation dimension = ResourceLocation.fromNamespaceAndPath("phoenixconflux",
                     "conflux/" + discipline);
             for (String feature : List.of(SolarisAPI.FEATURE_MINIMAP, SolarisAPI.FEATURE_WORLD_MAP,
                     SolarisAPI.FEATURE_FULLSCREEN_MAP)) {

@@ -2,6 +2,7 @@ package net.phoenix.core.common.entity;
 
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +43,12 @@ public class TetoSlime extends Slime {
             setSize(roll < 0.55f ? 1 : roll < 0.90f ? 2 : 4, true);
         }
         return data;
+    }
+
+    /** A slime only drops its loot when it is the smallest; a Teto Slime drops it at every size. */
+    @Override
+    protected ResourceKey<LootTable> getDefaultLootTable() {
+        return getType().getDefaultLootTable();
     }
 
     @Override

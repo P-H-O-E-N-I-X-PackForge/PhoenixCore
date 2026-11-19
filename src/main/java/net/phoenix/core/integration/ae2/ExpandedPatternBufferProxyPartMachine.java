@@ -23,8 +23,6 @@ public class ExpandedPatternBufferProxyPartMachine extends MEPatternBufferProxyP
 
     public ExpandedPatternBufferProxyPartMachine(BlockEntityCreationInfo info) {
         super(info);
-        getProxySlotRecipeHandler().getProxySlotHandlers()
-                .forEach(handlers -> ExpandedProxyContext.register(handlers, this));
     }
 
     public int getPriority() {

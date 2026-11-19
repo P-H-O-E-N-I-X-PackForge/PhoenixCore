@@ -259,7 +259,8 @@ public class SourceRelayMachine extends TieredMachine implements ISourceProvider
         syncManager.syncValue("linked", 0, new IntSyncValue(() -> this.linked, v -> this.linked = v));
         syncManager.syncValue("source", 0, new IntSyncValue(() -> container.getSource(),
                 v -> container.setSource(v)));
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private HudModel hudModel() {

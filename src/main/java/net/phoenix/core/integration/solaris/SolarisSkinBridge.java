@@ -7,7 +7,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.phoenix.conflux.client.ClientResearchCache;
 import net.phoenix.conflux.client.ConfluxTheme;
-import net.phoenix.conflux.research.DisciplineInfo;
+import net.phoenix.conflux.common.research.DisciplineInfo;
 import net.phoenixvine.solaris.client.SolarisThemeUtils;
 
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +49,7 @@ final class SolarisSkinBridge {
 
     private static @Nullable String disciplineFor(Level level) {
         ResourceLocation dimension = level.dimension().location();
-        if (dimension.getNamespace().equals("phoenixcore") && dimension.getPath().startsWith("conflux/")) {
+        if (dimension.getNamespace().equals("phoenixconflux") && dimension.getPath().startsWith("conflux/")) {
             return dimension.getPath().substring("conflux/".length());
         }
         DisciplineInfo info = ClientResearchCache.getDisciplineInfo();

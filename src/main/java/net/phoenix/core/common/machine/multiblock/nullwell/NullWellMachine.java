@@ -40,18 +40,24 @@ import brachy.modularui.value.sync.PanelSyncManager;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Null Well. Fluid fed into the hole adds to its mass; drawing on it turns mass into energy, which goes out
+ * through the energy output hatches. Above the horizon limit the field loses its grip, and at zero stability the hole
+ * breaks out of the chamber.
+ */
 public class NullWellMachine extends MultiblockControllerMachine implements IMuiMachine {
 
+    /** Mass above which the field starts to slip. */
     public static final double LIMIT = 200.0;
-
+    /** Mass the field can hold with no strain at all. */
     public static final double COMFORT = 120.0;
-
+    /** The most mass a single millibucket can add, however dense. */
     private static final double MASS_PER_MB = 0.0004;
-
+    /** Energy that one unit of mass gives up as radiation. */
     public static final long EU_PER_MASS = 2_000_000L;
-
+    /** The most energy a tick of full draw can ask for. */
     public static final long MAX_EMIT = 32_768L;
-
+    /** Most fluid the well will take in a tick at full feed. */
     public static final int MAX_FEED_MB = 200;
 
     @SaveField
@@ -74,6 +80,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
     @SyncToClient
     private int breaches;
 
+    /** Set the first time the well is given power. Until then nothing is held and nothing runs. */
     @SaveField
     @SyncToClient
     private boolean lit;
@@ -94,10 +101,10 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
     private double stability = 100.0;
     private boolean loaded;
     private double feedBuffer;
-
+    /** Energy radiated since the last condensate was made. */
     private double condensate;
     private ItemStack pending = ItemStack.EMPTY;
-
+    /** Energy of radiation it takes to condense one item. */
     private static final double EU_PER_ITEM = 4_000_000.0;
     private final ConditionalSubscriptionHandler tickHandler;
 
@@ -157,6 +164,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         return breaches;
     }
 
+    /** Whether the field has ever been lit. A well that was never powered is dormant. */
     public boolean lit() {
         return lit;
     }
@@ -169,10 +177,12 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         return energyUse;
     }
 
+    /** Energy going out last tick. */
     public int emitting() {
         return emitting;
     }
 
+    /** Fluid going in last tick, in millibuckets. */
     public int feeding() {
         return feeding;
     }
@@ -183,6 +193,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
                 getBlockPos().getZ() + 0.5 + back.getStepZ() * 3.0);
     }
 
+    /** Containment costs more the more there is to contain. */
     public static long containmentCost(double mass) {
         return 2048L + (long) (mass * 64.0);
     }
@@ -220,6 +231,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
     }
 
     private List<IEnergyContainer> energyHatches(IO io) {
+        // anything the machine can draw energy through or push it into: ordinary hatches, wireless ones, whatever it is
         List<IEnergyContainer> found = new ArrayList<>();
         for (var part : getParts()) {
             for (var list : part.getRecipeHandlers()) {
@@ -232,12 +244,14 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         return found;
     }
 
+    /** What the input hatches can hold between them: a weak hatch cannot be asked for more than it can hold. */
     private long inputCapacity() {
         long total = 0L;
         for (var c : energyHatches(IO.IN)) total += c.getEnergyCapacity();
         return total;
     }
 
+    /** The most a tick of upkeep can honestly be, given what the hatches can hold. */
     private long fitToHatches(long wanted) {
         long cap = inputCapacity();
         return cap <= 0 ? wanted : Math.min(wanted, Math.max(1L, cap * 3L / 4L));
@@ -279,6 +293,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         return ChemicalHelper.get(TagPrefix.rod, m, 2);
     }
 
+    /** Try to put the waiting item into an output bus. */
     private void deliver() {
         if (pending.isEmpty()) return;
         for (ItemBusPartMachine bus : outputBuses()) {
@@ -312,6 +327,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         }
     }
 
+    /** How heavy a millibucket of this fluid is, in units of mass. Denser fluids weigh more, up to a point. */
     private static double massOf(FluidStack stack) {
         if (stack.isEmpty()) return 0.0;
         double density = Math.abs(stack.getFluidType().getDensity(stack));
@@ -327,7 +343,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         need = fitToHatches(need);
         boolean ok = inputCapacity() > 0 && energyAvailable() >= need;
         if (!lit) {
-
+            // dormant: the field does not start, and nothing in the well changes, until it is first given power
             if (!ok) {
                 powered = false;
                 energyUse = 0;
@@ -341,6 +357,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         }
         if (ok) takeEnergy(need);
 
+        // feed: fluid in, mass up
         int fedMb = 0;
         if (ok && feed > 0) {
             feedBuffer += MAX_FEED_MB * feed / 100.0;
@@ -367,6 +384,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
             feedBuffer = 0.0;
         }
 
+        // draw: mass down, energy out
         long emitted = 0L;
         if (ok && draw > 0 && mass > 0.0) {
             long want = Math.round(MAX_EMIT * (draw / 100.0) * Math.min(1.0, mass / 20.0));
@@ -380,6 +398,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         }
         mass = Math.max(0.0, mass);
 
+        // the radiation condenses into neutronium
         if (emitted > 0) condensate += emitted;
         if (pending.isEmpty() && condensate >= EU_PER_ITEM && !outputBuses().isEmpty()) {
             condensate -= EU_PER_ITEM;
@@ -388,8 +407,9 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         if (getLevel().getGameTime() % 10 == 0) deliver();
         if (outputBuses().isEmpty()) condensate = Math.min(condensate, EU_PER_ITEM);
 
+        // the field: it holds while powered and under the comfort mass, slips above the limit
         if (!ok) {
-
+            // with nothing in the chamber there is nothing to lose
             if (mass > 0.5) stability -= 0.4;
         } else if (mass > LIMIT) {
             stability -= 0.15 + 1.2 * Math.min(1.0, (mass - LIMIT) / LIMIT);
@@ -409,6 +429,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
         publish();
     }
 
+    /** The hole breaks free: most of its mass goes, and it eats a ragged ball out of the walls. */
     private void breakOut() {
         var level = getLevel();
         if (level == null) return;
@@ -473,7 +494,7 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
                 syncDataHolder.markClientSyncFieldDirty("draw");
             }
             case NullWellControls.VENT -> {
-
+                // an emergency dump: half the mass is lost, none of it as usable energy
                 mass *= 0.5;
                 feed = 0;
                 syncDataHolder.markClientSyncFieldDirty("feed");
@@ -499,10 +520,13 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
 
                 @Override
                 public void set(int which, int value) {
-                    syncManager.callSyncedAction("null_well_control", buf -> {
-                        buf.writeVarInt(which);
-                        buf.writeVarInt(value);
-                    });
+                    {
+                        var out = new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),
+                                getLevel().registryAccess());
+                        out.writeVarInt(which);
+                        out.writeVarInt(value);
+                        syncManager.callSyncedAction("null_well_control", out);
+                    }
                 }
 
                 @Override
@@ -514,12 +538,13 @@ public class NullWellMachine extends MultiblockControllerMachine implements IMui
                     new TabStrip.Tab("~", new NullWellHistoryPage(this))), HudTheme.ARCANE);
         }
         final TabStrip tabs = screen;
-        var panel = MachineUIPanelBuilder.panelBuilder(this).attachInventory(false).addTitleBar(false)
+        var panel = MachineUIPanelBuilder.panelBuilder(this).showPatternErrors().attachInventory(false)
+                .addTitleBar(false)
                 .drawGTLogo(false)
                 .mainContents(main -> {
                     if (tabs != null) main.child(new CanvasWidget(tabs).size(UI_WIDTH, UI_HEIGHT));
                     else main.size(UI_WIDTH, UI_HEIGHT);
-                }).build(syncManager, settings);
+                }).build(data, syncManager, settings);
         if (tabs != null) HudPanel.apply(panel, tabs);
         return panel;
     }

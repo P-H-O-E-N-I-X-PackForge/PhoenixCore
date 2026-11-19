@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.phoenix.conflux.research.ResearchTeamHelper;
-import net.phoenix.conflux.research.WorldResearchData;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.research.WorldResearchData;
 import net.phoenixvine.wiki.util.TeamUtils;
 
 import org.jetbrains.annotations.Nullable;
@@ -147,7 +147,7 @@ public final class RebirthNetwork {
         data.changed();
         if (first) WorldResearchData.get(level).grantFlag(team, REBORN_FLAG);
         S2CEndingPacket.send(player);
-        if (first) net.phoenix.conflux.ending.EpilogueService.scheduleArrival(player, ARRIVAL_DELAY_TICKS);
+        if (first) net.phoenix.conflux.common.ending.EpilogueService.scheduleArrival(player, ARRIVAL_DELAY_TICKS);
         return new Result(true, first ? "The Phoenix Forge is lit." : "The Phoenix Forge burns again.");
     }
 }

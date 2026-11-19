@@ -10,10 +10,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.phoenixvine.wiki.ui.Cinematic;
-import net.phoenixvine.wiki.ui.CinematicPrefs;
-import net.phoenixvine.wiki.ui.GlDraw;
-import net.phoenixvine.wiki.ui.UiProfiler;
+import net.phoenixvine.wiki.ui.*;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import org.joml.Matrix4f;
@@ -105,7 +102,7 @@ public abstract class CineScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int rawMouseX, int rawMouseY, float partialTick) {
-        fit = net.phoenixvine.wiki.ui.ScreenFit.apply(this);
+        fit = ScreenFit.apply(this);
         g.pose().pushPose();
         g.pose().scale(fit, fit, 1f);
         renderStage(g, (int) (rawMouseX / fit), (int) (rawMouseY / fit), partialTick);
@@ -164,7 +161,7 @@ public abstract class CineScreen extends Screen {
             prof.end("ui", t);
         }
         afterFrame(g);
-        float toggleAlpha = Mth.clamp(seconds / 1.0f, 0f, 1f) *
+        float toggleAlpha = Mth.clamp(seconds, 0f, 1f) *
                 (seconds < introSeconds() ? 0.55f : Math.max(ui, 0.55f));
         CinematicPrefs.draw(g, font, width, bar() / 2 - 12, mouseX, mouseY, toggleAlpha);
         if (flash > 0f) g.fill(0, 0, width, height, argb(flashColor, Math.min(1f, flash)));

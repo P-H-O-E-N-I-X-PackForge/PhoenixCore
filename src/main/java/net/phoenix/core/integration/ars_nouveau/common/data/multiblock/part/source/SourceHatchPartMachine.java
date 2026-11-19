@@ -17,7 +17,8 @@ import com.hollingsworth.arsnouveau.api.source.ISourceTile;
 import lombok.Getter;
 
 @Getter
-public class SourceHatchPartMachine extends TieredIOPartMachine implements ISourceProviderCapability, IMuiMachine {
+public class SourceHatchPartMachine extends TieredIOPartMachine implements ISourceProviderCapability, IMuiMachine,
+                                    com.hollingsworth.arsnouveau.api.item.IWandable {
 
     private final IO io;
     private final NotifiableSourceContainer sourceContainer;
@@ -42,8 +43,9 @@ public class SourceHatchPartMachine extends TieredIOPartMachine implements ISour
         syncManager.syncValue("flow", 0, new brachy.modularui.value.sync.IntSyncValue(
                 () -> sourceContainer.getCurrentFlow(),
                 v -> sourceContainer.updateFlow(v - sourceContainer.getCurrentFlow())));
-        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                        this::hudModel));
     }
 
     private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {

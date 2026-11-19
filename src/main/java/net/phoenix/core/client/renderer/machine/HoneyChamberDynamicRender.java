@@ -37,6 +37,7 @@ public class HoneyChamberDynamicRender extends
 
     public static final HoneyChamberDynamicRender INSTANCE = new HoneyChamberDynamicRender();
 
+    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("honey_chamber", "Honey Crystallization Chamber")
             .machine("phoenixcore:honey_crystallization_chamber");

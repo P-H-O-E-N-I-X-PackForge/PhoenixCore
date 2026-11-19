@@ -41,9 +41,6 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
     @SyncToClient
     private float lastBotanicalBoost = 0.0f;
 
-    @SaveField
-    @SyncToClient
-
     public static final java.util.Map<String, Float> FLORA_BOOSTS = java.util.Map.of(
             "ars_nouveau:whirlisprig_flower", 0.18f,
             "ars_nouveau:magebloom_crop", 0.5f,
@@ -203,7 +200,8 @@ public class BioAethericEngineMachine extends WorkableElectricMultiblockMachine 
     public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private float multiplier() {

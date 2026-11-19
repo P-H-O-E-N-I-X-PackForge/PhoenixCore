@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
 
 public final class RecipeReplacements {
 
+    /**
+     * Swaps one ingredient for another in the recipes the rule matches. {@code from} and {@code to} are item ids, or
+     * tags when they start with {@code #}: {@code "#c:plates/bronze"} swaps every ingredient that is that tag, for an
+     * item or for another tag. {@code mustContain} is the same kind of id.
+     */
     public record Rule(String mod, Pattern idPattern, String mustContain, String from, String to) {}
 
     public static final List<Rule> RULES = new ArrayList<>();
@@ -32,12 +37,18 @@ public final class RecipeReplacements {
         }
     }
 
+    private static boolean isTag(String id) {
+        return id.startsWith("#");
+    }
+
     private static boolean uses(JsonElement e, String item) {
+        String key = isTag(item) ? "tag" : "item";
+        String value = isTag(item) ? item.substring(1) : item;
         if (e.isJsonObject()) {
             for (Map.Entry<String, JsonElement> x : e.getAsJsonObject().entrySet()) {
                 if (x.getKey().equals("result") || x.getKey().equals("results")) continue;
-                if (x.getKey().equals("item") && x.getValue().isJsonPrimitive() &&
-                        x.getValue().getAsString().equals(item))
+                if (x.getKey().equals(key) && x.getValue().isJsonPrimitive() &&
+                        x.getValue().getAsString().equals(value))
                     return true;
                 if (uses(x.getValue(), item)) return true;
             }
@@ -50,13 +61,19 @@ public final class RecipeReplacements {
     }
 
     private static void replace(JsonElement e, String from, String to) {
+        String fromKey = isTag(from) ? "tag" : "item";
+        String fromValue = isTag(from) ? from.substring(1) : from;
+        String toKey = isTag(to) ? "tag" : "item";
+        String toValue = isTag(to) ? to.substring(1) : to;
         if (e.isJsonObject()) {
             JsonObject o = e.getAsJsonObject();
             for (Map.Entry<String, JsonElement> x : new ArrayList<>(o.entrySet())) {
                 if (x.getKey().equals("result") || x.getKey().equals("results")) continue;
-                if (x.getKey().equals("item") && x.getValue().isJsonPrimitive() &&
-                        x.getValue().getAsString().equals(from)) {
-                    o.addProperty("item", to);
+                if (x.getKey().equals(fromKey) && x.getValue().isJsonPrimitive() &&
+                        x.getValue().getAsString().equals(fromValue)) {
+                    // an ingredient is {"item": ...} or {"tag": ...}; one can become the other
+                    o.remove(fromKey);
+                    o.addProperty(toKey, toValue);
                 } else {
                     replace(x.getValue(), from, to);
                 }

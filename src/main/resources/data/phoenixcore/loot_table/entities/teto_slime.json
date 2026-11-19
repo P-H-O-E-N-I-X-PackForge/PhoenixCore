@@ -31,21 +31,29 @@
     },
     {
       "rolls": 1.0,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": {
-            "type": "minecraft:enchantment_linear",
-            "enchantment": "minecraft:looting",
-            "base": 0.25,
-            "per_level_above_first": 0.05
-          }
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:bread"
+          "name": "minecraft:bread",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 2.0
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "enchantment": "minecraft:looting",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0.0,
+                "max": 1.0
+              }
+            }
+          ]
         }
       ]
     }

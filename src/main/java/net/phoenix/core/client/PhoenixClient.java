@@ -34,6 +34,8 @@ public class PhoenixClient {
     private PhoenixClient() {}
 
     public static void init(IEventBus modBus) {
+        net.phoenix.core.client.renderer.machine.VaultInterfaceOverlay.register();
+        net.phoenix.core.integration.emi.PhoenixViewer.register();
         NeoForge.EVENT_BUS.register(VocalVibrancyClientTick.class);
         net.phoenix.core.integration.gregvaults.client.GregTechVaultsClient.init(modBus);
         modBus.addListener(PhoenixClient::registerDynamicPipeModels);

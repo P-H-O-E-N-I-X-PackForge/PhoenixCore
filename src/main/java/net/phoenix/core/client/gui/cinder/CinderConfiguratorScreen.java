@@ -230,9 +230,7 @@ public class CinderConfiguratorScreen extends Screen {
         if (definition == null || schemaInfo == null) return;
         schemaInfo.getUserSliceRepeats().clear();
         schemaInfo.getUserGlobalBlockPreferences().clear();
-        if (schemaInfo.getStructureHelper() != null) {
-            schemaInfo.getStructureHelper().getBlockPreferences().clear();
-        }
+        schemaInfo.getBlockPreferences().clear();
         for (int i = 0; i < pattern.getSlices().length; i++) {
             schemaInfo.getUserSliceRepeats().put(i, pattern.getSlices()[i].getMinRepeats());
         }
@@ -409,12 +407,12 @@ public class CinderConfiguratorScreen extends Screen {
     }
 
     private @Nullable BlockInfo pickSelected(PredicateChoiceRow row) {
-        if (schemaInfo == null || schemaInfo.getStructureHelper() == null)
+        if (schemaInfo == null)
             return row.basePredicate().getFirstCandidate()
                     .orElse(null);
-        BlockInfo chosen = schemaInfo.getStructureHelper().getBlockPreferences().get(row.predicate(),
-                row.basePredicate());
-        return chosen != null ? chosen : row.basePredicate().getFirstCandidate().orElse(null);
+        BlockInfo chosen = schemaInfo.getBlockPreferences().get(row.predicateChar());
+        return chosen != null && row.basePredicate().getCandidates().contains(chosen) ? chosen :
+                row.basePredicate().getFirstCandidate().orElse(null);
     }
 
     private void renderDropdownOverlay(GuiGraphics g, int mouseX, int mouseY, int contentX, int contentW,
@@ -459,7 +457,7 @@ public class CinderConfiguratorScreen extends Screen {
 
             clickRegions.add(new ClickRegion(ddX, itemY, DROPDOWN_ROW_W, DROPDOWN_ITEM_H, () -> {
                 if (schemaInfo != null) {
-                    schemaInfo.putPredicatePreference(row.predicate(), row.basePredicate(), candidate);
+                    schemaInfo.getBlockPreferences().put(row.predicateChar(), candidate);
                     refreshResolution();
                 }
                 openDropdown = null;
@@ -484,7 +482,7 @@ public class CinderConfiguratorScreen extends Screen {
         }
 
         BlockInfo current = schemaInfo.getStructureBlocks().get(picker.localPos());
-        boolean hasOverride = schemaInfo.getUserGlobalBlockPreferences().containsKey(picker.localPos().asLong());
+        boolean hasOverride = schemaInfo.getUserGlobalBlockPreferences().containsKey(picker.localPos());
 
         int rowCount = 1 + candidates.size();
         int itemsH = Math.min(rowCount * DROPDOWN_ITEM_H, 9 * DROPDOWN_ITEM_H);
@@ -503,7 +501,7 @@ public class CinderConfiguratorScreen extends Screen {
         g.drawString(font, truncate("Default (auto)", DROPDOWN_ROW_W - 8), ddX + 4, itemY + 4,
                 !hasOverride ? cAccent : (hoveredDefault ? cText : cTextDim), false);
         clickRegions.add(new ClickRegion(ddX, itemY, DROPDOWN_ROW_W, DROPDOWN_ITEM_H, () -> {
-            schemaInfo.getUserGlobalBlockPreferences().remove(picker.localPos().asLong());
+            schemaInfo.getUserGlobalBlockPreferences().remove(picker.localPos());
             refreshResolution();
             openPositionPicker = null;
         }));
@@ -519,7 +517,7 @@ public class CinderConfiguratorScreen extends Screen {
             g.drawString(font, name, ddX + 4, itemY + 4, isCurrent ? cAccent : (hovered ? cText : cTextDim), false);
 
             clickRegions.add(new ClickRegion(ddX, itemY, DROPDOWN_ROW_W, DROPDOWN_ITEM_H, () -> {
-                schemaInfo.getUserGlobalBlockPreferences().put(picker.localPos().asLong(), candidate);
+                schemaInfo.getUserGlobalBlockPreferences().put(picker.localPos().immutable(), candidate);
                 refreshResolution();
                 openPositionPicker = null;
             }));

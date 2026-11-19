@@ -14,10 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.core.configs.PhoenixConfigs;
-import net.phoenix.core.mixin.ae2.MEPatternBufferResizeAccessor;
 
-import appeng.api.crafting.IPatternDetails;
-import appeng.api.inventories.InternalInventory;
 import appeng.crafting.pattern.EncodedPatternItem;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
@@ -55,42 +52,7 @@ public class ExpandedPatternBufferPartMachine extends MEPatternBufferPartMachine
     private int comparatorMode = 0;
 
     public ExpandedPatternBufferPartMachine(BlockEntityCreationInfo info) {
-        super(info);
-        var resize = (MEPatternBufferResizeAccessor) this;
-
-        getPatternInventory().setSize(SLOTS);
-
-        InternalSlot[] built = this.internalInventory;
-        InternalSlot[] slots = new InternalSlot[SLOTS];
-        for (int i = 0; i < SLOTS; i++) {
-            if (i < built.length) {
-                slots[i] = built[i];
-            } else {
-                slots[i] = new InternalSlot();
-                slots[i].setOnContentsChanged(resize::phoenix$onSlotChanged);
-            }
-        }
-        resize.phoenix$setInternalInventory(slots);
-        resize.phoenix$setPatternSlotDetails(new IPatternDetails[SLOTS]);
-        resize.phoenix$setInternalPatternInventory(new InternalInventory() {
-
-            @Override
-            public int size() {
-                return SLOTS;
-            }
-
-            @Override
-            public ItemStack getStackInSlot(int slotIndex) {
-                return getPatternInventory().getStackInSlot(slotIndex);
-            }
-
-            @Override
-            public void setItemDirect(int slotIndex, ItemStack stack) {
-                getPatternInventory().setStackInSlot(slotIndex, stack);
-                getPatternInventory().onContentsChanged(slotIndex);
-                onPatternChange(slotIndex);
-            }
-        });
+        super(info, SLOTS);
 
         NotifiableFluidTank tank = getShareTank();
         for (int i = 0; i < tank.getTanks(); i++) {
@@ -188,6 +150,18 @@ public class ExpandedPatternBufferPartMachine extends MEPatternBufferPartMachine
 
     private final java.util.Map<Integer, java.util.Map<ExpandedPatternBufferProxyPartMachine, Long>> wanted = new java.util.HashMap<>();
 
+    @Override
+    protected boolean mayUseSlot(int slotIndex,
+                                 @org.jetbrains.annotations.Nullable com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine requester) {
+        return !(requester instanceof ExpandedPatternBufferProxyPartMachine proxy) || mayUse(proxy, slotIndex);
+    }
+
+    @Override
+    protected void onSlotWanted(int slotIndex,
+                                @org.jetbrains.annotations.Nullable com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine requester) {
+        if (requester instanceof ExpandedPatternBufferProxyPartMachine proxy) markWanted(proxy, slotIndex);
+    }
+
     public int indexOf(InternalSlot slot) {
         InternalSlot[] slots = this.internalInventory;
         for (int i = 0; i < slots.length; i++) {
@@ -220,7 +194,7 @@ public class ExpandedPatternBufferPartMachine extends MEPatternBufferPartMachine
         if (!(getLevel() instanceof ServerLevel server) ||
                 !PhoenixConfigs.INSTANCE.features.expandedBufferKeepsChunkLoaded)
             return;
-        boolean linked = !((MEPatternBufferResizeAccessor) this).phoenix$getProxyPositions().isEmpty();
+        boolean linked = !getProxyPositions().isEmpty();
         ExpandedBufferChunkLoader.set(server, getBlockPos(), linked);
     }
 

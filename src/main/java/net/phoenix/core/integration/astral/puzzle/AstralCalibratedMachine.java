@@ -205,7 +205,8 @@ public abstract class AstralCalibratedMachine extends WorkableElectricMultiblock
     public brachy.modularui.screen.ModularPanel<?> buildUI(brachy.modularui.factory.PosGuiData data,
                                                            PanelSyncManager syncManager,
                                                            brachy.modularui.screen.UISettings settings) {
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private int[] threadReading() {

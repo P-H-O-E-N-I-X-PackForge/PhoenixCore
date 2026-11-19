@@ -1,7 +1,10 @@
 package net.phoenix.core.common.data.recipe.pft;
 
+import com.gregtechceu.gtceu.api.GTValues;
+
 import net.minecraft.data.recipes.RecipeOutput;
 import net.phoenix.core.common.data.PftCrafting;
+import net.phoenix.core.common.data.PftRecipe;
 
 public final class PftMiscRecipes {
 
@@ -26,5 +29,13 @@ public final class PftMiscRecipes {
 
         PftCrafting.shaped(provider, "pouch_pftmiscrecipes", "toolbelt:pouch", new String[] { " G ", "LSL", "   " },
                 "G", "#c:rings/gold", "L", "minecraft:leather", "S", "#c:plates/steel");
+
+        // early LV: the Conflux Research Terminal comes right after the first circuits
+        PftRecipe.gt(provider, "assembler", "research_terminal")
+                .itemInputs("1x gtceu:lv_machine_hull", "2x #gtceu:circuits/lv", "1x gtceu:lv_sensor")
+                .itemOutputs("phoenixconflux:research_terminal")
+                .duration(200)
+                .EUt(GTValues.VA[GTValues.LV])
+                .save();
     }
 }

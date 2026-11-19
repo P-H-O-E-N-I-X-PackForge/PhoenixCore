@@ -3,8 +3,8 @@ package net.phoenix.core.rebirth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.phoenix.conflux.ending.Ending;
-import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.ending.Ending;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
 
 public final class RebirthReplay {
 

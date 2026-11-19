@@ -82,8 +82,7 @@ public class BeeRecipeData {
             Map.entry("nether_quartz", "Nether Quartz Bee"),
             Map.entry("sodalite", "Sodalite Bee"), Map.entry("glowstone", "Glowstone Bee"), Map.entry("ice", "Ice Bee"),
             Map.entry("saltpeter", "Saltpeter Bee"), Map.entry("resonant_ender", "Ender Bee"),
-            Map.entry("acidic", "Acidic Bee"),
-            Map.entry("voidglass_shard", "Voidglass Shard Bee"));
+            Map.entry("acidic", "Acidic Bee"));
 
     public static int tierFor(String beeId) {
         return 1;

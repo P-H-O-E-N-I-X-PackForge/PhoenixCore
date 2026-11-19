@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
 
 public record S2CRebirthStatePacket(BlockPos forge, boolean open, int boundMask, int[] ring, int aligned, int attempts,
                                     boolean closed, boolean reborn, boolean ignited, String message)

@@ -71,8 +71,9 @@ public class AstralThreadHatchPartMachine extends TieredIOPartMachine implements
                     if (delta > 0) threadContainer.addThread(delta);
                     else if (delta < 0) threadContainer.removeThread(-delta);
                 }));
-        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                        this::hudModel));
     }
 
     private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {

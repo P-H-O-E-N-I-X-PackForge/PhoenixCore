@@ -2,7 +2,6 @@ package net.phoenix.core.api.pattern;
 
 import com.gregtechceu.gtceu.api.multiblock.MultiPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
-import com.gregtechceu.gtceu.api.multiblock.error.PlaceholderError;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.common.block.LampBlock;
 
@@ -37,7 +36,7 @@ public class PhoenixPredicates {
                     }
                     return false;
                 })
-                .errorFunction(ctx -> PlaceholderError.instance())
+                .errorFunction(ctx -> PhoenixPatternError.expected("a lamp", ctx.pos(), candidates))
                 .toMultiPredicate();
     }
 
@@ -75,7 +74,7 @@ public class PhoenixPredicates {
         return Predicates.builder("sound_hatch")
                 .candidates(candidates)
                 .predicate(ctx -> ctx.blockEntity() instanceof SoundHatchPartMachine)
-                .errorFunction(ctx -> PlaceholderError.instance())
+                .errorFunction(ctx -> PhoenixPatternError.expected("a sound hatch", ctx.pos(), candidates))
                 .toMultiPredicate();
     }
 
@@ -92,7 +91,7 @@ public class PhoenixPredicates {
         return Predicates.builder("speaker")
                 .candidates(candidates)
                 .predicate(ctx -> ctx.state().getBlock() instanceof SpeakerBlock)
-                .errorFunction(ctx -> PlaceholderError.instance())
+                .errorFunction(ctx -> PhoenixPatternError.expected("a speaker", ctx.pos(), candidates))
                 .toMultiPredicate();
     }
 }

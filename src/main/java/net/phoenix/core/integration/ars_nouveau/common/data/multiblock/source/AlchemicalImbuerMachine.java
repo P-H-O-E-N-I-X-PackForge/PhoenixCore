@@ -186,7 +186,8 @@ public class AlchemicalImbuerMachine extends WorkableElectricMultiblockMachine {
                                                            brachy.modularui.screen.UISettings settings) {
         syncManager.syncValue("extract_mode", 0, new brachy.modularui.value.sync.BooleanSyncValue(
                 () -> getRecipeType() == PhoenixRecipeTypes.SOURCE_EXTRACTION_RECIPES.get(), v -> extractMode = v));
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private float harmonicBonus() {

@@ -125,7 +125,8 @@ public class AetherCrucibleMachine extends TierAwareMultiblockMachine {
 
     @Override
     public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private String modeName() {
@@ -384,7 +385,8 @@ public class AetherCrucibleMachine extends TierAwareMultiblockMachine {
 
         @Override
         public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-            return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+            return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                    MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
         }
 
         private static String spaced(String s) {

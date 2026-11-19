@@ -9,16 +9,28 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.phoenix.core.common.machine.multiblock.nullwell.NullWellMachine;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
+/**
+ * The Null Well in its chamber: a black sphere that swells with its mass, a bright ring around its edge, a tilted
+ * accretion disc turning and streaked with arms, matter spiralling in when it is fed and jets out of its poles when it
+ * is drawn. The colour follows the field, from violet through amber to red as it fails, and the whole thing shakes when
+ * it is close to breaking out.
+ */
 public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRender> {
 
     public static final NullWellRender INSTANCE = new NullWellRender();
 
+    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("null_well", "Null Well").machine("phoenixcore:null_well");
     public static final MapCodec<NullWellRender> CODEC = MapCodec.unit(INSTANCE);
@@ -29,7 +41,10 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
     private static final float[] RED = { 1.0f, 0.29f, 0.35f };
     private static final float[] HOT = { 1.0f, 0.93f, 0.78f };
 
-    private NullWellRender() {}
+    private NullWellRender() {
+        net.phoenix.core.client.fx.FxStage.register(NullWellMachine.class, 96.0,
+                (m, partial, ps, buf) -> INSTANCE.render((NullWellMachine) m, partial, ps, buf, 0, 0));
+    }
 
     @Override
     public @NotNull DynamicRenderType<NullWellMachine, NullWellRender> getType() {
@@ -53,7 +68,7 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
         boolean pv = net.phoenix.core.client.fx.FxHook.preview(machine);
         if (!machine.isFormed() && !pv) return;
         boolean on = machine.lit() || pv;
-
+        // before it has power the hole is still there, but only faintly, and nothing falls in or leaves
         float dim = on ? 1f : 0.2f;
         float t = net.phoenix.core.client.fx.FxHook.time(FX, (machine.getOffsetTimer() + partialTick) / 20f);
         Vec3 c = GlowDraw.chamber(machine.getFrontFacing(), machine.getBlockPos(), 3.0, 3.5);
@@ -73,17 +88,42 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
         Matrix4f m = poseStack.last().pose();
         GlowDraw.Cam cam = GlowDraw.Cam.now(machine.getBlockPos());
 
+        // seen straight on, as a flat picture that always faces you, drawn by a shader from the stage hook
+        if (net.phoenix.core.client.worldfx.WorldFXShaders.FX_DISC != null) {
+            if (net.phoenix.core.client.fx.FxStage.active()) {
+                drawDisc(m, machine.getFrontFacing(), cx, cy, cz, radius, col, t, energyOf(feed, draw, dim), feed,
+                        on && draw > 0.01f && machine.emitting() > 0 ? draw : 0f, dim,
+                        machine.getBlockPos().asLong());
+            }
+            poseStack.popPose();
+            return;
+        }
+
+        // the shadow. Seen in perspective a sphere looks bigger than its radius the closer you stand, which is what
+        // made it spill out past the ring, so it is pulled in until its outline lands exactly on the horizon radius
+        float toCamX = cam.px() - cx;
+        float toCamY = cam.py() - cy;
+        float toCamZ = cam.pz() - cz;
+        float camDist = Math.max(radius * 1.5f, Mth.sqrt(toCamX * toCamX + toCamY * toCamY + toCamZ * toCamZ));
+        float shadowR = radius * camDist / Mth.sqrt(camDist * camDist + radius * radius);
         VertexConsumer dark = buffer.getBuffer(GlowDraw.DARK);
-        GlowDraw.sphere(dark, m, cx, cy, cz, radius, 10, 16, 0f, 0f, 0f, 1f);
+        GlowDraw.sphere(dark, m, cx, cy, cz, shadowR * 0.995f, 18, 36, 0f, 0f, 0f, 1f);
 
         VertexConsumer vc = net.phoenix.core.client.fx.FxHook.glow(FX, m, buffer.getBuffer(GlowDraw.GLOW), c, t);
-
+        // a soft halo
         GlowDraw.disc(vc, m, cam, cx, cy, cz, radius * 4.2f, col[0], col[1], col[2], 0.16f * (0.5f + mass) * dim, 0f);
 
+        // a wider, fainter bloom under the photon ring so its edge is not a hard line
         GlowDraw.ring(vc, m, cx, cy, cz, new float[] { cam.rx(), cam.ry(), cam.rz() },
-                new float[] { cam.ux(), cam.uy(), cam.uz() }, radius * 1.1f, radius * 0.07f, 0f, Mth.TWO_PI, 40, 1f,
+                new float[] { cam.ux(), cam.uy(), cam.uz() }, radius * 1.14f, radius * 0.24f, 0f, Mth.TWO_PI, 48, 1f,
+                0.9f, 1f, 0.12f * dim);
+
+        // the photon ring, round the edge as seen from here
+        GlowDraw.ring(vc, m, cx, cy, cz, new float[] { cam.rx(), cam.ry(), cam.rz() },
+                new float[] { cam.ux(), cam.uy(), cam.uz() }, radius * 1.1f, radius * 0.06f, 0f, Mth.TWO_PI, 64, 1f,
                 0.95f, 1f, 0.85f * dim);
 
+        // the accretion disc, tilted and slowly precessing
         float p = t * 0.25f;
         float tilt = 1.05f;
         float[] u = { Mth.cos(p), 0f, Mth.sin(p) };
@@ -91,7 +131,7 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
         float[] v = { w[0] * Mth.cos(tilt), Mth.sin(tilt), w[2] * Mth.cos(tilt) };
         float spin = t * (0.6f + 2.2f * feed);
         float energy = (0.55f + 0.45f * Math.min(1f, feed + draw + 0.3f)) * dim;
-        GlowDraw.annulus(vc, m, cx, cy, cz, u, v, radius * 1.45f, radius * 3.6f, 0f, Mth.TWO_PI, 8, 72,
+        GlowDraw.annulus(vc, m, cx, cy, cz, u, v, radius * 1.45f, radius * 3.6f, 0f, Mth.TWO_PI, 14, 96,
                 (angle, out) -> {
                     float arm = 0.5f + 0.5f * Mth.sin(2f * angle - 7f * out + t * 2.5f);
                     float dop = 0.5f + 0.5f * Mth.cos(angle - spin);
@@ -101,6 +141,26 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
                     return new float[] { rgb[0], rgb[1], rgb[2], a };
                 });
 
+        // the far side of the disc, bent over and under the hole by its gravity. Edge-on it shows as arcs above and
+        // below, face-on it closes into a full ring
+        float nrmX = u[1] * v[2] - u[2] * v[1];
+        float nrmY = u[2] * v[0] - u[0] * v[2];
+        float nrmZ = u[0] * v[1] - u[1] * v[0];
+        float onScreenX = nrmX * cam.rx() + nrmY * cam.ry() + nrmZ * cam.rz();
+        float onScreenY = nrmX * cam.ux() + nrmY * cam.uy() + nrmZ * cam.uz();
+        float lensAxis = (float) Math.atan2(onScreenY, onScreenX);
+        float lensEdgeOn = Math.min(1f, Mth.sqrt(onScreenX * onScreenX + onScreenY * onScreenY));
+        GlowDraw.annulus(vc, m, cx, cy, cz, new float[] { cam.rx(), cam.ry(), cam.rz() },
+                new float[] { cam.ux(), cam.uy(), cam.uz() }, radius * 1.12f, radius * 1.8f, 0f, Mth.TWO_PI, 6, 96,
+                (angle, out) -> {
+                    float along = Mth.cos(angle - lensAxis);
+                    float lensW = Mth.lerp(lensEdgeOn, 1f, along * along);
+                    float fall = (float) Math.pow(1f - out, 2.2f);
+                    float[] rgb = GlowDraw.lerp3(col, HOT, 0.35f + 0.5f * fall);
+                    return new float[] { rgb[0], rgb[1], rgb[2], 0.55f * lensW * fall * energy };
+                });
+
+        // matter falling in
         int falling = on ? 6 + Math.round(feed * 14f) : 0;
         for (int i = 0; i < falling; i++) {
             float u0 = (t * (0.18f + 0.3f * feed) + i * 0.381966f) % 1f;
@@ -113,6 +173,7 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
                     0f);
         }
 
+        // jets from the poles while it is being drawn on
         if (on && draw > 0.01f && machine.emitting() > 0) {
             for (int s = -1; s <= 1; s += 2) {
                 float len = 0.6f + 1.6f * draw;
@@ -126,6 +187,54 @@ public class NullWellRender extends DynamicRender<NullWellMachine, NullWellRende
             }
         }
         poseStack.popPose();
+    }
+
+    private static float energyOf(float feed, float draw, float dim) {
+        return (0.55f + 0.45f * Math.min(1f, feed + draw + 0.3f)) * dim;
+    }
+
+    /**
+     * The hole as a picture on a square that turns to face the camera: a black disc, a thin bright ring, spiral arms
+     * turning round it, streams falling in and jets from the poles. False if the shader is not there, so the
+     * model-built
+     * version above draws instead.
+     */
+    private static boolean drawDisc(Matrix4f m, net.minecraft.core.Direction facing, float cx, float cy, float cz,
+                                    float radius,
+                                    float[] col, float t, float energy, float feed, float draw, float dim, long seed) {
+        net.minecraft.client.renderer.ShaderInstance shader = net.phoenix.core.client.worldfx.WorldFXShaders.FX_DISC;
+        if (shader == null) return false;
+
+        float half = radius * 4.2f;
+        float[] a = net.phoenix.core.client.fx.FxHook.tint(FX, col[0], col[1], col[2], 1f, 0.5f, t);
+        float[] b = net.phoenix.core.client.fx.FxHook.tint(FX, HOT[0], HOT[1], HOT[2], 1f, 0.8f, t);
+
+        RenderSystem.setShader(() -> shader);
+        shader.safeGetUniform("Time").set(t);
+        shader.safeGetUniform("Horizon").set(radius / half);
+        shader.safeGetUniform("Energy").set(energy);
+        shader.safeGetUniform("Feed").set(feed * dim);
+        shader.safeGetUniform("Draw").set(draw);
+        shader.safeGetUniform("Power").set(FX.get("power", 1f) * (0.35f + 0.65f * dim));
+        shader.safeGetUniform("Seed").set((seed & 1023L) / 100f);
+        shader.safeGetUniform("ColorA").set(a[0], a[1], a[2]);
+        shader.safeGetUniform("ColorB").set(b[0], b[1], b[2]);
+
+        // a flat picture standing upright in the plane the machine faces, so it stays put as you move round it
+        float rx = facing.getStepZ() * half, ry = 0f, rz = -facing.getStepX() * half;
+        float ux = 0f, uy = half, uz = 0f;
+        BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        corner(bb, m, cx - rx - ux, cy - ry - uy, cz - rz - uz, 0f, 0f);
+        corner(bb, m, cx + rx - ux, cy + ry - uy, cz + rz - uz, 1f, 0f);
+        corner(bb, m, cx + rx + ux, cy + ry + uy, cz + rz + uz, 1f, 1f);
+        corner(bb, m, cx - rx + ux, cy - ry + uy, cz - rz + uz, 0f, 1f);
+        FxVolume.volumeBlended(shader, bb.buildOrThrow(), com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        return true;
+    }
+
+    private static void corner(BufferBuilder bb, Matrix4f m, float x, float y, float z, float u, float v) {
+        bb.addVertex(m, x, y, z).setUv(u, v);
     }
 
     @Override

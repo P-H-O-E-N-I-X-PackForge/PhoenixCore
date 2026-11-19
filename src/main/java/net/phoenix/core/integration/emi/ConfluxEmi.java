@@ -15,11 +15,11 @@ import net.phoenix.conflux.ConfluxDataType;
 import net.phoenix.conflux.client.ClientResearchCache;
 import net.phoenix.conflux.client.ConfluxIcons;
 import net.phoenix.conflux.client.ConfluxTheme;
-import net.phoenix.conflux.research.ResearchNode;
-import net.phoenix.conflux.research.ResearchTree;
-import net.phoenix.conflux.research.ResearchTreeRegistry;
-import net.phoenix.conflux.research.ResearchUnlock;
-import net.phoenix.conflux.terminal.ConfluxTerminalRegistry;
+import net.phoenix.conflux.common.research.ResearchNode;
+import net.phoenix.conflux.common.research.ResearchTree;
+import net.phoenix.conflux.common.research.ResearchTreeRegistry;
+import net.phoenix.conflux.common.research.ResearchUnlock;
+import net.phoenix.conflux.common.terminal.ConfluxTerminalRegistry;
 import net.phoenix.core.PhoenixCore;
 
 import dev.emi.emi.api.EmiRegistry;

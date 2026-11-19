@@ -88,12 +88,49 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
     @SaveField
     private long ringSeed;
 
+    /**
+     * How far the rift behind the furnace is open, 0 to 1. It widens a little with every tick a recipe runs, and slowly
+     * closes again while the furnace sits idle.
+     */
+    @SaveField
+    @SyncToClient
+    private float riftGrowth = 0f;
+
+    private int riftSyncTimer = 0;
+
     public HighPressurePlasmaArcFurnaceMachine(BlockEntityCreationInfo holder) {
         super(holder, new RecipeLogic());
 
         this.shieldHandler = new ConditionalSubscriptionHandler(this, this::shieldTick, this::isFormed);
 
         this.shieldContainer = attachTrait(new NotifiableShieldContainer());
+    }
+
+    public float riftGrowth() {
+        return riftGrowth;
+    }
+
+    private void moveRift(float by) {
+        float next = Math.max(0f, Math.min(1f, riftGrowth + by));
+        if (next == riftGrowth) return;
+        riftGrowth = next;
+        if (++riftSyncTimer >= 10 || next == 0f || next == 1f) {
+            riftSyncTimer = 0;
+            var holder = getSyncDataHolder();
+            if (holder != null) holder.markClientSyncFieldDirty("riftGrowth");
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (getLevel() != null && getLevel().isClientSide) net.phoenix.core.client.fx.RiftFX.add(this);
+    }
+
+    @Override
+    public void onUnload() {
+        if (getLevel() != null && getLevel().isClientSide) net.phoenix.core.client.fx.RiftFX.remove(this);
+        super.onUnload();
     }
 
     public Shield.ShieldTypes getShieldType() {
@@ -155,6 +192,8 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
             this.shieldCooldownTimer--;
             markShieldDirty();
         }
+
+        if (!recipeLogic.isWorking()) moveRift(-0.00012f);
     }
 
     public static @Nullable HighPressurePlasmaArcFurnaceMachine at(net.minecraft.world.level.Level level,
@@ -280,6 +319,7 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
 
     @Override
     public boolean onWorking() {
+        moveRift(0.0004f);
         if (this.consumptionTimer % (activeBoost == null ? 1 : activeBoost.ticksPerConsumption()) == 0) {
             isPlasmaBoosted = false;
             activeBoost = null;
@@ -374,7 +414,8 @@ public class HighPressurePlasmaArcFurnaceMachine extends WorkableElectricMultibl
 
     @Override
     public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private HudModel hudModel() {

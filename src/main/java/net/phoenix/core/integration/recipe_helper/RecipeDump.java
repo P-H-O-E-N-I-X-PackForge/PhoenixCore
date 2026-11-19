@@ -20,10 +20,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.phoenix.conflux.research.ConfluxResearchCondition;
-import net.phoenix.conflux.research.GatedRecipeRegistry;
-import net.phoenix.conflux.research.GatedRecipeRule;
-import net.phoenix.conflux.research.ResearchTreeRegistry;
+import net.phoenix.conflux.common.research.ConfluxResearchCondition;
+import net.phoenix.conflux.common.research.GatedRecipeRegistry;
+import net.phoenix.conflux.common.research.GatedRecipeRule;
+import net.phoenix.conflux.common.research.ResearchTreeRegistry;
 import net.phoenix.core.PhoenixCore;
 
 import java.io.IOException;

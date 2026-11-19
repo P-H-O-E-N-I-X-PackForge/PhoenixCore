@@ -18,10 +18,18 @@ import org.joml.Matrix4f;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Antimatter Collider's ring: a stream of cyan matter and a stream of magenta antimatter running opposite ways
+ * round
+ * two crossing oval tracks, a flash and a spray of debris at the crossings when they collide, and the trap in the
+ * middle
+ * growing as it fills, with spokes of light when it is being turned into power.
+ */
 public class ColliderRender extends DynamicRender<AntimatterColliderMachine, ColliderRender> {
 
     public static final ColliderRender INSTANCE = new ColliderRender();
 
+    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("antimatter_collider", "Antimatter Collider")
             .machine("phoenixcore:antimatter_collider");
@@ -31,7 +39,7 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
 
     private static final float[] MATTER = { 0.35f, 0.91f, 1f };
     private static final float[] ANTI = { 1f, 0.3f, 0.85f };
-
+    /** Where the two tracks cross, as a fraction of the longer radius. */
     private static final float CROSS = 0.625f;
 
     private static final class State {
@@ -43,7 +51,10 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
 
     private static final Map<Long, State> STATES = new HashMap<>();
 
-    private ColliderRender() {}
+    private ColliderRender() {
+        net.phoenix.core.client.fx.FxStage.register(AntimatterColliderMachine.class, 80.0,
+                (m, partial, ps, buf) -> INSTANCE.render((AntimatterColliderMachine) m, partial, ps, buf, 0, 0));
+    }
 
     @Override
     public @NotNull DynamicRenderType<AntimatterColliderMachine, ColliderRender> getType() {
@@ -86,8 +97,26 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
         net.phoenix.core.client.fx.FxHook.scale(FX, poseStack, c);
         Matrix4f m = poseStack.last().pose();
         GlowDraw.Cam cam = GlowDraw.Cam.now(machine.getBlockPos());
+        net.minecraft.client.renderer.ShaderInstance sh = net.phoenix.core.client.worldfx.WorldFXShaders.FX_COLLIDER;
+        if (sh != null) {
+            if (!net.phoenix.core.client.fx.FxStage.active()) {
+                poseStack.popPose();
+                return;
+            }
+            float age = t - s.flashAt;
+            var look = new FxVolume.Look(t, FX.get("power", 1f), 0f,
+                    net.phoenix.core.client.fx.FxHook.tint(FX, MATTER[0], MATTER[1], MATTER[2], 1f, 0.2f, t),
+                    net.phoenix.core.client.fx.FxHook.tint(FX, ANTI[0], ANTI[1], ANTI[2], 1f, 0.8f, t));
+            float[] p0 = { beam, dim, fill, on && machine.emitting() > 0 && powerMode ? 1f : 0f };
+            float[] p1 = { age >= 0f && age < 0.7f ? age / 0.7f : -1f, s.point, on ? 3 + Math.round(beam * 7f) : 1,
+                    0f };
+            FxVolume.draw(sh, m, FX.get("detail", 1f), cx, cy, cz, 3.0f, 1.5f, 3.0f, FX.get("size", 1f), look, p0, p1);
+            poseStack.popPose();
+            return;
+        }
         VertexConsumer vc = net.phoenix.core.client.fx.FxHook.glow(FX, m, buffer.getBuffer(GlowDraw.GLOW), c, t);
 
+        // the two tracks
         int segs = 48;
         for (int i = 0; i < segs; i++) {
             float a0 = Mth.TWO_PI * i / segs;
@@ -100,6 +129,7 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
                     0.3f * dim, 0.3f * dim);
         }
 
+        // the beams: bunches of matter one way and antimatter the other, with a short tail behind each
         int bunches = on ? 3 + Math.round(beam * 7f) : 1;
         float speed = 0.25f + 1.9f * beam;
         for (int i = 0; i < bunches; i++) {
@@ -117,6 +147,7 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
             }
         }
 
+        // the crossings: a ring of light at each, and a flash with debris when there has just been a collision
         for (int q = 0; q < 4; q++) {
             float px = cx + (q % 2 == 0 ? 1f : -1f) * CROSS * major * 1.0f;
             float pz = cz + (q < 2 ? 1f : -1f) * CROSS * major * 1.0f;
@@ -138,6 +169,7 @@ public class ColliderRender extends DynamicRender<AntimatterColliderMachine, Col
             }
         }
 
+        // the trap in the middle
         float r = 0.1f + 0.3f * (float) Math.sqrt(fill);
         GlowDraw.disc(vc, m, cam, cx, cy, cz, r * 2.2f, ANTI[0], ANTI[1], ANTI[2], 0.25f * dim * (0.4f + fill), 0f);
         GlowDraw.disc(vc, m, cam, cx, cy, cz, r, 1f, 0.95f, 1f, 0.9f * dim, 0.3f * dim);

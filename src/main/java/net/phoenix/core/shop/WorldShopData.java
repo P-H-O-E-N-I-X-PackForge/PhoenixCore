@@ -1,9 +1,12 @@
 package net.phoenix.core.shop;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ public class WorldShopData extends SavedData {
 
     public static WorldShopData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(new net.minecraft.world.level.saveddata.SavedData.Factory<>(WorldShopData::new,
+                .computeIfAbsent(new SavedData.Factory<>(WorldShopData::new,
                         (tag, provider) -> WorldShopData.load(tag), null), ID);
     }
 
@@ -59,7 +62,7 @@ public class WorldShopData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         ListTag list = new ListTag();
         for (ShopEntry entry : entries) list.add(entry.save());
         tag.put("entries", list);

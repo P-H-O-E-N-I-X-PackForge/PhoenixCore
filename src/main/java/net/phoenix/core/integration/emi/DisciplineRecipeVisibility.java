@@ -2,24 +2,19 @@ package net.phoenix.core.integration.emi;
 
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
-import net.phoenix.conflux.ConfluxConfigs;
-import net.phoenix.conflux.api.ConfluxApi;
-import net.phoenix.core.common.data.recipeConditions.DisciplineCondition;
-
-import dev.emi.emi.api.recipe.EmiRecipe;
-
 public final class DisciplineRecipeVisibility {
 
     private DisciplineRecipeVisibility() {}
 
-    public static boolean hide(EmiRecipe recipe) {
+    /** For EMI pages that are not GT viewer pages but are backed by a GT recipe, such as the Aether Crucible's. */
+    public static boolean hide(dev.emi.emi.api.recipe.EmiRecipe recipe) {
         var backing = recipe.getBackingRecipe();
-        if (backing == null || !(backing.value() instanceof GTRecipe gt)) return false;
-        ConfluxConfigs cfg = ConfluxConfigs.INSTANCE;
-        if (cfg != null && cfg.showOtherDisciplineRecipes) return false;
-        String mine = ConfluxApi.clientDiscipline();
+        return backing != null && backing.value() instanceof GTRecipe gt && hidden(gt);
+    }
+
+    public static boolean hidden(GTRecipe gt) {
         for (var condition : gt.conditions) {
-            if (condition instanceof DisciplineCondition d && !d.getDiscipline().equals(mine)) return true;
+            if (condition.hiddenInViewer(gt)) return true;
         }
         return false;
     }

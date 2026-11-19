@@ -15,9 +15,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.phoenix.conflux.ConfluxDataType;
-import net.phoenix.conflux.hatch.ConfluxDataHatchPartMachine;
-import net.phoenix.conflux.pipe.ConfluxDataCapability;
-import net.phoenix.conflux.pipe.IConfluxDataHandler;
+import net.phoenix.conflux.common.hatch.ConfluxDataHatchPartMachine;
+import net.phoenix.conflux.common.pipe.ConfluxDataCapability;
+import net.phoenix.conflux.common.pipe.IConfluxDataHandler;
 import net.phoenix.core.integration.ars_nouveau.common.data.multiblock.part.source.SourceHatchPartMachine;
 import net.phoenixvine.wiki.ui.hud.HudModel;
 import net.phoenixvine.wiki.ui.hud.HudRecipes;
@@ -241,7 +241,8 @@ public class ConfluxCascadeEngine extends WorkableElectricMultiblockMachine
         syncManager.syncValue("engine_active", 0,
                 new brachy.modularui.value.sync.BooleanSyncValue(() -> this.engineActive, v -> this.engineActive = v));
         syncManager.syncValue("data_buffer", 0, new LongSyncValue(() -> this.dataBuffer, v -> this.dataBuffer = v));
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private float multiplier() {

@@ -626,10 +626,13 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
 
                 @Override
                 public void set(int which, int value) {
-                    syncManager.callSyncedAction("stellar_control", buf -> {
-                        buf.writeVarInt(which);
-                        buf.writeVarInt(value);
-                    });
+                    {
+                        var out = new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),
+                                getLevel().registryAccess());
+                        out.writeVarInt(which);
+                        out.writeVarInt(value);
+                        syncManager.callSyncedAction("stellar_control", out);
+                    }
                 }
 
                 @Override
@@ -644,12 +647,13 @@ public class StellarForgeMachine extends MultiblockControllerMachine implements 
                     net.phoenixvine.wiki.ui.hud.HudTheme.DEEP_SPACE);
         }
         final TabStrip tabs = screen;
-        var panel = MachineUIPanelBuilder.panelBuilder(this).attachInventory(false).addTitleBar(false)
+        var panel = MachineUIPanelBuilder.panelBuilder(this).showPatternErrors().attachInventory(false)
+                .addTitleBar(false)
                 .drawGTLogo(false)
                 .mainContents(main -> {
                     if (tabs != null) main.child(new CanvasWidget(tabs).size(UI_WIDTH, UI_HEIGHT));
                     else main.size(UI_WIDTH, UI_HEIGHT);
-                }).build(syncManager, settings);
+                }).build(data, syncManager, settings);
         if (tabs != null) HudPanel.apply(panel, tabs);
         return panel;
     }

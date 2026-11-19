@@ -203,7 +203,7 @@ public class PhoenixMachineRecipes {
         GrowthRecipes.init(provider);
         CountDisplayExampleRecipes.init(provider);
         net.phoenix.core.integration.astral.AstralRecipes.init(provider);
-        net.phoenix.conflux.pipe.ConfluxPipeRecipes.init(provider);
+        net.phoenix.conflux.common.pipe.ConfluxPipeRecipes.init(provider);
         net.phoenix.core.integration.ars_nouveau.logistics.SourceLogisticsRecipes.init(provider);
 
         ASTRAL_WEAVING_RECIPES.recipeBuilder("astral_filament_to_thread")

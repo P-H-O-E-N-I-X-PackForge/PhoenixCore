@@ -76,8 +76,18 @@ public class PhoenixRecipeTypes {
 
         AETHER_CRUCIBLE_RECIPES = REGISTRATE.recipeType("aether_crucible", MULTIBLOCK)
                 .setEUIO(IO.IN)
-                .setMaxIOSize(3, 30, 2, 1)
-                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW))
+                .setMaxIOSize(3, 15, 2, 1)
+                // five across in the recipe viewers, so the page is short enough for a small window (EMI makes room at
+                // the sides)
+                .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_ARROW)
+                        .setRecipeViewerLayoutGridBuilder(
+                                com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability.CAP,
+                                IO.OUT,
+                                layout -> com.gregtechceu.gtceu.common.mui.GTMuiWidgets.createGrid(
+                                        layout.getRecipeType().getMaxSlots(
+                                                com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability.CAP,
+                                                IO.OUT),
+                                        5, true, 's')))
                 .setSound(GTSoundEntries.ARC)
                 .register();
 

@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.phoenix.conflux.ConfluxDataType;
 import net.phoenix.conflux.ConfluxRegistry;
 import net.phoenix.conflux.client.ConfluxTheme;
-import net.phoenix.conflux.terminal.ConfluxTerminalRegistry;
+import net.phoenix.conflux.common.terminal.ConfluxTerminalRegistry;
 import net.phoenix.core.PhoenixCore;
 import net.phoenix.core.integration.ars_nouveau.conflux.ConfluxProducerMachine;
 import net.phoenix.core.integration.ars_nouveau.conflux.ConfluxProducerMachines;

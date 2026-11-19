@@ -20,7 +20,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 @OnlyIn(Dist.CLIENT)
 final class SolarisVoidBridge implements MapLayer {
 
-    private static final ResourceLocation VOID = ResourceLocation.fromNamespaceAndPath("phoenixcore", "conflux/void");
+    private static final ResourceLocation VOID = ResourceLocation.fromNamespaceAndPath("phoenixconflux",
+            "conflux/void");
     private static final int MAX_CHUNKS = 20000;
     private static final int ABYSS = 0xD0090420;
 

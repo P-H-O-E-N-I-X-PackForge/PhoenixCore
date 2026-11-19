@@ -89,8 +89,7 @@ public final class PftCrucibleRecipes {
 
         DisciplineRecipes.crucibleAny(provider, "echo_moon")
                 .inputFluids("phoenixcore:voidic_drilling_fluid  8000")
-                .itemOutputs("10x phoenixcore:raw_voidglass_shard",
-                        "28x gtceu:raw_ilmenite",
+                .itemOutputs("28x gtceu:raw_ilmenite",
                         "28x gtceu:raw_bauxite",
                         "17x phoenixcore:raw_fluorite",
                         "28x gtceu:raw_magnetite",

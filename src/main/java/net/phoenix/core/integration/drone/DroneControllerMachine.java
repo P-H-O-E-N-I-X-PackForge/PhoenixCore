@@ -564,9 +564,10 @@ public class DroneControllerMachine extends MultiblockControllerMachine implemen
     @Override
     public brachy.modularui.screen.ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager,
                                                            UISettings settings) {
-        return net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
-                this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 308, 144,
-                        content -> buildMainUI(content, data, syncManager, settings)));
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                net.phoenixvine.wiki.ui.hud.MachineHud.build(this, data, syncManager, settings, (id, value) -> {},
+                        this::hudModel, new net.phoenixvine.wiki.ui.hud.MachineHud.Classic("C", 308, 144,
+                                content -> buildMainUI(content, data, syncManager, settings))));
     }
 
     private net.phoenixvine.wiki.ui.hud.HudModel hudModel() {

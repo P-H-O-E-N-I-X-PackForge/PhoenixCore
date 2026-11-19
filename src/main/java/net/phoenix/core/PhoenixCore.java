@@ -116,6 +116,7 @@ public class PhoenixCore {
     public PhoenixCore(IEventBus modEventBus, ModContainer container) {
         PhoenixConfigs.init();
         CrystalRoseIndicatorGenerator.register(modEventBus);
+        net.phoenix.core.api.pattern.PhoenixPatternErrors.register(modEventBus);
         VaultDatagen.init();
         GregPacksDatagen.init();
         GregPacksUpgrades.init();
@@ -258,13 +259,13 @@ public class PhoenixCore {
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(net.phoenix.core.common.GtHooks::registerModifiers);
         event.enqueueWork(() -> {
             PhoenixRecipeTypes.postInit();
             net.phoenix.core.integration.conflux.ConfluxBridge.init();
             VaultRegistry.registerLinkables();
             CinderAtlasWirelessLink.register();
             net.phoenix.core.integration.chronicles.ChroniclesLink.setup();
-            net.phoenix.core.integration.chronicles.ChroniclesScaffold.install();
 
             MapIngredientTypeManager.registerMapIngredient(Shield.ShieldTypes.class, MapShieldIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(
@@ -329,6 +330,7 @@ public class PhoenixCore {
         VaultRegistry.initMachines();
         VaultMachineDefinition.init();
         CinderForgeMachines.init();
+        net.phoenix.core.common.machine.multiblock.SubstructureTestMachines.init();
         net.phoenix.core.common.machine.multiblock.stellar.StellarForgeMachines.init();
         net.phoenix.core.common.machine.multiblock.nullwell.NullWellMachines.init();
         net.phoenix.core.common.machine.multiblock.cortex.SculkCortexMachines.init();

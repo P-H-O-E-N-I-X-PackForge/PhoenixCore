@@ -1,0 +1,27 @@
+{
+  "vertex": "phoenixcore:fx_volume",
+  "fragment": "phoenixcore:fx_rift",
+  "attributes": [ "Position" ],
+  "samplers": [
+    { "name": "InSampler" }
+  ],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "ScreenSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+    { "name": "Time", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "RiftPos", "type": "float", "count": 2, "values": [ 0.5, 0.5 ] },
+    { "name": "RiftSize", "type": "float", "count": 2, "values": [ 0.05, 0.2 ] },
+    { "name": "Centre", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "Normal", "type": "float", "count": 3, "values": [ 0.0, 0.0, 1.0 ] },
+    { "name": "HalfH", "type": "float", "count": 1, "values": [ 5.0 ] },
+    { "name": "WidthRatio", "type": "float", "count": 1, "values": [ 0.08 ] },
+    { "name": "Growth", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "Lens", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "Glitch", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ColorA", "type": "float", "count": 3, "values": [ 0.62, 0.45, 1.0 ] },
+    { "name": "ColorB", "type": "float", "count": 3, "values": [ 0.9, 0.95, 1.0 ] },
+    { "name": "Seed", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "Power", "type": "float", "count": 1, "values": [ 1.0 ] }
+  ]
+}

@@ -16,7 +16,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 @OnlyIn(Dist.CLIENT)
 final class SolarisFamiliarityBridge implements MapLayer {
 
-    private static final ResourceLocation SCULK = ResourceLocation.fromNamespaceAndPath("phoenixcore", "conflux/sculk");
+    private static final ResourceLocation SCULK = ResourceLocation.fromNamespaceAndPath("phoenixconflux",
+            "conflux/sculk");
     private static final int MAX_CHUNKS = 20000;
 
     private static final SolarisFamiliarityBridge INSTANCE = new SolarisFamiliarityBridge();

@@ -242,7 +242,9 @@ public class PhoenixProgressionMaterials {
         FIERY_BRONZE = PHOENIX_REGISTRATE.material("fiery_bronze", builder -> builder.ingot().fluid().color(0xff6d00)
                 .secondaryColor(0xa0522d).iconSet(MaterialIconSet.DULL)
                 .fluidPipeProperties(2000, 40, true, false, false, false)
-                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, PHOSPHORESCENT, GENERATE_ROD,
+                .flags(GENERATE_PLATE, GENERATE_RING, GENERATE_ROUND, GENERATE_GEAR, GENERATE_SMALL_GEAR,
+                        PHOSPHORESCENT,
+                        GENERATE_ROD, GENERATE_LONG_ROD,
                         GENERATE_BOLT_SCREW, GENERATE_FRAME, GENERATE_DENSE, GENERATE_ROTOR,
                         PhoenixMaterialFlags.GENERATE_BEE_HONEYCOMB_BLOCK, PhoenixMaterialFlags.GENERATE_BEE_COMB));
 

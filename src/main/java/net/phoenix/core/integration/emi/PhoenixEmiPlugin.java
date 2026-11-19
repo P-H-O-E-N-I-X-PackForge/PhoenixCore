@@ -14,7 +14,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.ModList;
-import net.phoenix.core.integration.astral.ritual.AstralRitualPedestalBlockEntity;
 import net.phoenix.core.integration.gregpacks.common.inventory.OmniPackScreen;
 import net.phoenix.core.integration.recipe_helper.RecipeBuilderScreen;
 
@@ -45,10 +44,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_breeding"),
             EmiStack.of(Items.CAULDRON));
 
-    public static final EmiRecipeCategory ASTRAL_RITUAL = new EmiRecipeCategory(
-            ResourceLocation.fromNamespaceAndPath("phoenixcore", "astral_ritual"),
-            EmiStack.of(new ItemStack(net.phoenix.core.integration.astral.AstralBlocks.ASTRAL_RITUAL_PEDESTAL.get())));
-
     private static final java.util.List<java.util.regex.Pattern> HIDDEN_ITEMS = java.util.List.of(
             java.util.regex.Pattern.compile("advanced_[a-z_]+_canvas_hive"),
             java.util.regex.Pattern.compile("exspansion_box_[a-z_]+_canvas"),
@@ -58,7 +53,9 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             java.util.regex.Pattern.compile("alchemical_sourcelink"),
             java.util.regex.Pattern.compile("mycelial_sourcelink"),
             java.util.regex.Pattern.compile("^productivebees:.*(exspansion|breeding_chamber|incubater|gene_indexer)"),
-            java.util.regex.Pattern.compile("^expatternprovider:circuit_cutter$"));
+            java.util.regex.Pattern.compile("^extendedae:(circuit_cutter|crystal_assembler)$"),
+            java.util.regex.Pattern.compile(
+                    "^utilitarian:(magnet|well_behaved_dropper|no_raider_block|no_soliciting_banner|restraining_order(_active)?|[a-z_]+soliciting_carpet)$"));
 
     private static final java.util.Set<String> HIDDEN_CATEGORIES = java.util.Set.of("jei:information",
             "ae2:certus_growth");
@@ -81,13 +78,11 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         hideFromScripts(registry);
         registry.removeRecipes(net.phoenix.conflux.client.ConfluxEmiRefresh::hide);
         registry.removeRecipes(DisciplineRecipeVisibility::hide);
-        registry.removeRecipes(CrucibleEmi::replaced);
         net.phoenix.conflux.client.ConfluxRecipeVisibility.builtNow();
         registry.addRecipeDecorator(net.phoenix.conflux.client.ConfluxEmiRefresh::decorate);
         guarded("Conflux research pages", () -> ConfluxEmi.register(registry));
         guarded("lapidary pages", () -> LapidaryEmi.register(registry));
         guarded("Cinder Forge pages", () -> CinderEmi.register(registry));
-        guarded("Aether Crucible pages", () -> CrucibleEmi.register(registry));
         guarded("chunk soul pages", () -> SoulEmi.register(registry));
         guarded("Tesla Network pages", () -> TeslaEmi.register(registry));
         guarded("Astral weaving pages", () -> AstralEmi.register(registry));
@@ -101,8 +96,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
 
         GrowthEmi.register(registry);
 
-        registry.addCategory(ASTRAL_RITUAL);
-        registerAstralRituals(registry);
         StellarEmi.register(registry);
 
         registry.addExclusionArea(RecipeBuilderScreen.class, (screen, consumer) -> consumer.accept(new Bounds(
@@ -128,11 +121,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
         } catch (Throwable t) {
             net.phoenix.core.PhoenixCore.LOGGER.error("[PFT] The EMI {} could not be registered", what, t);
         }
-    }
-
-    private static void registerAstralRituals(EmiRegistry registry) {
-        AstralRitualPedestalBlockEntity.RITUAL_TABLE
-                .forEach((catalyst, result) -> registry.addRecipe(new AstralRitualEmiRecipe(catalyst, result)));
     }
 
     private static void registerMaterialFluidSearchAliases(EmiRegistry registry) {

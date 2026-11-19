@@ -18,10 +18,16 @@ import org.joml.Matrix4f;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Aether Crucible's chamber: a pool of molten metal with rippling rings and rising bubbles, and an orb of aether
+ * above it with motes circling. At rest it is teal and quiet; while it is working the metal turns to gold and the orb
+ * brightens.
+ */
 public class CrucibleRender extends DynamicRender<AetherCrucibleMachine, CrucibleRender> {
 
     public static final CrucibleRender INSTANCE = new CrucibleRender();
 
+    /** The settings of /pftfx for this render. */
     private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxHook
             .standard("aether_crucible", "Aether Crucible").machine("phoenixcore:aether_crucible");
     public static final MapCodec<CrucibleRender> CODEC = MapCodec.unit(INSTANCE);
@@ -30,9 +36,13 @@ public class CrucibleRender extends DynamicRender<AetherCrucibleMachine, Crucibl
     private static final float[] AETHER = { 0.43f, 0.94f, 0.78f };
     private static final float[] GOLD = { 1f, 0.82f, 0.29f };
 
+    /** How worked up each machine's chamber is, eased so it warms and cools gradually. */
     private static final Map<Long, float[]> WORK = new HashMap<>();
 
-    private CrucibleRender() {}
+    private CrucibleRender() {
+        net.phoenix.core.client.fx.FxStage.register(AetherCrucibleMachine.class, 64.0,
+                (m, partial, ps, buf) -> INSTANCE.render((AetherCrucibleMachine) m, partial, ps, buf, 0, 0));
+    }
 
     @Override
     public @NotNull DynamicRenderType<AetherCrucibleMachine, CrucibleRender> getType() {
@@ -69,8 +79,25 @@ public class CrucibleRender extends DynamicRender<AetherCrucibleMachine, Crucibl
         net.phoenix.core.client.fx.FxHook.scale(FX, poseStack, c);
         Matrix4f m = poseStack.last().pose();
         GlowDraw.Cam cam = GlowDraw.Cam.now(machine.getBlockPos());
+        net.minecraft.client.renderer.ShaderInstance sh = net.phoenix.core.client.worldfx.WorldFXShaders.FX_CRUCIBLE;
+        if (sh != null) {
+            if (!net.phoenix.core.client.fx.FxStage.active()) {
+                poseStack.popPose();
+                return;
+            }
+            var look = new FxVolume.Look(t, FX.get("power", 1f), (machine.getBlockPos().asLong() & 1023L) / 100f,
+                    net.phoenix.core.client.fx.FxHook.tint(FX, AETHER[0], AETHER[1], AETHER[2], 1f, 0.3f, t),
+                    net.phoenix.core.client.fx.FxHook.tint(FX, GOLD[0], GOLD[1], GOLD[2], 1f, 0.7f, t));
+            float[] p0 = { work, 1f, 0f, 0f };
+            float[] p1 = { 0f, 0f, 0f, 0f };
+            FxVolume.draw(sh, m, FX.get("detail", 1f), cx, -0.05f, cz, 1.0f, 1.45f, 1.0f, FX.get("size", 1f), look, p0,
+                    p1);
+            poseStack.popPose();
+            return;
+        }
         VertexConsumer vc = net.phoenix.core.client.fx.FxHook.glow(FX, m, buffer.getBuffer(GlowDraw.GLOW), c, t);
 
+        // the pool, brighter in the middle, with rings spreading from it
         GlowDraw.flatDisc(vc, m, cx, surface, cz, 0.55f, col[0], col[1], col[2], 0.55f + 0.3f * work, 0.2f);
         for (int k = 0; k < 3; k++) {
             float f = (t * 0.5f + k / 3f) % 1f;
@@ -78,6 +105,7 @@ public class CrucibleRender extends DynamicRender<AetherCrucibleMachine, Crucibl
                     Mth.TWO_PI, 24, 1f, 1f, 0.95f, 0.5f * (1f - f));
         }
 
+        // bubbles rising from it
         for (int i = 0; i < 7; i++) {
             float life = (t * (0.25f + 0.3f * work) + i * 0.173f) % 1f;
             float a = i * 2.399f;
@@ -86,6 +114,7 @@ public class CrucibleRender extends DynamicRender<AetherCrucibleMachine, Crucibl
                     0.8f * (1f - life), 0f);
         }
 
+        // the orb of aether, and its motes
         float oy = 0.55f + 0.06f * Mth.sin(t * 1.7f);
         float orb = 0.2f + 0.1f * work + 0.02f * Mth.sin(t * 5f);
         GlowDraw.disc(vc, m, cam, cx, oy, cz, orb * 3f, col[0], col[1], col[2], 0.22f + 0.2f * work, 0f);

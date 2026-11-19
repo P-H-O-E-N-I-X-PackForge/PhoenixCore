@@ -6,7 +6,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.phoenix.conflux.dimension.worldgen.Landforms;
+import net.phoenix.conflux.common.dimension.worldgen.Landforms;
 
 import java.util.ArrayList;
 import java.util.HashMap;

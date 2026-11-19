@@ -26,9 +26,8 @@ public record C2SRemoveShopEntryPacket(UUID entryId) implements CustomPacketPayl
     }
 
     public static void handle(C2SRemoveShopEntryPacket packet, IPayloadContext contextSupplier) {
-        IPayloadContext context = contextSupplier;
-        context.enqueueWork(() -> {
-            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) context.player());
+        contextSupplier.enqueueWork(() -> {
+            ServerPlayer player = ((net.minecraft.server.level.ServerPlayer) contextSupplier.player());
             if (player == null || !player.hasPermissions(2)) return;
 
             WorldShopData data = WorldShopData.get(player.serverLevel());

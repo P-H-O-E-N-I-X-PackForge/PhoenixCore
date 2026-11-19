@@ -4,7 +4,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.phoenix.conflux.research.ConfluxRecipeGate;
+import net.phoenix.conflux.common.research.ConfluxRecipeGate;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

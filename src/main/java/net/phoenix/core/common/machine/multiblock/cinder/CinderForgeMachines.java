@@ -80,23 +80,12 @@ public final class CinderForgeMachines {
                             .where('C', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                             .where(' ', Predicates.air())
                             .build())
-                    .pattern("tier1", definition -> MultiblockPatternBuilder
-                            .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
-                            .slice("CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC")
-                            .slice("CCCCC", "C   C", "C   C", "C   C", "CCCCC")
-                            .slice("CCCCC", "CCCCC", "CCSCC", "CCCCC", "CCCCC")
-                            .where('S', Predicates.controller(definition))
-                            .where('C', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
-                            .where(' ', Predicates.air())
-                            .build())
-                    .pattern("tier2", definition -> buildHivePattern(definition,
-                            Predicates.abilities(PartAbility.IMPORT_ITEMS).setExactLimit(1),
-                            Predicates.abilities(PartAbility.EXPORT_ITEMS).setExactLimit(1)))
-                    .pattern("tier3", definition -> buildHivePattern(definition,
-                            Predicates.abilities(PartAbility.IMPORT_ITEMS).setMinGlobalLimited(2)
-                                    .setMaxGlobalLimited(4),
-                            Predicates.abilities(PartAbility.EXPORT_ITEMS).setMinGlobalLimited(2)
-                                    .setMaxGlobalLimited(4)))
+                    .pattern("tier2", definition -> buildHivePattern(definition, "steel_frame",
+                            Predicates.blocks(CINDER_FORGE_HATCH.getBlock()).setExactLimit(1).setPreviewCount(1)))
+                    // the same hive in titanium frames, which is how it is told apart from tier 2 at a glance
+                    .pattern("tier3", definition -> buildHivePattern(definition, "titanium_frame",
+                            Predicates.blocks(CINDER_FORGE_HATCH.getBlock()).setMinGlobalLimited(2)
+                                    .setMaxGlobalLimited(4).setPreviewCount(2)))
 
                     .workableCasingModel(net.phoenix.core.PhoenixCore.id("block/phoenix_heart_casing"),
                             com.gregtechceu.gtceu.GTCEu.id("block/multiblock/pyrolyse_oven"))
@@ -104,8 +93,8 @@ public final class CinderForgeMachines {
         }
     }
 
-    private static IBlockPattern buildHivePattern(MultiblockMachineDefinition definition, MultiPredicate hatchImport,
-                                                  MultiPredicate hatchExport) {
+    private static IBlockPattern buildHivePattern(MultiblockMachineDefinition definition, String frame,
+                                                  MultiPredicate hatch) {
         return MultiblockPatternBuilder
                 .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
 
@@ -136,13 +125,12 @@ public final class CinderForgeMachines {
                 .where('B', Predicates.any())
                 .where('C',
                         Predicates.blocks(BuiltInRegistries.BLOCK
-                                .get(ResourceLocation.fromNamespaceAndPath("gtceu", "steel_frame"))))
+                                .get(ResourceLocation.fromNamespaceAndPath("gtceu", frame))))
                 .where('D', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('E', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('F', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get()))
                 .where('G', Predicates.blocks(PhoenixBlocks.PHOENIX_HEART_CASING.get())
-                        .or(hatchImport)
-                        .or(hatchExport))
+                        .or(hatch))
                 .where('H', Predicates.controller(definition))
                 .build();
     }

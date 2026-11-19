@@ -115,7 +115,7 @@ public final class CinderSchemaData {
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return null;
 
-        MultiblockSchemaInfo info = new MultiblockSchemaInfo();
+        MultiblockSchemaInfo info = new MultiblockSchemaInfo(definition);
 
         if (tag.contains(SLICE_KEYS) && tag.contains(SLICE_VALUES)) {
             int[] keys = tag.getIntArray(SLICE_KEYS);
@@ -148,7 +148,7 @@ public final class CinderSchemaData {
                 if (candidateIndex < 0 || candidateIndex >= base.getCandidates().size()) continue;
                 BlockInfo blockInfo = base.getCandidates().get(candidateIndex);
 
-                info.putPredicatePreference(predicate, base, blockInfo);
+                info.getBlockPreferences().put(c, blockInfo);
             }
         }
 
@@ -175,7 +175,7 @@ public final class CinderSchemaData {
         if (predicate == null || baseIndex < 0 || baseIndex >= predicate.predicates().size()) return;
         BasePredicate base = predicate.predicates().get(baseIndex);
         if (candidateIndex < 0 || candidateIndex >= base.getCandidates().size()) return;
-        info.getUserGlobalBlockPreferences().put(pos, base.getCandidates().get(candidateIndex));
+        info.getUserGlobalBlockPreferences().put(BlockPos.of(pos), base.getCandidates().get(candidateIndex));
     }
 
     public record PositionPreferenceEntry(long pos, char predicateChar, int baseIndex, int candidateIndex) {}
@@ -186,8 +186,8 @@ public final class CinderSchemaData {
         var structureHelper = info.getStructureHelper();
         if (structureHelper == null) return result;
 
-        for (var entry : info.getUserGlobalBlockPreferences().long2ObjectEntrySet()) {
-            BlockPos pos = BlockPos.of(entry.getLongKey());
+        for (var entry : info.getUserGlobalBlockPreferences().object2ObjectEntrySet()) {
+            BlockPos pos = entry.getKey();
             BlockInfo chosen = entry.getValue();
             MultiPredicate predicate = structureHelper.getPredicateFromPos(pattern, pos, Direction.NORTH,
                     Direction.UP, false);
@@ -200,7 +200,7 @@ public final class CinderSchemaData {
             for (BasePredicate base : predicate.expand()) {
                 int candidateIndex = base.getCandidates().indexOf(chosen);
                 if (candidateIndex < 0) continue;
-                result.add(new PositionPreferenceEntry(entry.getLongKey(), charEntry.getCharKey(),
+                result.add(new PositionPreferenceEntry(pos.asLong(), charEntry.getCharKey(),
                         predicate.predicates().indexOf(base), candidateIndex));
                 break;
             }
@@ -228,7 +228,7 @@ public final class CinderSchemaData {
 
         setTarget(tag, definition);
 
-        MultiblockSchemaInfo info = new MultiblockSchemaInfo();
+        MultiblockSchemaInfo info = new MultiblockSchemaInfo(definition);
         for (int i = 0; i < pattern.getSlices().length; i++) {
             info.getUserSliceRepeats().put(i, pattern.getSlices()[i].getMinRepeats());
         }
@@ -252,7 +252,7 @@ public final class CinderSchemaData {
                 if (base.getCandidates().size() <= 1) continue;
                 for (BlockInfo candidate : base.getCandidates()) {
                     if (candidate.getBlockState().getBlock() == realBlock) {
-                        info.getUserGlobalBlockPreferences().put(localPos.asLong(), candidate);
+                        info.getUserGlobalBlockPreferences().put(localPos.immutable(), candidate);
                         break;
                     }
                 }
@@ -281,7 +281,7 @@ public final class CinderSchemaData {
         BlockPattern pattern = getPattern(definition);
         if (pattern == null) return false;
 
-        MultiblockSchemaInfo info = new MultiblockSchemaInfo();
+        MultiblockSchemaInfo info = new MultiblockSchemaInfo(definition);
         int sliceLength = Math.min(sliceKeys.length, sliceValues.length);
         for (int i = 0; i < sliceLength; i++) {
             info.getUserSliceRepeats().put(sliceKeys[i], sliceValues[i]);
@@ -298,7 +298,7 @@ public final class CinderSchemaData {
             BasePredicate base = predicate.predicates().get(baseIndex);
             int candidateIndex = prefCandidateIndices[i];
             if (candidateIndex < 0 || candidateIndex >= base.getCandidates().size()) continue;
-            info.putPredicatePreference(predicate, base, base.getCandidates().get(candidateIndex));
+            info.getBlockPreferences().put(prefChars[i], base.getCandidates().get(candidateIndex));
         }
 
         int posLength = Math.min(posKeys.length,
@@ -343,28 +343,28 @@ public final class CinderSchemaData {
             tag.putIntArray(SLICE_VALUES, values);
         }
 
-        var structureHelper = info.getStructureHelper();
-        var blockPreferences = structureHelper != null ? structureHelper.getBlockPreferences() : null;
-        if (blockPreferences == null || blockPreferences.isEmpty()) {
+        var blockPreferences = info.getBlockPreferences();
+        if (blockPreferences.isEmpty()) {
             tag.remove(BLOCK_PREFERENCES);
         } else {
             ListTag preferences = new ListTag();
-            for (var cell : blockPreferences.cellSet()) {
-                MultiPredicate predicate = cell.getRowKey();
-                BasePredicate base = cell.getColumnKey();
+            for (var cell : blockPreferences.char2ObjectEntrySet()) {
+                char predicateChar = cell.getCharKey();
                 BlockInfo chosen = cell.getValue();
-                if (predicate == null || base == null || chosen == null) continue;
+                MultiPredicate predicate = pattern.getPredicates().get(predicateChar);
+                if (predicate == null || chosen == null) continue;
 
-                var charEntry = pattern.getPredicates().char2ObjectEntrySet().stream()
-                        .filter(e -> e.getValue().equals(predicate))
-                        .findFirst().orElse(null);
-                if (charEntry == null) continue;
+                for (int baseIndex = 0; baseIndex < predicate.predicates().size(); baseIndex++) {
+                    int candidateIndex = predicate.predicates().get(baseIndex).getCandidates().indexOf(chosen);
+                    if (candidateIndex < 0) continue;
 
-                CompoundTag entry = new CompoundTag();
-                entry.putInt("Char", charEntry.getCharKey());
-                entry.putInt("Base", predicate.predicates().indexOf(base));
-                entry.putInt("Candidate", base.getCandidates().indexOf(chosen));
-                preferences.add(entry);
+                    CompoundTag entry = new CompoundTag();
+                    entry.putInt("Char", predicateChar);
+                    entry.putInt("Base", baseIndex);
+                    entry.putInt("Candidate", candidateIndex);
+                    preferences.add(entry);
+                    break;
+                }
             }
             tag.put(BLOCK_PREFERENCES, preferences);
         }
@@ -430,7 +430,7 @@ public final class CinderSchemaData {
         MultiblockSchemaInfo info = resolveSchema(tag);
         if (info == null) return;
 
-        info.putPredicatePreference(predicate, base, candidates.get(candidateIndex));
+        info.getBlockPreferences().put(predicateChar, candidates.get(candidateIndex));
         info.refreshSchema(definition, Direction.NORTH, Direction.UP, false, null);
         writeUserPreferences(tag, definition, info);
     }
@@ -441,8 +441,13 @@ public final class CinderSchemaData {
 
     public static int getPredicateCandidateIndex(CompoundTag tag, MultiPredicate predicate, BasePredicate base) {
         MultiblockSchemaInfo info = resolveSchema(tag);
-        if (info == null || info.getStructureHelper() == null) return 0;
-        BlockInfo current = info.getStructureHelper().getBlockPreferences().get(predicate, base);
+        if (info == null) return 0;
+        BlockPattern pattern = getPattern(info.getDefinition());
+        if (pattern == null) return 0;
+        var charEntry = pattern.getPredicates().char2ObjectEntrySet().stream()
+                .filter(e -> e.getValue().equals(predicate)).findFirst().orElse(null);
+        if (charEntry == null) return 0;
+        BlockInfo current = info.getBlockPreferences().get(charEntry.getCharKey());
         int index = current != null ? base.getCandidates().indexOf(current) : -1;
         return Math.max(0, index);
     }

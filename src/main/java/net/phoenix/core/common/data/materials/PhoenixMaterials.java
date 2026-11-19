@@ -101,7 +101,7 @@ public class PhoenixMaterials {
 
     public static void modifyMaterials() {
         CrystalRoseHelper
-                .addCrystalRoseFlags(net.phoenix.conflux.dimension.worldgen.ProvinceVeinTemplates
+                .addCrystalRoseFlags(net.phoenix.conflux.common.dimension.worldgen.ProvinceVeinTemplates
                         .allMaterials().toArray(new com.gregtechceu.gtceu.api.data.chemical.material.Material[0]));
         CrystalRoseHelper.addCrystalRoseFlags(
                 Amethyst, Apatite, Bauxite, Cinnabar, Cobalt, Cobaltite, Copper, Diamond,
@@ -113,7 +113,7 @@ public class PhoenixMaterials {
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite, PERMAFROST, DORMANT_EMBER, NAQUADATITE,
                 NetherQuartz, RockSalt, Sodalite,
-                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, Saltpeter,
                 PhoenixOres.FLUORITE.get(), PhoenixProgressionMaterials.SOURCE_GEM.get(), Glowstone, Ice,
                 IGNISIUM.get(),
                 RESONANT_ENDER.get(), FLUIX.get(), SPONGE.get(), Sculk, SLIME.get(), MAGMA.get(), Blaze, Salt, Bone,
@@ -147,7 +147,7 @@ public class PhoenixMaterials {
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
                 NetherQuartz, RockSalt, Sodalite,
-                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, Saltpeter,
                 PhoenixOres.FLUORITE.get(), PhoenixProgressionMaterials.SOURCE_GEM.get(), Glowstone, Ice,
                 PhoenixOres.IGNISIUM.get(),
                 RESONANT_ENDER.get(), FLUIX.get(), SPONGE.get(), Sculk, SLIME.get(), MAGMA.get(), Blaze, Salt, Bone,
@@ -164,7 +164,7 @@ public class PhoenixMaterials {
                 Pyrochlore, Pyrolusite, Sphalerite, Sulfur, Tantalite, Tetrahedrite, Thorium,
                 Titanium, VanadiumMagnetite,
                 NetherQuartz, RockSalt, Sodalite,
-                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, VOIDGLASS_SHARD, Saltpeter,
+                Coal, Redstone, Tin, Obsidian, Netherite, CertusQuartz, NetherQuartz, Saltpeter,
                 PhoenixOres.FLUORITE.get(), PhoenixProgressionMaterials.SOURCE_GEM.get(), Glowstone, Ice,
                 PhoenixOres.IGNISIUM.get(),
                 RESONANT_ENDER.get(), FLUIX.get(), SPONGE.get(), Sculk, SLIME.get(), MAGMA.get(), Blaze, Salt, Bone,

@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+/** A control the player sets on the Null Well's full screen: one of the {@link NullWellControls}, and a value. */
 public record C2SNullWellPacket(BlockPos pos, int which, int value) implements CustomPacketPayload {
 
     public static final Type<C2SNullWellPacket> TYPE = new Type<>(

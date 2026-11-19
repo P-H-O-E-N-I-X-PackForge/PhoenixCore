@@ -41,6 +41,12 @@
   "initial_stage": "unknown",
   "yields": [
     {
+      "item": "phoenixcore:raw_voidglass_shard",
+      "min": 2,
+      "max": 4,
+      "chance": 0.8
+    },
+    {
       "item": "minecraft:quartz",
       "min": 3,
       "max": 7,

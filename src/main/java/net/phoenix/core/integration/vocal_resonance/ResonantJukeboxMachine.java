@@ -309,7 +309,8 @@ public class ResonantJukeboxMachine extends WorkableElectricMultiblockMachine im
         syncManager.syncValue("jukebox_stream", 0, new BooleanSyncValue(() -> hasStreamHatch, v -> hasStreamHatch = v));
         syncManager.syncValue("jukebox_range", 0,
                 new IntSyncValue(() -> totalSpeakerRange, v -> totalSpeakerRange = v));
-        return MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel);
+        return net.phoenix.core.util.PatternErrorUi.with(this, syncManager,
+                MachineHud.build(this, data, syncManager, settings, this::hudAction, this::hudModel));
     }
 
     private boolean playing() {

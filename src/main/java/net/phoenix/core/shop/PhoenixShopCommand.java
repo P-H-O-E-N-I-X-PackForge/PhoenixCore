@@ -2,8 +2,10 @@ package net.phoenix.core.shop;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -90,7 +92,7 @@ public class PhoenixShopCommand {
 
         for (Object[] example : EXAMPLE_ENTRIES) {
             String name = (String) example[0];
-            ItemStack icon = new ItemStack((net.minecraft.world.item.Item) example[1]);
+            ItemStack icon = new ItemStack((Item) example[1]);
             int cost = (int) example[2];
             String category = (String) example[3];
             List<net.phoenix.core.shop.reward.ShopReward> rewards = new ArrayList<>();
@@ -99,7 +101,7 @@ public class PhoenixShopCommand {
         }
 
         C2SAddShopEntryPacket.broadcastSync(data);
-        source.sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+        source.sendSuccess(() -> Component.literal(
                 "Added " + EXAMPLE_ENTRIES.length + " example shop entries."), true);
         return 1;
     }

@@ -10,8 +10,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.phoenix.conflux.ending.EpilogueService;
-import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.ending.EpilogueService;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
 
 import java.util.List;
 

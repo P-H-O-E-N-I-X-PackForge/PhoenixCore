@@ -5,7 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
-import net.phoenix.conflux.research.ResearchTeamHelper;
+import net.phoenix.conflux.common.research.ResearchTeamHelper;
 
 import org.jetbrains.annotations.Nullable;
 

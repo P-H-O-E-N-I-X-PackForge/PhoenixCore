@@ -1,0 +1,20 @@
+{
+  "vertex": "phoenixcore:fx_volume",
+  "fragment": "phoenixcore:fx_crucible",
+  "attributes": [ "Position" ],
+  "samplers": [ { "name": "DepthSampler" } ],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "Time", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "Power", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "Seed", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "Detail", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "Scale", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "Centre", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "ColorA", "type": "float", "count": 3, "values": [ 1.0, 0.5, 0.2 ] },
+    { "name": "ColorB", "type": "float", "count": 3, "values": [ 1.0, 0.95, 0.8 ] },
+    { "name": "P0", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "P1", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] }
+  ]
+}

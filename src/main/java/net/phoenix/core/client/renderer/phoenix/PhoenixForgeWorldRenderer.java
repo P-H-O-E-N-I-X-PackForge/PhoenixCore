@@ -52,6 +52,35 @@ public final class PhoenixForgeWorldRenderer {
                         .createCompositeState(false));
     }
 
+    /** The settings of /pftfx for this render. {@code classic 1} brings back the model-built phoenix. */
+    private static final net.phoenix.core.client.fx.FxRender FX = net.phoenix.core.client.fx.FxRender
+            .builder("phoenix_forge", "Phoenix Forge phoenix")
+            .param("speed", 0f, 10f, "how fast it animates, 1 being as it is")
+            .param("size", 0.1f, 4f, "how big it is, 1 being as it is")
+            .param("power", 0f, 4f, "how bright it is, 1 being as it is")
+            .param("detail", 0.3f, 1f, "how many steps the 3D shader takes: lower is faster")
+            .param("classic", 0f, 1f, "1 draws the model-built phoenix, as it is unless set; 0 draws the shader one")
+            .build()
+            .spawner(PhoenixForgeWorldRenderer::spawnPreview);
+
+    /** A phoenix put down by {@code /pftfx phoenix_forge spawn}, flying above the spot, until it runs out. */
+    private record Preview(double x, double y, double z, Direction front, long until) {}
+
+    private static volatile Preview preview;
+
+    private static String spawnPreview(int seconds) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return "not in a world";
+        preview = new Preview(player.getX(), player.getY(), player.getZ(), player.getDirection(),
+                System.currentTimeMillis() + seconds * 1000L);
+        return "Phoenix put down for " + seconds + " seconds, flying the way you face. /pftfx clear takes it away.";
+    }
+
+    /** Takes a spawned phoenix away. */
+    public static void clearPreview() {
+        preview = null;
+    }
+
     private static final double RANGE = 320.0;
     private static final float SCALE = 5.2f;
     private static final Set<PhoenixForgeMachine> FORGES = new LinkedHashSet<>();
@@ -90,14 +119,35 @@ public final class PhoenixForgeWorldRenderer {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return;
+        RenderLevelStageEvent.Stage stage = event.getStage();
+        if (stage != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES &&
+                stage != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS)
+            return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         Vec3 camera = event.getCamera().getPosition();
         var buffers = mc.renderBuffers().bufferSource();
         boolean drew = false;
         float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-        float clock = (mc.level.getGameTime() + partial) / 20f;
+        float clock = net.phoenix.core.client.fx.FxHook.time(FX, (mc.level.getGameTime() + partial) / 20f);
+        net.minecraft.client.renderer.ShaderInstance shader = net.phoenix.core.client.worldfx.WorldFXShaders.FX_PHOENIX;
+        boolean useShader = shader != null && FX.get("classic", 1f) < 0.5f;
+        // The shader phoenix is drawn after the translucent blocks, from a copy of the depth taken before them, so
+        // water
+        // and glass lie over it and only solid things hide it. The model-built one is drawn before them, as it always
+        // was.
+        if (useShader && stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            if (!all().isEmpty() || preview != null) net.phoenix.core.client.fx.SceneDepth.capture();
+            return;
+        }
+        if (!useShader && stage != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return;
+        Runnable restore = useShader ?
+                net.phoenix.core.client.renderer.machine.FxVolume.stageMatrices(
+                        new Matrix4f(event.getModelViewMatrix()), event.getProjectionMatrix()) :
+                null;
+        if (useShader) {
+            net.phoenix.core.client.renderer.machine.FxVolume.adapt(mc.getFps());
+        }
 
         for (PhoenixForgeMachine forge : all()) {
             if (!forge.isFormed() || forge.getLevel() != mc.level) continue;
@@ -118,7 +168,9 @@ public final class PhoenixForgeWorldRenderer {
             VertexConsumer vc = buffers.getBuffer(Types.GLOW);
             Vector3f left = event.getCamera().getLeftVector();
             Vector3f up = event.getCamera().getUpVector();
-            if (phase == 1) {
+            if (useShader) {
+                drawWithShader(shader, m, phase, front, clock, since);
+            } else if (phase == 1) {
                 drawEmber(vc, m, left, up, clock, 12.5f);
             } else {
                 drawPhoenix(vc, m, left, up, front, clock, since);
@@ -126,7 +178,57 @@ public final class PhoenixForgeWorldRenderer {
             ps.popPose();
             drew = true;
         }
+        Preview spawned = preview;
+        if (spawned != null) {
+            if (System.currentTimeMillis() > spawned.until()) {
+                preview = null;
+            } else {
+                PoseStack ps = event.getPoseStack();
+                ps.pushPose();
+                ps.translate(spawned.x() - camera.x, spawned.y() - camera.y, spawned.z() - camera.z);
+                Matrix4f m = ps.last().pose();
+                if (useShader) {
+                    drawWithShader(shader, m, 2, spawned.front(), clock, 100f);
+                } else {
+                    drawPhoenix(buffers.getBuffer(Types.GLOW), m, event.getCamera().getLeftVector(),
+                            event.getCamera().getUpVector(), spawned.front(), clock, 100f);
+                }
+                ps.popPose();
+                drew = true;
+            }
+        }
+        if (restore != null) restore.run();
+        if (useShader) net.phoenix.core.client.fx.SceneDepth.release();
         if (drew) buffers.endBatch(Types.GLOW);
+    }
+
+    /**
+     * The shader phoenix: a box round the bird that the shader marches through. It flies the way the old one does, with
+     * the same slow swing of its heading and the same rise from small to full over the seven seconds after it wakes.
+     */
+    private static void drawWithShader(net.minecraft.client.renderer.ShaderInstance shader, Matrix4f m, int phase,
+                                       Direction front, float t, float since) {
+        float rise = Mth.clamp(since / 7f, 0f, 1f);
+        float eased = rise * rise * (3f - 2f * rise);
+        float size = FX.get("size", 1f);
+        float scale = (phase == 1 ? SCALE : SCALE * (0.2f + 0.8f * eased)) * size;
+        float height = phase == 1 ? 12.5f : 11f + 3f * eased + 0.45f * Mth.sin(t * 2.2f);
+        float yaw = 0.14f * Mth.sin(t * 0.35f);
+        float cs = Mth.cos(yaw);
+        float sn = Mth.sin(yaw);
+        float dirX = front.getStepX() * cs - front.getStepZ() * sn;
+        float dirZ = front.getStepX() * sn + front.getStepZ() * cs;
+        // the middle of the shader's box is a little up and back from the middle of the bird
+        float cx = dirX * -0.55f * scale;
+        float cz = dirZ * -0.55f * scale;
+        float cy = height + 0.2f * scale;
+        var look = new net.phoenix.core.client.renderer.machine.FxVolume.Look(t, FX.get("power", 1f), 3.7f,
+                net.phoenix.core.client.fx.FxHook.tint(FX, 1f, 0.76f, 0.29f, 1f, 0.3f, t),
+                net.phoenix.core.client.fx.FxHook.tint(FX, 1f, 0.957f, 0.847f, 1f, 0.7f, t));
+        net.phoenix.core.client.renderer.machine.FxVolume.draw(shader, m, FX.get("detail", 1f), cx, cy, cz,
+                2.3f * scale, 1.5f * scale, 2.3f * scale, scale, look,
+                new float[] { Mth.clamp(0.4f + 0.6f * eased, 0f, 1f), 0f, phase == 1 ? 0f : 1f, eased },
+                new float[] { dirX, dirZ, 0f, 0f });
     }
 
     private static void drawEmber(VertexConsumer vc, Matrix4f m, Vector3f left, Vector3f up, float t, float height) {

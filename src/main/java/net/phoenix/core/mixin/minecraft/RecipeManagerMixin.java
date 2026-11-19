@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.phoenix.conflux.research.RecipeGateApplier;
+import net.phoenix.conflux.common.research.RecipeGateApplier;
 import net.phoenix.core.api.RecipeBlacklist;
 
 import com.google.gson.JsonElement;

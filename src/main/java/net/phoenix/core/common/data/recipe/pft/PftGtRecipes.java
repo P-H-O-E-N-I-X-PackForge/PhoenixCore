@@ -14,6 +14,7 @@ public final class PftGtRecipes {
         PftIvRecipes.init(provider);
         PftMinerRecipes.init(provider);
         PftCrucibleRecipes.init(provider);
+        PftViewerStressRecipes.init(provider);
         PftSteamAgeRecipes.init(provider);
         PftSterileHatchRecipes.init(provider);
         PftGreenhouseRecipes.init(provider);
