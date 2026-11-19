@@ -1,6 +1,6 @@
 {
     "gtceu": {
-        "connection_texture": "kubejs:block/entropic_coil_block_bloom_ctm"
+        "connection_texture": "phoenixcore:block/entropic_coil_block_bloom_ctm"
     },
     "animation": {
         "frametime": 1,

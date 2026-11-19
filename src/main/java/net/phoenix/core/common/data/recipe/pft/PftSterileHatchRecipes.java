@@ -24,7 +24,7 @@ public final class PftSterileHatchRecipes {
                 .save();
 
         PftRecipe.gt(provider, "fusion_reactor", "stabilized_antimatter")
-                .inputFluids("kubejs:chaos 5000",
+                .inputFluids("gtceu:chaos 5000",
                         "gtceu:uranium_235 2500")
                 .outputFluids("gtceu:stabilized_antimatter 1000")
                 .duration(64)
@@ -34,7 +34,7 @@ public final class PftSterileHatchRecipes {
 
         PftRecipe.gt(provider, "extractor", "chaos")
                 .itemInputs("4x draconicevolution:large_chaos_frag")
-                .outputFluids("kubejs:chaos 6000")
+                .outputFluids("gtceu:chaos 6000")
                 .duration(1000)
                 .EUt(1048576)
                 .save();

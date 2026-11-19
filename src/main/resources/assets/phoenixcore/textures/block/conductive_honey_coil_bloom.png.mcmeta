@@ -1,6 +1,6 @@
 {
     "gtceu": {
-        "connection_texture": "kubejs:block/conductive_honey_coil_bloom_ctm",
+        "connection_texture": "phoenixcore:block/conductive_honey_coil_bloom_ctm",
         "emissive": true,
         "bloom": true
     }

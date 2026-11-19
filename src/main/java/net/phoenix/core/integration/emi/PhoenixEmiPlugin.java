@@ -52,7 +52,6 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             java.util.regex.Pattern.compile("volcanic_sourcelink"),
             java.util.regex.Pattern.compile("alchemical_sourcelink"),
             java.util.regex.Pattern.compile("mycelial_sourcelink"),
-            java.util.regex.Pattern.compile("^productivebees:.*(exspansion|breeding_chamber|incubater|gene_indexer)"),
             java.util.regex.Pattern.compile("^extendedae:(circuit_cutter|crystal_assembler)$"),
             java.util.regex.Pattern.compile(
                     "^utilitarian:(magnet|well_behaved_dropper|no_raider_block|no_soliciting_banner|restraining_order(_active)?|[a-z_]+soliciting_carpet)$"));

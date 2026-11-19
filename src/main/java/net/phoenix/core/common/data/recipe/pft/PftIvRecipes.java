@@ -12,7 +12,7 @@ public final class PftIvRecipes {
     public static void init(RecipeOutput provider) {
         PftRecipe.gt(provider, "assembly_line", "melferious_matrix")
                 .itemInputs("8x gtceu:sturdy_machine_casing", "16x phoenixcore:resonant_rhodium_alloy_plate",
-                        "64x phoenixcore:honey_treat", "4x kubejs:conductive_honey_coil",
+                        "64x phoenixcore:honey_treat", "4x phoenixcore:conductive_honey_coil",
                         "1x phoenixcore:extremely_modified_space_grade_steel_quadruple_wire",
                         "4x phoenixcore:void_touched_tungsten_steel_rotor", "2x phoenixcore:simulated_colony")
                 .inputFluids("phoenixcore:honey 24000", "gtceu:soldering_alloy 4000")
@@ -282,7 +282,7 @@ public final class PftIvRecipes {
         PftRecipe.gt(provider, "assembler", "superconductive_honey_coil_block")
                 .itemInputs("8x phoenixcore:superconductive_honey_double_wire", "8x gtceu:hsss_foil")
                 .inputFluids("phoenixcore:void_touched_tungsten_steel 144")
-                .itemOutputs("kubejs:conductive_honey_coil")
+                .itemOutputs("phoenixcore:conductive_honey_coil")
                 .duration(750)
                 .EUt(GTValues.VA[GTValues.IV])
                 .save();
@@ -653,7 +653,7 @@ public final class PftIvRecipes {
                 .save();
 
         PftRecipe.gt(provider, "assembler", "comb_decanter_recipe_assembler")
-                .itemInputs("4x minecraft:honey_block", "kubejs:conductive_honey_coil",
+                .itemInputs("4x minecraft:honey_block", "phoenixcore:conductive_honey_coil",
                         "2x gtceu:samarium_iron_arsenic_oxide_double_wire", "2x gtceu:iv_field_generator",
                         "2x #gtceu:circuits/iv")
                 .inputFluids("gtceu:soldering_alloy 5044")
@@ -709,9 +709,10 @@ public final class PftIvRecipes {
                 .save();
 
         PftRecipe.gt(provider, "assembler", "fully_charged_mob_essence_capsule_recipe")
-                .itemInputs("kubejs:full_passive_mob_essence_canister", "kubejs:full_neutral_mob_essence_canister",
-                        "kubejs:full_hostile_mob_essence_canister")
-                .itemOutputs("kubejs:fully_charged_mob_essence_capsule")
+                .itemInputs("phoenixcore:full_passive_mob_essence_canister",
+                        "phoenixcore:full_neutral_mob_essence_canister",
+                        "phoenixcore:full_hostile_mob_essence_canister")
+                .itemOutputs("phoenixcore:fully_charged_mob_essence_capsule")
                 .duration(400)
                 .EUt(GTValues.VA[GTValues.IV])
                 .save();

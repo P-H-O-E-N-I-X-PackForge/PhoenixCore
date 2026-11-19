@@ -74,13 +74,13 @@ public final class PftSteamAgeRecipes {
 
         PftRecipe.gt(provider, "forge_hammer", "dust")
                 .itemInputs("1x minecraft:sand")
-                .itemOutputs("1x kubejs:dust")
+                .itemOutputs("1x phoenixcore:dust")
                 .duration(40)
                 .EUt(32)
                 .save();
 
         PftRecipe.gt(provider, "chemical_reactor", "dirttty")
-                .itemInputs("1x kubejs:dust")
+                .itemInputs("1x phoenixcore:dust")
                 .inputFluids("minecraft:water 100")
                 .itemOutputs("1x minecraft:dirt")
                 .duration(40)
@@ -236,8 +236,13 @@ public final class PftSteamAgeRecipes {
                 .duration(2)
                 .save();
 
-        PftCrafting.shapeless(provider, "clay_shapeless_pftsteamagerecipes", "minecraft:clay", "kubejs:dust",
+        PftCrafting.shapeless(provider, "clay_shapeless_pftsteamagerecipes", "minecraft:clay", "phoenixcore:dust",
                 "minecraft:water_bucket");
+
+        // the wooden form stays in the grid (see KeepWoodenForm)
+        PftCrafting.shaped(provider, "compressed_coke_clay_pftsteamagerecipes", "3x gtceu:compressed_coke_clay",
+                new String[] { "CCC", "ScS", "SSS" }, "C", "minecraft:clay_ball", "c", "gtceu:brick_wooden_form", "S",
+                "#minecraft:sand");
 
         PftCrafting.shaped(provider, "lv_earth_sieve_pftsteamagerecipes", "gtceu:lv_earth_sieve",
                 new String[] { "OFO", "DWD", "CFC" }, "O", "phoenixcore:aurum_steel_plate", "W",

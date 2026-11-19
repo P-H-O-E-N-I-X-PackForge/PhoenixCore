@@ -1,6 +1,6 @@
 {
     "gtceu": {
-        "connection_texture": "kubejs:block/true_gravi_stable_coil_block_ctm"
+        "connection_texture": "phoenixcore:block/true_gravi_stable_coil_block_ctm"
     },
     "animation": {
         "frametime": 1,

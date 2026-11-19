@@ -62,7 +62,16 @@ public class PhoenixCoilBlock extends ActiveBlock {
 
         COIL_TRUE_HEAT_STABLE("true_heat_stable", 1, 1, 1, 1,
                 GTRegistries.MATERIALS.getHolder(PHOENIX_ENRICHED_TRITANIUM.getId()).orElse(null),
-                PhoenixCore.id("block/true_heat_stable_coil_block"));
+                PhoenixCore.id("block/true_heat_stable_coil_block")),
+        COIL_INFINITY("infinity", 20000, 30, 30, 12,
+                GTRegistries.MATERIALS.getHolder(com.gregtechceu.gtceu.GTCEu.id("infinity")).orElse(null),
+                PhoenixCore.id("block/infinity_coil_block")),
+        COIL_ENTROPIC("entropic", 20000, 30, 30, 12,
+                GTRegistries.MATERIALS.getHolder(PhoenixCore.id("corrupted_hyperalloy")).orElse(null),
+                PhoenixCore.id("block/entropic_coil_block")),
+        COIL_TRUE_GRAVI_STABLE("true_gravi_stable", 20000, 30, 30, 12,
+                GTRegistries.MATERIALS.getHolder(PhoenixCore.id("phoenix_enriched_neutronium")).orElse(null),
+                PhoenixCore.id("block/true_gravi_stable_coil_block"));
 
         @NotNull
         @Getter

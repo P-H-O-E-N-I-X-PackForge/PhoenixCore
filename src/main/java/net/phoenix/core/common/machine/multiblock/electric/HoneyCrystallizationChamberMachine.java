@@ -52,7 +52,7 @@ public class HoneyCrystallizationChamberMachine extends WorkableElectricMultiblo
     private static final FluidStack HONEY_STACK;
     static {
         Fluid honeyFluid = BuiltInRegistries.FLUID
-                .get(ResourceLocation.fromNamespaceAndPath("productivebees", "honey"));
+                .get(ResourceLocation.fromNamespaceAndPath("phoenixcore", "honey"));
         if (honeyFluid != null) {
             HONEY_STACK = new FluidStack(honeyFluid, 1000);
         } else {

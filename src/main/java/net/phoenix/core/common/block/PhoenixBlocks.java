@@ -64,6 +64,15 @@ public class PhoenixBlocks {
 
     public static final BlockEntry<CoilBlock> COIL_TRUE_HEAT_STABLE = createCoilBlock(
             PhoenixCoilBlock.CoilType.COIL_TRUE_HEAT_STABLE);
+    public static final BlockEntry<CoilBlock> COIL_INFINITY = createCoilBlock(
+            PhoenixCoilBlock.CoilType.COIL_INFINITY);
+    public static final BlockEntry<CoilBlock> COIL_ENTROPIC = createCoilBlock(
+            PhoenixCoilBlock.CoilType.COIL_ENTROPIC);
+    public static final BlockEntry<CoilBlock> COIL_TRUE_GRAVI_STABLE = createCoilBlock(
+            PhoenixCoilBlock.CoilType.COIL_TRUE_GRAVI_STABLE);
+    public static BlockEntry<Block> HIGHLY_CONDUCTIVE_FISSION_CASING = registerSimpleBlock(
+            "§bHighly Conductive Fission Casing", "highly_conductive_fission_casing",
+            "highly_conductive_fission_casing", BlockItem::new);
 
     public static BlockEntry<Block> PHOENIX_ENRICHED_TRITANIUM_CASING = registerSimpleBlock(
             "§6Extremely Heat-Stable Casing", "phoenix_enriched_tritanium_casing",

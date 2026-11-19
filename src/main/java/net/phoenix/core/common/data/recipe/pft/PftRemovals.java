@@ -161,17 +161,11 @@ public final class PftRemovals {
             "hangglider:glider_wing",
             "hangglider:glider_framework",
             "hangglider:hang_glider",
-            "productivebees:honey_treat",
-            "productivebees:honey_treat_from_block",
             "powah:energizing/energized_steel",
-            "productivebees:bottler/honey_treat",
             "powah:energizing/blazing_crystal",
             "powah:energizing/niotic_crystal",
             "powah:energizing/spirited_crystal",
             "powah:energizing/nitro_crystal",
-            "productivebees:gene_indexer",
-            "productivebees:breeding_chamber",
-            "productivebees:incubator",
             "powah:energizing/blazing_crystal_2",
             "hostilenetworks:prediction_matrix",
             "hostilenetworks:framework",
@@ -192,7 +186,6 @@ public final class PftRemovals {
             "storagenetwork:collector_remote",
             "storagenetwork:builder_remote",
             "storagenetwork:expanded_remote",
-            "productivebees:bee_breeding/raw_materials/osmium_bee",
             "minecraft:neutron_pile_from_ingots",
             "minecraft:neutron_nugget",
             "gtceu:shaped/steam_boiler_coal_bronze",
@@ -279,17 +272,11 @@ public final class PftRemovals {
             "gtceu:shaped/iv_machine_hull",
             "minecraft:kjs/gtceu_pyrolyse_oven",
             "ad_astra:fuel_refinery",
-            "productivebees:heated_centrifuge",
-            "productivebees:powered_centrifuge/thermal",
-            "productivebees:centrifuge",
-            "productivebees:centrifuge_cauldron",
             "gtceu:assembler/beehive",
             "minecraft:beehive",
-            "productivebees:nests/beehive",
             "minecraft:bread",
             "gtceu:mixer/flour_to_dough",
             "gtceu:shaped/flour_to_dough",
-            "productivebees/steamy_incubation",
             "gtceu:assembler/active_transformer",
             "minecraft:kjs/sophisticatedbackpacks_stack_upgrade_tier_1",
             "gtceu:alloy_blast_smelter/void_touched_tungsten_steel",
@@ -301,6 +288,7 @@ public final class PftRemovals {
             "gtceu:assembler/electric_motor_lv_iron",
             "gtceu:shaped/bronze_bricks_hull",
             "utilitarian:utility/logs_to_hopper",
+            "gtceu:shaped/compressed_coke_clay",
             "gtceu:smelting/smelt_dust_frost_reinforced_stained_steel_to_ingot",
             "gtceu:alloy_blast_smelter/advanced_quin_naquadian_alloy",
             "gtceu:alloy_blast_smelter/advanced_quin_naquadian_alloy_gas",
@@ -446,15 +434,9 @@ public final class PftRemovals {
             "elevatorid");
 
     private static final List<String> ID_REGEX = List.of(
-            "advanced_[a-z_]+_beehive",
-            "advanced_[a-z_]+_canvas_hive",
-            "^productivebees:stonecutter/.*canvas_hive$",
             "^thermal:machines/press/press_[a-z_]+_gear$",
             "^thermalexpansion:press/[a-z_]+_gear$",
             "^thermal:parts/[a-z_]+_gear$",
-            "^productivebees:bee_breeding/",
-            "^productivebees:cage_incubation",
-            "^productivebees.*incubation",
             "nasa_workbench",
             "functionalstorage:oak_drawer_alternate",
             "^sophisticatedstorage:.*limited.+barrel.+$",
@@ -483,6 +465,14 @@ public final class PftRemovals {
         OUTPUT_REGEX.forEach(p -> RecipeBlacklist.OUTPUT_PATTERNS.add(java.util.regex.Pattern.compile(p)));
         INPUT_REGEX.forEach(p -> RecipeBlacklist.INPUT_PATTERNS.add(java.util.regex.Pattern.compile(p)));
 
+        RecipeReplacements.RULES.add(new RecipeReplacements.Rule(null, java.util.regex.Pattern.compile("^gtceu:"), null,
+                "gtceu:europium_frame", "phoenixcore:uranium_236_frame"));
+        RecipeReplacements.RULES.add(new RecipeReplacements.Rule(null,
+                java.util.regex.Pattern.compile("^gtceu:shaped/electric_motor_lv_iron$"), null, "gtceu:iron_rod",
+                "phoenixcore:aurum_steel_rod"));
+        RecipeReplacements.RULES.add(new RecipeReplacements.Rule(null,
+                java.util.regex.Pattern.compile("^gtceu:(assembler|shaped)/casing_zpm$"), null,
+                "gtceu:naquadah_alloy_plate", "phoenixcore:advanced_quin_naquadian_alloy_plate"));
         RecipeReplacements.RULES.add(new RecipeReplacements.Rule(null, null, "ae2:charged_certus_quartz_crystal",
                 "ae2:charged_certus_quartz_crystal", "gtceu:certus_quartz_gem"));
         RecipeReplacements.RULES.add(new RecipeReplacements.Rule(null, null, "ae2:quartz_block", "ae2:quartz_block",
