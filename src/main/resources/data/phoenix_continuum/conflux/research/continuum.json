@@ -955,6 +955,126 @@
         }
       ],
       "hidden": true
+    },
+    {
+      "id": "phoenixcore:space_extraction",
+      "title": "Resource Extraction",
+      "lore": "Probes that go down, and come back up with something.",
+      "icon": "minecraft:raw_iron",
+      "position": [
+        -3,
+        6
+      ],
+      "prerequisites": [
+        "phoenixcore:space_launch_complex"
+      ],
+      "cost": {
+        "material": 1000,
+        "energetic": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_extraction"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_outposts",
+      "title": "Remote Outposts",
+      "lore": "A probe that stays. The outpost keeps working long after the rocket has gone.",
+      "icon": "minecraft:lightning_rod",
+      "position": [
+        -3,
+        8
+      ],
+      "prerequisites": [
+        "phoenixcore:space_extraction"
+      ],
+      "cost": {
+        "material": 2000,
+        "energetic": 1000,
+        "computational": 600
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_outposts"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_stations",
+      "title": "Orbital Stations",
+      "lore": "Crews that live above a world instead of visiting it.",
+      "icon": "minecraft:beacon",
+      "position": [
+        -1,
+        8
+      ],
+      "prerequisites": [
+        "phoenixcore:space_extraction",
+        "phoenixcore:space_hull_engineering"
+      ],
+      "cost": {
+        "material": 2500,
+        "energetic": 1500,
+        "computational": 800
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_stations"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_rescue",
+      "title": "Rescue Operations",
+      "lore": "Not every rocket comes home. Some of them can be fetched.",
+      "icon": "minecraft:shears",
+      "position": [
+        -3,
+        10
+      ],
+      "prerequisites": [
+        "phoenixcore:space_stations"
+      ],
+      "cost": {
+        "material": 1500,
+        "computational": 1000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_rescue"
+        }
+      ]
+    },
+    {
+      "id": "phoenixcore:space_shells",
+      "title": "Stellar Engineering",
+      "lore": "Swarms and shells: building round a star instead of beside it.",
+      "icon": "minecraft:nether_star",
+      "position": [
+        -1,
+        10
+      ],
+      "prerequisites": [
+        "phoenixcore:space_stations",
+        "phoenixcore:space_stellar_shielding"
+      ],
+      "cost": {
+        "material": 6000,
+        "energetic": 5000,
+        "computational": 3000
+      },
+      "unlocks": [
+        {
+          "type": "flag",
+          "value": "space_shells"
+        }
+      ]
     }
   ]
 }

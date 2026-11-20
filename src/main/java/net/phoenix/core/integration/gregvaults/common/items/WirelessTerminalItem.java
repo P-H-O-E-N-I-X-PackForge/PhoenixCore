@@ -27,11 +27,9 @@ import net.phoenix.core.integration.gregvaults.mui.VaultPanel;
 import net.phoenix.core.integration.gregvaults.mui.VaultSession;
 import net.phoenix.core.util.StackNbt;
 
-import brachy.modularui.api.IUIHolder;
 import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.factory.PlayerInventoryUIFactory;
 import brachy.modularui.screen.ModularPanel;
-import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
 import com.mojang.datafixers.util.Pair;
@@ -41,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class WirelessTerminalItem extends Item implements IUIHolder<PlayerInventoryGuiData<?>> {
+public class WirelessTerminalItem extends Item implements TerminalUIHolder {
 
     private static final Logger LOG = LoggerFactory.getLogger(WirelessTerminalItem.class);
     private static final String TAG_LINKED_POS = "linkedVault";
@@ -312,11 +310,6 @@ public class WirelessTerminalItem extends Item implements IUIHolder<PlayerInvent
             if (items.get(i) == stack) locked = i;
         }
         return VaultPanel.build(new VaultSession(player, access), syncManager, settings, locked);
-    }
-
-    @Override
-    public ModularScreen createScreen(PlayerInventoryGuiData<?> data, ModularPanel<?> mainPanel) {
-        return new com.gregtechceu.gtceu.api.mui.GTGuiScreen(mainPanel);
     }
 
     @Override
