@@ -479,5 +479,12 @@ public final class PftRemovals {
                 "gtceu:certus_quartz_block"));
         RecipeReplacements.RULES.add(new RecipeReplacements.Rule("integratedtunnels", null, null, "minecraft:hopper",
                 "gtceu:item_filter"));
+        // the first Ars Nouveau book (and its worn-notebook version) is made with wrought iron tools, not vanilla iron
+        // ones
+        for (String tool : new String[] { "pickaxe", "axe", "shovel", "sword" }) {
+            RecipeReplacements.RULES.add(new RecipeReplacements.Rule("ars_nouveau",
+                    java.util.regex.Pattern.compile("^ars_nouveau:novice_spell_?book"), null, "minecraft:iron_" + tool,
+                    "gtceu:wrought_iron_" + tool));
+        }
     }
 }
