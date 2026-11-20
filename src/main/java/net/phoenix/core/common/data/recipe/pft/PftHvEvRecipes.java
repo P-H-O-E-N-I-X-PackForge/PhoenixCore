@@ -68,7 +68,7 @@ public final class PftHvEvRecipes {
 
         PftRecipe.gt(provider, "assembly_line", "kubejs:epp/assembler_matrix_speed")
                 .itemInputs("4x extendedae:assembler_matrix_frame", "4x megacells:accumulation_processor",
-                        "mae2:4x_crafting_accelerator", "extendedae:ex_pattern_provider",
+                        "4x ae2:crafting_accelerator", "extendedae:ex_pattern_provider",
                         "extendedae:ex_molecular_assembler", "6x ae2:red_lumen_paint_ball",
                         "16x phoenixcore:eighty_five_percent_pure_nevonian_steel_frame")
                 .inputFluids("gtceu:polytetrafluoroethylene 288")
@@ -113,7 +113,7 @@ public final class PftHvEvRecipes {
         PftRecipe.gt(provider, "centrifuge", "oil_sands_light")
                 .itemInputs("gtceu:oilsands_dust")
                 .chancedOutput("minecraft:sand", 8500)
-                .outputFluids("gtceu:oil_light 2000")
+                .outputFluids("gtceu:light_oil 2000")
                 .circuit(1)
                 .duration(10 * 20)
                 .EUt(GTValues.VA[GTValues.LV])
@@ -122,7 +122,7 @@ public final class PftHvEvRecipes {
         PftRecipe.gt(provider, "centrifuge", "oil_sands_heavy")
                 .itemInputs("gtceu:oilsands_dust")
                 .chancedOutput("minecraft:sand", 8500)
-                .outputFluids("gtceu:oil_heavy 2000")
+                .outputFluids("gtceu:heavy_oil 2000")
                 .circuit(2)
                 .duration(10 * 20)
                 .EUt(GTValues.VA[GTValues.LV])
@@ -140,7 +140,7 @@ public final class PftHvEvRecipes {
         PftRecipe.gt(provider, "centrifuge", "oil_sands_raw")
                 .itemInputs("gtceu:oilsands_dust")
                 .chancedOutput("minecraft:sand", 8500)
-                .outputFluids("gtceu:oil_medium 2000")
+                .outputFluids("gtceu:raw_oil 2000")
                 .circuit(4)
                 .duration(10 * 20)
                 .EUt(GTValues.VA[GTValues.LV])
@@ -160,13 +160,6 @@ public final class PftHvEvRecipes {
                 .circuit(6)
                 .itemOutputs("12x minecraft:tinted_glass")
                 .inputFluids("gtceu:steel 144")
-                .duration(100)
-                .EUt(GTValues.VA[GTValues.LV] / 2)
-                .save();
-
-        PftRecipe.gt(provider, "macerator", "aurum_wood_dust")
-                .itemInputs("1x forbidden_arcanus:aurum_log")
-                .itemOutputs("4x phoenixcore:aurum_wood_dust")
                 .duration(100)
                 .EUt(GTValues.VA[GTValues.LV] / 2)
                 .save();
@@ -253,7 +246,7 @@ public final class PftHvEvRecipes {
                 .itemInputs("5x phoenixcore:medium_level_radioactive_waste_dust")
                 .itemOutputs("2x gtceu:neptunium_dust",
                         "2x gtceu:barium_dust",
-                        "1x gtceu:plutonium_dust")
+                        "1x gtceu:plutonium_239_dust")
                 .outputFluids("gtceu:helium 1000",
                         "gtceu:krypton 250")
                 .duration(300)
@@ -369,7 +362,7 @@ public final class PftHvEvRecipes {
                 .itemInputs("4x gtceu:double_iridium_plate",
                         "32x gtceu:tungsten_steel_plate",
                         "2x gtceu:molybdenum_dust",
-                        "1x gtceu:advanced_electric_jetpack")
+                        "1x gtceu:advanced_power_thruster")
                 .inputFluids("phoenixcore:void_touched_tungsten_steel 670")
                 .itemOutputs("1x angelring:diamond_ring")
                 .duration(500)

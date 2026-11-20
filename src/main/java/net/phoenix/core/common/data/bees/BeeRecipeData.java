@@ -151,7 +151,6 @@ public class BeeRecipeData {
             "minecraft:crimson_stem",
             "gtceu:rubber_log",
             "forbidden_arcanus:edelwood_log",
-            "forbidden_arcanus:aurum_log",
             "minecraft:warped_stem",
             "ars_nouveau:red_archwood_log",
             "ars_nouveau:blue_archwood_log",

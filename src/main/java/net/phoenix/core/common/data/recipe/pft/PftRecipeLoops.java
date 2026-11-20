@@ -18,7 +18,6 @@ public final class PftRecipeLoops {
             { "minecraft:dark_oak_sapling", "minecraft:dark_oak_log" },
             { "minecraft:mangrove_propagule", "minecraft:mangrove_log" },
             { "minecraft:cherry_sapling", "minecraft:cherry_log" },
-            { "forbidden_arcanus:aurum_sapling", "forbidden_arcanus:aurum_log" },
     };
 
     private static final String[][] PLANTS = {
@@ -126,7 +125,7 @@ public final class PftRecipeLoops {
             PftRecipe.gt(provider, "large_chemical_reactor", p[0] + "_fuel_pellet_crafting")
                     .itemInputs(p[1])
                     .inputFluids(p[2])
-                    .itemOutputs("9x phoenixcore:" + p[0].replace("uranium", "u") + "_fuel_pellet")
+                    .itemOutputs("9x phoenixcore:" + p[0].replace("uranium_", "u") + "_fuel_pellet")
                     .duration(100)
                     .EUt(volt)
                     .save();
@@ -203,8 +202,8 @@ public final class PftRecipeLoops {
 
     private static void reactorParts(RecipeOutput provider) {
         String[][] rods = {
-                { "t1_fuel_rod", "hv", "gtceu:uranium_dust", "phoenixcore:frost_reinforced_stained_steel", "480" },
-                { "t2_fuel_rod", "ev", "gtceu:uranium_dust", "phoenixcore:source_imbued_titanium", "1920" },
+                { "t1_fuel_rod", "hv", "gtceu:uranium_238_dust", "phoenixcore:frost_reinforced_stained_steel", "480" },
+                { "t2_fuel_rod", "ev", "gtceu:uranium_238_dust", "phoenixcore:source_imbued_titanium", "1920" },
                 { "t3_fuel_rod", "iv", "phoenixcore:u235_fuel_pellet", "phoenixcore:source_imbued_titanium", "7680" },
                 { "t4_fuel_rod", "luv", "phoenixcore:plutonium_241_fuel_pellet", "phoenixcore:resonant_rhodium_alloy",
                         "30720" },
@@ -226,7 +225,7 @@ public final class PftRecipeLoops {
                         "1920", "400" },
                 { "neptunium", "iv", "phoenixcore:frost_reinforced_stained_steel_plate", "gtceu:lead_dust", "7680",
                         "400" },
-                { "plutonium", "luv", "2x phoenixcore:resonant_rhodium_alloy_plate", "gtceu:uranium_dust", "30720",
+                { "plutonium", "luv", "2x phoenixcore:resonant_rhodium_alloy_plate", "gtceu:uranium_238_dust", "30720",
                         "600" },
                 { "americium", "zpm", "2x phoenixcore:advanced_quin_naquadian_alloy_plate",
                         "phoenixcore:u236_fuel_pellet", "122880", "800" },

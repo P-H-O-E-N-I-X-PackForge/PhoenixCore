@@ -122,7 +122,7 @@ public final class PftIvRecipes {
                 .itemInputs("4x gtceu:tungsten_dust", "4x phoenixcore:voidglass_shard_dust", "2x gtceu:molybdenum_dust")
                 .circuit(5)
                 .inputFluids("gtceu:liquid_ender_air 100")
-                .outputFluids("phoenixcore:molten_void_touched_tungsten_steel 1152")
+                .outputFluids("phoenixcore:void_touched_tungsten_steel 1152")
                 .duration(6000)
                 .blastFurnaceTemp(3600)
                 .EUt(GTValues.VA[GTValues.EV])
@@ -132,7 +132,7 @@ public final class PftIvRecipes {
                 .itemInputs("4x gtceu:tungsten_dust", "4x phoenixcore:voidglass_shard_dust", "2x gtceu:molybdenum_dust")
                 .circuit(15)
                 .inputFluids("gtceu:liquid_ender_air 100", "gtceu:helium 100")
-                .outputFluids("phoenixcore:molten_void_touched_tungsten_steel 1152")
+                .outputFluids("phoenixcore:void_touched_tungsten_steel 1152")
                 .duration(4200)
                 .blastFurnaceTemp(3600)
                 .EUt(GTValues.VA[GTValues.EV])
@@ -152,7 +152,7 @@ public final class PftIvRecipes {
                         "4x phoenixcore:space_grade_steel_dust", "32x minecraft:tnt")
                 .circuit(5)
                 .inputFluids("gtceu:radon 250")
-                .outputFluids("phoenixcore:molten_extremely_modified_space_grade_steel 1152")
+                .outputFluids("phoenixcore:extremely_modified_space_grade_steel 1152")
                 .duration(4800)
                 .blastFurnaceTemp(3400)
                 .EUt(GTValues.VA[GTValues.LuV])
@@ -163,7 +163,7 @@ public final class PftIvRecipes {
                         "4x phoenixcore:space_grade_steel_dust", "32x minecraft:tnt")
                 .circuit(15)
                 .inputFluids("gtceu:radon 250", "gtceu:helium 1000")
-                .outputFluids("phoenixcore:molten_extremely_modified_space_grade_steel 1440")
+                .outputFluids("phoenixcore:extremely_modified_space_grade_steel 1440")
                 .duration(3600)
                 .blastFurnaceTemp(3600)
                 .EUt(GTValues.VA[GTValues.LuV])
@@ -184,7 +184,7 @@ public final class PftIvRecipes {
                         "2x phoenixcore:polarity_flipped_bismuthite_dust", "4x gtceu:cerium_dust")
                 .circuit(15)
                 .inputFluids("phoenixcore:resonant_ender 1144", "gtceu:argon 100")
-                .outputFluids("phoenixcore:molten_resonant_rhodium_alloy 2016")
+                .outputFluids("phoenixcore:resonant_rhodium_alloy 2016")
                 .duration(3800)
                 .blastFurnaceTemp(3600)
                 .EUt(GTValues.VA[GTValues.EV])
@@ -195,7 +195,7 @@ public final class PftIvRecipes {
                         "2x phoenixcore:polarity_flipped_bismuthite_dust", "4x gtceu:cerium_dust")
                 .circuit(5)
                 .inputFluids("phoenixcore:resonant_ender 1144")
-                .outputFluids("phoenixcore:molten_resonant_rhodium_alloy 2016")
+                .outputFluids("phoenixcore:resonant_rhodium_alloy 2016")
                 .duration(5400)
                 .blastFurnaceTemp(3600)
                 .EUt(GTValues.VA[GTValues.EV])
@@ -690,11 +690,11 @@ public final class PftIvRecipes {
                 .save();
 
         PftRecipe.gt(provider, "assembler", "breeder_reactor_controller")
-                .itemInputs("phoenixcore:pressurized_fission_reactor",
+                .itemInputs("phoenix_fission:pressurized_fission_reactor",
                         "2x phoenixcore:void_touched_tungsten_steel_rotor", "4x #gtceu:circuits/iv",
                         "2x phoenixcore:zircalloy_gear", "2x gtceu:iv_machine_hull", "16x gtceu:uranium_235_rod")
                 .inputFluids("phoenixcore:cryo_zirconium_binding_solution 6000")
-                .itemOutputs("phoenixcore:high_performance_breeder_reactor")
+                .itemOutputs("phoenix_fission:high_performance_breeder_reactor")
                 .duration(800)
                 .EUt(GTValues.VA[GTValues.IV])
                 .save();

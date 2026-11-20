@@ -72,7 +72,7 @@ public final class PftCrucibleRecipes {
                         "17x gtceu:raw_molybdenite",
                         "29x gtceu:raw_magnetite",
                         "17x gtceu:raw_aluminium",
-                        "17x gtceu:raw_plutonium",
+                        "17x gtceu:raw_plutonium_239",
                         "17x gtceu:raw_chromite",
                         "17x gtceu:raw_vanadium_magnetite",
                         "17x gtceu:raw_lithium",

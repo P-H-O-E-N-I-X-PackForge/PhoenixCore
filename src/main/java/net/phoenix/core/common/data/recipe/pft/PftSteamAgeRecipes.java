@@ -19,13 +19,6 @@ public final class PftSteamAgeRecipes {
                 .EUt(20)
                 .save();
 
-        PftRecipe.gt(provider, "alloy_smelter", "flamingmatrix")
-                .itemInputs("1x phoenixcore:flaming_dust", "1x minecraft:clay_ball")
-                .itemOutputs("4x hostilenetworks:prediction_matrix")
-                .duration(100)
-                .EUt(32)
-                .save();
-
         PftRecipe.gt(provider, "alloy_smelter", "tin_alloy")
                 .itemInputs("3x minecraft:iron_ingot", "1x gtceu:tin_ingot")
                 .itemOutputs("4x gtceu:tin_alloy_ingot")
@@ -106,13 +99,6 @@ public final class PftSteamAgeRecipes {
                 .itemInputs("6x phoenixcore:fiery_bronze_plate", "1x minecraft:bricks")
                 .itemOutputs("2x gtceu:steam_machine_casing")
                 .duration(50)
-                .EUt(32)
-                .save();
-
-        PftRecipe.gt(provider, "forge_hammer", "sophisticatedstorage:packing_tap")
-                .itemInputs("3x minecraft:paper")
-                .itemOutputs("1x sophisticatedstorage:packing_tape")
-                .duration(1000)
                 .EUt(32)
                 .save();
 

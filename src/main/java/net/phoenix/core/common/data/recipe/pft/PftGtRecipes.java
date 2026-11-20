@@ -16,7 +16,6 @@ public final class PftGtRecipes {
         PftCrucibleRecipes.init(provider);
         PftViewerStressRecipes.init(provider);
         PftSteamAgeRecipes.init(provider);
-        PftSterileHatchRecipes.init(provider);
         PftGreenhouseRecipes.init(provider);
         PftComponentsRecipes.init(provider);
         PftMachineRecipes.init(provider);
@@ -37,20 +36,16 @@ public final class PftGtRecipes {
         PftAe2WtLibRecipes.init(provider);
         PftArchitectsPaletteRecipes.init(provider);
         PftBuildingBlockRecipes.init(provider);
-        PftBuildingGadgetRecipes.init(provider);
-        PftCcTweakedRecipes.init(provider);
         PftElevatorRecipes.init(provider);
         PftEnderBagRecipes.init(provider);
         PftExpandedAeRecipes.init(provider);
         PftExtendedAeRecipes.init(provider);
         PftFeatherRecipes.init(provider);
         PftFunctionalStorageRecipes.init(provider);
-        PftHangGliderRecipes.init(provider);
         PftHnnRecipes.init(provider);
         PftIntegratedDynamicsRecipes.init(provider);
         PftMiscRecipes.init(provider);
         PftSmeltingRecipes.init(provider);
-        PftSophisticatedStorageRecipes.init(provider);
         PftSteelAndBronzeRecipes.init(provider);
         PftTorchmasterRecipes.init(provider);
         PftVanillaRecipes.init(provider);

@@ -60,13 +60,6 @@ public final class PftAe2LoopRecipes {
                 processorInputs("engineering", "iv", "1x gtceu:advanced_smd_inductor", "hssg"),
                 "12x ae2:engineering_processor", 1048);
 
-        PftRecipe.gt(provider, "forming_press", "void_portal")
-                .itemInputs("4x minecraft:diamond_block")
-                .itemOutputs("1x javd:portal_block")
-                .duration(600)
-                .EUt(64)
-                .save();
-
         String[][] providers = { { "lv", "steel", "1" }, { "mv", "aluminium", "2" }, { "hv", "stainless_steel", "3" },
                 { "ev", "titanium", "4" } };
         for (String[] tier : providers) {

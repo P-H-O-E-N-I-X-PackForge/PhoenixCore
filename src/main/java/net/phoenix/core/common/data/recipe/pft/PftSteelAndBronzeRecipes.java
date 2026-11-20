@@ -25,7 +25,7 @@ public final class PftSteelAndBronzeRecipes {
                 "1x gtceu:coal_dust", "gtceu:wrought_iron_dust");
 
         PftCrafting.shapeless(provider, "paper_shapeless_pftsteelandbronzerecipes", "minecraft:paper",
-                "3x minecraft:sugarcane");
+                "3x minecraft:sugar_cane");
 
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_3", "gtceu:steel_dust",
                 "1x minecraft:coal", "gtceu:wrought_iron_dust");
@@ -41,9 +41,6 @@ public final class PftSteelAndBronzeRecipes {
 
         PftCrafting.shapeless(provider, "dormant_ember_dust_shapeless_pftsteelandbronzerecipes",
                 "phoenixcore:dormant_ember_dust", "#c:tools/mortar", "phoenixcore:dormant_ember_ingot");
-
-        PftCrafting.shapeless(provider, "permafrost_dust_shapeless_pftsteelandbronzerecipes",
-                "phoenixcore:permafrost_dust", "#c:tools/mortar", "phoenixcore:permafrost_ingot");
 
         PftCrafting.shapeless(provider, "fiery_bronze_dust_shapeless_pftsteelandbronzerecipes",
                 "4x phoenixcore:fiery_bronze_dust", "3x gtceu:copper_dust", "1x gtceu:tin_dust",
@@ -142,9 +139,6 @@ public final class PftSteelAndBronzeRecipes {
         PftCrafting.shaped(provider, "rubber_sapling_pftsteelandbronzerecipes", "16x gtceu:rubber_sapling",
                 new String[] { "   ", "   ", "  P" }, "P", "phoenixcore:phoenix_feather");
 
-        PftCrafting.shaped(provider, "aurum_sapling_pftsteelandbronzerecipes", "1x forbidden_arcanus:aurum_sapling",
-                new String[] { "   ", "   ", " P " }, "P", "phoenixcore:phoenix_feather");
-
         PftCrafting.shaped(provider, "apatite_ore_pftsteelandbronzerecipes", "17x gtceu:apatite_ore",
                 new String[] { "PPP", "PPP", "PP " }, "P", "phoenixcore:phoenix_feather");
 
@@ -187,11 +181,6 @@ public final class PftSteelAndBronzeRecipes {
         PftCrafting.shaped(provider, "steam_input_hatch_pftsteelandbronzerecipes", "gtceu:steam_input_hatch",
                 new String[] { "FWF", "FZF", "FWF" }, "F", "phoenixcore:fiery_bronze_plate", "W",
                 "phoenixcore:fiery_bronze_normal_fluid_pipe", "Z", "gtceu:bronze_drum");
-
-        PftCrafting.shaped(provider, "nasa_workbench_pftsteelandbronzerecipes", "ad_astra:nasa_workbench",
-                new String[] { "APW", "SZS", "WPA" }, "P", "phoenixcore:dense_frost_reinforced_stained_steel_plate",
-                "W", "#gtceu:circuits/ev", "Z", "gtceu:ev_machine_hull", "S", "phoenixcore:aluminfrost_gear", "A",
-                "gtceu:ev_robot_arm");
 
         PftCrafting.shaped(provider, "iv_machine_hull_pftsteelandbronzerecipes", "gtceu:iv_machine_hull",
                 new String[] { "SPS", "WZW", "   " }, "P", "phoenixcore:void_touched_tungsten_steel_plate", "W",
@@ -246,10 +235,10 @@ public final class PftSteelAndBronzeRecipes {
                 "1x gtceu:coke_dust", "minecraft:iron_ingot");
 
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_8", "gtceu:steel_dust",
-                "1x gtceu:coke", "gtceu:iron_dust");
+                "1x #c:gems/coke", "gtceu:iron_dust");
 
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_9", "gtceu:steel_dust",
-                "1x gtceu:coke", "gtceu:wrought_iron_dust");
+                "1x #c:gems/coke", "gtceu:wrought_iron_dust");
 
         PftCrafting.shapeless(provider, "aluminfrost_drum_shapeless_pftsteelandbronzerecipes",
                 "phoenixcore:aluminfrost_drum", "1x phoenixcore:aluminfrost_drum");
@@ -271,7 +260,7 @@ public final class PftSteelAndBronzeRecipes {
                 "1x minecraft:magma_block", "#c:tools/hammer");
 
         PftCrafting.shapeless(provider, "aurum_wood_dust_shapeless_pftsteelandbronzerecipes",
-                "4x phoenixcore:aurum_wood_dust", "1x forbidden_arcanus:aurum_log", "#c:tools/hammer");
+                "2x phoenixcore:aurum_wood_dust", "2x gtceu:wood_dust", "1x minecraft:gold_nugget");
 
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes_10", "gtceu:steel_dust",
                 "1x minecraft:charcoal", "gtceu:wrought_iron_dust");
@@ -336,14 +325,14 @@ public final class PftSteelAndBronzeRecipes {
 
         PftCrafting.shaped(provider, "bronze_crate_pftsteelandbronzerecipes", "gtceu:bronze_crate",
                 new String[] { "RPR", "PHP", "RPR" }, "P", "phoenixcore:fiery_bronze_plate", "R",
-                "phoenixcore:fiery_bronze_long_rod", "H", "#c:tools/hammer");
+                "phoenixcore:long_fiery_bronze_rod", "H", "#c:tools/hammer");
 
         PftCrafting.shaped(provider, "bronze_drum_pftsteelandbronzerecipes", "gtceu:bronze_drum",
                 new String[] { " H ", "PRP", "PRP" }, "P", "phoenixcore:fiery_bronze_plate", "R",
-                "phoenixcore:fiery_bronze_long_rod", "H", "#c:tools/hammer");
+                "phoenixcore:long_fiery_bronze_rod", "H", "#c:tools/hammer");
 
         PftRecipe.gt(provider, "assembler", "bronze_crate_fiery")
-                .itemInputs("4x phoenixcore:fiery_bronze_long_rod", "4x phoenixcore:fiery_bronze_plate")
+                .itemInputs("4x phoenixcore:long_fiery_bronze_rod", "4x phoenixcore:fiery_bronze_plate")
                 .circuit(1)
                 .itemOutputs("gtceu:bronze_crate")
                 .duration(200)
@@ -351,7 +340,7 @@ public final class PftSteelAndBronzeRecipes {
                 .save();
 
         PftRecipe.gt(provider, "assembler", "bronze_drum_fiery")
-                .itemInputs("2x phoenixcore:fiery_bronze_long_rod", "4x phoenixcore:fiery_bronze_plate")
+                .itemInputs("2x phoenixcore:long_fiery_bronze_rod", "4x phoenixcore:fiery_bronze_plate")
                 .circuit(2)
                 .itemOutputs("gtceu:bronze_drum")
                 .duration(200)

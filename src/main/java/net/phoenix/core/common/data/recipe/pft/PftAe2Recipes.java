@@ -45,34 +45,6 @@ public final class PftAe2Recipes {
                 .EUt(64)
                 .save();
 
-        PftRecipe.gt(provider, "assembler", "gtceu:4x_crafting_accelerator")
-                .itemInputs("3x ae2:crafting_accelerator", "ae2:cell_component_4k", "#gtceu:circuits/hv")
-                .itemOutputs("mae2:4x_crafting_accelerator")
-                .duration(100)
-                .EUt(130)
-                .save();
-
-        PftRecipe.gt(provider, "assembler", "gtceu:16x_crafting_accelerator")
-                .itemInputs("3x mae2:4x_crafting_accelerator", "ae2:cell_component_16k", "#gtceu:circuits/ev")
-                .itemOutputs("mae2:16x_crafting_accelerator")
-                .duration(100)
-                .EUt(520)
-                .save();
-
-        PftRecipe.gt(provider, "assembler", "gtceu:64x_crafting_accelerator")
-                .itemInputs("3x mae2:16x_crafting_accelerator", "ae2:cell_component_64k", "#gtceu:circuits/iv")
-                .itemOutputs("mae2:64x_crafting_accelerator")
-                .duration(100)
-                .EUt(2080)
-                .save();
-
-        PftRecipe.gt(provider, "assembler", "gtceu:256x_crafting_accelerator")
-                .itemInputs("3x mae2:64x_crafting_accelerator", "ae2:cell_component_256k", "#gtceu:circuits/luv")
-                .itemOutputs("mae2:256x_crafting_accelerator")
-                .duration(100)
-                .EUt(8320)
-                .save();
-
         PftRecipe.gt(provider, "canner", "gtceu:crafting_monitor")
                 .itemInputs("ae2:crafting_unit", "ae2:storage_monitor")
                 .itemOutputs("ae2:crafting_monitor")
@@ -105,7 +77,7 @@ public final class PftAe2Recipes {
 
         PftRecipe.gt(provider, "extruder", "gtceu:cable_anchor")
                 .itemInputs("#c:plates/steel")
-                .notConsumable("gtceu:bolt_extruder_mold")
+                .circuit(3)
                 .itemOutputs("8x ae2:cable_anchor")
                 .duration(20)
                 .EUt(16)
@@ -132,13 +104,6 @@ public final class PftAe2Recipes {
                 .itemOutputs("ae2:fluix_crystal")
                 .duration(100)
                 .EUt(24)
-                .save();
-
-        PftRecipe.gt(provider, "lathe", "fluix_lathing")
-                .itemInputs("ae2:fluix_crystal")
-                .itemOutputs("gtceu:fluix_rod")
-                .duration(200)
-                .EUt(8)
                 .save();
 
         PftRecipe.gt(provider, "circuit_assembler", "gtceu:logic_processor")
@@ -231,7 +196,7 @@ public final class PftAe2Recipes {
 
         PftCrafting.shaped(provider, "wireless_receiver_pftae2recipes", "ae2:wireless_receiver",
                 new String[] { "CPC", "RSR", "   " }, "C", "#gtceu:circuits/ev", "P", "ae2:fluix_pearl", "R",
-                "phoenixcore:frost_reinforced_stained_steel", "S", "gtceu:hv_sensor");
+                "phoenixcore:frost_reinforced_stained_steel_ingot", "S", "gtceu:hv_sensor");
 
         PftCrafting.shaped(provider, "annihilation_core_pftae2recipes", "ae2:annihilation_core", new String[] { "CPB" },
                 "C", "#gtceu:circuits/ulv", "P", "ae2:logic_processor", "B", "#c:dusts/nether_quartz");

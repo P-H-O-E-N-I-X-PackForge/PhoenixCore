@@ -184,6 +184,7 @@ public class PhoenixCore {
 
     private void onRegisterBlocksAndItems() {
         PhoenixBlocks.init();
+        net.phoenix.core.common.fission.PftFissionComponents.init();
         net.phoenix.core.common.block.PrismariteBlocks.init();
         GrowthBlocks.init();
         GrowthItems.init();

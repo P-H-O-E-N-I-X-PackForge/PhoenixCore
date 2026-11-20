@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "phoenixcore:voidglass_shard_crystal_rose"
+          "name": "phoenixcore:highly_conductive_fission_casing"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "phoenixcore:blocks/voidglass_shard_crystal_rose"
+  "random_sequence": "phoenixcore:blocks/highly_conductive_fission_casing"
 }

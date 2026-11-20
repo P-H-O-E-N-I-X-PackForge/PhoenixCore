@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "phoenixcore:block/entropic_coil_block"
+    },
+    "active=true": {
+      "model": "phoenixcore:block/entropic_coil_block_active"
+    }
+  }
+}
