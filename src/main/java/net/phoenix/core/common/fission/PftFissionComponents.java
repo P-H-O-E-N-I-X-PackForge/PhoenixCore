@@ -22,8 +22,10 @@ import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
 /**
  * PFT's own fission components: fuel rods, coolers, moderators and blankets, registered as {@code phoenixcore:} blocks
- * through the Fission API. The pack turns Fission's built-in set off ({@code fission.defaultComponentsEnabled = false}),
- * so these are the only ones. The tuning is a first pass, taken from Fission's own example progression; the textures are
+ * through the Fission API. The pack turns Fission's built-in set off
+ * ({@code fission.defaultComponentsEnabled = false}),
+ * so these are the only ones. The tuning is a first pass, taken from Fission's own example progression; the textures
+ * are
  * Fission's.
  */
 public final class PftFissionComponents {
@@ -79,7 +81,8 @@ public final class PftFissionComponents {
     }
 
     private record Cooler(String name, String display, int ratedHUt, String coolantIn, String coolantOut, int perTick,
-                          int temperature, int tint) implements IFissionCoolerType {
+                          int temperature, int tint)
+            implements IFissionCoolerType {
 
         @Override
         public @NotNull String getName() {

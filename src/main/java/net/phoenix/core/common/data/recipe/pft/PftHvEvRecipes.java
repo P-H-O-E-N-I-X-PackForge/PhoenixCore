@@ -20,6 +20,14 @@ public final class PftHvEvRecipes {
         PftRecipe.gt(provider, "assembler", "good_circuit_universal")
                 .save();
 
+        PftRecipe.gt(provider, "assembler", "warpstone")
+                .itemInputs("4x minecraft:amethyst_shard", "minecraft:ender_eye", "4x gtceu:emerald_heart_cut")
+                .inputFluids("phoenixcore:source_imbued_titanium 144")
+                .itemOutputs("waystones:warp_stone")
+                .duration(160)
+                .EUt(GTValues.VA[GTValues.EV])
+                .save();
+
         PftRecipe.gt(provider, "assembly_line", "kubejs:epp/assembler_matrix_frame")
                 .itemInputs("2x phoenixcore:dense_eighty_five_percent_pure_nevonian_steel_plate",
                         "4x gtceu:blue_steel_frame", "gtceu:plascrete", "#gtceu:circuits/ev")

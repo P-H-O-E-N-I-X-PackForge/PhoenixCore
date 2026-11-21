@@ -29,6 +29,9 @@ import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.screen.EmiScreenBase;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 @EmiEntrypoint
 public class PhoenixEmiPlugin implements EmiPlugin {
 
@@ -44,16 +47,20 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             ResourceLocation.fromNamespaceAndPath("phoenixcore", "fission_breeding"),
             EmiStack.of(Items.CAULDRON));
 
-    private static final java.util.List<java.util.regex.Pattern> HIDDEN_ITEMS = java.util.List.of(
-            java.util.regex.Pattern.compile("advanced_[a-z_]+_canvas_hive"),
-            java.util.regex.Pattern.compile("exspansion_box_[a-z_]+_canvas"),
-            java.util.regex.Pattern.compile("exspansion_box_[a-z_]"),
-            java.util.regex.Pattern.compile("advanced_[a-z_]+_beehive"),
-            java.util.regex.Pattern.compile("volcanic_sourcelink"),
-            java.util.regex.Pattern.compile("alchemical_sourcelink"),
-            java.util.regex.Pattern.compile("mycelial_sourcelink"),
-            java.util.regex.Pattern.compile("^extendedae:(circuit_cutter|crystal_assembler)$"),
-            java.util.regex.Pattern.compile(
+    private static final List<Pattern> HIDDEN_ITEMS = java.util.List.of(
+            Pattern.compile("advanced_[a-z_]+_canvas_hive"),
+            Pattern.compile("exspansion_box_[a-z_]+_canvas"),
+            Pattern.compile("exspansion_box_[a-z_]"),
+            Pattern.compile("advanced_[a-z_]+_beehive"),
+            Pattern.compile("volcanic_sourcelink"),
+            Pattern.compile("alchemical_sourcelink"),
+
+            Pattern.compile("mycelial_sourcelink"),
+            Pattern.compile("^extendedae:(circuit_cutter|crystal_assembler)$"),
+            Pattern.compile("^functionalstorage:(obsidian_upgrade|water_generator_upgrade|dripping_upgrade)$"),
+            Pattern.compile(
+                    "^ironfurnaces:(item_heater|heater|augment_blasting|rainbow_(coal|plating|core)|(million|obsidian|netherite|crystal)_furnace|upgrade_(netherite|silver|iron|gold|crystal|obsidian2?))$"),
+            Pattern.compile(
                     "^utilitarian:(magnet|well_behaved_dropper|no_raider_block|no_soliciting_banner|restraining_order(_active)?|[a-z_]+soliciting_carpet)$"));
 
     private static final java.util.Set<String> HIDDEN_CATEGORIES = java.util.Set.of("jei:information",
@@ -64,7 +71,7 @@ public class PhoenixEmiPlugin implements EmiPlugin {
             ResourceLocation id = stack.getId();
             if (id == null) return false;
             String text = id.toString();
-            for (java.util.regex.Pattern p : HIDDEN_ITEMS) {
+            for (Pattern p : HIDDEN_ITEMS) {
                 if (p.matcher(text).find()) return true;
             }
             return false;

@@ -18,6 +18,73 @@ public final class PftSteelAndBronzeRecipes {
                 .EUt(12)
                 .save();
 
+        // Iron furnace new recipes.
+
+        PftCrafting.shaped(provider, "copper_furnace",
+                "ironfurnaces:copper_furnace",
+                new String[] { "IPI", "PFP", "IPI" },
+                "I", "minecraft:copper_ingot", "P", "gtceu:copper_plate", "F", "minecraft:furnace");
+
+        PftCrafting.shaped(provider, "iron_furnace",
+                "ironfurnaces:iron_furnace",
+                new String[] { "IPI", "PFP", "IPI" },
+                "I", "gtceu:wrought_iron_ingot", "P", "gtceu:wrought_iron_plate", "F", "ironfurnaces:copper_furnace");
+
+        PftCrafting.shaped(provider, "silver_furnace",
+                "ironfurnaces:silver_furnace",
+                new String[] { "IPI", "PFP", "IPI" },
+                "I", "gtceu:silver_ingot", "P", "gtceu:silver_plate", "F", "ironfurnaces:iron_furnace");
+
+        PftCrafting.shaped(provider, "gold_furnace",
+                "ironfurnaces:gold_furnace",
+                new String[] { "IPI", "PFP", "IPI" },
+                "I", "phoenixcore:aurum_steel_ingot", "P", "phoenixcore:aurum_steel_plate", "F",
+                "ironfurnaces:silver_furnace");
+
+        PftCrafting.shaped(provider, "diamond_furnace",
+                "ironfurnaces:diamond_furnace",
+                new String[] { "CDP", "DFD", "PDC" },
+                "C", "gtceu:diamond_princess_cut", "D", "minecraft:diamond", "P", "gtceu:diamond_plate", "F",
+                "ironfurnaces:gold_furnace");
+
+        PftCrafting.shaped(provider, "emerald_furnace",
+                "ironfurnaces:emerald_furnace",
+                new String[] { "CEP", "EFE", "PEC" },
+                "C", "gtceu:emerald_princess_cut", "E", "minecraft:emerald", "P", "gtceu:emerald_plate", "F",
+                "ironfurnaces:diamond_furnace");
+
+        PftCrafting.shaped(provider, "stone_to_copper_upgrade",
+                "ironfurnaces:upgrade_copper",
+                new String[] { "PIP", "IUI", "PIP" },
+                "P", "gtceu:copper_plate", "I", "minecraft:copper_ingot", "U", "minecraft:cobblestone");
+
+        PftCrafting.shaped(provider, "copper_to_iron_upgrade",
+                "ironfurnaces:upgrade_iron2",
+                new String[] { "PIP", "IUI", "PIP" },
+                "P", "gtceu:wrought_iron_plate", "I", "gtceu:wrought_iron_ingot", "U", "minecraft:copper_ingot");
+
+        PftCrafting.shaped(provider, "iron_to_silver_upgrade",
+                "ironfurnaces:upgrade_silver2",
+                new String[] { "PIP", "IUI", "PIP" },
+                "P", "gtceu:silver_plate", "I", "gtceu:silver_ingot", "U", "gtceu:wrought_iron_ingot");
+
+        PftCrafting.shaped(provider, "silver_to_gold_upgrade",
+                "ironfurnaces:upgrade_gold2",
+                new String[] { "PIP", "IUI", "PIP" },
+                "P", "phoenixcore:aurum_steel_plate", "I", "phoenixcore:aurum_steel_ingot", "U", "gtceu:silver_ingot");
+
+        PftCrafting.shaped(provider, "gold_to_diamond_upgrade",
+                "ironfurnaces:upgrade_diamond",
+                new String[] { "DPC", "DUD", "CPD" },
+                "D", "minecraft:diamond", "P", "gtceu:diamond_plate", "C", "gtceu:diamond_princess_cut", "U",
+                "phoenixcore:aurum_steel_ingot");
+
+        PftCrafting.shaped(provider, "diamond_to_emerald_upgrade",
+                "ironfurnaces:upgrade_emerald",
+                new String[] { "DPC", "DUD", "CPD" },
+                "D", "minecraft:emerald", "P", "gtceu:emerald_plate", "C", "gtceu:diamond_emerald_cut", "U",
+                "minecraft:diamond");
+
         PftCrafting.shapeless(provider, "steel_dust_shapeless_pftsteelandbronzerecipes", "gtceu:steel_dust",
                 "1x gtceu:coal_dust", "gtceu:iron_dust");
 
@@ -61,13 +128,6 @@ public final class PftSteelAndBronzeRecipes {
 
         PftCrafting.shaped(provider, "wood_plate_pftsteelandbronzerecipes", "gtceu:wood_plate",
                 new String[] { " L ", " S ", " S " }, "S", "#minecraft:planks", "L", "#c:tools/hammer");
-
-        PftCrafting.shaped(provider, "iron_furnace_pftsteelandbronzerecipes", "ironfurnaces:iron_furnace",
-                new String[] { "SSS", "SLS", "SSS" }, "S", "gtceu:wrought_iron_ingot", "L", "minecraft:furnace");
-
-        PftCrafting.shaped(provider, "iron_furnace_pftsteelandbronzerecipes_2", "ironfurnaces:iron_furnace",
-                new String[] { "SSS", "GLG", "SSS" }, "S", "gtceu:wrought_iron_ingot", "L",
-                "ironfurnaces:copper_furnace", "G", "minecraft:glass");
 
         PftCrafting.shaped(provider, "large_steam_compressor_pftsteelandbronzerecipes", "gtceu:large_steam_compressor",
                 new String[] { "SPS", "PCP", "SLS" }, "S", "gtceu:steam_machine_casing", "L",
