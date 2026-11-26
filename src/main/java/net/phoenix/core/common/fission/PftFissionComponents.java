@@ -20,14 +20,6 @@ import java.util.List;
 
 import static net.phoenix.core.common.registry.PhoenixRegistration.REGISTRATE;
 
-/**
- * PFT's own fission components: fuel rods, coolers, moderators and blankets, registered as {@code phoenixcore:} blocks
- * through the Fission API. The pack turns Fission's built-in set off
- * ({@code fission.defaultComponentsEnabled = false}),
- * so these are the only ones. The tuning is a first pass, taken from Fission's own example progression; the textures
- * are
- * Fission's.
- */
 public final class PftFissionComponents {
 
     private PftFissionComponents() {}

@@ -18,8 +18,6 @@ public final class PftSteelAndBronzeRecipes {
                 .EUt(12)
                 .save();
 
-        // Iron furnace new recipes.
-
         PftCrafting.shaped(provider, "copper_furnace",
                 "ironfurnaces:copper_furnace",
                 new String[] { "IPI", "PFP", "IPI" },

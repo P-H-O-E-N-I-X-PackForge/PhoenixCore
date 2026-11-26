@@ -225,7 +225,6 @@ public final class PftSteamAgeRecipes {
         PftCrafting.shapeless(provider, "clay_shapeless_pftsteamagerecipes", "minecraft:clay", "phoenixcore:dust",
                 "minecraft:water_bucket");
 
-        // the wooden form stays in the grid (see KeepWoodenForm)
         PftCrafting.shaped(provider, "compressed_coke_clay_pftsteamagerecipes", "3x gtceu:compressed_coke_clay",
                 new String[] { "CCC", "ScS", "SSS" }, "C", "minecraft:clay_ball", "c", "gtceu:brick_wooden_form", "S",
                 "#minecraft:sand");

@@ -8,7 +8,6 @@ import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 
-/** Holds the client-only screen factory in an interface, so the item class never carries a ModularScreen method. */
 public interface TerminalUIHolder extends IUIHolder<PlayerInventoryGuiData<?>> {
 
     @Override

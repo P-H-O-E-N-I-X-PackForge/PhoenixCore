@@ -9,10 +9,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.phoenix.core.PhoenixCore;
 
-/**
- * Compressed coke clay is made with a wooden brick form that is not used up. A crafting grid takes every ingredient,
- * so the form is handed back to the player when the clay is crafted.
- */
 @EventBusSubscriber(modid = PhoenixCore.MOD_ID)
 public final class KeepWoodenForm {
 
@@ -26,7 +22,7 @@ public final class KeepWoodenForm {
         if (!BuiltInRegistries.ITEM.getKey(event.getCrafting().getItem()).equals(CLAY)) return;
         Item form = BuiltInRegistries.ITEM.get(FORM);
         if (form == null || form == net.minecraft.world.item.Items.AIR) return;
-        // the event fires before the grid is used up, so the form in it is about to be consumed: give one back
+
         ItemStack back = new ItemStack(form);
         if (!event.getEntity().getInventory().add(back)) event.getEntity().drop(back, false);
     }

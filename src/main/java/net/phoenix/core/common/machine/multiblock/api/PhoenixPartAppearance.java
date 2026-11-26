@@ -3,6 +3,7 @@ package net.phoenix.core.common.machine.multiblock.api;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.machine.multiblock.PartAppearanceProvider;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 
 import net.minecraft.core.BlockPos;
@@ -11,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ public class PhoenixPartAppearance {
         return new Builder();
     }
 
-    public static TriFunction<MultiblockControllerMachine, MultiblockPartMachine, Direction, BlockState> casingExceptAbilities(Supplier<? extends Block> casing,
-                                                                                                                               PartAbility... abilities) {
+    public static PartAppearanceProvider casingExceptAbilities(Supplier<? extends Block> casing,
+                                                               PartAbility... abilities) {
         return rules().ownTextureForAbilities(abilities).build(casing);
     }
 
@@ -143,8 +143,7 @@ public class PhoenixPartAppearance {
             return this;
         }
 
-        public TriFunction<MultiblockControllerMachine, MultiblockPartMachine, Direction, BlockState> build(
-                                                                                                            Supplier<? extends Block> defaultCasing) {
+        public PartAppearanceProvider build(Supplier<? extends Block> defaultCasing) {
             List<AppearanceRule> frozen = List.copyOf(rules);
             return (ctrl, part, side) -> {
                 for (AppearanceRule rule : frozen) {
